@@ -93,21 +93,12 @@ export function useNavData() {
       // MANAGEMENT
       // ----------------------------------------------------------------------
       {
-        subheader: t('management'),
+        subheader: t('Masters'),
         items: [
-          // Masters
           {
-            title: t('Masters'),
-            path: paths.dashboard.user.root,
+            title: t('Inquiry'),
+            path: paths.dashboard.inquiry.root,
             icon: ICONS.user,
-            children: [
-              { title: t('Inquiry'), path: paths.dashboard.user.root },
-              { title: t('Customer'), path: paths.dashboard.user.cards },
-              { title: t('list'), path: paths.dashboard.user.list },
-              { title: t('create'), path: paths.dashboard.user.new },
-              { title: t('edit'), path: paths.dashboard.user.demo.edit },
-              { title: t('account'), path: paths.dashboard.user.account },
-            ],
           },
 
           // PRODUCT
