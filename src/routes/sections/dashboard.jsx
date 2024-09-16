@@ -35,6 +35,9 @@ const UserListPage = lazy(() => import('src/pages/dashboard/user/list'));
 const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
 const UserCreatePage = lazy(() => import('src/pages/dashboard/user/new'));
 const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
+// MASTERS
+const InquiryListView = lazy(() => import('../../sections/inquiry/view/inquiry-list-view'));
+const InquiryCreateView = lazy(() => import('../../sections/inquiry/view/inquiry-create-view'));
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -80,6 +83,18 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
+      {
+        path: 'inquiry',
+        children: [
+          { element: <InquiryListView />, index: true },
+          { path: 'list', element: <InquiryListView /> },
+          // { path: 'cards', element: <UserCardsPage /> },
+          // { path: 'list', element: <InquiryListView /> },
+          { path: 'new', element: <InquiryCreateView /> },
+          { path: ':id/edit', element: <UserEditPage /> },
+          // { path: 'account', element: <UserAccountPage /> },
+        ],
+      },
       {
         path: 'user',
         children: [

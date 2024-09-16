@@ -9,11 +9,11 @@ import { _userList } from 'src/_mock';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import UserNewEditForm from '../user-new-edit-form';
+import InquiryNewEditForm from '../inquiry-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function UserEditView({ id }) {
+export default function InquiryEditView({ id }) {
   const settings = useSettingsContext();
 
   const currentUser = _userList.find((user) => user.id === id);
@@ -38,11 +38,11 @@ export default function UserEditView({ id }) {
         }}
       />
 
-      <UserNewEditForm currentUser={currentUser} />
+      <InquiryNewEditForm currentUser={currentUser} />
     </Container>
   );
 }
 
-UserEditView.propTypes = {
+InquiryEditView.propTypes = {
   id: PropTypes.string,
 };

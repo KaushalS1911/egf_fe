@@ -1,13 +1,9 @@
 import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
-
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { alpha } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
@@ -20,8 +16,6 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
-
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -39,32 +33,116 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import UserTableRow from '../user-table-row';
-import UserTableToolbar from '../user-table-toolbar';
-import UserTableFiltersResult from '../user-table-filters-result';
+import InquiryTableRow from '../inquiry-table-row';
+import InquiryTableToolbar from '../inquiry-table-toolbar';
+import InquiryTableFiltersResult from '../inquiry-table-filters-result';
+import { isAfter, isBetween } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
+  { id: 'date', label: 'Date' },
   { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-  { id: 'company', label: 'Company', width: 220 },
-  { id: 'role', label: 'Role', width: 180 },
-  { id: 'status', label: 'Status', width: 100 },
+  { id: 'phoneNumber', label: 'Phone Number'},
+  { id: 'email', label: 'Email' },
+  { id: 'inquiry for', label: 'Inquiry for'},
+  { id: 'remark', label: 'Remark'},
   { id: '', width: 88 },
+];
+const dummyData = [
+  {
+    date: '10/09/24',
+    name: 'Aditi Devani',
+    phoneNumber: '+91 9099257198',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '11/09/24',
+    name: 'Sujal Paghadal',
+    phoneNumber: '+91 9574854207',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '12/09/24',
+    name: 'Darshil Thummar',
+    phoneNumber: '+91 9316681395',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '13/09/24',
+    name: 'Heet Timbadiya',
+    phoneNumber: '+91 48596 52632',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '14/09/24',
+    name: 'Dax Savani',
+    phoneNumber: '+91 48596 52632',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '10/09/24',
+    name: 'Aditi Devani',
+    phoneNumber: '+91 9099257198',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '11/09/24',
+    name: 'Sujal Paghadal',
+    phoneNumber: '+91 9574854207',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '12/09/24',
+    name: 'Darshil Thummar',
+    phoneNumber: '+91 9316681395',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '13/09/24',
+    name: 'Heet Timbadiya',
+    phoneNumber: '+91 48596 52632',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  },
+  {
+    date: '14/09/24',
+    name: 'Dax Savani',
+    phoneNumber: '+91 48596 52632',
+    email: 'aditidevani@gmail.com',
+    inquiryFor: 'Gold Loan',
+    remark: 'Gold Loan'
+  }
 ];
 
 const defaultFilters = {
   name: '',
-  role: [],
   status: 'all',
+  startDate: null,
+  endDate: null,
 };
-
 // ----------------------------------------------------------------------
 
-export default function UserListView() {
+export default function InquiryListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
@@ -75,7 +153,7 @@ export default function UserListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState(dummyData);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -95,7 +173,7 @@ export default function UserListView() {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
+  const dateError = isAfter(filters.startDate, filters.endDate);
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -155,20 +233,20 @@ export default function UserListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Inquiry"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
+            { name: 'Masters', href: paths.dashboard.inquiry.root },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.user.new}
+              href={paths.dashboard.inquiry.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New User
+              New Inquiry
             </Button>
           }
           sx={{
@@ -177,55 +255,16 @@ export default function UserListView() {
         />
 
         <Card>
-          <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {['active', 'pending', 'banned', 'rejected'].includes(tab.value)
-                      ? tableData.filter((user) => user.status === tab.value).length
-                      : tableData.length}
-                  </Label>
-                }
-              />
-            ))}
-          </Tabs>
 
-          <UserTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            roleOptions={_roles}
+          <InquiryTableToolbar
+            filters={filters} onFilters={handleFilters} dateError={dateError}
           />
 
           {canReset && (
-            <UserTableFiltersResult
+            <InquiryTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
-              //
               onResetFilters={handleResetFilters}
-              //
               results={dataFiltered.length}
               sx={{ p: 2.5, pt: 0 }}
             />
@@ -275,7 +314,7 @@ export default function UserListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <UserTableRow
+                      <InquiryTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -336,32 +375,30 @@ export default function UserListView() {
 }
 
 // ----------------------------------------------------------------------
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { startDate, endDate, status, name } = filters;
 
-function applyFilter({ inputData, comparator, filters }) {
-  const { name, status, role } = filters;
-
+  // Sort the inputData based on comparator and index
   const stabilizedThis = inputData.map((el, index) => [el, index]);
-
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name) {
+  if (name && name.trim()) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (inq) =>
+        inq.name.toLowerCase().includes(name.toLowerCase()) ||
+        inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
     );
   }
 
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((order) =>
+      isBetween(new Date(order.date), startDate, endDate)
+    );
   }
 
   return inputData;

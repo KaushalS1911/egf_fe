@@ -14,7 +14,7 @@ import UserCardList from '../user-card-list';
 
 // ----------------------------------------------------------------------
 
-export default function UserCardsView() {
+export default function InquiryCardsView() {
   const settings = useSettingsContext();
 
   return (

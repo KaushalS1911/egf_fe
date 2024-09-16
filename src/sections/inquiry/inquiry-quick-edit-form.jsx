@@ -22,7 +22,7 @@ import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/comp
 
 // ----------------------------------------------------------------------
 
-export default function UserQuickEditForm({ currentUser, open, onClose }) {
+export default function InquiryQuickEditForm({ currentUser, open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -151,7 +151,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
   );
 }
 
-UserQuickEditForm.propTypes = {
+InquiryQuickEditForm.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   currentUser: PropTypes.object,
