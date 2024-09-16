@@ -12,7 +12,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function RHFAutocomplete({ name, label, type, helperText, placeholder, ...other }) {
+export default function RHFAutocomplete({ name, label, type, helperText, placeholder, req,...other }) {
   const { control, setValue } = useFormContext();
 
   const { multiple } = other;
@@ -87,6 +87,24 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
                           />
                         </InputAdornment>
                       ),
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderLeft: req ? (!!error ? 'none' : '1px solid #FF6530') : 'none', // Apply borderLeft only if req is true
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: req ? (!!error ? '1px solid #FF6530' : '1px solid #919eab') : 'red', // Apply border only if req is true
+                          opacity: req ? (!!error ? '1' : '0.2') : '1', // Apply opacity only if req is true
+                        },
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          border: req ? (!!error ? '1px solid #FF6530' : '1px solid #919eab') : 'red', // Apply border on hover only if req is true
+                          opacity: req ? (!!error ? '1' : '0.2') : '1', // Apply opacity on hover only if req is true
+                        },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          border: req ? (!!error ? '1px solid #FF6530' : '1px solid #919eab') : 'red', // Apply border when focused only if req is true
+                          opacity: req ? (!!error ? '1' : '0.2') : '1', // Apply opacity when focused only if req is true
+                        }
+                      },
+
                     }}
                   />
                 );

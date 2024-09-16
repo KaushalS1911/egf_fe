@@ -49,6 +49,7 @@ export function RHFSelect({
           }}
           error={!!error}
           helperText={error ? error?.message : helperText}
+
           {...other}
         >
           {children}

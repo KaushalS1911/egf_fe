@@ -250,6 +250,7 @@ export default function ProductNewEditForm({ currentProduct }) {
                 label="Quantity"
                 placeholder="0"
                 type="number"
+                req={""}
                 InputLabelProps={{ shrink: true }}
               />
 

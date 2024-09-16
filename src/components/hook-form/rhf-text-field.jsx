@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import { Controller, useFormContext } from 'react-hook-form';
-
 import TextField from '@mui/material/TextField';
 
 // ----------------------------------------------------------------------
 
-export default function RHFTextField({ name, helperText, type, ...other }) {
+export default function RHFTextField({ name, helperText, type, req, ...other }) {
   const { control } = useFormContext();
+
+  const customStyle = req ? { borderLeft: `2px solid ${req}` } : {};
 
   return (
     <Controller
@@ -27,15 +28,19 @@ export default function RHFTextField({ name, helperText, type, ...other }) {
           }}
           error={!!error}
           helperText={error ? error?.message : helperText}
+          InputProps={{
+            style: { ...customStyle }
+          }}
           {...other}
         />
       )}
     />
   );
-}
+};
 
 RHFTextField.propTypes = {
-  helperText: PropTypes.object,
-  name: PropTypes.string,
+  helperText: PropTypes.string,
+  name: PropTypes.string.isRequired,
   type: PropTypes.string,
+  req: PropTypes.string, // `req` should be a color string
 };
