@@ -95,14 +95,14 @@ export function useNavData() {
       {
         subheader: t('management'),
         items: [
-          // USER
+          // Masters
           {
-            title: t('user'),
+            title: t('Masters'),
             path: paths.dashboard.user.root,
             icon: ICONS.user,
             children: [
-              { title: t('profile'), path: paths.dashboard.user.root },
-              { title: t('cards'), path: paths.dashboard.user.cards },
+              { title: t('Inquiry'), path: paths.dashboard.user.root },
+              { title: t('Customer'), path: paths.dashboard.user.cards },
               { title: t('list'), path: paths.dashboard.user.list },
               { title: t('create'), path: paths.dashboard.user.new },
               { title: t('edit'), path: paths.dashboard.user.demo.edit },
