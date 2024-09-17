@@ -53,6 +53,7 @@ const TABLE_HEAD = [
 ];
 const dummyData = [
   {
+    id: 1,
     date: '10/09/24',
     name: 'Aditi Devani',
     phoneNumber: '+91 9099257198',
@@ -61,6 +62,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 2,
     date: '11/09/24',
     name: 'Sujal Paghadal',
     phoneNumber: '+91 9574854207',
@@ -69,6 +71,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 3,
     date: '12/09/24',
     name: 'Darshil Thummar',
     phoneNumber: '+91 9316681395',
@@ -77,6 +80,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 4,
     date: '13/09/24',
     name: 'Heet Timbadiya',
     phoneNumber: '+91 48596 52632',
@@ -85,6 +89,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 5,
     date: '14/09/24',
     name: 'Dax Savani',
     phoneNumber: '+91 48596 52632',
@@ -93,6 +98,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 6,
     date: '10/09/24',
     name: 'Aditi Devani',
     phoneNumber: '+91 9099257198',
@@ -101,6 +107,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 7,
     date: '11/09/24',
     name: 'Sujal Paghadal',
     phoneNumber: '+91 9574854207',
@@ -109,6 +116,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 8,
     date: '12/09/24',
     name: 'Darshil Thummar',
     phoneNumber: '+91 9316681395',
@@ -117,6 +125,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 9,
     date: '13/09/24',
     name: 'Heet Timbadiya',
     phoneNumber: '+91 48596 52632',
@@ -125,6 +134,7 @@ const dummyData = [
     remark: 'Gold Loan'
   },
   {
+    id: 10,
     date: '14/09/24',
     name: 'Dax Savani',
     phoneNumber: '+91 48596 52632',
@@ -217,7 +227,7 @@ export default function InquiryListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.user.edit(id));
+      router.push(paths.dashboard.inquiry.edit(id));
     },
     [router]
   );

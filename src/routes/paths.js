@@ -122,7 +122,19 @@ export const paths = {
       // cards: `${ROOTS.DASHBOARD}/user/cards`,
       // profile: `${ROOTS.DASHBOARD}/user/profile`,
       // account: `${ROOTS.DASHBOARD}/user/account`,
-      // edit: (id) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
+      edit: (id) => `${ROOTS.DASHBOARD}/inquiry/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
+    employee: {
+      root: `${ROOTS.DASHBOARD}/employee`,
+      new: `${ROOTS.DASHBOARD}/employee/new`,
+      list: `${ROOTS.DASHBOARD}/employee/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/employee/${id}/edit`,
       // demo: {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },
