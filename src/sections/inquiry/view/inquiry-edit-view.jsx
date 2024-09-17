@@ -10,28 +10,29 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import InquiryNewEditForm from '../inquiry-new-edit-form';
+import { useParams } from '../../../routes/hooks';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryEditView({ id }) {
+export default function InquiryEditView() {
   const settings = useSettingsContext();
-
+  const { id } = useParams();
   const currentUser = _userList.find((user) => user.id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="New Inquiry"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'User',
-            href: paths.dashboard.user.root,
+            name: 'Inquiry List',
+            href: paths.dashboard.inquiry.root,
           },
-          { name: currentUser?.name },
+          { name: 'New Inquiry' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

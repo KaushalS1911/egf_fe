@@ -18,3 +18,8 @@
 @import 'yet-another-react-lightbox/styles.css';
 @import 'yet-another-react-lightbox/plugins/captions.css';
 @import 'yet-another-react-lightbox/plugins/thumbnails.css';
+
+.req input{
+  border-left: 2.8px solid red !important;
+  border-radius: 8px;
+}

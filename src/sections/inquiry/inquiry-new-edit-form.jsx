@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -8,69 +8,49 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { fData } from 'src/utils/format-number';
-
-import { countries } from 'src/assets/data';
-
-import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
-  RHFSwitch,
   RHFTextField,
-  RHFUploadAvatar,
-  RHFAutocomplete,
 } from 'src/components/hook-form';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryNewEditForm({ currentUser }) {
+export default function InquiryNewEditForm({ currentInquiry }) {
   const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    address: Yup.string().required('Address is required'),
-    country: Yup.string().required('Country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role is required'),
-    zipCode: Yup.string().required('Zip code is required'),
-    avatarUrl: Yup.mixed().nullable().required('Avatar is required'),
-    // not required
-    status: Yup.string(),
-    isVerified: Yup.boolean(),
+    firstName: Yup.string().required('First name is required'),
+    lastName: Yup.string().required('Last name is required'),
+    contact: Yup.string().required('Contact is required'),
+    email: Yup.string().email('Email must be valid').required('Email is required'),
+    date: Yup.string().required('Date is required'),
+    inquiryFor: Yup.string().required('Inquiry field is required'),
+    other: Yup.string().required('Other field is required'),
+    remark: Yup.string().required('Remark is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
-      city: currentUser?.city || '',
-      role: currentUser?.role || '',
-      email: currentUser?.email || '',
-      state: currentUser?.state || '',
-      status: currentUser?.status || '',
-      address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      zipCode: currentUser?.zipCode || '',
-      company: currentUser?.company || '',
-      avatarUrl: currentUser?.avatarUrl || null,
-      phoneNumber: currentUser?.phoneNumber || '',
-      isVerified: currentUser?.isVerified || true,
+      firstName: currentInquiry?.firstName || '',
+      lastName: currentInquiry?.lastName || '',
+      contact: currentInquiry?.contact || '',
+      email: currentInquiry?.email || '',
+      date: currentInquiry?.date || '',
+      inquiryFor: currentInquiry?.inquiryFor || '',
+      other: currentInquiry?.other || '',
+      remark: currentInquiry?.remark || ''
     }),
-    [currentUser]
+    [currentInquiry]
   );
 
   const methods = useForm({
@@ -82,25 +62,21 @@ export default function InquiryNewEditForm({ currentUser }) {
     reset,
     watch,
     control,
-    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
-      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.user.list);
+      enqueueSnackbar(currentInquiry ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.inquiry.list);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
   });
-
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -122,31 +98,41 @@ export default function InquiryNewEditForm({ currentUser }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="name" label="Full Name" />
-              <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
+              <RHFTextField name="firstName" label="First Name" req={"red"}/>
+              <RHFTextField name="lastName" label="Last Name" req={"red"}/>
+              <RHFTextField name="contact" label="Mobile No." req={"red"}/>
+              <RHFTextField name="email" label="Email" req={"red"}/>
 
-              <RHFAutocomplete
-                name="country"
-                type="country"
-                label="Country"
-                placeholder="Choose a country"
-                fullWidth
-                options={countries.map((option) => option.label)}
-                getOptionLabel={(option) => option}
+              <Controller
+                name="date"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <DatePicker
+                    label="Date"
+                    value={field.value}
+                    onChange={(newValue) => {
+                      field.onChange(newValue);
+                    }}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!error,
+                        helperText: error?.message,
+                        className: `req`,
+                      },
+                    }}
+                  />
+                )}
               />
 
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="address" label="Address" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
-              <RHFTextField name="company" label="Company" />
-              <RHFTextField name="role" label="Role" />
+              <RHFTextField name="inquiryFor" label="Inquiry For" req={"red"}/>
+              <RHFTextField name="other" label="Other" req={"red"}/>
+              <RHFTextField name="remark" label="Remark" req={"red"}/>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Create User' : 'Save Changes'}
+                {!currentInquiry ? 'Create User' : 'Save Changes'}
               </LoadingButton>
             </Stack>
           </Card>
@@ -157,5 +143,5 @@ export default function InquiryNewEditForm({ currentUser }) {
 }
 
 InquiryNewEditForm.propTypes = {
-  currentUser: PropTypes.object,
+  currentInquiry: PropTypes.object,
 };

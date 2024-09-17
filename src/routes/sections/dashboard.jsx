@@ -39,6 +39,11 @@ const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
 // INQUIRY
 const InquiryListView = lazy(() => import('../../sections/inquiry/view/inquiry-list-view'));
 const InquiryCreateView = lazy(() => import('../../sections/inquiry/view/inquiry-create-view'));
+const InquiryEditView = lazy(() => import('../../sections/inquiry/view/inquiry-edit-view'));
+//EMPLOYEE
+const EmployeeListView = lazy(() => import('../../sections/employee/view/employee-list-view'));
+const EmployeeCreateView = lazy(() => import('../../sections/employee/view/employee-create-view'));
+const EmployeeEditView = lazy(() => import('../../sections/employee/view/employee-edit-view'));
 // SCHEME
 const SchemeListView = lazy(()=>import('../../sections/scheme/view/scheme-list-view'))
 // BLOG
@@ -108,6 +113,16 @@ export const dashboardRoutes = [
           // { path: 'new', element: <InquiryCreateView /> },
           // { path: ':id/edit', element: <UserEditPage /> },
           // { path: 'account', element: <UserAccountPage /> },
+          { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'employee',
+        children: [
+          { element: <EmployeeListView />, index: true },
+          { path: 'list', element: <EmployeeListView /> },
+          { path: 'new', element: <EmployeeCreateView /> },
+          { path: ':id/edit', element: <EmployeeEditView /> },
         ],
       },
       {

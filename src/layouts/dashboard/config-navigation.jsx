@@ -100,6 +100,12 @@ export function useNavData() {
             path: paths.dashboard.inquiry.root,
             icon: ICONS.user,
           },
+          {
+            title: t('Employee'),
+            path: paths.dashboard.employee.root,
+            icon: ICONS.user,
+          },
+
           // SCHEME
           {
             title: t('scheme'),

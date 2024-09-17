@@ -22,10 +22,10 @@ export default function InquiryCreateView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Masters',
-            // href: paths.dashboard.masters.root,
+            name: 'Inquiry List',
+            href: paths.dashboard.inquiry.root,
           },
-          { name: 'Inquiry' },
+          { name: 'New Inquiry' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
