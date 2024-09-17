@@ -100,7 +100,12 @@ export function useNavData() {
             path: paths.dashboard.inquiry.root,
             icon: ICONS.user,
           },
-
+          // SCHEME
+          {
+            title: t('scheme'),
+            path: paths.dashboard.scheme.root,
+            icon: ICONS.user,
+          },
           // PRODUCT
           {
             title: t('product'),

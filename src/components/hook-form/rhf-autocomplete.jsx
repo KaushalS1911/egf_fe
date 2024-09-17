@@ -12,11 +12,18 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function RHFAutocomplete({ name, label, type, helperText, placeholder, req,...other }) {
+export default function RHFAutocomplete({
+                                          name,
+                                          label,
+                                          type,
+                                          helperText,
+                                          placeholder,
+                                          req, // Now using req prop for conditional borderLeft
+                                          ...other
+                                        }) {
   const { control, setValue } = useFormContext();
-
   const { multiple } = other;
-
+  const customStyle = req ? { borderLeft: `2px solid ${req}` } : { borderLeft: '2px solid red' };
   return (
     <Controller
       name={name}
@@ -29,7 +36,9 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
               id={`autocomplete-${name}`}
               autoHighlight={!multiple}
               disableCloseOnSelect={multiple}
-              onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
+              onChange={(event, newValue) =>
+                setValue(name, newValue, { shouldValidate: true })
+              }
               renderOption={(props, option) => {
                 const country = getCountry(option);
 
@@ -63,9 +72,7 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
                   },
                 };
 
-                if (multiple) {
-                  return <TextField {...baseField} />;
-                }
+                const borderLeftColor = req ? req : 'transparent'; // Use req for borderLeft color
 
                 return (
                   <TextField
@@ -74,7 +81,7 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
                       ...params.InputProps,
                       startAdornment: (
                         <InputAdornment
-                          position="start"
+                          position='start'
                           sx={{
                             ...(!country.code && {
                               display: 'none',
@@ -87,24 +94,7 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
                           />
                         </InputAdornment>
                       ),
-                    }}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderLeft: req ? (!!error ? 'none' : '1px solid #FF6530') : 'none', // Apply borderLeft only if req is true
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          border: req ? (!!error ? '1px solid #FF6530' : '1px solid #919eab') : 'red', // Apply border only if req is true
-                          opacity: req ? (!!error ? '1' : '0.2') : '1', // Apply opacity only if req is true
-                        },
-                        "&:hover .MuiOutlinedInput-notchedOutline": {
-                          border: req ? (!!error ? '1px solid #FF6530' : '1px solid #919eab') : 'red', // Apply border on hover only if req is true
-                          opacity: req ? (!!error ? '1' : '0.2') : '1', // Apply opacity on hover only if req is true
-                        },
-                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          border: req ? (!!error ? '1px solid #FF6530' : '1px solid #919eab') : 'red', // Apply border when focused only if req is true
-                          opacity: req ? (!!error ? '1' : '0.2') : '1', // Apply opacity when focused only if req is true
-                        }
-                      },
-
+                      style: { ...customStyle },
                     }}
                   />
                 );
@@ -118,9 +108,13 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
                       {...getTagProps({ index })}
                       key={country.label}
                       label={country.label}
-                      icon={<Iconify icon={`circle-flags:${country.code?.toLowerCase()}`} />}
-                      size="small"
-                      variant="soft"
+                      icon={
+                        <Iconify
+                          icon={`circle-flags:${country.code?.toLowerCase()}`}
+                        />
+                      }
+                      size='small'
+                      variant='soft'
                     />
                   );
                 })
@@ -134,21 +128,31 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
           <Autocomplete
             {...field}
             id={`autocomplete-${name}`}
-            onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={label}
-                placeholder={placeholder}
-                error={!!error}
-                helperText={error ? error?.message : helperText}
-                inputProps={{
-                  ...params.inputProps,
-                  autoComplete: 'new-password',
-                }}
-              />
-            )}
-            {...other}
+            onChange={(event, newValue) =>
+              setValue(name, newValue, { shouldValidate: true })
+            }
+            renderInput={(params) => {
+
+
+              return (
+                <TextField
+                  {...params}
+                  label={label}
+                  placeholder={placeholder}
+                  error={!!error}
+                  helperText={error ? error?.message : helperText}
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password',
+                  }}
+                  InputProps={{
+                    ...params.InputProps,
+
+                  }}
+                  {...other}
+                />
+              );
+            }}
           />
         );
       }}
@@ -162,6 +166,7 @@ RHFAutocomplete.propTypes = {
   label: PropTypes.string,
   helperText: PropTypes.node,
   placeholder: PropTypes.string,
+  req: PropTypes.string, // req prop is now a string type for color
 };
 
 // ----------------------------------------------------------------------

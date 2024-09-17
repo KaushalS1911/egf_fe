@@ -21,11 +21,11 @@ export default function SchemeTableFiltersResult({
   ...other
 }) {
   const handleRemoveKeyword = useCallback(() => {
-    onFilters('name', '');
+    onFilters('schemeName', '');
   }, [onFilters]);
 
   const handleRemoveStatus = useCallback(() => {
-    onFilters('status', 'all');
+    onFilters('isActive', 'all');
   }, [onFilters]);
 
   const handleRemoveRole = useCallback(
@@ -47,23 +47,16 @@ export default function SchemeTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.status !== 'all' && (
-          <Block label="Status:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+        {filters.isActive !== 'all' && (
+          <Block label="Active">
+            <Chip size="small" label={filters.isActive === "true"?"Active":"Non Avtive"} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
-        {!!filters.role.length && (
-          <Block label="Role:">
-            {filters.role.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
-          </Block>
-        )}
 
-        {!!filters.name && (
-          <Block label="Keyword:">
-            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
+        {!!filters.schemeName && (
+          <Block label="Scheme Name:">
+            <Chip label={filters.schemeName} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
