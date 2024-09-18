@@ -16,10 +16,8 @@ export default function MainLayout({ children }) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 1 }}>
-      <Header />
-
       <Box
-        component="main"
+        component='main'
         sx={{
           flexGrow: 1,
           ...(!homePage && {
@@ -29,8 +27,6 @@ export default function MainLayout({ children }) {
       >
         {children}
       </Box>
-
-      <Footer />
     </Box>
   );
 }
