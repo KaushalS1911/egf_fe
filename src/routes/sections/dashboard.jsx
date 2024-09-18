@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
+import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 
 // ----------------------------------------------------------------------
 
@@ -134,6 +135,18 @@ export const dashboardRoutes = [
           { path: 'cards', element: <UserCardsPage /> },
           { path: 'list', element: <UserListPage /> },
           { path: 'new', element: <UserCreatePage /> },
+          { path: ':id/edit', element: <UserEditPage /> },
+          { path: 'account', element: <UserAccountPage /> },
+        ],
+      },
+      {
+        path: 'customer',
+        children: [
+          { element: <CustomerListView />, index: true },
+          { path: 'profile', element: <UserProfilePage /> },
+          { path: 'cards', element: <UserCardsPage /> },
+          { path: 'list', element: <UserListPage /> },
+          { path: 'new', element: <CustomerCreateView /> },
           { path: ':id/edit', element: <UserEditPage /> },
           { path: 'account', element: <UserAccountPage /> },
         ],

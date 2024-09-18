@@ -101,6 +101,11 @@ export function useNavData() {
             icon: ICONS.user,
           },
           {
+            title: t('Customer'),
+            path: paths.dashboard.customer.root,
+            icon: ICONS.user,
+          },
+          {
             title: t('Employee'),
             path: paths.dashboard.employee.root,
             icon: ICONS.user,

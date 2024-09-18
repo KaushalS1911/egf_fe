@@ -61,7 +61,7 @@ const authAmplify = {
       path: 'register',
       element: (
         <GuestGuard>
-          <AuthClassicLayout title="Manage the job more effectively with Minimal">
+          <AuthClassicLayout title='Manage the job more effectively with Minimal'>
             <AmplifyRegisterPage />
           </AuthClassicLayout>
         </GuestGuard>
@@ -104,7 +104,7 @@ const authJwt = {
       path: 'register',
       element: (
         <GuestGuard>
-          <AuthClassicLayout title="Manage the job more effectively with Minimal">
+          <AuthClassicLayout register={true} title='Manage the job more effectively with Minimal'>
             <JwtRegisterPage />
           </AuthClassicLayout>
         </GuestGuard>
@@ -135,7 +135,7 @@ const authFirebase = {
       path: 'register',
       element: (
         <GuestGuard>
-          <AuthClassicLayout title="Manage the job more effectively with Minimal">
+          <AuthClassicLayout title='Manage the job more effectively with Minimal'>
             <FirebaseRegisterPage />
           </AuthClassicLayout>
         </GuestGuard>
@@ -206,7 +206,7 @@ const authSupabase = {
       path: 'register',
       element: (
         <GuestGuard>
-          <AuthClassicLayout title="Manage the job more effectively with Minimal">
+          <AuthClassicLayout title='Manage the job more effectively with Minimal'>
             <SupabaseRegisterPage />
           </AuthClassicLayout>
         </GuestGuard>

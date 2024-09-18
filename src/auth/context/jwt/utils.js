@@ -12,7 +12,7 @@ function jwtDecode(token) {
       .atob(base64)
       .split('')
       .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
-      .join('')
+      .join(''),
   );
 
   return JSON.parse(jsonPayload);
@@ -57,18 +57,19 @@ export const tokenExpired = (exp) => {
 
 // ----------------------------------------------------------------------
 
-export const setSession = (accessToken) => {
-  if (accessToken) {
-    sessionStorage.setItem('accessToken', accessToken);
+export const setSession = (jwt, jwtRefresh) => {
+  if (jwt && jwtRefresh) {
+    sessionStorage.setItem('jwt', jwt);
+    sessionStorage.setItem('jwtRefresh', jwtRefresh);
 
-    axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+    axios.defaults.headers.common.AUTH_JWT = jwt;
+    axios.defaults.headers.common.AUTH_JWT_REFRESH = jwtRefresh;
 
-    // This function below will handle when token is expired
-    const { exp } = jwtDecode(accessToken); // ~3 days by minimals server
-    tokenExpired(exp);
   } else {
-    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('jwt');
+    sessionStorage.removeItem('jwtRefresh');
 
-    delete axios.defaults.headers.common.Authorization;
+    delete axios.defaults.headers.common.AUTH_JWT;
+    delete axios.defaults.headers.common.AUTH_JWT_REFRESH;
   }
 };
