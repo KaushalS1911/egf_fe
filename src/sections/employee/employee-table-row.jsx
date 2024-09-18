@@ -1,13 +1,18 @@
 import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import ListItemText from '@mui/material/ListItemText';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -15,8 +20,8 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { date , name , phoneNumber,email,inquiryFor, remark} = row;
+export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+  const { userName , contact , employeeCode , idProofs , joinDate , role , status} = row;
 
   const confirm = useBoolean();
 
@@ -31,14 +36,38 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{date}</TableCell>
+          <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+            {/*<Avatar alt={customer.name} src={customer.avatarUrl} sx={{ mr: 2 }} />*/}
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{email}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark}</TableCell>
+            {/*<ListItemText*/}
+            {/*  primary={customer.name}*/}
+            {/*  secondary={customer.email}*/}
+            {/*  primaryTypographyProps={{ typography: 'body2' }}*/}
+            {/*  secondaryTypographyProps={{*/}
+            {/*    component: 'span',*/}
+            {/*    color: 'text.disabled',*/}
+            {/*  }}*/}
+            {/*/>*/}
+          {userName}
+          </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{employeeCode}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idProofs}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{joinDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
+        <TableCell>
+          <Label
+            variant='soft'
+            color={
+              (status === "active" && 'success') ||
+              (status === "pending" && 'warning') ||
+              (status === "banned" && 'error') ||
+              'default'
+            }
+          >
+            {status}
+          </Label>
+        </TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -91,7 +120,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
   );
 }
 
-InquiryTableRow.propTypes = {
+EmployeeTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

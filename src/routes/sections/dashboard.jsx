@@ -21,6 +21,7 @@ const ProductDetailsPage = lazy(() => import('src/pages/dashboard/product/detail
 const ProductListPage = lazy(() => import('src/pages/dashboard/product/list'));
 const ProductCreatePage = lazy(() => import('src/pages/dashboard/product/new'));
 const ProductEditPage = lazy(() => import('src/pages/dashboard/product/edit'));
+
 // ORDER
 const OrderListPage = lazy(() => import('src/pages/dashboard/order/list'));
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
@@ -36,9 +37,16 @@ const UserListPage = lazy(() => import('src/pages/dashboard/user/list'));
 const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
 const UserCreatePage = lazy(() => import('src/pages/dashboard/user/new'));
 const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
-// MASTERS
+// INQUIRY
 const InquiryListView = lazy(() => import('../../sections/inquiry/view/inquiry-list-view'));
 const InquiryCreateView = lazy(() => import('../../sections/inquiry/view/inquiry-create-view'));
+const InquiryEditView = lazy(() => import('../../sections/inquiry/view/inquiry-edit-view'));
+//EMPLOYEE
+const EmployeeListView = lazy(() => import('../../sections/employee/view/employee-list-view'));
+const EmployeeCreateView = lazy(() => import('../../sections/employee/view/employee-create-view'));
+const EmployeeEditView = lazy(() => import('../../sections/employee/view/employee-edit-view'));
+// SCHEME
+const SchemeListView = lazy(()=>import('../../sections/scheme/view/scheme-list-view'))
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -94,6 +102,28 @@ export const dashboardRoutes = [
           { path: 'new', element: <InquiryCreateView /> },
           { path: ':id/edit', element: <UserEditPage /> },
           // { path: 'account', element: <UserAccountPage /> },
+        ],
+      },
+      {
+        path: 'scheme',
+        children: [
+          { element: <SchemeListView />, index: true },
+          { path: 'list', element: <SchemeListView /> },
+          // { path: 'cards', element: <UserCardsPage /> },
+          // { path: 'list', element: <InquiryListView /> },
+          // { path: 'new', element: <InquiryCreateView /> },
+          // { path: ':id/edit', element: <UserEditPage /> },
+          // { path: 'account', element: <UserAccountPage /> },
+          { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'employee',
+        children: [
+          { element: <EmployeeListView />, index: true },
+          { path: 'list', element: <EmployeeListView /> },
+          { path: 'new', element: <EmployeeCreateView /> },
+          { path: ':id/edit', element: <EmployeeEditView /> },
         ],
       },
       {

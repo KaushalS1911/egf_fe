@@ -17,12 +17,11 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import SchemeQuickEditForm from './scheme-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
 export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { name, avatarUrl, company, role, status, email, phoneNumber } = row;
+  const {schemeName,ratePerGram,interestRate,valuationPer,interestPeriod,renewalTime,schemeType,isActive} = row;
 
   const confirm = useBoolean();
 
@@ -37,46 +36,35 @@ export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, 
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeName}</TableCell>
 
-          <ListItemText
-            primary={name}
-            secondary={email}
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ratePerGram}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuationPer}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestPeriod}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{renewalTime}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeType}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeType}</TableCell>
         <TableCell>
           <Label
             variant="soft"
             color={
-              (status === 'active' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'banned' && 'error') ||
+              (isActive === true && 'success' ) ||
+              (isActive === false && 'error') ||
               'default'
             }
           >
-            {status}
+            {isActive?"Yes":"No"}
           </Label>
         </TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
-            <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
-              <Iconify icon="solar:pen-bold" />
-            </IconButton>
-          </Tooltip>
+          {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
+          {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
+          {/*    <Iconify icon="solar:pen-bold" />*/}
+          {/*  </IconButton>*/}
+          {/*</Tooltip>*/}
 
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -84,7 +72,7 @@ export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, 
         </TableCell>
       </TableRow>
 
-      <SchemeQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+
 
       <CustomPopover
         open={popover.open}

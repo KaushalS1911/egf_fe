@@ -33,126 +33,104 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import InquiryTableRow from '../inquiry-table-row';
-import InquiryTableToolbar from '../inquiry-table-toolbar';
-import InquiryTableFiltersResult from '../inquiry-table-filters-result';
+import EmployeeTableRow from '../employee-table-row';
+import EmployeeTableToolbar from '../employee-table-toolbar';
+import EmployeeTableFiltersResult from '../employee-table-filters-result';
 import { isAfter, isBetween } from '../../../utils/format-time';
+import { alpha } from '@mui/material/styles';
+import { Tab, Tabs } from '@mui/material';
+import Label from '../../../components/label';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' },{value: 'active', label: 'Active' },{value: 'pending', label: 'Pending' },{value: 'banned', label: 'Banned' }];
 
 const TABLE_HEAD = [
-  { id: 'date', label: 'Date' },
-  { id: 'name', label: 'Name' },
+  { id: 'username', label: 'UserName' },
   { id: 'phoneNumber', label: 'Phone Number'},
-  { id: 'email', label: 'Email' },
-  { id: 'inquiry for', label: 'Inquiry for'},
-  { id: 'remark', label: 'Remark'},
+  { id: 'employeeCode', label: 'Employee Code' },
+  { id: 'idProofs', label: 'ID Proofs' },
+  { id: 'joinDate', label: 'Join Date'},
+  { id: 'role', label: 'Role'},
+  { id: 'status', label: 'Status'},
   { id: '', width: 88 },
 ];
 const dummyData = [
   {
     id: 1,
-    date: '10/09/24',
-    name: 'Aditi Devani',
-    phoneNumber: '+91 9099257198',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
+    userName: 'Aditi Devani',
+    Email: 'aditi45@gmail.com',
+    contact: '+91 48596 52632',
+    employeeCode: 'EGF000001',
+    idProofs: 'Driving License',
+    joinDate: '12 Apr 2024',
+    role: 'Director',
+    status: "active",
   },
   {
     id: 2,
-    date: '11/09/24',
-    name: 'Sujal Paghadal',
-    phoneNumber: '+91 9574854207',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
+    userName: 'Rohan Patel',
+    Email: 'rohan.patel@example.com',
+    contact: '+91 98765 43210',
+    employeeCode: 'EGF000002',
+    idProofs: 'Passport',
+    joinDate: '10 May 2023',
+    role: 'MD',
+    status: "pending",
   },
   {
     id: 3,
-    date: '12/09/24',
-    name: 'Darshil Thummar',
-    phoneNumber: '+91 9316681395',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
+    userName: 'Priya Shah',
+    email: 'priya.shah@example.com',
+    contact: '+91 12345 67890',
+    employeeCode: 'EGF000003',
+    idProofs: 'Aadhaar Card',
+    joinDate: '01 Mar 2024',
+    role: 'Manager',
+    status: "banned",
   },
   {
     id: 4,
-    date: '13/09/24',
-    name: 'Heet Timbadiya',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
+    userName: 'Harsh Mehta',
+    email: 'harsh.mehta@example.com',
+    contact: '+91 55555 12345',
+    employeeCode: 'EGF000004',
+    idProofs: 'PAN Card',
+    joinDate: '15 Jun 2023',
+    role: 'Employee',
+    status: "active",
   },
   {
     id: 5,
-    date: '14/09/24',
-    name: 'Dax Savani',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
+    userName: 'Sneha Desai',
+    email: 'sneha.desai@example.com',
+    contact: '+91 88888 99999',
+    employeeCode: 'EGF000005',
+    idProofs: 'Voter ID',
+    joinDate: '20 Aug 2024',
+    role: 'Employee',
+    status: "active",
   },
   {
     id: 6,
-    date: '10/09/24',
-    name: 'Aditi Devani',
-    phoneNumber: '+91 9099257198',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 7,
-    date: '11/09/24',
-    name: 'Sujal Paghadal',
-    phoneNumber: '+91 9574854207',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 8,
-    date: '12/09/24',
-    name: 'Darshil Thummar',
-    phoneNumber: '+91 9316681395',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 9,
-    date: '13/09/24',
-    name: 'Heet Timbadiya',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 10,
-    date: '14/09/24',
-    name: 'Dax Savani',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
+    userName: 'Rahul Verma',
+    email: 'rahul.verma@example.com',
+    contact: '+91 67678 90909',
+    employeeCode: 'EGF000006',
+    idProofs: 'Driving License',
+    joinDate: '22 Feb 2024',
+    role: 'Employee',
+    status: "active",
   }
 ];
 
 const defaultFilters = {
-  name: '',
+  userName: '',
   status: 'all',
-  startDate: null,
-  endDate: null,
 };
 // ----------------------------------------------------------------------
 
-export default function InquiryListView() {
+export default function EmployeeListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
@@ -183,7 +161,7 @@ export default function InquiryListView() {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-  const dateError = isAfter(filters.startDate, filters.endDate);
+
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -227,7 +205,7 @@ export default function InquiryListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.inquiry.edit(id));
+      router.push(paths.dashboard.employee.edit(id));
     },
     [router]
   );
@@ -243,20 +221,20 @@ export default function InquiryListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Inquiry"
+          heading="Employee List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Masters', href: paths.dashboard.inquiry.root },
-            { name: 'List' },
+            { name: 'Masters', href: paths.dashboard.employee.root },
+            { name: 'Employee List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.inquiry.new}
+              href={paths.dashboard.employee.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Inquiry
+              Add Employee
             </Button>
           }
           sx={{
@@ -265,13 +243,47 @@ export default function InquiryListView() {
         />
 
         <Card>
-
-          <InquiryTableToolbar
-            filters={filters} onFilters={handleFilters} dateError={dateError}
-          />
+            <Tabs
+              value={filters.status}
+              onChange={handleFilterStatus}
+              sx={{
+                px: 2.5,
+                boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+              }}
+            >
+              {STATUS_OPTIONS.map((tab) => (
+                <Tab
+                  key={tab.value}
+                  iconPosition='end'
+                  value={tab.value}
+                  label={tab.label}
+                  icon={
+                    <>
+                      <Label
+                        style={{ margin: '5px' }}
+                        variant={
+                          ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                        }
+                        color={
+                          (tab.value === 'active' && 'success') ||
+                          (tab.value === 'pending' && 'warning') ||
+                          (tab.value === 'banned' && 'error') ||
+                          'default'
+                        }
+                      >
+                        {['active', 'pending', 'banned'].includes(tab.value)
+                          ? dummyData.filter((emp) => emp.status === tab.value).length
+                          : dummyData.length}
+                      </Label>
+                    </>
+                  }
+                />
+              ))}
+            </Tabs>
+          <EmployeeTableToolbar filters={filters} onFilters={handleFilters} />
 
           {canReset && (
-            <InquiryTableFiltersResult
+            <EmployeeTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -324,7 +336,7 @@ export default function InquiryListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <InquiryTableRow
+                      <EmployeeTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -385,10 +397,9 @@ export default function InquiryListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { startDate, endDate, status, name } = filters;
+function applyFilter({ inputData, comparator, filters }) {
+  const { status, userName } = filters;
 
-  // Sort the inputData based on comparator and index
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -396,19 +407,16 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name && name.trim()) {
+  if (userName && userName.trim()) {
     inputData = inputData.filter(
       (inq) =>
-        inq.name.toLowerCase().includes(name.toLowerCase()) ||
-        inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
+        inq.userName.toLowerCase().includes(userName.toLowerCase())
+        // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
     );
   }
 
-  if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((order) =>
-      isBetween(new Date(order.date), startDate, endDate)
-    );
+  if (status && status !== 'all') {
+    inputData = inputData.filter((user) => user.status === status);
   }
 
   return inputData;

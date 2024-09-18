@@ -5,34 +5,34 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import InquiryNewEditForm from '../inquiry-new-edit-form';
+import EmployeeNewEditForm from '../employee-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryCreateView() {
+export default function EmployeeCreateView() {
   const settings = useSettingsContext();
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="New Inquiry"
+        heading="Create New Employee"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Inquiry List',
-            href: paths.dashboard.inquiry.root,
+            name: 'Employee List',
+            href: paths.dashboard.employee.root,
           },
-          { name: 'New Inquiry' },
+          { name: 'Create New Employee' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <InquiryNewEditForm />
+      <EmployeeNewEditForm />
     </Container>
   );
 }

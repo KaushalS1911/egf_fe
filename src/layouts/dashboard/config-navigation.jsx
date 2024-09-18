@@ -105,7 +105,18 @@ export function useNavData() {
             path: paths.dashboard.customer.root,
             icon: ICONS.user,
           },
+          {
+            title: t('Employee'),
+            path: paths.dashboard.employee.root,
+            icon: ICONS.user,
+          },
 
+          // SCHEME
+          {
+            title: t('scheme'),
+            path: paths.dashboard.scheme.root,
+            icon: ICONS.user,
+          },
           // PRODUCT
           {
             title: t('product'),
@@ -200,7 +211,7 @@ export function useNavData() {
             title: t('mail'),
             path: paths.dashboard.mail,
             icon: ICONS.mail,
-            info: <Label color='error'>+32</Label>,
+            info: <Label color="error">+32</Label>,
           },
 
           // CHAT
@@ -211,22 +222,22 @@ export function useNavData() {
           },
 
           // CALENDAR
-          {
-            title: t('calendar'),
-            path: paths.dashboard.calendar,
-            icon: ICONS.calendar,
-          },
+          // {
+          //   title: t('calendar'),
+          //   path: paths.dashboard.calendar,
+          //   icon: ICONS.calendar,
+          // },
 
           // KANBAN
-          {
-            title: t('kanban'),
-            path: paths.dashboard.kanban,
-            icon: ICONS.kanban,
-          },
+          // {
+          //   title: t('kanban'),
+          //   path: paths.dashboard.kanban,
+          //   icon: ICONS.kanban,
+          // },
         ],
-      },
+      }
     ],
-    [t],
+    [t]
   );
 
   return data;
