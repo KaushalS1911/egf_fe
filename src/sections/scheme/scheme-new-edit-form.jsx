@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -17,18 +17,21 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
-  RHFAutocomplete,
+  RHFAutocomplete, RHFSwitch,
   RHFTextField,
 } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { countries } from '../../assets/data';
+import axios from 'axios';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 // ----------------------------------------------------------------------
 
 export default function SchemeNewEditForm({ currentScheme }) {
   const router = useRouter();
-  const selectOption = ["dax","darshil","sujal","heet"]
   const { enqueueSnackbar } = useSnackbar();
+  const [includeTaxes, setIncludeTaxes] = useState(false);
 
   const NewSchema = Yup.object().shape({
     schemeName: Yup.string().required('Scheme Name is required'),
@@ -52,14 +55,17 @@ export default function SchemeNewEditForm({ currentScheme }) {
       minimumLoanTime: currentScheme?.minimumLoanTime || '',
       ratePerGram: currentScheme?.ratePerGram || '',
       remark: currentScheme?.remark || '',
+      // isActive: currentScheme?.include || true,
     }),
     [currentScheme]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewSchema),
     defaultValues,
   });
+  const handleChangeIncludeTaxes = useCallback((event) => {
+    setIncludeTaxes(event.target.checked);
+  }, []);
 
   const {
     reset,
@@ -70,12 +76,15 @@ export default function SchemeNewEditForm({ currentScheme }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    alert("raam")
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('DATA', data);
+      axios.post("https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/scheme?branch=66ea5ebb0f0bdc8062c13a64",data).then((res)=> {
+        router.push(paths.dashboard.scheme.list);
+      enqueueSnackbar( 'Create success!');
+      }).catch((err)=>enqueueSnackbar( 'err!'))
       reset();
-      enqueueSnackbar(currentScheme ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.inquiry.list);
-      console.info('DATA', data);
+
     } catch (error) {
       console.error(error);
     }
@@ -157,13 +166,15 @@ export default function SchemeNewEditForm({ currentScheme }) {
               />
               <RHFTextField name="ratePerGram" label="Rate Per Gram" req={"red"}/>
               <RHFTextField name="remark" label="Remark"/>
+
             </Box>
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+            <Box  sx={{ mt: 3 ,display:"flex",justifyContent:"space-between"}}>
+              <RHFSwitch name="isActive" label={"is Active"} sx={{ m: 0 }} />
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {!currentScheme ? 'Create Scheme' : 'Save Changes'}
               </LoadingButton>
-            </Stack>
+            </Box>
           </Card>
         </Grid>
       </Grid>

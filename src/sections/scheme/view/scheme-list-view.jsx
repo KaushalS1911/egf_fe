@@ -44,6 +44,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import { valueToPercent } from '@mui/material/Slider/useSlider';
+import { useGetScheme } from '../../../api/scheme';
 
 // ----------------------------------------------------------------------
 
@@ -64,130 +65,7 @@ const TABLE_HEAD = [
   { id: 'active', label: 'Active' },
   { id: '', width: 88 },
 ];
-const dummyData = [
-  {
-    id: 1,
-    schemeName: 'darshuil',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 2,
-    schemeName: 'sujal',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 3,
-    schemeName: 'dev',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 4,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 5,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 6,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 7,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 8,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 9,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 10,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 11,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 12,
-    schemeName: 'heet',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  },
 
-];
 
 const defaultFilters = {
   schemeName: '',
@@ -206,7 +84,9 @@ export default function InquiryListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(dummyData);
+  const {scheme,schemeLoading} = useGetScheme()
+
+  const [tableData, setTableData] = useState(scheme);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -346,8 +226,8 @@ export default function InquiryListView() {
                       }
                     >
                       {['false','true'].includes(tab.value)
-                        ? dummyData.filter((emp) => String(emp.isActive) == tab.value).length
-                        : dummyData.length}
+                        ? scheme.filter((emp) => String(emp.isActive) == tab.value).length
+                        : scheme.length}
                     </Label>
                   </>
                 }
@@ -492,7 +372,6 @@ function applyFilter({ inputData, comparator, filters }) {
     );
   }
 
-  // Adjust the logic to filter based on the 'isActive' status
   if (isActive !== 'all') {
     inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
   }
