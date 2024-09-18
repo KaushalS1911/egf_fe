@@ -5,11 +5,11 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import SchemeNewEditForm from '../scheme-new-edit-form';
+import CustomerNewEditForm from '../customer-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function SchemeCreateView() {
+export default function CustomerCreateView() {
   const settings = useSettingsContext();
 
   return (
@@ -21,18 +21,14 @@ export default function SchemeCreateView() {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
-          {
-            name: 'Scheme',
-            href: paths.dashboard.scheme.root,
-          },
-          { name: 'New Scheme' },
+          { name: 'New user' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <SchemeNewEditForm />
+      <CustomerNewEditForm />
     </Container>
   );
 }

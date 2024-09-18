@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
+import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 
 // ----------------------------------------------------------------------
 
@@ -46,6 +47,7 @@ const EmployeeCreateView = lazy(() => import('../../sections/employee/view/emplo
 const EmployeeEditView = lazy(() => import('../../sections/employee/view/employee-edit-view'));
 // SCHEME
 const SchemeListView = lazy(()=>import('../../sections/scheme/view/scheme-list-view'))
+const SchemeCreateView = lazy(() => import('../../sections/scheme/view/scheme-create-view'));
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -110,7 +112,7 @@ export const dashboardRoutes = [
           { path: 'list', element: <SchemeListView /> },
           // { path: 'cards', element: <UserCardsPage /> },
           // { path: 'list', element: <InquiryListView /> },
-          // { path: 'new', element: <InquiryCreateView /> },
+          { path: 'new', element: <SchemeCreateView /> },
           // { path: ':id/edit', element: <UserEditPage /> },
           // { path: 'account', element: <UserAccountPage /> },
           { path: ':id/edit', element: <InquiryEditView /> },
@@ -133,6 +135,18 @@ export const dashboardRoutes = [
           { path: 'cards', element: <UserCardsPage /> },
           { path: 'list', element: <UserListPage /> },
           { path: 'new', element: <UserCreatePage /> },
+          { path: ':id/edit', element: <UserEditPage /> },
+          { path: 'account', element: <UserAccountPage /> },
+        ],
+      },
+      {
+        path: 'customer',
+        children: [
+          { element: <CustomerListView />, index: true },
+          { path: 'profile', element: <UserProfilePage /> },
+          { path: 'cards', element: <UserCardsPage /> },
+          { path: 'list', element: <UserListPage /> },
+          { path: 'new', element: <CustomerCreateView /> },
           { path: ':id/edit', element: <UserEditPage /> },
           { path: 'account', element: <UserAccountPage /> },
         ],

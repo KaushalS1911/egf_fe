@@ -11,7 +11,7 @@ export default function HomePage() {
         <title> Minimal: The starting point for your next project</title>
       </Helmet>
 
-      <HomeView />
+      {/*<HomeView />*/}
     </>
   );
 }

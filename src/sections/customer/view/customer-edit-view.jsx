@@ -1,38 +1,48 @@
+import PropTypes from 'prop-types';
+
 import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
+import { _userList } from 'src/_mock';
+
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import SchemeNewEditForm from '../scheme-new-edit-form';
+import CustomerNewEditForm from '../customer-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function SchemeCreateView() {
+export default function CustomerEditView({ id }) {
   const settings = useSettingsContext();
+
+  const currentUser = _userList.find((user) => user.id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new user"
+        heading="Edit"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Scheme',
-            href: paths.dashboard.scheme.root,
+            name: 'User',
+            href: paths.dashboard.user.root,
           },
-          { name: 'New Scheme' },
+          { name: currentUser?.name },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <SchemeNewEditForm />
+      <CustomerNewEditForm currentUser={currentUser} />
     </Container>
   );
 }
+
+CustomerEditView.propTypes = {
+  id: PropTypes.string,
+};

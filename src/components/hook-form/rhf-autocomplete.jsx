@@ -1,29 +1,22 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Controller, useFormContext } from 'react-hook-form';
-
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import InputAdornment from '@mui/material/InputAdornment';
-
-import { countries } from 'src/assets/data';
-
 import Iconify from 'src/components/iconify';
+import { countries } from 'src/assets/data';
 
 // ----------------------------------------------------------------------
 
-export default function RHFAutocomplete({
-                                          name,
-                                          label,
-                                          type,
-                                          helperText,
-                                          placeholder,
-                                          req, // Now using req prop for conditional borderLeft
-                                          ...other
-                                        }) {
+export default function RHFAutocomplete({ name, label, type, helperText, placeholder, options,req,...other }) {
   const { control, setValue } = useFormContext();
   const { multiple } = other;
-  const customStyle = req ? { borderLeft: `2px solid ${req}` } : { borderLeft: '2px solid red' };
+  console.log(helperText);
+  const customStyle = req  ? { borderLeft: `2px solid ${req}`,borderRadius:'8px'} : {};
+  console.log("req",req);
+
   return (
     <Controller
       name={name}
@@ -36,16 +29,15 @@ export default function RHFAutocomplete({
               id={`autocomplete-${name}`}
               autoHighlight={!multiple}
               disableCloseOnSelect={multiple}
-              onChange={(event, newValue) =>
-                setValue(name, newValue, { shouldValidate: true })
-              }
+              onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
+              options={countries}
+              getOptionLabel={(option) => option.label || ''}
               renderOption={(props, option) => {
-                const country = getCountry(option);
+                const country = getCountry(option.label);
 
                 if (!country.label) {
                   return null;
                 }
-
                 return (
                   <li {...props} key={country.label}>
                     <Iconify
@@ -72,16 +64,20 @@ export default function RHFAutocomplete({
                   },
                 };
 
-                const borderLeftColor = req ? req : 'transparent'; // Use req for borderLeft color
+                if (multiple) {
+                  return <TextField {...baseField} />;
+                }
 
                 return (
                   <TextField
+                   style={ ...customStyle }
+
                     {...baseField}
                     InputProps={{
                       ...params.InputProps,
                       startAdornment: (
                         <InputAdornment
-                          position='start'
+                          position="start"
                           sx={{
                             ...(!country.code && {
                               display: 'none',
@@ -94,27 +90,22 @@ export default function RHFAutocomplete({
                           />
                         </InputAdornment>
                       ),
-                      style: { ...customStyle },
                     }}
                   />
                 );
               }}
               renderTags={(selected, getTagProps) =>
                 selected.map((option, index) => {
-                  const country = getCountry(option);
+                  const country = getCountry(option.label);
 
                   return (
                     <Chip
                       {...getTagProps({ index })}
                       key={country.label}
                       label={country.label}
-                      icon={
-                        <Iconify
-                          icon={`circle-flags:${country.code?.toLowerCase()}`}
-                        />
-                      }
-                      size='small'
-                      variant='soft'
+                      icon={<Iconify icon={`circle-flags:${country.code?.toLowerCase()}`} />}
+                      size="small"
+                      variant="soft"
                     />
                   );
                 })
@@ -122,37 +113,30 @@ export default function RHFAutocomplete({
               {...other}
             />
           );
-        }
+        };
 
         return (
           <Autocomplete
             {...field}
             id={`autocomplete-${name}`}
-            onChange={(event, newValue) =>
-              setValue(name, newValue, { shouldValidate: true })
-            }
-            renderInput={(params) => {
+            onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
+            options={options}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={label}
+                placeholder={placeholder}
+                error={!!error}
+                helperText={error ? error?.message : helperText}
+                inputProps={{
+                  ...params.inputProps,
+                  autoComplete: 'new-password',
+                }}
+                style={error?.message ? {} : customStyle }
 
-
-              return (
-                <TextField
-                  {...params}
-                  label={label}
-                  placeholder={placeholder}
-                  error={!!error}
-                  helperText={error ? error?.message : helperText}
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: 'new-password',
-                  }}
-                  InputProps={{
-                    ...params.InputProps,
-
-                  }}
-                  {...other}
-                />
-              );
-            }}
+              />
+            )}
+            {...other}
           />
         );
       }}
@@ -161,20 +145,17 @@ export default function RHFAutocomplete({
 }
 
 RHFAutocomplete.propTypes = {
-  name: PropTypes.string,
+  name: PropTypes.string.isRequired,
   type: PropTypes.string,
   label: PropTypes.string,
   helperText: PropTypes.node,
   placeholder: PropTypes.string,
-  req: PropTypes.string, // req prop is now a string type for color
+  options: PropTypes.array.isRequired,
 };
 
 // ----------------------------------------------------------------------
 
 export function getCountry(inputValue) {
-  const option = countries.filter((country) => country.label === inputValue)[0];
-
-  return {
-    ...option,
-  };
+  const option = countries.find((country) => country.label === inputValue);
+  return option || {};
 }

@@ -29,11 +29,11 @@ const OPTIONS = [
   },
   {
     label: 'Profile',
-    linkTo: paths.dashboard.user.profile,
+    linkTo: paths.dashboard.customer.profile,
   },
   {
     label: 'Settings',
-    linkTo: paths.dashboard.user.account,
+    linkTo: paths.dashboard.customer.account,
   },
 ];
 
@@ -41,13 +41,9 @@ const OPTIONS = [
 
 export default function AccountPopover() {
   const router = useRouter();
-
   const { user } = useMockedUser();
-
   const { logout } = useAuthContext();
-
   const { enqueueSnackbar } = useSnackbar();
-
   const popover = usePopover();
 
   const handleLogout = async () => {
@@ -70,8 +66,8 @@ export default function AccountPopover() {
     <>
       <IconButton
         component={m.button}
-        whileTap="tap"
-        whileHover="hover"
+        whileTap='tap'
+        whileHover='hover'
         variants={varHover(1.05)}
         onClick={popover.onOpen}
         sx={{
@@ -99,17 +95,14 @@ export default function AccountPopover() {
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
-          <Typography variant="subtitle2" noWrap>
+          <Typography variant='subtitle2' noWrap>
             {user?.displayName}
           </Typography>
-
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+          <Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
             {user?.email}
           </Typography>
         </Box>
-
         <Divider sx={{ borderStyle: 'dashed' }} />
-
         <Stack sx={{ p: 1 }}>
           {OPTIONS.map((option) => (
             <MenuItem key={option.label} onClick={() => handleClickItem(option.linkTo)}>
@@ -117,9 +110,7 @@ export default function AccountPopover() {
             </MenuItem>
           ))}
         </Stack>
-
         <Divider sx={{ borderStyle: 'dashed' }} />
-
         <MenuItem
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
