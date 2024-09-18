@@ -99,7 +99,7 @@ export const dashboardRoutes = [
           // { path: 'cards', element: <UserCardsPage /> },
           // { path: 'list', element: <InquiryListView /> },
           { path: 'new', element: <InquiryCreateView /> },
-          { path: ':id/edit', element: <UserEditPage /> },
+          { path: ':id/edit', element: <InquiryEditView /> },
           // { path: 'account', element: <UserAccountPage /> },
         ],
       },

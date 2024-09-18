@@ -1,32 +1,33 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {useMemo} from 'react';
+import {useForm, Controller} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
+import axios from 'axios';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import {paths} from 'src/routes/paths';
+import {useRouter} from 'src/routes/hooks';
 
-import { useSnackbar } from 'src/components/snackbar';
+import {useSnackbar} from 'src/components/snackbar';
 import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryNewEditForm({ currentInquiry }) {
+export default function InquiryNewEditForm({currentInquiry}) {
   const router = useRouter();
 
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
@@ -35,7 +36,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     email: Yup.string().email('Email must be valid').required('Email is required'),
     date: Yup.string().required('Date is required'),
     inquiryFor: Yup.string().required('Inquiry field is required'),
-    other: Yup.string().required('Other field is required'),
+    // other: Yup.string().required('Other field is required'),
     remark: Yup.string().required('Remark is required'),
   });
 
@@ -45,9 +46,9 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       lastName: currentInquiry?.lastName || '',
       contact: currentInquiry?.contact || '',
       email: currentInquiry?.email || '',
-      date: currentInquiry?.date || '',
+      date: new Date(currentInquiry?.date) || '',
       inquiryFor: currentInquiry?.inquiryFor || '',
-      other: currentInquiry?.other || '',
+      // other: currentInquiry?.other || '',
       remark: currentInquiry?.remark || ''
     }),
     [currentInquiry]
@@ -63,17 +64,25 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     watch,
     control,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: {isSubmitting},
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentInquiry) {
+        axios.put(`https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
+          enqueueSnackbar(res?.data.message);
+          router.push(paths.dashboard.inquiry.list)
+        }).catch((err) => console.log(err));
+      } else {
+        axios.post("https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/inquiry?branch=66ea5ebb0f0bdc8062c13a64", data).then((res) => {
+          enqueueSnackbar(res?.data.message);
+          router.push(paths.dashboard.inquiry.list)
+        }).catch((err) => console.log(err));
+      }
       reset();
-      enqueueSnackbar(currentInquiry ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.inquiry.list);
-      console.info('DATA', data);
     } catch (error) {
+          enqueueSnackbar("Failed to create Inquiry");
       console.error(error);
     }
   });
@@ -82,13 +91,13 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
+          <Typography variant="h6" sx={{mb: 0.5}}>
             Inquiry Details
           </Typography>
         </Grid>
 
         <Grid xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{p: 3}}>
             <Box
               rowGap={3}
               columnGap={2}
@@ -106,7 +115,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
               <Controller
                 name="date"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
+                render={({field, fieldState: {error}}) => (
                   <DatePicker
                     label="Date"
                     value={field.value}
@@ -130,7 +139,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
               <RHFTextField name="remark" label="Remark" req={"red"}/>
             </Box>
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+            <Stack alignItems="flex-end" sx={{mt: 3}}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {!currentInquiry ? 'Create User' : 'Save Changes'}
               </LoadingButton>

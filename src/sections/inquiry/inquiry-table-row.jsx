@@ -6,7 +6,7 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-
+import { fDate } from 'src/utils/format-time';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -16,7 +16,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { date , name , phoneNumber,email,inquiryFor, remark} = row;
+  const { date , firstName,lastName , contact,email,inquiryFor, remark , _id} = row;
 
   const confirm = useBoolean();
 
@@ -31,11 +31,11 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{date}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{email}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark}</TableCell>
@@ -67,7 +67,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
 
         <MenuItem
           onClick={() => {
-            onEditRow();
+            onEditRow(_id);
             popover.onClose();
           }}
         >
