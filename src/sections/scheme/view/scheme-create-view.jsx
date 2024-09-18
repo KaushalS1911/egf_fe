@@ -22,10 +22,10 @@ export default function SchemeCreateView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'User',
-            href: paths.dashboard.user.root,
+            name: 'Scheme',
+            href: paths.dashboard.scheme.root,
           },
-          { name: 'New user' },
+          { name: 'New Scheme' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

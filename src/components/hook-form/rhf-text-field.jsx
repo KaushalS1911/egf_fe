@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField';
 export default function RHFTextField({ name, helperText, type, req, ...other }) {
   const { control } = useFormContext();
 
-  const customStyle = req ? { borderLeft: `2px solid ${req}` } : {};
+  const customStyle = req ? { borderLeft: `2px solid ${req}`,borderRadius:'8px' } : {};
 
   return (
     <Controller
@@ -28,9 +28,7 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
           }}
           error={!!error}
           helperText={error ? error?.message : helperText}
-          InputProps={{
-            style: { ...customStyle }
-          }}
+            style={ error?.message ? {} : customStyle  }
           {...other}
         />
       )}
