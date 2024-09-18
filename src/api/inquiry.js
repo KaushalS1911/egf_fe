@@ -4,26 +4,18 @@ import { fetcher } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetInquiry() {
-  const { user } = useAuthContext();
-  // const URL = `${import.meta.env.VITE_AUTH_API}/api/company/${user?.company_id}/inquiry`;
-  const URL = `https://egf-be.onrender.com/api/company/${user?.company_id}/inquiry`;
-  const { data, error, isValidating, mutate } = useSWR(URL, fetcher);
-  if (error) {
-    console.error('Error fetching data:', error);
-  }
-
-  const memoizedValue = useMemo(() => {
-    const inquiry = data?.data || [];
-    const isLoading = !data && !error;
-    return {
-      inquiry,
+  const URL = `https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/inquiry?branch=66ea5ebb0f0bdc8062c13a64`;
+  const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
+  const memoizedValue = useMemo(
+    () => ({
+      inquiry: data?.data || [],
       inquiryLoading: isLoading,
       inquiryError: error,
       inquiryValidating: isValidating,
-      inquiryEmpty: !isLoading && inquiry.length === 0,
+      inquiryEmpty: !isLoading && !data?.data?.length,
       mutate,
-    };
-  }, [data, error, isValidating, mutate]);
-
+    }),
+    [data?.data, error, isLoading, isValidating, mutate]
+  );
   return memoizedValue;
 }
