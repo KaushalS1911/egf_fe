@@ -55,9 +55,9 @@ export function AuthProvider({ children }) {
       const jwtRefresh = sessionStorage.getItem(JWT_REFRESH);
       if (jwt && jwtRefresh) {
         setSession(jwt, jwtRefresh);
-        const url = `${import.meta.env.VITE_BASE_URL}/me`;
+        const url = `${import.meta.env.VITE_AUTH_API}/me`;
         const response = await axios.get(url);
-        const user = response?.data;
+        const user = response?.data.data;
         dispatch({
           type: 'INITIAL',
           payload: {

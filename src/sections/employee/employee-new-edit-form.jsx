@@ -12,11 +12,11 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import countrystatecity from '../../_mock/map/csc.json';
-
 import FormProvider, {
   RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
+  RHFAutocomplete,
 } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Label from 'src/components/label';
@@ -27,12 +27,17 @@ import { useSnackbar } from 'src/components/snackbar';
 import CountrySelect from '../../components/country-select';
 import { countries } from '../../assets/data';
 import { Autocomplete, TextField } from '@mui/material';
+import axios from 'axios';
+import { useAuthContext } from 'src/auth/hooks';
+import {useGetAllUser} from 'src/api/user'
 
 // ----------------------------------------------------------------------
 
 export default function EmployeeNewEditForm({ currentEmployee }) {
   const router = useRouter();
   const [profilePic, setProfilePic] = useState(null);
+  const allUser = useGetAllUser();
+  const {user} = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewEmployeeSchema = Yup.object().shape({
@@ -45,14 +50,14 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     voterId: Yup.string(),
     aadharCard: Yup.string().required('Aadhar Card is required'),
     mobile: Yup.string().required('Mobile number is required'),
-    dateOfBirth: Yup.string().required('Date of Birth is required'),
-    remarks: Yup.string(),
+    dob: Yup.string().required('Date of Birth is required'),
+    remark: Yup.string(),
 
     // Official Info
     role: Yup.string().required('Role is required'),
-    workUnder: Yup.string().required('Work Under is required'),
-    branch: Yup.string().required('Branch is required'),
-    userName: Yup.string().required('Username is required'),
+    reportingTo: Yup.object().required('Reporting to is required'),
+    // branch: Yup.string().required('Branch is required'),
+    username: Yup.string().required('Username is required'),
     password: Yup.string().required('Password is required'),
     joinDate: Yup.string().required('Join date is required'),
     leaveDate: Yup.string(),
@@ -84,12 +89,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     panNo: currentEmployee?.panNo || '',
     aadharCard: currentEmployee?.aadharCard || '',
     mobile: currentEmployee?.mobile || '',
-    dateOfBirth: currentEmployee?.dateOfBirth || '',
-    remarks: currentEmployee?.remarks || '',
+    dob: currentEmployee?.dob || '',
+    remark: currentEmployee?.remark || '',
     role: currentEmployee?.role || '',
-    workUnder: currentEmployee?.workUnder || '',
-    branch: currentEmployee?.branch || '',
-    userName: currentEmployee?.userName || '',
+    reportingTo: currentEmployee?.reportingTo || null,
+    username: currentEmployee?.username || '',
     password: '',
     joinDate: currentEmployee?.joinDate || '',
     leaveDate: currentEmployee?.leaveDate || '',
@@ -120,53 +124,56 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
   const onSubmit = handleSubmit(async (data) => {
-    const payload = {
-      profile_pic: data.profile_pic,
-      firstName: data.firstName,
-      surName: data.surName,
-      middleName: data.middleName,
-      drivingLicense: data.drivingLicense,
-      voterId: data.voterId,
-      panNo: data.panNo,
-      aadharCard: data.aadharCard,
-      mobile: data.mobile,
-      dateOfBirth: data.dateOfBirth,
-      remarks: data.remarks,
-      role: data.role,
-      workUnder: data.workUnder,
-      branch: data.branch,
-      userName: data.userName,
-      password: data.password,
-      joinDate: data.joinDate,
-      leaveDate: data.leaveDate,
-      permanentAddress: {
-        address: data.permanentAddress,
-        landmark: data.permanentLandmark,
-        country: data.permanentCountry,
-        state: data.permanentState,
-        city: data.permanentCity,
-        pincode: data.permanentPincode,
-      },
-      temporaryAddress: {
-        address: data.tempAddress,
-        landmark: data.tempLandmark,
-        country: data.tempCountry,
-        state: data.tempState,
-        city: data.tempCity,
-        pincode: data.tempPincode,
-      },
-    };
-    console.log("payloadddddddddd : ",payload);
-    // try {
-    //   await new Promise((resolve) => setTimeout(resolve, 500));
-    //   reset();
-    //   enqueueSnackbar(currentEmployee ? 'Update success!' : 'Create success!');
-    //   router.push(paths.dashboard.employee.list);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    const formData = new FormData();
+    const fields = [
+      'firstName', 'middleName', 'lastName', 'drivingLicense', 'voterId', 'panNo',
+      'aadharCard', 'mobile', 'dob', 'remark', 'role', 'reportingTo',
+       'username', 'password', 'joinDate', 'leaveDate'
+    ];
+
+    fields.forEach(field => {
+      if(field === 'reportingTo'){
+      formData.append(field, data[field]._id)
+      }
+      else{
+      formData.append(field, data[field])
+      }
+    });
+    if (data.profile_pic && data.profile_pic.path) {
+      formData.append('profile-pic', data.profile_pic);
+    }
+      formData.append('branch', '66ea5ebb0f0bdc8062c13a64');
+    const addressFields = ['address', 'landmark', 'country', 'state', 'city', 'pincode'];
+    addressFields.forEach(field => {
+      formData.append(`permanentAddress[${field}]`, data[`permanent${capitalize(field)}`]);
+      formData.append(`temporaryAddress[${field}]`, data[`temp${capitalize(field)}`]);
+    });
+
+    try {
+      const url = currentEmployee
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.data.company}/employee/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`
+        : `${import.meta.env.VITE_BASE_URL}/${user?.data.company}/employee?branch=66ea5ebb0f0bdc8062c13a64`;
+
+      const response = await axios({
+        method: currentEmployee ? 'put' : 'post',
+        url,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      enqueueSnackbar(response?.data.message);
+      router.push(paths.dashboard.employee.list);
+      reset();
+    } catch (error) {
+      console.error(error);
+    }
+
   });
 
   const handleDrop = useCallback(
@@ -218,7 +225,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               <RHFTextField name="aadharCard" label="Aadhar Card" req={"red"}/>
               <RHFTextField name="mobile" label="Mobile" req={"red"}/>
               <Controller
-                name="dateOfBirth"
+                name="dob"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
@@ -236,7 +243,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   />
                 )}
               />
-              <RHFTextField name="remarks" label="Remarks" />
+              <RHFTextField name="remark" label="Remark" />
             </Box>
           </Card>
         </Grid>
@@ -258,9 +265,23 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               }}
             >
               <RHFTextField name="role" label="Role" req={"red"}/>
-              <RHFTextField name="workUnder" label="Work Under" req={"red"}/>
-              <RHFTextField name="branch" label="Branch" req={"red"}/>
-              <RHFTextField name="userName" label="Username" req={"red"}/>
+              {/*<RHFTextField name="reportingTo" label="Reporting to" req={"red"}/>*/}
+              <RHFAutocomplete
+                name="reportingTo"
+                label="Reporting to"
+                req={"red"}
+                fullWidth
+                options={allUser.user.map((item) => item)}
+                getOptionLabel={(option) => option.firstName + ' ' + option.lastName}
+                renderOption={(props, option) => (
+                  <li {...props} key={option} value={option._id}>
+                    {console.log(option._id)}
+                    {option.firstName + ' ' + option.lastName}
+                  </li>
+                )}
+                />
+              {/*<RHFTextField name="branch" label="Branch" req={"red"}/>*/}
+              <RHFTextField name="username" label="Username" req={"red"}/>
               <RHFTextField name="password" label="Password" req={"red"}/>
               <Controller
                 name="joinDate"

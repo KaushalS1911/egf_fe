@@ -21,7 +21,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { userName , contact , employeeCode , idProofs , joinDate , role , status} = row;
+  const { username , contact , employeeCode , idProofs , joinDate , role , status} = row;
 
   const confirm = useBoolean();
 
@@ -48,7 +48,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
             {/*    color: 'text.disabled',*/}
             {/*  }}*/}
             {/*/>*/}
-          {userName}
+          {username}
           </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{employeeCode}</TableCell>
