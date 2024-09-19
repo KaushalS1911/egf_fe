@@ -190,7 +190,10 @@ export default function SchemeNewEditForm({ currentScheme }) {
             </Box>
 
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
+              {
+                currentScheme &&
               <RHFSwitch name='isActive' label={'is Active'} sx={{ m: 0 }} />
+              }
 
             </Box>
           </Card>

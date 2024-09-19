@@ -23,32 +23,29 @@ import { useAuthContext } from '../../auth/hooks';
 
 // ----------------------------------------------------------------------
 
-export default function CaratNewEditForm({ currentCarat }) {
+export default function LoantypeNewEditForm({ currentLoan }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
 
 
-  const NewCarat = Yup.object().shape({
-    name: Yup.string().required('Scheme Name is required'),
-    caratPercentage: Yup.string().required('Carat Percentagee is required'),
-
+  const NewLoan = Yup.object().shape({
+    loanType: Yup.string().required('loanType is required'),
   });
 
   const defaultValues = useMemo(
     () => (
 
       {
-        name: currentCarat?.name || '',
-        caratPercentage: currentCarat?.caratPercentage || '',
-        remark: currentCarat?.remark || '',
-        isActive: currentCarat?.isActive || '',
+        loanType: currentLoan?.loanType || '',
+        remark: currentLoan?.remark || '',
+        isActive: currentLoan?.isActive || '',
       }),
-    [currentCarat],
+    [currentLoan],
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewCarat),
+    resolver: yupResolver(NewLoan),
     defaultValues,
   });
 
@@ -62,19 +59,19 @@ export default function CaratNewEditForm({ currentCarat }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      if (currentCarat) {
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat/${currentCarat._id}?branch=66ea5ebb0f0bdc8062c13a64`, data)
-          router.push(paths.dashboard.carat.list);
+      if (currentLoan) {
+        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loan/${currentLoan._id}?branch=66ea5ebb0f0bdc8062c13a64`, data)
+          router.push(paths.dashboard.loan.list);
           enqueueSnackbar(res?.data.message);
           reset();
       } else {
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat/?branch=66ea5ebb0f0bdc8062c13a64`, data)
-          router.push(paths.dashboard.carat.list);
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loan/?branch=66ea5ebb0f0bdc8062c13a64`, data)
+          router.push(paths.dashboard.loan.list);
           enqueueSnackbar(res?.data.message);
           reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentCarat ? 'Failed To Edit Carat' :'Failed to create carat');
+      enqueueSnackbar(currentLoan ? 'Failed To Edit Loan Type' :'Failed to create Loan Type');
       console.error(error);
     }
   });
@@ -83,7 +80,7 @@ export default function CaratNewEditForm({ currentCarat }) {
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Scheme Info
+            Lon Type Info
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>
@@ -97,14 +94,13 @@ export default function CaratNewEditForm({ currentCarat }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='name' label='carat' req={'red'} />
-              <RHFTextField name='caratPercentage' label='Carat%' req={'red'} />
+              <RHFTextField name='loanType' label='loan' req={'red'} />
               <RHFTextField name='remark' label='Remark' />
             </Box>
 
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
               {
-                currentCarat &&
+               currentLoan &&
               <RHFSwitch name='isActive' label={'is Active'} sx={{ m: 0 }} />
               }
 
@@ -112,7 +108,7 @@ export default function CaratNewEditForm({ currentCarat }) {
           </Card>
           <Stack alignItems='flex-end' sx={{ mt: 3 }}>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              {currentCarat ? 'Save Changes' : 'Create Scheme'}
+              {currentLoan ? 'Save Changes' : 'Add Loan Type'}
             </LoadingButton>
           </Stack>
         </Grid>
@@ -121,6 +117,6 @@ export default function CaratNewEditForm({ currentCarat }) {
   );
 }
 
-CaratNewEditForm.propTypes = {
-  currentScheme: PropTypes.object,
+LoantypeNewEditForm.propTypes = {
+  currentLoan: PropTypes.object,
 };
