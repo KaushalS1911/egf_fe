@@ -15,7 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -36,97 +35,24 @@ import {
 import EmployeeTableRow from '../employee-table-row';
 import EmployeeTableToolbar from '../employee-table-toolbar';
 import EmployeeTableFiltersResult from '../employee-table-filters-result';
-import { isAfter, isBetween } from '../../../utils/format-time';
-import { alpha } from '@mui/material/styles';
-import { Tab, Tabs } from '@mui/material';
-import Label from '../../../components/label';
+import {useGetEmployee} from 'src/api/employee'
+import axios from 'axios';
+import { useAuthContext } from '../../../auth/hooks';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' },{value: 'active', label: 'Active' },{value: 'pending', label: 'Pending' },{value: 'banned', label: 'Banned' }];
+
 
 const TABLE_HEAD = [
   { id: 'username', label: 'UserName' },
-  { id: 'phoneNumber', label: 'Phone Number'},
-  { id: 'employeeCode', label: 'Employee Code' },
-  { id: 'idProofs', label: 'ID Proofs' },
+  { id: 'contact', label: 'Phone Number'},
   { id: 'joinDate', label: 'Join Date'},
   { id: 'role', label: 'Role'},
-  { id: 'status', label: 'Status'},
   { id: '', width: 88 },
-];
-const dummyData = [
-  {
-    id: 1,
-    userName: 'Aditi Devani',
-    Email: 'aditi45@gmail.com',
-    contact: '+91 48596 52632',
-    employeeCode: 'EGF000001',
-    idProofs: 'Driving License',
-    joinDate: '12 Apr 2024',
-    role: 'Director',
-    status: "active",
-  },
-  {
-    id: 2,
-    userName: 'Rohan Patel',
-    Email: 'rohan.patel@example.com',
-    contact: '+91 98765 43210',
-    employeeCode: 'EGF000002',
-    idProofs: 'Passport',
-    joinDate: '10 May 2023',
-    role: 'MD',
-    status: "pending",
-  },
-  {
-    id: 3,
-    userName: 'Priya Shah',
-    email: 'priya.shah@example.com',
-    contact: '+91 12345 67890',
-    employeeCode: 'EGF000003',
-    idProofs: 'Aadhaar Card',
-    joinDate: '01 Mar 2024',
-    role: 'Manager',
-    status: "banned",
-  },
-  {
-    id: 4,
-    userName: 'Harsh Mehta',
-    email: 'harsh.mehta@example.com',
-    contact: '+91 55555 12345',
-    employeeCode: 'EGF000004',
-    idProofs: 'PAN Card',
-    joinDate: '15 Jun 2023',
-    role: 'Employee',
-    status: "active",
-  },
-  {
-    id: 5,
-    userName: 'Sneha Desai',
-    email: 'sneha.desai@example.com',
-    contact: '+91 88888 99999',
-    employeeCode: 'EGF000005',
-    idProofs: 'Voter ID',
-    joinDate: '20 Aug 2024',
-    role: 'Employee',
-    status: "active",
-  },
-  {
-    id: 6,
-    userName: 'Rahul Verma',
-    email: 'rahul.verma@example.com',
-    contact: '+91 67678 90909',
-    employeeCode: 'EGF000006',
-    idProofs: 'Driving License',
-    joinDate: '22 Feb 2024',
-    role: 'Employee',
-    status: "active",
-  }
 ];
 
 const defaultFilters = {
-  userName: '',
-  status: 'all',
+  username: '',
 };
 // ----------------------------------------------------------------------
 
@@ -134,19 +60,20 @@ export default function EmployeeListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
-
+  const {user} = useAuthContext();
+  const {employee, mutate} = useGetEmployee();
   const settings = useSettingsContext();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(dummyData);
+  const [tableData, setTableData] = useState(employee);
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: employee,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -176,25 +103,31 @@ export default function EmployeeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  const handleDelete = (id) => {
+    axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/employee`, {
+      data: {ids: id}
+    }).then((res) => {
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
+      mutate();
+    }).catch((err) => enqueueSnackbar("Failed to delete Inquiry"));
+  }
 
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      if (id) {
+        handleDelete([id]);
+        table.onUpdatePageDeleteRow(dataInPage.length);
+      }
 
-      enqueueSnackbar('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
-    enqueueSnackbar('Delete success!');
-
+    const deleteRows = employee.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -243,43 +176,6 @@ export default function EmployeeListView() {
         />
 
         <Card>
-            <Tabs
-              value={filters.status}
-              onChange={handleFilterStatus}
-              sx={{
-                px: 2.5,
-                boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-              }}
-            >
-              {STATUS_OPTIONS.map((tab) => (
-                <Tab
-                  key={tab.value}
-                  iconPosition='end'
-                  value={tab.value}
-                  label={tab.label}
-                  icon={
-                    <>
-                      <Label
-                        style={{ margin: '5px' }}
-                        variant={
-                          ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                        }
-                        color={
-                          (tab.value === 'active' && 'success') ||
-                          (tab.value === 'pending' && 'warning') ||
-                          (tab.value === 'banned' && 'error') ||
-                          'default'
-                        }
-                      >
-                        {['active', 'pending', 'banned'].includes(tab.value)
-                          ? dummyData.filter((emp) => emp.status === tab.value).length
-                          : dummyData.length}
-                      </Label>
-                    </>
-                  }
-                />
-              ))}
-            </Tabs>
           <EmployeeTableToolbar filters={filters} onFilters={handleFilters} />
 
           {canReset && (
@@ -324,7 +220,7 @@ export default function EmployeeListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row.id)
+                      dataFiltered.map((row) => row._id)
                     )
                   }
                 />
@@ -337,12 +233,12 @@ export default function EmployeeListView() {
                     )
                     .map((row) => (
                       <EmployeeTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
 
@@ -398,7 +294,7 @@ export default function EmployeeListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { status, userName } = filters;
+  const {  username } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -407,17 +303,12 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-  if (userName && userName.trim()) {
+  if (username && username.trim()) {
     inputData = inputData.filter(
       (inq) =>
-        inq.userName.toLowerCase().includes(userName.toLowerCase())
+        inq.username.toLowerCase().includes(username.toLowerCase())
         // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
     );
   }
-
-  if (status && status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
   return inputData;
 }

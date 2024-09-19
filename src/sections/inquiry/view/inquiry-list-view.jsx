@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import {useState, useCallback} from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -8,19 +8,19 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import axios from 'axios';
+import {paths} from 'src/routes/paths';
+import {useRouter} from 'src/routes/hooks';
+import {RouterLink} from 'src/routes/components';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
+import {useBoolean} from 'src/hooks/use-boolean';
+import {useGetInquiry} from 'src/api/inquiry'
+import {_roles, _userList, USER_STATUS_OPTIONS} from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { useSnackbar } from 'src/components/snackbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useSettingsContext } from 'src/components/settings';
+import {useSnackbar} from 'src/components/snackbar';
+import {ConfirmDialog} from 'src/components/custom-dialog';
+import {useSettingsContext} from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -32,116 +32,24 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
+import {useAuthContext} from 'src/auth/hooks';
 import InquiryTableRow from '../inquiry-table-row';
 import InquiryTableToolbar from '../inquiry-table-toolbar';
 import InquiryTableFiltersResult from '../inquiry-table-filters-result';
-import { isAfter, isBetween } from '../../../utils/format-time';
+import {isAfter, isBetween} from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{value: 'all', label: 'All'}, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'date', label: 'Date' },
-  { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number'},
-  { id: 'email', label: 'Email' },
-  { id: 'inquiry for', label: 'Inquiry for'},
-  { id: 'remark', label: 'Remark'},
-  { id: '', width: 88 },
-];
-const dummyData = [
-  {
-    id: 1,
-    date: '10/09/24',
-    name: 'Aditi Devani',
-    phoneNumber: '+91 9099257198',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 2,
-    date: '11/09/24',
-    name: 'Sujal Paghadal',
-    phoneNumber: '+91 9574854207',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 3,
-    date: '12/09/24',
-    name: 'Darshil Thummar',
-    phoneNumber: '+91 9316681395',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 4,
-    date: '13/09/24',
-    name: 'Heet Timbadiya',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 5,
-    date: '14/09/24',
-    name: 'Dax Savani',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 6,
-    date: '10/09/24',
-    name: 'Aditi Devani',
-    phoneNumber: '+91 9099257198',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 7,
-    date: '11/09/24',
-    name: 'Sujal Paghadal',
-    phoneNumber: '+91 9574854207',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 8,
-    date: '12/09/24',
-    name: 'Darshil Thummar',
-    phoneNumber: '+91 9316681395',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 9,
-    date: '13/09/24',
-    name: 'Heet Timbadiya',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  },
-  {
-    id: 10,
-    date: '14/09/24',
-    name: 'Dax Savani',
-    phoneNumber: '+91 48596 52632',
-    email: 'aditidevani@gmail.com',
-    inquiryFor: 'Gold Loan',
-    remark: 'Gold Loan'
-  }
+  {id: 'date', label: 'Date'},
+  {id: 'name', label: 'Name'},
+  {id: 'phoneNumber', label: 'Phone Number'},
+  {id: 'email', label: 'Email'},
+  {id: 'inquiry for', label: 'Inquiry for'},
+  {id: 'remark', label: 'Remark'},
+  {id: '', width: 88},
 ];
 
 const defaultFilters = {
@@ -153,22 +61,22 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function InquiryListView() {
-  const { enqueueSnackbar } = useSnackbar();
-
+  const {enqueueSnackbar} = useSnackbar();
+  const {inquiry, mutate} = useGetInquiry();
   const table = useTable();
-
+  const {user} = useAuthContext();
   const settings = useSettingsContext();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(dummyData);
+  const [tableData, setTableData] = useState(inquiry);
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: inquiry,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -199,24 +107,32 @@ export default function InquiryListView() {
     setFilters(defaultFilters);
   }, []);
 
+  const handleDelete = (id) => {
+    axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/inquiry`, {
+      data: {ids: id}
+    }).then((res) => {
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
+      mutate();
+    }).catch((err) => enqueueSnackbar("Failed to delete Inquiry"));
+  }
+
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      if (id) {
+        handleDelete([id]);
+        setTableData(deleteRow);
 
-      enqueueSnackbar('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
+        table.onUpdatePageDeleteRow(dataInPage.length);
+      }
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
-    enqueueSnackbar('Delete success!');
-
+    const deleteRows = inquiry.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -245,22 +161,22 @@ export default function InquiryListView() {
         <CustomBreadcrumbs
           heading="Inquiry"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Masters', href: paths.dashboard.inquiry.root },
-            { name: 'List' },
+            {name: 'Dashboard', href: paths.dashboard.root},
+            {name: 'Masters', href: paths.dashboard.inquiry.root},
+            {name: 'List'},
           ]}
           action={
             <Button
               component={RouterLink}
               href={paths.dashboard.inquiry.new}
               variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
+              startIcon={<Iconify icon="mingcute:add-line"/>}
             >
               New Inquiry
             </Button>
           }
           sx={{
-            mb: { xs: 3, md: 5 },
+            mb: {xs: 3, md: 5},
           }}
         />
 
@@ -276,11 +192,11 @@ export default function InquiryListView() {
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
               results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
+              sx={{p: 2.5, pt: 0}}
             />
           )}
 
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{position: 'relative', overflow: 'unset'}}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -294,14 +210,14 @@ export default function InquiryListView() {
               action={
                 <Tooltip title="Delete">
                   <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                    <Iconify icon="solar:trash-bin-trash-bold"/>
                   </IconButton>
                 </Tooltip>
               }
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{minWidth: 960}}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -325,12 +241,12 @@ export default function InquiryListView() {
                     )
                     .map((row) => (
                       <InquiryTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
 
@@ -339,7 +255,7 @@ export default function InquiryListView() {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
 
-                  <TableNoData notFound={notFound} />
+                  <TableNoData notFound={notFound}/>
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -385,10 +301,9 @@ export default function InquiryListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { startDate, endDate, status, name } = filters;
+function applyFilter({inputData, comparator, filters, dateError}) {
+  const {startDate, endDate, status, name} = filters;
 
-  // Sort the inputData based on comparator and index
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -400,8 +315,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (inq) =>
-        inq.name.toLowerCase().includes(name.toLowerCase()) ||
-        inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
+        inq.firstName.toLowerCase().includes(name.toLowerCase()) ||
+        inq.lastName.toLowerCase().includes(name.toLowerCase()) ||
+        inq.contact.toLowerCase().includes(name)
     );
   }
 

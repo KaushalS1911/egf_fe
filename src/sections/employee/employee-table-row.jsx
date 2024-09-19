@@ -16,16 +16,15 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { fDate } from '../../utils/format-time';
 
 
 // ----------------------------------------------------------------------
 
 export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { userName , contact , employeeCode , idProofs , joinDate , role , status} = row;
-
+  const { user, status , joiningDate} = row;
+  const {avatar_url , contact , firstName , lastName , middleName , role , email } = user;
   const confirm = useBoolean();
-
-  const quickEdit = useBoolean();
 
   const popover = usePopover();
 
@@ -37,37 +36,21 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         </TableCell>
 
           <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-            {/*<Avatar alt={customer.name} src={customer.avatarUrl} sx={{ mr: 2 }} />*/}
+            <Avatar alt={firstName} src={avatar_url} sx={{ mr: 2 }} />
 
-            {/*<ListItemText*/}
-            {/*  primary={customer.name}*/}
-            {/*  secondary={customer.email}*/}
-            {/*  primaryTypographyProps={{ typography: 'body2' }}*/}
-            {/*  secondaryTypographyProps={{*/}
-            {/*    component: 'span',*/}
-            {/*    color: 'text.disabled',*/}
-            {/*  }}*/}
-            {/*/>*/}
-          {userName}
+            <ListItemText
+              primary={`${firstName} ${middleName} ${lastName}`}
+              secondary={email}
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
           </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{employeeCode}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idProofs}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{joinDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
-        <TableCell>
-          <Label
-            variant='soft'
-            color={
-              (status === "active" && 'success') ||
-              (status === "pending" && 'warning') ||
-              (status === "banned" && 'error') ||
-              'default'
-            }
-          >
-            {status}
-          </Label>
-        </TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

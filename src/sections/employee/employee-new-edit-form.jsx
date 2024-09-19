@@ -12,99 +12,97 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import countrystatecity from '../../_mock/map/csc.json';
-
 import FormProvider, {
-  RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
+  RHFAutocomplete,
 } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Label from 'src/components/label';
-import { fData } from 'src/utils/format-number';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
-import CountrySelect from '../../components/country-select';
-import { countries } from '../../assets/data';
 import { Autocomplete, TextField } from '@mui/material';
+import axios from 'axios';
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetAllUser } from 'src/api/user';
 
 // ----------------------------------------------------------------------
 
 export default function EmployeeNewEditForm({ currentEmployee }) {
   const router = useRouter();
-  const [profilePic, setProfilePic] = useState(null);
+  const allUser = useGetAllUser();
+  const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewEmployeeSchema = Yup.object().shape({
-    // Personal Info
+
     firstName: Yup.string().required('First name is required'),
     middleName: Yup.string().required('Middle name is required'),
     lastName: Yup.string().required('lastName is required'),
     drivingLicense: Yup.string(),
-    panNo: Yup.string().required('PAN No. is required'),
-    voterId: Yup.string(),
+    panCard: Yup.string().required('PAN No. is required'),
+    voterCard: Yup.string(),
     aadharCard: Yup.string().required('Aadhar Card is required'),
-    mobile: Yup.string().required('Mobile number is required'),
-    dateOfBirth: Yup.string().required('Date of Birth is required'),
-    remarks: Yup.string(),
+    contact: Yup.string().required('Mobile number is required'),
+    dob: Yup.string().required('Date of Birth is required'),
+    remark: Yup.string(),
 
-    // Official Info
+
     role: Yup.string().required('Role is required'),
-    workUnder: Yup.string().required('Work Under is required'),
-    branch: Yup.string().required('Branch is required'),
-    userName: Yup.string().required('Username is required'),
-    password: Yup.string().required('Password is required'),
-    joinDate: Yup.string().required('Join date is required'),
+    reportingTo: Yup.object().required('Reporting to is required'),
+    // branch: Yup.string().required('Branch is required'),
+    email: Yup.string().required('Email is required'),
+    password: currentEmployee ? Yup.string() : Yup.string().required('Password is required'),
+    joiningDate: Yup.string().required('Join date is required'),
     leaveDate: Yup.string(),
 
     // Permanent Address Info
-    permanentAddress: Yup.string().required('Permanent Address is required'),
+    permanentStreet: Yup.string().required('Permanent Address is required'),
     permanentLandmark: Yup.string(),
     permanentCountry: Yup.string().required('Country is required'),
     permanentState: Yup.string().required('State is required'),
     permanentCity: Yup.string().required('City is required'),
-    permanentPincode: Yup.string().required('Pincode is required'),
+    permanentZipcode: Yup.string().required('Zipcode is required'),
 
     // Temporary Address Info
-    tempAddress: Yup.string(),
+    tempStreet: Yup.string(),
     tempLandmark: Yup.string(),
     tempCountry: Yup.string(),
     tempState: Yup.string(),
     tempCity: Yup.string(),
-    tempPincode: Yup.string(),
+    tempZipcode: Yup.string(),
   });
 
   const defaultValues = useMemo(() => ({
-    profile_pic: currentEmployee?.profile_pic || '',
-    firstName: currentEmployee?.firstName || '',
-    middleName: currentEmployee?.middleName || '',
-    lastName: currentEmployee?.lastName || '',
+    profile_pic: currentEmployee?.user.avatar_url || '',
+    firstName: currentEmployee?.user.firstName || '',
+    middleName: currentEmployee?.user.middleName || '',
+    lastName: currentEmployee?.user.lastName || '',
     drivingLicense: currentEmployee?.drivingLicense || '',
-    voterId: currentEmployee?.voterId || '',
-    panNo: currentEmployee?.panNo || '',
+    voterCard: currentEmployee?.voterCard || '',
+    panCard: currentEmployee?.panCard || '',
     aadharCard: currentEmployee?.aadharCard || '',
-    mobile: currentEmployee?.mobile || '',
-    dateOfBirth: currentEmployee?.dateOfBirth || '',
-    remarks: currentEmployee?.remarks || '',
-    role: currentEmployee?.role || '',
-    workUnder: currentEmployee?.workUnder || '',
-    branch: currentEmployee?.branch || '',
-    userName: currentEmployee?.userName || '',
+    contact: currentEmployee?.user.contact || '',
+    dob: new Date(currentEmployee?.dob) || '',
+    remark: currentEmployee?.remark || '',
+    role: currentEmployee?.user.role || '',
+    reportingTo: currentEmployee?.reportingTo || null,
+    email: currentEmployee?.user.email || '',
     password: '',
-    joinDate: currentEmployee?.joinDate || '',
-    leaveDate: currentEmployee?.leaveDate || '',
-    permanentAddress: currentEmployee?.permanentAddress || '',
-    permanentLandmark: currentEmployee?.permanentLandmark || '',
-    permanentCountry: currentEmployee?.permanentCountry || '',
-    permanentState: currentEmployee?.permanentState || '',
-    permanentCity: currentEmployee?.permanentCity || '',
-    permanentPincode: currentEmployee?.permanentPincode || '',
-    tempAddress: currentEmployee?.tempAddress || '',
-    tempLandmark: currentEmployee?.tempLandmark || '',
-    tempCountry: currentEmployee?.tempCountry || '',
-    tempState: currentEmployee?.tempState || '',
-    tempCity: currentEmployee?.tempCity || '',
-    tempPincode: currentEmployee?.tempPincode || '',
+    joiningDate: new Date(currentEmployee?.joiningDate) || '',
+    leaveDate: new Date(currentEmployee?.leaveDate) || '',
+    permanentStreet: currentEmployee?.permanentAddress.street || '',
+    permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
+    permanentCountry: currentEmployee?.permanentAddress.country || '',
+    permanentState: currentEmployee?.permanentAddress.state || '',
+    permanentCity: currentEmployee?.permanentAddress.city || '',
+    permanentZipcode: currentEmployee?.permanentAddress.zipcode || '',
+    tempStreet: currentEmployee?.temporaryAddress.street || '',
+    tempLandmark: currentEmployee?.temporaryAddress.landmark || '',
+    tempCountry: currentEmployee?.temporaryAddress.country || '',
+    tempState: currentEmployee?.temporaryAddress.state || '',
+    tempCity: currentEmployee?.temporaryAddress.city || '',
+    tempZipcode: currentEmployee?.temporaryAddress.zipcode || '',
   }), [currentEmployee]);
 
   const methods = useForm({
@@ -121,53 +119,89 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     formState: { isSubmitting },
   } = methods;
 
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   const onSubmit = handleSubmit(async (data) => {
-    const payload = {
-      profile_pic: data.profile_pic,
-      firstName: data.firstName,
-      surName: data.surName,
-      middleName: data.middleName,
-      drivingLicense: data.drivingLicense,
-      voterId: data.voterId,
-      panNo: data.panNo,
-      aadharCard: data.aadharCard,
-      mobile: data.mobile,
-      dateOfBirth: data.dateOfBirth,
-      remarks: data.remarks,
-      role: data.role,
-      workUnder: data.workUnder,
-      branch: data.branch,
-      userName: data.userName,
-      password: data.password,
-      joinDate: data.joinDate,
-      leaveDate: data.leaveDate,
-      permanentAddress: {
-        address: data.permanentAddress,
-        landmark: data.permanentLandmark,
-        country: data.permanentCountry,
-        state: data.permanentState,
-        city: data.permanentCity,
-        pincode: data.permanentPincode,
-      },
-      temporaryAddress: {
-        address: data.tempAddress,
-        landmark: data.tempLandmark,
-        country: data.tempCountry,
-        state: data.tempState,
-        city: data.tempCity,
-        pincode: data.tempPincode,
-      },
+    let payload;
+
+    // Create permanent and temporary address objects
+    const permanentAddress = {
+      street: data.permanentStreet || '',
+      landmark: data.permanentLandmark || '',
+      country: data.permanentCountry || '',
+      state: data.permanentState || '',
+      city: data.permanentCity || '',
+      zipcode: data.permanentZipcode || '',
     };
-    console.log("payloadddddddddd : ",payload);
-    // try {
-    //   await new Promise((resolve) => setTimeout(resolve, 500));
-    //   reset();
-    //   enqueueSnackbar(currentEmployee ? 'Update success!' : 'Create success!');
-    //   router.push(paths.dashboard.employee.list);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+
+    const temporaryAddress = {
+      street: data.tempStreet || '',
+      landmark: data.tempLandmark || '',
+      country: data.tempCountry || '',
+      state: data.tempState || '',
+      city: data.tempCity || '',
+      zipcode: data.tempZipcode || '',
+    };
+
+    if (currentEmployee) {
+      payload = {
+        ...data,
+        reportingTo: data.reportingTo?._id || '',
+        permanentAddress,
+        temporaryAddress,
+        branch: '66ea5ebb0f0bdc8062c13a64',
+      };
+    } else {
+      const formData = new FormData();
+      const fields = [
+        'firstName', 'middleName', 'lastName', 'drivingLicense', 'voterCard', 'panCard',
+        'aadharCard', 'contact', 'dob', 'remark', 'role', 'reportingTo',
+        'email', 'password', 'joiningDate', 'leaveDate',
+      ];
+      fields.forEach(field => {
+        if (field === 'reportingTo') {
+          formData.append(field, data[field]?._id || '');
+        } else {
+          formData.append(field, data[field] || '');
+        }
+      });
+
+      if (data.profile_pic && typeof data.profile_pic !== 'string') {
+        formData.append('profile-pic', data.profile_pic);
+      }
+
+      formData.append('branch', '66ea5ebb0f0bdc8062c13a64');
+      formData.append('permanentAddress', JSON.stringify(permanentAddress));
+      formData.append('temporaryAddress', JSON.stringify(temporaryAddress));
+
+      payload = formData;
+    }
+    try {
+      const url = currentEmployee
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee/${currentEmployee._id}?branch=66ea5ebb0f0bdc8062c13a64`
+        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee?branch=66ea5ebb0f0bdc8062c13a64`;
+      const config = {
+        method: currentEmployee ? 'put' : 'post',
+        url,
+        data: payload,
+      };
+      if (!currentEmployee) {
+        config.headers = {
+          'Content-Type': 'multipart/form-data',
+        };
+      }
+      const response = await axios(config);
+      enqueueSnackbar(response?.data.message);
+      router.push(paths.dashboard.employee.list);
+      reset();
+    } catch (error) {
+      console.error(error);
+    }
   });
+
+
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
@@ -177,9 +211,14 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       });
       if (file) {
         setValue('profile_pic', newFile, { shouldValidate: true });
+        if(currentEmployee){
+          const formData = new FormData();
+          formData.append("profile-pic",file)
+          axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,formData).then((res) => console.log(res)).catch((err) => console.log(err))
+        }
       }
     },
-    [setValue]
+    [setValue],
   );
 
   return (
@@ -189,7 +228,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
-                name="profile_pic"
+                name='profile_pic'
                 maxSize={3145728}
                 onDrop={handleDrop}
               />
@@ -203,26 +242,26 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             <Box
               rowGap={3}
               columnGap={2}
-              display="grid"
+              display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="firstName" label="First Name" req={"red"}/>
-              <RHFTextField name="middleName" label="Middle Name" req={"red"}/>
-              <RHFTextField name="lastName" label="Last Name" req={"red"}/>
-              <RHFTextField name="drivingLicense" label="Driving License" />
-              <RHFTextField name="panNo" label="Pan No." req={"red"}/>
-              <RHFTextField name="voterId" label="Voter ID" />
-              <RHFTextField name="aadharCard" label="Aadhar Card" req={"red"}/>
-              <RHFTextField name="mobile" label="Mobile" req={"red"}/>
+              <RHFTextField name='firstName' label='First Name' req={'red'} />
+              <RHFTextField name='middleName' label='Middle Name' req={'red'} />
+              <RHFTextField name='lastName' label='Last Name' req={'red'} />
+              <RHFTextField name='drivingLicense' label='Driving License' />
+              <RHFTextField name='panCard' label='Pan No.' req={'red'} />
+              <RHFTextField name='voterCard' label='Voter ID' />
+              <RHFTextField name='aadharCard' label='Aadhar Card' req={'red'} />
+              <RHFTextField name='contact' label='Mobile' req={'red'} />
               <Controller
-                name="dateOfBirth"
+                name='dob'
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
-                    label="Date of Birth"
+                    label='Date of Birth'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
                     slotProps={{
@@ -230,19 +269,19 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                         fullWidth: true,
                         error: !!error,
                         helperText: error?.message,
-                        className: "req"
+                        className: 'req',
                       },
                     }}
                   />
                 )}
               />
-              <RHFTextField name="remarks" label="Remarks" />
+              <RHFTextField name='remark' label='Remark' />
             </Box>
           </Card>
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
+          <Typography variant='h6' sx={{ mb: 0.5 }}>
             Official Info
           </Typography>
         </Grid>
@@ -251,23 +290,35 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             <Box
               rowGap={3}
               columnGap={2}
-              display="grid"
+              display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="role" label="Role" req={"red"}/>
-              <RHFTextField name="workUnder" label="Work Under" req={"red"}/>
-              <RHFTextField name="branch" label="Branch" req={"red"}/>
-              <RHFTextField name="userName" label="Username" req={"red"}/>
-              <RHFTextField name="password" label="Password" req={"red"}/>
+              <RHFTextField name='role' label='Role' req={'red'} />
+              {/*<RHFTextField name="reportingTo" label="Reporting to" req={"red"}/>*/}
+              <RHFAutocomplete
+                name='reportingTo'
+                label='Reporting to'
+                req={'red'}
+                fullWidth
+                options={allUser.user.map((item) => item)}
+                getOptionLabel={(option) => option.firstName + ' ' + option.lastName}
+                renderOption={(props, option) => (
+                  <li {...props} key={option} value={option._id}>
+                    {option.firstName + ' ' + option.lastName}
+                  </li>
+                )}
+              />
+              <RHFTextField name='email' label='Email' req={'red'} />
+              {!currentEmployee && <RHFTextField name='password' label='Password' req={'red'} />}
               <Controller
-                name="joinDate"
+                name='joiningDate'
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
-                    label="Join Date"
+                    label='Join Date'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
                     slotProps={{
@@ -275,7 +326,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                         fullWidth: true,
                         error: !!error,
                         helperText: error?.message,
-                        className: "req"
+                        className: 'req',
                       },
                     }}
                   />
@@ -283,11 +334,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               />
 
               <Controller
-                name="leaveDate"
+                name='leaveDate'
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
-                    label="Leave Date"
+                    label='Leave Date'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
                     slotProps={{
@@ -306,50 +357,50 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
 
         <Grid item xs={12} md={4}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
+          <Typography variant='h6' sx={{ mb: 0.5 }}>
             Address Details
           </Typography>
         </Grid>
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
-            <Typography gutterBottom sx={{ mb: 2,fontSize: "17px",fontWeight: "700" }}>
+            <Typography gutterBottom sx={{ mb: 2, fontSize: '17px', fontWeight: '700' }}>
               Permanent Address
             </Typography>
             <Box
               rowGap={3}
               columnGap={2}
-              display="grid"
+              display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="permanentAddress" label="Address" req={"red"}/>
-              <RHFTextField name="permanentLandmark" label="Landmark" />
+              <RHFTextField name='permanentStreet' label='Address' req={'red'} />
+              <RHFTextField name='permanentLandmark' label='Landmark' />
               {/*<RHFTextField name="permanentCountry" label="Country" />*/}
               <Controller
-                name="permanentCountry"
+                name='permanentCountry'
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
                     {...field}
-                    sx={{borderLeft: "2px solid red",borderRadius: "8px"}}
+                    sx={{ borderLeft: '2px solid red', borderRadius: '8px' }}
                     options={countrystatecity.map((country) => country.name)}
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label="Country" variant="outlined" />
+                      <TextField {...params} label='Country' variant='outlined' />
                     )}
                   />
                 )}
               />
               <Controller
-                name="permanentState"
+                name='permanentState'
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
                     {...field}
-                    sx={{borderLeft: "2px solid red",borderRadius: "8px"}}
+                    sx={{ borderLeft: '2px solid red', borderRadius: '8px' }}
                     options={
                       watch('permanentCountry')
                         ? countrystatecity
@@ -360,19 +411,18 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label="State" variant="outlined"/>
+                      <TextField {...params} label='State' variant='outlined' />
                     )}
                   />
                 )}
               />
-              {/*<RHFTextField name="permanentCity" label="City" />*/}
               <Controller
-                name="permanentCity"
+                name='permanentCity'
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
                     {...field}
-                    sx={{borderLeft: "2px solid red",borderRadius: "8px"}}
+                    sx={{ borderLeft: '2px solid red', borderRadius: '8px' }}
                     options={
                       watch('permanentState')
                         ? countrystatecity
@@ -384,30 +434,30 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label="City" variant="outlined" />
+                      <TextField {...params} label='City' variant='outlined' />
                     )}
                   />
                 )}
               />
-              <RHFTextField name="permanentPincode" label="Pincode" req={"red"}/>
+              <RHFTextField name='permanentZipcode' label='Zipcode' req={'red'} />
             </Box>
-            <Typography gutterBottom sx={{ mt:3 ,mb: 2,fontSize: "17px",fontWeight: "700" }}>
+            <Typography gutterBottom sx={{ mt: 3, mb: 2, fontSize: '17px', fontWeight: '700' }}>
               Temporary Address
             </Typography>
             <Box
               rowGap={3}
               columnGap={2}
-              display="grid"
+              display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="tempAddress" label="Address" />
-              <RHFTextField name="tempLandmark" label="Landmark" />
+              <RHFTextField name='tempStreet' label='Address' />
+              <RHFTextField name='tempLandmark' label='Landmark' />
               {/*<RHFTextField name="tempCountry" label="Country" />*/}
               <Controller
-                name="tempCountry"
+                name='tempCountry'
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
@@ -416,14 +466,14 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label="Country" variant="outlined" />
+                      <TextField {...params} label='Country' variant='outlined' />
                     )}
                   />
                 )}
               />
               {/*<RHFTextField name="tempState" label="State" />*/}
               <Controller
-                name="tempState"
+                name='tempState'
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
@@ -438,14 +488,13 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label="State" variant="outlined" />
+                      <TextField {...params} label='State' variant='outlined' />
                     )}
                   />
                 )}
               />
-              {/*<RHFTextField name="tempCity" label="City" />*/}
               <Controller
-                name="city"
+                name='tempCity'
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
@@ -461,22 +510,22 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label="City" variant="outlined" />
+                      <TextField {...params} label='City' variant='outlined' />
                     )}
                   />
                 )}
               />
-              <RHFTextField name="tempPincode" label="Pincode" />
+              <RHFTextField name='tempZipcode' label='Zipcode' />
             </Box>
           </Card>
         </Grid>
 
       </Grid>
-            <Box sx={{display: "flex",justifyContent: "end",mt: 3}}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentEmployee ? 'Create Employee' : 'Save Changes'}
-              </LoadingButton>
-            </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+        <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+          {!currentEmployee ? 'Create Employee' : 'Save Changes'}
+        </LoadingButton>
+      </Box>
     </FormProvider>
   );
 }

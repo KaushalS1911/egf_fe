@@ -11,13 +11,17 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import EmployeeNewEditForm from '../employee-new-edit-form';
 import { useParams } from '../../../routes/hooks';
+import { useGetEmployee } from '../../../api/employee';
+import { Box } from '@mui/material';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
 export default function EmployeeEditView() {
   const settings = useSettingsContext();
+  const {employee} = useGetEmployee();
   const { id } = useParams();
-  const currentUser = _userList.find((user) => user.id === id);
+  const currentEmployee = employee.find((emp) => emp._id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -39,7 +43,11 @@ export default function EmployeeEditView() {
         }}
       />
 
-      <EmployeeNewEditForm currentUser={currentUser} />
+      {currentEmployee ? <EmployeeNewEditForm currentEmployee={currentEmployee} /> :
+        <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <LoadingScreen />
+        </Box>
+      }
     </Container>
   );
 }

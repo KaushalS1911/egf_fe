@@ -49,6 +49,7 @@ const EmployeeEditView = lazy(() => import('../../sections/employee/view/employe
 // SCHEME
 const SchemeListView = lazy(()=>import('../../sections/scheme/view/scheme-list-view'))
 const SchemeCreateView = lazy(() => import('../../sections/scheme/view/scheme-create-view'));
+const SchemeEditView = lazy(()=>import('../../sections/scheme/view/scheme-edit-view'))
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -102,7 +103,7 @@ export const dashboardRoutes = [
           // { path: 'cards', element: <UserCardsPage /> },
           // { path: 'list', element: <InquiryListView /> },
           { path: 'new', element: <InquiryCreateView /> },
-          { path: ':id/edit', element: <UserEditPage /> },
+          { path: ':id/edit', element: <InquiryEditView /> },
           // { path: 'account', element: <UserAccountPage /> },
         ],
       },
@@ -114,7 +115,7 @@ export const dashboardRoutes = [
           // { path: 'cards', element: <UserCardsPage /> },
           // { path: 'list', element: <InquiryListView /> },
           { path: 'new', element: <SchemeCreateView /> },
-          // { path: ':id/edit', element: <UserEditPage /> },
+          { path: ':id/edit', element: <SchemeEditView /> },
           // { path: 'account', element: <UserAccountPage /> },
           { path: ':id/edit', element: <InquiryEditView /> },
         ],

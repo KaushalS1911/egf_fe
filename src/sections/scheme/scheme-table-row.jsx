@@ -21,7 +21,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const {schemeName,ratePerGram,interestRate,valuationPer,interestPeriod,renewalTime,schemeType,isActive} = row;
+  const {name,ratePerGram,interestRate,valuation,interestPeriod,renewalTime,minLoanTime,schemeType,isActive} = row;
 
   const confirm = useBoolean();
 
@@ -36,22 +36,22 @@ export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, 
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{ratePerGram}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuationPer}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuation}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestPeriod}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{renewalTime}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeType}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{minLoanTime}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeType}</TableCell>
         <TableCell>
           <Label
             variant="soft"
             color={
-              (isActive === true && 'success' ) ||
-              (isActive === false && 'error') ||
+              (isActive == true && 'success' ) ||
+              (isActive == false && 'error') ||
               'default'
             }
           >
