@@ -10,14 +10,19 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import SchemeNewEditForm from '../scheme-new-edit-form';
+import { useGetScheme } from '../../../api/scheme';
+import { useParams } from '../../../routes/hooks';
+import { LoadingScreen } from '../../../components/loading-screen';
+import { Box } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function SchemeEditView({ id }) {
+export default function SchemeEditView() {
   const settings = useSettingsContext();
+  const {scheme} = useGetScheme()
+  const {id} = useParams()
 
-  const currentUser = _userList.find((user) => user.id === id);
-
+  const currentScheme = scheme.find((scheme) => scheme._id === id);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -28,17 +33,21 @@ export default function SchemeEditView({ id }) {
             href: paths.dashboard.root,
           },
           {
-            name: 'User',
-            href: paths.dashboard.user.root,
+            name: 'Scheme',
+            href: paths.dashboard.scheme.root,
           },
-          { name: currentUser?.name },
+          { name: currentScheme?.name },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <SchemeNewEditForm currentUser={currentUser} />
+      {currentScheme ? <SchemeNewEditForm currentScheme={currentScheme} /> :
+        <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <LoadingScreen />
+        </Box>
+      }
     </Container>
   );
 }

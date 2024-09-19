@@ -4,7 +4,8 @@ import { fetcher } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetScheme() {
-  const URL = `https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/scheme?branch=66ea5ebb0f0bdc8062c13a64`;
+  const { user } = useAuthContext();
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user.data?.company}/scheme`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
   const memoizedValue = useMemo(
     () => ({

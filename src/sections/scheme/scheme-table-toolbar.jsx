@@ -27,7 +27,7 @@ export default function   SchemeTableToolbar({
 
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('schemeName', event.target.value);
+      onFilters('name', event.target.value);
     },
     [onFilters]
   );

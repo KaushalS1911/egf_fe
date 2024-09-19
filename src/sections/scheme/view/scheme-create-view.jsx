@@ -15,7 +15,7 @@ export default function SchemeCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new user"
+        heading="Create a new Scheme"
         links={[
           {
             name: 'Dashboard',

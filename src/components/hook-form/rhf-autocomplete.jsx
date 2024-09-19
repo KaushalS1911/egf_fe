@@ -13,7 +13,6 @@ import { countries } from 'src/assets/data';
 export default function RHFAutocomplete({ name, label, type, helperText, placeholder, options,req,...other }) {
   const { control, setValue } = useFormContext();
   const { multiple } = other;
-  console.log(helperText);
   const customStyle = req  ? { borderLeft: `2px solid ${req}`,borderRadius:'8px'} : {};
   return (
     <Controller
