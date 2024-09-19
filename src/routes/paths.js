@@ -146,7 +146,7 @@ export const paths = {
       // cards: `${ROOTS.DASHBOARD}/user/cards`,
       // profile: `${ROOTS.DASHBOARD}/user/profile`,
       // account: `${ROOTS.DASHBOARD}/user/account`,
-      // edit: (id) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
+      edit: (id) => `${ROOTS.DASHBOARD}/scheme/${id}/edit`,
       // demo: {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },

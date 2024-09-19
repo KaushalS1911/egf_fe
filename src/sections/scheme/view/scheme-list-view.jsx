@@ -44,6 +44,9 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import { valueToPercent } from '@mui/material/Slider/useSlider';
+import { useGetScheme } from '../../../api/scheme';
+import axios from 'axios';
+import { useAuthContext } from '../../../auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -64,133 +67,10 @@ const TABLE_HEAD = [
   { id: 'active', label: 'Active' },
   { id: '', width: 88 },
 ];
-const dummyData = [
-  {
-    id: 1,
-    schemeName: 'darshuil',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 2,
-    schemeName: 'sujal',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 3,
-    schemeName: 'dev',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 4,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: false,
-  }, {
-    id: 5,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 6,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 7,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 8,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 9,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 10,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 11,
-    schemeName: 'EGF1M001',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  }, {
-    id: 12,
-    schemeName: 'heet',
-    ratePerGram: '3589.00',
-    interestRate: '1.00%',
-    valuationPer: '57.00%',
-    interestPeriod: 'Monthly',
-    renewalTime: 'Monthly',
-    schemeType: 'Regular',
-    isActive: true,
-  },
 
-];
 
 const defaultFilters = {
-  schemeName: '',
+  name: '',
   isActive: 'all',
 };
 // ----------------------------------------------------------------------
@@ -198,6 +78,8 @@ const defaultFilters = {
 export default function InquiryListView() {
   const { enqueueSnackbar } = useSnackbar();
 
+  const { user } = useAuthContext();
+  console.log(user);
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -206,12 +88,15 @@ export default function InquiryListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(dummyData);
+  const {scheme,mutate} = useGetScheme()
+
+  const [tableData, setTableData] = useState(scheme);
 
   const [filters, setFilters] = useState(defaultFilters);
 
+
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: scheme,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -242,25 +127,28 @@ export default function InquiryListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
+const handleDelete = (id) =>{
+  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
+    .then((res)=> {
+      mutate();
+      confirm.onFalse();
+      enqueueSnackbar(res.data.message)
+    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
+}
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      enqueueSnackbar('Delete success!');
-
+    handleDelete([id])
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
-
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
-    enqueueSnackbar('Delete success!');
-
+    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+     const deleteIds = deleteRows.map((row) => row._id);
+    console.log("yhbjuyh",deleteIds);
+     handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -271,7 +159,7 @@ export default function InquiryListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.user.edit(id));
+      router.push(paths.dashboard.scheme.edit(id));
     },
     [router],
   );
@@ -346,8 +234,8 @@ export default function InquiryListView() {
                       }
                     >
                       {['false','true'].includes(tab.value)
-                        ? dummyData.filter((emp) => String(emp.isActive) == tab.value).length
-                        : dummyData.length}
+                        ? scheme.filter((emp) => String(emp.isActive) == tab.value).length
+                        : scheme.length}
                     </Label>
                   </>
                 }
@@ -413,12 +301,12 @@ export default function InquiryListView() {
                     )
                     .map((row) => (
                       <SchemeTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
 
@@ -473,7 +361,7 @@ export default function InquiryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, schemeName } = filters;
+  const { isActive, name } = filters;
 
   // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -485,14 +373,13 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   // Filter by scheme name if provided
-  if (schemeName && schemeName.trim()) {
+  if (name && name.trim()) {
     inputData = inputData.filter(
       (sch) =>
-        sch.schemeName.toLowerCase().includes(schemeName.toLowerCase()),
+        sch.name.toLowerCase().includes(name.toLowerCase()),
     );
   }
 
-  // Adjust the logic to filter based on the 'isActive' status
   if (isActive !== 'all') {
     inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
   }

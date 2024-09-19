@@ -21,7 +21,7 @@ export default function SchemeTableFiltersResult({
   ...other
 }) {
   const handleRemoveKeyword = useCallback(() => {
-    onFilters('schemeName', '');
+    onFilters('name', '');
   }, [onFilters]);
 
   const handleRemoveStatus = useCallback(() => {
@@ -49,14 +49,14 @@ export default function SchemeTableFiltersResult({
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.isActive !== 'all' && (
           <Block label="Active">
-            <Chip size="small" label={filters.isActive === "true"?"Active":"Non Avtive"} onDelete={handleRemoveStatus} />
+            <Chip size="small" label={filters.isActive === "true"?"Active":"Non Active"} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
 
-        {!!filters.schemeName && (
+        {!!filters.name && (
           <Block label="Scheme Name:">
-            <Chip label={filters.schemeName} size="small" onDelete={handleRemoveKeyword} />
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
