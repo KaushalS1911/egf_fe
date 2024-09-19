@@ -5,7 +5,7 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetAllUser() {
   const {user} = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user.data?.company}/user`;
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/user`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
   const memoizedValue = useMemo(
     () => ({

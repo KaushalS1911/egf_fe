@@ -14,6 +14,7 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
   const { control, setValue } = useFormContext();
   const { multiple } = other;
   const customStyle = req  ? { borderLeft: `2px solid ${req}`,borderRadius:'8px'} : {};
+
   return (
     <Controller
       name={name}
