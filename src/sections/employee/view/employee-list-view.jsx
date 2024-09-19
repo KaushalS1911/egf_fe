@@ -15,7 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -36,30 +35,24 @@ import {
 import EmployeeTableRow from '../employee-table-row';
 import EmployeeTableToolbar from '../employee-table-toolbar';
 import EmployeeTableFiltersResult from '../employee-table-filters-result';
-import { isAfter, isBetween } from '../../../utils/format-time';
-import { alpha } from '@mui/material/styles';
-import { Tab, Tabs } from '@mui/material';
 import {useGetEmployee} from 'src/api/employee'
-import Label from '../../../components/label';
+import axios from 'axios';
+import { useAuthContext } from '../../../auth/hooks';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' },{value: 'Active', label: 'Active' },{value: 'Pending', label: 'Pending' },{value: 'Banned', label: 'Banned' }];
+
 
 const TABLE_HEAD = [
   { id: 'username', label: 'UserName' },
-  { id: 'phoneNumber', label: 'Phone Number'},
-  { id: 'employeeCode', label: 'Employee Code' },
-  { id: 'idProofs', label: 'ID Proofs' },
+  { id: 'contact', label: 'Phone Number'},
   { id: 'joinDate', label: 'Join Date'},
   { id: 'role', label: 'Role'},
-  { id: 'status', label: 'Status'},
   { id: '', width: 88 },
 ];
 
 const defaultFilters = {
   username: '',
-  status: 'all',
 };
 // ----------------------------------------------------------------------
 
@@ -67,7 +60,8 @@ export default function EmployeeListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
-  const {employee} = useGetEmployee();
+  const {user} = useAuthContext();
+  const {employee, mutate} = useGetEmployee();
   const settings = useSettingsContext();
 
   const router = useRouter();
@@ -109,25 +103,31 @@ export default function EmployeeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  const handleDelete = (id) => {
+    axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/employee`, {
+      data: {ids: id}
+    }).then((res) => {
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
+      mutate();
+    }).catch((err) => enqueueSnackbar("Failed to delete Inquiry"));
+  }
 
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      if (id) {
+        handleDelete([id]);
+        table.onUpdatePageDeleteRow(dataInPage.length);
+      }
 
-      enqueueSnackbar('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
-    enqueueSnackbar('Delete success!');
-
+    const deleteRows = employee.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -176,43 +176,6 @@ export default function EmployeeListView() {
         />
 
         <Card>
-            <Tabs
-              value={filters.status}
-              onChange={handleFilterStatus}
-              sx={{
-                px: 2.5,
-                boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-              }}
-            >
-              {STATUS_OPTIONS.map((tab) => (
-                <Tab
-                  key={tab.value}
-                  iconPosition='end'
-                  value={tab.value}
-                  label={tab.label}
-                  icon={
-                    <>
-                      <Label
-                        style={{ margin: '5px' }}
-                        variant={
-                          ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                        }
-                        color={
-                          (tab.value === 'Active' && 'success') ||
-                          (tab.value === 'Pending' && 'warning') ||
-                          (tab.value === 'Banned' && 'error') ||
-                          'default'
-                        }
-                      >
-                        {['Active', 'Pending', 'Banned'].includes(tab.value)
-                          ? employee.filter((emp) => emp.status === tab.value).length
-                          : employee.length}
-                      </Label>
-                    </>
-                  }
-                />
-              ))}
-            </Tabs>
           <EmployeeTableToolbar filters={filters} onFilters={handleFilters} />
 
           {canReset && (
@@ -257,7 +220,7 @@ export default function EmployeeListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row.id)
+                      dataFiltered.map((row) => row._id)
                     )
                   }
                 />
@@ -270,12 +233,12 @@ export default function EmployeeListView() {
                     )
                     .map((row) => (
                       <EmployeeTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
 
@@ -331,7 +294,7 @@ export default function EmployeeListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { status, username } = filters;
+  const {  username } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -347,10 +310,5 @@ function applyFilter({ inputData, comparator, filters }) {
         // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
     );
   }
-
-  if (status && status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
   return inputData;
 }

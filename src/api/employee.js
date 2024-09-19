@@ -21,16 +21,3 @@ export function useGetEmployee() {
   return memoizedValue;
 }
 
-export function useGetSingleEmployee(employeeId) {
-  const { user } = useAuthContext();
-
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee?branch=66ea5ebb0f0bdc8062c13a64`;
-  const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
-  const singleEmployee = data?.employee.find((data) => data?._id === employeeId);
-  const employeeData = {
-    data: singleEmployee,
-    mutate,
-  };
-
-  return employeeData;
-}

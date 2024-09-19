@@ -7,21 +7,23 @@ import { paths } from 'src/routes/paths';
 
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import {useGetInquiry} from 'src/api/inquiry'
+import { useGetInquiry } from 'src/api/inquiry';
 import InquiryNewEditForm from '../inquiry-new-edit-form';
 import { useParams } from '../../../routes/hooks';
+import { LoadingScreen } from '../../../components/loading-screen';
+import { Box } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 export default function InquiryEditView() {
   const settings = useSettingsContext();
-  const {inquiry} = useGetInquiry();
+  const { inquiry } = useGetInquiry();
   const { id } = useParams();
   const currentInquiry = inquiry.find((inq) => inq._id === id);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="New Inquiry"
+        heading='New Inquiry'
         links={[
           {
             name: 'Dashboard',
@@ -38,7 +40,11 @@ export default function InquiryEditView() {
         }}
       />
 
-      <InquiryNewEditForm currentInquiry={currentInquiry} />
+      {currentInquiry ? <InquiryNewEditForm currentInquiry={currentInquiry} /> :
+        <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <LoadingScreen />
+        </Box>
+      }
     </Container>
   );
 }
