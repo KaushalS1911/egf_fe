@@ -40,5 +40,5 @@ RHFTextField.propTypes = {
   helperText: PropTypes.string,
   name: PropTypes.string.isRequired,
   type: PropTypes.string,
-  req: PropTypes.string, // `req` should be a color string
+  req: PropTypes.string,
 };

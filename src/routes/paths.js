@@ -151,6 +151,18 @@ export const paths = {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },
     },
+    carat: {
+      root: `${ROOTS.DASHBOARD}/carat`,
+      new: `${ROOTS.DASHBOARD}/carat/new`,
+      list: `${ROOTS.DASHBOARD}/carat/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/carat/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
     customer: {
       root: `${ROOTS.DASHBOARD}/customer`,
       new: `${ROOTS.DASHBOARD}/customer/new`,

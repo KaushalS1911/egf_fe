@@ -35,9 +35,9 @@ import {
 
 
 import { isAfter, isBetween } from '../../../utils/format-time';
-import SchemeTableToolbar from '../scheme-table-toolbar';
-import SchemeTableFiltersResult from '../scheme-table-filters-result';
-import SchemeTableRow from '../scheme-table-row';
+import CaratTableToolbar from '../carat-table-toolbar';
+import CaratTableFiltersResult from '../carat-table-filters-result';
+import CaratTableRow from '../carat-table-row';
 import { Box, CircularProgress } from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
@@ -47,6 +47,7 @@ import { valueToPercent } from '@mui/material/Slider/useSlider';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
+import { useGetCarat } from '../../../api/carat';
 
 // ----------------------------------------------------------------------
 
@@ -56,14 +57,9 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 
 }];
 
 const TABLE_HEAD = [
-  { id: 'scheme name', label: 'Scheme Name' },
-  { id: 'rate per gram', label: 'Rate per Gram' },
-  { id: 'interest rate', label: 'Interest Rate' },
-  { id: 'valuation per%', label: 'Valuation per%' },
-  { id: 'interest period', label: 'Interest Period' },
-  { id: 'renewal time', label: 'Renewal Time' },
-  { id: 'minimum loan time', label: 'Minimum Loan Time' },
-  { id: 'scheme type', label: 'Scheme Type' },
+  { id: 'cara', label: 'Carat' },
+  { id: 'caratPercentage', label: 'Create%' },
+  { id: 'remarks', label: 'Remarks' },
   { id: 'active', label: 'Active' },
   { id: '', width: 88 },
 ];
@@ -75,7 +71,7 @@ const defaultFilters = {
 };
 // ----------------------------------------------------------------------
 
-export default function SchemeListView() {
+export default function CaratListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
@@ -88,15 +84,15 @@ export default function SchemeListView() {
 
   const confirm = useBoolean();
 
-  const {scheme,mutate} = useGetScheme()
+  const {carat,mutate} = useGetCarat()
 
-  const [tableData, setTableData] = useState(scheme);
+  const [tableData, setTableData] = useState(carat);
 
   const [filters, setFilters] = useState(defaultFilters);
 
 
   const dataFiltered = applyFilter({
-    inputData: scheme,
+    inputData: carat,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -127,13 +123,16 @@ export default function SchemeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-const handleDelete = (id) =>{
-  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
-    .then((res)=> {
+ const handleDelete =async (id) =>{
+   try {
+   const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
       mutate();
       confirm.onFalse();
       enqueueSnackbar(res.data.message)
-    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
+   } catch (error){
+      enqueueSnackbar("Failed to Delete carat")
+
+   }
 }
   const handleDeleteRow = useCallback(
     (id) => {
@@ -145,9 +144,8 @@ const handleDelete = (id) =>{
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+    const deleteRows = carat.filter((row) => table.selected.includes(row._id));
      const deleteIds = deleteRows.map((row) => row._id);
-    console.log("yhbjuyh",deleteIds);
      handleDelete(deleteIds)
     setTableData(deleteRows);
 
@@ -159,7 +157,7 @@ const handleDelete = (id) =>{
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      router.push(paths.dashboard.carat.edit(id));
     },
     [router],
   );
@@ -175,29 +173,21 @@ const handleDelete = (id) =>{
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Scheme List'
+          heading='Carat List'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Scheme', href: paths.dashboard.scheme.root },
+            { name: 'carat', href: paths.dashboard.carat.root },
             { name: 'List' },
           ]}
           action={
             <Box>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.scheme.new}
-                variant='contained'
-                sx={{ mx: 2 }}
-              >
-                Gold Price change
-              </Button>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.scheme.new}
+                href={paths.dashboard.carat.new}
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
-                Create Scheme
+                Create Carat
               </Button>
             </Box>
           }
@@ -234,20 +224,20 @@ const handleDelete = (id) =>{
                       }
                     >
                       {['false','true'].includes(tab.value)
-                        ? scheme.filter((emp) => String(emp.isActive) == tab.value).length
-                        : scheme.length}
+                        ? carat.filter((emp) => String(emp.isActive) == tab.value).length
+                        : carat.length}
                     </Label>
                   </>
                 }
               />
             ))}
           </Tabs>
-          <SchemeTableToolbar
+          <CaratTableToolbar
             filters={filters} onFilters={handleFilters}
           />
 
          {canReset && (
-            <SchemeTableFiltersResult
+            <CaratTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -300,7 +290,7 @@ const handleDelete = (id) =>{
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row) => (
-                      <SchemeTableRow
+                      <CaratTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
@@ -372,7 +362,6 @@ function applyFilter({ inputData, comparator, filters }) {
   });
   inputData = stabilizedThis.map((el) => el[0]);
 
-  // Filter by scheme name if provided
   if (name && name.trim()) {
     inputData = inputData.filter(
       (sch) =>
@@ -381,7 +370,7 @@ function applyFilter({ inputData, comparator, filters }) {
   }
 
   if (isActive !== 'all') {
-    inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
+    inputData = inputData.filter((carat) => carat.isActive === (isActive == 'true'));
   }
 
   return inputData;

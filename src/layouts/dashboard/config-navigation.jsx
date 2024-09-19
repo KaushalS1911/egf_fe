@@ -117,6 +117,12 @@ export function useNavData() {
             path: paths.dashboard.scheme.root,
             icon: ICONS.user,
           },
+          // CREATE
+          {
+            title: t('carat'),
+            path: paths.dashboard.carat.root,
+            icon: ICONS.user,
+          },
           // PRODUCT
           {
             title: t('product'),
