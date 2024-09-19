@@ -2,11 +2,18 @@ import PropTypes from 'prop-types';
 import { forwardRef, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import { useGetConfigs } from 'src/api/config';
 import defaultLogo from 'src/assets/logo/Group 45.png';
+import { useGetCompanyDetails } from '../../api/company_details';
 // ----------------------------------------------------------------------
 const Logo = forwardRef(({ disabledLink = false, navWidth, sx, ...other }, ref) => {
+
+  const { companyDetail } = useGetCompanyDetails();
   const [company, setCompany] = useState({});
-  const logo1 = defaultLogo;
+  useEffect(() => {
+    setCompany(companyDetail);
+  }, [companyDetail]);
+  const logo1 = company?.logo_url ? `${company?.logo_url}` : defaultLogo;
   const logo = (
     <Box
       ref={ref}
@@ -24,6 +31,7 @@ const Logo = forwardRef(({ disabledLink = false, navWidth, sx, ...other }, ref) 
         src={logo1}
         alt={logo1}
         style={{
+          borderRadius: '5%',
           width: navWidth ? '75px' : '124px',
           height: navWidth ? '75px' : '124px',
         }}

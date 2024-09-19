@@ -6,6 +6,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
+import { SettingsPage } from '../../sections/settings/view';
 
 
 // ----------------------------------------------------------------------
@@ -240,6 +241,7 @@ export const dashboardRoutes = [
       { path: 'chat', element: <ChatPage /> },
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },
+      { path: 'setting', element: <SettingsPage /> },
     ],
   },
 ];

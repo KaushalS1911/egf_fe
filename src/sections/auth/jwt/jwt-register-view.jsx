@@ -66,11 +66,8 @@ export default function JwtRegisterView() {
     try {
       const URL = `${import.meta.env.VITE_AUTH_API}/register`;
       const response = await axios.post(URL, data);
-      if (response.status === 201) {
-        enqueueSnackbar(response.data.data.message, { variant: 'success' });
-        const result = response.data.data.tokens;
-        localStorage.setItem('jwt', result.jwt);
-        localStorage.setItem('jwtRefresh', result.jwtRefresh);
+      if (response.data.status === 201) {
+        enqueueSnackbar(response.data.message, { variant: 'success' });
         reset();
         router.push(returnTo || PATH_AFTER_LOGIN);
       }
