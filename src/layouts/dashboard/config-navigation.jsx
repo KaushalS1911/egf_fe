@@ -43,6 +43,7 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -211,7 +212,7 @@ export function useNavData() {
             title: t('mail'),
             path: paths.dashboard.mail,
             icon: ICONS.mail,
-            info: <Label color="error">+32</Label>,
+            info: <Label color='error'>+32</Label>,
           },
 
           // CHAT
@@ -234,10 +235,21 @@ export function useNavData() {
           //   path: paths.dashboard.kanban,
           //   icon: ICONS.kanban,
           // },
+
         ],
-      }
+      },
+      {
+        subheader: t('config'),
+        items: [
+          {
+            title: t('setting'),
+            path: paths.dashboard.setting,
+            icon: ICONS.setting,
+          },
+        ],
+      },
     ],
-    [t]
+    [t],
   );
 
   return data;

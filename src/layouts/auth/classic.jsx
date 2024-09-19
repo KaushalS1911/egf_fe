@@ -99,7 +99,7 @@ export default function AuthClassicLayout({ children, register, invite }) {
             md={7}
             lg={8}
           >
-            <img src={loginImage} alt={loginImage} style={{ height: '100%', aspectRatio: '16/9' }} />
+            <img src={loginImage} alt={loginImage} style={{ height: '100%', aspectRatio: '3/2' }} />
           </Grid>
         </Grid>
       </Box>

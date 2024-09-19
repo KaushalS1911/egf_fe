@@ -25,44 +25,47 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import { Button } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
 export default function CustomerNewEditForm({ currentCustomer }) {
   const router = useRouter();
+  const { configs, mutate } = useGetConfigs();
   const mdUp = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
   const [profilePic, setProfilePic] = useState(null);
 
-  const NewProductSchema = Yup.object().shape({
+  const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
-    middleName: Yup.string(),
+    middleName: Yup.string().required('Middle Name is required'),
     lastName: Yup.string().required('Last Name is required'),
     contact: Yup.string().required('Contact number is required').max(10),
     email: Yup.string().email('Invalid email format').required('Email is required'),
     dob: Yup.date().required('Date of Birth is required'),
-    drivingLicense: Yup.string().required('Driving License is required'),
+    // drivingLicense: Yup.string().required('Driving License is required'),
     customerCode: Yup.string().required('Customer Code is required'),
-    landline: Yup.string(),
+    // landline: Yup.string(),
     panCard: Yup.string().required('PAN Card number is required'),
-    joiningDate: Yup.date().required('Joining Date is required'),
+    // joiningDate: Yup.date().required('Joining Date is required'),
     aadharCard: Yup.string().required('Aadhar Card number is required'),
     otpContact: Yup.string().required('OTP Contact number is required'),
-    businessType: Yup.object().required('Business Type is required'),
+    // businessType: Yup.object().required('Business Type is required'),
     loanType: Yup.object().required('Loan Type is required'),
-    remark: Yup.string(),
+    // remark: Yup.string(),
     PerStreet: Yup.string().required('Address Line 1 is required'),
-    PerLandmark: Yup.string(),
+    PerLandmark: Yup.string().required('Landmark 1 is required'),
     PerCountry: Yup.string().required('Country is required'),
     PerState: Yup.string().required('State is required'),
     PerCity: Yup.string().required('City is required'),
     PerZipcode: Yup.string().required('Pincode is required'),
-    TemStreet: Yup.string().required('Address Line 1 is required'),
-    TemLandmark: Yup.string(),
-    TemCountry: Yup.string().required('Country is required'),
-    TemState: Yup.string().required('State is required'),
-    TemCity: Yup.string().required('City is required'),
-    TemZipcode: Yup.string().required('Pincode is required'),
+    // TemStreet: Yup.string().required('Address Line 1 is required'),
+    // TemLandmark: Yup.string(),
+    // TemCountry: Yup.string().required('Country is required'),
+    // TemState: Yup.string().required('State is required'),
+    // TemCity: Yup.string().required('City is required'),
+    // TemZipcode: Yup.string().required('Pincode is required'),
     // accountName: Yup.string().required('Account Name is required'),
     // accountNo: Yup.string().required('Account Number is required'),
     // accountType: Yup.string().required('Account Type is required'),
@@ -112,6 +115,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   );
 
   const methods = useForm({
+    resolver: yupResolver(NewCustomerSchema),
     defaultValues,
   });
 
@@ -230,6 +234,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   const value = e.target.value.toUpperCase();
                   methods.setValue('firstName', value, { shouldValidate: true });
                 }}
+                req={'red'}
               />
               <RHFTextField
                 name='middleName'
@@ -239,6 +244,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   const value = e.target.value.toUpperCase();
                   methods.setValue('middleName', value, { shouldValidate: true });
                 }}
+                req={'red'}
               />
               <RHFTextField
                 name='lastName'
@@ -248,14 +254,17 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   const value = e.target.value.toUpperCase();
                   methods.setValue('lastName', value, { shouldValidate: true });
                 }}
+                req={'red'}
               />
               <RHFTextField
                 name='contact'
                 label='Contact'
+                req={'red'}
               />
               <RHFTextField
                 name='email'
                 label='Email'
+                req={'red'}
               />
               <Controller
                 name='dob'
@@ -272,6 +281,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                         fullWidth: true,
                         error: !!error,
                         helperText: error?.message,
+                        className: 'req',
                       },
                     }}
                   />
@@ -284,6 +294,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='customerCode'
                 label='Customer Code'
+                req={'red'}
               />
               <RHFTextField
                 name='landline'
@@ -292,6 +303,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='panCard'
                 label='PAN No.'
+                req={'red'}
               />
               <Controller
                 name='joiningDate'
@@ -316,24 +328,24 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='aadharCard'
                 label='Aadhar Card'
+                req={'red'}
               />
               <RHFTextField
                 name='otpContact'
                 label='OTP Mobile'
+                req={'red'}
               />
               <RHFAutocomplete
                 name='businessType'
                 label='Business Type'
                 placeholder='Choose Business Type'
-                options={[
-                  { label: 'Business One', value: 'business_one' },
-                  { label: 'Business Two', value: 'business_two' },
-                ]}
+                options={configs.businessTypes.map((type) => (type))}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
               />
               <RHFAutocomplete
                 name='loanType'
                 label='Loan Type'
+                req={'red'}
                 placeholder='Choose Loan Type'
                 options={[
                   { label: 'Gold Loan', value: 'gold_loan' },
@@ -376,10 +388,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='PerStreet' label='Street' />
-              <RHFTextField name='PerLandmark' label='landmark' />
+              <RHFTextField name='PerStreet' label='Street' req={'red'} />
+              <RHFTextField name='PerLandmark' label='landmark' req={'red'} />
               <RHFAutocomplete
                 name='PerCountry'
+                req={'red'}
                 label='Country'
                 placeholder='Choose a country'
                 options={countrystatecity.map((country) => country.name)}
@@ -387,6 +400,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               />
               <RHFAutocomplete
                 name='PerState'
+                req={'red'}
                 label='State'
                 placeholder='Choose a State'
                 options={
@@ -401,6 +415,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFAutocomplete
                 name='PerCity'
                 label='City'
+                req={'red'}
                 placeholder='Choose a City'
                 options={
                   watch('PerState')
@@ -412,7 +427,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 }
                 isOptionEqualToValue={(option, value) => option === value}
               />
-              <RHFTextField name='PerZipcode' label='Zipcode' />
+              <RHFTextField req={'red'} name='PerZipcode' label='Zipcode' />
             </Box>
           </Stack>
           <Stack spacing={3} sx={{ p: 3 }}>
@@ -497,21 +512,26 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='accountName'
                 label='Account Name'
+                req={'red'}
               />
               <RHFTextField
                 name='accountNo'
+                req={'red'}
                 label='Account Number'
               />
               <RHFTextField
                 name='accountType'
+                req={'red'}
                 label='Account Type'
               />
               <RHFTextField
                 name='ifscCode'
+                req={'red'}
                 label='IFSC Code'
               />
               <RHFTextField
                 name='bankName'
+                req={'red'}
                 label='Bank Name'
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
