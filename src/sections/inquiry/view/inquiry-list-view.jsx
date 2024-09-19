@@ -32,7 +32,7 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
+import {useAuthContext} from 'src/auth/hooks';
 import InquiryTableRow from '../inquiry-table-row';
 import InquiryTableToolbar from '../inquiry-table-toolbar';
 import InquiryTableFiltersResult from '../inquiry-table-filters-result';
@@ -62,9 +62,9 @@ const defaultFilters = {
 
 export default function InquiryListView() {
   const {enqueueSnackbar} = useSnackbar();
-  const {inquiry,mutate} = useGetInquiry();
+  const {inquiry, mutate} = useGetInquiry();
   const table = useTable();
-
+  const {user} = useAuthContext();
   const settings = useSettingsContext();
 
   const router = useRouter();
@@ -107,20 +107,23 @@ export default function InquiryListView() {
     setFilters(defaultFilters);
   }, []);
 
+  const handleDelete = (id) => {
+    axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/inquiry`, {
+      data: {ids: id}
+    }).then((res) => {
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
+      mutate();
+    }).catch((err) => enqueueSnackbar("Failed to delete Inquiry"));
+  }
+
   const handleDeleteRow = useCallback(
     (id) => {
-      if(id){
-        axios.delete(`https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/inquiry`,  {
-          data: { ids: [id] }
-        }).then((res) => {
-          enqueueSnackbar(res.data.message);
-          confirm.onFalse();
-          mutate();
-        }).catch((err) => console.log(err));
+      if (id) {
+        handleDelete([id]);
+        setTableData(deleteRow);
 
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
+        table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
@@ -129,14 +132,7 @@ export default function InquiryListView() {
   const handleDeleteRows = useCallback(() => {
     const deleteRows = inquiry.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
-    axios.delete(`https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/inquiry`,  {
-      data: { ids: deleteIds }
-    }).then((res) => {
-      enqueueSnackbar(res.data.message);
-      confirm.onFalse();
-      mutate();
-    }).catch((err) => console.log(err));
-
+    handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({

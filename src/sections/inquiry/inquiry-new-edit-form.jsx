@@ -11,11 +11,11 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-
+import LoadivngButton from '@mui/lab/LoadingButton';
+import {useAuthContext} from 'src/auth/hooks';
 import {paths} from 'src/routes/paths';
 import {useRouter} from 'src/routes/hooks';
-
+import LoadingButton from '@mui/lab/LoadingButton';
 import {useSnackbar} from 'src/components/snackbar';
 import FormProvider, {
   RHFTextField,
@@ -26,7 +26,7 @@ import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 
 export default function InquiryNewEditForm({currentInquiry}) {
   const router = useRouter();
-
+  const {user} = useAuthContext();
   const {enqueueSnackbar} = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -70,19 +70,20 @@ export default function InquiryNewEditForm({currentInquiry}) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentInquiry) {
-        axios.put(`https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
+        axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
           enqueueSnackbar(res?.data.message);
           router.push(paths.dashboard.inquiry.list)
+          reset();
         }).catch((err) => console.log(err));
       } else {
-        axios.post("https://egf-be.onrender.com/api/company/66ea4b784993e01af85bcfe3/inquiry?branch=66ea5ebb0f0bdc8062c13a64", data).then((res) => {
+        axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
           enqueueSnackbar(res?.data.message);
           router.push(paths.dashboard.inquiry.list)
+          reset();
         }).catch((err) => console.log(err));
       }
-      reset();
     } catch (error) {
-          enqueueSnackbar("Failed to create Inquiry");
+      enqueueSnackbar(currentInquiry ? "Failed to Update Inquiry" : "Failed to create Inquiry", {variant: "error"});
       console.error(error);
     }
   });
@@ -141,7 +142,7 @@ export default function InquiryNewEditForm({currentInquiry}) {
 
             <Stack alignItems="flex-end" sx={{mt: 3}}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentInquiry ? 'Create User' : 'Save Changes'}
+                {!currentInquiry ? 'Add Inquiry' : 'Save Changes'}
               </LoadingButton>
             </Stack>
           </Card>

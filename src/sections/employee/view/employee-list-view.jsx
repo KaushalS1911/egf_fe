@@ -39,11 +39,12 @@ import EmployeeTableFiltersResult from '../employee-table-filters-result';
 import { isAfter, isBetween } from '../../../utils/format-time';
 import { alpha } from '@mui/material/styles';
 import { Tab, Tabs } from '@mui/material';
+import {useGetEmployee} from 'src/api/employee'
 import Label from '../../../components/label';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' },{value: 'active', label: 'Active' },{value: 'pending', label: 'Pending' },{value: 'banned', label: 'Banned' }];
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' },{value: 'Active', label: 'Active' },{value: 'Pending', label: 'Pending' },{value: 'Banned', label: 'Banned' }];
 
 const TABLE_HEAD = [
   { id: 'username', label: 'UserName' },
@@ -55,77 +56,9 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status'},
   { id: '', width: 88 },
 ];
-const dummyData = [
-  {
-    id: 1,
-    userName: 'Aditi Devani',
-    Email: 'aditi45@gmail.com',
-    contact: '+91 48596 52632',
-    employeeCode: 'EGF000001',
-    idProofs: 'Driving License',
-    joinDate: '12 Apr 2024',
-    role: 'Director',
-    status: "active",
-  },
-  {
-    id: 2,
-    userName: 'Rohan Patel',
-    Email: 'rohan.patel@example.com',
-    contact: '+91 98765 43210',
-    employeeCode: 'EGF000002',
-    idProofs: 'Passport',
-    joinDate: '10 May 2023',
-    role: 'MD',
-    status: "pending",
-  },
-  {
-    id: 3,
-    userName: 'Priya Shah',
-    email: 'priya.shah@example.com',
-    contact: '+91 12345 67890',
-    employeeCode: 'EGF000003',
-    idProofs: 'Aadhaar Card',
-    joinDate: '01 Mar 2024',
-    role: 'Manager',
-    status: "banned",
-  },
-  {
-    id: 4,
-    userName: 'Harsh Mehta',
-    email: 'harsh.mehta@example.com',
-    contact: '+91 55555 12345',
-    employeeCode: 'EGF000004',
-    idProofs: 'PAN Card',
-    joinDate: '15 Jun 2023',
-    role: 'Employee',
-    status: "active",
-  },
-  {
-    id: 5,
-    userName: 'Sneha Desai',
-    email: 'sneha.desai@example.com',
-    contact: '+91 88888 99999',
-    employeeCode: 'EGF000005',
-    idProofs: 'Voter ID',
-    joinDate: '20 Aug 2024',
-    role: 'Employee',
-    status: "active",
-  },
-  {
-    id: 6,
-    userName: 'Rahul Verma',
-    email: 'rahul.verma@example.com',
-    contact: '+91 67678 90909',
-    employeeCode: 'EGF000006',
-    idProofs: 'Driving License',
-    joinDate: '22 Feb 2024',
-    role: 'Employee',
-    status: "active",
-  }
-];
 
 const defaultFilters = {
-  userName: '',
+  username: '',
   status: 'all',
 };
 // ----------------------------------------------------------------------
@@ -134,19 +67,19 @@ export default function EmployeeListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
-
+  const {employee} = useGetEmployee();
   const settings = useSettingsContext();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(dummyData);
+  const [tableData, setTableData] = useState(employee);
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: employee,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -265,15 +198,15 @@ export default function EmployeeListView() {
                           ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
                         }
                         color={
-                          (tab.value === 'active' && 'success') ||
-                          (tab.value === 'pending' && 'warning') ||
-                          (tab.value === 'banned' && 'error') ||
+                          (tab.value === 'Active' && 'success') ||
+                          (tab.value === 'Pending' && 'warning') ||
+                          (tab.value === 'Banned' && 'error') ||
                           'default'
                         }
                       >
-                        {['active', 'pending', 'banned'].includes(tab.value)
-                          ? dummyData.filter((emp) => emp.status === tab.value).length
-                          : dummyData.length}
+                        {['Active', 'Pending', 'Banned'].includes(tab.value)
+                          ? employee.filter((emp) => emp.status === tab.value).length
+                          : employee.length}
                       </Label>
                     </>
                   }
@@ -398,7 +331,7 @@ export default function EmployeeListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { status, userName } = filters;
+  const { status, username } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -407,10 +340,10 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-  if (userName && userName.trim()) {
+  if (username && username.trim()) {
     inputData = inputData.filter(
       (inq) =>
-        inq.userName.toLowerCase().includes(userName.toLowerCase())
+        inq.username.toLowerCase().includes(username.toLowerCase())
         // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
     );
   }
