@@ -58,6 +58,11 @@ const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view
 const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
 const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
 const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
+// PENALTY
+const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
+const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
+const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
+
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -143,6 +148,15 @@ export const dashboardRoutes = [
           { path: 'new', element: <LoanTypecreateView/> },
           { path: ':id/edit', element: <LoanTypeEditView /> },
           // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'penalty',
+        children: [
+          { element: <PenaltyListView/>, index: true },
+          { path: 'list', element: <PenaltyListView/> },
+          { path: 'new', element: <PenaltyCreateview/> },
+          { path: ':id/edit', element: <PenaltyEditView /> },
         ],
       },
       {

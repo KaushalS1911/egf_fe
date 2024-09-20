@@ -47,11 +47,11 @@ export default function SchemeNewEditForm({ currentScheme }) {
       .required('valuation is required')
       .typeError('valuation must be a number')
       .positive('valuation must be greater than zero') ,
-    renewalTime: Yup.number()
-      .required('Renewal Time is required')
-      .typeError('Renewal Time must be a number')
-      .positive('Renewal Time must be greater than zero') ,
-    minLoanTime: Yup.string().required('Minimum Loan Time field is required'),
+    minLoanTime: Yup.number()
+      .typeError('Minimum Loan Time must be a number')
+      .required('Minimum Loan Time is required')
+      .positive('Minimum Loan Time be greater than zero') ,
+    renewalTime: Yup.string().required('Renewal Time is required'),
     ratePerGram: Yup.number().required('Rate per Gram is required'),
   });
 
@@ -73,7 +73,6 @@ export default function SchemeNewEditForm({ currentScheme }) {
     [currentScheme],
   );
 
-  console.log("ygtyugu",currentScheme);
   const methods = useForm({
     resolver: yupResolver(NewSchema),
     defaultValues,
