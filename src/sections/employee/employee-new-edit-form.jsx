@@ -160,6 +160,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         'aadharCard', 'contact', 'dob', 'remark', 'role', 'reportingTo',
         'email', 'password', 'joiningDate', 'leaveDate',
       ];
+
       fields.forEach(field => {
         if (field === 'reportingTo') {
           formData.append(field, data[field]?._id || '');
@@ -168,14 +169,18 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         }
       });
 
-      if (data.profile_pic && typeof data.profile_pic !== 'string') {
+      if (data.profile_pic && data.profile_pic.path) {
         formData.append('profile-pic', data.profile_pic);
       }
 
       formData.append('branch', '66ea5ebb0f0bdc8062c13a64');
-      formData.append('permanentAddress', JSON.stringify(permanentAddress));
-      formData.append('temporaryAddress', JSON.stringify(temporaryAddress));
 
+      const addressFields = ['street', 'landmark', 'country', 'state', 'city', 'zipcode'];
+
+      addressFields.forEach(field => {
+        formData.append(`permanentAddress[${field}]`, data[`permanent${capitalize(field)}`] || '');
+        formData.append(`temporaryAddress[${field}]`, data[`temp${capitalize(field)}`] || '');
+      });
       payload = formData;
     }
     try {
