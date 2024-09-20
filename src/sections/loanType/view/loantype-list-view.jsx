@@ -34,10 +34,9 @@ import {
 } from 'src/components/table';
 
 
-import { isAfter, isBetween } from '../../../utils/format-time';
-import SchemeTableToolbar from '../scheme-table-toolbar';
-import SchemeTableFiltersResult from '../scheme-table-filters-result';
-import SchemeTableRow from '../scheme-table-row';
+import LoantypeTableToolbar from '../loantype-table-toolbar';
+import LoantypeTableFiltersResult from '../loantype-table-filters-result';
+import LoantypeTableRow from '../loantype-table-row';
 import { Box, CircularProgress } from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
@@ -47,6 +46,8 @@ import { valueToPercent } from '@mui/material/Slider/useSlider';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
+import { useGetCarat } from '../../../api/carat';
+import { useGetLoan } from '../../../api/loantype';
 
 // ----------------------------------------------------------------------
 
@@ -56,14 +57,8 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 
 }];
 
 const TABLE_HEAD = [
-  { id: 'scheme name', label: 'Scheme Name' },
-  { id: 'rate per gram', label: 'Rate per Gram' },
-  { id: 'interest rate', label: 'Interest Rate' },
-  { id: 'valuation per%', label: 'Valuation per%' },
-  { id: 'interest period', label: 'Interest Period' },
-  { id: 'renewal time', label: 'Renewal Time' },
-  { id: 'minimum loan time', label: 'Minimum Loan Time' },
-  { id: 'scheme type', label: 'Scheme Type' },
+  { id: 'loan type name', label: 'Loan Type Name' },
+  { id: 'remarks', label: 'Remarks' },
   { id: 'active', label: 'Active' },
   { id: '', width: 88 },
 ];
@@ -75,11 +70,10 @@ const defaultFilters = {
 };
 // ----------------------------------------------------------------------
 
-export default function SchemeListView() {
+export default function LoantypeListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
-  console.log(user);
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -88,15 +82,15 @@ export default function SchemeListView() {
 
   const confirm = useBoolean();
 
-  const {scheme,mutate} = useGetScheme()
+  const {loan,mutate} = useGetLoan()
 
-  const [tableData, setTableData] = useState(scheme);
+  const [tableData, setTableData] = useState(loan);
 
   const [filters, setFilters] = useState(defaultFilters);
 
 
   const dataFiltered = applyFilter({
-    inputData: scheme,
+    inputData: loan,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -127,13 +121,16 @@ export default function SchemeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-const handleDelete = (id) =>{
-  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
-    .then((res)=> {
+ const handleDelete =async (id) =>{
+   try {
+   const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loan/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
       mutate();
       confirm.onFalse();
       enqueueSnackbar(res.data.message)
-    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
+   } catch (error){
+      enqueueSnackbar("Failed to Delete Loan Type ")
+
+   }
 }
   const handleDeleteRow = useCallback(
     (id) => {
@@ -145,9 +142,8 @@ const handleDelete = (id) =>{
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+    const deleteRows = loan.filter((row) => table.selected.includes(row._id));
      const deleteIds = deleteRows.map((row) => row._id);
-    console.log("yhbjuyh",deleteIds);
      handleDelete(deleteIds)
     setTableData(deleteRows);
 
@@ -159,7 +155,7 @@ const handleDelete = (id) =>{
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      router.push(paths.dashboard.loan.edit(id));
     },
     [router],
   );
@@ -175,29 +171,21 @@ const handleDelete = (id) =>{
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Scheme List'
+          heading='Loan Type List'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Scheme', href: paths.dashboard.scheme.root },
+            { name: 'Loan Type', href: paths.dashboard.loan.root },
             { name: 'List' },
           ]}
           action={
             <Box>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.scheme.new}
-                variant='contained'
-                sx={{ mx: 2 }}
-              >
-                Gold Price change
-              </Button>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.scheme.new}
+                href={paths.dashboard.loan.new}
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
-                Create Scheme
+                Create Loan Type
               </Button>
             </Box>
           }
@@ -234,20 +222,20 @@ const handleDelete = (id) =>{
                       }
                     >
                       {['false','true'].includes(tab.value)
-                        ? scheme.filter((emp) => String(emp.isActive) == tab.value).length
-                        : scheme.length}
+                        ? loan.filter((emp) => String(emp.isActive) == tab.value).length
+                        : loan.length}
                     </Label>
                   </>
                 }
               />
             ))}
           </Tabs>
-          <SchemeTableToolbar
+          <LoantypeTableToolbar
             filters={filters} onFilters={handleFilters}
           />
 
          {canReset && (
-            <SchemeTableFiltersResult
+            <LoantypeTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -300,7 +288,7 @@ const handleDelete = (id) =>{
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row) => (
-                      <SchemeTableRow
+                      <LoantypeTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
@@ -372,16 +360,15 @@ function applyFilter({ inputData, comparator, filters }) {
   });
   inputData = stabilizedThis.map((el) => el[0]);
 
-  // Filter by scheme name if provided
   if (name && name.trim()) {
     inputData = inputData.filter(
       (sch) =>
-        sch.name.toLowerCase().includes(name.toLowerCase()),
+        sch.loanType.toLowerCase().includes(name.toLowerCase()),
     );
   }
 
   if (isActive !== 'all') {
-    inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
+    inputData = inputData.filter((loan) => loan.isActive === (isActive == 'true'));
   }
 
   return inputData;

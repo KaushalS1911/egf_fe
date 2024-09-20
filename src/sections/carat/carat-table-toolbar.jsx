@@ -17,7 +17,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function   SchemeTableToolbar({
+export default function   CaratTableToolbar({
   filters,
   onFilters,
   //
@@ -105,7 +105,7 @@ export default function   SchemeTableToolbar({
   );
 }
 
-SchemeTableToolbar.propTypes = {
+CaratTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

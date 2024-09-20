@@ -6,6 +6,8 @@ import DashboardLayout from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
+import { SettingsPage } from '../../sections/settings/view';
+
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +23,6 @@ const ProductDetailsPage = lazy(() => import('src/pages/dashboard/product/detail
 const ProductListPage = lazy(() => import('src/pages/dashboard/product/list'));
 const ProductCreatePage = lazy(() => import('src/pages/dashboard/product/new'));
 const ProductEditPage = lazy(() => import('src/pages/dashboard/product/edit'));
-
 // ORDER
 const OrderListPage = lazy(() => import('src/pages/dashboard/order/list'));
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
@@ -49,6 +50,14 @@ const EmployeeEditView = lazy(() => import('../../sections/employee/view/employe
 const SchemeListView = lazy(()=>import('../../sections/scheme/view/scheme-list-view'))
 const SchemeCreateView = lazy(() => import('../../sections/scheme/view/scheme-create-view'));
 const SchemeEditView = lazy(()=>import('../../sections/scheme/view/scheme-edit-view'))
+// CARAT
+const CaratListView = lazy(()=> import('../../sections/carat/view/carat-list-view'));
+const CaratCreateView = lazy(()=>import('../../sections/carat/view/carat-create-view'))
+const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view'))
+// LOANTYPE
+const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
+const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
+const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -111,12 +120,29 @@ export const dashboardRoutes = [
         children: [
           { element: <SchemeListView />, index: true },
           { path: 'list', element: <SchemeListView /> },
-          // { path: 'cards', element: <UserCardsPage /> },
-          // { path: 'list', element: <InquiryListView /> },
           { path: 'new', element: <SchemeCreateView /> },
           { path: ':id/edit', element: <SchemeEditView /> },
-          // { path: 'account', element: <UserAccountPage /> },
           { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'carat',
+        children: [
+          { element: <CaratListView/>, index: true },
+          { path: 'list', element: <CaratListView/> },
+          { path: 'new', element: <CaratCreateView/> },
+          { path: ':id/edit', element: <CaratEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'loan',
+        children: [
+          { element: <LoanTypeListView/>, index: true },
+          { path: 'list', element: <LoanTypeListView/> },
+          { path: 'new', element: <LoanTypecreateView/> },
+          { path: ':id/edit', element: <LoanTypeEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
         ],
       },
       {
@@ -215,6 +241,7 @@ export const dashboardRoutes = [
       { path: 'chat', element: <ChatPage /> },
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },
+      { path: 'setting', element: <SettingsPage /> },
     ],
   },
 ];

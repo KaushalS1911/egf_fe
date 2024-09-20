@@ -3,17 +3,17 @@ import { useMemo } from 'react';
 import { fetcher } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
 
-export function useGetScheme() {
+export function useGetCarat() {
   const { user } = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`;
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/carat`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
   const memoizedValue = useMemo(
     () => ({
-      scheme: data?.data || [],
-      schemeLoading: isLoading,
-      schemeError: error,
-      schemeValidating: isValidating,
-      schemeEmpty: !isLoading && !data?.data?.length,
+      carat: data?.data || [],
+      caratLoading: isLoading,
+      caratError: error,
+      caratValidating: isValidating,
+      caratEmpty: !isLoading && !data?.data?.length,
       mutate,
     }),
     [data?.data, error, isLoading, isValidating, mutate]
