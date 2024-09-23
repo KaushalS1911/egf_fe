@@ -103,6 +103,7 @@ export default function EmployeeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleDelete = (id) => {
     axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/employee`, {
       data: {ids: id}

@@ -14,24 +14,24 @@ const options = {
 };
 
 export function useGetEvents() {
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, options);
+  // const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, options);
+  //
+  // const memoizedValue = useMemo(() => {
+  //   const events = data?.events.map((event) => ({
+  //     ...event,
+  //     textColor: event.color,
+  //   }));
+  //
+  //   return {
+  //     events: events || [],
+  //     eventsLoading: isLoading,
+  //     eventsError: error,
+  //     eventsValidating: isValidating,
+  //     eventsEmpty: !isLoading && !data?.events.length,
+  //   };
+  // }, [data?.events, error, isLoading, isValidating]);
 
-  const memoizedValue = useMemo(() => {
-    const events = data?.events.map((event) => ({
-      ...event,
-      textColor: event.color,
-    }));
-
-    return {
-      events: events || [],
-      eventsLoading: isLoading,
-      eventsError: error,
-      eventsValidating: isValidating,
-      eventsEmpty: !isLoading && !data?.events.length,
-    };
-  }, [data?.events, error, isLoading, isValidating]);
-
-  return memoizedValue;
+  return [];
 }
 
 // ----------------------------------------------------------------------
@@ -46,18 +46,18 @@ export async function createEvent(eventData) {
   /**
    * Work in local
    */
-  mutate(
-    URL,
-    (currentData) => {
-      const events = [...currentData.events, eventData];
-
-      return {
-        ...currentData,
-        events,
-      };
-    },
-    false
-  );
+  // mutate(
+  //   URL,
+  //   (currentData) => {
+  //     const events = [...currentData.events, eventData];
+  //
+  //     return {
+  //       ...currentData,
+  //       events,
+  //     };
+  //   },
+  //   false
+  // );
 }
 
 // ----------------------------------------------------------------------
@@ -72,20 +72,20 @@ export async function updateEvent(eventData) {
   /**
    * Work in local
    */
-  mutate(
-    URL,
-    (currentData) => {
-      const events = currentData.events.map((event) =>
-        event.id === eventData.id ? { ...event, ...eventData } : event
-      );
-
-      return {
-        ...currentData,
-        events,
-      };
-    },
-    false
-  );
+  // mutate(
+  //   URL,
+  //   (currentData) => {
+  //     const events = currentData.events.map((event) =>
+  //       event.id === eventData.id ? { ...event, ...eventData } : event
+  //     );
+  //
+  //     return {
+  //       ...currentData,
+  //       events,
+  //     };
+  //   },
+  //   false
+  // );
 }
 
 // ----------------------------------------------------------------------
@@ -100,16 +100,16 @@ export async function deleteEvent(eventId) {
   /**
    * Work in local
    */
-  mutate(
-    URL,
-    (currentData) => {
-      const events = currentData.events.filter((event) => event.id !== eventId);
-
-      return {
-        ...currentData,
-        events,
-      };
-    },
-    false
-  );
+  // mutate(
+  //   URL,
+  //   (currentData) => {
+  //     const events = currentData.events.filter((event) => event.id !== eventId);
+  //
+  //     return {
+  //       ...currentData,
+  //       events,
+  //     };
+  //   },
+  //   false
+  // );
 }

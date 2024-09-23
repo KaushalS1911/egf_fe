@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
         setSession(jwt, jwtRefresh);
         const url = `${import.meta.env.VITE_AUTH_API}/me`;
         const response = await axios.get(url);
-        const user = response?.data?.data;
+        const user = response?.data.data;
         dispatch({
           type: 'INITIAL',
           payload: {

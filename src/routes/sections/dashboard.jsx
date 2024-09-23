@@ -7,6 +7,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 import { SettingsPage } from '../../sections/settings/view';
+import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 
 
 // ----------------------------------------------------------------------
@@ -184,12 +185,9 @@ export const dashboardRoutes = [
         path: 'customer',
         children: [
           { element: <CustomerListView />, index: true },
-          { path: 'profile', element: <UserProfilePage /> },
-          { path: 'cards', element: <UserCardsPage /> },
-          { path: 'list', element: <UserListPage /> },
+          { path: 'list', element: <CustomerListView /> },
           { path: 'new', element: <CustomerCreateView /> },
-          { path: ':id/edit', element: <UserEditPage /> },
-          { path: 'account', element: <UserAccountPage /> },
+          { path: ':id/edit', element: <CustomerEditView /> },
         ],
       },
       {

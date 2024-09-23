@@ -11,9 +11,7 @@ export const USER_STATUS_OPTIONS = [
   { value: 'rejected', label: 'Rejected' },
 ];
 export const CUSTOMER_STATUS_OPTIONS = [
-  { value: 'Active', label: 'Active' },
-  { value: 'In Active', label: 'In Active' },
-  { value: 'Blocked', label: 'Blocked' },
+
 ];
 
 export const _userAbout = {

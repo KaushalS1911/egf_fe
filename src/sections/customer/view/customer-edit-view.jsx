@@ -4,41 +4,42 @@ import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { _userList } from 'src/_mock';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import CustomerNewEditForm from '../customer-new-edit-form';
+import { useGetCustomer } from '../../../api/customer';
+import { useParams } from '../../../routes/hooks';
 
 // ----------------------------------------------------------------------
 
-export default function CustomerEditView({ id }) {
+export default function CustomerEditView() {
+  const { customer } = useGetCustomer();
   const settings = useSettingsContext();
-
-  const currentUser = _userList.find((user) => user.id === id);
+  const { id } = useParams();
+  const currentCustomer = customer?.find((user) => user?._id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading='Edit'
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'User',
-            href: paths.dashboard.user.root,
+            name: 'Customer',
+            href: paths.dashboard.customer.root,
           },
-          { name: currentUser?.name },
+          { name: currentCustomer?.firstName },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <CustomerNewEditForm currentUser={currentUser} />
+      <CustomerNewEditForm currentCustomer={currentCustomer} />
     </Container>
   );
 }
