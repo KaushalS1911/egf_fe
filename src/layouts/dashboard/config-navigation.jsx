@@ -124,12 +124,7 @@ export function useNavData() {
             path: paths.dashboard.carat.root,
             icon: ICONS.user,
           },
-          // LOANTYPE
-          {
-            title: t('loan type'),
-            path: paths.dashboard.loan.root,
-            icon: ICONS.user,
-          },
+
           // PROPERTY
           {
             title: t('property'),
