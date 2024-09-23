@@ -189,6 +189,15 @@ export const paths = {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },
     },
+    penalty: {
+      root: `${ROOTS.DASHBOARD}/penalty`,
+      new: `${ROOTS.DASHBOARD}/penalty/new`,
+      list: `${ROOTS.DASHBOARD}/penalty/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/penalty/${id}/edit`,
+    },
     customer: {
       root: `${ROOTS.DASHBOARD}/customer`,
       new: `${ROOTS.DASHBOARD}/customer/new`,

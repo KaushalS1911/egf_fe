@@ -11,7 +11,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function LoantypeTableFiltersResult({
+export default function PenaltyTableFiltersResult({
   filters,
   onFilters,
   //
@@ -55,7 +55,7 @@ export default function LoantypeTableFiltersResult({
 
 
         {!!filters.name && (
-          <Block label="Loan Type :">
+          <Block label="Penalty Name:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
@@ -72,7 +72,7 @@ export default function LoantypeTableFiltersResult({
   );
 }
 
-LoantypeTableFiltersResult.propTypes = {
+PenaltyTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
