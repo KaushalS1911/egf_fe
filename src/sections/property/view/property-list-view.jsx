@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import {useState, useCallback} from 'react';
+import { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -8,19 +8,19 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import axios from 'axios';
-import {paths} from 'src/routes/paths';
-import {useRouter} from 'src/routes/hooks';
-import {RouterLink} from 'src/routes/components';
 
-import {useBoolean} from 'src/hooks/use-boolean';
-import {useGetInquiry} from 'src/api/inquiry'
-import {_roles, _userList, USER_STATUS_OPTIONS} from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+import { RouterLink } from 'src/routes/components';
+
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import {useSnackbar} from 'src/components/snackbar';
-import {ConfirmDialog} from 'src/components/custom-dialog';
-import {useSettingsContext} from 'src/components/settings';
+import { useSnackbar } from 'src/components/snackbar';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -32,58 +32,71 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import {useAuthContext} from 'src/auth/hooks';
-import InquiryTableRow from '../inquiry-table-row';
-import InquiryTableToolbar from '../inquiry-table-toolbar';
-import InquiryTableFiltersResult from '../inquiry-table-filters-result';
-import {isAfter, isBetween} from '../../../utils/format-time';
+
+
+import { isAfter, isBetween } from '../../../utils/format-time';
+import PropertyTableToolbar from '../property-table-toolbar';
+import PropertyTableFiltersResult from '../property-table-filters-result';
+import PropertyTableRow from '../property-table-row';
+import { Box } from '@mui/material';
+import Label from '../../../components/label';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import { alpha } from '@mui/material/styles';
+import axios from 'axios';
+import { useAuthContext } from '../../../auth/hooks';
+import { useGetAllProperty } from '../../../api/property';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{value: 'all', label: 'All'}, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
+  value: 'false',
+  label: 'Non Active',
+}];
 
 const TABLE_HEAD = [
-  {id: 'date', label: 'Date'},
-  {id: 'name', label: 'Name'},
-  {id: 'phoneNumber', label: 'Phone Number'},
-  {id: 'email', label: 'Email'},
-  {id: 'inquiry for', label: 'Inquiry for'},
-  {id: 'remark', label: 'Remark'},
-  {id: '', width: 88},
+  { id: 'property', label: 'Property' },
+  { id: 'loanType', label: 'Loan Type' },
+  { id: 'remark', label: 'Remark' },
+  { id: 'active', label: 'Active' },
+  { id: '', width: 88 },
 ];
+
 
 const defaultFilters = {
   name: '',
-  status: 'all',
-  startDate: null,
-  endDate: null,
+  isActive: 'all',
 };
 // ----------------------------------------------------------------------
 
-export default function InquiryListView() {
-  const {enqueueSnackbar} = useSnackbar();
-  const {inquiry, mutate} = useGetInquiry();
+export default function PropertyListView() {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { user } = useAuthContext();
   const table = useTable();
-  const {user} = useAuthContext();
+
   const settings = useSettingsContext();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(inquiry);
+  const {property,mutate} = useGetAllProperty()
+
+  const [tableData, setTableData] = useState(property);
 
   const [filters, setFilters] = useState(defaultFilters);
 
+
   const dataFiltered = applyFilter({
-    inputData: inquiry,
+    inputData: property,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
+    table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -91,48 +104,46 @@ export default function InquiryListView() {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-  const dateError = isAfter(filters.startDate, filters.endDate);
-  const handleFilters = useCallback(
+  const
+    handleFilters = useCallback(
     (name, value) => {
+      console.log("name",value)
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
         [name]: value,
       }));
     },
-    [table]
+    [table],
   );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
-  const handleDelete = (id) => {
-    axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/inquiry`, {
-      data: {ids: id}
-    }).then((res) => {
-      enqueueSnackbar(res.data.message);
-      confirm.onFalse();
+ const handleDelete =async (id) =>{
+   try {
+   const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
       mutate();
-    }).catch((err) => enqueueSnackbar("Failed to delete Inquiry"));
-  }
+      confirm.onFalse();
+      enqueueSnackbar(res.data.message)
+   } catch (error){
+      enqueueSnackbar("Failed to Delete Property")
 
+   }
+}
   const handleDeleteRow = useCallback(
     (id) => {
-      if (id) {
-        handleDelete([id]);
-        setTableData(deleteRow);
+    handleDelete([id])
+      setTableData(deleteRow);
 
-        table.onUpdatePageDeleteRow(dataInPage.length);
-      }
+      table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage.length, enqueueSnackbar, table, tableData],
   );
-
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = inquiry.filter((row) => table.selected.includes(row._id));
-    const deleteIds = deleteRows.map((row) => row._id);
-    handleDelete(deleteIds)
+    const deleteRows = property.filter((row) => table.selected.includes(row._id));
+     const deleteIds = deleteRows.map((row) => row._id);
+     handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -143,60 +154,96 @@ export default function InquiryListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.inquiry.edit(id));
+      router.push(paths.dashboard.property.edit(id));
     },
-    [router]
+    [router],
   );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
-      handleFilters('status', newValue);
+      handleFilters('isActive', newValue);
     },
-    [handleFilters]
+    [handleFilters],
   );
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Inquiry"
+          heading='Property List'
           links={[
-            {name: 'Dashboard', href: paths.dashboard.root},
-            {name: 'Masters', href: paths.dashboard.inquiry.root},
-            {name: 'List'},
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Property', href: paths.dashboard.property.root },
+            { name: 'List' },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.inquiry.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line"/>}
-            >
-              New Inquiry
-            </Button>
+            <Box>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.property.new}
+                variant='contained'
+                startIcon={<Iconify icon='mingcute:add-line' />}
+              >
+                Create Property
+              </Button>
+            </Box>
           }
           sx={{
-            mb: {xs: 3, md: 5},
+            mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
-
-          <InquiryTableToolbar
-            filters={filters} onFilters={handleFilters} dateError={dateError}
+          <Tabs
+            value={filters.isActive}
+            onChange={handleFilterStatus}
+            sx={{
+              px: 2.5,
+              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+            }}
+          >
+            {STATUS_OPTIONS.map((tab) => (
+              <Tab
+                key={tab.value}
+                iconPosition='end'
+                value={tab.value}
+                label={tab.label}
+                icon={
+                  <>
+                    <Label
+                      style={{ margin: '5px' }}
+                      variant={
+                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'
+                      }
+                      color={
+                        (tab.value == 'true' && 'success') ||
+                        (tab.value == 'false' && 'error') ||
+                        'default'
+                      }
+                    >
+                      {['false','true'].includes(tab.value)
+                        ? property.filter((emp) => String(emp.isActive) == tab.value).length
+                        : property.length}
+                    </Label>
+                  </>
+                }
+              />
+            ))}
+          </Tabs>
+          <PropertyTableToolbar
+            filters={filters} onFilters={handleFilters}
           />
 
-          {canReset && (
-            <InquiryTableFiltersResult
+         {canReset && (
+            <PropertyTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
               results={dataFiltered.length}
-              sx={{p: 2.5, pt: 0}}
+              sx={{ p: 2.5, pt: 0 }}
             />
           )}
 
-          <TableContainer sx={{position: 'relative', overflow: 'unset'}}>
+          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -204,20 +251,20 @@ export default function InquiryListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id)
+                  dataFiltered.map((row) => row.id),
                 )
               }
               action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold"/>
+                <Tooltip title='Delete'>
+                  <IconButton color='primary' onClick={confirm.onTrue}>
+                    <Iconify icon='solar:trash-bin-trash-bold' />
                   </IconButton>
                 </Tooltip>
               }
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{minWidth: 960}}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -228,7 +275,7 @@ export default function InquiryListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row._id)
+                      dataFiltered.map((row) => row._id),
                     )
                   }
                 />
@@ -237,10 +284,10 @@ export default function InquiryListView() {
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
+                      table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row) => (
-                      <InquiryTableRow
+                      <PropertyTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
@@ -255,7 +302,7 @@ export default function InquiryListView() {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
 
-                  <TableNoData notFound={notFound}/>
+                  <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -267,7 +314,6 @@ export default function InquiryListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
@@ -277,7 +323,7 @@ export default function InquiryListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title='Delete'
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -285,8 +331,8 @@ export default function InquiryListView() {
         }
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -298,12 +344,13 @@ export default function InquiryListView() {
       />
     </>
   );
-}
+};
 
 // ----------------------------------------------------------------------
-function applyFilter({inputData, comparator, filters, dateError}) {
-  const {startDate, endDate, status, name} = filters;
+function applyFilter({ inputData, comparator, filters }) {
+  const { isActive, name } = filters;
 
+  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -314,18 +361,15 @@ function applyFilter({inputData, comparator, filters, dateError}) {
 
   if (name && name.trim()) {
     inputData = inputData.filter(
-      (inq) =>
-        inq.firstName.toLowerCase().includes(name.toLowerCase()) ||
-        inq.lastName.toLowerCase().includes(name.toLowerCase()) ||
-        inq.contact.toLowerCase().includes(name)
+      (sch) =>
+        sch.propertyType.toLowerCase().includes(name.toLowerCase()),
     );
   }
 
-  if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((order) =>
-      isBetween(new Date(order.date), startDate, endDate)
-    );
+  if (isActive !== 'all') {
+    inputData = inputData.filter((prop) => prop.isActive === (isActive == 'true'));
   }
 
   return inputData;
 }
+

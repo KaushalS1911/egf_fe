@@ -4,16 +4,17 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import { useGetConfigs } from 'src/api/config';
 import defaultLogo from 'src/assets/logo/Group 45.png';
-import { useGetCompanyDetails } from '../../api/company_details';
+// import { useGetCompanyDetails } from '../../api/company_details';
 // ----------------------------------------------------------------------
 const Logo = forwardRef(({ disabledLink = false, navWidth, sx, ...other }, ref) => {
 
-  const { companyDetail } = useGetCompanyDetails();
-  const [company, setCompany] = useState({});
-  useEffect(() => {
-    setCompany(companyDetail);
-  }, [companyDetail]);
-  const logo1 = company?.logo_url ? `${company?.logo_url}` : defaultLogo;
+  // const { companyDetail } = useGetCompanyDetails();
+  // const [company, setCompany] = useState({});
+  // useEffect(() => {
+  //   setCompany(companyDetail);
+  // }, [companyDetail]);
+  // const logo1 = company?.logo_url ? `${company?.logo_url}` : defaultLogo;
+  const logo1 = defaultLogo;
   const logo = (
     <Box
       ref={ref}

@@ -130,6 +130,12 @@ export function useNavData() {
             path: paths.dashboard.loan.root,
             icon: ICONS.user,
           },
+          // PROPERTY
+          {
+            title: t('property'),
+            path: paths.dashboard.property.root,
+            icon: ICONS.user,
+          },
           // PRODUCT
           {
             title: t('product'),
