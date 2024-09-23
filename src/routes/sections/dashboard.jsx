@@ -50,14 +50,11 @@ const EmployeeEditView = lazy(() => import('../../sections/employee/view/employe
 const SchemeListView = lazy(()=>import('../../sections/scheme/view/scheme-list-view'))
 const SchemeCreateView = lazy(() => import('../../sections/scheme/view/scheme-create-view'));
 const SchemeEditView = lazy(()=>import('../../sections/scheme/view/scheme-edit-view'))
+const GoldPriceListView = lazy(()=>import('../../sections/scheme/goldprice/goldprice-list-view'))
 // CARAT
 const CaratListView = lazy(()=> import('../../sections/carat/view/carat-list-view'));
 const CaratCreateView = lazy(()=>import('../../sections/carat/view/carat-create-view'))
 const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view'))
-// LOANTYPE
-const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
-const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
-const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
@@ -125,6 +122,7 @@ export const dashboardRoutes = [
         children: [
           { element: <SchemeListView />, index: true },
           { path: 'list', element: <SchemeListView /> },
+          { path: 'goldpricelist', element: <GoldPriceListView /> },
           { path: 'new', element: <SchemeCreateView /> },
           { path: ':id/edit', element: <SchemeEditView /> },
           { path: ':id/edit', element: <InquiryEditView /> },
@@ -140,16 +138,7 @@ export const dashboardRoutes = [
           // { path: ':id/edit', element: <InquiryEditView /> },
         ],
       },
-      {
-        path: 'loan',
-        children: [
-          { element: <LoanTypeListView/>, index: true },
-          { path: 'list', element: <LoanTypeListView/> },
-          { path: 'new', element: <LoanTypecreateView/> },
-          { path: ':id/edit', element: <LoanTypeEditView /> },
-          // { path: ':id/edit', element: <InquiryEditView /> },
-        ],
-      },
+
       {
         path: 'penalty',
         children: [

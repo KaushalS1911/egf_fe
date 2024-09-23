@@ -1,29 +1,33 @@
 import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import ListItemText from '@mui/material/ListItemText';
+
 import { useBoolean } from 'src/hooks/use-boolean';
+
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { TextField } from '@mui/material';
 
 
 // ----------------------------------------------------------------------
 
-export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const {name,ratePerGram,interestRate,valuation,interestPeriod,renewalTime,minLoanTime,schemeType,isActive} = row;
+export default function GoldpriceTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow , goldRate}) {
+  const {name,ratePerGram,interestRate,valuation} = row;
 
   const confirm = useBoolean();
 
-  const quickEdit = useBoolean();
 
   const popover = usePopover();
-
   return (
     <>
       <TableRow hover selected={selected}>
@@ -32,28 +36,11 @@ export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, 
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ratePerGram}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuation}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestPeriod}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{renewalTime}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{minLoanTime}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeType}</TableCell>
-        <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (isActive == true && 'success' ) ||
-              (isActive == false && 'error') ||
-              'default'
-            }
-          >
-            {isActive?"Yes":"No"}
-          </Label>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <TextField sx={{ whiteSpace: 'nowrap' , " input" : { height: 0 }}} value={goldRate ?  parseFloat(goldRate) * parseFloat(interestRate)/100 : 0}></TextField>
         </TableCell>
-
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
           {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
@@ -112,7 +99,7 @@ export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, 
   );
 }
 
-SchemeTableRow.propTypes = {
+GoldpriceTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

@@ -34,9 +34,10 @@ import {
 } from 'src/components/table';
 
 
-import LoantypeTableToolbar from '../loantype-table-toolbar';
-import LoantypeTableFiltersResult from '../loantype-table-filters-result';
-import LoantypeTableRow from '../loantype-table-row';
+import { isAfter, isBetween } from '../../../utils/format-time';
+import SchemeTableToolbar from '../scheme-table-toolbar';
+import SchemeTableFiltersResult from '../scheme-table-filters-result';
+import SchemeTableRow from '../scheme-table-row';
 import { Box, CircularProgress } from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
@@ -46,35 +47,33 @@ import { valueToPercent } from '@mui/material/Slider/useSlider';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetCarat } from '../../../api/carat';
-import { useGetLoan } from '../../../api/loantype';
+import GoldpriceTableRow from './goldprice-table-row';
+import { useGetConfigs } from '../../../api/config';
+import GoldpriceTableToolbar from './goldprice-table-toolbar';
+import Stack from '@mui/material/Stack';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-  value: 'false',
-  label: 'Non Active',
-}];
-
 const TABLE_HEAD = [
-  { id: 'loan type name', label: 'Loan Type Name' },
-  { id: 'remarks', label: 'Remarks' },
-  { id: 'active', label: 'Active' },
+  { id: 'scheme name', label: 'Scheme Name' },
+  { id: 'interest rate', label: 'Interest Rate' },
+  { id: 'valuation per%', label: 'Valuation per%' },
+  { id: 'rate per gram', label: 'Rate per Gram' },
   { id: '', width: 88 },
 ];
 
+// ----------------------------------------------------------------------
 
+export default function GoldpriceListView() {
+  const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthContext();
+  const table = useTable();
+  const {configs} = useGetConfigs()
 const defaultFilters = {
   name: '',
   isActive: 'all',
 };
-// ----------------------------------------------------------------------
-
-export default function LoantypeListView() {
-  const { enqueueSnackbar } = useSnackbar();
-
-  const { user } = useAuthContext();
-  const table = useTable();
 
   const settings = useSettingsContext();
 
@@ -82,15 +81,15 @@ export default function LoantypeListView() {
 
   const confirm = useBoolean();
 
-  const {loan,mutate} = useGetLoan()
+  const {scheme,mutate} = useGetScheme()
 
-  const [tableData, setTableData] = useState(loan);
+  const [tableData, setTableData] = useState(scheme);
 
   const [filters, setFilters] = useState(defaultFilters);
 
 
   const dataFiltered = applyFilter({
-    inputData: loan,
+    inputData: scheme,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -108,7 +107,6 @@ export default function LoantypeListView() {
   const
     handleFilters = useCallback(
     (name, value) => {
-      console.log("name",value)
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -121,16 +119,13 @@ export default function LoantypeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
- const handleDelete =async (id) =>{
-   try {
-   const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loan/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
+const handleDelete = (id) =>{
+  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
+    .then((res)=> {
       mutate();
       confirm.onFalse();
       enqueueSnackbar(res.data.message)
-   } catch (error){
-      enqueueSnackbar("Failed to Delete Loan Type ")
-
-   }
+    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
 }
   const handleDeleteRow = useCallback(
     (id) => {
@@ -142,8 +137,9 @@ export default function LoantypeListView() {
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = loan.filter((row) => table.selected.includes(row._id));
+    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
      const deleteIds = deleteRows.map((row) => row._id);
+    console.log("yhbjuyh",deleteIds);
      handleDelete(deleteIds)
     setTableData(deleteRows);
 
@@ -155,7 +151,7 @@ export default function LoantypeListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.loan.edit(id));
+      router.push(paths.dashboard.scheme.edit(id));
     },
     [router],
   );
@@ -167,82 +163,36 @@ export default function LoantypeListView() {
     [handleFilters],
   );
 
+  const handleSave = async ()=>{
+    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.interestRate) * parseFloat(filters.name)/100}));
+    try {
+    const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
+      enqueueSnackbar(res?.data.message);
+    router.push(paths.dashboard.scheme.list);
+    // const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`,payload)
+    }
+    catch (error) {
+      enqueueSnackbar("");
+    }
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Loan Type List'
+          heading='Scheme List'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Loan Type', href: paths.dashboard.loan.root },
+            { name: 'Scheme', href: paths.dashboard.scheme.root },
             { name: 'List' },
           ]}
-          action={
-            <Box>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.loan.new}
-                variant='contained'
-                startIcon={<Iconify icon='mingcute:add-line' />}
-              >
-                Create Loan Type
-              </Button>
-            </Box>
-          }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
-          <Tabs
-            value={filters.isActive}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition='end'
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <>
-                    <Label
-                      style={{ margin: '5px' }}
-                      variant={
-                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'
-                      }
-                      color={
-                        (tab.value == 'true' && 'success') ||
-                        (tab.value == 'false' && 'error') ||
-                        'default'
-                      }
-                    >
-                      {['false','true'].includes(tab.value)
-                        ? loan.filter((emp) => String(emp.isActive) == tab.value).length
-                        : loan.length}
-                    </Label>
-                  </>
-                }
-              />
-            ))}
-          </Tabs>
-          <LoantypeTableToolbar
-            filters={filters} onFilters={handleFilters}
+          <GoldpriceTableToolbar
+            filters={filters} onFilters={handleFilters} goldRate={configs?.goldRate}
           />
-
-         {canReset && (
-            <LoantypeTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              onResetFilters={handleResetFilters}
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -288,7 +238,8 @@ export default function LoantypeListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row) => (
-                      <LoantypeTableRow
+                      <GoldpriceTableRow
+                        goldRate = {filters.name}
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
@@ -319,6 +270,11 @@ export default function LoantypeListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
+        <Stack  alignItems="flex-end" sx={{mt:3}}>
+          <LoadingButton type='submit' variant='contained' onClick={handleSave}>
+            Save
+          </LoadingButton>
+        </Stack>
       </Container>
 
       <ConfirmDialog
@@ -342,7 +298,10 @@ export default function LoantypeListView() {
             Delete
           </Button>
         }
+
       />
+
+
     </>
   );
 };
@@ -360,16 +319,7 @@ function applyFilter({ inputData, comparator, filters }) {
   });
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name && name.trim()) {
-    inputData = inputData.filter(
-      (sch) =>
-        sch.loanType.toLowerCase().includes(name.toLowerCase()),
-    );
-  }
-
-  if (isActive !== 'all') {
-    inputData = inputData.filter((loan) => loan.isActive === (isActive == 'true'));
-  }
+  // Filter by scheme name if provided
 
   return inputData;
 }

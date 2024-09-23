@@ -50,7 +50,7 @@ export default function SplashScreen({ sx, ...other }) {
             repeat: Infinity,
           }}
         >
-          <Logo disabledLink sx={{ width: 64, height: 64 }} />
+          <Logo disabledLink  />
         </m.div>
 
         <Box
@@ -66,7 +66,7 @@ export default function SplashScreen({ sx, ...other }) {
             width: 100,
             height: 100,
             position: 'absolute',
-            border: (theme) => `solid 3px ${alpha(theme.palette.primary.dark, 0.24)}`,
+            border: (theme) => `solid 3px orange`,
           }}
         />
 
@@ -87,7 +87,7 @@ export default function SplashScreen({ sx, ...other }) {
             width: 120,
             height: 120,
             position: 'absolute',
-            border: (theme) => `solid 8px ${alpha(theme.palette.primary.dark, 0.24)}`,
+            border: (theme) => `solid 8px orange`,
           }}
         />
       </>
