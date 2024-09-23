@@ -16,15 +16,16 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { fDate } from '../../utils/format-time';
+import { Box } from '@mui/material';
 
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { user , joiningDate} = row;
-  const {avatar_url , contact , firstName , lastName , middleName , role , email } = user;
+export default function PropertyTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+  const {propertyType,loanType,remark,isActive,isQtyEdit} = row;
+
   const confirm = useBoolean();
+
 
   const popover = usePopover();
 
@@ -35,29 +36,35 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-          <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar alt={avatar_url} src={avatar_url} sx={{ mr: 2 }} />
-
-            <ListItemText
-              primary={`${firstName} ${middleName} ${lastName}`}
-              secondary={email}
-              primaryTypographyProps={{ typography: 'body2' }}
-              secondaryTypographyProps={{
-                component: 'span',
-                color: 'text.disabled',
-              }}
-            />
-          </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{propertyType}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanType}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark ? remark : "-"}</TableCell>
+        <TableCell>
+          <Label
+            variant="soft"
+            color={
+              (isActive == true && 'success' ) ||
+              (isActive == false && 'error') ||
+              'default'
+            }
+          >
+            {isActive?"Yes":"No"}
+          </Label>
+        </TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
+          {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
+          {/*    <Iconify icon="solar:pen-bold" />*/}
+          {/*  </IconButton>*/}
+          {/*</Tooltip>*/}
+
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
+
 
 
       <CustomPopover
@@ -77,15 +84,16 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
           Delete
         </MenuItem>
 
+        {isQtyEdit &&
         <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:pen-bold" />
+          <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
 
       <ConfirmDialog
@@ -103,7 +111,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
   );
 }
 
-EmployeeTableRow.propTypes = {
+PropertyTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

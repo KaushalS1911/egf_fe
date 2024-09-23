@@ -9,7 +9,6 @@ import { CustomerCreateView, CustomerListView } from '../../sections/customer/vi
 import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 
-
 // ----------------------------------------------------------------------
 
 // OVERVIEW
@@ -59,6 +58,11 @@ const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view
 const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
 const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
 const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
+//PROPERTY
+const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
+const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
+const  PropertyListView = lazy(()=>import('../../sections/property/view/property-list-view'))
+
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
@@ -148,6 +152,16 @@ export const dashboardRoutes = [
           { path: 'list', element: <LoanTypeListView/> },
           { path: 'new', element: <LoanTypecreateView/> },
           { path: ':id/edit', element: <LoanTypeEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'property',
+        children: [
+          { element: <PropertyListView />, index: true },
+          { path: 'list', element: <PropertyListView /> },
+          { path: 'new', element: <PropertyCreateView /> },
+          { path: ':id/edit', element: <PropertyEditView /> },
           // { path: ':id/edit', element: <InquiryEditView /> },
         ],
       },

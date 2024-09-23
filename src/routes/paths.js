@@ -177,6 +177,18 @@ export const paths = {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },
     },
+    property: {
+      root: `${ROOTS.DASHBOARD}/property`,
+      new: `${ROOTS.DASHBOARD}/property/new`,
+      list: `${ROOTS.DASHBOARD}/property/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/property/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
     penalty: {
       root: `${ROOTS.DASHBOARD}/penalty`,
       new: `${ROOTS.DASHBOARD}/penalty/new`,

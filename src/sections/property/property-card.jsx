@@ -20,7 +20,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserCard({ user }) {
+export default function PropertyCard({ user }) {
   const theme = useTheme();
 
   const { name, coverUrl, role, totalFollowers, totalPosts, avatarUrl, totalFollowing } = user;
@@ -119,6 +119,6 @@ export default function UserCard({ user }) {
   );
 }
 
-UserCard.propTypes = {
+PropertyCard.propTypes = {
   user: PropTypes.object,
 };

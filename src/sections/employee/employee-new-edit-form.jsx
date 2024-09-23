@@ -25,6 +25,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +33,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   const router = useRouter();
   const allUser = useGetAllUser();
   const { user } = useAuthContext();
+  const { configs} = useGetConfigs();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewEmployeeSchema = Yup.object().shape({
@@ -83,14 +85,14 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     panCard: currentEmployee?.panCard || '',
     aadharCard: currentEmployee?.aadharCard || '',
     contact: currentEmployee?.user.contact || '',
-    dob: new Date(currentEmployee?.dob) || '',
+    dob: new Date(currentEmployee?.dob) || new  Date(),
     remark: currentEmployee?.remark || '',
     role: currentEmployee?.user.role || '',
     reportingTo: currentEmployee?.reportingTo || null,
     email: currentEmployee?.user.email || '',
     password: '',
-    joiningDate: new Date(currentEmployee?.joiningDate) || '',
-    leaveDate: new Date(currentEmployee?.leaveDate) || '',
+    joiningDate: new Date(currentEmployee?.joiningDate) || new  Date(),
+    leaveDate: new Date(currentEmployee?.leaveDate) || new  Date(),
     permanentStreet: currentEmployee?.permanentAddress.street || '',
     permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
     permanentCountry: currentEmployee?.permanentAddress.country || '',
@@ -125,7 +127,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
   const onSubmit = handleSubmit(async (data) => {
     let payload;
-
+    console.log(data);
     // Create permanent and temporary address objects
     const permanentAddress = {
       street: data.permanentStreet || '',
@@ -301,14 +303,25 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='role' label='Role' req={'red'} />
-              {/*<RHFTextField name="reportingTo" label="Reporting to" req={"red"}/>*/}
+              <RHFAutocomplete
+                name='role'
+                label='Role'
+                req={'red'}
+                fullWidth
+                options={configs?.roles?.map((item) => item)}
+                getOptionLabel={(option) => option}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
               <RHFAutocomplete
                 name='reportingTo'
                 label='Reporting to'
                 req={'red'}
                 fullWidth
-                options={allUser.user.map((item) => item)}
+                options={allUser?.user?.map((item) => item)}
                 getOptionLabel={(option) => option.firstName + ' ' + option.lastName}
                 renderOption={(props, option) => (
                   <li {...props} key={option} value={option._id}>

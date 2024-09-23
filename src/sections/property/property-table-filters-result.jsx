@@ -8,60 +8,62 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
 import Iconify from 'src/components/iconify';
-import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
-
-
+export default function PropertyTableFiltersResult({
+  filters,
+  onFilters,
+  //
+  onResetFilters,
+  //
+  results,
+  ...other
+}) {
   const handleRemoveKeyword = useCallback(() => {
-    onFilters('username', '');
+    onFilters('name', '');
   }, [onFilters]);
-
-  const handleRemoveService = useCallback(
-    (inputValue) => {
-      const newValue = filters.service.filter((item) => item !== inputValue);
-      onFilters('service', newValue);
-    },
-    [filters.service, onFilters],
-  );
 
   const handleRemoveStatus = useCallback(() => {
-    onFilters('status', 'all');
+    onFilters('isActive', 'all');
   }, [onFilters]);
 
+  const handleRemoveRole = useCallback(
+    (inputValue) => {
+      const newValue = filters.role.filter((item) => item !== inputValue);
+
+      onFilters('role', newValue);
+    },
+    [filters.role, onFilters]
+  );
 
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
-        <Box component='span' sx={{ color: 'text.secondary', ml: 0.25 }}>
+        <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
           results found
         </Box>
       </Box>
-      <Stack flexGrow={1} spacing={1} direction='row' flexWrap='wrap' alignItems='center'>
-        {!!filters.service && (
-          <Block label='Service:'>
-            {filters.service.map((item) => (
-              <Chip
-                key={item}
-                label={item}
-                size='small'
-                onDelete={() => handleRemoveService(item)}
-              />
-            ))}
+
+      <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
+        {filters.isActive !== 'all' && (
+          <Block label="Active">
+            <Chip size="small" label={filters.isActive === "true"?"Active":"Non Active"} onDelete={handleRemoveStatus} />
           </Block>
         )}
-        {!!filters.userName && (
-          <Block label='Keyword:'>
-            <Chip label={filters.userName} size='small' onDelete={handleRemoveKeyword} />
+
+
+        {!!filters.name && (
+          <Block label="Property :">
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
+
         <Button
-          color='error'
+          color="error"
           onClick={onResetFilters}
-          startIcon={<Iconify icon='solar:trash-bin-trash-bold' />}
+          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
           Clear
         </Button>
@@ -70,7 +72,7 @@ export default function EmployeeTableFiltersResult({ filters, onFilters, onReset
   );
 }
 
-EmployeeTableFiltersResult.propTypes = {
+PropertyTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
@@ -83,9 +85,9 @@ function Block({ label, children, sx, ...other }) {
   return (
     <Stack
       component={Paper}
-      variant='outlined'
+      variant="outlined"
       spacing={1}
-      direction='row'
+      direction="row"
       sx={{
         p: 1,
         borderRadius: 1,
@@ -95,10 +97,11 @@ function Block({ label, children, sx, ...other }) {
       }}
       {...other}
     >
-      <Box component='span' sx={{ typography: 'subtitle2' }}>
+      <Box component="span" sx={{ typography: 'subtitle2' }}>
         {label}
       </Box>
-      <Stack spacing={1} direction='row' flexWrap='wrap'>
+
+      <Stack spacing={1} direction="row" flexWrap="wrap">
         {children}
       </Stack>
     </Stack>

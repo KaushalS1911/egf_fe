@@ -103,16 +103,19 @@ export default function EmployeeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
-  const handleDelete = (id) => {
-    axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/employee`, {
-      data: {ids: id}
-    }).then((res) => {
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/employee`, {
+        data: { ids: id },
+      });
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
-    }).catch((err) => enqueueSnackbar("Failed to delete Inquiry"));
-  }
+    } catch (err) {
+      enqueueSnackbar("Failed to delete Employee");
+    }
+  };
+
 
   const handleDeleteRow = useCallback(
     (id) => {
@@ -144,12 +147,6 @@ export default function EmployeeListView() {
     [router]
   );
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
 
   return (
     <>
