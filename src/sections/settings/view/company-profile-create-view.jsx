@@ -7,7 +7,7 @@ import { Stack } from '@mui/system';
 import { LoadingButton } from '@mui/lab';
 import { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useResponsive } from '../../../hooks/use-responsive';
@@ -15,11 +15,16 @@ import Iconify from 'src/components/iconify';
 import { useGetCompanyDetails } from '../../../api/company_details';
 import { ACCOUNT_TYPE_OPTIONS } from '../../../_mock';
 
-const validationSchema = yup.object().shape({
+// Validation schema for personal details
+const personalDetailsSchema = yup.object().shape({
   logo_url: yup.mixed().required('Logo is required'),
   name: yup.string().required('Company Name is required'),
   email: yup.string().email('Invalid email address').required('Email Address is required'),
   contact: yup.string().required('Phone Number is required'),
+});
+
+// Validation schema for bank details
+const bankDetailsSchema = yup.object().shape({
   accountNumber: yup.string().required('Account Number is required'),
   accountType: yup.string().required('Account Type is required'),
   accountHolderName: yup.string().required('Account Holder Name is required'),
@@ -37,42 +42,43 @@ export default function CompanyProfile() {
   const [loading, setLoading] = useState(false);
   const [editingBankDetail, setEditingBankDetail] = useState(null);
 
-  const defaultValues = useMemo(() => ({
-    logo_url: companyDetail?.logo_url || '',
-    name: companyDetail?.name || '',
-    email: companyDetail?.email || '',
-    contact: companyDetail?.contact || '',
-    accountNumber: editingBankDetail?.accountNumber || '',
-    accountType: editingBankDetail?.accountType || '',
-    accountHolderName: editingBankDetail?.accountHolderName || '',
-    bankName: editingBankDetail?.bankName || '',
-    IFSC: editingBankDetail?.IFSC || '',
-    branchName: editingBankDetail?.branchName || '',
-  }), [companyDetail, editingBankDetail]);
-
-  const methods = useForm({
-    defaultValues,
-    resolver: yupResolver(validationSchema),
+  // useForm for personal details
+  const personalDetailsMethods = useForm({
+    defaultValues: {
+      logo_url: companyDetail?.logo_url || '',
+      name: companyDetail?.name || '',
+      email: companyDetail?.email || '',
+      contact: companyDetail?.contact || '',
+    },
+    resolver: yupResolver(personalDetailsSchema),
   });
 
-  const { reset, setValue, handleSubmit } = methods;
+  // useForm for bank details
+  const bankDetailsMethods = useForm({
+    defaultValues: {
+      accountNumber: editingBankDetail?.accountNumber || '',
+      accountType: editingBankDetail?.accountType || '',
+      accountHolderName: editingBankDetail?.accountHolderName || '',
+      bankName: editingBankDetail?.bankName || '',
+      IFSC: editingBankDetail?.IFSC || '',
+      branchName: editingBankDetail?.branchName || '',
+    },
+    resolver: yupResolver(bankDetailsSchema),
+  });
+
+  const { reset: resetPersonalDetails, handleSubmit: handleSubmitPersonalDetails } = personalDetailsMethods;
+  const { reset: resetBankDetails, handleSubmit: handleSubmitBankDetails } = bankDetailsMethods;
 
   useEffect(() => {
     if (companyDetail) {
-      reset({
+      resetPersonalDetails({
         logo_url: companyDetail.logo_url || '',
         name: companyDetail.name || '',
         email: companyDetail.email || '',
         contact: companyDetail.contact || '',
-        accountNumber: editingBankDetail?.accountNumber || '',
-        accountType: editingBankDetail?.accountType || '',
-        accountHolderName: editingBankDetail?.accountHolderName || '',
-        bankName: editingBankDetail?.bankName || '',
-        IFSC: editingBankDetail?.IFSC || '',
-        branchName: editingBankDetail?.branchName || '',
       });
     }
-  }, [companyDetail, editingBankDetail, reset]);
+  }, [companyDetail, resetPersonalDetails]);
 
   const onSubmitPersonalDetails = async (data) => {
     setLoading(true);
@@ -110,7 +116,6 @@ export default function CompanyProfile() {
 
     try {
       const response = await axios.get(URL);
-      mutate();
       const existingBankAccounts = response.data.data.bankAccounts || [];
 
       if (editingBankDetail) {
@@ -124,7 +129,7 @@ export default function CompanyProfile() {
       }
       mutate();
       enqueueSnackbar(editingBankDetail ? 'Bank details updated successfully' : 'Bank details added successfully', { variant: 'success' });
-      reset();
+      resetBankDetails();
       setEditingBankDetail(null);
     } catch (err) {
       console.error('Update error:', err);
@@ -143,20 +148,20 @@ export default function CompanyProfile() {
 
       if (file) {
         setProfilePic(file);
-        setValue('logo_url', newFile, { shouldValidate: true });
+        personalDetailsMethods.setValue('logo_url', newFile, { shouldValidate: true });
       }
     },
-    [setValue],
+    [personalDetailsMethods],
   );
 
   const handleEditBankDetail = (detail) => {
     setEditingBankDetail(detail);
-    setValue('accountNumber', detail.accountNumber || '');
-    setValue('accountType', detail.accountType || '');
-    setValue('accountHolderName', detail.accountHolderName || '');
-    setValue('bankName', detail.bankName || '');
-    setValue('IFSC', detail.IFSC || '');
-    setValue('branchName', detail.branchName || '');
+    bankDetailsMethods.setValue('accountNumber', detail.accountNumber || '');
+    bankDetailsMethods.setValue('accountType', detail.accountType || '');
+    bankDetailsMethods.setValue('accountHolderName', detail.accountHolderName || '');
+    bankDetailsMethods.setValue('bankName', detail.bankName || '');
+    bankDetailsMethods.setValue('IFSC', detail.IFSC || '');
+    bankDetailsMethods.setValue('branchName', detail.branchName || '');
   };
 
   const handleDeleteBankDetail = async (detail) => {
@@ -183,7 +188,8 @@ export default function CompanyProfile() {
 
   return (
     <>
-      <FormProvider methods={methods}>
+      {/* Form for Personal Details */}
+      <FormProvider methods={personalDetailsMethods}>
         <Grid container spacing={3}>
           <Grid item md={4} xs={12}>
             <Card sx={{ pt: 5, px: 3 }}>
@@ -195,13 +201,9 @@ export default function CompanyProfile() {
 
           <Grid item sx={{ my: 'auto' }} xs={12} md={8}>
             <Typography variant='h6' sx={{ mb: 0.5 }}>
-              Comapany Details
-            </Typography>
-            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-              Basic info, profile pic, role, qualification...
+              Company Details
             </Typography>
             <Card>
-              {!mdUp && <Typography variant='h6' sx={{ p: 2 }}>Personal Details</Typography>}
               <Stack spacing={3} sx={{ p: 3 }}>
                 <Box
                   columnGap={2}
@@ -220,85 +222,78 @@ export default function CompanyProfile() {
             </Card>
 
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-              <LoadingButton onClick={handleSubmit(onSubmitPersonalDetails)} variant='contained' loading={loading}>
+              <LoadingButton onClick={handleSubmitPersonalDetails(onSubmitPersonalDetails)} variant='contained'
+                             loading={loading}>
                 Save Personal Details
               </LoadingButton>
             </Box>
           </Grid>
+        </Grid>
+      </FormProvider>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <CardHeader title='Bank Details' />
-              <Typography variant='body2' sx={{ color: 'text.secondary', px: 3 }}>
-                Bank info...
-              </Typography>
-            </Grid>
-            <Grid item md={4} xs={12}>
-              <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
-                <Box display='flex' flexDirection='column' gap={2}>
-                  <RHFTextField name='accountNumber' label='Account Number' />
-                  <RHFAutocomplete
-                    name='accountType'
-                    label='Account Type'
-                    placeholder='Choose Account Type'
-                    options={ACCOUNT_TYPE_OPTIONS}
-                    isOptionEqualToValue={(option, value) => option === value}
-                  />
-                  <RHFTextField name='accountHolderName' label='Account Holder Name' />
-                  <RHFTextField name='bankName' label='Bank Name' />
-                  <RHFTextField name='IFSC' label='IFSC Code' />
-                  <RHFTextField name='branchName' label='Branch Name' />
-                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'end' }}>
-                    <LoadingButton onClick={handleSubmit(onSubmitBankDetails)} variant='contained' loading={loading}>
-                      {editingBankDetail ? 'Update Bank Details' : 'Add Bank Details'}
-                    </LoadingButton>
-                    <LoadingButton
-                      sx={{ margin: '0px 5px' }}
-                      variant='contained'
-                      onClick={() => {
-                        reset({
-                          accountNumber: '',
-                          accountType: '',
-                          accountHolderName: '',
-                          bankName: '',
-                          IFSC: '',
-                          branchName: '',
-                        });
-                        setEditingBankDetail(null);
-                      }}
-                      disabled={loading}
-                    >
-                      Reset
-                    </LoadingButton>
-                  </Box>
-
+      {/* Form for Bank Details */}
+      <FormProvider methods={bankDetailsMethods}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <CardHeader title='Bank Details' />
+            <Typography variant='body2' sx={{ color: 'text.secondary', px: 3 }}>
+              Bank info...
+            </Typography>
+          </Grid>
+          <Grid item md={4} xs={12}>
+            <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
+              <Box display='flex' flexDirection='column' gap={2}>
+                <RHFTextField name='accountNumber' label='Account Number' />
+                <RHFAutocomplete
+                  name='accountType'
+                  label='Account Type'
+                  options={ACCOUNT_TYPE_OPTIONS}
+                  isOptionEqualToValue={(option, value) => option === value}
+                />
+                <RHFTextField name='accountHolderName' label='Account Holder Name' />
+                <RHFTextField name='bankName' label='Bank Name' />
+                <RHFTextField name='IFSC' label='IFSC Code' />
+                <RHFTextField name='branchName' label='Branch Name' />
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'end' }}>
+                  <LoadingButton onClick={handleSubmitBankDetails(onSubmitBankDetails)} variant='contained'
+                                 loading={loading}>
+                    {editingBankDetail ? 'Update Bank Details' : 'Add Bank Details'}
+                  </LoadingButton>
+                  <LoadingButton
+                    sx={{ margin: '0px 5px' }}
+                    variant='contained'
+                    onClick={() => resetBankDetails()}
+                    disabled={loading}
+                  >
+                    Reset
+                  </LoadingButton>
                 </Box>
               </Box>
-            </Grid>
-            <Grid item xs={8}>
-              {companyDetail?.bankAccounts?.map((account) => (
-                <Card sx={{ margin: '10px 0px' }}>
-                  <Stack sx={{ p: 3 }}>
-                    <Box key={account._id}
-                         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant='body2'
-                                  sx={{ fontWeight: '600', fontSize: '17px' }}>{account.bankName}({account.accountType})</Typography>
-                      <Box>
-                        <IconButton onClick={() => handleEditBankDetail(account)}>
-                          <Iconify icon={'eva:edit-fill'} />
-                        </IconButton>
-                        <IconButton onClick={() => handleDeleteBankDetail(account)}>
-                          <Iconify icon={'eva:trash-2-outline'} />
-                        </IconButton>
-                      </Box>
-                    </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={8}>
+            {companyDetail?.bankAccounts?.map((account) => (
+              <Card sx={{ margin: '10px 0px' }} key={account._id}>
+                <Stack sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant='body2' sx={{ fontWeight: '600', fontSize: '17px' }}>
+                      {account.bankName} ({account.accountType})
+                    </Typography>
                     <Box>
-                      <Typography variant='body2'>{account.IFSC}</Typography>
+                      <IconButton onClick={() => handleEditBankDetail(account)}>
+                        <Iconify icon={'eva:edit-fill'} />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteBankDetail(account)}>
+                        <Iconify icon={'eva:trash-2-outline'} />
+                      </IconButton>
                     </Box>
-                  </Stack>
-                </Card>
-              ))}
-            </Grid>
+                  </Box>
+                  <Box>
+                    <Typography variant='body2'>{account.IFSC}</Typography>
+                  </Box>
+                </Stack>
+              </Card>
+            ))}
           </Grid>
         </Grid>
       </FormProvider>

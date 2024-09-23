@@ -1,33 +1,45 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import {useMemo} from 'react';
+import { useMemo, useState } from 'react';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
 import Typography from '@mui/material/Typography';
-import LoadivngButton from '@mui/lab/LoadingButton';
 import {useAuthContext} from 'src/auth/hooks';
 import {paths} from 'src/routes/paths';
 import {useRouter} from 'src/routes/hooks';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {useSnackbar} from 'src/components/snackbar';
 import FormProvider, {
+  RHFAutocomplete,
   RHFTextField,
 } from 'src/components/hook-form';
+
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import { useGetLoan } from '../../api/loantype';
 
 // ----------------------------------------------------------------------
 
 export default function InquiryNewEditForm({currentInquiry}) {
   const router = useRouter();
   const {user} = useAuthContext();
+
   const {enqueueSnackbar} = useSnackbar();
+  const {loan} = useGetLoan();
+
+  function checkInquiryFor(val){
+    const isLoanValue = loan.find((item) => item.loanType === val);
+    if(isLoanValue){
+      return false;
+    } else{
+      return true;
+    }
+  }
 
   const NewUserSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
@@ -46,9 +58,9 @@ export default function InquiryNewEditForm({currentInquiry}) {
       lastName: currentInquiry?.lastName || '',
       contact: currentInquiry?.contact || '',
       email: currentInquiry?.email || '',
+      other: checkInquiryFor(currentInquiry?.inquiryFor) ? currentInquiry?.inquiryFor : null || '',
       date: new Date(currentInquiry?.date) || '',
-      inquiryFor: currentInquiry?.inquiryFor || '',
-      // other: currentInquiry?.other || '',
+      inquiryFor: (currentInquiry && checkInquiryFor(currentInquiry?.inquiryFor) ? 'Other' : currentInquiry?.inquiryFor ) || '',
       remark: currentInquiry?.remark || ''
     }),
     [currentInquiry]
@@ -68,15 +80,24 @@ export default function InquiryNewEditForm({currentInquiry}) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    const payload = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      contact: data.contact,
+      email: data.email,
+      date: data.date,
+      inquiryFor: data.inquiryFor === "Other" ? data.other : data.inquiryFor,
+      remark: data.remark
+    }
     try {
       if (currentInquiry) {
-        axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
+        axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`, payload).then((res) => {
           enqueueSnackbar(res?.data.message);
           router.push(paths.dashboard.inquiry.list)
           reset();
         }).catch((err) => console.log(err));
       } else {
-        axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
+        axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?branch=66ea5ebb0f0bdc8062c13a64`, payload).then((res) => {
           enqueueSnackbar(res?.data.message);
           router.push(paths.dashboard.inquiry.list)
           reset();
@@ -134,9 +155,23 @@ export default function InquiryNewEditForm({currentInquiry}) {
                   />
                 )}
               />
-
-              <RHFTextField name="inquiryFor" label="Inquiry For" req={"red"}/>
+              <RHFAutocomplete
+                name="inquiryFor"
+                label={"Inquiry For"}
+                autoHighlight
+                options={[...loan,{loanType: "Other"}].map((option) => option.loanType)}
+                getOptionLabel={(option) => option}
+                req={"red"}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
+              {
+                (watch('inquiryFor') === "Other") &&
               <RHFTextField name="other" label="Other" req={"red"}/>
+              }
               <RHFTextField name="remark" label="Remark" req={"red"}/>
             </Box>
 

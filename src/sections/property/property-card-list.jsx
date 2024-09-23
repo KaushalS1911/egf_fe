@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
 
-import UserCard from './user-card';
+import PropertyCard from './property-card';
 
 // ----------------------------------------------------------------------
 
-export default function UserCardList({ users }) {
+export default function PropertyCardList({ users }) {
   return (
     <Box
       gap={3}
@@ -18,12 +18,12 @@ export default function UserCardList({ users }) {
       }}
     >
       {users.map((user) => (
-        <UserCard key={user.id} user={user} />
+        <PropertyCard key={user.id} user={user} />
       ))}
     </Box>
   );
 }
 
-UserCardList.propTypes = {
+PropertyCardList.propTypes = {
   users: PropTypes.array,
 };

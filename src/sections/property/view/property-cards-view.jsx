@@ -10,11 +10,11 @@ import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import UserCardList from '../user-card-list';
+import PropertyCardList from '../property-card-list';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeCardsView() {
+export default function PropertyCardsView() {
   const settings = useSettingsContext();
 
   return (
@@ -39,7 +39,7 @@ export default function EmployeeCardsView() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <UserCardList users={_userCards} />
+      <PropertyCardList users={_userCards} />
     </Container>
   );
 }

@@ -19,7 +19,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles, _userList, CUSTOMER_STATUS_OPTIONS, USER_STATUS_OPTIONS } from 'src/_mock';
+import { _roles } from 'src/_mock';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -42,10 +42,17 @@ import {
 import CustomerTableFiltersResult from '../customer-table-filters-result';
 import CustomerTableToolbar from '../customer-table-toolbar';
 import CustomerTableRow from '../customer-table-row';
+import { useGetCustomer } from '../../../api/customer';
+import axios from 'axios';
+import { useAuthContext } from '../../../auth/hooks';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...CUSTOMER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'Active', label: 'Active' },
+  { value: 'In Active', label: 'In Active' },
+  { value: 'Blocked', label: 'Blocked' }];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
@@ -65,21 +72,17 @@ const defaultFilters = {
 
 export default function CustomerListView() {
   const { enqueueSnackbar } = useSnackbar();
-
   const table = useTable();
-
+  const { user } = useAuthContext();
+  const { customer, mutate } = useGetCustomer();
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
-  const [tableData, setTableData] = useState(_userList);
-
+  const [tableData, setTableData] = useState(customer);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: customer,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -110,25 +113,31 @@ export default function CustomerListView() {
     setFilters(defaultFilters);
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/customer`, {
+        data: { ids: id },
+      });
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
+      mutate();
+    } catch (err) {
+      enqueueSnackbar('Failed to delete Customer');
+    }
+  };
+
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      enqueueSnackbar('Delete success!');
-
-      setTableData(deleteRow);
-
+      handleDelete([id]);
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
-    enqueueSnackbar('Delete success!');
-
-    setTableData(deleteRows);
+    const deleteRows = customer.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds);
 
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
@@ -138,7 +147,7 @@ export default function CustomerListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.user.edit(id));
+      router.push(paths.dashboard.customer.edit(id));
     },
     [router],
   );
@@ -201,9 +210,9 @@ export default function CustomerListView() {
                       'default'
                     }
                   >
-                    {['active', 'pending', 'banned', 'rejected'].includes(tab.value)
-                      ? tableData.filter((user) => user.status === tab.value).length
-                      : tableData.length}
+                    {['Active', 'In Active', 'Blocked'].includes(tab.value)
+                      ? customer.filter((user) => user.status === tab.value).length
+                      : customer.length}
                   </Label>
                 }
               />
@@ -237,7 +246,7 @@ export default function CustomerListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row._id),
                 )
               }
               action={
@@ -261,7 +270,7 @@ export default function CustomerListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row.id),
+                      dataFiltered.map((row) => row._id),
                     )
                   }
                 />
@@ -276,10 +285,10 @@ export default function CustomerListView() {
                       <CustomerTableRow
                         key={row.id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
 
@@ -350,7 +359,7 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1,
+      (user) => (user.firstName + ' ' + user.lastName).toLowerCase().indexOf(name.toLowerCase()) !== -1,
     );
   }
 

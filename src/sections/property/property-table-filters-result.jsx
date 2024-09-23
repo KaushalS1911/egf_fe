@@ -11,21 +11,21 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function CustomerTableFiltersResult({
-                                                     filters,
-                                                     onFilters,
-                                                     //
-                                                     onResetFilters,
-                                                     //
-                                                     results,
-                                                     ...other
-                                                   }) {
+export default function PropertyTableFiltersResult({
+  filters,
+  onFilters,
+  //
+  onResetFilters,
+  //
+  results,
+  ...other
+}) {
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
 
   const handleRemoveStatus = useCallback(() => {
-    onFilters('status', 'all');
+    onFilters('isActive', 'all');
   }, [onFilters]);
 
   const handleRemoveRole = useCallback(
@@ -34,43 +34,36 @@ export default function CustomerTableFiltersResult({
 
       onFilters('role', newValue);
     },
-    [filters.role, onFilters],
+    [filters.role, onFilters]
   );
 
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
-        <Box component='span' sx={{ color: 'text.secondary', ml: 0.25 }}>
+        <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
           results found
         </Box>
       </Box>
 
-      <Stack flexGrow={1} spacing={1} direction='row' flexWrap='wrap' alignItems='center'>
-        {filters.status !== 'all' && (
-          <Block label='Status:'>
-            <Chip size='small' label={filters.status} onDelete={handleRemoveStatus} />
+      <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
+        {filters.isActive !== 'all' && (
+          <Block label="Active">
+            <Chip size="small" label={filters.isActive === "true"?"Active":"Non Active"} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
-        {!!filters.role.length && (
-          <Block label='Role:'>
-            {filters.role.map((item) => (
-              <Chip key={item} label={item} size='small' onDelete={() => handleRemoveRole(item)} />
-            ))}
-          </Block>
-        )}
 
         {!!filters.name && (
-          <Block label='Keyword:'>
-            <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
+          <Block label="Property :">
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
         <Button
-          color='error'
+          color="error"
           onClick={onResetFilters}
-          startIcon={<Iconify icon='solar:trash-bin-trash-bold' />}
+          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
           Clear
         </Button>
@@ -79,7 +72,7 @@ export default function CustomerTableFiltersResult({
   );
 }
 
-CustomerTableFiltersResult.propTypes = {
+PropertyTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
@@ -92,9 +85,9 @@ function Block({ label, children, sx, ...other }) {
   return (
     <Stack
       component={Paper}
-      variant='outlined'
+      variant="outlined"
       spacing={1}
-      direction='row'
+      direction="row"
       sx={{
         p: 1,
         borderRadius: 1,
@@ -104,11 +97,11 @@ function Block({ label, children, sx, ...other }) {
       }}
       {...other}
     >
-      <Box component='span' sx={{ typography: 'subtitle2' }}>
+      <Box component="span" sx={{ typography: 'subtitle2' }}>
         {label}
       </Box>
 
-      <Stack spacing={1} direction='row' flexWrap='wrap'>
+      <Stack spacing={1} direction="row" flexWrap="wrap">
         {children}
       </Stack>
     </Stack>

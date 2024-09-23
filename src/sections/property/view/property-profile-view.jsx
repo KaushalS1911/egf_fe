@@ -15,11 +15,11 @@ import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import CustomerProfileCover from '../customer-cover';
-import CustomerProfileHome from '../customer-home';
-import CustomerProfileFollowers from '../customer-followers';
-import CustomerProfileFriends from '../customer-friends';
-import CustomerProfileGallery from '../customer-gallery';
+import ProfileHome from '../profile-home';
+import ProfileCover from '../profile-cover';
+import ProfileFriends from '../profile-friends';
+import ProfileGallery from '../profile-gallery';
+import ProfileFollowers from '../profile-followers';
 
 // ----------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ const TABS = [
 
 // ----------------------------------------------------------------------
 
-export default function CustomerProfileView() {
+export default function PropertyProfileView() {
   const settings = useSettingsContext();
 
   const { user } = useMockedUser();
@@ -85,8 +85,7 @@ export default function CustomerProfileView() {
           height: 290,
         }}
       >
-
-        <CustomerProfileCover
+        <ProfileCover
           role={_userAbout.role}
           name={user?.displayName}
           avatarUrl={user?.photoURL}
@@ -117,19 +116,19 @@ export default function CustomerProfileView() {
         </Tabs>
       </Card>
 
-      {currentTab === 'profile' && <CustomerProfileHome info={_userAbout} posts={_userFeeds} />}
+      {currentTab === 'profile' && <ProfileHome info={_userAbout} posts={_userFeeds} />}
 
-      {currentTab === 'followers' && <CustomerProfileFollowers followers={_userFollowers} />}
+      {currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
 
       {currentTab === 'friends' && (
-        <CustomerProfileFriends
+        <ProfileFriends
           friends={_userFriends}
           searchFriends={searchFriends}
           onSearchFriends={handleSearchFriends}
         />
       )}
 
-      {currentTab === 'gallery' && <CustomerProfileGallery gallery={_userGallery} />}
+      {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}
     </Container>
   );
 }

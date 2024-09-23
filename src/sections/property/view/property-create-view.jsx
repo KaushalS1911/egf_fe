@@ -5,34 +5,34 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import CustomerNewEditForm from '../customer-new-edit-form';
+import PropertyNewEditForm from '../property-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function CustomerCreateView() {
+export default function PropertyCreateView() {
   const settings = useSettingsContext();
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading='Create a new user'
+        heading="Property"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Customer',
-            href: paths.dashboard.customer.root,
+            name: 'Property List',
+            href: paths.dashboard.property.root,
           },
-          { name: 'New user' },
+          { name: 'Property' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <CustomerNewEditForm />
+      <PropertyNewEditForm />
     </Container>
   );
 }

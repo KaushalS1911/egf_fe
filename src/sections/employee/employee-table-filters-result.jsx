@@ -16,7 +16,7 @@ export default function EmployeeTableFiltersResult({ filters, onFilters, onReset
 
 
   const handleRemoveKeyword = useCallback(() => {
-    onFilters('userName', '');
+    onFilters('username', '');
   }, [onFilters]);
 
   const handleRemoveService = useCallback(
@@ -51,11 +51,6 @@ export default function EmployeeTableFiltersResult({ filters, onFilters, onReset
                 onDelete={() => handleRemoveService(item)}
               />
             ))}
-          </Block>
-        )}
-        {filters.status !== 'all' && (
-          <Block label='Status:'>
-            <Chip size='small' label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
         {!!filters.userName && (

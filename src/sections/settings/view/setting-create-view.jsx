@@ -12,6 +12,7 @@ import PermissionView from './permission-view';
 import Rolescreatepage from './roles-crete-view';
 import BusinessTypeCreteView from './business-type-crete-view';
 import BranchCreateView from './branch-create-view';
+import LoanTypeView from './loan-type-view';
 
 const TABS = [
   {
@@ -43,6 +44,11 @@ const TABS = [
     value: 'Business type',
     label: 'Business type',
     icon: <Iconify icon='material-symbols:add-business' width={24} />,
+  },
+  {
+    value: 'Loan type',
+    label: 'Loan type',
+    icon: <Iconify icon='mdi:cash-sync' width={24} />,
   },
 ];
 
@@ -80,6 +86,7 @@ export default function SettingsPage() {
         {currentTab === 'Roles' && <Rolescreatepage setTab={setCurrentTab} />}
         {currentTab === 'Permission' && <PermissionView />}
         {currentTab === 'Business type' && <BusinessTypeCreteView />}
+        {currentTab === 'Loan type' && <LoanTypeView />}
         {currentTab === 'Branch' && <BranchCreateView />}
       </Container>
     </>

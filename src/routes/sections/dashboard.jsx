@@ -7,7 +7,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 import { SettingsPage } from '../../sections/settings/view';
-
+import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +55,15 @@ const GoldPriceListView = lazy(()=>import('../../sections/scheme/goldprice/goldp
 const CaratListView = lazy(()=> import('../../sections/carat/view/carat-list-view'));
 const CaratCreateView = lazy(()=>import('../../sections/carat/view/carat-create-view'))
 const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view'))
+// LOANTYPE
+const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
+const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
+const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
+//PROPERTY
+const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
+const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
+const  PropertyListView = lazy(()=>import('../../sections/property/view/property-list-view'))
+
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
@@ -140,6 +149,26 @@ export const dashboardRoutes = [
       },
 
       {
+        path: 'loan',
+        children: [
+          { element: <LoanTypeListView/>, index: true },
+          { path: 'list', element: <LoanTypeListView/> },
+          { path: 'new', element: <LoanTypecreateView/> },
+          { path: ':id/edit', element: <LoanTypeEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'property',
+        children: [
+          { element: <PropertyListView />, index: true },
+          { path: 'list', element: <PropertyListView /> },
+          { path: 'new', element: <PropertyCreateView /> },
+          { path: ':id/edit', element: <PropertyEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
         path: 'penalty',
         children: [
           { element: <PenaltyListView/>, index: true },
@@ -173,12 +202,9 @@ export const dashboardRoutes = [
         path: 'customer',
         children: [
           { element: <CustomerListView />, index: true },
-          { path: 'profile', element: <UserProfilePage /> },
-          { path: 'cards', element: <UserCardsPage /> },
-          { path: 'list', element: <UserListPage /> },
+          { path: 'list', element: <CustomerListView /> },
           { path: 'new', element: <CustomerCreateView /> },
-          { path: ':id/edit', element: <UserEditPage /> },
-          { path: 'account', element: <UserAccountPage /> },
+          { path: ':id/edit', element: <CustomerEditView /> },
         ],
       },
       {

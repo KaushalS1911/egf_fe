@@ -22,7 +22,7 @@ import { fDate } from '../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { user, status , joiningDate} = row;
+  const { user , joiningDate} = row;
   const {avatar_url , contact , firstName , lastName , middleName , role , email } = user;
   const confirm = useBoolean();
 
@@ -36,7 +36,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         </TableCell>
 
           <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar alt={firstName} src={avatar_url} sx={{ mr: 2 }} />
+            <Avatar alt={avatar_url} src={avatar_url} sx={{ mr: 2 }} />
 
             <ListItemText
               primary={`${firstName} ${middleName} ${lastName}`}

@@ -3,10 +3,9 @@ import { useMemo } from 'react';
 import { fetcher } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
 
-export function useGetConfigs() {
+export function useGetCustomer() {
   const { user } = useAuthContext();
-
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config`;
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer`;
   const { data, error, isValidating, mutate } = useSWR(URL, fetcher);
 
   if (error) {
@@ -14,17 +13,17 @@ export function useGetConfigs() {
   }
 
   const memoizedValue = useMemo(() => {
-    const configs = data?.data[0] || [];
+    const customer = data?.data || [];
     const isLoading = !data && !error;
     return {
-      configs,
-      configsLoading: isLoading,
-      configsError: error,
-      configsValidating: isValidating,
-      configsEmpty: !isLoading && configs?.length === 0,
+      customer,
+      customerLoading: isLoading,
+      customerError: error,
+      customerValidating: isValidating,
+      customerEmpty: !isLoading && customer?.length === 0,
       mutate,
     };
-  }, [data?.data[0], error, isValidating, mutate]);
+  }, [data?.data, error, isValidating, mutate]);
 
   return memoizedValue;
 }
