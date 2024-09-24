@@ -67,6 +67,11 @@ const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-lis
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
 
+// LOAN ISSUE
+const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
+const LoanissueCreateView = lazy(()=>import('../../sections/loanissue/view/loanissue-create-view'))
+const LoanissueListView = lazy(()=>import('../../sections/loanissue/view/loanissue-list-view'))
+
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -180,6 +185,15 @@ export const dashboardRoutes = [
           { path: 'list', element: <EmployeeListView /> },
           { path: 'new', element: <EmployeeCreateView /> },
           { path: ':id/edit', element: <EmployeeEditView /> },
+        ],
+      },
+      {
+        path: 'loanissue',
+        children: [
+          { element: <LoanissueListView />, index: true },
+          { path: 'list', element: <LoanissueListView /> },
+          { path: 'new', element: <LoanissueCreateView /> },
+          { path: ':id/edit', element: <LoanissueEditView /> },
         ],
       },
       {
