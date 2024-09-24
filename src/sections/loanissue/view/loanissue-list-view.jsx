@@ -15,7 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -33,78 +32,55 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-
-import { isAfter, isBetween } from '../../../utils/format-time';
-import SchemeTableToolbar from '../scheme-table-toolbar';
-import SchemeTableFiltersResult from '../scheme-table-filters-result';
-import SchemeTableRow from '../scheme-table-row';
-import { Box, CircularProgress } from '@mui/material';
-import Label from '../../../components/label';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { valueToPercent } from '@mui/material/Slider/useSlider';
-import { useGetScheme } from '../../../api/scheme';
+import LoanissueTableRow from '../loanissue-table-row';
+import LoanissueTableToolbar from '../loanissue-table-toolbar';
+import LoanissueTableFiltersResult from '../loanissue-table-filters-result';
+import {useGetEmployee} from 'src/api/employee'
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-  value: 'false',
-  label: 'Non Active',
-}];
+
 
 const TABLE_HEAD = [
-  { id: 'scheme name', label: 'Scheme Name' },
-  { id: 'rate per gram', label: 'Rate per Gram' },
-  { id: 'interest rate', label: 'Interest Rate' },
-  { id: 'valuation per%', label: 'Valuation per%' },
-  { id: 'interest period', label: 'Interest Period' },
-  { id: 'renewal time', label: 'Renewal Time' },
-  { id: 'minimum loan time', label: 'Minimum Loan Time' },
-  { id: 'scheme type', label: 'Scheme Type' },
-  { id: 'active', label: 'Active' },
+  { id: 'username', label: 'UserName' },
+  { id: 'contact', label: 'Phone Number'},
+  { id: 'joinDate', label: 'Join Date'},
+  { id: 'role', label: 'Role'},
   { id: '', width: 88 },
 ];
 
-
 const defaultFilters = {
-  name: '',
-  isActive: 'all',
+  username: '',
 };
 // ----------------------------------------------------------------------
 
-export default function SchemeListView() {
+export default function LoanissueListView() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const table = useTable();
-
+  const {user} = useAuthContext();
+  const {employee, mutate} = useGetEmployee();
   const settings = useSettingsContext();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const {scheme,mutate} = useGetScheme()
-
-  const [tableData, setTableData] = useState(scheme);
+  const [tableData, setTableData] = useState(employee);
 
   const [filters, setFilters] = useState(defaultFilters);
 
-
   const dataFiltered = applyFilter({
-    inputData: scheme,
+    inputData: employee,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -112,17 +88,16 @@ export default function SchemeListView() {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-  const
-    handleFilters = useCallback(
+
+  const handleFilters = useCallback(
     (name, value) => {
-      console.log("name",value)
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -130,30 +105,33 @@ export default function SchemeListView() {
   }, []);
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/employee`, {
         data: { ids: id },
       });
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
     } catch (err) {
-      enqueueSnackbar("Failed to delete Scheme");
+      enqueueSnackbar("Failed to delete Employee");
     }
   };
+
+
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
-      setTableData(deleteRow);
+      if (id) {
+        handleDelete([id]);
+        table.onUpdatePageDeleteRow(dataInPage.length);
+      }
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
+
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-    console.log("yhbjuyh",deleteIds);
-     handleDelete(deleteIds)
+    const deleteRows = employee.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -164,95 +142,42 @@ export default function SchemeListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      router.push(paths.dashboard.employee.edit(id));
     },
-    [router],
+    [router]
   );
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters],
-  );
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Scheme List'
+          heading="Loan Issue List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Scheme', href: paths.dashboard.scheme.root },
-            { name: 'List' },
+            { name: 'Masters', href: paths.dashboard.loanissue.root },
+            { name: 'Loan issue List' },
           ]}
           action={
-            <Box>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.scheme.goldpricelist}
-                variant='contained'
-                sx={{ mx: 2 }}
-              >
-                Gold Price change
-              </Button>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.scheme.new}
-                variant='contained'
-                startIcon={<Iconify icon='mingcute:add-line' />}
-              >
-                Create Scheme
-              </Button>
-            </Box>
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.loanissue.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              Create Loan issue
+            </Button>
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
-        <Card>
-          <Tabs
-            value={filters.isActive}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition='end'
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <>
-                    <Label
-                      style={{ margin: '5px' }}
-                      variant={
-                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'
-                      }
-                      color={
-                        (tab.value == 'true' && 'success') ||
-                        (tab.value == 'false' && 'error') ||
-                        'default'
-                      }
-                    >
-                      {['false','true'].includes(tab.value)
-                        ? scheme.filter((emp) => String(emp.isActive) == tab.value).length
-                        : scheme.length}
-                    </Label>
-                  </>
-                }
-              />
-            ))}
-          </Tabs>
-          <SchemeTableToolbar
-            filters={filters} onFilters={handleFilters}
-          />
 
-         {canReset && (
-            <SchemeTableFiltersResult
+        <Card>
+          <LoanissueTableToolbar filters={filters} onFilters={handleFilters} />
+
+          {canReset && (
+            <LoanissueTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -269,14 +194,13 @@ export default function SchemeListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id)
-                  ,
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -294,7 +218,7 @@ export default function SchemeListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row._id),
+                      dataFiltered.map((row) => row._id)
                     )
                   }
                 />
@@ -303,10 +227,10 @@ export default function SchemeListView() {
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <SchemeTableRow
+                      <LoanissueTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
@@ -333,6 +257,7 @@ export default function SchemeListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
+            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
@@ -342,7 +267,7 @@ export default function SchemeListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -350,8 +275,8 @@ export default function SchemeListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -363,13 +288,12 @@ export default function SchemeListView() {
       />
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, name } = filters;
+  const {  username } = filters;
 
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -377,19 +301,12 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-
-  // Filter by scheme name if provided
-  if (name && name.trim()) {
+  if (username && username.trim()) {
     inputData = inputData.filter(
-      (sch) =>
-        sch.name.toLowerCase().includes(name.toLowerCase()),
+      (inq) =>
+        inq.username.toLowerCase().includes(username.toLowerCase())
+        // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
     );
   }
-
-  if (isActive !== 'all') {
-    inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
-  }
-
   return inputData;
 }
-
