@@ -68,7 +68,7 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
 
                 return (
                   <TextField
-                   style={ ...customStyle }
+                   style={ customStyle }
 
                     {...baseField}
                     InputProps={{
