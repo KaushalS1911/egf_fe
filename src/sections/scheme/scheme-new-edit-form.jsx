@@ -26,6 +26,7 @@ import axios from 'axios';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
+  const {configs} = useGetConfigs()
 
 
   const NewSchema = Yup.object().shape({
@@ -60,13 +62,13 @@ export default function SchemeNewEditForm({ currentScheme }) {
 
       {
       name: currentScheme?.name || '',
-      ratePerGram: currentScheme?.ratePerGram || '',
-      interestRate: currentScheme?.interestRate || '',
+      ratePerGram: currentScheme?.ratePerGram || 0,
+      interestRate: currentScheme?.interestRate || 0,
       interestPeriod: currentScheme?.interestPeriod || '',
       schemeType: currentScheme?.schemeType || '',
       valuation: currentScheme?.valuation || '',
       renewalTime: currentScheme?.renewalTime || '',
-      minLoanTime: currentScheme?.minLoanTime || '',
+      minLoanTime: currentScheme?.minLoanTime || '' ,
       remark: currentScheme?.remark || '',
       isActive: currentScheme?.isActive || '',
     }),
@@ -83,27 +85,35 @@ export default function SchemeNewEditForm({ currentScheme }) {
     watch,
     control,
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
+  useEffect(() => {
+    const interestRate = watch("interestRate");
+    if (interestRate) {
+      const rpg = (configs.goldRate * interestRate) / 100;
+      setValue("ratePerGram", rpg);
+    }
+    else{
+      setValue("ratePerGram", 0);
+    }
+  }, [watch("interestRate"), configs.goldRate, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentScheme) {
-        axios.put(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/scheme/${currentScheme._id}?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
-          router.push(paths.dashboard.scheme.list)
-          enqueueSnackbar(res?.data.message);
-          reset();
-        }).catch((err) => console.log(err));
+        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/${currentScheme._id}?branch=66ea5ebb0f0bdc8062c13a64`, data)
+        router.push(paths.dashboard.scheme.list);
+        enqueueSnackbar(res?.data.message);
+        reset();
       } else {
-        axios.post(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, data).then((res) => {
-          router.push(paths.dashboard.scheme.list);
-          enqueueSnackbar(res?.data.message);
-          reset();
-        }).catch((err) => err);
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, data)
+        router.push(paths.dashboard.scheme.list);
+        enqueueSnackbar(res?.data.message);
+        reset();
       }
-
     } catch (error) {
-      enqueueSnackbar("Failed to create Scheme");
+      enqueueSnackbar(currentScheme ? 'Failed To update scheme' :'Failed to create Scheme');
       console.error(error);
     }
   });
@@ -183,7 +193,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
                   </li>
                 )}
               />
-              <RHFTextField name='ratePerGram'  label='Rate Per Gram' req={'red'}    InputProps={{ readOnly: true }} />
+              <RHFTextField name='ratePerGram'  label='Rate Per Gram' req={'red'}  InputProps={{ readOnly: true }} />
               <RHFTextField name='remark' label='Remark' />
 
             </Box>

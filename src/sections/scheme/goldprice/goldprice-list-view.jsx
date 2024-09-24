@@ -1,13 +1,9 @@
 import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
-
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { alpha } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
@@ -19,9 +15,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles } from 'src/_mock';
-
-import Label from 'src/components/label';
+import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -39,50 +33,63 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import CustomerTableFiltersResult from '../customer-table-filters-result';
-import CustomerTableToolbar from '../customer-table-toolbar';
-import CustomerTableRow from '../customer-table-row';
-import { useGetCustomer } from '../../../api/customer';
+
+import { isAfter, isBetween } from '../../../utils/format-time';
+import SchemeTableToolbar from '../scheme-table-toolbar';
+import SchemeTableFiltersResult from '../scheme-table-filters-result';
+import SchemeTableRow from '../scheme-table-row';
+import { Box, CircularProgress } from '@mui/material';
+import Label from '../../../components/label';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import { alpha } from '@mui/material/styles';
+import { valueToPercent } from '@mui/material/Slider/useSlider';
+import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
+import GoldpriceTableRow from './goldprice-table-row';
+import { useGetConfigs } from '../../../api/config';
+import GoldpriceTableToolbar from './goldprice-table-toolbar';
+import Stack from '@mui/material/Stack';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 // ----------------------------------------------------------------------
-
-const STATUS_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'Active', label: 'Active' },
-  { value: 'In Active', label: 'In Active' },
-  { value: 'Blocked', label: 'Blocked' }];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-  { id: 'CustomerCode', label: 'Customer Code', width: 220 },
-  { id: 'status', label: 'Status', width: 100 },
-  { id: '', width: 120 },
+  { id: 'scheme name', label: 'Scheme Name' },
+  { id: 'interest rate', label: 'Interest Rate' },
+  { id: 'valuation per%', label: 'Valuation per%' },
+  { id: 'rate per gram', label: 'Rate per Gram' },
+  { id: '', width: 88 },
 ];
-
-const defaultFilters = {
-  name: '',
-  role: [],
-  status: 'all',
-};
 
 // ----------------------------------------------------------------------
 
-export default function CustomerListView() {
+export default function GoldpriceListView() {
   const { enqueueSnackbar } = useSnackbar();
-  const table = useTable();
   const { user } = useAuthContext();
-  const { customer, mutate } = useGetCustomer();
+  const table = useTable();
+  const {configs} = useGetConfigs()
+const defaultFilters = {
+  name: '',
+  isActive: 'all',
+};
+
   const settings = useSettingsContext();
+
   const router = useRouter();
+
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(customer);
+
+  const {scheme,mutate} = useGetScheme()
+
+  const [tableData, setTableData] = useState(scheme);
+
   const [filters, setFilters] = useState(defaultFilters);
 
+
   const dataFiltered = applyFilter({
-    inputData: customer,
+    inputData: scheme,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -97,8 +104,8 @@ export default function CustomerListView() {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-  const handleFilters = useCallback(
+  const
+    handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
@@ -112,32 +119,29 @@ export default function CustomerListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
-  const handleDelete = async (id) => {
-    try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/customer`, {
-        data: { ids: id },
-      });
-      enqueueSnackbar(res.data.message);
-      confirm.onFalse();
+const handleDelete = (id) =>{
+  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
+    .then((res)=> {
       mutate();
-    } catch (err) {
-      enqueueSnackbar('Failed to delete Customer');
-    }
-  };
-
+      confirm.onFalse();
+      enqueueSnackbar(res.data.message)
+    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
+}
   const handleDeleteRow = useCallback(
     (id) => {
-      handleDelete([id]);
+    handleDelete([id])
+      setTableData(deleteRow);
+
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
-
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = customer.filter((row) => table.selected.includes(row._id));
-    const deleteIds = deleteRows.map((row) => row._id);
-    handleDelete(deleteIds);
+    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+     const deleteIds = deleteRows.map((row) => row._id);
+    console.log("yhbjuyh",deleteIds);
+     handleDelete(deleteIds)
+    setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
@@ -147,96 +151,48 @@ export default function CustomerListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.customer.edit(id));
+      router.push(paths.dashboard.scheme.edit(id));
     },
     [router],
   );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
-      handleFilters('status', newValue);
+      handleFilters('isActive', newValue);
     },
     [handleFilters],
   );
 
+  const handleSave = async ()=>{
+    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.interestRate) * parseFloat(filters.name)/100}));
+    try {
+    const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
+      enqueueSnackbar(res?.data.message);
+    router.push(paths.dashboard.scheme.list);
+    // const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`,payload)
+    }
+    catch (error) {
+      enqueueSnackbar("");
+    }
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='List'
+          heading='Scheme List'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Scheme', href: paths.dashboard.scheme.root },
             { name: 'List' },
           ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.customer.new}
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-            >
-              Create Customer
-            </Button>
-          }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
-          <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition='end'
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={
-                      (tab.value === 'Active' && 'success') ||
-                      (tab.value === 'In Active' && 'warning') ||
-                      (tab.value === 'Blocked' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {['Active', 'In Active', 'Blocked'].includes(tab.value)
-                      ? customer.filter((user) => user.status === tab.value).length
-                      : customer.length}
-                  </Label>
-                }
-              />
-            ))}
-          </Tabs>
-
-          <CustomerTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            roleOptions={_roles}
+          <GoldpriceTableToolbar
+            filters={filters} onFilters={handleFilters} goldRate={configs?.goldRate}
           />
-
-          {canReset && (
-            <CustomerTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              //
-              onResetFilters={handleResetFilters}
-              //
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -246,7 +202,7 @@ export default function CustomerListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row.id),
                 )
               }
               action={
@@ -282,8 +238,9 @@ export default function CustomerListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row) => (
-                      <CustomerTableRow
-                        key={row.id}
+                      <GoldpriceTableRow
+                        goldRate = {filters.name}
+                        key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
@@ -309,11 +266,15 @@ export default function CustomerListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
+        <Stack  alignItems="flex-end" sx={{mt:3}}>
+          <LoadingButton type='submit' variant='contained' onClick={handleSave}>
+            Save
+          </LoadingButton>
+        </Stack>
       </Container>
 
       <ConfirmDialog
@@ -337,39 +298,29 @@ export default function CustomerListView() {
             Delete
           </Button>
         }
+
       />
+
+
     </>
   );
-}
+};
 
 // ----------------------------------------------------------------------
-
 function applyFilter({ inputData, comparator, filters }) {
-  const { name, status, role } = filters;
+  const { isActive, name } = filters;
 
+  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
-
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name) {
-    inputData = inputData.filter(
-      (user) => (user.firstName + ' ' + user.lastName).toLowerCase().indexOf(name.toLowerCase()) !== -1,
-    );
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
-  }
+  // Filter by scheme name if provided
 
   return inputData;
 }
+

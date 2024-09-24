@@ -134,6 +134,7 @@ export function useNavData() {
             path: paths.dashboard.carat.root,
             icon: ICONS.carat,
           },
+
           // LOANTYPE
           {
             title: t('loan type'),

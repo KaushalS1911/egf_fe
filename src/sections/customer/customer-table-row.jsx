@@ -17,14 +17,16 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import CustomerQuickEditForm from './customer-quick-edit-form';
+import { useRouter } from '../../routes/hooks';
 
 // ----------------------------------------------------------------------
 
 export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { name, avatarUrl, company, role, status, email, phoneNumber } = row;
+  const { firstName, lastName, contact, customerCode, email, avatar_url, status } = row;
 
   const confirm = useBoolean();
+
+  const router = useRouter();
 
   const quickEdit = useBoolean();
 
@@ -33,15 +35,15 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
+          <Avatar alt={firstName} src={avatar_url} sx={{ mr: 2 }} />
 
           <ListItemText
-            primary={name}
+            primary={firstName + ' ' + lastName}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -51,19 +53,17 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
-
-        {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>*/}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerCode}</TableCell>
 
         <TableCell>
           <Label
-            variant="soft"
+            variant='soft'
             color={
-              (status === 'active' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'banned' && 'error') ||
+              (status === 'Active' && 'success') ||
+              (status === 'In Active' && 'warning') ||
+              (status === 'Blocked' && 'error') ||
               'default'
             }
           >
@@ -71,25 +71,19 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           </Label>
         </TableCell>
 
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
-            <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
-              <Iconify icon="solar:pen-bold" />
-            </IconButton>
-          </Tooltip>
-
+        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
 
-      <CustomerQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      {/*<CustomerQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />*/}
 
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -99,17 +93,16 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon="solar:trash-bin-trash-bold" />
+          <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:pen-bold" />
+          <Iconify icon='solar:pen-bold' />
           Edit
         </MenuItem>
       </CustomPopover>
@@ -117,10 +110,10 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }

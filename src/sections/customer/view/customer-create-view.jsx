@@ -15,11 +15,15 @@ export default function CustomerCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new user"
+        heading='Create a new user'
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
+          },
+          {
+            name: 'Customer',
+            href: paths.dashboard.customer.root,
           },
           { name: 'New user' },
         ]}

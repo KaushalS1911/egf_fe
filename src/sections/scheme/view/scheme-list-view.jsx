@@ -47,6 +47,7 @@ import { valueToPercent } from '@mui/material/Slider/useSlider';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -79,6 +80,7 @@ export default function SchemeListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -126,14 +128,18 @@ export default function SchemeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-const handleDelete = (id) =>{
-  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
-    .then((res)=> {
-      mutate();
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
+        data: { ids: id },
+      });
+      enqueueSnackbar(res.data.message);
       confirm.onFalse();
-      enqueueSnackbar(res.data.message)
-    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
-}
+      mutate();
+    } catch (err) {
+      enqueueSnackbar("Failed to delete Scheme");
+    }
+  };
   const handleDeleteRow = useCallback(
     (id) => {
     handleDelete([id])
@@ -184,7 +190,7 @@ const handleDelete = (id) =>{
             <Box>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.scheme.new}
+                href={paths.dashboard.scheme.goldpricelist}
                 variant='contained'
                 sx={{ mx: 2 }}
               >
@@ -263,7 +269,8 @@ const handleDelete = (id) =>{
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row._id)
+                  ,
                 )
               }
               action={

@@ -145,13 +145,9 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/scheme`,
       new: `${ROOTS.DASHBOARD}/scheme/new`,
       list: `${ROOTS.DASHBOARD}/scheme/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
+      goldpricelist: `${ROOTS.DASHBOARD}/scheme/goldpricelist`,
       edit: (id) => `${ROOTS.DASHBOARD}/scheme/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
+
     },
     carat: {
       root: `${ROOTS.DASHBOARD}/carat`,

@@ -11,7 +11,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function SchemeTableFiltersResult({
+export default function GoldpriceTableFiltersResult({
   filters,
   onFilters,
   //
@@ -72,7 +72,7 @@ export default function SchemeTableFiltersResult({
   );
 }
 
-SchemeTableFiltersResult.propTypes = {
+GoldpriceTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
