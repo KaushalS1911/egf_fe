@@ -106,6 +106,8 @@ export const paths = {
     calendar: `${ROOTS.DASHBOARD}/calendar`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
+    setting: `${ROOTS.DASHBOARD}/setting`,
+
     general: {
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
@@ -114,16 +116,94 @@ export const paths = {
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
     },
-    user: {
-      root: `${ROOTS.DASHBOARD}/user`,
-      new: `${ROOTS.DASHBOARD}/user/new`,
-      list: `${ROOTS.DASHBOARD}/user/list`,
-      cards: `${ROOTS.DASHBOARD}/user/cards`,
-      profile: `${ROOTS.DASHBOARD}/user/profile`,
-      account: `${ROOTS.DASHBOARD}/user/account`,
-      edit: (id) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
+
+    inquiry: {
+      root: `${ROOTS.DASHBOARD}/inquiry`,
+      new: `${ROOTS.DASHBOARD}/inquiry/new`,
+      list: `${ROOTS.DASHBOARD}/inquiry/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/inquiry/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
+    employee: {
+      root: `${ROOTS.DASHBOARD}/employee`,
+      new: `${ROOTS.DASHBOARD}/employee/new`,
+      list: `${ROOTS.DASHBOARD}/employee/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/employee/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
+    scheme: {
+      root: `${ROOTS.DASHBOARD}/scheme`,
+      new: `${ROOTS.DASHBOARD}/scheme/new`,
+      list: `${ROOTS.DASHBOARD}/scheme/list`,
+      goldpricelist: `${ROOTS.DASHBOARD}/scheme/goldpricelist`,
+      edit: (id) => `${ROOTS.DASHBOARD}/scheme/${id}/edit`,
+
+    },
+    carat: {
+      root: `${ROOTS.DASHBOARD}/carat`,
+      new: `${ROOTS.DASHBOARD}/carat/new`,
+      list: `${ROOTS.DASHBOARD}/carat/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/carat/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
+    loan: {
+      root: `${ROOTS.DASHBOARD}/loan`,
+      new: `${ROOTS.DASHBOARD}/loan/new`,
+      list: `${ROOTS.DASHBOARD}/loan/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/loan/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
+    property: {
+      root: `${ROOTS.DASHBOARD}/property`,
+      new: `${ROOTS.DASHBOARD}/property/new`,
+      list: `${ROOTS.DASHBOARD}/property/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/property/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
+    penalty: {
+      root: `${ROOTS.DASHBOARD}/penalty`,
+      new: `${ROOTS.DASHBOARD}/penalty/new`,
+      list: `${ROOTS.DASHBOARD}/penalty/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/penalty/${id}/edit`,
+    },
+    customer: {
+      root: `${ROOTS.DASHBOARD}/customer`,
+      new: `${ROOTS.DASHBOARD}/customer/new`,
+      list: `${ROOTS.DASHBOARD}/customer/list`,
+      cards: `${ROOTS.DASHBOARD}/customer/cards`,
+      profile: `${ROOTS.DASHBOARD}/customer/profile`,
+      account: `${ROOTS.DASHBOARD}/customer/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/customer/${id}/edit`,
       demo: {
-        edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+        edit: `${ROOTS.DASHBOARD}/customer/${MOCK_ID}/edit`,
       },
     },
     product: {

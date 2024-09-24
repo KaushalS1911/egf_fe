@@ -1,22 +1,12 @@
 import PropTypes from 'prop-types';
-
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { alpha, useTheme } from '@mui/material/styles';
-
 import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-
-import { useResponsive } from 'src/hooks/use-responsive';
-
-import { bgGradient } from 'src/theme/css';
-import { useAuthContext } from 'src/auth/hooks';
-
-import Logo from 'src/components/logo';
-
+import { Grid } from '@mui/material';
+import loginImage from 'src/assets/login-back/login.jpg';
+import { useRouter } from '../../routes/hooks';
+import { PATH_AFTER_LOGIN } from '../../config-global';
+import Iconify from '../../components/iconify';
 // ----------------------------------------------------------------------
 
 const METHODS = [
@@ -52,106 +42,75 @@ const METHODS = [
   },
 ];
 
-export default function AuthClassicLayout({ children, image, title }) {
-  const { method } = useAuthContext();
+export default function AuthClassicLayout({ children, register, invite }) {
 
-  const theme = useTheme();
-
-  const mdUp = useResponsive('up', 'md');
-
-  const renderLogo = (
-    <Logo
-      sx={{
-        zIndex: 9,
-        position: 'absolute',
-        m: { xs: 2, md: 5 },
-      }}
-    />
-  );
-
+  const router = useRouter();
   const renderContent = (
-    <Stack
-      sx={{
-        width: 1,
-        mx: 'auto',
-        maxWidth: 480,
-        px: { xs: 2, md: 8 },
-        pt: { xs: 15, md: 20 },
-        pb: { xs: 15, md: 0 },
-      }}
-    >
-      {children}
-    </Stack>
-  );
-
-  const renderSection = (
-    <Stack
-      flexGrow={1}
-      spacing={10}
-      alignItems="center"
-      justifyContent="center"
-      sx={{
-        ...bgGradient({
-          color: alpha(
-            theme.palette.background.default,
-            theme.palette.mode === 'light' ? 0.88 : 0.94
-          ),
-          imgUrl: '/assets/background/overlay_2.jpg',
-        }),
-      }}
-    >
-      <Typography variant="h3" sx={{ maxWidth: 480, textAlign: 'center' }}>
-        {title || 'Hi, Welcome back'}
-      </Typography>
-
+    <>
       <Box
-        component="img"
-        alt="auth"
-        src={image || '/assets/illustrations/illustration_dashboard.png'}
         sx={{
-          maxWidth: {
-            xs: 480,
-            lg: 560,
-            xl: 720,
-          },
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          backgroundColor: '#F6F7F9',
+          position: invite ? 'relative' : 'unset',
         }}
-      />
-
-      <Stack direction="row" spacing={2}>
-        {METHODS.map((option) => (
-          <Tooltip key={option.label} title={option.label}>
-            <Link component={RouterLink} href={option.path}>
-              <Box
-                component="img"
-                alt={option.label}
-                src={option.icon}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  ...(method !== option.id && {
-                    filter: 'grayscale(100%)',
-                  }),
-                }}
-              />
-            </Link>
-          </Tooltip>
-        ))}
-      </Stack>
-    </Stack>
+      >
+        {invite && <Box sx={{
+          position: 'absolute',
+          top: '3%',
+          left: '5%',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }} onClick={() =>
+          router.push(PATH_AFTER_LOGIN)}>
+          <Iconify icon='material-symbols-light:keyboard-backspace'
+                   sx={{ height: '25px', width: '25px', marginRight: '3px' }} /> Back</Box>}
+        <Grid
+          container
+          sx={{
+            borderRadius: '20px',
+            overflow: 'hidden',
+            boxShadow: '1px 1px 20px #e1e1e1',
+            maxWidth: { md: '85rem !important', xs: 'unset' },
+            width: { xs: '430px', md: '100%' },
+            mx: '20px',
+            justifyContent: { xs: 'center', md: 'unset' },
+            height: register ? '890px' : '550px',
+          }}
+        >
+          <Grid item xs={12} md={5} lg={4} sx={{ backgroundColor: 'white' }}>
+            <Stack
+              sx={{
+                px: { xs: 6, md: 8 },
+                pt: register ? { xs: 2, md: 2 } : { xs: 3, md: 3 },
+                pb: register ? { xs: 6, md: 6 } : { xs: 8, md: 10 },
+              }}
+            >
+              {children}
+            </Stack>
+          </Grid>
+          <Grid
+            item
+            md={7}
+            lg={8}
+          >
+            <img src={loginImage} alt={loginImage} style={{ height: '100%', aspectRatio: '3/2' }} />
+          </Grid>
+        </Grid>
+      </Box>
+    </>
   );
 
   return (
     <Stack
-      component="main"
-      direction="row"
-      sx={{
-        minHeight: '100vh',
-      }}
+      component='main'
+      direction='row'
     >
-      {renderLogo}
-
-      {mdUp && renderSection}
-
       {renderContent}
     </Stack>
   );

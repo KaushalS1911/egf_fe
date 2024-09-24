@@ -12,6 +12,34 @@ export const INVOICE_STATUS_OPTIONS = [
   { value: 'draft', label: 'Draft' },
 ];
 
+export const ACCOUNT_TYPE_OPTIONS = [
+  'Savings Account',
+  'Checking Account',
+  'Current Account',
+  'Business Account',
+  'Fixed Deposit Account',
+  'Joint Account',
+  'Student Account',
+  'Salary Account',
+  'NRI Account',
+  'Trust Account',
+  'Escrow Account',
+  'Investment Account',
+  'Demat Account',
+  'Credit Card Account',
+  'Foreign Currency Account',
+  'Retirement Account',
+  'Money Market Account',
+  'Offshore Account',
+  'Islamic Account',
+  'Health Savings Account',
+  'Brokerage Account',
+  'Custodial Account',
+  'Sweep Account',
+  'Virtual Account',
+  'Loan Account',
+];
+
 export const INVOICE_SERVICE_OPTIONS = [...Array(8)].map((_, index) => ({
   id: _mock.id(index),
   name: _mock.role(index),

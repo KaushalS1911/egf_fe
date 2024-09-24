@@ -1,21 +1,19 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Controller, useFormContext } from 'react-hook-form';
-
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import InputAdornment from '@mui/material/InputAdornment';
-
-import { countries } from 'src/assets/data';
-
 import Iconify from 'src/components/iconify';
+import { countries } from 'src/assets/data';
 
 // ----------------------------------------------------------------------
 
-export default function RHFAutocomplete({ name, label, type, helperText, placeholder, ...other }) {
+export default function RHFAutocomplete({ name, label, type, helperText, placeholder, options,req,...other }) {
   const { control, setValue } = useFormContext();
-
   const { multiple } = other;
+  const customStyle = req  ? { borderLeft: `2px solid ${req}`,borderRadius:'8px'} : {};
 
   return (
     <Controller
@@ -30,13 +28,14 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
               autoHighlight={!multiple}
               disableCloseOnSelect={multiple}
               onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
+              options={countries}
+              getOptionLabel={(option) => option.label || ''}
               renderOption={(props, option) => {
-                const country = getCountry(option);
+                const country = getCountry(option.label);
 
                 if (!country.label) {
                   return null;
                 }
-
                 return (
                   <li {...props} key={country.label}>
                     <Iconify
@@ -69,6 +68,8 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
 
                 return (
                   <TextField
+                   style={ ...customStyle }
+
                     {...baseField}
                     InputProps={{
                       ...params.InputProps,
@@ -93,7 +94,7 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
               }}
               renderTags={(selected, getTagProps) =>
                 selected.map((option, index) => {
-                  const country = getCountry(option);
+                  const country = getCountry(option.label);
 
                   return (
                     <Chip
@@ -110,13 +111,14 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
               {...other}
             />
           );
-        }
+        };
 
         return (
           <Autocomplete
             {...field}
             id={`autocomplete-${name}`}
             onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
+            options={options}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -128,6 +130,8 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
                   ...params.inputProps,
                   autoComplete: 'new-password',
                 }}
+                style={error?.message ? {} : customStyle }
+
               />
             )}
             {...other}
@@ -139,19 +143,17 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
 }
 
 RHFAutocomplete.propTypes = {
-  name: PropTypes.string,
+  name: PropTypes.string.isRequired,
   type: PropTypes.string,
   label: PropTypes.string,
   helperText: PropTypes.node,
   placeholder: PropTypes.string,
+  options: PropTypes.array.isRequired,
 };
 
 // ----------------------------------------------------------------------
 
 export function getCountry(inputValue) {
-  const option = countries.filter((country) => country.label === inputValue)[0];
-
-  return {
-    ...option,
-  };
+  const option = countries.find((country) => country.label === inputValue);
+  return option || {};
 }

@@ -5,6 +5,9 @@ import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
+import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
+import { SettingsPage } from '../../sections/settings/view';
+import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +38,37 @@ const UserListPage = lazy(() => import('src/pages/dashboard/user/list'));
 const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
 const UserCreatePage = lazy(() => import('src/pages/dashboard/user/new'));
 const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
+// INQUIRY
+const InquiryListView = lazy(() => import('../../sections/inquiry/view/inquiry-list-view'));
+const InquiryCreateView = lazy(() => import('../../sections/inquiry/view/inquiry-create-view'));
+const InquiryEditView = lazy(() => import('../../sections/inquiry/view/inquiry-edit-view'));
+//EMPLOYEE
+const EmployeeListView = lazy(() => import('../../sections/employee/view/employee-list-view'));
+const EmployeeCreateView = lazy(() => import('../../sections/employee/view/employee-create-view'));
+const EmployeeEditView = lazy(() => import('../../sections/employee/view/employee-edit-view'));
+// SCHEME
+const SchemeListView = lazy(()=>import('../../sections/scheme/view/scheme-list-view'))
+const SchemeCreateView = lazy(() => import('../../sections/scheme/view/scheme-create-view'));
+const SchemeEditView = lazy(()=>import('../../sections/scheme/view/scheme-edit-view'))
+const GoldPriceListView = lazy(()=>import('../../sections/scheme/goldprice/goldprice-list-view'))
+// CARAT
+const CaratListView = lazy(()=> import('../../sections/carat/view/carat-list-view'));
+const CaratCreateView = lazy(()=>import('../../sections/carat/view/carat-create-view'))
+const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view'))
+// LOANTYPE
+const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
+const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
+const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
+//PROPERTY
+const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
+const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
+const  PropertyListView = lazy(()=>import('../../sections/property/view/property-list-view'))
+
+// PENALTY
+const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
+const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
+const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
+
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -81,6 +115,78 @@ export const dashboardRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       {
+        path: 'inquiry',
+        children: [
+          { element: <InquiryListView />, index: true },
+          { path: 'list', element: <InquiryListView /> },
+          // { path: 'cards', element: <UserCardsPage /> },
+          // { path: 'list', element: <InquiryListView /> },
+          { path: 'new', element: <InquiryCreateView /> },
+          { path: ':id/edit', element: <InquiryEditView /> },
+          // { path: 'account', element: <UserAccountPage /> },
+        ],
+      },
+      {
+        path: 'scheme',
+        children: [
+          { element: <SchemeListView />, index: true },
+          { path: 'list', element: <SchemeListView /> },
+          { path: 'goldpricelist', element: <GoldPriceListView /> },
+          { path: 'new', element: <SchemeCreateView /> },
+          { path: ':id/edit', element: <SchemeEditView /> },
+          { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'carat',
+        children: [
+          { element: <CaratListView/>, index: true },
+          { path: 'list', element: <CaratListView/> },
+          { path: 'new', element: <CaratCreateView/> },
+          { path: ':id/edit', element: <CaratEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+
+      {
+        path: 'loan',
+        children: [
+          { element: <LoanTypeListView/>, index: true },
+          { path: 'list', element: <LoanTypeListView/> },
+          { path: 'new', element: <LoanTypecreateView/> },
+          { path: ':id/edit', element: <LoanTypeEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'property',
+        children: [
+          { element: <PropertyListView />, index: true },
+          { path: 'list', element: <PropertyListView /> },
+          { path: 'new', element: <PropertyCreateView /> },
+          { path: ':id/edit', element: <PropertyEditView /> },
+          // { path: ':id/edit', element: <InquiryEditView /> },
+        ],
+      },
+      {
+        path: 'penalty',
+        children: [
+          { element: <PenaltyListView/>, index: true },
+          { path: 'list', element: <PenaltyListView/> },
+          { path: 'new', element: <PenaltyCreateview/> },
+          { path: ':id/edit', element: <PenaltyEditView /> },
+        ],
+      },
+      {
+        path: 'employee',
+        children: [
+          { element: <EmployeeListView />, index: true },
+          { path: 'list', element: <EmployeeListView /> },
+          { path: 'new', element: <EmployeeCreateView /> },
+          { path: ':id/edit', element: <EmployeeEditView /> },
+        ],
+      },
+      {
         path: 'user',
         children: [
           { element: <UserProfilePage />, index: true },
@@ -90,6 +196,15 @@ export const dashboardRoutes = [
           { path: 'new', element: <UserCreatePage /> },
           { path: ':id/edit', element: <UserEditPage /> },
           { path: 'account', element: <UserAccountPage /> },
+        ],
+      },
+      {
+        path: 'customer',
+        children: [
+          { element: <CustomerListView />, index: true },
+          { path: 'list', element: <CustomerListView /> },
+          { path: 'new', element: <CustomerCreateView /> },
+          { path: ':id/edit', element: <CustomerEditView /> },
         ],
       },
       {
@@ -155,6 +270,7 @@ export const dashboardRoutes = [
       { path: 'chat', element: <ChatPage /> },
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },
+      { path: 'setting', element: <SettingsPage /> },
     ],
   },
 ];

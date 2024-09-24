@@ -8,6 +8,8 @@ import { authDemoRoutes } from './auth-demo';
 import { HomePage, mainRoutes } from './main';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
+import AuthClassicLayout from '../../layouts/auth/classic';
+import LoginPage from '../../pages/auth/jwt/login';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +28,9 @@ export default function Router() {
       path: '/',
       element: (
         <MainLayout>
-          <HomePage />
+          <AuthClassicLayout>
+            <LoginPage />
+          </AuthClassicLayout>
         </MainLayout>
       ),
     },
@@ -45,6 +49,6 @@ export default function Router() {
     ...componentsRoutes,
 
     // No match 404
-    { path: '*', element: <Navigate to="/404" replace /> },
+    { path: '*', element: <Navigate to='/404' replace /> },
   ]);
 }

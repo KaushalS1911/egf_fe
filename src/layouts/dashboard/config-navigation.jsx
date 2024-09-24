@@ -43,6 +43,7 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -93,23 +94,49 @@ export function useNavData() {
       // MANAGEMENT
       // ----------------------------------------------------------------------
       {
-        subheader: t('management'),
+        subheader: t('Masters'),
         items: [
-          // USER
           {
-            title: t('user'),
-            path: paths.dashboard.user.root,
+            title: t('Inquiry'),
+            path: paths.dashboard.inquiry.root,
             icon: ICONS.user,
-            children: [
-              { title: t('profile'), path: paths.dashboard.user.root },
-              { title: t('cards'), path: paths.dashboard.user.cards },
-              { title: t('list'), path: paths.dashboard.user.list },
-              { title: t('create'), path: paths.dashboard.user.new },
-              { title: t('edit'), path: paths.dashboard.user.demo.edit },
-              { title: t('account'), path: paths.dashboard.user.account },
-            ],
+          },
+          {
+            title: t('Customer'),
+            path: paths.dashboard.customer.root,
+            icon: ICONS.user,
+          },
+          {
+            title: t('Employee'),
+            path: paths.dashboard.employee.root,
+            icon: ICONS.user,
           },
 
+          // SCHEME
+          {
+            title: t('scheme'),
+            path: paths.dashboard.scheme.root,
+            icon: ICONS.user,
+          },
+          // CREATE
+          {
+            title: t('carat'),
+            path: paths.dashboard.carat.root,
+            icon: ICONS.user,
+          },
+
+          // PROPERTY
+          {
+            title: t('property'),
+            path: paths.dashboard.property.root,
+            icon: ICONS.user,
+          },
+          // PENALTY
+          {
+            title: t('penalty'),
+            path: paths.dashboard.penalty.root,
+            icon: ICONS.user,
+          },
           // PRODUCT
           {
             title: t('product'),
@@ -204,7 +231,7 @@ export function useNavData() {
             title: t('mail'),
             path: paths.dashboard.mail,
             icon: ICONS.mail,
-            info: <Label color="error">+32</Label>,
+            info: <Label color='error'>+32</Label>,
           },
 
           // CHAT
@@ -227,10 +254,21 @@ export function useNavData() {
           //   path: paths.dashboard.kanban,
           //   icon: ICONS.kanban,
           // },
+
         ],
-      }
+      },
+      {
+        subheader: t('config'),
+        items: [
+          {
+            title: t('setting'),
+            path: paths.dashboard.setting,
+            icon: ICONS.setting,
+          },
+        ],
+      },
     ],
-    [t]
+    [t],
   );
 
   return data;
