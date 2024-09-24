@@ -20,7 +20,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
-import { useGetLoan } from '../../api/loantype';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const { loan } = useGetLoan();
+  const {configs} = useGetConfigs();
 
   const NewSchemaProperty = Yup.object().shape({
     propertyType: Yup.string().required('Property is required'),
@@ -99,10 +99,10 @@ export default function PropertyNewEditForm({ currentProperty }) {
               }}
             >
               <RHFTextField name='propertyType' label='Property' req={'red'} />
-              <RHFAutocomplete
+              {configs.loanTypes && <RHFAutocomplete
                 name='loanType'
                 label='Loan Type'
-                options={loan.map((item) => item.loanType)}
+                options={configs.loanTypes.map((item) => item.loanType)}
                 getOptionLabel={(option) => option}
                 req={'red'}
                 isOptionEqualToValue={(option, value) => option === value}
@@ -111,7 +111,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
                     {option}
                   </li>
                 )}
-              />
+              />}
               <RHFTextField name='remark' label='Remark' />
             </Box>
 
