@@ -124,7 +124,6 @@ export function useNavData() {
             path: paths.dashboard.carat.root,
             icon: ICONS.user,
           },
-
           // PROPERTY
           {
             title: t('property'),
@@ -135,6 +134,12 @@ export function useNavData() {
           {
             title: t('penalty'),
             path: paths.dashboard.penalty.root,
+            icon: ICONS.user,
+          },
+          // DISBURSE
+          {
+            title: t('disburse'),
+            path: paths.dashboard.disburse.new,
             icon: ICONS.user,
           },
           // PRODUCT
