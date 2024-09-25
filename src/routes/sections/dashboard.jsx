@@ -63,12 +63,19 @@ const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype
 const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
 const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
 const  PropertyListView = lazy(()=>import('../../sections/property/view/property-list-view'))
+
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
 // DISBURSE
 const DisbursecreateView = lazy(()=>import('../../sections/disburse/view/disburse-create-view'))
+
+// LOAN ISSUE
+const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
+const LoanissueCreateView = lazy(()=>import('../../sections/loanissue/view/loanissue-create-view'))
+const LoanissueListView = lazy(()=>import('../../sections/loanissue/view/loanissue-list-view'))
+
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -193,6 +200,15 @@ export const dashboardRoutes = [
           { path: 'list', element: <EmployeeListView /> },
           { path: 'new', element: <EmployeeCreateView /> },
           { path: ':id/edit', element: <EmployeeEditView /> },
+        ],
+      },
+      {
+        path: 'loanissue',
+        children: [
+          { element: <LoanissueListView />, index: true },
+          { path: 'list', element: <LoanissueListView /> },
+          { path: 'new', element: <LoanissueCreateView /> },
+          { path: ':id/edit', element: <LoanissueEditView /> },
         ],
       },
       {

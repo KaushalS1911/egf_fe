@@ -21,7 +21,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import { useGetLoan } from '../../api/loantype';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -30,10 +30,10 @@ export default function InquiryNewEditForm({currentInquiry}) {
   const {user} = useAuthContext();
 
   const {enqueueSnackbar} = useSnackbar();
-  const {loan} = useGetLoan();
-
+  const {configs} = useGetConfigs()
   function checkInquiryFor(val){
-    const isLoanValue = loan.find((item) => item.loanType === val);
+    return null
+    const isLoanValue = configs?.loanTypes?.find((item) => item === val);
     if(isLoanValue){
       return false;
     } else{
@@ -108,7 +108,7 @@ export default function InquiryNewEditForm({currentInquiry}) {
       console.error(error);
     }
   });
-
+  console.log("deswifn : ",configs.loanTypes)
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -155,19 +155,19 @@ export default function InquiryNewEditForm({currentInquiry}) {
                   />
                 )}
               />
-              <RHFAutocomplete
-                name="inquiryFor"
-                label={"Inquiry For"}
+              {configs.loanTypes && <RHFAutocomplete
+                name='inquiryFor'
+                label={'Inquiry For'}
                 autoHighlight
-                options={[...loan,{loanType: "Other"}].map((option) => option.loanType)}
+                options={[...configs?.loanTypes, 'Other']?.map((option) => option)}
                 getOptionLabel={(option) => option}
-                req={"red"}
+                req={'red'}
                 renderOption={(props, option) => (
                   <li {...props} key={option}>
                     {option}
                   </li>
                 )}
-              />
+              />}
               {
                 (watch('inquiryFor') === "Other") &&
               <RHFTextField name="other" label="Other" req={"red"}/>

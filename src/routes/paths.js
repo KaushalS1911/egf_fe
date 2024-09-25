@@ -206,6 +206,18 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/customer/${MOCK_ID}/edit`,
       },
     },
+    loanissue: {
+      root: `${ROOTS.DASHBOARD}/loanissue`,
+      new: `${ROOTS.DASHBOARD}/loanissue/new`,
+      list: `${ROOTS.DASHBOARD}/loanissue/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/loanissue/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
     disburse: {
       root: `${ROOTS.DASHBOARD}/disburse`,
       new: `${ROOTS.DASHBOARD}/disburse/new`,

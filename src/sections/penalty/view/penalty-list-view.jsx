@@ -73,7 +73,7 @@ export default function PenaltyListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
-  console.log(user);
+
   const table = useTable();
 
   const settings = useSettingsContext();
