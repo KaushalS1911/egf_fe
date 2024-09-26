@@ -15,11 +15,7 @@ import {paths} from 'src/routes/paths';
 import {useRouter} from 'src/routes/hooks';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {useSnackbar} from 'src/components/snackbar';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFTextField,
-} from 'src/components/hook-form';
-
+import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import { useGetConfigs } from '../../api/config';
 
