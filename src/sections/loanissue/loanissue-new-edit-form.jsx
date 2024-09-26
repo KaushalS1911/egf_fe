@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useCallback, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useCallback, useMemo, useState } from 'react';
+import { useForm, Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
@@ -25,16 +25,39 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
 import { useGetConfigs } from '../../api/config';
 import { useGetScheme } from '../../api/scheme';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import { Upload } from '../../components/upload';
+import Table from '@mui/material/Table';
+import { TableHeadCustom } from '../../components/table';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Button from '@mui/material/Button';
+import Iconify from '../../components/iconify';
+import { _roles } from '../../_mock';
 
 // ----------------------------------------------------------------------
+const TABLE_HEAD = [
+  { id: 'type', label: 'Type' },
+  { id: 'carat', label: 'Carat', align: 'right' },
+  { id: 'Pcs', label: 'Pcs', align: 'right' },
+  { id: 'totalWeight', label: 'Total Weight', align: 'right' },
+  { id: 'lossWeight', label: 'Loss Weight', align: 'right' },
+  { id: 'grossWeight', label: 'Gross Weight', align: 'right' },
+  { id: 'Net Amount', label: 'Net Amount', align: 'right' },
+  { id: '', label: '', align: 'right' },
+];
 
 export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const router = useRouter();
   const allUser = useGetAllUser();
+
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const [file, setFile] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
-  const {scheme,mutate} = useGetScheme()
+  const { scheme, mutate } = useGetScheme();
 
   const NewEmployeeSchema = Yup.object().shape({
 
@@ -73,6 +96,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     tempState: Yup.string(),
     tempCity: Yup.string(),
     tempZipcode: Yup.string(),
+    items: Yup.lazy(() =>
+      Yup.array().of(
+        Yup.object({
+          title: Yup.string().required('Title is required'),
+          service: Yup.string().required('Service is required'),
+          quantity: Yup.number()
+            .required('Quantity is required')
+            .min(1, 'Quantity must be more than 0'),
+        }),
+      ),
+    ),
   });
 
   const defaultValues = useMemo(() => ({
@@ -105,6 +139,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     tempState: currentLoanIssue?.temporaryAddress.state || '',
     tempCity: currentLoanIssue?.temporaryAddress.city || '',
     tempZipcode: currentLoanIssue?.temporaryAddress.zipcode || '',
+    items: currentLoanIssue?.items || [
+      {
+        title: '',
+        description: '',
+        service: '',
+        quantity: 1,
+        price: 0,
+        total: 0,
+      },
+    ],
   }), [currentLoanIssue]);
 
   const methods = useForm({
@@ -120,6 +164,26 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'items',
+  });
+
+  const handleAdd = () => {
+    append({
+      title: '',
+      description: '',
+      service: '',
+      quantity: 1,
+      price: 0,
+      total: 0,
+    });
+  };
+
+  const handleRemove = (index) => {
+    remove(index);
+  };
 
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -227,6 +291,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     [setValue],
   );
 
+  const handleDropSingleFile = useCallback((acceptedFiles) => {
+    const newFile = acceptedFiles[0];
+    if (newFile) {
+      setFile(
+        Object.assign(newFile, {
+          preview: URL.createObjectURL(newFile),
+        }),
+      );
+    }
+  }, []);
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -257,12 +332,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='customerCode' label='Customer Code' sx={{' div' : {border: '1px solid black'}}} />
-              <RHFTextField name='customerName' label='Customer Name' sx={{' div' : {border: '1px solid black'}}} />
-              <RHFTextField name='customerAddress' label='Customer Address' sx={{' div' : {border: '1px solid black'}}} />
-              <RHFTextField name='contact' label='Mobile No.' sx={{' div' : {border: '1px solid black'}}}/>
-              <RHFTextField name='contactOtp' label='OTP Mobile No.' sx={{' div' : {border: '1px solid black'}}} />
-              <RHFTextField name='voterCard' label='OTP Loan No.' sx={{' div' : {border: '1px solid black'}}}/>
+              <RHFTextField name='customerCode' label='Customer Code'
+                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+              <RHFTextField name='customerName' label='Customer Name'
+                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+              <RHFTextField name='customerAddress' label='Customer Address'
+                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+              <RHFTextField name='contact' label='Mobile No.'
+                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+              <RHFTextField name='contactOtp' label='OTP Mobile No.'
+                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+              <RHFTextField name='voterCard' label='OTP Loan No.'
+                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
             </Box>
           </Card>
         </Grid>
@@ -317,19 +398,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   </li>
                 )}
               />
-              <RHFTextField name='middleName' label='Middle Name' req={'red'} />
-              <RHFTextField name='lastName' label='Last Name' req={'red'} />
-              <RHFTextField name='drivingLicense' label='Driving License' />
-              <RHFTextField name='panCard' label='Pan No.' req={'red'} />
-              <RHFTextField name='voterCard' label='Voter ID' />
-              <RHFTextField name='aadharCard' label='Aadhar Card' req={'red'} />
-              <RHFTextField name='contact' label='Mobile' req={'red'} />
+              <RHFTextField name='interestRate' label='Instrest Rate' req={'red'} />
+              <RHFTextField name='lastName' label='Consulting Charge' req={'red'} />
+              <RHFTextField name='periodTime' label='INT. Period Time' req={'red'} />
+              <RHFTextField name='renewalTime' label='Renewal Time' req={'red'} />
+              <RHFTextField name='loanCloseTime' label='Minimun Loan Close Time' req={'red'} />
+              <RHFTextField name='aadharCard' label='Loan AMT.' req={'red'} />
               <Controller
-                name='dob'
+                name='intDate'
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
-                    label='Date of Birth'
+                    label='Next INT.Date'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
                     slotProps={{
@@ -343,98 +423,70 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   />
                 )}
               />
-              <RHFTextField name='remark' label='Remark' />
+              <RHFTextField name='jewelersName' label='Jewelers Name' req={'red'} />
             </Box>
           </Card>
         </Grid>
 
         <Grid item xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Official Info
+            Property Details
           </Typography>
         </Grid>
         <Grid item xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              {/*<RHFAutocomplete*/}
-              {/*  name='role'*/}
-              {/*  label='Role'*/}
-              {/*  req={'red'}*/}
-              {/*  fullWidth*/}
-              {/*  options={configs?.roles?.map((item) => item)}*/}
-              {/*  getOptionLabel={(option) => option}*/}
-              {/*  renderOption={(props, option) => (*/}
-              {/*    <li {...props} key={option}>*/}
-              {/*      {option}*/}
-              {/*    </li>*/}
-              {/*  )}*/}
-              {/*/>*/}
-              {/*<RHFAutocomplete*/}
-              {/*  name='reportingTo'*/}
-              {/*  label='Reporting to'*/}
-              {/*  req={'red'}*/}
-              {/*  fullWidth*/}
-              {/*  options={allUser?.user?.map((item) => item)}*/}
-              {/*  getOptionLabel={(option) => option.firstName + ' ' + option.lastName}*/}
-              {/*  renderOption={(props, option) => (*/}
-              {/*    <li {...props} key={option} value={option._id}>*/}
-              {/*      {option.firstName + ' ' + option.lastName}*/}
-              {/*    </li>*/}
-              {/*  )}*/}
-              {/*/>*/}
-              <RHFTextField name='email' label='Email' req={'red'} />
-              {!currentLoanIssue && <RHFTextField name='password' label='Password' req={'red'} />}
-              <Controller
-                name='joiningDate'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Join Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                        className: 'req',
-                      },
-                    }}
-                  />
-                )}
-              />
-
-              <Controller
-                name='leaveDate'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Leave Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                      },
-                    }}
-                  />
-                )}
-              />
-            </Box>
+          <Card>
+            <CardHeader title='Property Images' />
+            <CardContent>
+              <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} />
+            </CardContent>
           </Card>
         </Grid>
-
-
+        <Grid item xs={12}>
+          <Card>
+            <Table sx={{ minWidth: 800, borderRadius: '16px' }}>
+              <TableHeadCustom headLabel={TABLE_HEAD} />
+              <TableBody>
+                {fields.map((row, index) => (
+                  <TableRow key={row.name}>
+                    <TableCell><RHFAutocomplete
+                      name="goldType"
+                      autoHighlight
+                      options={['sa','as','yu'].map((option) => option)}
+                      getOptionLabel={(option) => option}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option}>
+                          {option}
+                        </li>
+                      )}
+                    /></TableCell>
+                    <TableCell align='right'><RHFTextField name={""} /></TableCell>
+                    <TableCell align='right'>sasasa</TableCell>
+                    <TableCell align='right'>sasas</TableCell>
+                    <TableCell align='right'>sasasa</TableCell>
+                    <TableCell align='right'>
+                      <Button
+                        size='small'
+                        color='error'
+                        startIcon={<Iconify icon='solar:trash-bin-trash-bold' />}
+                        onClick={() => handleRemove(index)}
+                      >
+                        Remove
+                      </Button></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+          <Button
+            size='small'
+            color='primary'
+            startIcon={<Iconify icon='mingcute:add-line' />}
+            onClick={handleAdd}
+            sx={{ flexShrink: 0 }}
+          >
+            Add Item
+          </Button>
+        </Grid>
         <Grid item xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
             Address Details

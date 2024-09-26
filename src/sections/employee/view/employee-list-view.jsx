@@ -105,12 +105,12 @@ export default function EmployeeListView() {
   }, []);
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/employee`, {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
         data: { ids: id },
       });
-      enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
+      enqueueSnackbar(res.data.message);
     } catch (err) {
       enqueueSnackbar("Failed to delete Employee");
     }
@@ -130,7 +130,8 @@ export default function EmployeeListView() {
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = employee.filter((row) => table.selected.includes(row._id));
-    const deleteIds = deleteRows.map((row) => row._id);
+    console.log("deleteRowsdeleteRows : ",deleteRows)
+    const deleteIds = deleteRows.map((row) => row.user._id);
     handleDelete(deleteIds)
     setTableData(deleteRows);
 
@@ -235,8 +236,8 @@ export default function EmployeeListView() {
                         row={row}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row.user._id)}
+                        onEditRow={() => handleEditRow(row.user._id)}
                       />
                     ))}
 
