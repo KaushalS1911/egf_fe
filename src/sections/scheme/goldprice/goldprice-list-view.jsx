@@ -173,7 +173,7 @@ const handleDelete = (id) =>{
 
     }
     catch (error) {
-      enqueueSnackbar("");
+      enqueueSnackbar("Failed to Update schemes",{variant:'error'});
     }
   }
   return (

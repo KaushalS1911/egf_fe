@@ -19,6 +19,7 @@ const AmplifyForgotPasswordPage = lazy(() => import('src/pages/auth/amplify/forg
 // JWT
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
+const ForgotPasswordPage = lazy(() => import('src/pages/auth/jwt/forgot-password'));
 
 // FIREBASE
 const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
@@ -107,6 +108,16 @@ const authJwt = {
           <AuthClassicLayout register={true} title='Manage the job more effectively with Minimal'>
             <JwtRegisterPage />
           </AuthClassicLayout>
+        </GuestGuard>
+      ),
+    },
+    {
+      path: 'forgot-password',
+      element: (
+        <GuestGuard>
+          {/*<AuthClassicLayout>*/}
+            <ForgotPasswordPage />
+          {/*</AuthClassicLayout>*/}
         </GuestGuard>
       ),
     },

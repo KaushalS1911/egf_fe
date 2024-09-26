@@ -34,7 +34,7 @@ const Logo = forwardRef(({ disabledLink = false, navWidth, sx, ...other }, ref) 
         style={{
           borderRadius: '5%',
           width: navWidth ? '75px' : '124px',
-          height: navWidth ? '75px' : '124px',
+          padding: ' 0 10px',
         }}
       />
     </Box>

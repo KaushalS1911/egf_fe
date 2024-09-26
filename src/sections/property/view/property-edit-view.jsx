@@ -37,7 +37,7 @@ export default function PropertyEditView() {
             name: 'Property List',
             href: paths.dashboard.property.root,
           },
-          { name: currentProperty?.name },
+          { name: 'Edit Property' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

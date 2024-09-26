@@ -20,13 +20,18 @@ import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import Logo from 'src/components/logo';
 import { useAuthContext } from '../../../auth/hooks';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Box } from '@mui/material';
+import axios from 'axios';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
-export default function JwtLoginView() {
-  const { login } = useAuthContext();
+export default function JwtForgotPassword() {
+  // const { login } = useAuthContext();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuthContext();
 
   const returnTo = searchParams.get('returnTo');
 
@@ -34,15 +39,16 @@ export default function JwtLoginView() {
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    // password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
     email: '',
-    password: '',
+    // password: '',
   };
 
   const methods = useForm({
+    resolver: yupResolver(LoginSchema),
     defaultValues,
   });
 
@@ -54,11 +60,13 @@ export default function JwtLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await login(data.email, data.password);
-      router.push(returnTo || PATH_AFTER_LOGIN);
+      const res = await axios.post(`${import.meta.env.VITE_AUTH_API}/forgot-password`,data)
+      enqueueSnackbar(res?.data.message);
+      // router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-      console.error(error);
-      reset();
+      enqueueSnackbar("something went wrong",{variant:'error'});
+      // console.error(error);
+      // reset();
     }
   });
 
@@ -69,30 +77,15 @@ export default function JwtLoginView() {
   );
 
   return (
-    <>
+    <Box sx={{height:'100vh',display:'flex',justifyContent:"center" ,alignItems:'center'}}>
+    <Box width={350} sx={{boxShadow: '1px 1px 20px #e1e1e1',p:3,borderRadius:2}}>
       {renderHead}
+      <Stack sx={{mb:3}} alignItems={'center'}>
+      <Typography variant='h4'>Forgot password</Typography>
+      </Stack>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Stack spacing={2.5}>
           <RHFTextField name='email' label='Email address' />
-          <RHFTextField
-            name='password'
-            label='Password'
-            type={password.value ? 'text' : 'password'}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='end'>
-                  <IconButton onClick={password.onToggle} edge='end'>
-                    <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Stack>
-            <Link component={RouterLink} href={paths.auth.jwt.forgotPassword} variant='subtitle2'>
-              Forgot Password?
-            </Link>
-          </Stack>
 
           <LoadingButton
             fullWidth
@@ -102,17 +95,17 @@ export default function JwtLoginView() {
             variant='contained'
             loading={isSubmitting}
           >
-            Login
-          </LoadingButton>
+            Submit
+          </LoadingButton>   <Stack sx={{ textAlign: 'center', mt: '10px' }}>
 
-          <Stack sx={{ textAlign: 'center', mt: '10px' }}>
-            <Typography variant='body2'>Don't have an account?</Typography>
-            <Link component={RouterLink} href={paths.auth.jwt.register} variant='subtitle2' sx={{ mt: '8px' }}>
-              Create an account
-            </Link>
-          </Stack>
+          <Link component={RouterLink} href={paths.auth.jwt.login} variant='subtitle2' sx={{ mt: '8px' }}>
+            Back to Log In
+          </Link>
+        </Stack>
+
         </Stack>
       </FormProvider>
-    </>
+    </Box>
+    </Box>
   );
 }

@@ -135,12 +135,7 @@ export function useNavData() {
             icon: ICONS.carat,
           },
 
-          // LOANTYPE
-          {
-            title: t('loan type'),
-            path: paths.dashboard.loan.root,
-            icon: ICONS.loanType,
-          },
+
           // PROPERTY
           {
             title: t('property'),
@@ -153,12 +148,7 @@ export function useNavData() {
             path: paths.dashboard.penalty.root,
             icon: ICONS.penalty,
           },
-          // DISBURSE
-          {
-            title: t('disburse'),
-            path: paths.dashboard.disburse.new,
-            icon: ICONS.user,
-          },
+
           // PRODUCT
           // {
           //   title: t('product'),
@@ -286,7 +276,14 @@ export function useNavData() {
             title: t('Loan issue'),
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
-          }
+          },
+
+          // DISBURSE
+          {
+            title: t('disburse'),
+            path: paths.dashboard.disburse.new,
+            icon: ICONS.user,
+          },
           ]
       },
       {

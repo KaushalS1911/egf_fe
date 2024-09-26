@@ -34,7 +34,7 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
       )}
     />
   );
-};
+}
 
 RHFTextField.propTypes = {
   helperText: PropTypes.string,
