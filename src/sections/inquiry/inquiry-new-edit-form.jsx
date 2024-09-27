@@ -28,7 +28,6 @@ export default function InquiryNewEditForm({currentInquiry}) {
   const {enqueueSnackbar} = useSnackbar();
   const {configs} = useGetConfigs()
   function checkInquiryFor(val){
-    return null
     const isLoanValue = configs?.loanTypes?.find((item) => item === val);
     if(isLoanValue){
       return false;
@@ -42,7 +41,10 @@ export default function InquiryNewEditForm({currentInquiry}) {
     lastName: Yup.string().required('Last name is required'),
     contact: Yup.string().required('Contact is required'),
     email: Yup.string().email('Email must be valid').required('Email is required'),
-    date: Yup.string().required('Date is required'),
+    date: Yup.date()
+      .required('Date is required')
+      .nullable()
+      .typeError('Date is required'),
     inquiryFor: Yup.string().required('Inquiry field is required'),
     // other: Yup.string().required('Other field is required'),
     remark: Yup.string().required('Remark is required'),
@@ -87,22 +89,28 @@ export default function InquiryNewEditForm({currentInquiry}) {
     }
     try {
       if (currentInquiry) {
-        axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`, payload).then((res) => {
-          enqueueSnackbar(res?.data.message);
-          router.push(paths.dashboard.inquiry.list)
-          reset();
-        }).catch((err) => console.log(err));
+        const res = await axios.put(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`,
+          payload
+        );
+        enqueueSnackbar(res?.data?.message);
+        router.push(paths.dashboard.inquiry.list);
+        reset();
       } else {
-        axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?branch=66ea5ebb0f0bdc8062c13a64`, payload).then((res) => {
-          enqueueSnackbar(res?.data.message);
-          router.push(paths.dashboard.inquiry.list)
-          reset();
-        }).catch((err) => console.log(err));
+        const res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?branch=66ea5ebb0f0bdc8062c13a64`,
+          payload
+        );
+        enqueueSnackbar(res?.data?.message);
+        router.push(paths.dashboard.inquiry.list);
+        reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentInquiry ? "Failed to Update Inquiry" : "Failed to create Inquiry", {variant: "error"});
+      const errorMessage = error?.response?.data?.message || "Request failed";
+      enqueueSnackbar(errorMessage, { variant: "error" });
       console.error(error);
     }
+
   });
   console.log("deswifn : ",configs.loanTypes)
   return (
