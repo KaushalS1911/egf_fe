@@ -31,7 +31,6 @@ export default function JwtForgotPassword() {
   // const { login } = useAuthContext();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuthContext();
 
   const returnTo = searchParams.get('returnTo');
 

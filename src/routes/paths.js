@@ -63,6 +63,7 @@ export const paths = {
       login: `${ROOTS.AUTH}/jwt/login`,
       register: `${ROOTS.AUTH}/jwt/register`,
       forgotPassword: `${ROOTS.AUTH}/jwt/forgot-password`,
+      // resetPassword: `/jwt/reset-password/:token`,
     },
     firebase: {
       login: `${ROOTS.AUTH}/firebase/login`,
@@ -97,6 +98,9 @@ export const paths = {
       verify: `${ROOTS.AUTH_DEMO}/modern/verify`,
     },
   },
+  resetPassword:{
+    resetPassword: `/jwt/reset-password/:token`,
+  },
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
@@ -118,7 +122,6 @@ export const paths = {
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
     },
-
     inquiry: {
       root: `${ROOTS.DASHBOARD}/inquiry`,
       new: `${ROOTS.DASHBOARD}/inquiry/new`,

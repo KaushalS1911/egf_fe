@@ -1,17 +1,18 @@
 import { Helmet } from 'react-helmet-async';
-import JwtForgotPassword from '../../../sections/auth/jwt/forgot-password-view';
 
+import { JwtLoginView } from 'src/sections/auth/jwt';
+import JwtResetPassword from '../../../sections/auth/jwt/reset-password-view';
 
 // ----------------------------------------------------------------------
 
-export default function ForgotPasswordPage() {
+export default function ResetPage() {
   return (
     <>
       <Helmet>
         <title> Jwt: Login</title>
       </Helmet>
 
-      <JwtForgotPassword />
+      <JwtResetPassword />
     </>
   );
 }

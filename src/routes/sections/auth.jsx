@@ -121,6 +121,7 @@ const authJwt = {
         </GuestGuard>
       ),
     },
+
   ],
 };
 

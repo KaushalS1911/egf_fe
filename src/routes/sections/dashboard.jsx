@@ -11,6 +11,7 @@ import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 
 // ----------------------------------------------------------------------
 
+const ResetPassword = lazy(() => import('src/pages/auth/jwt/reset'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
@@ -284,4 +285,5 @@ export const dashboardRoutes = [
       { path: 'setting', element: <SettingsPage /> },
     ],
   },
+  { path: 'jwt/reset-password/:token', element: <ResetPassword   /> },
 ];
