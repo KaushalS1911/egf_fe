@@ -134,6 +134,8 @@ export function useNavData() {
             path: paths.dashboard.carat.root,
             icon: ICONS.carat,
           },
+
+
           // PROPERTY
           {
             title: t('property'),
@@ -146,6 +148,7 @@ export function useNavData() {
             path: paths.dashboard.penalty.root,
             icon: ICONS.penalty,
           },
+
           // PRODUCT
           // {
           //   title: t('product'),
@@ -274,7 +277,14 @@ export function useNavData() {
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
           },
-        ],
+
+          // DISBURSE
+          {
+            title: t('disburse'),
+            path: paths.dashboard.disburse.new,
+            icon: ICONS.user,
+          },
+          ]
       },
       {
         subheader: t('config'),

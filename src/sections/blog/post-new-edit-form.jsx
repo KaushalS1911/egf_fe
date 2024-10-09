@@ -51,7 +51,6 @@ export default function PostNewEditForm({ currentPost }) {
     coverUrl: Yup.mixed().nullable().required('Cover is required'),
     tags: Yup.array().min(2, 'Must have at least 2 tags'),
     metaKeywords: Yup.array().min(1, 'Meta keywords is required'),
-    // not required
     metaTitle: Yup.string(),
     metaDescription: Yup.string(),
   });

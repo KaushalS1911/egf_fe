@@ -81,7 +81,7 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
           reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentPenalty ? 'Failed To Edit penalty' :'Failed to create penalty');
+      enqueueSnackbar(currentPenalty ? 'Failed To Edit penalty' :'Failed to create penalty',{variant:'error'});
       console.error(error);
     }
   });
@@ -104,8 +104,8 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='afterDueDateFromDate' label='afterDueDateFromDate' req={'red'} />
-              <RHFTextField name='afterDueDateToDate' label='afterDueDateToDate' req={'red'} />
+              <RHFTextField name='afterDueDateFromDate' label='After DueDate From Date' req={'red'} />
+              <RHFTextField name='afterDueDateToDate' label='After DueDate To Date' req={'red'} />
               <RHFTextField name='penaltyInterest' label='Penalty Interest' req={'red'} />
               <RHFTextField name='remark' label='Remark' />
             </Box>

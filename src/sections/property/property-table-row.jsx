@@ -22,7 +22,7 @@ import { Box } from '@mui/material';
 // ----------------------------------------------------------------------
 
 export default function PropertyTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const {propertyType,loanType,remark,isActive,isQtyEdit} = row;
+  const {propertyType,loanType,quantity,remark,isActive,isQtyEdit} = row;
 
   const confirm = useBoolean();
 
@@ -38,6 +38,7 @@ export default function PropertyTableRow({ row, selected, onEditRow, onSelectRow
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{propertyType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanType}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{quantity}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark ? remark : "-"}</TableCell>
         <TableCell>
           <Label
@@ -84,7 +85,6 @@ export default function PropertyTableRow({ row, selected, onEditRow, onSelectRow
           Delete
         </MenuItem>
 
-        {isQtyEdit &&
         <MenuItem
           onClick={() => {
             onEditRow();
@@ -93,7 +93,7 @@ export default function PropertyTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>}
+        </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog

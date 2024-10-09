@@ -9,21 +9,20 @@ import { _userList } from 'src/_mock';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import PropertyNewEditForm from '../property-new-edit-form';
+import DisburseNewEditForm from '../disburse-new-edit-form';
 import { useGetScheme } from '../../../api/scheme';
 import { useParams } from '../../../routes/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { Box } from '@mui/material';
-import { useGetAllProperty } from '../../../api/property';
 
 // ----------------------------------------------------------------------
 
-export default function PropertyEditView() {
+export default function DisburseEditView() {
   const settings = useSettingsContext();
-  const {property} = useGetAllProperty()
+  const {scheme} = useGetScheme()
   const {id} = useParams()
 
-  const currentProperty = property.find((carat) => carat._id === id);
+  const currentScheme = scheme.find((scheme) => scheme._id === id);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -34,17 +33,17 @@ export default function PropertyEditView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Property List',
-            href: paths.dashboard.property.root,
+            name: 'Scheme',
+            href: paths.dashboard.scheme.root,
           },
-          { name: 'Edit Property' },
+          { name: currentScheme?.name },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      {currentProperty ? <PropertyNewEditForm currentProperty={currentProperty} /> :
+      {currentScheme ? <DisburseNewEditForm currentScheme={currentScheme} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>
@@ -53,6 +52,6 @@ export default function PropertyEditView() {
   );
 }
 
-PropertyEditView.propTypes = {
+DisburseEditView.propTypes = {
   id: PropTypes.string,
 };

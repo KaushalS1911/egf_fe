@@ -30,6 +30,7 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useGetConfigs } from '../../api/config';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
+import Iconify from '../../components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -727,14 +728,32 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                     onChange={(e) => handleBankDetailChange(index, 'branchName', e.target.value)}
                   />
                   <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
-                    <Button variant='outlined' color='error' onClick={() => removeBankDetail(index)}>
-                      Remove Bank Account
+                    {/*<Button variant='outlined' color='error' onClick={() => removeBankDetail(index)}>*/}
+                    {/*  Remove Bank Account*/}
+                    {/*</Button>*/}
+                    <Button
+                      size="small"
+                      color="error"
+                      startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                      onClick={() => removeBankDetail(index)}
+                    >
+                      Remove
                     </Button>
                   </Box>
                 </Box>
               </Box>
             ))}
-            <Button variant='outlined' onClick={addBankDetail}>
+
+            {/*<Button variant='outlined' onClick={addBankDetail}>*/}
+            {/*  Add Bank Account*/}
+            {/*</Button>*/}
+            <Button
+            size="small"
+            color="primary"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={addBankDetail}
+            sx={{ flexShrink: 0 }}
+          >
               Add Bank Account
             </Button>
           </Stack>

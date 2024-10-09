@@ -11,6 +11,7 @@ import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 
 // ----------------------------------------------------------------------
 
+const ResetPassword = lazy(() => import('src/pages/auth/jwt/reset'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
@@ -64,6 +65,8 @@ const  PropertyListView = lazy(()=>import('../../sections/property/view/property
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
+// DISBURSE
+const DisbursecreateView = lazy(()=>import('../../sections/disburse/view/disburse-create-view'))
 
 // LOAN ISSUE
 const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
@@ -148,6 +151,7 @@ export const dashboardRoutes = [
           // { path: ':id/edit', element: <InquiryEditView /> },
         ],
       },
+
       {
         path: 'property',
         children: [
@@ -165,6 +169,15 @@ export const dashboardRoutes = [
           { path: 'list', element: <PenaltyListView/> },
           { path: 'new', element: <PenaltyCreateview/> },
           { path: ':id/edit', element: <PenaltyEditView /> },
+        ],
+      },
+      {
+        path: 'disburse',
+        children: [
+          // { element: <PenaltyListView/>, index: true },
+          // { path: 'list', element: <PenaltyListView/> },
+          { path: 'new', element: <DisbursecreateView/> },
+          // { path: ':id/edit', element: <PenaltyEditView /> },
         ],
       },
       {
@@ -272,4 +285,5 @@ export const dashboardRoutes = [
       { path: 'setting', element: <SettingsPage /> },
     ],
   },
+  { path: 'jwt/reset-password/:token', element: <ResetPassword   /> },
 ];

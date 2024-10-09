@@ -167,12 +167,13 @@ const handleDelete = (id) =>{
     const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.interestRate) * parseFloat(filters.name)/100}));
     try {
     const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
-      enqueueSnackbar(res?.data.message);
+    const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/update-schemes?branch=66ea5ebb0f0bdc8062c13a64`,{schemes:payload})
+      enqueueSnackbar(resScheme?.data.message);
     router.push(paths.dashboard.scheme.list);
-    // const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`,payload)
+
     }
     catch (error) {
-      enqueueSnackbar("");
+      enqueueSnackbar("Failed to Update schemes",{variant:'error'});
     }
   }
   return (

@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -20,11 +19,7 @@ import FormProvider, {
   RHFAutocomplete, RHFSwitch,
   RHFTextField,
 } from 'src/components/hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { countries } from '../../assets/data';
 import axios from 'axios';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 
@@ -59,7 +54,6 @@ export default function SchemeNewEditForm({ currentScheme }) {
 
   const defaultValues = useMemo(
     () => (
-
       {
       name: currentScheme?.name || '',
       ratePerGram: currentScheme?.ratePerGram || 0,
@@ -104,7 +98,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
       if (currentScheme) {
         const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/${currentScheme._id}?branch=66ea5ebb0f0bdc8062c13a64`, data)
         router.push(paths.dashboard.scheme.list);
-        enqueueSnackbar(res?.data.message);
+          enqueueSnackbar(res?.data.message);
         reset();
       } else {
         const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, data)
@@ -113,7 +107,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
         reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentScheme ? 'Failed To update scheme' :'Failed to create Scheme');
+      enqueueSnackbar(currentScheme ? 'Failed To update scheme' :'Failed to create Scheme',{variant:'error'});
       console.error(error);
     }
   });
@@ -216,7 +210,6 @@ export default function SchemeNewEditForm({ currentScheme }) {
     </FormProvider>
   );
 }
-
 SchemeNewEditForm.propTypes = {
   currentScheme: PropTypes.object,
 };

@@ -74,7 +74,7 @@ export default function CaratNewEditForm({ currentCarat }) {
           reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentCarat ? 'Failed To Edit Carat' :'Failed to create carat');
+      enqueueSnackbar(currentCarat ? 'Failed To Edit Carat' :'Failed to create carat',{variant:'error'});
       console.error(error);
     }
   });
