@@ -121,25 +121,13 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/inquiry`,
       new: `${ROOTS.DASHBOARD}/inquiry/new`,
       list: `${ROOTS.DASHBOARD}/inquiry/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/inquiry/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
     },
     employee: {
       root: `${ROOTS.DASHBOARD}/employee`,
       new: `${ROOTS.DASHBOARD}/employee/new`,
       list: `${ROOTS.DASHBOARD}/employee/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/employee/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
     },
     scheme: {
       root: `${ROOTS.DASHBOARD}/scheme`,
@@ -153,37 +141,13 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/carat`,
       new: `${ROOTS.DASHBOARD}/carat/new`,
       list: `${ROOTS.DASHBOARD}/carat/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/carat/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
-    },
-    loan: {
-      root: `${ROOTS.DASHBOARD}/loan`,
-      new: `${ROOTS.DASHBOARD}/loan/new`,
-      list: `${ROOTS.DASHBOARD}/loan/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
-      edit: (id) => `${ROOTS.DASHBOARD}/loan/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
     },
     property: {
       root: `${ROOTS.DASHBOARD}/property`,
       new: `${ROOTS.DASHBOARD}/property/new`,
       list: `${ROOTS.DASHBOARD}/property/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/property/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
     },
     penalty: {
       root: `${ROOTS.DASHBOARD}/penalty`,
@@ -210,13 +174,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/loanissue`,
       new: `${ROOTS.DASHBOARD}/loanissue/new`,
       list: `${ROOTS.DASHBOARD}/loanissue/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/loanissue/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
     },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,

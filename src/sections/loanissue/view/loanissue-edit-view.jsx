@@ -4,46 +4,42 @@ import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { _userList } from 'src/_mock';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-
 import LoanissueNewEditForm from '../loanissue-new-edit-form';
 import { useParams } from '../../../routes/hooks';
-import { useGetEmployee } from '../../../api/employee';
 import { Box } from '@mui/material';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetLoanissue } from '../../../api/loanissue';
 
 // ----------------------------------------------------------------------
 
 export default function LoanissueEditView() {
   const settings = useSettingsContext();
-  const {employee} = useGetEmployee();
+  const { Loanissue } = useGetLoanissue();
   const { id } = useParams();
-  const currentEmployee = employee.find((emp) => emp._id === id);
+  const currentLoanIssue = Loanissue?.find((loan) => loan?._id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create New Employee"
+        heading='Create New Loanissue'
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Employee List',
-            href: paths.dashboard.employee.root,
+            name: 'Loanissue List',
+            href: paths.dashboard.loanissue.root,
           },
-          { name: 'Create New Employee' },
+          { name: 'Create New Loanissue' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
-
-      {currentEmployee ? <LoanissueNewEditForm currentEmployee={currentEmployee} /> :
+      {currentLoanIssue ? <LoanissueNewEditForm currentLoanIssue={currentLoanIssue} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>

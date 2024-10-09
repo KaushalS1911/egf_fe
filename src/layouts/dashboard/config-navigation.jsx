@@ -134,13 +134,6 @@ export function useNavData() {
             path: paths.dashboard.carat.root,
             icon: ICONS.carat,
           },
-
-          // LOANTYPE
-          {
-            title: t('loan type'),
-            path: paths.dashboard.loan.root,
-            icon: ICONS.loanType,
-          },
           // PROPERTY
           {
             title: t('property'),
@@ -280,8 +273,8 @@ export function useNavData() {
             title: t('Loan issue'),
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
-          }
-          ]
+          },
+        ],
       },
       {
         subheader: t('config'),

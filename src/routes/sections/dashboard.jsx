@@ -55,10 +55,6 @@ const GoldPriceListView = lazy(()=>import('../../sections/scheme/goldprice/goldp
 const CaratListView = lazy(()=> import('../../sections/carat/view/carat-list-view'));
 const CaratCreateView = lazy(()=>import('../../sections/carat/view/carat-create-view'))
 const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view'))
-// LOANTYPE
-const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
-const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
-const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
 //PROPERTY
 const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
 const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
@@ -149,17 +145,6 @@ export const dashboardRoutes = [
           { path: 'list', element: <CaratListView/> },
           { path: 'new', element: <CaratCreateView/> },
           { path: ':id/edit', element: <CaratEditView /> },
-          // { path: ':id/edit', element: <InquiryEditView /> },
-        ],
-      },
-
-      {
-        path: 'loan',
-        children: [
-          { element: <LoanTypeListView/>, index: true },
-          { path: 'list', element: <LoanTypeListView/> },
-          { path: 'new', element: <LoanTypecreateView/> },
-          { path: ':id/edit', element: <LoanTypeEditView /> },
           // { path: ':id/edit', element: <InquiryEditView /> },
         ],
       },
