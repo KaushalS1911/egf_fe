@@ -65,8 +65,12 @@ const  PropertyListView = lazy(()=>import('../../sections/property/view/property
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
+
 // DISBURSE
 const DisbursecreateView = lazy(()=>import('../../sections/disburse/view/disburse-create-view'))
+
+// DISBURSE
+const ReminderListView = lazy(()=>import('../../sections/reminder/view/reminder-list-view'))
 
 // LOAN ISSUE
 const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
@@ -178,6 +182,12 @@ export const dashboardRoutes = [
           // { path: 'list', element: <PenaltyListView/> },
           { path: 'new', element: <DisbursecreateView/> },
           // { path: ':id/edit', element: <PenaltyEditView /> },
+        ],
+      },
+      {
+        path: 'reminder',
+        children: [
+          { path: 'list', element: <ReminderListView/> },
         ],
       },
       {

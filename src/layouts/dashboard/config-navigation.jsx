@@ -52,6 +52,7 @@ const ICONS = {
   property: <Iconify icon='clarity:building-solid' sx={{ width: 1, height: 1 }} />, // Property icon (cityscape for real estate/property)
   penalty: <Iconify icon='icon-park-outline:gavel' sx={{ width: 1, height: 1 }} />, // Penalty icon (justice scale for penalties and fines)
   loanissue: <Iconify icon='streamline:bank-solid' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
+  reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
 };
 
@@ -283,6 +284,12 @@ export function useNavData() {
             title: t('disburse'),
             path: paths.dashboard.disburse.new,
             icon: ICONS.user,
+          },
+          // REMINDER
+          {
+            title: t('reminder'),
+            path: paths.dashboard.reminder.list,
+            icon: ICONS.reminder,
           },
           ]
       },

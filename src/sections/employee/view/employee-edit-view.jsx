@@ -21,7 +21,7 @@ export default function EmployeeEditView() {
   const settings = useSettingsContext();
   const {employee} = useGetEmployee();
   const { id } = useParams();
-  const currentEmployee = employee.find((emp) => emp._id === id);
+  const currentEmployee = employee.find((emp) => emp.user._id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>

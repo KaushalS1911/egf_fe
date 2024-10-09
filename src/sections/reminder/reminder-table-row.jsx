@@ -16,30 +16,44 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { TextField } from '@mui/material';
 
 
 // ----------------------------------------------------------------------
 
-export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSelectRow, onDeleteRow , goldRate}) {
-  const {name,ratePerGram,interestRate,valuation} = row;
+export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+  const {loanNo,customerName,otpNo,loanAmount,days,nextInterestPayDate,issueDate,lastInterestDate} = row;
 
   const confirm = useBoolean();
 
+  const quickEdit = useBoolean();
 
   const popover = usePopover();
+
   return (
     <>
       <TableRow hover selected={selected}>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuation}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <TextField sx={{ whiteSpace: 'nowrap' , " input" : { height: 0 }}} value={goldRate ?  parseFloat(goldRate) * parseFloat(interestRate)/100 : 0}></TextField>
+        <TableCell padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerName}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otpNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nextInterestPayDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{issueDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{lastInterestDate}</TableCell>
+
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
+          {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
+          {/*    <Iconify icon="solar:pen-bold" />*/}
+          {/*  </IconButton>*/}
+          {/*</Tooltip>*/}
+
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
@@ -91,7 +105,7 @@ export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSe
   );
 }
 
-GoldpriceTableRow.propTypes = {
+ReminderTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

@@ -104,8 +104,8 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='afterDueDateFromDate' label='After DueDate From Date' req={'red'} />
-              <RHFTextField name='afterDueDateToDate' label='After DueDate To Date' req={'red'} />
+              <RHFTextField name='afterDueDateFromDate' label='After Due Date From Date' req={'red'}/>
+              <RHFTextField name='afterDueDateToDate' label='After Due Date To Date' req={'red'} />
               <RHFTextField name='penaltyInterest' label='Penalty Interest' req={'red'} />
               <RHFTextField name='remark' label='Remark' />
             </Box>

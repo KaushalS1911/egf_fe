@@ -34,16 +34,14 @@ import {
 } from 'src/components/table';
 
 
-import { isAfter, isBetween } from '../../../utils/format-time';
 import SchemeTableToolbar from '../scheme-table-toolbar';
 import SchemeTableFiltersResult from '../scheme-table-filters-result';
 import SchemeTableRow from '../scheme-table-row';
-import { Box, CircularProgress } from '@mui/material';
+import { Box} from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
-import { valueToPercent } from '@mui/material/Slider/useSlider';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
@@ -392,4 +390,3 @@ function applyFilter({ inputData, comparator, filters }) {
 
   return inputData;
 }
-

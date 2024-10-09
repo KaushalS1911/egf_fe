@@ -221,6 +221,15 @@ export const paths = {
       // account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/penalty/${id}/edit`,
     },
+    reminder: {
+      // root: `${ROOTS.DASHBOARD}/reminder`,
+      // new: `${ROOTS.DASHBOARD}/disburse/new`,
+      list: `${ROOTS.DASHBOARD}/reminder/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      // edit: (id) => `${ROOTS.DASHBOARD}/penalty/${id}/edit`,
+    },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
       new: `${ROOTS.DASHBOARD}/product/new`,

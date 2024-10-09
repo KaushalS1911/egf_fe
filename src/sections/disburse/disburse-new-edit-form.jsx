@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {  useEffect, useMemo } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -12,7 +12,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
@@ -21,19 +20,10 @@ import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { countries } from '../../assets/data';
-import axios from 'axios';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
 import { useGetScheme } from '../../api/scheme';
-import Divider from '@mui/material/Divider';
-import MenuItem from '@mui/material/MenuItem';
-import { INVOICE_SERVICE_OPTIONS } from '../../_mock';
-import InputAdornment from '@mui/material/InputAdornment';
-import { inputBaseClasses } from '@mui/material/InputBase';
 import Iconify from '../../components/iconify';
 
 // ----------------------------------------------------------------------
@@ -45,10 +35,35 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   const {configs} = useGetConfigs()
   const {branch} = useGetBranch()
   const {scheme,mutate} = useGetScheme()
-  console.log(configs);
 
 
   const NewDisburse = Yup.object().shape({
+    loanNo: Yup.string().required('Loan No is required'),
+    customerName: Yup.string().required('Customer Name is required'),
+    loanAmount: Yup.string().required('Loan Amount is required'),
+    interest: Yup.string().required('Interest is required'),
+    schemeName: Yup.string().required('Scheme Name is required'),
+    valuation: Yup.string().required('Valuation is required'),
+    address: Yup.string().required('Address is required'),
+    branch: Yup.string().required('Branch is required'),
+
+    items: Yup.array().of(
+      Yup.object().shape({
+        propertyName: Yup.string().required('Property Name is required'),
+        totalWeight: Yup.string().required('Total Weight is required'),
+        loseWeight: Yup.string().required('Lose Weight is required'),
+        grossWeight: Yup.string().required('Gross Weight is required'),
+        netWeight: Yup.string().required('Net Weight is required'),
+        loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
+      })
+    ),
+
+    netAmount: Yup.string().required('Net Amount is required'),
+    PendingAmount: Yup.string().required('Pending Amount is required'),
+    PayingAmount: Yup.string().required('Paying Amount is required'),
+    accountNumber: Yup.string().required('Account Number is required'),
+    transactionID: Yup.string().required('Transaction ID is required'),
+    date: Yup.date().required('Date is required'),
 
   });
 
@@ -85,7 +100,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   );
 
   const methods = useForm({
-    // resolver: yupResolver(NewDisburse),
+    resolver: yupResolver(NewDisburse),
     defaultValues,
   });
 
@@ -129,15 +144,16 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentDisburse) {
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/${currentDisburse._id}?branch=66ea5ebb0f0bdc8062c13a64`, data)
-        router.push(paths.dashboard.scheme.list);
-        enqueueSnackbar(res?.data.message);
-        reset();
+        // const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/${currentDisburse._id}?branch=66ea5ebb0f0bdc8062c13a64`, data)
+        // router.push(paths.dashboard.scheme.list);
+        // enqueueSnackbar(res?.data.message);
+        // reset();
       } else {
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, data)
-        router.push(paths.dashboard.scheme.list);
-        enqueueSnackbar(res?.data.message);
-        reset();
+        console.log(data);
+        // const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, data)
+        // router.push(paths.dashboard.scheme.list);
+        // enqueueSnackbar(res?.data.message);
+        // reset();
       }
     } catch (error) {
       enqueueSnackbar(currentDisburse ? 'Failed To update scheme' :'Failed to create Scheme');
@@ -217,39 +233,37 @@ export default function DisburseNewEditForm({ currentDisburse }) {
             </Button>
           </Stack>
                 <Card sx={{ p: 3 }}>
-        {fields.map((item, index) => (
-  <>
+                  {fields.map((item, index) => (
+                    <div key={item.id}> {/* Add a unique key for each item */}
+                      <Box
+                        rowGap={3}
+                        columnGap={2}
+                        display='grid'
+                        gridTemplateColumns={{
+                          xs: 'repeat(1, 1fr)',
+                          sm: 'repeat(2, 1fr)',
+                        }}
+                      >
+                        <RHFTextField name={`items.${index}.propertyName`} label='Property Name' req={'red'} />
+                        <RHFTextField name={`items.${index}.totalWeight`} label='Total Weight' req={'red'} />
+                        <RHFTextField name={`items.${index}.loseWeight`} label='Lose Weight' req={'red'} />
+                        <RHFTextField name={`items.${index}.grossWeight`} label='Gross Weight' req={'red'} />
+                        <RHFTextField name={`items.${index}.netWeight`} label='Net Weight' req={'red'} />
+                        <RHFTextField name={`items.${index}.loanApplicableAmount`} label='Loan Applicable Amount' req={'red'} />
+                      </Box>
 
-                  <Box
-                    rowGap={3}
-                    columnGap={2}
-                    display='grid'
-                    gridTemplateColumns={{
-                      xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(2, 1fr)',
-                    }}
-                  >
-
-                    <RHFTextField name='propertyName' label='Property Name' req={'red'} />
-                    <RHFTextField name='totalWeight' label='Total Weight' req={'red'} />
-                    <RHFTextField name='loseWeight' label='Lose Weight' req={'red'} />
-                    <RHFTextField name='accountNumber' label='Account Number' req={'red'} />
-                    <RHFTextField name='netWeight' label='Net Weight' req={'red'} />
-                    <RHFTextField name='loanApplicableAmount' label='Loan Applicable Amount' req={'red'} />
-                  </Box>
-
-              <Box my={2}>
-              <Button
-                size="small"
-                color="error"
-                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </Button>
-              </Box>
-  </>
-          ))}
+                      <Box my={2}>
+                        <Button
+                          size="small"
+                          color="error"
+                          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                          onClick={() => handleRemove(index)}
+                        >
+                          Remove
+                        </Button>
+                      </Box>
+                    </div>
+                  ))}
                 </Card>
           </Grid>
         <Grid xs={12} md={4} py={5}>
