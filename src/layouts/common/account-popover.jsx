@@ -29,11 +29,11 @@ const OPTIONS = [
   },
   {
     label: 'Profile',
-    linkTo: paths.dashboard.customer.profile,
+    linkTo: paths.dashboard.customer?.profile,
   },
   {
     label: 'Settings',
-    linkTo: paths.dashboard.customer.account,
+    linkTo: paths.dashboard.customer?.account,
   },
 ];
 

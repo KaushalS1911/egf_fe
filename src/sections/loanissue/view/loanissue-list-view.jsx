@@ -65,7 +65,7 @@ export default function LoanissueListView() {
   const table = useTable();
   const { user } = useAuthContext();
   const { Loanissue } = useGetLoanissue();
-  const { employee, mutate } = useGetEmployee();
+  // const { employee, mutate } = useGetEmployee();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();

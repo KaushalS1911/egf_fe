@@ -65,9 +65,9 @@ const  PropertyListView = lazy(()=>import('../../sections/property/view/property
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
+
 // DISBURSE
 const DisbursecreateView = lazy(()=>import('../../sections/disburse/view/disburse-create-view'))
-
 // LOAN ISSUE
 const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
 const LoanissueCreateView = lazy(()=>import('../../sections/loanissue/view/loanissue-create-view'))
