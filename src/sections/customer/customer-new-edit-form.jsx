@@ -104,7 +104,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
       bankDetails: currentCustomer?.bankDetails || [],
     }),
-    [currentCustomer, branch],
+    [currentCustomer, branch]
   );
 
   const methods = useForm({
@@ -120,8 +120,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
-
-  const values = watch();
 
   useEffect(() => {
     if (currentCustomer) {

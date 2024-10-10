@@ -27,3 +27,28 @@ export function useGetCustomer() {
 
   return memoizedValue;
 }
+
+export function useGetSingleCustomer(customerData) {
+  const { user } = useAuthContext();
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?.id}`;
+  const { data, error, isValidating, mutate } = useSWR(URL, fetcher);
+
+  if (error) {
+    console.error('Error fetching data:', error);
+  }
+
+  const memoizedValue = useMemo(() => {
+    const customerSingle = data?.data;
+    const isLoading = !data && !error;
+    return {
+      customerSingle,
+      customerSingleLoading: isLoading,
+      customerSingleError: error,
+      customerSingleValidating: isValidating,
+      customerSingleEmpty: !isLoading && customerSingle?.length === 0,
+      mutate,
+    };
+  }, [data?.data, error, isValidating, mutate]);
+
+  return memoizedValue;
+}

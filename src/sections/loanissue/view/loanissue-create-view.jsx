@@ -15,23 +15,22 @@ export default function LoanissueCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create Loan Issue"
+        heading='Create Loan Issue'
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Employee List',
-            href: paths.dashboard.employee.root,
+            name: 'Loanissue List',
+            href: paths.dashboard.loanissue.root,
           },
-          { name: 'Create New Employee' },
+          { name: 'Create New Loanissue' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
-
       <LoanissueNewEditForm />
     </Container>
   );
