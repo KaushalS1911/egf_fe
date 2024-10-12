@@ -40,6 +40,27 @@ export const ACCOUNT_TYPE_OPTIONS = [
   'Loan Account',
 ];
 
+export const paymentMethods = [
+  "Credit/Debit Cards",
+  "E-Wallets",
+  "Cryptocurrency",
+  "Bank Transfers",
+  "Direct Debit",
+  "Payment Gateways",
+  "Buy Now, Pay Later",
+  "Cash",
+  "Checks",
+  "Contactless Payments",
+  "QR Code Payments",
+  "Gift Cards",
+  "Rewards Points",
+  "Installment Payments",
+  "Biometric Payments",
+  "Voice-Activated Payments",
+  "Local Payment Systems"
+];
+
+
 export const INVOICE_SERVICE_OPTIONS = [...Array(8)].map((_, index) => ({
   id: _mock.id(index),
   name: _mock.role(index),

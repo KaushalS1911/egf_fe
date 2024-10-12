@@ -135,7 +135,12 @@ export function useNavData() {
             icon: ICONS.carat,
           },
 
-
+          // LOANTYPE
+          // {
+          //   title: t('loan type'),
+          //   path: paths.dashboard.loan.root,
+          //   icon: ICONS.loanType,
+          // },
           // PROPERTY
           {
             title: t('property'),

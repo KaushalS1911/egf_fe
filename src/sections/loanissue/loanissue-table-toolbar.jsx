@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback , useState} from 'react';
+import { useCallback, useState } from 'react';
 
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -13,14 +13,14 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableToolbar({ filters, onFilters}) {
+export default function LoanissueTableToolbar({ filters, onFilters }) {
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('userName', event.target.value);
     },
     [onFilters],
   );
-
 
   return (
     <>
