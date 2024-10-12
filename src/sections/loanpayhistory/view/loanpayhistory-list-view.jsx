@@ -42,6 +42,7 @@ import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
+import { useGetDisburseLoan } from '../../../api/disburseLoan';
 
 // ----------------------------------------------------------------------
 
@@ -58,58 +59,6 @@ const TABLE_HEAD = [
   { id: 'bankAmount', label: 'Bank Amount'},
   { id: '', width: 88 },
 ];
-const dummyData = [
-  {
-    id: 1,
-    loanNumber: "EGF/F24_250001",
-    customerID: "EGFIM001",
-    contact: "+91 48596 52632",
-    loanAmount: 256000,
-    interestRate: 1.5,
-    loanBalance: 45000,
-    totalPayable: 154000,
-  },
-  {
-    id: 2,
-    loanNumber: "EGF/F24_250001",
-    customerID: "EGFIM001",
-    contact: "+91 48596 52632",
-    loanAmount: 256000,
-    interestRate: 1.5,
-    loanBalance: 45000,
-    totalPayable: 154000,
-  },
-  {
-    id: 3,
-    loanNumber: "EGF/F24_250001",
-    customerID: "EGFIM001",
-    contact: "+91 48596 52632",
-    loanAmount: 256000,
-    interestRate: 1.5,
-    loanBalance: 45000,
-    totalPayable: 154000,
-  },
-  {
-    id: 4,
-    loanNumber: "EGF/F24_250001",
-    customerID: "EGFIM001",
-    contact: "+91 48596 52632",
-    loanAmount: 256000,
-    interestRate: 1.5,
-    loanBalance: 45000,
-    totalPayable: 154000,
-  },
-  {
-    id: 5,
-    loanNumber: "EGF/F24_250001",
-    customerID: "EGFIM001",
-    contact: "+91 48596 52632",
-    loanAmount: 256000,
-    interestRate: 1.5,
-    loanBalance: 45000,
-    totalPayable: 154000,
-  }
-];
 
 const defaultFilters = {
   username: '',
@@ -121,19 +70,19 @@ export default function LoanpayhistoryListView() {
 
   const table = useTable();
   const {user} = useAuthContext();
-  const { mutate} = useGetEmployee();
+  const { disburseLoan , mutate} = useGetDisburseLoan();
   const settings = useSettingsContext();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(dummyData);
+  const [tableData, setTableData] = useState(disburseLoan);
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: dummyData,
+    inputData: disburseLoan,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -189,7 +138,7 @@ export default function LoanpayhistoryListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = dummyData.filter((row) => table.selected.includes(row._id));
+    const deleteRows = disburseLoan.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row.user._id);
     handleDelete(deleteIds)
     setTableData(deleteRows);
