@@ -9,7 +9,7 @@ import { _userList } from 'src/_mock';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import EmployeeNewEditForm from '../employee-new-edit-form';
+import LoanpayhistoryNewEditForm from '../loanpayhistory-new-edit-form';
 import { useParams } from '../../../routes/hooks';
 import { useGetEmployee } from '../../../api/employee';
 import { Box } from '@mui/material';
@@ -17,33 +17,33 @@ import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeEditView() {
+export default function LoanpayhistoryEditView() {
   const settings = useSettingsContext();
   const {employee} = useGetEmployee();
   const { id } = useParams();
-  const currentEmployee = employee.find((emp) => emp.user._id == id);
+  const currentEmployee = employee.find((emp) => emp._id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create New Employee"
+        heading="Loan Pay History"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Employee List',
-            href: paths.dashboard.employee.root,
+            name: 'Loan Pay History List',
+            href: paths.dashboard.loanPayHistory.root,
           },
-          { name: 'Create New Employee' },
+          { name: 'Loan Pay History' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      {currentEmployee ? <EmployeeNewEditForm currentEmployee={currentEmployee} /> :
+      {currentEmployee ? <LoanpayhistoryNewEditForm currentEmployee={currentEmployee} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>
@@ -52,6 +52,6 @@ export default function EmployeeEditView() {
   );
 }
 
-EmployeeEditView.propTypes = {
+LoanpayhistoryEditView.propTypes = {
   id: PropTypes.string,
 };

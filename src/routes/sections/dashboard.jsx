@@ -8,7 +8,6 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
-
 // ----------------------------------------------------------------------
 
 const ResetPassword = lazy(() => import('src/pages/auth/jwt/reset'));
@@ -60,6 +59,10 @@ const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view
 const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
 const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
 const  PropertyListView = lazy(()=>import('../../sections/property/view/property-list-view'))
+//LOAN PAY HISTORY
+const  LoanpayhistoryListView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-list-view'))
+const  LoanpayhistoryCreateView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-create-view'))
+const  { LoanpayhistoryEditView }  = lazy(()=>import('../../sections/loanpayhistory/view'))
 
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
@@ -196,6 +199,15 @@ export const dashboardRoutes = [
           { path: 'list', element: <LoanissueListView /> },
           { path: 'new', element: <LoanissueCreateView /> },
           { path: ':id/edit', element: <LoanissueEditView /> },
+        ],
+      },
+      {
+        path: 'loanpayhistory',
+        children: [
+          { element: <LoanpayhistoryListView />, index: true },
+          { path: 'list', element: <LoanpayhistoryListView /> },
+          { path: 'new', element: <LoanpayhistoryCreateView /> },
+          { path: ':id/edit', element: <LoanpayhistoryEditView /> },
         ],
       },
       {

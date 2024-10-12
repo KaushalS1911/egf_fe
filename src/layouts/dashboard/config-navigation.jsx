@@ -284,6 +284,12 @@ export function useNavData() {
             path: paths.dashboard.disburse.new,
             icon: ICONS.user,
           },
+          // LOAN PAY HISTORY
+          {
+            title: t('Loan Pay History'),
+            path: paths.dashboard.loanPayHistory.list,
+            icon: ICONS.user,
+          },
           ]
       },
       {
