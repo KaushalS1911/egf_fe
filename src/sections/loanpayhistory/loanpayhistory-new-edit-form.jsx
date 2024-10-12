@@ -44,88 +44,75 @@ import LoanCloseForm from './view/loan-close-form';
 // ----------------------------------------------------------------------
 
 
-export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
+export default function LoanpayhistoryNewEditForm({ currentLoan }) {
   const router = useRouter();
+  console.log("currentLoan : ",currentLoan);
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
   const [file, setFile] = useState(null);
 
   const NewLoanPayHistorySchema = Yup.object().shape({
-    firstName: Yup.string().required('First name is required'),
-    middleName: Yup.string().required('Middle name is required'),
-    lastName: Yup.string().required('Last name is required'),
-    drivingLicense: Yup.string(),
-    panCard: Yup.string().required('PAN No. is required'),
-    voterCard: Yup.string(),
-    aadharCard: Yup.string().required('Aadhar Card is required'),
+    loanNo: Yup.string().required('Loan No. is required'),
+    customerName: Yup.string().required('Customer Name is required'),
+    address: Yup.string().required('Address is required'),
     contact: Yup.string()
       .required('Mobile number is required')
-      .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
-    dob: Yup.date()
-      .required('Date of Birth is required')
+      .matches(/^\d{10,16}$/, 'Mobile number must be between 10 and 16 digits'),
+    issueDate: Yup.date()
+      .required('Issue Date is required')
       .nullable()
-      .typeError('Date of Birth is required'),
-    remark: Yup.string(),
-
-    role: Yup.string().required('Role is required'),
-    reportingTo: Yup.object().required('Reporting to is required'),
-    email: Yup.string().email('Invalid email format').required('Email is required'),
-    password: currentEmployee
-      ? Yup.string()
-      : Yup.string().required('Password is required'),
-    joiningDate: Yup.date()
-      .required('Joining date is required')
+      .typeError('Invalid Issue Date'),
+    schemeName: Yup.string()
+      .required('Scheme Name is required')
+      .max(10, 'Scheme Name must be exactly 10 characters'),
+    closedBy: Yup.string().required('Closed By is required'),
+    oldLoanNo: Yup.string()
+      .matches(/^[0-9]*$/, 'Old Loan No must be numeric')
+      .max(12, 'Old Loan No must be 12 digits or less'),
+    interest: Yup.number()
+      .required('Interest is required')
+      .typeError('Interest must be a number')
+      .max(100, 'Interest cannot exceed 100%'),
+    consultCharge: Yup.number().required('Consult Charge is required'),
+    loanAmount: Yup.number().required('Loan Amount is required'),
+    interestLoanAmount: Yup.number().required('Interest Loan Amount is required'),
+    loanPeriod: Yup.number().required('Loan Period is required'),
+    IntPeriodTime: Yup.number().required('Interest Period Time is required'),
+    witnessName: Yup.string().required('Witness Name is required'),
+    witnessMobileNo: Yup.string()
+      .matches(/^\d{10,16}$/, 'Witness Mobile No. must be between 10 and 16 digits')
+      .required('Witness Mobile No. is required'),
+    nextInterestPayDate: Yup.date()
       .nullable()
-      .typeError('Joining date is required'),
-    leaveDate: Yup.string().typeError('Enter a valid date').nullable(),
-
-    permanentStreet: Yup.string().required('Permanent Address is required'),
-    permanentLandmark: Yup.string(),
-    permanentCountry: Yup.string().required('Country is required'),
-    permanentState: Yup.string().required('State is required'),
-    permanentCity: Yup.string().required('City is required'),
-    permanentZipcode: Yup.string().required('Zipcode is required'),
-
-    tempStreet: Yup.string(),
-    tempLandmark: Yup.string(),
-    tempCountry: Yup.string(),
-    tempState: Yup.string(),
-    tempCity: Yup.string(),
-    tempZipcode: Yup.string(),
+      .required('Next Interest Pay Date is required')
+      .typeError('Invalid Next Interest Pay Date'),
+    lastInterestPayDate: Yup.date()
+      .nullable()
+      .required('Last Interest Pay Date is required')
+      .typeError('Invalid Last Interest Pay Date'),
   });
 
   const defaultValues = useMemo(() => ({
-    profile_pic: currentEmployee?.user.avatar_url || '',
-    firstName: currentEmployee?.user.firstName || '',
-    middleName: currentEmployee?.user.middleName || '',
-    lastName: currentEmployee?.user.lastName || '',
-    drivingLicense: currentEmployee?.drivingLicense || '',
-    voterCard: currentEmployee?.voterCard || '',
-    panCard: currentEmployee?.panCard || '',
-    aadharCard: currentEmployee?.aadharCard || '',
-    contact: currentEmployee?.user.contact || '',
-    dob: new Date(currentEmployee?.dob) || new Date(),
-    remark: currentEmployee?.remark || '',
-    role: currentEmployee?.user.role || '',
-    reportingTo: currentEmployee?.reportingTo || null,
-    email: currentEmployee?.user.email || '',
-    password: '',
-    joiningDate: new Date(currentEmployee?.joiningDate) || new Date(),
-    leaveDate: new Date(currentEmployee?.leaveDate) || new Date(),
-    permanentStreet: currentEmployee?.permanentAddress.street || '',
-    permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
-    permanentCountry: currentEmployee?.permanentAddress.country || '',
-    permanentState: currentEmployee?.permanentAddress.state || '',
-    permanentCity: currentEmployee?.permanentAddress.city || '',
-    permanentZipcode: currentEmployee?.permanentAddress.zipcode || '',
-    tempStreet: currentEmployee?.temporaryAddress.street || '',
-    tempLandmark: currentEmployee?.temporaryAddress.landmark || '',
-    tempCountry: currentEmployee?.temporaryAddress.country || '',
-    tempState: currentEmployee?.temporaryAddress.state || '',
-    tempCity: currentEmployee?.temporaryAddress.city || '',
-    tempZipcode: currentEmployee?.temporaryAddress.zipcode || '',
-  }), [currentEmployee]);
+    loanNo: currentLoan?.loanNo || '',
+    customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.lastName || '',
+    address: `${currentLoan.customer.permanentAddress.street || ''}, ${currentLoan.customer.permanentAddress.landmark || ''}, ${currentLoan.customer.permanentAddress.city || ''}, ${currentLoan.customer.permanentAddress.state || ''}, ${currentLoan.customer.permanentAddress.zipcode || ''}, ${currentLoan.customer.permanentAddress.country || ''}` || '',
+    contact: currentLoan?.contact || '',
+    issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
+    schemeName: currentLoan?.schemeName || '',
+    closedBy: currentLoan?.closedBy || '',
+    oldLoanNo: currentLoan?.oldLoanNo || '',
+    interest: currentLoan?.interest || '',
+    consultCharge: currentLoan?.consultCharge || '',
+    loanAmount: currentLoan?.loanAmount || '',
+    interestLoanAmount: currentLoan?.interestLoanAmount || '',
+    loanPeriod: currentLoan?.loanPeriod || '',
+    IntPeriodTime: currentLoan?.IntPeriodTime || '',
+    witnessName: currentLoan?.witnessName || '',
+    witnessMobileNo: currentLoan?.witnessMobileNo || '',
+    nextInterestPayDate: currentLoan?.nextInterestPayDate ? new Date(currentLoan?.nextInterestPayDate) : new Date(),
+    lastInterestPayDate: currentLoan?.lastInterestPayDate ? new Date(currentLoan?.lastInterestPayDate) : new Date(),
+  }), [currentLoan]);
 
   const methods = useForm({
     resolver: yupResolver(NewLoanPayHistorySchema),
@@ -179,16 +166,13 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
                 md: 'repeat(3, 1fr)',
               }}
             >
-              <RHFTextField name='loanNo' label='Loan No.'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
-              <RHFTextField name='customerName' req={'red'} label='Customer Name'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
-              <RHFTextField name='address' label='Address' req={'red'}
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+              <RHFTextField name='loanNo' label='Loan No.' InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='customerName' label='Customer Name' InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='address' label='Address' InputLabelProps={{ shrink: true }} />
               <RHFTextField
                 name='contact'
                 label='Mobile No.'
-                sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }}
+                InputLabelProps={{ shrink: true }}
                 inputProps={{ maxLength: 16 }}
               />
               <Controller
@@ -197,18 +181,13 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
                     label='Issue Date'
-                    sx={{
-                      ':not(:focus-within) label ~ div:first-of-type': {
-                        outline: '1px solid black',
-                        borderRadius: '8px',
-                      },
-                    }}
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
                     slotProps={{
                       textField: {
                         fullWidth: true,
                         error: !!error,
+                        InputLabelProps:{ shrink: true },
                         helperText: error?.message,
                       },
                     }}
@@ -218,18 +197,18 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
               <RHFTextField
                 name='schemeName'
                 label='Scheme Name'
-                sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }}
+                InputLabelProps={{ shrink: true }}
                 inputProps={{ minLength: 10, maxLength: 10 }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
                   methods.setValue('panCard', value, { shouldValidate: true });
                 }} />
               <RHFTextField name='closedBy' label='Closed by'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
               <RHFTextField
                 name='oldLoanNo'
                 label='Old Loan No'
-                sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }}
+                InputLabelProps={{ shrink: true }}
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -253,7 +232,7 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
               <RHFTextField
                 name='interest'
                 label='Interest %'
-                sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }}
+                InputLabelProps={{ shrink: true }}
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -273,15 +252,15 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
                 }} />
 
               <RHFTextField name='consultCharge' label='Consult Charge %'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
               <RHFTextField name='loanAmount' label='Loan Amount'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
               <RHFTextField name='interestLoanAmount' label='Interest Loan Amt'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
               <RHFTextField name='loanPeriod' label='Loan Period (Month)'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
               <RHFTextField name='IntPeriodTime' label='INT. Period Time'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
             </Box>
             <Box variant='div' sx={{ mt: 2.5, fontSize: '18px', fontWeight: '700' }}>
               Third Part
@@ -298,27 +277,22 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
               }}
             >
               <RHFTextField name='witnessName' label='Witness Name'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
               <RHFTextField name='witnessMobileNo' label='Witness Mobile No.'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+                            InputLabelProps={{ shrink: true }} />
               <Controller
                 name='nextInterestPayDate'
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
                     label='Next Interest Pay Date'
-                    sx={{
-                      ':not(:focus-within) label ~ div:first-of-type': {
-                        outline: '1px solid black',
-                        borderRadius: '8px',
-                      },
-                    }}
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
                     slotProps={{
                       textField: {
                         fullWidth: true,
                         error: !!error,
+                        InputLabelProps:{ shrink: true },
                         helperText: error?.message,
                       },
                     }}
@@ -331,28 +305,21 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
                     label='Last Interest Pay Date'
-                    sx={{
-                      ':not(:focus-within) label ~ div:first-of-type': {
-                        outline: '1px solid black',
-                        borderRadius: '8px',
-                      },
-                    }}
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
                     slotProps={{
                       textField: {
                         fullWidth: true,
                         error: !!error,
+                        InputLabelProps:{ shrink: true },
                         helperText: error?.message,
                       },
                     }}
                   />
                 )}
               />
-              <RHFTextField name='review' label='Review'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
-              <RHFTextField name='createdBy' label='Created By'
-                            sx={{ ' input': { outline: '1px solid black', borderRadius: '8px' } }} />
+              <RHFTextField name='review' label='Review' InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} />
             </Box>
           </Card>
     </FormProvider>
@@ -395,5 +362,5 @@ export default function LoanpayhistoryNewEditForm({ currentEmployee }) {
 }
 
 LoanpayhistoryNewEditForm.propTypes = {
-  currentEmployee: PropTypes.object,
+  currentLoan: PropTypes.object,
 };

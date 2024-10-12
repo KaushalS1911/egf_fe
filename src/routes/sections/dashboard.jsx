@@ -213,8 +213,8 @@ export const dashboardRoutes = [
         children: [
           { element: <LoanpayhistoryListView />, index: true },
           { path: 'list', element: <LoanpayhistoryListView /> },
-          { path: 'new', element: <LoanpayhistoryCreateView /> },
-          { path: ':id/edit', element: <LoanpayhistoryEditView /> },
+          // { path: 'new', element: <LoanpayhistoryCreateView /> },
+          { path: ':id/new', element: <LoanpayhistoryCreateView /> },
         ],
       },
       {

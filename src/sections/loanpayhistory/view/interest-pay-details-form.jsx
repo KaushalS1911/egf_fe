@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { Controller, useForm } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -95,7 +95,7 @@ function InterestPayDetailsForm() {
 
   const defaultValues = {
     fromDate: null,
-    toDate: null,
+    toDate: tableDummyData.length === 0 ? null : null,
     days: '',
     total: '',
     interest: '',
@@ -122,6 +122,24 @@ function InterestPayDetailsForm() {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
+  const fromDate = watch('fromDate');
+  const toDate = watch('toDate');
+
+  useEffect(() => {
+    if (fromDate && toDate) {
+      const startDate = new Date(fromDate);
+      const endDate = new Date(toDate);
+      const differenceInTime = endDate - startDate;
+      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+
+      if (differenceInDays >= 0) {
+        setValue('days', differenceInDays.toString());
+      } else {
+        setValue('days', '0');
+      }
+    }
+  }, [fromDate, toDate, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     console.log("DATA : ", data);
@@ -180,8 +198,7 @@ function InterestPayDetailsForm() {
             )}
           />
 
-          <RHFTextField name='days' label='Days' req={'red'} />
-          <RHFTextField name='total' label='Total' req={'red'} />
+          <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }}/>
           <RHFTextField name='interest' label='Interest' req={'red'} />
           <RHFTextField name='consultCharge' label='Consult Charge' req={'red'} />
           <RHFTextField name='penalty' label='Penalty' req={'red'} />
@@ -190,6 +207,7 @@ function InterestPayDetailsForm() {
           <RHFTextField name='totalPay' label='Total Pay' req={'red'} />
           <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'} />
           <RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} />
+          <RHFTextField name='total' label='Total' req={'red'} />
         </Box>
 
         <Box>
