@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
@@ -16,18 +15,16 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
-
-// ----------------------------------------------------------------------
+import ReminderRecallingForm from './reminder-recalling-form';
+import { useState } from 'react';
 
 export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const {loanNo,customerName,otpNo,loanAmount,days,nextInterestPayDate,issueDate,lastInterestDate} = row;
-
+  const { loanNo, customerName, otpNo, loanAmount, days, nextInterestPayDate, issueDate, lastInterestDate } = row;
+const [open,setOpen] = useState(false)
   const confirm = useBoolean();
-
   const quickEdit = useBoolean();
-
   const popover = usePopover();
+  const recallingPopover = usePopover();
 
   return (
     <>
@@ -37,9 +34,7 @@ export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerName}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{otpNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
@@ -48,19 +43,11 @@ export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{lastInterestDate}</TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
-          {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
-          {/*    <Iconify icon="solar:pen-bold" />*/}
-          {/*  </IconButton>*/}
-          {/*</Tooltip>*/}
-
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
-
-
 
       <CustomPopover
         open={popover.open}
@@ -88,8 +75,28 @@ export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow
           <Iconify icon="solar:pen-bold" />
           Edit
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            recallingPopover.onOpen(ReminderRecallingForm);
+            setOpen(true)
+          }}
+        >
+          <Iconify icon="eva:clock-outline" />
+          Recalling
+        </MenuItem>
       </CustomPopover>
 
+      <CustomPopover
+        open={recallingPopover.open}
+        onClose={recallingPopover.onClose}
+        arrow="right-top"
+        sx={{ width: 400 }}
+      >
+        <ReminderRecallingForm onClose={recallingPopover.onClose} />
+      </CustomPopover>
+<ReminderRecallingForm  currentReminder={row} open={open} onClose={() => setOpen(false)}/>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

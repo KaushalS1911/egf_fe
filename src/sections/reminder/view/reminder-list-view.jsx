@@ -47,6 +47,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import { isAfter, isBetween } from '../../../utils/format-time';
+import { useGetDisburseLoan } from '../../../api/disburseLoan';
 
 // ----------------------------------------------------------------------
 
@@ -77,49 +78,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function ReminderListView() {
-  const dummyData = [
-    {
-    loanNo:"EGF/24_250001",
-    customerName:"Rajubhai",
-    otpNo:+914859652632,
-    loanAmount:256000,
-    days:20,
-    nextInterestPayDate:"05 Sep 2024",
-    issueDate:"05 Sep 2024",
-    lastInterestDate:"04 Sep 2024"
-
-  },  {
-    loanNo:"EGF/24_250001",
-    customerName:" Popatbhai",
-    otpNo:+914859652632,
-    loanAmount:256000,
-    days:20,
-    nextInterestPayDate:"04 Sep 2024",
-    issueDate:"04 Sep 2024",
-    lastInterestDate:"04 Sep 2024"
-
-  },  {
-    loanNo:"EGF/24_250001",
-    customerName:" Popatbhai ",
-    otpNo:+914859652632,
-    loanAmount:256000,
-    days:20,
-    nextInterestPayDate:"04 Sep 2024",
-    issueDate:"04 Sep 2024",
-    lastInterestDate:"04 Sep 2024"
-
-  },  {
-    loanNo:"EGF/24_250001",
-    customerName:"Rajubhaia",
-    otpNo:+914859652632,
-    loanAmount:256000,
-    days:20,
-    nextInterestPayDate:"04 Sep 2024",
-    issueDate:"04 Sep 2024",
-    lastInterestDate:"04 Sep 2024"
-
-  },
-  ]
+  const {disburseLoan} = useGetDisburseLoan()
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
@@ -134,13 +93,13 @@ export default function ReminderListView() {
 
   // const {scheme,mutate} = useGetScheme()
 
-  const [tableData, setTableData] = useState(dummyData);
+  const [tableData, setTableData] = useState(disburseLoan);
 
   const [filters, setFilters] = useState(defaultFilters);
 
 
   const dataFiltered = applyFilter({
-    inputData: dummyData,
+    inputData: disburseLoan,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -218,7 +177,7 @@ export default function ReminderListView() {
     },
     [handleFilters],
   );
-
+  console.log(filters);
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -229,71 +188,15 @@ export default function ReminderListView() {
             { name: 'reminder', href: paths.dashboard.reminder.list},
             { name: 'List' },
           ]}
-          // action={
-          //   <Box>
-          //     <Button
-          //       component={RouterLink}
-          //       href={paths.dashboard.scheme.goldpricelist}
-          //       variant='contained'
-          //       sx={{ mx: 2 }}
-          //     >
-          //       Gold Price change
-          //     </Button>
-          //     <Button
-          //       component={RouterLink}
-          //       href={paths.dashboard.scheme.new}
-          //       variant='contained'
-          //       startIcon={<Iconify icon='mingcute:add-line' />}
-          //     >
-          //       Create Scheme
-          //     </Button>
-          //   </Box>
-          // }
+
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
-          {/*<Tabs*/}
-          {/*  value={filters.isActive}*/}
-          {/*  onChange={handleFilterStatus}*/}
-          {/*  sx={{*/}
-          {/*    px: 2.5,*/}
-          {/*    boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {STATUS_OPTIONS.map((tab) => (*/}
-          {/*    <Tab*/}
-          {/*      key={tab.value}*/}
-          {/*      iconPosition='end'*/}
-          {/*      value={tab.value}*/}
-          {/*      label={tab.label}*/}
-          {/*      icon={*/}
-          {/*        <>*/}
-          {/*          <Label*/}
-          {/*            style={{ margin: '5px' }}*/}
-          {/*            variant={*/}
-          {/*              ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'*/}
-          {/*            }*/}
-          {/*            color={*/}
-          {/*              (tab.value == 'true' && 'success') ||*/}
-          {/*              (tab.value == 'false' && 'error') ||*/}
-          {/*              'default'*/}
-          {/*            }*/}
-          {/*          >*/}
-          {/*            /!*{['false','true'].includes(tab.value)*!/*/}
-          {/*            /!*  ? scheme.filter((emp) => String(emp.isActive) == tab.value).length*!/*/}
-          {/*            /!*  : scheme.length}*!/*/}
-          {/*          </Label>*/}
-          {/*        </>*/}
-          {/*      }*/}
-          {/*    />*/}
-          {/*  ))}*/}
-          {/*</Tabs>*/}
           <ReminderTableToolbar
             filters={filters} onFilters={handleFilters}
           />
-
          {canReset && (
             <ReminderTableFiltersResult
               filters={filters}
@@ -303,7 +206,6 @@ export default function ReminderListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -324,7 +226,6 @@ export default function ReminderListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -341,35 +242,33 @@ export default function ReminderListView() {
                     )
                   }
                 />
-
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
-                    )
-                    .map((row) => (
-                      <ReminderTableRow
-                        key={row._id}
-                        row={row}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
+                  {filters.startDate && filters.endDate || filters.name ?
+                    <>      {dataFiltered
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage,
+                      )
+                      .map((row) => (
+                        <ReminderTableRow
+                          key={row._id}
+                          row={row}
+                          selected={table.selected.includes(row._id)}
+                          onSelectRow={() => table.onSelectRow(row._id)}
+                          onDeleteRow={() => handleDeleteRow(row._id)}
+                          onEditRow={() => handleEditRow(row._id)}
+                        />
+                      ))}
+                      <TableEmptyRows
+                        height={denseHeight}
+                        emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                      /></>:
+                  <TableNoData notFound={true} />
+                  }
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -381,7 +280,6 @@ export default function ReminderListView() {
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -428,16 +326,11 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
         rem.customerName.toLowerCase().includes(name.toLowerCase()),
     );
   }
-
-  if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((order) =>
-      isBetween(new Date(order.issueDate), startDate, endDate)
-    );
-      console.log(inputData,"order")
+    if (!dateError && startDate && endDate) {
+      inputData = inputData.filter((order) =>
+        isBetween(new Date(order.nextInterestPayDate), startDate, endDate),
+      );
+      console.log(inputData, 'order') ;
   }
-  // if (isActive !== 'all') {
-  //   inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
-  // }
-
   return inputData;
 }

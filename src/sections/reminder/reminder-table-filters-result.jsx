@@ -63,7 +63,6 @@ export default function ReminderTableFiltersResult({
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
-
         <Button
           color="error"
           onClick={onResetFilters}
