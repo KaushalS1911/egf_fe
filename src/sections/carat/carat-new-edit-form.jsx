@@ -97,11 +97,13 @@ export default function CaratNewEditForm({ currentCarat }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='name' label='carat' req={'red'}  onKeyPress={(e) => {
+              <RHFTextField name='name' label='carat' req={'red'}
+                onKeyPress={(e) => {
                 if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                   e.preventDefault();
                 }
-              }}/>
+              }}
+              />
               <RHFTextField name='caratPercentage' label='Carat%' req={'red'}  onKeyPress={(e) => {
                 if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                   e.preventDefault();

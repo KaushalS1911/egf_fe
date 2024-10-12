@@ -37,9 +37,10 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <Button
           onClick={handleClick}
-          sx={{ my: 2 }}
+          sx={{ my: 2,textWrap:"nowrap" }}
           variant='contained'
           startIcon={<Iconify icon='mingcute:add-line' />}
+
         >
           Loan Disburse
         </Button>

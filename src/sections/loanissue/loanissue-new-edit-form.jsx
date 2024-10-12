@@ -182,7 +182,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     payload.append('company', user.company);
     payload.append('customer', data.customer.id);
-    payload.append('scheme', data.scheme.id);
+    payload.append('scheme', currentLoanIssue ? data.scheme._id : data.scheme.id);
     payload.append('loanNo', data.loanNo);
     payload.append('issueDate', data.issueDate);
     payload.append('nextInstallmentDate', data.nextInstallmentDate);

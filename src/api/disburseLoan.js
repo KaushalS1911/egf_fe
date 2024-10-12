@@ -6,7 +6,7 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetDisburseLoan() {
   const {user} = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans?type=disburse`;
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans?type=Disbursed`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
   const memoizedValue = useMemo(
     () => ({

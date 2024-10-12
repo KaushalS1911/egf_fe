@@ -20,34 +20,38 @@ import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useAuthContext } from '../../auth/hooks';
-import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
-import { useGetScheme } from '../../api/scheme';
 import Iconify from '../../components/iconify';
 import CardContent from '@mui/material/CardContent';
 import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import axios from 'axios';
+import { paths } from '../../routes/paths';
+import { useGetScheme } from '../../api/scheme';
 
 // ----------------------------------------------------------------------
 
 export default function DisburseNewEditForm({ currentDisburse }) {
-  console.log(currentDisburse,"dis");
+  console.log(currentDisburse);
+
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { user } = useAuthContext();
-  const { branch } = useGetBranch();
-  const { scheme, mutate } = useGetScheme();
-  const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
+  const { branch } = useGetBranch()
+  const {scheme} = useGetScheme()
   const NewDisburse = Yup.object().shape({
     loanNo: Yup.string().required('Loan No is required'),
-    customer: Yup.string().required('Customer Name is required'),
+    customerName: Yup.string().required('Customer Name is required'),
     loanAmount: Yup.string().required('Loan Amount is required'),
     interest: Yup.string().required('Interest is required'),
     scheme: Yup.string().required('Scheme Name is required'),
     valuation: Yup.string().required('Valuation is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
     items: Yup.array().of(
       Yup.object().shape({
         propertyName: Yup.string().required('Property Name is required'),
@@ -56,47 +60,44 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         grossWeight: Yup.string().required('Gross Weight is required'),
         netWeight: Yup.string().required('Net Weight is required'),
         loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
-      }),
-    ),
-    netAmount: Yup.string().required('Net Amount is required'),
-    PendingAmount: Yup.string().required('Pending Amount is required'),
-    PayingAmount: Yup.string().required('Paying Amount is required'),
-    accountNumber: Yup.string().required('Account Number is required'),
-    transactionID: Yup.string().required('Transaction ID is required'),
-    date: Yup.date().required('Date is required'),
+      })
+    ).required('At least one item is required'),
+    companyBankDetail: Yup.object().shape({
+      account: Yup.string().required('Account Number is required'),
+      transactionID: Yup.string().required('Transaction ID is required'),
+    }),
+
   });
   const defaultValues = useMemo(
     () => (
       {
-        loan: currentDisburse?.loanNo || '',
-        customer: `${currentDisburse?.customer?.firstName || ''} ${currentDisburse?.customer?.lastName || ''}`,
+        loanNo: currentDisburse?.loanNo || '',
+        customerName: `${currentDisburse?.customer?.firstName || ''} ${currentDisburse?.customer?.lastName || ''}`,
         loanAmount: currentDisburse?.loanAmount || '',
         interest: currentDisburse?.scheme?.interestRate || '',
         scheme: currentDisburse?.scheme?.name || '',
         valuation: currentDisburse?.valuation || '',
         address: currentDisburse?.customer?.permanentAddress?.street || '',
         branch: currentDisburse?.branch || '',
+        bankNetAmount: currentDisburse?.bankAmount || 0,
+        bankPayingAmount: currentDisburse?.bankPayingAmount || '',
+        bankPendingAmount: currentDisburse?.pendingAmount || '',
+        bankDate: currentDisburse?.issueDate ? new Date(currentDisburse.issueDate) : new Date(),
+        cashNetAmount: currentDisburse?.cashAmount || 0,
+        cashPayingAmount: currentDisburse?.cashPayingAmount || '',
+        cashPendingAmount: currentDisburse?.pendingAmount || '',
+        cashDate: currentDisburse?.date? new Date(currentDisburse.issueDate) : new Date(),
         items: currentDisburse?.propertyDetails?.map(item => ({
           propertyName: item.type || '',
           totalWeight: item.totalWeight || '',
           loseWeight: item.lossWeight || '',
           grossWeight: item.grossWeight || '',
           netWeight: item.netWeight || '',
-          loanApplicableAmount: item.loanApplicableAmount || '',
+          loanApplicableAmount: item.netAmount || '',
         })) || [],
-        bankAmount:{
-        netAmount: currentDisburse?.bankAmount || '',
-        payingAmount: currentDisburse?.payingAmount || '',
-        pendingAmount: currentDisburse?.pendingAmount || '',
-        date: currentDisburse?.issueDate ? new Date(currentDisburse.issueDate) : new Date(),
-        transactionID: currentDisburse?.transactionID || '',
+        companyBankDetail:{
         account: currentDisburse?.account || null,
-        },
-        cashAmount:{
-        netAmount: currentDisburse?.cashAmount || '',
-        payingAmount: currentDisburse?.payingAmount || '',
-        pendingAmount: currentDisburse?.pendingAmount || '',
-        date: currentDisburse?.date? new Date(currentDisburse.issueDate) : new Date(),
+        transactionID: currentDisburse?.transactionID || '',
         },
       }
       ),
@@ -104,7 +105,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewDisburse),
+    // resolver: yupResolver(NewDisburse),
     defaultValues,
   });
 
@@ -134,49 +135,32 @@ export default function DisburseNewEditForm({ currentDisburse }) {
       loanApplicableAmount: '',
     });
   };
-  // const handleReset = (index) => {
-  //   methods.setValue(`propertyDetails[${index}]`, {
-  //     propertyName: '',
-  //     totalWeight: '',
-  //     loseWeight: '',
-  //     grossWeight: '',
-  //     netWeight: '',
-  //     loanApplicableAmount: '',
-  //   });
-  // };
-  // const calculateTotal = (field) => {
-  //   const propertyDetails = useWatch({ name: 'propertyDetails', control: methods.control });
-  //   if (!propertyDetails || propertyDetails.length === 0) return 0;
-  //   return propertyDetails
-  //     .reduce((total, item) => {
-  //       const value = parseFloat(item?.[field]) || 0;
-  //       return total + value;
-  //     }, 0)
-  //     .toFixed(field === 'pcs' ? 0 : 2);
-  // };
   const onSubmit = handleSubmit(async (data) => {
+      console.log("PAY ",data);
     try {
-      if (currentDisburse) {
-        // const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/${currentDisburse._id}?branch=66ea5ebb0f0bdc8062c13a64`, data)
-        // router.push(paths.dashboard.scheme.list);
-        // enqueueSnackbar(res?.data.message);
-        // reset();
-      } else {
         const payload = {
           loan:currentDisburse._id,
-
+          companyBankDetail:data.companyBankDetail,
+          bankAmount:data.bankAmount,
+          cashAmount:data.cashAmount,
+          customer:currentDisburse.customer._id,
+          pendingBankAmount:data.bankPendingAmount,
+          pendingCashAmount:data.cashPendingAmount,
+          loanAmount:data.loanAmount,
+          interest:data.interest,
+          scheme:data.scheme,
+          address:data.address,
         }
-        // const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, data)
-        // router.push(paths.dashboard.scheme.list);
-        // enqueueSnackbar(res?.data.message);
-        // reset();
-      }
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload)
+        router.push(paths.dashboard.disburse.list);
+        enqueueSnackbar(res?.data.message);
+        reset();
+
     } catch (error) {
       enqueueSnackbar(currentDisburse ? 'Failed To update scheme' : 'Failed to create Scheme');
-      console.error(error);
+      console.error(error,"ree");
     }
   });
-  console.log(currentDisburse?.propertyDetails);
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -197,23 +181,24 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='loan' label='Loan No' req={'red'} />
-              <RHFTextField name='customer' label='Customer Name' req={'red'} />
+              <RHFTextField name='loanNo' label='Loan No' req={'red'} />
+              <RHFTextField name='customerName' label='Customer Name' req={'red'} />
               <RHFTextField name='loanAmount' label='Loan Amount' req={'red'} />
               <RHFTextField name='interest' label='Interest' req={'red'} />
-              <RHFAutocomplete
-                name='scheme'
-                label='Scheme Name'
-                req={'red'}
-                fullWidth
-                options={scheme?.map((item) => item.name)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
+              <RHFTextField name='scheme' label='Scheme Name' req={'red'} />
+              {/*<RHFAutocomplete*/}
+              {/*  name='scheme'*/}
+              {/*  label='Scheme Name'*/}
+              {/*  req={'red'}*/}
+              {/*  fullWidth*/}
+              {/*  options={scheme?.map((item) => item.name)}*/}
+              {/*  getOptionLabel={(option) => option}*/}
+              {/*  renderOption={(props, option) => (*/}
+              {/*    <li {...props} key={option}>*/}
+              {/*      {option}*/}
+              {/*    </li>*/}
+              {/*  )}*/}
+              {/*/>*/}
               <RHFTextField name='address' label='Address' req={'red'} />
               <RHFAutocomplete
                 name='branch'
@@ -270,7 +255,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         name={`propertyDetails.${index}.propertyName`}
                         label="Property Name"
                         defaultValue={row.propertyName || ''}
-                        disabled={!isFieldsEnabled}
+                        disabled={true}
                       />
                     </TableCell>
                     <TableCell>
@@ -278,7 +263,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         name={`propertyDetails.${index}.totalWeight`}
                         label="Total Weight"
                         defaultValue={row.totalWeight || ''}
-                        disabled={!isFieldsEnabled}
+                        disabled={true}
                       />
                     </TableCell>
                     <TableCell>
@@ -286,7 +271,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         name={`propertyDetails.${index}.loseWeight`}
                         label="Lose Weight"
                         defaultValue={row.loseWeight || ''}
-                        disabled={!isFieldsEnabled}
+                        disabled={true}
                       />
                     </TableCell>
                     <TableCell>
@@ -294,6 +279,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         name={`propertyDetails.${index}.grossWeight`}
                         label="Gross Weight"
                         defaultValue={row.grossWeight || ''}
+                        disabled={true}
                       />
                     </TableCell>
                     <TableCell>
@@ -301,6 +287,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         name={`propertyDetails.${index}.netWeight`}
                         label="Net Weight"
                         defaultValue={row.netWeight || ''}
+                        disabled={true}
                       />
                     </TableCell>
                     <TableCell>
@@ -308,7 +295,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         name={`propertyDetails.${index}.loanApplicableAmount`}
                         label="Loan Applicable Amount"
                         defaultValue={row.loanApplicableAmount || ''}
-                        disabled={!isFieldsEnabled}
+                        disabled={true}
+
                       />
                     </TableCell>
                     <TableCell>
@@ -336,7 +324,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         <Grid xs={12} md={8} py={5}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
-              {/* Bank Amount Section */}
               {(currentDisburse.paymentMode === 'Bank' || currentDisburse.paymentMode === 'Both') && (
                 <>
                   <Typography my={2} sx={{ display: 'inline-block' }}>
@@ -351,12 +338,19 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       sm: 'repeat(2, 1fr)',
                     }}
                   >
-                    <RHFTextField name='bankAmount.netAmount' label='Net Amount' req={'red'} />
-                    <RHFTextField name='bankAmount.PayingAmount' label='Paying Amount' req={'red'} />
-                    <RHFTextField name='bankAmount.PendingAmount' label='Pending Amount' req={'red'}  value={watch('bankAmount.netAmount') - watch('bankAmount.PayingAmount') || 0} InputLabelProps={{ shrink: true }} />
-                    {console.log("branch?.company?.bankAccounts : ",watch('bankAmount.account'))}
+                    <RHFTextField name='bankNetAmount' label='Net Amount' req={'red'} onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                        e.preventDefault();
+                      }
+                    }}/>
+                    <RHFTextField name='bankPayingAmount' label='Paying Amount' req={'red'}onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                        e.preventDefault();
+                      }
+                    }} />
+                    <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}  value={watch('bankNetAmount') - watch('bankPayingAmount') || 0} InputLabelProps={{ shrink: true }} />
                     {branch.find((item) => item.name === watch('branch')) && <RHFAutocomplete
-                      name='bankAmount.account'
+                      name='companyBankDetail.account'
                       label='Account'
                       req={'red'}
                       fullWidth
@@ -368,9 +362,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         </li>
                       )}
                     />}
-                    <RHFTextField name='bankAmount.transactionID' label='Transaction ID' req={'red'} />
+                    <RHFTextField name='companyBankDetail.transactionID' label='Transaction ID' req={'red'} />
                     <Controller
-                      name='date'
+                      name='bankDate'
                       control={control}
                       render={({ field, fieldState: { error } }) => (
                         <DatePicker
@@ -405,22 +399,22 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       sm: 'repeat(2, 1fr)',
                     }}
                   >
-                    <RHFTextField name='cashAmount.netAmount' label='Net Amount' req={'red'}
+                    <RHFTextField name='cashNetAmount' label='Net Amount' req={'red'}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                                       e.preventDefault();
                                     }
                                   }}
                     />
-                    <RHFTextField name='cashAmount.PayingAmount' label='Paying Amount' req={'red'}
+                    <RHFTextField name='cashPayingAmount' label='Paying Amount' req={'red'}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                                       e.preventDefault();
                                     }
                                   }}
                     />
-                    <RHFTextField name='cashAmount.PendingAmount' label='Pending Amount' req={'red'}
-                                  value={watch('cashAmount.netAmount') - watch('cashAmount.PayingAmount') || 0} InputLabelProps={{ shrink: true }}
+                    <RHFTextField name='cashPendingAmount' label='Pending Amount' req={'red'}
+                                  value={watch('cashNetAmount') - watch('cashPayingAmount') || 0} InputLabelProps={{ shrink: true }}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                                       e.preventDefault();
@@ -428,7 +422,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                                   }}
                     />
                     <Controller
-                      name='date'
+                      name='cashDate'
                       control={control}
                       render={({ field, fieldState: { error } }) => (
                         <DatePicker
