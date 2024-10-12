@@ -232,12 +232,12 @@ export const paths = {
     },
     loanPayHistory: {
       root: `${ROOTS.DASHBOARD}/loanpayhistory`,
-      new: `${ROOTS.DASHBOARD}/loanpayhistory/new`,
+      // new: `${ROOTS.DASHBOARD}/loanpayhistory/new`,
       list: `${ROOTS.DASHBOARD}/loanpayhistory/list`,
       // cards: `${ROOTS.DASHBOARD}/user/cards`,
       // profile: `${ROOTS.DASHBOARD}/user/profile`,
       // account: `${ROOTS.DASHBOARD}/user/account`,
-      edit: (id) => `${ROOTS.DASHBOARD}/loanpayhistory/${id}/edit`,
+      edit: (id) => `${ROOTS.DASHBOARD}/loanpayhistory/${id}/new`,
       // demo: {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },

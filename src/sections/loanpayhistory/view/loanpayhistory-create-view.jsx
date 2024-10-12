@@ -6,12 +6,19 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import LoanpayhistoryNewEditForm from '../loanpayhistory-new-edit-form';
+import { useGetDisburseLoan } from '../../../api/disburseLoan';
+import { useParams } from 'react-router';
+import EmployeeNewEditForm from '../../employee/employee-new-edit-form';
+import { Box } from '@mui/material';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryCreateView() {
   const settings = useSettingsContext();
-
+  const {id} = useParams()
+  const {disburseLoan} = useGetDisburseLoan();
+  const currentLoan = disburseLoan.find((item) => item._id == id);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -32,7 +39,11 @@ export default function LoanpayhistoryCreateView() {
         }}
       />
 
-      <LoanpayhistoryNewEditForm />
+      {currentLoan ? <LoanpayhistoryNewEditForm currentLoan={currentLoan} /> :
+        <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <LoadingScreen />
+        </Box>
+      }
     </Container>
   );
 }

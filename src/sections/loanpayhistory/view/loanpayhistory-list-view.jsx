@@ -72,7 +72,6 @@ export default function LoanpayhistoryListView() {
   const {user} = useAuthContext();
   const { disburseLoan , mutate} = useGetDisburseLoan();
   const settings = useSettingsContext();
-
   const router = useRouter();
 
   const confirm = useBoolean();
@@ -139,7 +138,7 @@ export default function LoanpayhistoryListView() {
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = disburseLoan.filter((row) => table.selected.includes(row._id));
-    const deleteIds = deleteRows.map((row) => row.user._id);
+    const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds)
     setTableData(deleteRows);
 
@@ -281,8 +280,8 @@ export default function LoanpayhistoryListView() {
                         row={row}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row.user._id)}
-                        onEditRow={() => handleEditRow(row.user._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
 

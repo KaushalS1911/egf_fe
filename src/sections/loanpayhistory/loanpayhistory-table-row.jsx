@@ -16,14 +16,14 @@ import { paths } from '../../routes/paths';
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,index}) {
-  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount } = row;
+  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount , _id} = row;
   const confirm = useBoolean();
   const router = useRouter();
   const popover = usePopover();
 
   return (
     <>
-      <TableRow hover selected={selected} sx={{cursor: "pointer"}} onClick={() => router.push(paths.dashboard.loanPayHistory.new)}>
+      <TableRow hover selected={selected} sx={{cursor: "pointer"}} onClick={() => router.push(paths.dashboard.loanPayHistory.edit(_id))}>
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
