@@ -97,13 +97,13 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     loanNo: currentLoan?.loanNo || '',
     customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.lastName || '',
     address: `${currentLoan.customer.permanentAddress.street || ''}, ${currentLoan.customer.permanentAddress.landmark || ''}, ${currentLoan.customer.permanentAddress.city || ''}, ${currentLoan.customer.permanentAddress.state || ''}, ${currentLoan.customer.permanentAddress.zipcode || ''}, ${currentLoan.customer.permanentAddress.country || ''}` || '',
-    contact: currentLoan?.contact || '',
+    contact: currentLoan?.customer.contact || '',
     issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
-    schemeName: currentLoan?.schemeName || '',
+    schemeName: currentLoan?.scheme.name || '',
     closedBy: currentLoan?.closedBy || '',
     oldLoanNo: currentLoan?.oldLoanNo || '',
-    interest: currentLoan?.interest || '',
-    consultCharge: currentLoan?.consultCharge || '',
+    interest: currentLoan?.scheme.interestRate || '',
+    consultCharge: currentLoan?.consultingCharge || '',
     loanAmount: currentLoan?.loanAmount || '',
     interestLoanAmount: currentLoan?.interestLoanAmount || '',
     loanPeriod: currentLoan?.loanPeriod || '',
@@ -348,11 +348,11 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <Tab label='Loan Part Payment' />
               <Tab label='Loan Close' />
             </Tabs>
-            {activeTab === 0 && <InterestPayDetailsForm />}
-            {activeTab === 1 && <PartReleaseForm />}
-            {activeTab === 2 && <UchakInterestPayForm />}
-            {activeTab === 3 && <LoanPartPaymentForm />}
-            {activeTab === 4 && <LoanCloseForm />}
+            {activeTab === 0 && <InterestPayDetailsForm  currentLoan={currentLoan}/>}
+            {activeTab === 1 && <PartReleaseForm  currentLoan={currentLoan}/>}
+            {activeTab === 2 && <UchakInterestPayForm currentLoan={currentLoan} />}
+            {activeTab === 3 && <LoanPartPaymentForm  currentLoan={currentLoan}/>}
+            {activeTab === 4 && <LoanCloseForm  currentLoan={currentLoan}/>}
           </Card>
         </Grid>
       </Grid>
