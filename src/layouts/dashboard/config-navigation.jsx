@@ -291,6 +291,12 @@ export function useNavData() {
             path: paths.dashboard.reminder.list,
             icon: ICONS.reminder,
           },
+          // LOAN PAY HISTORY
+          {
+            title: t('Loan Pay History'),
+            path: paths.dashboard.loanPayHistory.list,
+            icon: ICONS.user,
+          },
           ]
       },
       {

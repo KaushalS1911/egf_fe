@@ -130,8 +130,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
   const onSubmit = handleSubmit(async (data) => {
     let payload;
-    console.log(data);
-    // Create permanent and temporary address objects
     const permanentAddress = {
       street: data.permanentStreet || '',
       landmark: data.permanentLandmark || '',
