@@ -16,7 +16,7 @@ import { paths } from '../../routes/paths';
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,index}) {
-  const {loanNumber , customerID , contact , interestRate ,loanAmount, loanBalance , totalPayable } = row;
+  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount } = row;
   const confirm = useBoolean();
   const router = useRouter();
   const popover = usePopover();
@@ -31,13 +31,13 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
           <TableCell>
             {index + 1}
           </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNumber}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerID}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanBalance}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalPayable}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
