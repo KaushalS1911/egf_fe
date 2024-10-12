@@ -35,7 +35,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
   const { scheme, mutate } = useGetScheme();
   const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
@@ -90,14 +89,14 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         payingAmount: currentDisburse?.payingAmount || '',
         pendingAmount: currentDisburse?.pendingAmount || '',
         date: currentDisburse?.issueDate ? new Date(currentDisburse.issueDate) : new Date(),
-        account: currentDisburse?.account || '',
         transactionID: currentDisburse?.transactionID || '',
+        account: currentDisburse?.account || null,
         },
         cashAmount:{
-        netAmount: currentDisburse?.propertyDetails.netAmount || '',
+        netAmount: currentDisburse?.cashAmount || '',
         payingAmount: currentDisburse?.payingAmount || '',
         pendingAmount: currentDisburse?.pendingAmount || '',
-        date: currentDisburse?.issueDate ? new Date(currentDisburse.issueDate) : new Date(),
+        date: currentDisburse?.date? new Date(currentDisburse.issueDate) : new Date(),
         },
       }
       ),
@@ -118,17 +117,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     formState: { isSubmitting },
     getValues
   } = methods;
-  useEffect(() => {
-    const netAmount = watch('bankAmount.netAmount');
-    const payingAmount = watch('bankAmount.payingAmount');
-
-    if (netAmount && payingAmount) {
-      const remainingAmount = netAmount - payingAmount;
-      setValue('bankAmount.pendingAmount', remainingAmount);
-    } else {
-      setValue('bankAmount.pendingAmount', 0);
-    }
-  }, [watch('bankAmount.netAmount'), watch('bankAmount.payingAmount'), setValue]);
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'items',
@@ -365,21 +353,22 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                   >
                     <RHFTextField name='bankAmount.netAmount' label='Net Amount' req={'red'} />
                     <RHFTextField name='bankAmount.PayingAmount' label='Paying Amount' req={'red'} />
-                    <RHFTextField name='bankAmount.PendingAmount' label='Pending Amount' req={'red'} />
-                    <RHFTextField name='bankAmount.transactionID' label='Transaction ID' req={'red'} />
-                    <RHFAutocomplete
-                      name='transactionID'
-                      label='TransactionID'
+                    <RHFTextField name='bankAmount.PendingAmount' label='Pending Amount' req={'red'}  value={watch('bankAmount.netAmount') - watch('bankAmount.PayingAmount') || 0} InputLabelProps={{ shrink: true }} />
+                    {console.log("branch?.company?.bankAccounts : ",watch('bankAmount.account'))}
+                    {branch.find((item) => item.name === watch('branch')) && <RHFAutocomplete
+                      name='bankAmount.account'
+                      label='Account'
                       req={'red'}
                       fullWidth
-                      options={scheme?.map((item) => item.name)}
-                      getOptionLabel={(option) => option}
+                      options={branch.find((item) => item.name === watch('branch'))?.company.bankAccounts.map((item) => item)}
+                      getOptionLabel={(option) => option.bankName}
                       renderOption={(props, option) => (
                         <li {...props} key={option}>
-                          {option}
+                          {option.bankName}
                         </li>
                       )}
-                    />
+                    />}
+                    <RHFTextField name='bankAmount.transactionID' label='Transaction ID' req={'red'} />
                     <Controller
                       name='date'
                       control={control}
@@ -431,6 +420,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                                   }}
                     />
                     <RHFTextField name='cashAmount.PendingAmount' label='Pending Amount' req={'red'}
+                                  value={watch('cashAmount.netAmount') - watch('cashAmount.PayingAmount') || 0} InputLabelProps={{ shrink: true }}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                                       e.preventDefault();
