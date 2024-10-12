@@ -127,7 +127,6 @@ export default function LoanissueListView() {
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
-    console.log(deleteRows,"yguygugug");
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -140,6 +139,12 @@ export default function LoanissueListView() {
   const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
+    },
+    [router],
+  );
+  const handleClick = useCallback(
+    (id) => {
+      router.push(paths.dashboard.disburse.new(id));
     },
     [router],
   );
@@ -229,6 +234,7 @@ export default function LoanissueListView() {
                       <LoanissueTableRow
                         key={row._id}
                         row={row}
+                        handleClick={() => handleClick(row._id)}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}

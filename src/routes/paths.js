@@ -214,12 +214,12 @@ export const paths = {
     },
     disburse: {
       root: `${ROOTS.DASHBOARD}/disburse`,
-      new: `${ROOTS.DASHBOARD}/disburse/new`,
-      // list: `${ROOTS.DASHBOARD}/penalty/list`,
+      // new: `${ROOTS.DASHBOARD}/disburse/new`,
+      list: `${ROOTS.DASHBOARD}/disburse/list`,
       // cards: `${ROOTS.DASHBOARD}/user/cards`,
       // profile: `${ROOTS.DASHBOARD}/user/profile`,
       // account: `${ROOTS.DASHBOARD}/user/account`,
-      edit: (id) => `${ROOTS.DASHBOARD}/penalty/${id}/edit`,
+      new: (id) => `${ROOTS.DASHBOARD}/disburse/${id}/new`,
     },
     reminder: {
       // root: `${ROOTS.DASHBOARD}/reminder`,

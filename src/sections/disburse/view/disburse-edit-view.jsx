@@ -14,36 +14,37 @@ import { useGetScheme } from '../../../api/scheme';
 import { useParams } from '../../../routes/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { Box } from '@mui/material';
+import { useGetLoanissue } from '../../../api/loanissue';
 
 // ----------------------------------------------------------------------
 
-export default function DisburseEditView() {
+  export default function DisburseEditView() {
   const settings = useSettingsContext();
-  const {scheme} = useGetScheme()
+  const { Loanissue } = useGetLoanissue();
   const {id} = useParams()
-
-  const currentScheme = scheme.find((scheme) => scheme._id === id);
+  const currentDisburse = Loanissue.find((loanissue) => loanissue._id === id);
+    console.log(currentDisburse);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="Create New Disbuese"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Scheme',
-            href: paths.dashboard.scheme.root,
+            name: 'Disburse',
+            href: paths.dashboard.disburse.root,
           },
-          { name: currentScheme?.name },
+          { name: currentDisburse?.name },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      {currentScheme ? <DisburseNewEditForm currentScheme={currentScheme} /> :
+      {currentDisburse ? <DisburseNewEditForm currentDisburse={currentDisburse} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>

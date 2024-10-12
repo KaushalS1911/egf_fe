@@ -150,7 +150,6 @@ export default function SchemeListView() {
   const handleDeleteRows = useCallback(() => {
     const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
      const deleteIds = deleteRows.map((row) => row._id);
-    console.log("yhbjuyh",deleteIds);
      handleDelete(deleteIds)
     setTableData(deleteRows);
 

@@ -66,7 +66,9 @@ const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-lis
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
 // DISBURSE
-const DisbursecreateView = lazy(()=>import('../../sections/disburse/view/disburse-create-view'))
+const DisburseEditView = lazy(()=>import('../../sections/disburse/view/disburse-edit-view'))
+// REMINDER
+const ReminderListView = lazy(()=>import('../../sections/reminder/view/reminder-list-view'))
 // LOAN ISSUE
 const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
 const LoanissueCreateView = lazy(()=>import('../../sections/loanissue/view/loanissue-create-view'))
@@ -173,10 +175,10 @@ export const dashboardRoutes = [
       {
         path: 'disburse',
         children: [
-          // { element: <PenaltyListView/>, index: true },
-          // { path: 'list', element: <PenaltyListView/> },
-          { path: 'new', element: <DisbursecreateView/> },
-          // { path: ':id/edit', element: <PenaltyEditView /> },
+          { element: <LoanissueListView />, index: true },
+          { path: 'list', element: <LoanissueListView /> },
+          // { path: 'new', element: <DisbursecreateView/> },
+          { path: ':id/new', element: <DisburseEditView /> },
         ],
       },
       {

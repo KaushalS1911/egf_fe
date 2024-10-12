@@ -8,22 +8,16 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { fDate } from '../../utils/format-time';
 import { RouterLink } from '../../routes/components';
-import { paths } from '../../routes/paths';
 
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow,handleClick }) {
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -42,8 +36,8 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <Button
+          onClick={handleClick}
           sx={{ my: 2 }}
-          component={RouterLink}
           variant='contained'
           startIcon={<Iconify icon='mingcute:add-line' />}
         >

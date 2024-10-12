@@ -282,7 +282,7 @@ export function useNavData() {
           // DISBURSE
           {
             title: t('disburse'),
-            path: paths.dashboard.disburse.new,
+            path: paths.dashboard.disburse.root,
             icon: ICONS.user,
           },
           // REMINDER
