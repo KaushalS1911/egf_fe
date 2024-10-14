@@ -27,6 +27,9 @@ import { Upload } from '../../../components/upload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
 import { fDate } from '../../../utils/format-time';
+import axios from 'axios';
+import { enqueueSnackbar } from 'notistack';
+import { useParams } from 'react-router';
 
 const rows = [
   {
@@ -162,12 +165,12 @@ const tableDummyData = [
   },
 ];
 
-function PartReleaseForm() {
+function PartReleaseForm({ currentLoan }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [file, setFile] = useState(null);
-
+  const {id} = useParams();
   const selectedTotals = useMemo(() => {
-    return rows.reduce(
+    return currentLoan.propertyDetails.reduce(
       (totals, row) => {
         if (selectedRows.includes(row.id)) {
           totals.pcs += row.pcs || 0;
@@ -178,7 +181,7 @@ function PartReleaseForm() {
         }
         return totals;
       },
-      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 }
+      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 },
     );
   }, [selectedRows]);
 
@@ -190,17 +193,66 @@ function PartReleaseForm() {
       .typeError('Pay amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    accountName: Yup.string().required('Account name is required'),
-    accountNo: Yup.string().required('Account number is required'),
-    accountType: Yup.string().required('Account type is required'),
-    IFSC: Yup.string().required('IFSC code is required'),
-    bankName: Yup.string().required('Bank name is required'),
+    accountName: Yup.string().test(
+      'accountNameRequired',
+      'Account name is required',
+      function(value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      },
+    ),
+
+    cashAmount: Yup.string().test(
+      'cashAmountRequired',
+      'Cash Amount is required',
+      function(value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
+      },
+    ),
+
+    accountNo: Yup.string().test(
+      'accountNoRequired',
+      'Account number is required',
+      function(value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      },
+    ),
+
+    accountType: Yup.string().test(
+      'accountTypeRequired',
+      'Account type is required',
+      function(value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      },
+    ),
+
+    IFSC: Yup.string().test(
+      'ifscRequired',
+      'IFSC code is required',
+      function(value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      },
+    ),
+
+    bankName: Yup.string().test(
+      'bankNameRequired',
+      'Bank name is required',
+      function(value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      },
+    ),
   });
   const defaultValues = {
     date: null,
     amountPaid: '',
     remark: '',
     paymentMode: '',
+    cashAmount: '',
     accountName: '',
     accountNo: '',
     accountType: '',
@@ -215,27 +267,66 @@ function PartReleaseForm() {
 
   const {
     control,
+    watch,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    let paymentDetail = {
+      paymentMode: data.paymentMode
+    };
+
+    if (data.paymentMode === 'Cash') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+      };
+    } else if (data.paymentMode === 'Bank') {
+      paymentDetail = {
+        ...paymentDetail,
+        accountName: data.accountName,
+        accountNo: data.accountNo,
+        accountType: data.accountType,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
+    } else if (data.paymentMode === 'Both') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+        accountName: data.accountName,
+        accountNo: data.accountNo,
+        accountType: data.accountType,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
+    }
     const payload = {
-      loan : 'adsdasdadsdadsdddw233e',
       property: selectedRows,
       remark: data.remark,
       propertyImage: file,
       date: data.date,
       amountPaid: data.amountPaid,
-      paymentDetail : {
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        ifscCode: data.IFSC,
-        bankName: data.bankName
-      }
+      paymentDetail: paymentDetail,
+    };
+    try {
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/part-release`;
+
+      const config = {
+        method: 'post',
+        url,
+        data: payload,
+      };
+    console.log('DATAAAAAAAAAAA : ',config, payload);
+
+      // const response = await axios(config);
+      // mutate();
+      // reset();
+      enqueueSnackbar(response?.data.message);
+    } catch (error) {
+      console.error(error);
     }
-    console.log('DATAAAAAAAAAAA : ', payload);
   });
 
   const handleDropSingleFile = useCallback((acceptedFiles) => {
@@ -251,21 +342,20 @@ function PartReleaseForm() {
 
   const handleCheckboxClick = (row) => {
     setSelectedRows((prevSelected) =>
-      prevSelected.includes(row.id)
-        ? prevSelected.filter((id) => id !== row.id)
-        : [...prevSelected, row.id]
+      prevSelected.find((selectedRow) => selectedRow._id === row._id)
+        ? prevSelected.filter((selectedRow) => selectedRow._id !== row._id)
+        : [...prevSelected, row],
     );
   };
 
   const handleSelectAllClick = () => {
-    if (selectedRows.length === rows.length) {
+    if (selectedRows.length === currentLoan.propertyDetails.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(rows.map((row) => row.id));
+      setSelectedRows(currentLoan.propertyDetails);
     }
   };
-
-  const isRowSelected = (id) => selectedRows.includes(id);
+  const isRowSelected = (id) => selectedRows.some((row) => row._id === id);
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -276,10 +366,10 @@ function PartReleaseForm() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell padding="checkbox">
+                      <TableCell padding='checkbox'>
                         <Checkbox
-                          indeterminate={selectedRows.length > 0 && selectedRows.length < rows.length}
-                          checked={rows.length > 0 && selectedRows.length === rows.length}
+                          indeterminate={selectedRows.length > 0 && selectedRows.length < currentLoan.propertyDetails.length}
+                          checked={currentLoan.propertyDetails.length > 0 && selectedRows.length === currentLoan.propertyDetails.length}
                           onChange={handleSelectAllClick}
                         />
                       </TableCell>
@@ -289,16 +379,16 @@ function PartReleaseForm() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rows.map((row) => (
+                    {currentLoan.propertyDetails && currentLoan.propertyDetails?.map((row) => (
                       <TableRow key={row.id} selected={isRowSelected(row.id)}>
-                        <TableCell padding="checkbox">
+                        <TableCell padding='checkbox'>
                           <Checkbox
                             checked={isRowSelected(row.id)}
                             onChange={() => handleCheckboxClick(row)}
                           />
                         </TableCell>
-                        <TableCell>{row.loanNo}</TableCell>
-                        <TableCell>{row.propertyName}</TableCell>
+                        <TableCell>{currentLoan.loanNo}</TableCell>
+                        <TableCell>{row.type}</TableCell>
                         <TableCell>{row.carat}</TableCell>
                         <TableCell>{row.pcs}</TableCell>
                         <TableCell>{row.totalWeight}</TableCell>
@@ -308,7 +398,7 @@ function PartReleaseForm() {
                       </TableRow>
                     ))}
                     <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
-                      <TableCell padding="checkbox" />
+                      <TableCell padding='checkbox' />
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>TOTAL AMOUNT</TableCell>
                       <TableCell />
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.carat}</TableCell>
@@ -363,7 +453,7 @@ function PartReleaseForm() {
                         name='paymentMode'
                         label='Payment Mode'
                         req={'red'}
-                        options={['Cash', 'Check']}
+                        options={['Cash', 'Bank', 'Both']}
                         getOptionLabel={(option) => option}
                         renderOption={(props, option) => (
                           <li {...props} key={option}>
@@ -374,6 +464,7 @@ function PartReleaseForm() {
                     </Grid>
                   </Grid>
                 </Grid>
+
                 <Grid item xs={3}>
                   <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} />
                 </Grid>
@@ -381,44 +472,54 @@ function PartReleaseForm() {
             </Box>
           </Box>
         </Box>
-        <Grid container sx={{ mt: 3 }}>
-          <Grid item xs={12} md={4}>
-            <Typography variant='h6' sx={{ mb: 0.5 }}>
-              Bank Account Details
-            </Typography>
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <RHFTextField name='accountName' label='Account Name' req={'red'} />
-              <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-              <RHFAutocomplete
-                name='accountType'
-                label='Account Type'
-                req={'red'}
-                options={['Saving', 'Current']}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
-              <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-              <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-            </Box>
-          </Grid>
-        </Grid>
+        <Box sx={{ p: 3 }} >
+          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+            <>
+              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }}
+                            InputLabelProps={{ shrink: true, readOnly: true }} />
+            </>
+          )}
+          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+            <Grid container sx={{ mt: 8 }}>
+              <Grid item xs={12} md={4}>
+                <Typography variant='h6' sx={{ mb: 0.5 }}>
+                  Bank Account Details
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display='grid'
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                  }}
+                >
+                  <RHFTextField name='accountName' label='Account Name' req={'red'} />
+                  <RHFTextField name='accountNo' label='Account No.' req={'red'} />
+                  <RHFAutocomplete
+                    name='accountType'
+                    label='Account Type'
+                    req={'red'}
+                    options={['Saving', 'Current']}
+                    getOptionLabel={(option) => option}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option}>
+                        {option}
+                      </li>
+                    )}
+                  />
+                  <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
+                  <RHFTextField name='bankName' label='Bank Name' req={'red'} />
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-          Submit
+            Submit
           </LoadingButton>
         </Box>
       </FormProvider>

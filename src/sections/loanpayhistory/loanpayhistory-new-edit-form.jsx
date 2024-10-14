@@ -46,7 +46,6 @@ import LoanCloseForm from './view/loan-close-form';
 
 export default function LoanpayhistoryNewEditForm({ currentLoan }) {
   const router = useRouter();
-  console.log("currentLoan : ",currentLoan);
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -110,8 +109,8 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     IntPeriodTime: currentLoan?.IntPeriodTime || '',
     witnessName: currentLoan?.witnessName || '',
     witnessMobileNo: currentLoan?.witnessMobileNo || '',
-    nextInterestPayDate: currentLoan?.nextInterestPayDate ? new Date(currentLoan?.nextInterestPayDate) : new Date(),
-    lastInterestPayDate: currentLoan?.lastInterestPayDate ? new Date(currentLoan?.lastInterestPayDate) : new Date(),
+    nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
+    lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : new Date(),
   }), [currentLoan]);
 
   const methods = useForm({
