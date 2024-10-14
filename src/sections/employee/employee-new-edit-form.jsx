@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -24,6 +23,7 @@ import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
 import { useGetConfigs } from '../../api/config';
+import { useGetBranch } from '../../api/branch';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const { enqueueSnackbar } = useSnackbar();
+  const { branch } = useGetBranch();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
 
   const NewEmployeeSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
@@ -50,7 +52,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       .nullable()
       .typeError('Date of Birth is required'),
     remark: Yup.string(),
-
     role: Yup.string().required('Role is required'),
     reportingTo: Yup.object().required('Reporting to is required'),
     email: Yup.string().email('Invalid email format').required('Email is required'),
@@ -62,14 +63,12 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       .nullable()
       .typeError('Joining date is required'),
     leaveDate: Yup.string().typeError('Enter a valid date').nullable(),
-
     permanentStreet: Yup.string().required('Permanent Address is required'),
     permanentLandmark: Yup.string(),
     permanentCountry: Yup.string().required('Country is required'),
     permanentState: Yup.string().required('State is required'),
     permanentCity: Yup.string().required('City is required'),
     permanentZipcode: Yup.string().required('Zipcode is required'),
-
     tempStreet: Yup.string(),
     tempLandmark: Yup.string(),
     tempCountry: Yup.string(),
@@ -79,6 +78,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   });
 
   const defaultValues = useMemo(() => ({
+    branchId: currentEmployee ? {
+      label: currentEmployee?.branch?.name,
+      value: currentEmployee?.branch?._id,
+    } : null,
     profile_pic: currentEmployee?.user.avatar_url || '',
     firstName: currentEmployee?.user.firstName || '',
     middleName: currentEmployee?.user.middleName || '',
@@ -98,15 +101,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     leaveDate: new Date(currentEmployee?.leaveDate) || new Date(),
     permanentStreet: currentEmployee?.permanentAddress.street || '',
     permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
-    permanentCountry: currentEmployee?.permanentAddress.country || '',
-    permanentState: currentEmployee?.permanentAddress.state || '',
-    permanentCity: currentEmployee?.permanentAddress.city || '',
+    permanentCountry: currentEmployee?.permanentAddress.country || 'India',
+    permanentState: currentEmployee?.permanentAddress.state || 'Gujarat',
+    permanentCity: currentEmployee?.permanentAddress.city || 'Surat',
     permanentZipcode: currentEmployee?.permanentAddress.zipcode || '',
     tempStreet: currentEmployee?.temporaryAddress.street || '',
     tempLandmark: currentEmployee?.temporaryAddress.landmark || '',
-    tempCountry: currentEmployee?.temporaryAddress.country || '',
-    tempState: currentEmployee?.temporaryAddress.state || '',
-    tempCity: currentEmployee?.temporaryAddress.city || '',
+    tempCountry: currentEmployee?.temporaryAddress.country || 'India',
+    tempState: currentEmployee?.temporaryAddress.state || 'Gujarat',
+    tempCity: currentEmployee?.temporaryAddress.city || 'Surat',
     tempZipcode: currentEmployee?.temporaryAddress.zipcode || '',
   }), [currentEmployee]);
 
@@ -177,7 +180,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       }
 
       formData.append('branch', '66ea5ebb0f0bdc8062c13a64');
-
       const addressFields = ['street', 'landmark', 'country', 'state', 'city', 'zipcode'];
 
       addressFields.forEach(field => {
@@ -187,9 +189,24 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       payload = formData;
     }
     try {
+      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+      let parsedBranch = storedBranch;
+
+      if (storedBranch !== 'all') {
+        try {
+          parsedBranch = JSON.parse(storedBranch);
+        } catch (error) {
+          console.error('Error parsing storedBranch:', error);
+        }
+      }
+
+      const branchQuery = parsedBranch && parsedBranch === 'all'
+        ? `&branch=${mainbranchid?._id}`
+        : `&branch=${parsedBranch}`;
+
       const url = currentEmployee
-        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee/${currentEmployee._id}?branch=66ea5ebb0f0bdc8062c13a64`
-        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee?branch=66ea5ebb0f0bdc8062c13a64`;
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee/${currentEmployee._id}?${branchQuery}`
+        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee?${branchQuery}`;
       const config = {
         method: currentEmployee ? 'put' : 'post',
         url,
@@ -240,7 +257,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 onDrop={handleDrop}
               />
             </Box>
-
           </Card>
         </Grid>
 
@@ -255,6 +271,19 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
+                <RHFAutocomplete
+                  name='branchId'
+                  req={'red'}
+                  label='Branch'
+                  placeholder='Choose a Branch'
+                  options={branch?.map((branchItem) => ({
+                    label: branchItem?.name,
+                    value: branchItem?._id,
+                  })) || []}
+                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                />
+              )}
               <RHFTextField name='firstName' label='First Name' req={'red'} />
               <RHFTextField name='middleName' label='Middle Name' req={'red'} />
               <RHFTextField name='lastName' label='Last Name' req={'red'} />
@@ -287,10 +316,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 label='Mobile'
                 req={'red'}
                 inputProps={{
-                maxLength: 10,
-                inputMode: 'numeric',
-                pattern: '[0-9]*',
-              }}
+                  maxLength: 10,
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                }}
                 rules={{
                   required: 'OTP is required',
                   pattern: {

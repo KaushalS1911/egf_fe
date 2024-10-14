@@ -1,33 +1,70 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
-
-import { usePathname } from 'src/routes/hooks';
-
+import { usePathname, useRouter } from 'src/routes/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 import { NavSectionVertical } from 'src/components/nav-section';
-
 import { NAV } from '../config-layout';
 import { useNavData } from './config-navigation';
 import NavToggleButton from '../common/nav-toggle-button';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetBranch } from '../../api/branch';
+import { RHFAutocomplete } from '../../components/hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
+import { paths } from '../../routes/paths';
 
 // ----------------------------------------------------------------------
 
 export default function NavVertical({ openNav, onCloseNav }) {
-  const { user } = useMockedUser();
-
+  const { user } = useAuthContext();
+  const router = useRouter();
+  const { branch } = useGetBranch();
   const pathname = usePathname();
-
   const lgUp = useResponsive('up', 'lg');
-
   const navData = useNavData();
+
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+  const methods = useForm({
+    defaultValues: {
+      branchId: storedBranch
+        ? storedBranch === 'all'
+          ? { label: 'All', value: 'all' }
+          : { label: 'Loading...', value: storedBranch }
+        : { label: 'All', value: 'all' },
+    },
+  });
+  const { watch, setValue } = methods;
+  const selectedBranch = watch('branchId');
+
+  useEffect(() => {
+    if (selectedBranch?.value) {
+      sessionStorage.setItem('selectedBranch', selectedBranch.value);
+      router.replace(paths.dashboard);
+    } else {
+      sessionStorage.removeItem('selectedBranch');
+      setValue('branchId', { label: 'All', value: 'all' });
+    }
+  }, [selectedBranch]);
+
+  useEffect(() => {
+    if (branch && storedBranch) {
+      if (storedBranch === 'all') {
+        setValue('branchId', { label: 'All', value: 'all' });
+      } else {
+        const foundBranch = branch?.find((branchItem) => branchItem?._id === storedBranch);
+        if (foundBranch) {
+          setValue(
+            'branchId',
+            { label: foundBranch.name, value: foundBranch._id },
+          );
+        }
+      }
+    }
+  }, [branch, setValue]);
 
   useEffect(() => {
     if (openNav) {
@@ -49,6 +86,26 @@ export default function NavVertical({ openNav, onCloseNav }) {
     >
       <Logo sx={{ mt: 3, ml: 4, mb: 1 }} />
 
+      {user?.role === 'Admin' && branch && (
+        <FormProvider {...methods}>
+          <Box sx={{ mt: 2, mx: 4 }}>
+            <RHFAutocomplete
+              name='branchId'
+              label='Branch'
+              placeholder='Choose a Branch'
+              options={[
+                { label: 'All', value: 'all' },
+                ...branch?.map((branchItem) => ({
+                  label: branchItem?.name,
+                  value: branchItem?._id,
+                })),
+              ]}
+              isOptionEqualToValue={(option, value) => option?.value === value?.value}
+            />
+          </Box>
+        </FormProvider>
+      )}
+
       <NavSectionVertical
         data={navData}
         slotProps={{
@@ -57,7 +114,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
       />
 
       <Box sx={{ flexGrow: 1 }} />
-
     </Scrollbar>
   );
 

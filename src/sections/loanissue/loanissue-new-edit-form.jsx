@@ -30,12 +30,12 @@ import Button from '@mui/material/Button';
 import Iconify from '../../components/iconify';
 import { useGetCustomer } from '../../api/customer';
 import { ACCOUNT_TYPE_OPTIONS, paymentMethods } from '../../_mock';
-import { useGetBranch } from '../../api/branch';
 import { useGetAllProperty } from '../../api/property';
 import { useGetCarat } from '../../api/carat';
 import { useGetConfigs } from '../../api/config';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
+import { useGetBranch } from '../../api/branch';
 
 // ----------------------------------------------------------------------
 
@@ -46,14 +46,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [schemeId, setSchemeID] = useState();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const { branch } = useGetBranch();
   const { customer } = useGetCustomer();
   const { scheme } = useGetScheme();
-  const { branch } = useGetBranch();
   const { property } = useGetAllProperty();
   const { carat } = useGetCarat();
   const { enqueueSnackbar } = useSnackbar();
   const [multiSchema, setMultiSchema] = useState([]);
   const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
+  const [totalWeightError, setTotalWeightError] = useState('');
+  const [lossWeightError, setLossWeightError] = useState('');
+  const storedBranch = sessionStorage.getItem('selectedBranch');
 
   useEffect(() => {
     setMultiSchema(scheme);
@@ -82,7 +85,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       periodTime: '',
       renewalTime: '',
       loanCloseTime: '',
-      property_image: currentLoanIssue?.property_image || '',
+      property_image: currentLoanIssue?.propertyImage || '',
       customer: currentLoanIssue ? {
         id: currentLoanIssue?.customer?._id,
         name: currentLoanIssue?.customer?.firstName + ' ' + currentLoanIssue?.customer?.lastName,
@@ -117,10 +120,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         },
       ],
     };
-
     return baseValues;
   }, [currentLoanIssue]);
-
 
   const methods = useForm({
     resolver: yupResolver(NewLoanissueSchema),
@@ -179,7 +180,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const onSubmit = handleSubmit(async (data) => {
     const propertyDetails = watch('propertyDetails');
     const payload = new FormData();
-
     payload.append('company', user.company);
     payload.append('customer', data.customer.id);
     payload.append('scheme', currentLoanIssue ? data.scheme._id : data.scheme.id);
@@ -202,7 +202,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     });
 
     if (data.property_image) {
-      payload.append('property-image', data.property_image[0]);
+      payload.append('property-image', data.property_image);
     }
 
     payload.append('loanAmount', parseFloat(data.loanAmount));
@@ -218,7 +218,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       payload.append('customerBankDetail[accountHolderName]', data.accountHolderName);
       payload.append('customerBankDetail[IFSC]', data.IFSC);
       payload.append('customerBankDetail[bankName]', data.bankName);
-      payload.append('customerBankDetail[branchName]', data.branchName.id);
+      payload.append('customerBankDetail[branchName]', data.branchName);
     }
 
     try {
@@ -245,14 +245,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
   });
 
-
   const handleDropSingleFile = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
       const newFile = Object.assign(file, {
         preview: URL.createObjectURL(file),
       });
-
       if (newFile) {
         setValue('property_image', newFile, { shouldValidate: true });
       }
@@ -294,6 +292,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setValue('contact', findedCus.contact);
       setValue('contactOtp', findedCus.otpContact);
       setValue('customer_url', findedCus.avatar_url);
+      if (!currentLoanIssue) {
+        setValue('accountNumber', findedCus.bankDetails.accountNumber);
+        setValue('accountType', findedCus.bankDetails.accountType);
+        setValue('accountHolderName', findedCus.bankDetails.accountHolderName);
+        setValue('IFSC', findedCus.bankDetails.IFSC);
+        setValue('bankName', findedCus.bankDetails.bankName);
+        setValue('branchName', findedCus.bankDetails.branchName);
+      }
     } else {
       setValue('customerCode', '');
       setValue('customerName', '');
@@ -301,6 +307,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setValue('contact', '');
       setValue('contactOtp', '');
       setValue('customer_url', '');
+      if (!currentLoanIssue) {
+        setValue('accountNumber', '');
+        setValue('accountType', '');
+        setValue('accountHolderName', '');
+        setValue('IFSC', '');
+        setValue('bankName', '');
+        setValue('branchName', '');
+      }
     }
   }, [customerId, customer, setValue]);
 
@@ -336,16 +350,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
-    const currentCashAmount = parseFloat(getValues('cashAmount')) || '';
-
     setValue('loanAmount', newLoanAmount);
+    const paymentMode = watch('paymentMode');
 
-    if (watch('paymentMode') === 'Both') {
-      if (newLoanAmount < currentCashAmount) {
-        setValue('cashAmount', newLoanAmount);
-      }
-      const calculatedBankAmount = newLoanAmount - currentCashAmount;
-      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : 0);
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', newLoanAmount);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      setValue('cashAmount', newLoanAmount / 2);
+      setValue('bankAmount', newLoanAmount / 2);
     }
   };
 
@@ -359,10 +375,49 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     } else {
       setValue('cashAmount', newCashAmount);
     }
-
     if (watch('paymentMode') === 'Both') {
       const calculatedBankAmount = currentLoanAmount - newCashAmount;
-      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : 0);
+      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
+
+  const saveCustomerBankDetails = async () => {
+    const payload = {
+      bankDetails: {
+        branchName: watch('branchName'),
+        accountHolderName: watch('accountHolderName'),
+        accountNumber: watch('accountNumber'),
+        accountType: watch('accountType'),
+        IFSC: watch('IFSC'),
+        bankName: watch('bankName'),
+      },
+    };
+
+    const mainbranchid = branch?.find((e) => e?._id === customerData?.branch?._id);
+    let parsedBranch = storedBranch;
+
+    if (storedBranch !== 'all') {
+      try {
+        parsedBranch = JSON.parse(storedBranch);
+      } catch (error) {
+        console.error('Error parsing storedBranch:', error);
+      }
+    }
+    const branchQuery = parsedBranch && parsedBranch === 'all'
+      ? `&branch=${mainbranchid?._id}`
+      : `&branch=${parsedBranch}`;
+
+    try {
+      const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?._id}?${branchQuery}`;
+      const response = await axios.put(url, payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      enqueueSnackbar('Save Customer Bank Details successfully!', { variant: 'success' });
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar('Failed to process loan.', { variant: 'error' });
     }
   };
 
@@ -403,7 +458,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             <Button
               variant='contained'
               startIcon={<Iconify icon='mingcute:add-line' />}
-              onClick={handleAdd}>
+              onClick={handleAdd}
+              href={paths.dashboard.customer.new}
+            >
               Add Customer
             </Button>
           </Box>
@@ -572,7 +629,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </CardContent>
           </Card>
         </Grid>
-
         <Grid item xs={12} md={12}>
           <Card
             sx={{ margin: '0px 0px 20px 0px' }}
@@ -662,17 +718,43 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                           <RHFTextField
                             name={`propertyDetails[${index}].totalWeight`}
                             label='TW'
+                            type='number'
+                            step='0.01'
                             disabled={!isFieldsEnabled}
+                            helperText={totalWeightError}
+                            error={!!totalWeightError}
                             onChange={(e) => {
-                              const totalWeight = parseFloat(e.target.value) || 0;
-                              const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
-                              const grossWeight = totalWeight - lossWeight;
-                              setValue(`propertyDetails[${index}].totalWeight`, totalWeight);
-                              setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
+                              const inputValue = e.target.value;
 
-                              const caratValue = parseFloat(getValues(`propertyDetails[${index}].carat`)) || 0;
-                              const netWeight = grossWeight * caratValue;
-                              setValue(`propertyDetails[${index}].netWeight`, netWeight);
+                              if (inputValue === '') {
+                                setTotalWeightError('Total weight cannot be empty.');
+                                setValue(`propertyDetails[${index}].totalWeight`, '');
+                                return;
+                              } else {
+                                setTotalWeightError('');
+                              }
+
+                              if (/^-?\d*\.?\d*$/.test(inputValue)) {
+                                const totalWeight = parseFloat(inputValue);
+                                setValue(`propertyDetails[${index}].totalWeight`, inputValue);
+
+                                if (!isNaN(totalWeight) && totalWeight >= 0) {
+                                  const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
+
+                                  if (lossWeight > totalWeight) {
+                                    setTotalWeightError('Loss weight cannot be greater than total weight.');
+                                  } else {
+                                    const grossWeight = totalWeight - lossWeight;
+                                    setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
+                                    const caratValue = parseFloat(getValues(`propertyDetails[${index}].carat`)) || 0;
+                                    const netWeight = grossWeight * caratValue;
+                                    setValue(`propertyDetails[${index}].netWeight`, netWeight);
+                                    setTotalWeightError('');
+                                  }
+                                }
+                              } else {
+                                setTotalWeightError('Please enter a valid number for total weight.');
+                              }
                             }}
                           />
                         </TableCell>
@@ -680,24 +762,46 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                           <RHFTextField
                             name={`propertyDetails[${index}].lossWeight`}
                             label='LW'
+                            type='number'
+                            step='0.01'
                             disabled={!isFieldsEnabled}
+                            helperText={lossWeightError}
+                            error={!!lossWeightError}
                             onChange={(e) => {
-                              const lossWeight = parseFloat(e.target.value) || 0;
-                              const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
-                              const grossWeight = totalWeight - lossWeight;
-                              setValue(`propertyDetails[${index}].lossWeight`, lossWeight);
-                              setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
+                              const inputValue = e.target.value;
 
-                              const caratValue = carat?.find((e) => e.name == parseFloat(getValues(`propertyDetails[${index}].carat`))) || 0;
-                              const netWeight = grossWeight * caratValue.caratPercentage / 100;
-                              setValue(`propertyDetails[${index}].netWeight`, netWeight);
+                              if (inputValue === '') {
+                                setLossWeightError('Loss weight cannot be empty.');
+                                setValue(`propertyDetails[${index}].lossWeight`, '');
+                                return;
+                              } else {
+                                setLossWeightError('');
+                              }
 
-                              const pcs = parseFloat(getValues(`propertyDetails[${index}].pcs`)) || 0;
-                              const grossAmount = grossWeight * pcs * configs.goldRate;
-                              setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
+                              if (/^-?\d*\.?\d*$/.test(inputValue)) {
+                                const lossWeight = parseFloat(inputValue);
+                                setValue(`propertyDetails[${index}].lossWeight`, inputValue);
 
-                              const netAmount = netWeight * pcs * configs.goldRate;
-                              setValue(`propertyDetails[${index}].netAmount`, netAmount);
+                                const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
+
+                                if (lossWeight > totalWeight) {
+                                  setLossWeightError('Loss weight cannot be greater than total weight.');
+                                } else {
+                                  const grossWeight = totalWeight - lossWeight;
+                                  setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
+                                  const caratValue = carat?.find((item) => item.name == parseFloat(getValues(`propertyDetails[${index}].carat`))) || 0;
+                                  const netWeight = grossWeight * (caratValue.caratPercentage / 100);
+                                  setValue(`propertyDetails[${index}].netWeight`, netWeight);
+                                  const pcs = parseFloat(getValues(`propertyDetails[${index}].pcs`)) || 0;
+                                  const grossAmount = grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                  setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
+                                  const netAmount = netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                  setValue(`propertyDetails[${index}].netAmount`, netAmount);
+                                  setLossWeightError('');
+                                }
+                              } else {
+                                setLossWeightError('Please enter a valid number for loss weight.');
+                              }
                             }}
                           />
                         </TableCell>
@@ -808,7 +912,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   />
                 )}
               />
-
               <RHFAutocomplete
                 name='paymentMode'
                 label='Payment Mode'
@@ -822,8 +925,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     {option}
                   </li>
                 )}
+                onChange={(event, value) => {
+                  setValue('paymentMode', value);
+                  handleLoanAmountChange({ target: { value: getValues('loanAmount') } });
+                }}
               />
-
               {watch('paymentMode') === 'Cash' && (
                 <Controller
                   name='cashAmount'
@@ -836,11 +942,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       disabled={!isFieldsEnabled}
                       type='number'
                       inputProps={{ min: 0 }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleCashAmountChange(e);
+                      }}
                     />
                   )}
                 />
               )}
-
               {watch('paymentMode') === 'Bank' && (
                 <Controller
                   name='bankAmount'
@@ -857,7 +966,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   )}
                 />
               )}
-
               {watch('paymentMode') === 'Both' && (
                 <>
                   <Controller
@@ -944,23 +1052,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   disabled={!isFieldsEnabled}
                 />
                 <RHFTextField name='bankName' label='Bank Name' req={'red'} disabled={!isFieldsEnabled} />
-                <RHFAutocomplete
-                  name='branchName'
-                  label='Branch Name'
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
-                  fullWidth
-                  options={branch?.map((item) => ({
-                    id: item._id,
-                    name: item.name,
-                  }))}
-                  getOptionLabel={(option) => option.name}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option._id}>
-                      {option.name}
-                    </li>
-                  )}
-                />
+                <RHFTextField name='branchName' label='Branch Name' req={'red'} disabled={!isFieldsEnabled} />
+                <Box></Box>
+                <Box sx={{ justifyContent: 'end', display: 'flex' }}>
+                  <Button disabled={!isFieldsEnabled} variant='contained' onClick={() => saveCustomerBankDetails()}>
+                    Save Customer Bank
+                  </Button>
+                </Box>
               </Box>
             </Card>
           </Grid></>}

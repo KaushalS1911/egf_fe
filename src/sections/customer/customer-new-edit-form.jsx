@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import countrystatecity from '../../_mock/map/csc.json';
 
 import Box from '@mui/material/Box';
@@ -22,7 +22,7 @@ import FormProvider, {
   RHFAutocomplete,
   RHFUploadAvatar,
 } from 'src/components/hook-form';
-import { Autocomplete, Button, TextField } from '@mui/material';
+import { Button } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
@@ -30,7 +30,6 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useGetConfigs } from '../../api/config';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
-import Iconify from '../../components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +45,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const { configs, mutate } = useGetConfigs();
   const mdUp = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
-  const [bankDetails, setBankDetails] = useState(currentCustomer?.bankDetails || []);
+  const storedBranch = sessionStorage.getItem('selectedBranch');
 
   const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
@@ -69,57 +68,55 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     PerZipcode: Yup.string().required('Pincode is required'),
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      branchId: currentCustomer?.branch?.name || '',
-      status: currentCustomer?.status || '',
-      profile_pic: currentCustomer?.avatar_url || '',
-      firstName: currentCustomer?.firstName || '',
-      middleName: currentCustomer?.middleName || '',
-      lastName: currentCustomer?.lastName || '',
-      contact: currentCustomer?.contact || '',
-      email: currentCustomer?.email || '',
-      dob: new Date(currentCustomer?.dob) || null,
-      panCard: (currentCustomer?.panCard || '').toUpperCase(),
-      aadharCard: currentCustomer?.aadharCard || '',
-      otpContact: currentCustomer?.otpContact || '',
-      loanType: currentCustomer?.loanType || '',
-      remark: currentCustomer?.remark || '',
-      customerCode: currentCustomer?.customerCode || '',
-      drivingLicense: currentCustomer?.drivingLicense || '',
-      landline: currentCustomer?.landline || '',
-      joiningDate: new Date(currentCustomer?.joiningDate) || '',
-      businessType: currentCustomer?.businessType || '',
-      PerStreet: currentCustomer?.permanentAddress?.street || '',
-      PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
-      PerCountry: currentCustomer?.permanentAddress?.country || 'India',
-      PerState: currentCustomer?.permanentAddress?.state || 'Gujarat',
-      PerCity: currentCustomer?.permanentAddress?.city || 'Surat',
-      PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
-      tempStreet: currentCustomer?.temporaryAddress?.street || '',
-      tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
-      tempCountry: currentCustomer?.temporaryAddress?.country || 'India',
-      tempState: currentCustomer?.temporaryAddress?.state || 'Gujarat',
-      tempCity: currentCustomer?.temporaryAddress?.city || 'Surat',
-      tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
-      bankDetails: currentCustomer?.bankDetails || [],
-    }),
-    [currentCustomer, branch]
-  );
+  const defaultValues = useMemo(() => ({
+    branchId: currentCustomer ? {
+      label: currentCustomer?.branch?.name,
+      value: currentCustomer?.branch?._id,
+    } : null,
+    status: currentCustomer?.status || '',
+    profile_pic: currentCustomer?.avatar_url || '',
+    firstName: currentCustomer?.firstName || '',
+    middleName: currentCustomer?.middleName || '',
+    lastName: currentCustomer?.lastName || '',
+    contact: currentCustomer?.contact || '',
+    email: currentCustomer?.email || '',
+    dob: new Date(currentCustomer?.dob) || null,
+    panCard: (currentCustomer?.panCard || '').toUpperCase(),
+    aadharCard: currentCustomer?.aadharCard || '',
+    otpContact: currentCustomer?.otpContact || '',
+    loanType: currentCustomer?.loanType || '',
+    remark: currentCustomer?.remark || '',
+    customerCode: currentCustomer?.customerCode || '',
+    drivingLicense: currentCustomer?.drivingLicense || '',
+    landline: currentCustomer?.landline || '',
+    joiningDate: new Date(currentCustomer?.joiningDate) || '',
+    businessType: currentCustomer?.businessType || '',
+    PerStreet: currentCustomer?.permanentAddress?.street || '',
+    PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
+    PerCountry: currentCustomer?.permanentAddress?.country || 'India',
+    PerState: currentCustomer?.permanentAddress?.state || 'Gujarat',
+    PerCity: currentCustomer?.permanentAddress?.city || 'Surat',
+    PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
+    tempStreet: currentCustomer?.temporaryAddress?.street || '',
+    tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
+    tempCountry: currentCustomer?.temporaryAddress?.country || 'India',
+    tempState: currentCustomer?.temporaryAddress?.state || 'Gujarat',
+    tempCity: currentCustomer?.temporaryAddress?.city || 'Surat',
+    tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
+    bankName: currentCustomer?.bankDetails?.bankName || '',
+    IFSC: currentCustomer?.bankDetails?.IFSC || '',
+    accountType: currentCustomer?.bankDetails?.accountType || '',
+    accountNumber: currentCustomer?.bankDetails?.accountNumber || '',
+    accountHolderName: currentCustomer?.bankDetails?.accountHolderName || '',
+    branchName: currentCustomer?.bankDetails?.branchName || '',
+  }), [currentCustomer, branch]);
 
   const methods = useForm({
     resolver: yupResolver(NewCustomerSchema),
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    control,
-    handleSubmit,
-    setValue,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, control, handleSubmit, setValue, formState: { isSubmitting } } = methods;
 
   useEffect(() => {
     if (currentCustomer) {
@@ -137,9 +134,9 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         contact: data.contact,
         email: data.email,
         dob: data.dob,
+        joiningDate: data.joiningDate,
         drivingLicense: data.drivingLicense,
         landline: data.landline,
-        joiningDate: data.joiningDate,
         panCard: data.panCard,
         aadharCard: data.aadharCard,
         otpContact: data.otpContact,
@@ -162,43 +159,54 @@ export default function CustomerNewEditForm({ currentCustomer }) {
           city: data.tempCity,
           zipcode: data.tempZipcode,
         },
-        bankDetails: data.bankDetails || [],
+        bankDetails: {
+          branchName: data.branchName,
+          accountHolderName: data.accountHolderName,
+          accountNumber: data.accountNumber,
+          accountType: data.accountType,
+          IFSC: data.IFSC,
+          bankName: data.bankName,
+        },
       };
 
       const formData = new FormData();
-      [
-        'status', 'firstName', 'middleName',
-        'lastName', 'contact', 'email', 'dob', 'drivingLicense', 'landline', 'joiningDate',
-        'panCard', 'aadharCard', 'otpContact', 'businessType',
-        'loanType', 'remark',
-      ].forEach(field => formData.append(field, data[field]));
-
-      ['PerStreet', 'PerLandmark', 'PerCountry', 'PerState', 'PerCity', 'PerZipcode'].forEach(field =>
-        formData.append(`permanentAddress[${field.replace('Per', '').toLowerCase()}]`, data[field]),
-      );
-      ['tempStreet', 'tempLandmark', 'tempCountry', 'tempState', 'tempCity', 'tempZipcode'].forEach(field =>
-        formData.append(`temporaryAddress[${field.replace('temp', '').toLowerCase()}]`, data[field]),
-      );
-
-      data?.bankDetails?.forEach((detail, index) => {
-        Object.keys(detail).forEach(key =>
-          formData.append(`bankDetails[${index}][${key}]`, detail[key]),
-        );
+      Object.keys(payload).forEach((key) => {
+        if (typeof payload[key] === 'object') {
+          if (key == 'dob' || key == 'joiningDate') {
+            formData.append(key, payload[key]);
+          }
+          Object.keys(payload[key]).forEach((subKey) => {
+            formData.append(`${key}[${subKey}]`, payload[key][subKey]);
+          });
+        } else {
+          formData.append(key, payload[key]);
+        }
       });
 
       if (data.profile_pic) {
         formData.append('profile-pic', data.profile_pic);
       }
 
-      const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?branch=${user?.role === 'Admin' ? data?.branchId?.value : user?.branch}`;
-      const mainbranchid = branch?.find((e) => e?.name === data?.branchId);
+      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+      let parsedBranch = storedBranch;
+
+      if (storedBranch !== 'all') {
+        try {
+          parsedBranch = JSON.parse(storedBranch);
+        } catch (error) {
+          console.error('Error parsing storedBranch:', error);
+        }
+      }
+
+      const branchQuery = parsedBranch && parsedBranch === 'all'
+        ? `&branch=${mainbranchid?._id}`
+        : `&branch=${parsedBranch}`;
+
+      const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?${branchQuery}`;
+
       await (currentCustomer
-          ? axios.put(
-            `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?branch=${user?.role === 'Admin' ? mainbranchid?._id : user?.branch}`,
-            payload,
-          )
-          : axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-      );
+        ? axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?${branchQuery}`, payload)
+        : axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } }));
 
       enqueueSnackbar(currentCustomer ? 'Update success!' : 'Create success!');
       reset();
@@ -209,47 +217,20 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     }
   });
 
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-      if (file) {
-        setValue('profile_pic', newFile, { shouldValidate: true });
-        if (currentCustomer) {
-          const formData = new FormData();
-          formData.append('profile-pic', file);
-          axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`, formData).then((res) => console.log(res)).catch((err) => console.log(err));
-        }
+  const handleDrop = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    const newFile = Object.assign(file, { preview: URL.createObjectURL(file) });
+    if (file) {
+      setValue('profile_pic', newFile, { shouldValidate: true });
+      if (currentCustomer) {
+        const formData = new FormData();
+        formData.append('profile-pic', file);
+        axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`, formData)
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
       }
-    },
-    [setValue],
-  );
-
-  const addBankDetail = () => {
-    setBankDetails([...bankDetails, {
-      branchName: '',
-      accountHolderName: '',
-      accountNumber: '',
-      accountType: '',
-      IFSC: '',
-      bankName: '',
-    }]);
-  };
-
-  const handleBankDetailChange = (index, field, value) => {
-    const newBankDetails = [...bankDetails];
-    newBankDetails[index][field] = value;
-    setBankDetails(newBankDetails);
-    methods.setValue('bankDetails', newBankDetails);
-  };
-
-  const removeBankDetail = (index) => {
-    const newBankDetails = bankDetails?.filter((_, i) => i !== index);
-    setBankDetails(newBankDetails);
-    methods.setValue('bankDetails', newBankDetails);
-  };
+    }
+  }, [setValue]);
 
   const PersonalDetails = (
     <>
@@ -277,7 +258,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              {user?.role === 'Admin' && branch && (
+              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
                 <RHFAutocomplete
                   name='branchId'
                   req={'red'}
@@ -367,17 +348,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='drivingLicense'
                 label='Driving License'
-                // inputProps={{
-                //   maxLength: 16,
-                //   pattern: '[A-Z]*',
-                // }}
-                // rules={{
-                //   required: 'Driving license number is required',
-                //   pattern: {
-                //     value: /^[A-Z]{1,16}$/,
-                //     message: 'Please enter a valid driving license number (16 uppercase letters max)',
-                //   },
-                // }}
                 onInput={(e) => {
                   e.target.value = e.target.value.toUpperCase();
                 }}
@@ -582,7 +552,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   }
                 }}
               />
-
             </Box>
           </Stack>
           <Stack spacing={3} sx={{ p: 3 }}>
@@ -667,95 +636,54 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         <Card>
           {!mdUp && <CardHeader title='Bank Accounts' />}
           <Stack spacing={3} sx={{ p: 3 }}>
-            {bankDetails.map((bankDetail, index) => (
-              <Box key={index} sx={{ mb: 3 }}>
-                <Typography variant='p' my={2} sx={{ display: 'inline-block' }}>
-                  Bank Account {index + 1}
-                </Typography>
-                <Box
-                  columnGap={2}
-                  rowGap={3}
-                  display='grid'
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    md: 'repeat(2, 1fr)',
+            <Box sx={{ mb: 3 }}>
+              <Typography variant='p' my={2} sx={{ display: 'inline-block' }}>
+                Bank Account
+              </Typography>
+              <Box
+                columnGap={2}
+                rowGap={3}
+                display='grid'
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  md: 'repeat(2, 1fr)',
+                }}
+              >
+                <RHFTextField
+                  name='accountHolderName'
+                  label='Account Holder Name'
+                />
+                <RHFTextField
+                  name='accountNumber'
+                  label='Account Number'
+                  type='number'
+                  inputProps={{ min: 0 }}
+                />
+                <RHFAutocomplete
+                  name='accountType'
+                  label='Account Type'
+                  placeholder='Choose a country'
+                  options={ACCOUNT_TYPE_OPTIONS}
+                  isOptionEqualToValue={(option, value) => option === value}
+                />
+                <RHFTextField
+                  name='IFSC'
+                  label='IFSC Code'
+                  inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
-                >
-                  <RHFTextField
-                    name={`bankDetails[${index}].accountHolderName`}
-                    label='Account Holder Name'
-                    value={bankDetail?.accountHolderName}
-                    onChange={(e) => handleBankDetailChange(index, 'accountHolderName', e.target.value)}
-                  />
-                  <RHFTextField
-                    name={`bankDetails[${index}].accountNumber`}
-                    label='Account Number'
-                    value={bankDetail?.accountNumber}
-                    onChange={(e) => handleBankDetailChange(index, 'accountNumber', e.target.value)}
-                  />
-                  <Autocomplete
-                    name={`bankDetails[${index}].accountType`}
-                    value={bankDetail?.accountType || null}
-                    options={ACCOUNT_TYPE_OPTIONS}
-                    getOptionLabel={(option) => option || ''}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    onChange={(event, newValue) => handleBankDetailChange(index, 'accountType', newValue)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label='Account Type'
-                        placeholder='Choose Account Type'
-                        variant='outlined'
-                      />
-                    )}
-                  />
-                  <RHFTextField
-                    name={`bankDetails[${index}].IFSC`}
-                    label='IFSC Code'
-                    value={bankDetail?.IFSC}
-                    onChange={(e) => handleBankDetailChange(index, 'IFSC', e.target.value)}
-                  />
-                  <RHFTextField
-                    name={`bankDetails[${index}].bankName`}
-                    label='Bank Name'
-                    value={bankDetail?.bankName}
-                    onChange={(e) => handleBankDetailChange(index, 'bankName', e.target.value)}
-                  />
-                  <RHFTextField
-                    name={`bankDetails[${index}].branchName`}
-                    label='Branch Name'
-                    value={bankDetail?.branchName}
-                    onChange={(e) => handleBankDetailChange(index, 'branchName', e.target.value)}
-                  />
-                  <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
-                    {/*<Button variant='outlined' color='error' onClick={() => removeBankDetail(index)}>*/}
-                    {/*  Remove Bank Account*/}
-                    {/*</Button>*/}
-                    <Button
-                      size="small"
-                      color="error"
-                      startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                      onClick={() => removeBankDetail(index)}
-                    >
-                      Remove
-                    </Button>
-                  </Box>
-                </Box>
+                />
+                <RHFTextField
+                  name='bankName'
+                  label='Bank Name'
+                />
+                <RHFTextField
+                  name='branchName'
+                  label='Branch Name'
+                />
               </Box>
-            ))}
-
-            {/*<Button variant='outlined' onClick={addBankDetail}>*/}
-            {/*  Add Bank Account*/}
-            {/*</Button>*/}
-            <Button
-            size="small"
-            color="primary"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            onClick={addBankDetail}
-            sx={{ flexShrink: 0 }}
-          >
-              Add Bank Account
-            </Button>
+            </Box>
           </Stack>
         </Card>
       </Grid>
