@@ -302,32 +302,39 @@ function PartReleaseForm({ currentLoan }) {
         bankName: data.bankName,
       };
     }
-    const payload = {
-      property: selectedRows,
-      remark: data.remark,
-      propertyImage: file,
-      date: data.date,
-      amountPaid: data.amountPaid,
-      paymentDetail: paymentDetail,
-    };
+
+    // Create FormData
+    const formData = new FormData();
+    formData.append('property', JSON.stringify(selectedRows)); // Convert array/object to JSON string
+    formData.append('remark', data.remark);
+    formData.append('propertyImage', file); // Handle file upload
+    formData.append('date', data.date);
+    formData.append('amountPaid', data.amountPaid);
+    formData.append('paymentDetail', JSON.stringify(paymentDetail)); // Convert nested object to JSON string
+
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/part-release`;
 
       const config = {
         method: 'post',
         url,
-        data: payload,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data', // Set the correct content type
+        },
       };
-    console.log('DATAAAAAAAAAAA : ',config, payload);
 
-      // const response = await axios(config);
-      // mutate();
+      console.log('FormData:', config, formData);
+
+      const response = await axios(config);
+      mutate();
       // reset();
       enqueueSnackbar(response?.data.message);
     } catch (error) {
       console.error(error);
     }
   });
+
 
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const newFile = acceptedFiles[0];
