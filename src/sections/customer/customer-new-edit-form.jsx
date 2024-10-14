@@ -355,7 +355,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='customerCode'
                 label='Customer Code'
-                req={'red'}
                 InputProps={{
                   disabled: true,
                 }}

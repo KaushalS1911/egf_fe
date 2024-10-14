@@ -113,6 +113,7 @@ export const paths = {
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     setting: `${ROOTS.DASHBOARD}/setting`,
+    goldLoanCalculator: `${ROOTS.DASHBOARD}/goldLoanCalculator`,
 
     general: {
       app: `${ROOTS.DASHBOARD}/app`,

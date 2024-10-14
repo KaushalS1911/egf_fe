@@ -54,6 +54,7 @@ const ICONS = {
   loanissue: <Iconify icon='streamline:bank-solid' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
+  goldLoanCalculator: <Iconify icon='icon-park-solid:calculator' width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -297,7 +298,13 @@ export function useNavData() {
             path: paths.dashboard.loanPayHistory.list,
             icon: ICONS.user,
           },
-          ]
+          // GOLD LOAN CALCULATOR
+          {
+            title: t('Gold Loan Calculator'),
+            path: paths.dashboard.goldLoanCalculator,
+            icon: ICONS.goldLoanCalculator,
+          },
+        ],
       },
       {
         subheader: t('config'),

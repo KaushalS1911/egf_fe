@@ -8,6 +8,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
+import GoldLoanCalculator from '../../sections/goldloancalculator/gold-loan-calculator';
 // ----------------------------------------------------------------------
 
 const ResetPassword = lazy(() => import('src/pages/auth/jwt/reset'));
@@ -302,6 +303,7 @@ export const dashboardRoutes = [
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'setting', element: <SettingsPage /> },
+      { path: 'goldLoanCalculator', element: <GoldLoanCalculator /> },
     ],
   },
   { path: 'jwt/reset-password/:token', element: <ResetPassword   /> },
