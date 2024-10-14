@@ -122,6 +122,7 @@ export function AuthProvider({ children }) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
+    sessionStorage.removeItem('selectedBranch');
     dispatch({
       type: 'LOGOUT',
     });

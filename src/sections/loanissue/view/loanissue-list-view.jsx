@@ -64,8 +64,7 @@ export default function LoanissueListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { Loanissue } = useGetLoanissue();
-  // const { employee, mutate } = useGetEmployee();
+  const { Loanissue, mutate } = useGetLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -127,7 +126,6 @@ export default function LoanissueListView() {
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
-    console.log(deleteRows,"yguygugug");
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
