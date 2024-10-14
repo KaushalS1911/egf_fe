@@ -114,11 +114,11 @@ export default function PropertyNewEditForm({ currentProperty }) {
                   </li>
                 )}
               />}
-              {
-                watch("isQtyEdit") === true &&
-              <RHFTextField name='quantity' label='Quantity' req={'red'}/>
-              }
-              {/*<RHFTextField name='quantity' label='Quantity' req={'red'} disabled={!values.isQtyEdit.enabled}/>*/}
+              <RHFTextField name='quantity' label='Quantity' req={'red'} disabled={!values.isQtyEdit}  onKeyPress={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}/>
               <RHFTextField name='remark' label='Remark' />
             </Box>
 
@@ -129,7 +129,6 @@ export default function PropertyNewEditForm({ currentProperty }) {
               }
 
             </Box>
-            {/*<RHFSwitch name='isQtyEdit.enabled' label={'Is Qty Edit'} sx={{ m: 0 }} />*/}
             <RHFSwitch name='isQtyEdit' label={'Is Qty Edit'} sx={{ m: 0 }} />
           </Card>
           <Stack alignItems='flex-end' sx={{ mt: 3 }}>

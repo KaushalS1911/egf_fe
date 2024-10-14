@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
@@ -16,37 +15,39 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { TextField } from '@mui/material';
+import ReminderRecallingForm from './reminder-recalling-form';
+import { useState } from 'react';
 
-
-// ----------------------------------------------------------------------
-
-export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSelectRow, onDeleteRow , goldRate}) {
-  const {name,ratePerGram,interestRate,valuation} = row;
-
+export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+  const { loanNo, customerName, otpNo, loanAmount, days, nextInterestPayDate, issueDate, lastInterestDate } = row;
+const [open,setOpen] = useState(false)
   const confirm = useBoolean();
-
-
+  const quickEdit = useBoolean();
   const popover = usePopover();
+  const recallingPopover = usePopover();
+
   return (
     <>
       <TableRow hover selected={selected}>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuation}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <TextField sx={{ whiteSpace: 'nowrap' , " input" : { height: 0 }}} value={goldRate ?  parseFloat(goldRate) * parseFloat(interestRate)/100 : 0}></TextField>
+        <TableCell padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otpNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nextInterestPayDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{issueDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{lastInterestDate}</TableCell>
+
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
-
-
 
       <CustomPopover
         open={popover.open}
@@ -74,8 +75,28 @@ export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSe
           <Iconify icon="solar:pen-bold" />
           Edit
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            recallingPopover.onOpen(ReminderRecallingForm);
+            setOpen(true)
+          }}
+        >
+          <Iconify icon="eva:clock-outline" />
+          Recalling
+        </MenuItem>
       </CustomPopover>
 
+      <CustomPopover
+        open={recallingPopover.open}
+        onClose={recallingPopover.onClose}
+        arrow="right-top"
+        sx={{ width: 400 }}
+      >
+        <ReminderRecallingForm onClose={recallingPopover.onClose} />
+      </CustomPopover>
+<ReminderRecallingForm  currentReminder={row} open={open} onClose={() => setOpen(false)}/>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -91,7 +112,7 @@ export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSe
   );
 }
 
-GoldpriceTableRow.propTypes = {
+ReminderTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

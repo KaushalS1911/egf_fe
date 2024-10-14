@@ -15,7 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -33,71 +32,63 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-
-import { isAfter, isBetween } from '../../../utils/format-time';
-import SchemeTableToolbar from '../scheme-table-toolbar';
-import SchemeTableFiltersResult from '../scheme-table-filters-result';
-import SchemeTableRow from '../scheme-table-row';
-import { Box, CircularProgress } from '@mui/material';
-import Label from '../../../components/label';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { valueToPercent } from '@mui/material/Slider/useSlider';
-import { useGetScheme } from '../../../api/scheme';
+import LoanpayhistoryTableRow from '../loanpayhistory-table-row';
+import LoanpayhistoryTableToolbar from '../loanpayhistory-table-toolbar';
+import LoanpayhistoryTableFiltersResult from '../loanpayhistory-table-filters-result';
+import {useGetEmployee} from 'src/api/employee'
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import GoldpriceTableRow from './goldprice-table-row';
-import { useGetConfigs } from '../../../api/config';
-import GoldpriceTableToolbar from './goldprice-table-toolbar';
-import Stack from '@mui/material/Stack';
-import LoadingButton from '@mui/lab/LoadingButton';
+import Tabs from '@mui/material/Tabs';
+import { alpha } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import Label from '../../../components/label';
+import { useGetDisburseLoan } from '../../../api/disburseLoan';
 
 // ----------------------------------------------------------------------
 
+
+
 const TABLE_HEAD = [
-  { id: 'index', label: '#' },
-  { id: 'scheme name', label: 'Scheme Name' },
-  { id: 'interest rate', label: 'Interest Rate' },
-  { id: 'valuation per%', label: 'Valuation per%' },
-  { id: 'rate per gram', label: 'Rate per Gram' },
+  { id: '', label: '#' },
+  { id: 'loanNo', label: 'Loan No.'},
+  { id: 'customerName', label: 'Customer Name'},
+  { id: 'contact', label: 'Mobile No.'},
+  { id: 'interestLoanAmount', label: 'Interest Loan Amount'},
+  { id: 'interestRate', label: 'Interest Rate'},
+  { id: 'cashAmount', label: 'Cash Amount'},
+  { id: 'bankAmount', label: 'Bank Amount'},
   { id: '', width: 88 },
 ];
 
+const defaultFilters = {
+  username: '',
+};
 // ----------------------------------------------------------------------
 
-export default function GoldpriceListView() {
+export default function LoanpayhistoryListView() {
   const { enqueueSnackbar } = useSnackbar();
-  const { user } = useAuthContext();
+
   const table = useTable();
-  const {configs} = useGetConfigs()
-const defaultFilters = {
-  name: '',
-  isActive: 'all',
-};
-
+  const {user} = useAuthContext();
+  const { disburseLoan , mutate} = useGetDisburseLoan();
   const settings = useSettingsContext();
-
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const {scheme,mutate} = useGetScheme()
-
-  const [tableData, setTableData] = useState(scheme);
+  const [tableData, setTableData] = useState(disburseLoan);
 
   const [filters, setFilters] = useState(defaultFilters);
 
-
   const dataFiltered = applyFilter({
-    inputData: scheme,
+    inputData: disburseLoan,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -105,8 +96,8 @@ const defaultFilters = {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-  const
-    handleFilters = useCallback(
+
+  const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
@@ -114,34 +105,41 @@ const defaultFilters = {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-const handleDelete = (id) =>{
-  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
-    .then((res)=> {
-      mutate();
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
+        data: { ids: id },
+      });
       confirm.onFalse();
-      enqueueSnackbar(res.data.message)
-    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
-}
+      mutate();
+      enqueueSnackbar(res.data.message);
+    } catch (err) {
+      enqueueSnackbar("Failed to delete Employee");
+    }
+  };
+
+
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
-      setTableData(deleteRow);
+      if (id) {
+        handleDelete([id]);
+        table.onUpdatePageDeleteRow(dataInPage.length);
+      }
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
+
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-    console.log("yhbjuyh",deleteIds);
-     handleDelete(deleteIds)
+    const deleteRows = disburseLoan.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds)
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -152,49 +150,85 @@ const handleDelete = (id) =>{
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      router.push(paths.dashboard.loanPayHistory.edit(id));
     },
-    [router],
+    [router]
   );
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters],
-  );
 
-  const handleSave = async ()=>{
-    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.interestRate) * parseFloat(filters.name)/100}));
-    try {
-    const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
-    const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/update-schemes?branch=66ea5ebb0f0bdc8062c13a64`,{schemes:payload})
-      enqueueSnackbar(resScheme?.data.message);
-    router.push(paths.dashboard.scheme.list);
-
-    }
-    catch (error) {
-      enqueueSnackbar("Failed to Update schemes",{variant:'error'});
-    }
-  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Scheme List'
+          heading="Loan Pay History"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Scheme', href: paths.dashboard.scheme.root },
-            { name: 'List' },
+            { name: 'Masters', href: paths.dashboard.loanPayHistory.root },
+            { name: 'Loan Pay History List' },
           ]}
+          // action={
+          //   <Button
+          //     component={RouterLink}
+          //     href={paths.dashboard.employee.new}
+          //     variant="contained"
+          //     startIcon={<Iconify icon="mingcute:add-line" />}
+          //   >
+          //     Add Loan
+          //   </Button>
+          // }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
+
         <Card>
-          <GoldpriceTableToolbar
-            filters={filters} onFilters={handleFilters} goldRate={configs?.goldRate}
-          />
+          {/*<Tabs*/}
+          {/*  value={filters.isActive}*/}
+          {/*  onChange={handleFilterStatus}*/}
+          {/*  sx={{*/}
+          {/*    px: 2.5,*/}
+          {/*    boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  {STATUS_OPTIONS.map((tab) => (*/}
+          {/*    <Tab*/}
+          {/*      key={tab.value}*/}
+          {/*      iconPosition='end'*/}
+          {/*      value={tab.value}*/}
+          {/*      label={tab.label}*/}
+          {/*      icon={*/}
+          {/*        <>*/}
+          {/*          <Label*/}
+          {/*            style={{ margin: '5px' }}*/}
+          {/*            variant={*/}
+          {/*              ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'*/}
+          {/*            }*/}
+          {/*            color={*/}
+          {/*              (tab.value == 'true' && 'success') ||*/}
+          {/*              (tab.value == 'false' && 'error') ||*/}
+          {/*              'default'*/}
+          {/*            }*/}
+          {/*          >*/}
+          {/*            {['false','true'].includes(tab.value)*/}
+          {/*              ? property.filter((emp) => String(emp.isActive) == tab.value).length*/}
+          {/*              : property.length}*/}
+          {/*          </Label>*/}
+          {/*        </>*/}
+          {/*      }*/}
+          {/*    />*/}
+          {/*  ))}*/}
+          {/*</Tabs>*/}
+          <LoanpayhistoryTableToolbar filters={filters} onFilters={handleFilters} />
+
+          {canReset && (
+            <LoanpayhistoryTableFiltersResult
+              filters={filters}
+              onFilters={handleFilters}
+              onResetFilters={handleResetFilters}
+              results={dataFiltered.length}
+              sx={{ p: 2.5, pt: 0 }}
+            />
+          )}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -204,13 +238,13 @@ const handleDelete = (id) =>{
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -225,18 +259,22 @@ const handleDelete = (id) =>{
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-
+                  onSelectAllRows={(checked) =>
+                    table.onSelectAllRows(
+                      checked,
+                      dataFiltered.map((row) => row._id)
+                    )
+                  }
                 />
 
                 <TableBody>
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row,index) => (
-                      <GoldpriceTableRow
-                        goldRate = {filters.name}
+                      <LoanpayhistoryTableRow
                         key={row._id}
                         index={index}
                         row={row}
@@ -264,21 +302,17 @@ const handleDelete = (id) =>{
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
+            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
-        <Stack  alignItems="flex-end" sx={{mt:3}}>
-          <LoadingButton type='submit' variant='contained' onClick={handleSave}>
-            Save
-          </LoadingButton>
-        </Stack>
       </Container>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -286,8 +320,8 @@ const handleDelete = (id) =>{
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -296,29 +330,28 @@ const handleDelete = (id) =>{
             Delete
           </Button>
         }
-
       />
-
-
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, name } = filters;
-
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  // Filter by scheme name if provided
-
+  // const {  username } = filters;
+  //
+  // const stabilizedThis = inputData.map((el, index) => [el, index]);
+  // stabilizedThis.sort((a, b) => {
+  //   const order = comparator(a[0], b[0]);
+  //   if (order !== 0) return order;
+  //   return a[1] - b[1];
+  // });
+  // inputData = stabilizedThis.map((el) => el[0]);
+  // if (username && username.trim()) {
+  //   inputData = inputData.filter(
+  //     (inq) =>
+  //       inq.username.toLowerCase().includes(username.toLowerCase())
+  //       // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
+  //   );
+  // }
   return inputData;
 }
-

@@ -34,47 +34,56 @@ import {
 } from 'src/components/table';
 
 
-import { isAfter, isBetween } from '../../../utils/format-time';
-import SchemeTableToolbar from '../scheme-table-toolbar';
-import SchemeTableFiltersResult from '../scheme-table-filters-result';
-import SchemeTableRow from '../scheme-table-row';
-import { Box, CircularProgress } from '@mui/material';
+import ReminderTableToolbar from '../reminder-table-toolbar';
+import ReminderTableFiltersResult from '../reminder-table-filters-result';
+import ReminderTableRow from '../reminder-table-row';
+import { Box} from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
-import { valueToPercent } from '@mui/material/Slider/useSlider';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import GoldpriceTableRow from './goldprice-table-row';
 import { useGetConfigs } from '../../../api/config';
-import GoldpriceTableToolbar from './goldprice-table-toolbar';
-import Stack from '@mui/material/Stack';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { isAfter, isBetween } from '../../../utils/format-time';
+import { useGetDisburseLoan } from '../../../api/disburseLoan';
 
 // ----------------------------------------------------------------------
+
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
+  value: 'false',
+  label: 'Non Active',
+}];
 
 const TABLE_HEAD = [
-  { id: 'index', label: '#' },
-  { id: 'scheme name', label: 'Scheme Name' },
-  { id: 'interest rate', label: 'Interest Rate' },
-  { id: 'valuation per%', label: 'Valuation per%' },
-  { id: 'rate per gram', label: 'Rate per Gram' },
-  { id: '', width: 88 },
+  { id: 'loanNo', label: 'Loan No.' },
+  { id: 'customerName', label: 'Customer Name' },
+  { id: 'otpNo.', label: 'OTP No.' },
+  { id: 'loanAmount', label: 'Loan Amount', },
+  { id: 'days', label: 'Days' },
+  { id: 'nextInterestPaydate', label: 'Next Interest Pay date'},
+  { id: 'issueDate', label: 'Issue Date' },
+  { id: 'lastInterestDate', label: 'Last Interest date' },
+  { id: ''},
 ];
+
+
+const defaultFilters = {
+  name: '',
+  startDate: null,
+  endDate: null,
+}
 
 // ----------------------------------------------------------------------
 
-export default function GoldpriceListView() {
+export default function ReminderListView() {
+  const {disburseLoan} = useGetDisburseLoan()
   const { enqueueSnackbar } = useSnackbar();
+
   const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const table = useTable();
-  const {configs} = useGetConfigs()
-const defaultFilters = {
-  name: '',
-  isActive: 'all',
-};
 
   const settings = useSettingsContext();
 
@@ -82,19 +91,19 @@ const defaultFilters = {
 
   const confirm = useBoolean();
 
-  const {scheme,mutate} = useGetScheme()
+  // const {scheme,mutate} = useGetScheme()
 
-  const [tableData, setTableData] = useState(scheme);
+  const [tableData, setTableData] = useState(disburseLoan);
 
   const [filters, setFilters] = useState(defaultFilters);
 
 
   const dataFiltered = applyFilter({
-    inputData: scheme,
+    inputData: disburseLoan,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
+  const dateError = isAfter(filters.startDate, filters.endDate);
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage,
@@ -108,6 +117,7 @@ const defaultFilters = {
   const
     handleFilters = useCallback(
     (name, value) => {
+      console.log("name",value)
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -120,17 +130,21 @@ const defaultFilters = {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-const handleDelete = (id) =>{
-  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
-    .then((res)=> {
+  const handleDelete = async (id) => {
+    try {
+      // const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
+      //   data: { ids: id },
+      // });
+      // enqueueSnackbar(res.data.message);
+      // confirm.onFalse();
       mutate();
-      confirm.onFalse();
-      enqueueSnackbar(res.data.message)
-    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
-}
+    } catch (err) {
+      // enqueueSnackbar("Failed to delete Scheme");
+    }
+  };
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
+    // handleDelete([id])
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
@@ -138,11 +152,11 @@ const handleDelete = (id) =>{
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-    console.log("yhbjuyh",deleteIds);
-     handleDelete(deleteIds)
-    setTableData(deleteRows);
+    // const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+    //  const deleteIds = deleteRows.map((row) => row._id);
+    // console.log("yhbjuyh",deleteIds);
+    //  handleDelete(deleteIds)
+    // setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
@@ -152,7 +166,7 @@ const handleDelete = (id) =>{
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      // router.push(paths.dashboard.scheme.edit(id));
     },
     [router],
   );
@@ -163,39 +177,35 @@ const handleDelete = (id) =>{
     },
     [handleFilters],
   );
-
-  const handleSave = async ()=>{
-    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.interestRate) * parseFloat(filters.name)/100}));
-    try {
-    const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
-    const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/update-schemes?branch=66ea5ebb0f0bdc8062c13a64`,{schemes:payload})
-      enqueueSnackbar(resScheme?.data.message);
-    router.push(paths.dashboard.scheme.list);
-
-    }
-    catch (error) {
-      enqueueSnackbar("Failed to Update schemes",{variant:'error'});
-    }
-  }
+  console.log(filters);
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Scheme List'
+          heading='Reminders'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Scheme', href: paths.dashboard.scheme.root },
+            { name: 'reminder', href: paths.dashboard.reminder.list},
             { name: 'List' },
           ]}
+
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
-          <GoldpriceTableToolbar
-            filters={filters} onFilters={handleFilters} goldRate={configs?.goldRate}
+          <ReminderTableToolbar
+            filters={filters} onFilters={handleFilters}
           />
-
+         {canReset && (
+            <ReminderTableFiltersResult
+              filters={filters}
+              onFilters={handleFilters}
+              onResetFilters={handleResetFilters}
+              results={dataFiltered.length}
+              sx={{ p: 2.5, pt: 0 }}
+            />
+          )}
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -204,7 +214,8 @@ const handleDelete = (id) =>{
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row._id)
+                  ,
                 )
               }
               action={
@@ -215,7 +226,6 @@ const handleDelete = (id) =>{
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -225,39 +235,40 @@ const handleDelete = (id) =>{
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-
-                />
-
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                  onSelectAllRows={(checked) =>
+                    table.onSelectAllRows(
+                      checked,
+                      dataFiltered.map((row) => row._id),
                     )
-                    .map((row,index) => (
-                      <GoldpriceTableRow
-                        goldRate = {filters.name}
-                        key={row._id}
-                        index={index}
-                        row={row}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
+                  }
+                />
+                <TableBody>
+                  {filters.startDate && filters.endDate || filters.name ?
+                    <>      {dataFiltered
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage,
+                      )
+                      .map((row) => (
+                        <ReminderTableRow
+                          key={row._id}
+                          row={row}
+                          selected={table.selected.includes(row._id)}
+                          onSelectRow={() => table.onSelectRow(row._id)}
+                          onDeleteRow={() => handleDeleteRow(row._id)}
+                          onEditRow={() => handleEditRow(row._id)}
+                        />
+                      ))}
+                      <TableEmptyRows
+                        height={denseHeight}
+                        emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                      /></>:
+                  <TableNoData notFound={true} />
+                  }
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -268,13 +279,7 @@ const handleDelete = (id) =>{
             onChangeDense={table.onChangeDense}
           />
         </Card>
-        <Stack  alignItems="flex-end" sx={{mt:3}}>
-          <LoadingButton type='submit' variant='contained' onClick={handleSave}>
-            Save
-          </LoadingButton>
-        </Stack>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -296,17 +301,14 @@ const handleDelete = (id) =>{
             Delete
           </Button>
         }
-
       />
-
-
     </>
   );
 };
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, name } = filters;
+function applyFilter({ inputData, comparator, filters ,dateError}) {
+  const { startDate, endDate,name} = filters;
 
   // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -318,7 +320,17 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   // Filter by scheme name if provided
-
+  if (name && name.trim()) {
+    inputData = inputData.filter(
+      (rem) =>
+        rem.customerName.toLowerCase().includes(name.toLowerCase()),
+    );
+  }
+    if (!dateError && startDate && endDate) {
+      inputData = inputData.filter((order) =>
+        isBetween(new Date(order.nextInterestPayDate), startDate, endDate),
+      );
+      console.log(inputData, 'order') ;
+  }
   return inputData;
 }
-

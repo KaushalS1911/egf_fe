@@ -1,8 +1,5 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -12,49 +9,48 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { RouterLink } from '../../routes/components';
+import { useRouter } from '../../routes/hooks';
+import { paths } from '../../routes/paths';
 
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow,handleClick }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount } = row;
+export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,index}) {
+  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount , _id} = row;
   const confirm = useBoolean();
+  const router = useRouter();
   const popover = usePopover();
 
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+      <TableRow hover selected={selected} sx={{cursor: "pointer"}} onClick={() => router.push(paths.dashboard.loanPayHistory.edit(_id))}>
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
+
+          <TableCell>
+            {index + 1}
+          </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.lastName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-        <Button
-          onClick={handleClick}
-          sx={{ my: 2,textWrap:"nowrap" }}
-          variant='contained'
-          startIcon={<Iconify icon='mingcute:add-line' />}
 
-        >
-          Loan Disburse
-        </Button>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
 
+
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -64,7 +60,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon='solar:trash-bin-trash-bold' />
+          <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
         </MenuItem>
 
@@ -74,7 +70,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:pen-bold' />
+          <Iconify icon="solar:pen-bold" />
           Edit
         </MenuItem>
       </CustomPopover>
@@ -82,10 +78,10 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -94,7 +90,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
   );
 }
 
-LoanissueTableRow.propTypes = {
+LoanpayhistoryTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

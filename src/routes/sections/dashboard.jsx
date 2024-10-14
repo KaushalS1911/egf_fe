@@ -8,7 +8,6 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
-
 // ----------------------------------------------------------------------
 
 const ResetPassword = lazy(() => import('src/pages/auth/jwt/reset'));
@@ -60,14 +59,19 @@ const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view
 const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
 const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
 const  PropertyListView = lazy(()=>import('../../sections/property/view/property-list-view'))
+//LOAN PAY HISTORY
+const  LoanpayhistoryListView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-list-view'))
+const  LoanpayhistoryCreateView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-create-view'))
+const  { LoanpayhistoryEditView }  = lazy(()=>import('../../sections/loanpayhistory/view'))
 
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
-
 // DISBURSE
-const DisbursecreateView = lazy(()=>import('../../sections/disburse/view/disburse-create-view'))
+const DisburseEditView = lazy(()=>import('../../sections/disburse/view/disburse-edit-view'))
+// REMINDER
+const ReminderListView = lazy(()=>import('../../sections/reminder/view/reminder-list-view'))
 // LOAN ISSUE
 const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
 const LoanissueCreateView = lazy(()=>import('../../sections/loanissue/view/loanissue-create-view'))
@@ -174,10 +178,16 @@ export const dashboardRoutes = [
       {
         path: 'disburse',
         children: [
-          // { element: <PenaltyListView/>, index: true },
-          // { path: 'list', element: <PenaltyListView/> },
-          { path: 'new', element: <DisbursecreateView/> },
-          // { path: ':id/edit', element: <PenaltyEditView /> },
+          { element: <LoanissueListView />, index: true },
+          { path: 'list', element: <LoanissueListView /> },
+          // { path: 'new', element: <DisbursecreateView/> },
+          { path: ':id/new', element: <DisburseEditView /> },
+        ],
+      },
+      {
+        path: 'reminder',
+        children: [
+          { path: 'list', element: <ReminderListView/> },
         ],
       },
       {
@@ -196,6 +206,15 @@ export const dashboardRoutes = [
           { path: 'list', element: <LoanissueListView /> },
           { path: 'new', element: <LoanissueCreateView /> },
           { path: ':id/edit', element: <LoanissueEditView /> },
+        ],
+      },
+      {
+        path: 'loanpayhistory',
+        children: [
+          { element: <LoanpayhistoryListView />, index: true },
+          { path: 'list', element: <LoanpayhistoryListView /> },
+          // { path: 'new', element: <LoanpayhistoryCreateView /> },
+          { path: ':id/new', element: <LoanpayhistoryCreateView /> },
         ],
       },
       {

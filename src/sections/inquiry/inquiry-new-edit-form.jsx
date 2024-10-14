@@ -132,6 +132,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       enqueueSnackbar(errorMessage, { variant: 'error' });
       console.error(error);
     }
+
   });
 
   return (

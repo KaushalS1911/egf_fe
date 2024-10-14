@@ -141,6 +141,12 @@ export default function LoanissueListView() {
     },
     [router],
   );
+  const handleClick = useCallback(
+    (id) => {
+      router.push(paths.dashboard.disburse.new(id));
+    },
+    [router],
+  );
 
   return (
     <>
@@ -227,6 +233,7 @@ export default function LoanissueListView() {
                       <LoanissueTableRow
                         key={row._id}
                         row={row}
+                        handleClick={() => handleClick(row._id)}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
