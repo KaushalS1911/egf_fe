@@ -144,7 +144,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
               />
               <RHFAutocomplete
                 name='interestPeriod'
-                label='interestPeriod'
+                label='Interest Period'
                 req={'red'}
                 fullWidth
                 options={['Monthly', '3 Months', '6 Months', '9 Months', 'Yearly']}

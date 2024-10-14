@@ -165,7 +165,7 @@ const handleDelete = (id) =>{
   );
 
   const handleSave = async ()=>{
-    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.interestRate) * parseFloat(filters.name)/100}));
+    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.valuation) * parseFloat(filters.name)/100}));
     try {
     const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
     const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/update-schemes?branch=66ea5ebb0f0bdc8062c13a64`,{schemes:payload})
