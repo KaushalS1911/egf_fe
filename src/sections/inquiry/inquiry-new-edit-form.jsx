@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -18,15 +18,17 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetConfigs } from '../../api/config';
+import { useGetBranch } from '../../api/branch';
 
 // ----------------------------------------------------------------------
 
 export default function InquiryNewEditForm({ currentInquiry }) {
   const router = useRouter();
   const { user } = useAuthContext();
-
+  const { branch } = useGetBranch();
   const { enqueueSnackbar } = useSnackbar();
   const { configs } = useGetConfigs();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
 
   function checkInquiryFor(val) {
     const isLoanValue = configs?.loanTypes?.find((item) => item === val);
@@ -47,12 +49,15 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       .nullable()
       .typeError('Date is required'),
     inquiryFor: Yup.string().required('Inquiry field is required'),
-    // other: Yup.string().required('Other field is required'),
     remark: Yup.string().required('Remark is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
+      branchId: currentInquiry ? {
+        label: currentInquiry?.branch?.name,
+        value: currentInquiry?.branch?._id,
+      } : null,
       firstName: currentInquiry?.firstName || '',
       lastName: currentInquiry?.lastName || '',
       contact: currentInquiry?.contact || '',
@@ -88,10 +93,26 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       inquiryFor: data.inquiryFor === 'Other' ? data.other : data.inquiryFor,
       remark: data.remark,
     };
+
+    const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+    let parsedBranch = storedBranch;
+
+    if (storedBranch !== 'all') {
+      try {
+        parsedBranch = JSON.parse(storedBranch);
+      } catch (error) {
+        console.error('Error parsing storedBranch:', error);
+      }
+    }
+
+    const branchQuery = parsedBranch && parsedBranch === 'all'
+      ? `&branch=${mainbranchid?._id}`
+      : `&branch=${parsedBranch}`;
+
     try {
       if (currentInquiry) {
         const res = await axios.put(
-          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?branch=66ea5ebb0f0bdc8062c13a64`,
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?${branchQuery}`,
           payload,
         );
         enqueueSnackbar(res?.data?.message);
@@ -99,7 +120,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
         reset();
       } else {
         const res = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?branch=66ea5ebb0f0bdc8062c13a64`,
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${branchQuery}`,
           payload,
         );
         enqueueSnackbar(res?.data?.message);
@@ -113,6 +134,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     }
 
   });
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -133,29 +155,22 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
+                <RHFAutocomplete
+                  name='branchId'
+                  req={'red'}
+                  label='Branch'
+                  placeholder='Choose a Branch'
+                  options={branch?.map((branchItem) => ({
+                    label: branchItem?.name,
+                    value: branchItem?._id,
+                  })) || []}
+                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                />
+              )}
               <RHFTextField name='firstName' label='First Name' req={'red'} />
               <RHFTextField name='lastName' label='Last Name' req={'red'} />
-              <RHFTextField
-                name='contact'
-                label='Mobile No.'
-                req={'red'}
-                inputProps={{
-                  maxLength: 10,
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                }}
-                rules={{
-                  required: 'Contact number is required',
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: 'Please enter a valid 10-digit contact number',
-                  },
-                }}
-                onKeyPress={(e) => {
-                  if (!/[0-9]/.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }} />
+              <RHFTextField name='contact' label='Mobile No.' req={'red'} />
               <RHFTextField name='email' label='Email' req={'red'} />
 
               <Controller
