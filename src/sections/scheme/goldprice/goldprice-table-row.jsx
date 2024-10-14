@@ -37,7 +37,7 @@ export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSe
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuation}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <TextField sx={{ whiteSpace: 'nowrap' , " input" : { height: 0 }}} value={goldRate ?  parseFloat(goldRate) * parseFloat(interestRate)/100 : 0}></TextField>
+          <TextField sx={{ whiteSpace: 'nowrap' , " input" : { height: 0 }}} value={goldRate ?  parseFloat(goldRate) * parseFloat(valuation)/100 : 0}></TextField>
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

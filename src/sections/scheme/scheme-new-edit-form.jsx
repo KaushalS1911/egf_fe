@@ -83,14 +83,14 @@ export default function SchemeNewEditForm({ currentScheme }) {
     formState: { isSubmitting },
   } = methods;
   useEffect(() => {
-    const interestRate = watch('interestRate');
-    if (interestRate) {
-      const rpg = (configs.goldRate * interestRate) / 100;
+    const valuation = watch('valuation');
+    if (valuation) {
+      const rpg = (configs.goldRate * valuation) / 100;
       setValue('ratePerGram', rpg);
     } else {
       setValue('ratePerGram', 0);
     }
-  }, [watch('interestRate'), configs.goldRate, setValue]);
+  }, [watch('valuation'), configs.goldRate, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
