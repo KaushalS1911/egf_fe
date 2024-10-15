@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   TextField,
@@ -50,13 +50,20 @@ function GoldLoanCalculator() {
     };
 
     setFinanceTables(updatedTables);
+    calculateTotalFinance(updatedTables);
+  };
 
-    const totalFinanceValue = updatedTables.flat().reduce((sum, table, index) => {
-      const ratePerGram = scheme[index]?.ratePerGram || 0;
-      return sum + (Number(table.netGram) || 0) * ratePerGram;
-    }, 0).toFixed(2);
-
-    setTotalFinance(totalFinanceValue);
+  const calculateTotalFinance = (tables) => {
+    let total = 0;
+    tables.forEach((table, tableIndex) => {
+      table.forEach((row, rowIndex) => {
+        const ratePerGram = scheme[rowIndex]?.ratePerGram || 0;
+        if (row.netGram && ratePerGram) {
+          total += Number(row.netGram) * Number(ratePerGram);
+        }
+      });
+    });
+    setTotalFinance(total.toFixed(2));
   };
 
   const addTable = () => {
@@ -68,7 +75,7 @@ function GoldLoanCalculator() {
     setGoldGramsTables([[{ netGram: 0, goldGram: '' }]]);
     setFinanceTables([[{ netGram: '' }]]);
     setTotalNetGram(0);
-    setTotalFinance(0); // Reset total finance
+    setTotalFinance(0);
   };
 
   const renderTable = (rows, tableIndex, handleChange, dataTable, type) => (
@@ -173,7 +180,7 @@ function GoldLoanCalculator() {
 
       <Box mt={4}>
         <Typography variant='h6' gutterBottom>
-          Total Finance: {totalFinance} 
+          Total Finance: {totalFinance}
         </Typography>
       </Box>
     </Box>
