@@ -12,6 +12,7 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetAllPartPayment } from '../../../api/part-payment';
+import { useGetBranch } from '../../../api/branch';
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
   { id: 'payAmount', label: 'Pay Amount' },
@@ -21,9 +22,10 @@ const TABLE_HEAD = [
 ];
 
 function LoanPartPaymentForm() {
-  const {id} = useParams()
+  const {id} = useParams();
+  const {branch} = useGetBranch();
   const { partPayment , mutate} = useGetAllPartPayment(id);
-  console.log("as",partPayment)
+
   const NewPartPaymentSchema = Yup.object().shape({
     date: Yup.date().nullable().required('Uchak Pay date is required'),
     amountPaid: Yup.number()
@@ -32,9 +34,9 @@ function LoanPartPaymentForm() {
       .typeError('Uchak Interest Pay Amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    accountName: Yup.string().test(
-      'accountNameRequired',
-      'Account name is required',
+    account: Yup.object().test(
+      'accountRequired',
+      'Account is required',
       function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
@@ -49,42 +51,6 @@ function LoanPartPaymentForm() {
         return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
       }
     ),
-
-    accountNo: Yup.string().test(
-      'accountNoRequired',
-      'Account number is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    accountType: Yup.string().test(
-      'accountTypeRequired',
-      'Account type is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    IFSC: Yup.string().test(
-      'ifscRequired',
-      'IFSC code is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    bankName: Yup.string().test(
-      'bankNameRequired',
-      'Bank name is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
   });
 
   const defaultValues = {
@@ -93,11 +59,7 @@ function LoanPartPaymentForm() {
     remark: '',
     paymentMode: '',
     cashAmount: '',
-    accountName: '',
-    accountNo: '',
-    accountType: '',
-    IFSC: '',
-    bankName: '',
+    account: '',
   };
 
   const methods = useForm({
@@ -110,6 +72,7 @@ function LoanPartPaymentForm() {
     watch,
     reset,
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
@@ -126,24 +89,15 @@ function LoanPartPaymentForm() {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     }
-
     const payload = {
       remark: data.remark,
       date: data.date,
@@ -224,41 +178,26 @@ function LoanPartPaymentForm() {
             </>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Grid container sx={{ mt: 8 }}>
-              <Grid item xs={12} md={4}>
-                <Typography variant='h6' sx={{ mb: 0.5 }}>
-                  Bank Account Details
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display='grid'
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(2, 1fr)',
-                  }}
-                >
-                  <RHFTextField name='accountName' label='Account Name' req={'red'} />
-                  <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-                  <RHFAutocomplete
-                    name='accountType'
-                    label='Account Type'
-                    req={'red'}
-                    options={['Saving', 'Current']}
-                    getOptionLabel={(option) => option}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option}>
-                        {option}
-                      </li>
-                    )}
-                  />
-                  <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-                  <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-                </Box>
-              </Grid>
-            </Grid>
+            <Box sx={{ mt: 8 }}>
+              <RHFAutocomplete
+                name='account'
+                label='Account'
+                req={'red'}
+                fullWidth
+                sx={{width: "25%"}}
+                options={branch.flatMap((item) => item.company.bankAccounts)}
+                getOptionLabel={(option) => option.bankName || ''}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id || option.bankName}>
+                    {option.bankName}
+                  </li>
+                )}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(event, value) => {
+                  setValue('account', value);
+                }}
+              />
+            </Box>
           )}
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
