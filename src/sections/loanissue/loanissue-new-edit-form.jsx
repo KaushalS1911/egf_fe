@@ -403,15 +403,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         console.error('Error parsing storedBranch:', error);
       }
     }
+
     const branchQuery = parsedBranch && parsedBranch === 'all'
       ? `&branch=${mainbranchid?._id}`
       : `&branch=${parsedBranch}`;
 
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?._id}?${branchQuery}`;
-      const response = await axios.put(url, payload, {
+      const response = await axios.put(url, JSON.stringify(payload), {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       });
       enqueueSnackbar('Save Customer Bank Details successfully!', { variant: 'success' });
