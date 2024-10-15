@@ -286,19 +286,19 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     const findedCus = customer?.find((item) => item?._id === customerId?.id);
     setCustomerData(findedCus);
     if (findedCus) {
-      setValue('customerCode', findedCus.customerCode);
-      setValue('customerName', `${findedCus.firstName} ${findedCus.lastName}`);
-      setValue('customerAddress', `${findedCus.permanentAddress.street} ${findedCus.permanentAddress.landmark} ${findedCus.permanentAddress?.city}`);
-      setValue('contact', findedCus.contact);
-      setValue('contactOtp', findedCus.otpContact);
-      setValue('customer_url', findedCus.avatar_url);
+      setValue('customerCode', findedCus?.customerCode);
+      setValue('customerName', `${findedCus?.firstName} ${findedCus?.lastName}`);
+      setValue('customerAddress', `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`);
+      setValue('contact', findedCus?.contact);
+      setValue('contactOtp', findedCus?.otpContact);
+      setValue('customer_url', findedCus?.avatar_url);
       if (!currentLoanIssue) {
-        setValue('accountNumber', findedCus.bankDetails.accountNumber);
-        setValue('accountType', findedCus.bankDetails.accountType);
-        setValue('accountHolderName', findedCus.bankDetails.accountHolderName);
-        setValue('IFSC', findedCus.bankDetails.IFSC);
-        setValue('bankName', findedCus.bankDetails.bankName);
-        setValue('branchName', findedCus.bankDetails.branchName);
+        setValue('accountNumber', findedCus?.bankDetails?.accountNumber);
+        setValue('accountType', findedCus?.bankDetails?.accountType);
+        setValue('accountHolderName', findedCus?.bankDetails?.accountHolderName);
+        setValue('IFSC', findedCus?.bankDetails?.IFSC);
+        setValue('bankName', findedCus?.bankDetails?.bankName);
+        setValue('branchName', findedCus?.bankDetails?.branchName);
       }
     } else {
       setValue('customerCode', '');
