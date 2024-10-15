@@ -53,7 +53,7 @@ function GoldLoanCalculator() {
 
     const totalNetGram2 = updatedTables.flat().reduce(
       (sum, table) => sum + (Number(table.netGram) || 0),
-      0
+      0,
     );
     setTotalNetGram2(totalNetGram2);
   };
@@ -90,8 +90,8 @@ function GoldLoanCalculator() {
               <TableCell>
                 {type === 'gold' ? (
                   <TextField
-                    variant="outlined"
-                    size="small"
+                    variant='outlined'
+                    size='small'
                     value={dataTable[tableIndex][rowIndex]?.goldGram || ''}
                     onChange={(e) => handleChange(tableIndex, rowIndex, e.target.value)}
                     InputProps={{ sx: { color: 'red' } }}
@@ -102,8 +102,8 @@ function GoldLoanCalculator() {
               </TableCell>
               <TableCell>
                 <TextField
-                  variant="outlined"
-                  size="small"
+                  variant='outlined'
+                  size='small'
                   value={dataTable[tableIndex][rowIndex]?.netGram || 0}
                   onChange={(e) => type === 'finance' && handleChange(tableIndex, rowIndex, e.target.value)}
                   readOnly={type === 'gold'}
@@ -113,8 +113,8 @@ function GoldLoanCalculator() {
               {type === 'finance' && (
                 <TableCell>
                   <TextField
-                    variant="outlined"
-                    size="small"
+                    variant='outlined'
+                    size='small'
                     value={(Number(dataTable[tableIndex][rowIndex]?.netGram || 0) * row.ratePerGram).toFixed(2)}
                     readOnly
                     InputProps={{ sx: { color: 'red' } }}
@@ -130,15 +130,15 @@ function GoldLoanCalculator() {
 
   return (
     <Box p={3}>
-      <Box display="flex" justifyContent="space-between" my={2} textAlign="center">
-        <Typography variant="h6" gutterBottom>
+      <Box display='flex' justifyContent='space-between' my={2} textAlign='center'>
+        <Typography variant='h6' gutterBottom>
           Type 1
         </Typography>
         <Box>
-          <Button variant="contained" color="primary" onClick={addTable}>
+          <Button variant='contained' onClick={addTable}>
             Add Table
           </Button>
-          <Button variant="outlined" color="secondary" onClick={resetTables} style={{ marginLeft: '10px' }}>
+          <Button variant='outlined' onClick={resetTables} style={{ marginLeft: '10px' }}>
             Reset
           </Button>
         </Box>
@@ -153,7 +153,7 @@ function GoldLoanCalculator() {
       </Grid>
 
       <Box mt={4}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant='h6' gutterBottom>
           Total Net Gram: {totalNetGram}
         </Typography>
       </Box>
@@ -167,8 +167,8 @@ function GoldLoanCalculator() {
       </Grid>
 
       <Box mt={4}>
-        <Typography variant="h6" gutterBottom>
-          Total Net Gram (Finance): {totalNetGram2}
+        <Typography variant='h6' gutterBottom>
+          Total Net Gram (Finance): {(totalNetGram2).toFixed(2)}
         </Typography>
       </Box>
     </Box>

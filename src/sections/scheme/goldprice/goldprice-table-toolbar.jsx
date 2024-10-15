@@ -17,22 +17,22 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function GoldpriceTableToolbar({
-  filters,
-  onFilters,
-  //
-  roleOptions,
- goldRate
-}) {
+                                                filters,
+                                                onFilters,
+                                                //
+                                                roleOptions,
+                                                goldRate,
+                                              }) {
   const popover = usePopover();
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters]
+    [onFilters],
   );
   useEffect(() => {
-    onFilters('name',goldRate)
-  },[goldRate])
+    onFilters('name', goldRate);
+  }, [goldRate]);
   return (
     <>
       <Stack
@@ -47,20 +47,20 @@ export default function GoldpriceTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-           defaultValue={goldRate && goldRate}
+            defaultValue={goldRate || ''} // Ensures that defaultValue is handled properly
             fullWidth
             value={filters.name}
-            onChange={handleFilterName}
-            // InputProps={{
-            //   startAdornment: (
-            //     <InputAdornment position="start">
-            //       <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-            //     </InputAdornment>
-            //   ),
-            // }}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Allow only digits (and optionally a decimal point)
+              const numericValue = value.replace(/[^0-9]/g, ''); // Use /[^0-9.]/g if you want to allow decimals
+              handleFilterName({ target: { value: numericValue } });
+            }}
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restricts input to numbers
           />
+
 
           {/*<IconButton onClick={popover.onOpen}>*/}
           {/*  <Iconify icon="eva:more-vertical-fill" />*/}
@@ -71,7 +71,7 @@ export default function GoldpriceTableToolbar({
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -79,7 +79,7 @@ export default function GoldpriceTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:printer-minimalistic-bold" />
+          <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
 
@@ -88,7 +88,7 @@ export default function GoldpriceTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:import-bold" />
+          <Iconify icon='solar:import-bold' />
           Import
         </MenuItem>
 
@@ -97,7 +97,7 @@ export default function GoldpriceTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:export-bold" />
+          <Iconify icon='solar:export-bold' />
           Export
         </MenuItem>
       </CustomPopover>

@@ -334,7 +334,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         }
       }
     },
-    [schemeId, scheme, setValue,   reset, getValues],
+    [schemeId, scheme, setValue, reset, getValues],
   );
 
   const calculateTotal = (field) => {

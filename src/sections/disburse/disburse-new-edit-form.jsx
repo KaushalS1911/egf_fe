@@ -31,7 +31,6 @@ import { useGetScheme } from '../../api/scheme';
 // ----------------------------------------------------------------------
 
 export default function DisburseNewEditForm({ currentDisburse }) {
-  console.log(currentDisburse);
 
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -135,7 +134,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     });
   };
   const onSubmit = handleSubmit(async (data) => {
-    console.log('PAY ', data);
     try {
       const payload = {
         loan: currentDisburse._id,
