@@ -55,6 +55,7 @@ const ICONS = {
   reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
   goldLoanCalculator: <Iconify icon='icon-park-solid:calculator' width={24} />,
+  loanPayHistory: <Iconify icon='cuida:history-outline' width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -296,7 +297,7 @@ export function useNavData() {
           {
             title: t('Loan Pay History'),
             path: paths.dashboard.loanPayHistory.list,
-            icon: ICONS.user,
+            icon: ICONS.loanPayHistory,
           },
           // GOLD LOAN CALCULATOR
           {

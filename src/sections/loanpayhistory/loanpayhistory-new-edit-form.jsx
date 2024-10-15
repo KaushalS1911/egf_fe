@@ -106,6 +106,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     IntPeriodTime: currentLoan?.IntPeriodTime || '',
     witnessName: currentLoan?.witnessName || '',
     witnessMobileNo: currentLoan?.witnessMobileNo || '',
+    createdBy: (user?.firstName + ' ' + user?.lastName) || null,
     nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
     lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : new Date(),
   }), [currentLoan]);
