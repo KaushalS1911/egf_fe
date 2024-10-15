@@ -8,6 +8,9 @@ import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
 import { fDate } from '../../../utils/format-time';
+import axios from 'axios';
+import { enqueueSnackbar } from 'notistack';
+import { useParams } from 'react-router';
 const dummyTableData = [
   {
     loanAmount: '5000 USD',
@@ -54,6 +57,7 @@ const TABLE_HEAD = [
 ];
 
 function UchakInterestPayForm() {
+  const { id } = useParams();
   const NewUchakSchema = Yup.object().shape({
     uchakPayDate: Yup.date().nullable().required('Uchak Pay date is required'),
     uchakInterestAmount: Yup.number()
@@ -62,11 +66,59 @@ function UchakInterestPayForm() {
       .typeError('Uchak Interest Pay Amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    accountName: Yup.string().required('Account name is required'),
-    accountNo: Yup.string().required('Account number is required'),
-    accountType: Yup.string().required('Account type is required'),
-    IFSC: Yup.string().required('IFSC code is required'),
-    bankName: Yup.string().required('Bank name is required'),
+    accountName: Yup.string().test(
+      'accountNameRequired',
+      'Account name is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    cashAmount: Yup.string().test(
+      'cashAmountRequired',
+      'Cash amount is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    accountNo: Yup.string().test(
+      'accountNoRequired',
+      'Account number is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    accountType: Yup.string().test(
+      'accountTypeRequired',
+      'Account type is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    IFSC: Yup.string().test(
+      'ifscRequired',
+      'IFSC code is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    bankName: Yup.string().test(
+      'bankNameRequired',
+      'Bank name is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
   });
 
   const defaultValues = {
@@ -74,6 +126,7 @@ function UchakInterestPayForm() {
     uchakInterestAmount: 0,
     remark: '',
     paymentMode: '',
+    cashAmount: '',
     accountName: '',
     accountNo: '',
     accountType: '',
@@ -89,24 +142,64 @@ function UchakInterestPayForm() {
   const {
     control,
     handleSubmit,
+    watch,
+    reset,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const payload = {
-      loan : 'adsdasdadsdadsdddw233e',
-      remark: data.remark,
-      date: data.uchakPayDate,
-      InterestAmount: data.uchakInterestAmount,
-      paymentDetail : {
+    let paymentDetail = {
+      paymentMode: data.paymentMode
+    };
+
+    if (data.paymentMode === 'Cash') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+      };
+    } else if (data.paymentMode === 'Bank') {
+      paymentDetail = {
+        ...paymentDetail,
         accountName: data.accountName,
         accountNo: data.accountNo,
         accountType: data.accountType,
-        ifscCode: data.IFSC,
-        bankName: data.bankName
-      }
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
+    } else if (data.paymentMode === 'Both') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+        accountName: data.accountName,
+        accountNo: data.accountNo,
+        accountType: data.accountType,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
     }
-    console.log('DATAAAAAAAAAAA : ', payload);
+
+    const payload = {
+      remark: data.remark,
+      date: data.uchakPayDate,
+      amountPaid: data.uchakInterestAmount,
+      paymentDetail : paymentDetail,
+    }
+    try {
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/uchak-interest-payment`;
+
+      const config = {
+        method: 'post',
+        url,
+        data: payload,
+      };
+
+      const response = await axios(config);
+      mutate();
+      reset();
+      enqueueSnackbar(response?.data.message);
+    } catch (error) {
+      console.error(error);
+    }
   });
   return (
     <>
@@ -147,7 +240,7 @@ function UchakInterestPayForm() {
             name='paymentMode'
             label='Payment Mode'
             req={'red'}
-            options={['Cash', 'Check']}
+            options={['Cash', 'Bank','Both']}
             getOptionLabel={(option) => option}
             renderOption={(props, option) => (
               <li {...props} key={option}>
@@ -157,41 +250,51 @@ function UchakInterestPayForm() {
           />
         </Grid>
       </Grid>
-      <Grid container sx={{ mt: 5,p:3 }}>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Bank Account Details
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Box
-            rowGap={3}
-            columnGap={2}
-            display='grid'
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)',
-              sm: 'repeat(2, 1fr)',
-            }}
-          >
-            <RHFTextField name='accountName' label='Account Name' req={'red'} />
-            <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-            <RHFAutocomplete
-              name='accountType'
-              label='Account Type'
-              req={'red'}
-              options={['Saving', 'Current']}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-            />
-            <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-            <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-          </Box>
-        </Grid>
-      </Grid>
+        <Box sx={{ p: 3 }}>
+          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+            <>
+              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }}
+                            InputLabelProps={{ shrink: true, readOnly: true }} />
+            </>
+          )}
+          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+            <Grid container sx={{ mt: 8 }}>
+              <Grid item xs={12} md={4}>
+                <Typography variant='h6' sx={{ mb: 0.5 }}>
+                  Bank Account Details
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display='grid'
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                  }}
+                >
+                  <RHFTextField name='accountName' label='Account Name' req={'red'} />
+                  <RHFTextField name='accountNo' label='Account No.' req={'red'} />
+                  <RHFAutocomplete
+                    name='accountType'
+                    label='Account Type'
+                    req={'red'}
+                    options={['Saving', 'Current']}
+                    getOptionLabel={(option) => option}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option}>
+                        {option}
+                      </li>
+                    )}
+                  />
+                  <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
+                  <RHFTextField name='bankName' label='Bank Name' req={'red'} />
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit

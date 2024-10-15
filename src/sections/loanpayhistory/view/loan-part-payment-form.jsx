@@ -8,6 +8,10 @@ import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
 import { fDate } from '../../../utils/format-time';
+import axios from 'axios';
+import { enqueueSnackbar } from 'notistack';
+import { useParams } from 'react-router';
+import { useGetAllPartPayment } from '../../../api/part-payment';
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
   { id: 'payAmount', label: 'Pay Amount' },
@@ -16,31 +20,10 @@ const TABLE_HEAD = [
   { id: 'remarks', label: 'Remarks' },
 ];
 
-const dummyTableData = [
-  {
-    loanAmount: '05 Aug 2024',
-    payAmount: '05 Aug 2024',
-    payDate: '05 Jul 2024',
-    entryDate: '05 Jul 2024',
-    remarks: '1 Chain close',
-  },
-  {
-    loanAmount: '15 Sep 2024',
-    payAmount: '15 Sep 2024',
-    payDate: '14 Aug 2024',
-    entryDate: '14 Aug 2024',
-    remarks: '2 Chain open',
-  },
-  {
-    loanAmount: '20 Oct 2024',
-    payAmount: '20 Oct 2024',
-    payDate: '19 Sep 2024',
-    entryDate: '19 Sep 2024',
-    remarks: '1 Chain ongoing',
-  },
-];
-
 function LoanPartPaymentForm() {
+  const {id} = useParams()
+  const { partPayment , mutate} = useGetAllPartPayment(id);
+  console.log("as",partPayment)
   const NewPartPaymentSchema = Yup.object().shape({
     date: Yup.date().nullable().required('Uchak Pay date is required'),
     amountPaid: Yup.number()
@@ -49,13 +32,72 @@ function LoanPartPaymentForm() {
       .typeError('Uchak Interest Pay Amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
+    accountName: Yup.string().test(
+      'accountNameRequired',
+      'Account name is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    cashAmount: Yup.string().test(
+      'cashAmountRequired',
+      'Cash amount is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    accountNo: Yup.string().test(
+      'accountNoRequired',
+      'Account number is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    accountType: Yup.string().test(
+      'accountTypeRequired',
+      'Account type is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    IFSC: Yup.string().test(
+      'ifscRequired',
+      'IFSC code is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    bankName: Yup.string().test(
+      'bankNameRequired',
+      'Bank name is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
   });
 
   const defaultValues = {
     date: null,
-    amountPaid: 0,
+    amountPaid: '',
     remark: '',
     paymentMode: '',
+    cashAmount: '',
+    accountName: '',
+    accountNo: '',
+    accountType: '',
+    IFSC: '',
+    bankName: '',
   };
 
   const methods = useForm({
@@ -65,12 +107,65 @@ function LoanPartPaymentForm() {
 
   const {
     control,
+    watch,
+    reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('DATAAAAAAAAAAA : ', data);
+    let paymentDetail = {
+      paymentMode: data.paymentMode
+    };
+
+    if (data.paymentMode === 'Cash') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+      };
+    } else if (data.paymentMode === 'Bank') {
+      paymentDetail = {
+        ...paymentDetail,
+        accountName: data.accountName,
+        accountNo: data.accountNo,
+        accountType: data.accountType,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
+    } else if (data.paymentMode === 'Both') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+        accountName: data.accountName,
+        accountNo: data.accountNo,
+        accountType: data.accountType,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
+    }
+
+    const payload = {
+      remark: data.remark,
+      date: data.date,
+      amountPaid: data.amountPaid,
+      paymentDetail : paymentDetail,
+    }
+    try {
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/part-payment`;
+
+      const config = {
+        method: 'post',
+        url,
+        data: payload,
+      };
+
+      const response = await axios(config);
+      // mutate();
+      reset();
+      enqueueSnackbar(response?.data.message);
+    } catch (error) {
+      console.error(error);
+    }
   });
   return (
     <>
@@ -111,7 +206,7 @@ function LoanPartPaymentForm() {
               name='paymentMode'
               label='Payment Mode'
               req={'red'}
-              options={['Cash', 'Check']}
+              options={['Cash', 'Bank','Both']}
               getOptionLabel={(option) => option}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
@@ -121,6 +216,51 @@ function LoanPartPaymentForm() {
             />
           </Grid>
         </Grid>
+        <Box sx={{ p: 3 }}>
+          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+            <>
+              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }}
+                            InputLabelProps={{ shrink: true, readOnly: true }} />
+            </>
+          )}
+          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+            <Grid container sx={{ mt: 8 }}>
+              <Grid item xs={12} md={4}>
+                <Typography variant='h6' sx={{ mb: 0.5 }}>
+                  Bank Account Details
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display='grid'
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                  }}
+                >
+                  <RHFTextField name='accountName' label='Account Name' req={'red'} />
+                  <RHFTextField name='accountNo' label='Account No.' req={'red'} />
+                  <RHFAutocomplete
+                    name='accountType'
+                    label='Account Type'
+                    req={'red'}
+                    options={['Saving', 'Current']}
+                    getOptionLabel={(option) => option}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option}>
+                        {option}
+                      </li>
+                    )}
+                  />
+                  <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
+                  <RHFTextField name='bankName' label='Bank Name' req={'red'} />
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
@@ -130,13 +270,13 @@ function LoanPartPaymentForm() {
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 8 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
-          {dummyTableData.map((row, index) => (
+          {partPayment.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.payAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.payDate)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.entryDate)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remarks}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
             </TableRow>
           ))}
 

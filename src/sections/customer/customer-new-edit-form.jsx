@@ -351,11 +351,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 onInput={(e) => {
                   e.target.value = e.target.value.toUpperCase();
                 }}
+                inputProps={{ maxLength: 16 }}
               />
               <RHFTextField
                 name='customerCode'
                 label='Customer Code'
-                req={'red'}
                 InputProps={{
                   disabled: true,
                 }}

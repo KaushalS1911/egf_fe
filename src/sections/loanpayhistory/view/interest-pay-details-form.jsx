@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { Controller, useForm } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -13,17 +13,25 @@ import TableCell from '@mui/material/TableCell';
 import { fDate } from '../../../utils/format-time';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Card } from '@mui/material';
+import { Card, Grid, Stack } from '@mui/material';
 import { useGetPenalty } from '../../../api/penalty';
+import { useParams } from 'react-router';
+import axios from 'axios';
+import { paths } from '../../../routes/paths';
+import { enqueueSnackbar } from 'notistack';
+import { useRouter } from '../../../routes/hooks';
+import { useAuthContext } from '../../../auth/hooks';
+import { useGetAllInterest } from '../../../api/interest-pay';
+// import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
-  { id: 'fromDate', label: 'From Date' },
-  { id: 'toDate', label: 'To Date' },
+  { id: 'from', label: 'From Date' },
+  { id: 'to', label: 'To Date' },
   { id: 'loanAmount', label: 'Loan Amount' },
   { id: 'interestRate', label: 'Interest Rate' },
   { id: 'totalInterest', label: 'Total Interest' },
   { id: 'penaltyAmount', label: 'Penalty Amount' },
-  { id: 'payInterest', label: 'Pay Interest' },
+  // { id: 'payInterest', label: 'Pay Interest' },
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'consultantInterest', label: 'Consultant Interest' },
   { id: 'days', label: 'Days' },
@@ -31,87 +39,104 @@ const TABLE_HEAD = [
   { id: 'totalPay', label: 'Total Pay' },
   { id: 'adjustedPay', label: 'Adjusted Pay' },
 ];
-const tableDummyData = [
-  // {
-  //   fromDate: '2024-10-01',
-  //   toDate: '2024-10-10',
-  //   loanAmount: '5000',
-  //   interestRate: '5%',
-  //   totalInterest: '250',
-  //   penaltyAmount: '50',
-  //   payInterest: '200',
-  //   entryDate: '2024-09-30',
-  //   consultantInterest: '100',
-  //   days: '10',
-  //   crDrAmount: '1000',
-  //   totalPay: '8000',
-  //   adjustedPay: '7800',
-  // },
-  // {
-  //   fromDate: '2024-09-15',
-  //   toDate: '2024-09-25',
-  //   loanAmount: '10000',
-  //   interestRate: '7%',
-  //   totalInterest: '700',
-  //   penaltyAmount: '75',
-  //   payInterest: '600',
-  //   entryDate: '2024-09-12',
-  //   consultantInterest: '150',
-  //   days: '15',
-  //   crDrAmount: '2000',
-  //   totalPay: '15000',
-  //   adjustedPay: '14800',
-  // },
-  // {
-  //   fromDate: '2024-08-05',
-  //   toDate: '2024-08-20',
-  //   loanAmount: '2000',
-  //   interestRate: '3%',
-  //   totalInterest: '60',
-  //   penaltyAmount: '10',
-  //   payInterest: '50',
-  //   entryDate: '2024-08-01',
-  //   consultantInterest: '20',
-  //   days: '5',
-  //   crDrAmount: '500',
-  //   totalPay: '3000',
-  //   adjustedPay: '2950',
-  // },
-];
-
 function InterestPayDetailsForm({ currentLoan }) {
   const { penalty } = useGetPenalty();
-  console.log('penalty : ', penalty);
+  const {id} = useParams();
+  const [interests,setInterests] = useState([]);
+
+  const {loanInterest , mutate} = useGetAllInterest(id);
+  const { user } = useAuthContext();
+  const router = useRouter();
+
+
   const NewInterestPayDetailsSchema = Yup.object().shape({
-    fromDate: Yup.date().required('From Date is required'),
-    toDate: Yup.date().required('To Date is required'),
+    from: Yup.date().required('From Date is required'),
+    to: Yup.date().required('To Date is required'),
     days: Yup.string().required('Days is required'),
-    total: Yup.string().required('Total is required'),
-    interest: Yup.string().required('Interest is required'),
-    consultCharge: Yup.string().required('Consult Charge is required'),
+    amountPaid: Yup.string().required('Total is required'),
+    interestAmount: Yup.string().required('Interest is required'),
+    consultingCharge: Yup.string().required('Consult Charge is required'),
     penalty: Yup.string().required('Penalty is required'),
     uchakAmount: Yup.string().required('Uchak Amount is required'),
-    newCrDr: Yup.string().required('New CR/DR is required'),
+    cr_dr: Yup.string().required('New CR/DR is required'),
     totalPay: Yup.string().required('Total Pay is required'),
     payAfterAdjusted1: Yup.string().required('Pay After Adjusted 1 is required'),
     oldCrDr: Yup.string().required('Old CR/DR is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-  });
+    accountName: Yup.string().test(
+      'accountNameRequired',
+      'Account name is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
 
+    cashAmount: Yup.string().test(
+      'cashAmountRequired',
+      'Cash Amount is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    accountNo: Yup.string().test(
+      'accountNoRequired',
+      'Account number is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    accountType: Yup.string().test(
+      'accountTypeRequired',
+      'Account type is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    IFSC: Yup.string().test(
+      'ifscRequired',
+      'IFSC code is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    bankName: Yup.string().test(
+      'bankNameRequired',
+      'Bank name is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+  });
   const defaultValues = {
-    fromDate: (tableDummyData.length === 0 && currentLoan?.issueDate) ? new Date(currentLoan?.issueDate) : new Date(),//prev to date
-    toDate: (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
+    from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0].to),
+    to: currentLoan?.nextInstallmentDate ? new Date(currentLoan.nextInstallmentDate) : new Date(),
     days: '',
-    total: '',
-    interest: currentLoan?.scheme.interestRate || '',
-    consultCharge: currentLoan?.consultingCharge || '',
+    amountPaid: '',
+    interestAmount: currentLoan?.scheme.interestRate || '',
+    consultingCharge: currentLoan?.consultingCharge || '',
     penalty: '',
-    uchakAmount: '',
-    newCrDr: '',
+    uchakAmount: 0,
+    cr_dr: '',
     totalPay: '',
     payAfterAdjusted1: '',
-    oldCrDr: '',
+    oldCrDr: 0,
     paymentMode: '',
+    accountName: '',
+    accountNo: '',
+    accountType: '',
+    IFSC: '',
+    bankName: '',
+    cashAmount: '',
   };
 
   const methods = useForm({
@@ -119,61 +144,120 @@ function InterestPayDetailsForm({ currentLoan }) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    control,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, control, setValue, handleSubmit, formState: { isSubmitting } } = methods;
 
-  const fromDate = watch('fromDate');
-  const toDate = watch('toDate');
+  const from = watch('from');
+  const to = watch('to');
 
   function calculatePenalty(loanAmount, interestRate) {
     let dayDifference = 0;
-    if (currentLoan?.nextInstallmentDate) {
-      const nextInstallmentDate = new Date(currentLoan?.nextInstallmentDate);
-      const today = new Date();
-      const timeDifference = nextInstallmentDate.getTime() - today.getTime();
+    if (watch('to') && currentLoan.nextInstallmentDate) {
+      const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
+      const to = new Date(watch('to'));
+      const timeDifference = to.getTime() - nextInstallmentDate.getTime();
       dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
       dayDifference = Math.abs(dayDifference);
     }
     const monthlyInterest = (loanAmount * interestRate) / 100;
     const penalty = (dayDifference / 30) * monthlyInterest;
-    const total = loanAmount + penalty;
-    return total.toFixed(2);
+    return penalty.toFixed(2);
   }
 
 
-
   useEffect(() => {
-    if (fromDate && toDate) {
-      const startDate = new Date(fromDate);
-      const endDate = new Date(toDate);
-      const differenceInTime = Math.abs(endDate - startDate);
-      const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
-      setValue('days', differenceInDays.toString());
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+    const differenceInTime = Math.abs(endDate - startDate);
+    const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
 
-      let penaltyPer = 0;
-      penalty.forEach(penaltyItem => {
-        if (
-          differenceInDays >= penaltyItem.afterDueDateFromDate &&
-          differenceInDays <= penaltyItem.afterDueDateToDate
-        ) {
-          penaltyPer = calculatePenalty(currentLoan.loanAmount,penaltyItem.penaltyInterest)
-        }
-      });
-      console.log("penaltyPer : ",penaltyPer)
-      setValue('days', differenceInDays.toString());
-      setValue('penalty', penaltyPer);
-    }
-  }, [fromDate, toDate, setValue, penalty]);
+    const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
+    const differenceInTime2 = Math.abs(new Date(to) - nextInstallmentDate);
+    const differenceInDays2 = Math.floor(differenceInTime2 / (1000 * 3600 * 24));
+
+    setValue('days', differenceInDays.toString());
+
+    let penaltyPer = 0;
+    penalty.forEach(penaltyItem => {
+      if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate) {
+        penaltyPer = calculatePenalty(currentLoan.loanAmount, penaltyItem.penaltyInterest);
+      }
+    });
+
+    setValue('interestAmount', (currentLoan?.scheme.interestRate * currentLoan.loanAmount / 100 * differenceInDays / 30).toFixed(2));
+    setValue('penalty', penaltyPer);
+    setValue('totalPay', (
+      Number(watch('interestAmount')) +
+      Number(watch('consultingCharge')) +
+      Number(watch('penalty')) -
+      Number(watch('uchakAmount'))
+    ).toFixed(2));
+    setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
+    setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
+  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
+
 
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('DATA : ', data);
+
+    let paymentDetail = {
+      paymentMode: data.paymentMode
+    };
+
+    if (data.paymentMode === 'Cash') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+      };
+    } else if (data.paymentMode === 'Bank') {
+      paymentDetail = {
+        ...paymentDetail,
+        accountName: data.accountName,
+        accountNo: data.accountNo,
+        accountType: data.accountType,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
+    } else if (data.paymentMode === 'Both') {
+      paymentDetail = {
+        ...paymentDetail,
+        cashAmount: data.cashAmount,
+        accountName: data.accountName,
+        accountNo: data.accountNo,
+        accountType: data.accountType,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+      };
+    }
+
+    const payload = {
+      to: data.to,
+      adjustedPay: data.payAfterAdjusted1,
+      days: data.days,
+      interestAmount: data.interestAmount,
+      from: data.from,
+      amountPaid: data.amountPaid,
+      penalty: data.penalty,
+      cr_dr: data.cr_dr,
+      paymentDetail
+    };
+    try {
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/interest-payment`;
+
+      const config = {
+        method: 'post',
+        url,
+        data: payload,
+      };
+
+      const response = await axios(config);
+      reset();
+      mutate();
+      enqueueSnackbar(response?.data.message);
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar("Failed to pay interest",{variant: "error"});
+    }
+
   });
 
   return (
@@ -190,7 +274,7 @@ function InterestPayDetailsForm({ currentLoan }) {
           }}
         >
           <Controller
-            name='fromDate'
+            name='from'
             control={control}
             render={({ field, fieldState: { error } }) => (
               <DatePicker
@@ -210,7 +294,7 @@ function InterestPayDetailsForm({ currentLoan }) {
           />
 
           <Controller
-            name='toDate'
+            name='to'
             control={control}
             render={({ field, fieldState: { error } }) => (
               <DatePicker
@@ -230,15 +314,15 @@ function InterestPayDetailsForm({ currentLoan }) {
           />
 
           <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name='interest' label='Interest' req={'red'} />
-          <RHFTextField name='consultCharge' label='Consult Charge' req={'red'} />
-          <RHFTextField name='penalty' label='Penalty' req={'red'} />
           <RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} />
-          <RHFTextField name='newCrDr' label='New CR/DR' req={'red'} />
+          <RHFTextField name='interestAmount' label='Interest' req={'red'} />
+          <RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} />
+          <RHFTextField name='penalty' label='Penalty' req={'red'} />
           <RHFTextField name='totalPay' label='Total Pay' req={'red'} />
-          <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'} />
           <RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} />
-          <RHFTextField name='total' label='Total' req={'red'} />
+          <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'} />
+          <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} />
+          <RHFTextField name='amountPaid' label='Total' req={'red'} />
         </Box>
 
         <Box>
@@ -250,7 +334,7 @@ function InterestPayDetailsForm({ currentLoan }) {
             label='Payment Mode'
             req={'red'}
             sx={{ width: '25%' }}
-            options={['Cash', 'Check']}
+            options={['Cash', 'Bank','Both']}
             getOptionLabel={(option) => option}
             renderOption={(props, option) => (
               <li {...props} key={option}>
@@ -259,7 +343,50 @@ function InterestPayDetailsForm({ currentLoan }) {
             )}
           />
         </Box>
-
+        <Box sx={{mt:8}}>
+          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+            <>
+              <RHFTextField name='cashAmount' label='Cash Amount'  sx={{ width: '25%' }} InputLabelProps={{ shrink: true,readOnly: true }}/>
+            </>
+          )}
+            {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+              <Grid container sx={{ mt: 8 }}>
+                <Grid item xs={12} md={4}>
+                  <Typography variant='h6' sx={{ mb: 0.5 }}>
+                    Bank Account Details
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={8}>
+                  <Box
+                    rowGap={3}
+                    columnGap={2}
+                    display='grid'
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(2, 1fr)',
+                    }}
+                  >
+                    <RHFTextField name='accountName' label='Account Name' req={'red'} />
+                    <RHFTextField name='accountNo' label='Account No.' req={'red'} />
+                    <RHFAutocomplete
+                      name='accountType'
+                      label='Account Type'
+                      req={'red'}
+                      options={['Saving', 'Current']}
+                      getOptionLabel={(option) => option}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option}>
+                          {option}
+                        </li>
+                      )}
+                    />
+                    <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
+                    <RHFTextField name='bankName' label='Bank Name' req={'red'} />
+                  </Box>
+                </Grid>
+              </Grid>
+            )}
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
@@ -286,20 +413,20 @@ function InterestPayDetailsForm({ currentLoan }) {
           <Table sx={{ borderRadius: '16px', mt: 8, minWidth: '1600px' }}>
             <TableHeadCustom headLabel={TABLE_HEAD} />
             <TableBody>
-              {tableDummyData.map((row, index) => (
+              {loanInterest.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.fromDate)}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.toDate)}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loanAmount}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestRate}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.totalInterest}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.penaltyAmount}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.payInterest}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.entryDate)}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.consultantInterest}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.from)}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.to)}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.scheme.interestRate}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.penalty}</TableCell>
+                  {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>*/}
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.consultingCharge}</TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.days}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.crDrAmount}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.totalPay}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.cr_dr}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.adjustedPay}</TableCell>
                 </TableRow>
               ))}

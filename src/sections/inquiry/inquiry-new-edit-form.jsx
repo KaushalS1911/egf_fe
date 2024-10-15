@@ -170,7 +170,27 @@ export default function InquiryNewEditForm({ currentInquiry }) {
               )}
               <RHFTextField name='firstName' label='First Name' req={'red'} />
               <RHFTextField name='lastName' label='Last Name' req={'red'} />
-              <RHFTextField name='contact' label='Mobile No.' req={'red'} />
+              <RHFTextField
+                name='contact'
+                label='Mobile No.'
+                req={'red'}
+                inputProps={{
+                maxLength: 10,
+                inputMode: 'numeric',
+                pattern: '[0-9]*',
+              }}
+                rules={{
+                  required: 'Mobile number is required',
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: 'Please enter a valid 10-digit OTP',
+                  },
+                }}
+                onKeyPress={(e) => {
+                  if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }} />
               <RHFTextField name='email' label='Email' req={'red'} />
 
               <Controller

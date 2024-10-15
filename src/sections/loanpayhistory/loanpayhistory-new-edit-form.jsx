@@ -45,13 +45,9 @@ import LoanCloseForm from './view/loan-close-form';
 
 
 export default function LoanpayhistoryNewEditForm({ currentLoan }) {
-  const router = useRouter();
-  console.log("currentLoan : ",currentLoan);
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuthContext();
-  const { enqueueSnackbar } = useSnackbar();
-  const [file, setFile] = useState(null);
-
+  const [file, setFile] = useState(currentLoan.propertyImage);
   const NewLoanPayHistorySchema = Yup.object().shape({
     loanNo: Yup.string().required('Loan No. is required'),
     customerName: Yup.string().required('Customer Name is required'),
@@ -100,7 +96,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     contact: currentLoan?.customer.contact || '',
     issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
     schemeName: currentLoan?.scheme.name || '',
-    closedBy: currentLoan?.closedBy || '',
+    closedBy: (user?.firstName + ' ' + user?.lastName) || '',
     oldLoanNo: currentLoan?.oldLoanNo || '',
     interest: currentLoan?.scheme.interestRate || '',
     consultCharge: currentLoan?.consultingCharge || '',
@@ -110,8 +106,8 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     IntPeriodTime: currentLoan?.IntPeriodTime || '',
     witnessName: currentLoan?.witnessName || '',
     witnessMobileNo: currentLoan?.witnessMobileNo || '',
-    nextInterestPayDate: currentLoan?.nextInterestPayDate ? new Date(currentLoan?.nextInterestPayDate) : new Date(),
-    lastInterestPayDate: currentLoan?.lastInterestPayDate ? new Date(currentLoan?.lastInterestPayDate) : new Date(),
+    nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
+    lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : new Date(),
   }), [currentLoan]);
 
   const methods = useForm({
@@ -146,7 +142,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
   return (
     <>
       <Grid container spacing={3}>
