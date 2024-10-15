@@ -30,75 +30,8 @@ import { fDate } from '../../../utils/format-time';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
+import { useGetAllPartRelease } from '../../../api/part-release';
 
-const rows = [
-  {
-    id: 1,
-    loanNo: 'EGL/24_25/001',
-    propertyName: 'NECKLACE',
-    carat: 20.00,
-    pcs: 1.00,
-    totalWeight: 17.20,
-    netWeight: 14.54,
-    grossAmount: 1999.00,
-    netAmount: 8877.00,
-  },
-  {
-    id: 2,
-    loanNo: 'EGL/24_25/001',
-    propertyName: 'RING',
-    carat: 20.00,
-    pcs: 1.00,
-    totalWeight: 17.20,
-    netWeight: 14.54,
-    grossAmount: 1999.00,
-    netAmount: 8877.00,
-  },
-  {
-    id: 3,
-    loanNo: 'EGL/24_25/001',
-    propertyName: 'CHAIN',
-    carat: 20.00,
-    pcs: 1.00,
-    totalWeight: 17.20,
-    netWeight: 14.54,
-    grossAmount: 1999.00,
-    netAmount: 8877.00,
-  },
-  {
-    id: 4,
-    loanNo: 'EGL/24_25/001',
-    propertyName: 'EAR CHAIN',
-    carat: 20.00,
-    pcs: 1.00,
-    totalWeight: 17.20,
-    netWeight: 14.54,
-    grossAmount: 1999.00,
-    netAmount: 8877.00,
-  },
-  {
-    id: 5,
-    loanNo: 'EGL/24_25/001',
-    propertyName: 'CHAIN',
-    carat: 20.00,
-    pcs: 1.00,
-    totalWeight: 17.20,
-    netWeight: 14.54,
-    grossAmount: 1999.00,
-    netAmount: 8877.00,
-  },
-  {
-    id: 6,
-    loanNo: 'EGL/24_25/001',
-    propertyName: 'EAR CHAIN',
-    carat: 20.00,
-    pcs: 1.00,
-    totalWeight: 17.20,
-    netWeight: 14.54,
-    grossAmount: 1999.00,
-    netAmount: 8877.00,
-  },
-];
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'propertyName', label: 'Property Name' },
@@ -110,81 +43,32 @@ const tableHeaders = [
   { id: 'netAmount', label: 'Net Amount' },
 ];
 const TABLE_HEAD = [
-  { id: 'docNo', label: 'Doc No.' },
+  { id: 'loanNo', label: 'Loan No.' },
   { id: 'loanAmount', label: 'Loan Amount' },
   { id: 'payAmount', label: 'Pay Amount' },
   { id: 'pendingAmount', label: 'Pending Amount' },
   { id: 'payDate', label: 'Pay Date' },
   { id: 'remarks', label: 'Remarks' },
 ];
-const tableDummyData = [
-  {
-    id: 1,
-    docNo: 'DOC001',
-    loanAmount: 3325.20,
-    payAmount: 1000.00,
-    pendingAmount: 2325.20,
-    payDate: '05 Aug 2024',
-    remarks: 'First payment',
-  },
-  {
-    id: 2,
-    docNo: 'DOC002',
-    loanAmount: 31000.00,
-    payAmount: 15000.00,
-    pendingAmount: 16000.00,
-    payDate: '05 Aug 2024',
-    remarks: 'Partial payment',
-  },
-  {
-    id: 3,
-    docNo: 'DOC003',
-    loanAmount: 5000.00,
-    payAmount: 5000.00,
-    pendingAmount: 0.00,
-    payDate: '05 Aug 2024',
-    remarks: 'Full payment',
-  },
-  {
-    id: 4,
-    docNo: 'DOC004',
-    loanAmount: 15000.00,
-    payAmount: 5000.00,
-    pendingAmount: 10000.00,
-    payDate: '05 Aug 2024',
-    remarks: 'Pending amount remaining',
-  },
-  {
-    id: 5,
-    docNo: 'DOC005',
-    loanAmount: 7500.00,
-    payAmount: 3000.00,
-    pendingAmount: 4500.00,
-    payDate: '05 Aug 2024',
-    remarks: 'Partial payment',
-  },
-];
 
 function PartReleaseForm({ currentLoan }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [file, setFile] = useState(null);
   const {id} = useParams();
+  const {partRelease,mutate} = useGetAllPartRelease(id);
   const selectedTotals = useMemo(() => {
-    return currentLoan.propertyDetails.reduce(
+    return selectedRows.reduce(
       (totals, row) => {
-        if (selectedRows.includes(row.id)) {
-          totals.pcs += row.pcs || 0;
-          totals.totalWeight += row.totalWeight || 0;
-          totals.netWeight += row.netWeight || 0;
-          totals.grossAmount += row.grossAmount || 0;
-          totals.netAmount += row.netAmount || 0;
-        }
+          totals.pcs += Number(row.pcs) || 0;
+          totals.totalWeight += Number(row.totalWeight) || 0;
+          totals.netWeight += Number(row.netWeight) || 0;
+          totals.grossAmount += Number(row.grossAmount) || 0;
+          totals.netAmount += Number(row.netAmount) || 0;
         return totals;
       },
       { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 },
     );
-  }, [selectedRows]);
-
+  }, [selectedRows, currentLoan.propertyDetails]);
   const NewPartReleaseSchema = Yup.object().shape({
     date: Yup.date().nullable().required('Pay date is required'),
     amountPaid: Yup.number()
@@ -196,55 +80,55 @@ function PartReleaseForm({ currentLoan }) {
     accountName: Yup.string().test(
       'accountNameRequired',
       'Account name is required',
-      function(value) {
+      function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      },
+      }
     ),
 
     cashAmount: Yup.string().test(
       'cashAmountRequired',
-      'Cash Amount is required',
-      function(value) {
+      'Cash amount is required',
+      function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
-      },
+      }
     ),
 
     accountNo: Yup.string().test(
       'accountNoRequired',
       'Account number is required',
-      function(value) {
+      function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      },
+      }
     ),
 
     accountType: Yup.string().test(
       'accountTypeRequired',
       'Account type is required',
-      function(value) {
+      function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      },
+      }
     ),
 
     IFSC: Yup.string().test(
       'ifscRequired',
       'IFSC code is required',
-      function(value) {
+      function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      },
+      }
     ),
 
     bankName: Yup.string().test(
       'bankNameRequired',
       'Bank name is required',
-      function(value) {
+      function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      },
+      }
     ),
   });
   const defaultValues = {
@@ -268,10 +152,10 @@ function PartReleaseForm({ currentLoan }) {
   const {
     control,
     watch,
+    reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode
@@ -303,15 +187,26 @@ function PartReleaseForm({ currentLoan }) {
       };
     }
 
-    // Create FormData
+
     const formData = new FormData();
-    formData.append('property', JSON.stringify(selectedRows)); // Convert array/object to JSON string
+    selectedRows.forEach((row, index) => {
+      formData.append(`property[${index}][type]`, row.type);
+      formData.append(`property[${index}][carat]`, row.carat);
+      formData.append(`property[${index}][pcs]`, row.pcs);
+      formData.append(`property[${index}][totalWeight]`, row.totalWeight);
+      formData.append(`property[${index}][lossWeight]`, row.lossWeight);
+      formData.append(`property[${index}][grossWeight]`, row.grossWeight);
+      formData.append(`property[${index}][netWeight]`, row.netWeight);
+      formData.append(`property[${index}][grossAmount]`, row.grossAmount);
+      formData.append(`property[${index}][netAmount]`, row.netAmount);
+    });
     formData.append('remark', data.remark);
-    formData.append('propertyImage', file); // Handle file upload
+    formData.append('property-image', file);
     formData.append('date', data.date);
     formData.append('amountPaid', data.amountPaid);
-    formData.append('paymentDetail', JSON.stringify(paymentDetail)); // Convert nested object to JSON string
-
+    for (const [key, value] of Object.entries(paymentDetail)) {
+      formData.append(`paymentDetail[${key}]`, value);
+    }
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/part-release`;
 
@@ -320,15 +215,13 @@ function PartReleaseForm({ currentLoan }) {
         url,
         data: formData,
         headers: {
-          'Content-Type': 'multipart/form-data', // Set the correct content type
+          'Content-Type': 'multipart/form-data',
         },
       };
 
-      console.log('FormData:', config, formData);
-
       const response = await axios(config);
       mutate();
-      // reset();
+      reset();
       enqueueSnackbar(response?.data.message);
     } catch (error) {
       console.error(error);
@@ -479,7 +372,7 @@ function PartReleaseForm({ currentLoan }) {
             </Box>
           </Box>
         </Box>
-        <Box sx={{ p: 3 }} >
+        <Box sx={{ p: 3 }}>
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
             <>
               <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }}
@@ -533,14 +426,14 @@ function PartReleaseForm({ currentLoan }) {
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 8 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
-          {tableDummyData.map((row, index) => (
+          {partRelease && partRelease.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.docNo}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.payAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.pendingAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.payDate)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remarks}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanNo}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.interestLoanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
             </TableRow>
           ))}
         </TableBody>

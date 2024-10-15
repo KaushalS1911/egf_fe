@@ -44,7 +44,7 @@ function InterestPayDetailsForm({ currentLoan }) {
   const {id} = useParams();
   const [interests,setInterests] = useState([]);
 
-  const {loanInterest,mutate} = useGetAllInterest(id);
+  const {loanInterest , mutate} = useGetAllInterest(id);
   const { user } = useAuthContext();
   const router = useRouter();
 
@@ -240,7 +240,6 @@ function InterestPayDetailsForm({ currentLoan }) {
       cr_dr: data.cr_dr,
       paymentDetail
     };
-    console.log("payload : ",payload)
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/interest-payment`;
 
@@ -251,11 +250,12 @@ function InterestPayDetailsForm({ currentLoan }) {
       };
 
       const response = await axios(config);
-      mutate();
       reset();
+      mutate();
       enqueueSnackbar(response?.data.message);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar("Failed to pay interest",{variant: "error"});
     }
 
   });
