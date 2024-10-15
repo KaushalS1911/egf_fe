@@ -75,10 +75,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     interestLoanAmount: Yup.number().required('Interest Loan Amount is required'),
     loanPeriod: Yup.number().required('Loan Period is required'),
     IntPeriodTime: Yup.number().required('Interest Period Time is required'),
-    witnessName: Yup.string().required('Witness Name is required'),
-    witnessMobileNo: Yup.string()
-      .matches(/^\d{10,16}$/, 'Witness Mobile No. must be between 10 and 16 digits')
-      .required('Witness Mobile No. is required'),
     nextInterestPayDate: Yup.date()
       .nullable()
       .required('Next Interest Pay Date is required')
@@ -104,8 +100,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     interestLoanAmount: currentLoan?.interestLoanAmount || '',
     loanPeriod: currentLoan?.loanPeriod || '',
     IntPeriodTime: currentLoan?.IntPeriodTime || '',
-    witnessName: currentLoan?.witnessName || '',
-    witnessMobileNo: currentLoan?.witnessMobileNo || '',
     createdBy: (user?.firstName + ' ' + user?.lastName) || null,
     nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
     lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : new Date(),
@@ -150,7 +144,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
           <Card sx={{ p: 3 }}>
             <Box variant='div' sx={{ mb: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              First Part
+              Customer details
             </Box>
             <Box
               rowGap={3}
@@ -212,7 +206,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               />
             </Box>
             <Box variant='div' sx={{ mt: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              Second Part
+              Loan Details
             </Box>
             <Box
               rowGap={3}
@@ -256,25 +250,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <RHFTextField name='loanPeriod' label='Loan Period (Month)'
                             InputLabelProps={{ shrink: true }} />
               <RHFTextField name='IntPeriodTime' label='INT. Period Time'
-                            InputLabelProps={{ shrink: true }} />
-            </Box>
-            <Box variant='div' sx={{ mt: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              Third Part
-            </Box>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              sx={{ py: 3 }}
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-              }}
-            >
-              <RHFTextField name='witnessName' label='Witness Name'
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='witnessMobileNo' label='Witness Mobile No.'
                             InputLabelProps={{ shrink: true }} />
               <Controller
                 name='nextInterestPayDate'

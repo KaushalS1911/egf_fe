@@ -160,7 +160,7 @@ function LoanPartPaymentForm() {
       };
 
       const response = await axios(config);
-      // mutate();
+      mutate();
       reset();
       enqueueSnackbar(response?.data.message);
     } catch (error) {
