@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import { useParams, useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -34,9 +34,6 @@ import {
 } from 'src/components/table';
 
 
-import ReminderTableToolbar from '../reminder-table-toolbar';
-import ReminderTableFiltersResult from '../reminder-table-filters-result';
-import ReminderTableRow from '../reminder-table-row';
 import { Box} from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
@@ -48,26 +45,26 @@ import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import { isAfter, isBetween } from '../../../utils/format-time';
 import { useGetDisburseLoan } from '../../../api/disburseLoan';
+import ReminderDetailsTableRow from '../reminder-details-table-row';
+import ReminderDetailsTableToolbar from '../reminder-table-toolbar';
+import ReminderDetailsTableFiltersResult from '../reminder-details-table-filters-result';
+import { useGetReminder } from '../../../api/reminder';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-  value: 'false',
-  label: 'Non Active',
-}];
+// const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
+//   value: 'false',
+//   label: 'Non Active',
+// }];
 
 const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
-  { id: 'customerName', label: 'Customer Name' },
-  { id: 'otpNo.', label: 'OTP No.' },
-  { id: 'loanAmount', label: 'Loan Amount', },
-  { id: 'days', label: 'Days' },
-  { id: 'nextInterestPaydate', label: 'Next Interest Pay date'},
-  { id: 'issueDate', label: 'Issue Date' },
-  { id: 'lastInterestDate', label: 'Last Interest date' },
+  { id: 'entryDate', label: 'Entry Date' },
+  { id: 'nextFollowUpDate.', label: 'Next Follow up date' },
+  { id: 'remarks', label: 'Remarks' },
+  { id: 'user', label: 'User'},
   { id: ''},
 ];
-
 
 const defaultFilters = {
   name: '',
@@ -77,8 +74,12 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function ReminderListView() {
-  const {disburseLoan} = useGetDisburseLoan()
+export default function ReminderDetailsListView() {
+  const {reminder,mutate} = useGetReminder()
+  const { user } = useAuthContext();
+  const {id} = useParams()
+  const reminderDetails = reminder.filter((item) => item.loan._id === id);
+  console.log(reminderDetails,"8520");
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
@@ -90,13 +91,13 @@ export default function ReminderListView() {
   const confirm = useBoolean();
 
 
-  const [tableData, setTableData] = useState(disburseLoan);
+  const [tableData, setTableData] = useState(reminderDetails);
 
   const [filters, setFilters] = useState(defaultFilters);
 
 
   const dataFiltered = applyFilter({
-    inputData: disburseLoan,
+    inputData: reminderDetails,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -129,19 +130,19 @@ export default function ReminderListView() {
   }, []);
   const handleDelete = async (id) => {
     try {
-      // const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
-      //   data: { ids: id },
-      // });
-      // enqueueSnackbar(res.data.message);
-      // confirm.onFalse();
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`, {
+        data: { ids: id },
+      });
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
       mutate();
     } catch (err) {
-      // enqueueSnackbar("Failed to delete Scheme");
+      enqueueSnackbar("Failed to delete Scheme");
     }
   };
   const handleDeleteRow = useCallback(
     (id) => {
-    // handleDelete([id])
+    handleDelete([id])
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
@@ -149,11 +150,10 @@ export default function ReminderListView() {
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
   const handleDeleteRows = useCallback(() => {
-    // const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-    //  const deleteIds = deleteRows.map((row) => row._id);
-    // console.log("yhbjuyh",deleteIds);
-    //  handleDelete(deleteIds)
-    // setTableData(deleteRows);
+    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+     const deleteIds = deleteRows.map((row) => row._id);
+     handleDelete(deleteIds)
+    setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
@@ -174,12 +174,8 @@ export default function ReminderListView() {
     },
     [handleFilters],
   );
-  const handleClick = useCallback(
-    (id) => {
-      router.push(paths.dashboard.reminder_details.list(id));
-    },
-    [router],
-  );
+
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -187,7 +183,7 @@ export default function ReminderListView() {
           heading='Reminders'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'reminder', href: paths.dashboard.reminder.list},
+            { name: 'Reminder', href: paths.dashboard.reminder.list},
             { name: 'List' },
           ]}
 
@@ -196,11 +192,11 @@ export default function ReminderListView() {
           }}
         />
         <Card>
-          <ReminderTableToolbar
+          <ReminderDetailsTableToolbar
             filters={filters} onFilters={handleFilters}
           />
          {canReset && (
-            <ReminderTableFiltersResult
+            <ReminderDetailsTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -252,10 +248,9 @@ export default function ReminderListView() {
                         table.page * table.rowsPerPage + table.rowsPerPage,
                       )
                       .map((row) => (
-                        <ReminderTableRow
+                        <ReminderDetailsTableRow
                           key={row._id}
                           row={row}
-                          handleClick={() => handleClick(row._id)}
                           selected={table.selected.includes(row._id)}
                           onSelectRow={() => table.onSelectRow(row._id)}
                           onDeleteRow={() => handleDeleteRow(row._id)}
@@ -265,10 +260,9 @@ export default function ReminderListView() {
                       <TableEmptyRows
                         height={denseHeight}
                         emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                      /></>
-                  {/*:*/}
-                  {/*<TableNoData notFound={true} />*/}
-                  {/*}*/}
+                      />
+                    </>
+                  <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -325,7 +319,7 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>
-        rem.customerName.toLowerCase().includes(name.toLowerCase()),
+        rem.loan.customer.firstName.toLowerCase().includes(name.toLowerCase()),
     );
   }
     if (!dateError && startDate && endDate) {

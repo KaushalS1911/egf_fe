@@ -230,6 +230,15 @@ export const paths = {
       // account: `${ROOTS.DASHBOARD}/user/account`,
       // edit: (id) => `${ROOTS.DASHBOARD}/penalty/${id}/edit`,
     },
+    reminder_details: {
+      // root: `${ROOTS.DASHBOARD}/reminder`,
+      // new: `${ROOTS.DASHBOARD}/disburse/new`,
+      // list: `${ROOTS.DASHBOARD}/reminder-details/list`,
+      list: (id) => `${ROOTS.DASHBOARD}/reminder-details/${id}/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+    },
     loanPayHistory: {
       root: `${ROOTS.DASHBOARD}/loanpayhistory`,
       // new: `${ROOTS.DASHBOARD}/loanpayhistory/new`,

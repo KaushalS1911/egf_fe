@@ -350,19 +350,23 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                     <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}
                                   value={watch('bankNetAmount') - watch('bankPayingAmount') || 0}
                                   InputLabelProps={{ shrink: true }} />
-                    {branch.find((item) => item.name === watch('branch')) && <RHFAutocomplete
+                    <RHFAutocomplete
                       name='companyBankDetail.account'
                       label='Account'
                       req={'red'}
                       fullWidth
-                      options={branch.find((item) => item.name === watch('branch'))?.company.bankAccounts.map((item) => item)}
-                      getOptionLabel={(option) => option.bankName}
+                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
-                        <li {...props} key={option}>
+                        <li {...props} key={option.id || option.bankName}>
                           {option.bankName}
                         </li>
                       )}
-                    />}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      onChange={(event, value) => {
+                        setValue('companyBankDetail.account', value);
+                      }}
+                    />
                     <RHFTextField name='companyBankDetail.transactionID' label='Transaction ID' req={'red'} />
                     <Controller
                       name='bankDate'

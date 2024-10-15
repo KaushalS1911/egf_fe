@@ -76,7 +76,8 @@ const ReminderListView = lazy(()=>import('../../sections/reminder/view/reminder-
 const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
 const LoanissueCreateView = lazy(()=>import('../../sections/loanissue/view/loanissue-create-view'))
 const LoanissueListView = lazy(()=>import('../../sections/loanissue/view/loanissue-list-view'))
-
+// REMINDER-DETAILS
+const ReminderDetailsListView = lazy(()=>import('../../sections/reminder/view/reminder-details-list-view'))
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -188,6 +189,15 @@ export const dashboardRoutes = [
         path: 'reminder',
         children: [
           { path: 'list', element: <ReminderListView/> },
+        ],
+      },
+      {
+        path: 'reminder-details',
+        children: [
+          { element: <ReminderDetailsListView />, index: true },
+          { path: ':id/list', element: <ReminderDetailsListView /> },
+          // { path: 'new', element: <EmployeeCreateView /> },
+          // { path: ':id/edit', element: <EmployeeEditView /> },
         ],
       },
       {
