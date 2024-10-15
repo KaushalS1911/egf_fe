@@ -56,6 +56,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: 'index', label: '#' },
   { id: 'scheme name', label: 'Scheme Name' },
   { id: 'interest rate', label: 'Interest Rate' },
   { id: 'valuation per%', label: 'Valuation per%' },
@@ -164,15 +165,16 @@ const handleDelete = (id) =>{
   );
 
   const handleSave = async ()=>{
-    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.interestRate) * parseFloat(filters.name)/100}));
+    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.valuation) * parseFloat(filters.name)/100}));
     try {
     const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
-      enqueueSnackbar(res?.data.message);
+    const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/update-schemes?branch=66ea5ebb0f0bdc8062c13a64`,{schemes:payload})
+      enqueueSnackbar(resScheme?.data.message);
     router.push(paths.dashboard.scheme.list);
-    // const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`,payload)
+
     }
     catch (error) {
-      enqueueSnackbar("");
+      enqueueSnackbar("Failed to Update schemes",{variant:'error'});
     }
   }
   return (
@@ -223,12 +225,7 @@ const handleDelete = (id) =>{
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row._id),
-                    )
-                  }
+
                 />
 
                 <TableBody>
@@ -237,10 +234,11 @@ const handleDelete = (id) =>{
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
-                    .map((row) => (
+                    .map((row,index) => (
                       <GoldpriceTableRow
                         goldRate = {filters.name}
                         key={row._id}
+                        index={index}
                         row={row}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}

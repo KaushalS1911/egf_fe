@@ -52,7 +52,10 @@ const ICONS = {
   property: <Iconify icon='clarity:building-solid' sx={{ width: 1, height: 1 }} />, // Property icon (cityscape for real estate/property)
   penalty: <Iconify icon='icon-park-outline:gavel' sx={{ width: 1, height: 1 }} />, // Penalty icon (justice scale for penalties and fines)
   loanissue: <Iconify icon='streamline:bank-solid' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
+  reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
+  goldLoanCalculator: <Iconify icon='icon-park-solid:calculator' width={24} />,
+  loanPayHistory: <Iconify icon='cuida:history-outline' width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -135,12 +138,7 @@ export function useNavData() {
             icon: ICONS.carat,
           },
 
-          // LOANTYPE
-          {
-            title: t('loan type'),
-            path: paths.dashboard.loan.root,
-            icon: ICONS.loanType,
-          },
+
           // PROPERTY
           {
             title: t('property'),
@@ -153,6 +151,7 @@ export function useNavData() {
             path: paths.dashboard.penalty.root,
             icon: ICONS.penalty,
           },
+
           // PRODUCT
           // {
           //   title: t('product'),
@@ -280,8 +279,33 @@ export function useNavData() {
             title: t('Loan issue'),
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
-          }
-          ]
+          },
+
+          // DISBURSE
+          {
+            title: t('disburse'),
+            path: paths.dashboard.disburse.root,
+            icon: ICONS.user,
+          },
+          // REMINDER
+          {
+            title: t('reminder'),
+            path: paths.dashboard.reminder.list,
+            icon: ICONS.reminder,
+          },
+          // LOAN PAY HISTORY
+          {
+            title: t('Loan Pay History'),
+            path: paths.dashboard.loanPayHistory.list,
+            icon: ICONS.loanPayHistory,
+          },
+          // GOLD LOAN CALCULATOR
+          {
+            title: t('Gold Loan Calculator'),
+            path: paths.dashboard.goldLoanCalculator,
+            icon: ICONS.goldLoanCalculator,
+          },
+        ],
       },
       {
         subheader: t('config'),

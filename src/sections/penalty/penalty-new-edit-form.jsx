@@ -81,7 +81,7 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
           reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentPenalty ? 'Failed To Edit penalty' :'Failed to create penalty');
+      enqueueSnackbar(currentPenalty ? 'Failed To Edit penalty' :'Failed to create penalty',{variant:'error'});
       console.error(error);
     }
   });
@@ -104,9 +104,22 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='afterDueDateFromDate' label='afterDueDateFromDate' req={'red'} />
-              <RHFTextField name='afterDueDateToDate' label='afterDueDateToDate' req={'red'} />
-              <RHFTextField name='penaltyInterest' label='Penalty Interest' req={'red'} />
+              <RHFTextField name='afterDueDateFromDate' label='After Due Date From Date' req={'red'}/>
+              <RHFTextField name='afterDueDateToDate' label='After Due Date To Date' req={'red'} />
+              <RHFTextField
+                name='penaltyInterest'
+                label='Penalty Interest'
+                req={'red'}
+                inputProps={{ inputMode: 'decimal', pattern: '[0-9.]*' }}
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+
+                  if (e.target.value.split('.').length > 2) {
+                    e.target.value = e.target.value.slice(0, -1);
+                  }
+                }}
+              />
+
               <RHFTextField name='remark' label='Remark' />
             </Box>
 

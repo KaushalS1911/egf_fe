@@ -68,8 +68,6 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
 
                 return (
                   <TextField
-                   style={ customStyle }
-
                     {...baseField}
                     InputProps={{
                       ...params.InputProps,
@@ -123,6 +121,9 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
               <TextField
                 {...params}
                 label={label}
+            sx={{
+              ':not(:focus-within) label ~ div:first-of-type': customStyle,
+            }}
                 placeholder={placeholder}
                 error={!!error}
                 helperText={error ? error?.message : helperText}
@@ -130,8 +131,6 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
                   ...params.inputProps,
                   autoComplete: 'new-password',
                 }}
-                style={error?.message ? {} : customStyle }
-
               />
             )}
             {...other}

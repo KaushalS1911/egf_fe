@@ -21,7 +21,7 @@ import { TextField } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function GoldpriceTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow , goldRate}) {
+export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSelectRow, onDeleteRow , goldRate}) {
   const {name,ratePerGram,interestRate,valuation} = row;
 
   const confirm = useBoolean();
@@ -31,23 +31,15 @@ export default function GoldpriceTableRow({ row, selected, onEditRow, onSelectRo
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuation}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <TextField sx={{ whiteSpace: 'nowrap' , " input" : { height: 0 }}} value={goldRate ?  parseFloat(goldRate) * parseFloat(interestRate)/100 : 0}></TextField>
+          <TextField sx={{ whiteSpace: 'nowrap' , " input" : { height: 0 }}} value={goldRate ?  parseFloat(goldRate) * parseFloat(valuation)/100 : 0}></TextField>
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
-          {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
-          {/*    <Iconify icon="solar:pen-bold" />*/}
-          {/*  </IconButton>*/}
-          {/*</Tooltip>*/}
-
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>

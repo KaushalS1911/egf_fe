@@ -8,9 +8,10 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomerCreateView, CustomerListView } from '../../sections/customer/view';
 import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
-
+import GoldLoanCalculator from '../../sections/goldloancalculator/gold-loan-calculator';
 // ----------------------------------------------------------------------
 
+const ResetPassword = lazy(() => import('src/pages/auth/jwt/reset'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
@@ -55,20 +56,23 @@ const GoldPriceListView = lazy(()=>import('../../sections/scheme/goldprice/goldp
 const CaratListView = lazy(()=> import('../../sections/carat/view/carat-list-view'));
 const CaratCreateView = lazy(()=>import('../../sections/carat/view/carat-create-view'))
 const CaratEditView = lazy(()=>import('../../sections/carat/view/carat-edit-view'))
-// LOANTYPE
-const LoanTypeListView = lazy(()=>import('../../sections/loanType/view/loantype-list-view'))
-const LoanTypecreateView = lazy(()=> import('../../sections/loanType/view/loantype-create-view'))
-const  LoanTypeEditView = lazy(()=>import('../../sections/loanType/view/loantype-edit-view'))
 //PROPERTY
 const  PropertyEditView = lazy(()=>import('../../sections/property/view/property-edit-view'))
 const  PropertyCreateView = lazy(()=>import('../../sections/property/view/property-create-view'))
 const  PropertyListView = lazy(()=>import('../../sections/property/view/property-list-view'))
+//LOAN PAY HISTORY
+const  LoanpayhistoryListView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-list-view'))
+const  LoanpayhistoryCreateView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-create-view'))
+const  { LoanpayhistoryEditView }  = lazy(()=>import('../../sections/loanpayhistory/view'))
 
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
-
+// DISBURSE
+const DisburseEditView = lazy(()=>import('../../sections/disburse/view/disburse-edit-view'))
+// REMINDER
+const ReminderListView = lazy(()=>import('../../sections/reminder/view/reminder-list-view'))
 // LOAN ISSUE
 const LoanissueEditView = lazy(()=>import('../../sections/loanissue/view/loanissue-edit-view'))
 const LoanissueCreateView = lazy(()=>import('../../sections/loanissue/view/loanissue-create-view'))
@@ -154,16 +158,6 @@ export const dashboardRoutes = [
       },
 
       {
-        path: 'loan',
-        children: [
-          { element: <LoanTypeListView/>, index: true },
-          { path: 'list', element: <LoanTypeListView/> },
-          { path: 'new', element: <LoanTypecreateView/> },
-          { path: ':id/edit', element: <LoanTypeEditView /> },
-          // { path: ':id/edit', element: <InquiryEditView /> },
-        ],
-      },
-      {
         path: 'property',
         children: [
           { element: <PropertyListView />, index: true },
@@ -183,6 +177,21 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'disburse',
+        children: [
+          { element: <LoanissueListView />, index: true },
+          { path: 'list', element: <LoanissueListView /> },
+          // { path: 'new', element: <DisbursecreateView/> },
+          { path: ':id/new', element: <DisburseEditView /> },
+        ],
+      },
+      {
+        path: 'reminder',
+        children: [
+          { path: 'list', element: <ReminderListView/> },
+        ],
+      },
+      {
         path: 'employee',
         children: [
           { element: <EmployeeListView />, index: true },
@@ -198,6 +207,15 @@ export const dashboardRoutes = [
           { path: 'list', element: <LoanissueListView /> },
           { path: 'new', element: <LoanissueCreateView /> },
           { path: ':id/edit', element: <LoanissueEditView /> },
+        ],
+      },
+      {
+        path: 'loanpayhistory',
+        children: [
+          { element: <LoanpayhistoryListView />, index: true },
+          { path: 'list', element: <LoanpayhistoryListView /> },
+          // { path: 'new', element: <LoanpayhistoryCreateView /> },
+          { path: ':id/new', element: <LoanpayhistoryCreateView /> },
         ],
       },
       {
@@ -285,6 +303,8 @@ export const dashboardRoutes = [
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'setting', element: <SettingsPage /> },
+      { path: 'goldLoanCalculator', element: <GoldLoanCalculator /> },
     ],
   },
+  { path: 'jwt/reset-password/:token', element: <ResetPassword   /> },
 ];

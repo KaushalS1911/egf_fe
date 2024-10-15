@@ -17,6 +17,9 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
         <TextField
           {...field}
           fullWidth
+          sx={{
+            ':not(:focus-within) label ~ div:first-of-type': customStyle,
+          }}
           type={type}
           value={type === 'number' && field.value === 0 ? '' : field.value}
           onChange={(event) => {
@@ -28,13 +31,12 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
           }}
           error={!!error}
           helperText={error ? error?.message : helperText}
-            style={ error?.message ? {} : customStyle  }
           {...other}
         />
       )}
     />
   );
-};
+}
 
 RHFTextField.propTypes = {
   helperText: PropTypes.string,

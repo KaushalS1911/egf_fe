@@ -42,7 +42,7 @@ const METHODS = [
   },
 ];
 
-export default function AuthClassicLayout({ children, register, invite }) {
+export default function AuthClassicLayout({ children, register, invite,forgotPassword }) {
 
   const router = useRouter();
   const renderContent = (
@@ -71,19 +71,19 @@ export default function AuthClassicLayout({ children, register, invite }) {
           <Iconify icon='material-symbols-light:keyboard-backspace'
                    sx={{ height: '25px', width: '25px', marginRight: '3px' }} /> Back</Box>}
         <Grid
-          container
+            container
           sx={{
             borderRadius: '20px',
             overflow: 'hidden',
             boxShadow: '1px 1px 20px #e1e1e1',
             maxWidth: { md: '85rem !important', xs: 'unset' },
-            width: { xs: '430px', md: '100%' },
+            width: forgotPassword ? {xs: '430px'} : { xs: '430px', md: '100%' },
             mx: '20px',
-            justifyContent: { xs: 'center', md: 'unset' },
+            justifyContent: { xs: 'center' },
             height: register ? '890px' : '550px',
           }}
         >
-          <Grid item xs={12} md={5} lg={4} sx={{ backgroundColor: 'white' }}>
+          <Grid item xs={12} md={5} lg={4} >
             <Stack
               sx={{
                 px: { xs: 6, md: 8 },
@@ -94,6 +94,8 @@ export default function AuthClassicLayout({ children, register, invite }) {
               {children}
             </Stack>
           </Grid>
+          {
+            !forgotPassword &&
           <Grid
             item
             md={7}
@@ -101,6 +103,7 @@ export default function AuthClassicLayout({ children, register, invite }) {
           >
             <img src={loginImage} alt={loginImage} style={{ height: '100%', aspectRatio: '3/2' }} />
           </Grid>
+          }
         </Grid>
       </Box>
     </>

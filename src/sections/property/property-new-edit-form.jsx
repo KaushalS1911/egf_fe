@@ -33,6 +33,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
   const NewSchemaProperty = Yup.object().shape({
     propertyType: Yup.string().required('Property is required'),
     loanType: Yup.string().required('Loan Type is required'),
+    quantity: Yup.string().required('Loan Type is quantity'),
     remark: Yup.string(),
   });
 
@@ -41,9 +42,10 @@ export default function PropertyNewEditForm({ currentProperty }) {
       {
         propertyType: currentProperty?.propertyType || '',
         loanType: currentProperty?.loanType || null,
+        quantity: currentProperty?.quantity || 1,
         remark: currentProperty?.remark || '',
-        isActive: currentProperty?.isActive || true,
-        isQtyEdit: currentProperty?.isQtyEdit || true,
+        isActive: currentProperty?.isActive || null,
+        isQtyEdit: currentProperty?.isQtyEdit || !currentProperty && true,
       }),
     [currentProperty],
   );
@@ -60,7 +62,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
+  const values = watch();
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentProperty) {
@@ -75,7 +77,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
         reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentProperty ? 'Failed To Edit Property' : 'Failed to create Property');
+      enqueueSnackbar(currentProperty ? 'Failed To Edit Property' : 'Failed to create Property',{variant: "error"});
       console.error(error);
     }
   });
@@ -102,7 +104,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
               {configs.loanTypes && <RHFAutocomplete
                 name='loanType'
                 label='Loan Type'
-                options={configs.loanTypes.map((item) => item.loanType)}
+                options={configs.loanTypes.map((item) => item)}
                 getOptionLabel={(option) => option}
                 req={'red'}
                 isOptionEqualToValue={(option, value) => option === value}
@@ -112,6 +114,11 @@ export default function PropertyNewEditForm({ currentProperty }) {
                   </li>
                 )}
               />}
+              <RHFTextField name='quantity' label='Quantity' req={'red'} disabled={!values.isQtyEdit}  onKeyPress={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}/>
               <RHFTextField name='remark' label='Remark' />
             </Box>
 

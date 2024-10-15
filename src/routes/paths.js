@@ -62,6 +62,8 @@ export const paths = {
     jwt: {
       login: `${ROOTS.AUTH}/jwt/login`,
       register: `${ROOTS.AUTH}/jwt/register`,
+      forgotPassword: `${ROOTS.AUTH}/jwt/forgot-password`,
+      // resetPassword: `/jwt/reset-password/:token`,
     },
     firebase: {
       login: `${ROOTS.AUTH}/firebase/login`,
@@ -96,10 +98,14 @@ export const paths = {
       verify: `${ROOTS.AUTH_DEMO}/modern/verify`,
     },
   },
+  resetPassword:{
+    resetPassword: `/jwt/reset-password/:token`,
+  },
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
     mail: `${ROOTS.DASHBOARD}/mail`,
+    forgotPassword: `${ROOTS.DASHBOARD}/forgot-password`,
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,
     kanban: `${ROOTS.DASHBOARD}/kanban`,
@@ -107,6 +113,7 @@ export const paths = {
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     setting: `${ROOTS.DASHBOARD}/setting`,
+    goldLoanCalculator: `${ROOTS.DASHBOARD}/goldLoanCalculator`,
 
     general: {
       app: `${ROOTS.DASHBOARD}/app`,
@@ -116,7 +123,6 @@ export const paths = {
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
     },
-
     inquiry: {
       root: `${ROOTS.DASHBOARD}/inquiry`,
       new: `${ROOTS.DASHBOARD}/inquiry/new`,
@@ -161,18 +167,7 @@ export const paths = {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },
     },
-    loan: {
-      root: `${ROOTS.DASHBOARD}/loan`,
-      new: `${ROOTS.DASHBOARD}/loan/new`,
-      list: `${ROOTS.DASHBOARD}/loan/list`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
-      // profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // account: `${ROOTS.DASHBOARD}/user/account`,
-      edit: (id) => `${ROOTS.DASHBOARD}/loan/${id}/edit`,
-      // demo: {
-      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
-      // },
-    },
+
     property: {
       root: `${ROOTS.DASHBOARD}/property`,
       new: `${ROOTS.DASHBOARD}/property/new`,
@@ -214,6 +209,36 @@ export const paths = {
       // profile: `${ROOTS.DASHBOARD}/user/profile`,
       // account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/loanissue/${id}/edit`,
+      // demo: {
+      //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
+      // },
+    },
+    disburse: {
+      root: `${ROOTS.DASHBOARD}/disburse`,
+      // new: `${ROOTS.DASHBOARD}/disburse/new`,
+      list: `${ROOTS.DASHBOARD}/disburse/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      new: (id) => `${ROOTS.DASHBOARD}/disburse/${id}/new`,
+    },
+    reminder: {
+      // root: `${ROOTS.DASHBOARD}/reminder`,
+      // new: `${ROOTS.DASHBOARD}/disburse/new`,
+      list: `${ROOTS.DASHBOARD}/reminder/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      // edit: (id) => `${ROOTS.DASHBOARD}/penalty/${id}/edit`,
+    },
+    loanPayHistory: {
+      root: `${ROOTS.DASHBOARD}/loanpayhistory`,
+      // new: `${ROOTS.DASHBOARD}/loanpayhistory/new`,
+      list: `${ROOTS.DASHBOARD}/loanpayhistory/list`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // profile: `${ROOTS.DASHBOARD}/user/profile`,
+      // account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/loanpayhistory/${id}/new`,
       // demo: {
       //   edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       // },

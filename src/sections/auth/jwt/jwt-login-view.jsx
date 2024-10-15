@@ -88,6 +88,12 @@ export default function JwtLoginView() {
               ),
             }}
           />
+          <Stack>
+            <Link component={RouterLink} href={paths.auth.jwt.forgotPassword} variant='subtitle2'>
+              Forgot Password?
+            </Link>
+          </Stack>
+
           <LoadingButton
             fullWidth
             color='inherit'
@@ -98,6 +104,7 @@ export default function JwtLoginView() {
           >
             Login
           </LoadingButton>
+
           <Stack sx={{ textAlign: 'center', mt: '10px' }}>
             <Typography variant='body2'>Don't have an account?</Typography>
             <Link component={RouterLink} href={paths.auth.jwt.register} variant='subtitle2' sx={{ mt: '8px' }}>

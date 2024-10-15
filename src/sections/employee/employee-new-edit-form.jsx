@@ -3,11 +3,8 @@ import PropTypes from 'prop-types';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -26,6 +23,7 @@ import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
 import { useGetConfigs } from '../../api/config';
+import { useGetBranch } from '../../api/branch';
 
 // ----------------------------------------------------------------------
 
@@ -33,40 +31,44 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   const router = useRouter();
   const allUser = useGetAllUser();
   const { user } = useAuthContext();
-  const { configs} = useGetConfigs();
+  const { configs } = useGetConfigs();
   const { enqueueSnackbar } = useSnackbar();
+  const { branch } = useGetBranch();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
 
   const NewEmployeeSchema = Yup.object().shape({
-
     firstName: Yup.string().required('First name is required'),
     middleName: Yup.string().required('Middle name is required'),
-    lastName: Yup.string().required('lastName is required'),
+    lastName: Yup.string().required('Last name is required'),
     drivingLicense: Yup.string(),
     panCard: Yup.string().required('PAN No. is required'),
     voterCard: Yup.string(),
     aadharCard: Yup.string().required('Aadhar Card is required'),
-    contact: Yup.string().required('Mobile number is required'),
-    dob: Yup.string().required('Date of Birth is required'),
+    contact: Yup.string()
+      .required('Mobile number is required')
+      .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
+    dob: Yup.date()
+      .required('Date of Birth is required')
+      .nullable()
+      .typeError('Date of Birth is required'),
     remark: Yup.string(),
-
-
     role: Yup.string().required('Role is required'),
     reportingTo: Yup.object().required('Reporting to is required'),
-    // branch: Yup.string().required('Branch is required'),
-    email: Yup.string().required('Email is required'),
-    password: currentEmployee ? Yup.string() : Yup.string().required('Password is required'),
-    joiningDate: Yup.string().required('Join date is required'),
-    leaveDate: Yup.string(),
-
-    // Permanent Address Info
+    email: Yup.string().email('Invalid email format').required('Email is required'),
+    password: currentEmployee
+      ? Yup.string()
+      : Yup.string().required('Password is required'),
+    joiningDate: Yup.date()
+      .required('Joining date is required')
+      .nullable()
+      .typeError('Joining date is required'),
+    leaveDate: Yup.string().typeError('Enter a valid date').nullable(),
     permanentStreet: Yup.string().required('Permanent Address is required'),
     permanentLandmark: Yup.string(),
     permanentCountry: Yup.string().required('Country is required'),
     permanentState: Yup.string().required('State is required'),
     permanentCity: Yup.string().required('City is required'),
     permanentZipcode: Yup.string().required('Zipcode is required'),
-
-    // Temporary Address Info
     tempStreet: Yup.string(),
     tempLandmark: Yup.string(),
     tempCountry: Yup.string(),
@@ -76,6 +78,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   });
 
   const defaultValues = useMemo(() => ({
+    branchId: currentEmployee ? {
+      label: currentEmployee?.branch?.name,
+      value: currentEmployee?.branch?._id,
+    } : null,
     profile_pic: currentEmployee?.user.avatar_url || '',
     firstName: currentEmployee?.user.firstName || '',
     middleName: currentEmployee?.user.middleName || '',
@@ -85,25 +91,25 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     panCard: currentEmployee?.panCard || '',
     aadharCard: currentEmployee?.aadharCard || '',
     contact: currentEmployee?.user.contact || '',
-    dob: new Date(currentEmployee?.dob) || new  Date(),
+    dob: new Date(currentEmployee?.dob) || new Date(),
     remark: currentEmployee?.remark || '',
     role: currentEmployee?.user.role || '',
     reportingTo: currentEmployee?.reportingTo || null,
     email: currentEmployee?.user.email || '',
     password: '',
-    joiningDate: new Date(currentEmployee?.joiningDate) || new  Date(),
-    leaveDate: new Date(currentEmployee?.leaveDate) || new  Date(),
+    joiningDate: new Date(currentEmployee?.joiningDate) || new Date(),
+    leaveDate: new Date(currentEmployee?.leaveDate) || new Date(),
     permanentStreet: currentEmployee?.permanentAddress.street || '',
     permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
-    permanentCountry: currentEmployee?.permanentAddress.country || '',
-    permanentState: currentEmployee?.permanentAddress.state || '',
-    permanentCity: currentEmployee?.permanentAddress.city || '',
+    permanentCountry: currentEmployee?.permanentAddress.country || 'India',
+    permanentState: currentEmployee?.permanentAddress.state || 'Gujarat',
+    permanentCity: currentEmployee?.permanentAddress.city || 'Surat',
     permanentZipcode: currentEmployee?.permanentAddress.zipcode || '',
     tempStreet: currentEmployee?.temporaryAddress.street || '',
     tempLandmark: currentEmployee?.temporaryAddress.landmark || '',
-    tempCountry: currentEmployee?.temporaryAddress.country || '',
-    tempState: currentEmployee?.temporaryAddress.state || '',
-    tempCity: currentEmployee?.temporaryAddress.city || '',
+    tempCountry: currentEmployee?.temporaryAddress.country || 'India',
+    tempState: currentEmployee?.temporaryAddress.state || 'Gujarat',
+    tempCity: currentEmployee?.temporaryAddress.city || 'Surat',
     tempZipcode: currentEmployee?.temporaryAddress.zipcode || '',
   }), [currentEmployee]);
 
@@ -127,8 +133,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
   const onSubmit = handleSubmit(async (data) => {
     let payload;
-    console.log(data);
-    // Create permanent and temporary address objects
     const permanentAddress = {
       street: data.permanentStreet || '',
       landmark: data.permanentLandmark || '',
@@ -176,7 +180,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       }
 
       formData.append('branch', '66ea5ebb0f0bdc8062c13a64');
-
       const addressFields = ['street', 'landmark', 'country', 'state', 'city', 'zipcode'];
 
       addressFields.forEach(field => {
@@ -186,9 +189,24 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       payload = formData;
     }
     try {
+      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+      let parsedBranch = storedBranch;
+
+      if (storedBranch !== 'all') {
+        try {
+          parsedBranch = JSON.parse(storedBranch);
+        } catch (error) {
+          console.error('Error parsing storedBranch:', error);
+        }
+      }
+
+      const branchQuery = parsedBranch && parsedBranch === 'all'
+        ? `&branch=${mainbranchid?._id}`
+        : `&branch=${parsedBranch}`;
+
       const url = currentEmployee
-        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee/${currentEmployee._id}?branch=66ea5ebb0f0bdc8062c13a64`
-        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee?branch=66ea5ebb0f0bdc8062c13a64`;
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee/${currentEmployee._id}?${branchQuery}`
+        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee?${branchQuery}`;
       const config = {
         method: currentEmployee ? 'put' : 'post',
         url,
@@ -209,7 +227,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   });
 
 
-
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -218,10 +235,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       });
       if (file) {
         setValue('profile_pic', newFile, { shouldValidate: true });
-        if(currentEmployee){
+        if (currentEmployee) {
           const formData = new FormData();
-          formData.append("profile-pic",file)
-          axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,formData).then((res) => console.log(res)).catch((err) => console.log(err))
+          formData.append('profile-pic', file);
+          axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`, formData).then((res) => console.log(res)).catch((err) => console.log(err));
         }
       }
     },
@@ -240,7 +257,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 onDrop={handleDrop}
               />
             </Box>
-
           </Card>
         </Grid>
 
@@ -255,14 +271,73 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
+                <RHFAutocomplete
+                  name='branchId'
+                  req={'red'}
+                  label='Branch'
+                  placeholder='Choose a Branch'
+                  options={branch?.map((branchItem) => ({
+                    label: branchItem?.name,
+                    value: branchItem?._id,
+                  })) || []}
+                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                />
+              )}
               <RHFTextField name='firstName' label='First Name' req={'red'} />
               <RHFTextField name='middleName' label='Middle Name' req={'red'} />
               <RHFTextField name='lastName' label='Last Name' req={'red'} />
-              <RHFTextField name='drivingLicense' label='Driving License' />
-              <RHFTextField name='panCard' label='Pan No.' req={'red'} />
-              <RHFTextField name='voterCard' label='Voter ID' />
-              <RHFTextField name='aadharCard' label='Aadhar Card' req={'red'} />
-              <RHFTextField name='contact' label='Mobile' req={'red'} />
+              <RHFTextField
+                name='drivingLicense'
+                label='Driving License'
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
+                inputProps={{ maxLength: 16 }}
+              />
+              <RHFTextField
+                name='panCard'
+                label='Pan No.'
+                req={'red'}
+                inputProps={{ minLength: 10, maxLength: 10 }}
+                onChange={(e) => {
+                  const value = e.target.value.toUpperCase();
+                  methods.setValue('panCard', value, { shouldValidate: true });
+                }} />
+              <RHFTextField name='voterCard' label='Voter ID'
+                            onInput={(e) => {
+                              e.target.value = e.target.value.toUpperCase();
+                            }} />
+              <RHFTextField
+                name='aadharCard'
+                label='Aadhar Card'
+                req={'red'}
+                inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                }}
+              />
+              <RHFTextField
+                name='contact'
+                label='Mobile'
+                req={'red'}
+                inputProps={{
+                  maxLength: 10,
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                }}
+                rules={{
+                  required: 'OTP is required',
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: 'Please enter a valid 10-digit OTP',
+                  },
+                }}
+                onKeyPress={(e) => {
+                  if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }} />
               <Controller
                 name='dob'
                 control={control}
@@ -303,7 +378,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFAutocomplete
+              {configs.roles && <RHFAutocomplete
                 name='role'
                 label='Role'
                 req={'red'}
@@ -315,8 +390,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     {option}
                   </li>
                 )}
-              />
-              <RHFAutocomplete
+              />}
+              {allUser?.user && <RHFAutocomplete
                 name='reportingTo'
                 label='Reporting to'
                 req={'red'}
@@ -328,7 +403,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     {option.firstName + ' ' + option.lastName}
                   </li>
                 )}
-              />
+              />}
               <RHFTextField name='email' label='Email' req={'red'} />
               {!currentEmployee && <RHFTextField name='password' label='Password' req={'red'} />}
               <Controller
@@ -395,66 +470,56 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             >
               <RHFTextField name='permanentStreet' label='Address' req={'red'} />
               <RHFTextField name='permanentLandmark' label='Landmark' />
-              {/*<RHFTextField name="permanentCountry" label="Country" />*/}
-              <Controller
+              <RHFAutocomplete
                 name='permanentCountry'
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    sx={{ borderLeft: '2px solid red', borderRadius: '8px' }}
-                    options={countrystatecity.map((country) => country.name)}
-                    onChange={(event, value) => field.onChange(value)}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    renderInput={(params) => (
-                      <TextField {...params} label='Country' variant='outlined' />
-                    )}
-                  />
+                label='Country'
+                req={'red'}
+                fullWidth
+                options={countrystatecity.map((country) => country.name)}
+                getOptionLabel={(option) => option}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
                 )}
               />
-              <Controller
+              <RHFAutocomplete
                 name='permanentState'
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    sx={{ borderLeft: '2px solid red', borderRadius: '8px' }}
-                    options={
-                      watch('permanentCountry')
-                        ? countrystatecity
-                        .find((country) => country.name === watch('permanentCountry'))
-                        ?.states.map((state) => state.name) || []
-                        : []
-                    }
-                    onChange={(event, value) => field.onChange(value)}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    renderInput={(params) => (
-                      <TextField {...params} label='State' variant='outlined' />
-                    )}
-                  />
+                label='State'
+                req={'red'}
+                fullWidth
+                options={
+                  watch('permanentCountry')
+                    ? countrystatecity
+                    .find((country) => country.name === watch('permanentCountry'))
+                    ?.states.map((state) => state.name) || []
+                    : []
+                }
+                getOptionLabel={(option) => option}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
                 )}
               />
-              <Controller
+              <RHFAutocomplete
                 name='permanentCity'
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    sx={{ borderLeft: '2px solid red', borderRadius: '8px' }}
-                    options={
-                      watch('permanentState')
-                        ? countrystatecity
-                        .find((country) => country.name === watch('permanentCountry'))
-                        ?.states.find((state) => state.name === watch('permanentState'))
-                        ?.cities.map((city) => city.name) || []
-                        : []
-                    }
-                    onChange={(event, value) => field.onChange(value)}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    renderInput={(params) => (
-                      <TextField {...params} label='City' variant='outlined' />
-                    )}
-                  />
+                label='City'
+                req={'red'}
+                fullWidth
+                options={
+                  watch('permanentState')
+                    ? countrystatecity
+                    .find((country) => country.name === watch('permanentCountry'))
+                    ?.states.find((state) => state.name === watch('permanentState'))
+                    ?.cities.map((city) => city.name) || []
+                    : []
+                }
+                getOptionLabel={(option) => option}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
                 )}
               />
               <RHFTextField name='permanentZipcode' label='Zipcode' req={'red'} />
@@ -473,7 +538,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             >
               <RHFTextField name='tempStreet' label='Address' />
               <RHFTextField name='tempLandmark' label='Landmark' />
-              {/*<RHFTextField name="tempCountry" label="Country" />*/}
               <Controller
                 name='tempCountry'
                 control={control}
@@ -489,7 +553,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   />
                 )}
               />
-              {/*<RHFTextField name="tempState" label="State" />*/}
               <Controller
                 name='tempState'
                 control={control}
