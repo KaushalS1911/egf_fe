@@ -290,6 +290,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               <RHFTextField
                 name='drivingLicense'
                 label='Driving License'
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
                 inputProps={{ maxLength: 16 }}
               />
               <RHFTextField
@@ -301,7 +304,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   const value = e.target.value.toUpperCase();
                   methods.setValue('panCard', value, { shouldValidate: true });
                 }} />
-              <RHFTextField name='voterCard' label='Voter ID' />
+              <RHFTextField name='voterCard' label='Voter ID'
+                            onInput={(e) => {
+                              e.target.value = e.target.value.toUpperCase();
+                            }} />
               <RHFTextField
                 name='aadharCard'
                 label='Aadhar Card'
