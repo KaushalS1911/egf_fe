@@ -15,7 +15,6 @@ import Iconify from 'src/components/iconify';
 import { useGetCompanyDetails } from '../../../api/company_details';
 import { ACCOUNT_TYPE_OPTIONS } from '../../../_mock';
 
-// Validation schema for personal details
 const personalDetailsSchema = yup.object().shape({
   logo_url: yup.mixed().required('Logo is required'),
   name: yup.string().required('Company Name is required'),
@@ -23,7 +22,6 @@ const personalDetailsSchema = yup.object().shape({
   contact: yup.string().required('Phone Number is required'),
 });
 
-// Validation schema for bank details
 const bankDetailsSchema = yup.object().shape({
   accountNumber: yup.string().required('Account Number is required'),
   accountType: yup.string().required('Account Type is required'),
@@ -40,9 +38,9 @@ export default function CompanyProfile() {
   const { enqueueSnackbar } = useSnackbar();
   const mdUp = useResponsive('up', 'md');
   const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
   const [editingBankDetail, setEditingBankDetail] = useState(null);
 
-  // useForm for personal details
   const personalDetailsMethods = useForm({
     defaultValues: {
       logo_url: companyDetail?.logo_url || '',
@@ -53,7 +51,6 @@ export default function CompanyProfile() {
     resolver: yupResolver(personalDetailsSchema),
   });
 
-  // useForm for bank details
   const bankDetailsMethods = useForm({
     defaultValues: {
       accountNumber: editingBankDetail?.accountNumber || '',
@@ -102,7 +99,7 @@ export default function CompanyProfile() {
   };
 
   const onSubmitBankDetails = async (data) => {
-    setLoading(true);
+    setLoading2(true);
     const newBankAccount = {
       accountNumber: data.accountNumber,
       accountType: data.accountType,
@@ -135,7 +132,7 @@ export default function CompanyProfile() {
       console.error('Update error:', err);
       enqueueSnackbar(err.response?.data?.message || 'An error occurred', { variant: 'error' });
     } finally {
-      setLoading(false);
+      setLoading2(false);
     }
   };
 
@@ -165,7 +162,7 @@ export default function CompanyProfile() {
   };
 
   const handleDeleteBankDetail = async (detail) => {
-    setLoading(true);
+    setLoading2(true);
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}`;
     try {
       const response = await axios.get(URL);
@@ -182,13 +179,12 @@ export default function CompanyProfile() {
       console.error('Delete error:', err);
       enqueueSnackbar(err.response?.data?.message || 'An error occurred', { variant: 'error' });
     } finally {
-      setLoading(false);
+      setLoading2(false);
     }
   };
 
   return (
     <>
-      {/* Form for Personal Details */}
       <FormProvider methods={personalDetailsMethods}>
         <Grid container spacing={3}>
           <Grid item md={4} xs={12}>
@@ -231,7 +227,6 @@ export default function CompanyProfile() {
         </Grid>
       </FormProvider>
 
-      {/* Form for Bank Details */}
       <FormProvider methods={bankDetailsMethods}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
@@ -256,14 +251,14 @@ export default function CompanyProfile() {
                 <RHFTextField name='branchName' label='Branch Name' />
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'end' }}>
                   <LoadingButton onClick={handleSubmitBankDetails(onSubmitBankDetails)} variant='contained'
-                                 loading={loading}>
+                                 loading={loading2}>
                     {editingBankDetail ? 'Update Bank Details' : 'Add Bank Details'}
                   </LoadingButton>
                   <LoadingButton
                     sx={{ margin: '0px 5px' }}
                     variant='contained'
                     onClick={() => resetBankDetails()}
-                    disabled={loading}
+                    disabled={loading2}
                   >
                     Reset
                   </LoadingButton>

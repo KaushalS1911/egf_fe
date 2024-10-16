@@ -75,10 +75,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     interestLoanAmount: Yup.number().required('Interest Loan Amount is required'),
     loanPeriod: Yup.number().required('Loan Period is required'),
     IntPeriodTime: Yup.number().required('Interest Period Time is required'),
-    witnessName: Yup.string().required('Witness Name is required'),
-    witnessMobileNo: Yup.string()
-      .matches(/^\d{10,16}$/, 'Witness Mobile No. must be between 10 and 16 digits')
-      .required('Witness Mobile No. is required'),
     nextInterestPayDate: Yup.date()
       .nullable()
       .required('Next Interest Pay Date is required')
@@ -102,19 +98,18 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     consultCharge: currentLoan?.consultingCharge || '',
     loanAmount: currentLoan?.loanAmount || '',
     interestLoanAmount: currentLoan?.interestLoanAmount || '',
-    loanPeriod: currentLoan?.loanPeriod || '',
-    IntPeriodTime: currentLoan?.IntPeriodTime || '',
-    witnessName: currentLoan?.witnessName || '',
-    witnessMobileNo: currentLoan?.witnessMobileNo || '',
+    loanPeriod: currentLoan?.scheme.renewalTime || '',
+    IntPeriodTime: currentLoan?.scheme.interestPeriod || '',
+    createdBy: (user?.firstName + ' ' + user?.lastName) || null,
+    renewDate: currentLoan?.issueDate ? new Date(new Date(currentLoan.issueDate).setMonth(new Date(currentLoan.issueDate).getMonth() + 6)) : null,
     nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
     lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : new Date(),
   }), [currentLoan]);
-
   const methods = useForm({
     resolver: yupResolver(NewLoanPayHistorySchema),
     defaultValues,
   });
-
+  console.log("")
   const {
     reset,
     watch,
@@ -149,7 +144,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
           <Card sx={{ p: 3 }}>
             <Box variant='div' sx={{ mb: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              First Part
+              Customer details
             </Box>
             <Box
               rowGap={3}
@@ -161,13 +156,13 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                 md: 'repeat(3, 1fr)',
               }}
             >
-              <RHFTextField name='loanNo' label='Loan No.' InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='customerName' label='Customer Name' InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='address' label='Address' InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='loanNo' label='Loan No.' InputLabelProps={{ shrink: true,readOnly: true }} />
+              <RHFTextField name='customerName' label='Customer Name' InputLabelProps={{ shrink: true,readOnly: true }} />
+              <RHFTextField name='address' label='Address' InputLabelProps={{ shrink: true,readOnly: true }} />
               <RHFTextField
                 name='contact'
                 label='Mobile No.'
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{ shrink: true,readOnly: true }}
                 inputProps={{ maxLength: 16 }}
               />
               <Controller
@@ -182,7 +177,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                       textField: {
                         fullWidth: true,
                         error: !!error,
-                        InputLabelProps:{ shrink: true },
+                        InputLabelProps:{ shrink: true,readOnly: true },
                         helperText: error?.message,
                       },
                     }}
@@ -192,7 +187,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <RHFTextField
                 name='schemeName'
                 label='Scheme Name'
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{ shrink: true,readOnly: true }}
                 inputProps={{ minLength: 10, maxLength: 10 }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
@@ -203,7 +198,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <RHFTextField
                 name='oldLoanNo'
                 label='Old Loan No'
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{ shrink: true,readOnly: true }}
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -211,7 +206,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               />
             </Box>
             <Box variant='div' sx={{ mt: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              Second Part
+              Loan Details
             </Box>
             <Box
               rowGap={3}
@@ -256,25 +251,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                             InputLabelProps={{ shrink: true }} />
               <RHFTextField name='IntPeriodTime' label='INT. Period Time'
                             InputLabelProps={{ shrink: true }} />
-            </Box>
-            <Box variant='div' sx={{ mt: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              Third Part
-            </Box>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              sx={{ py: 3 }}
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-              }}
-            >
-              <RHFTextField name='witnessName' label='Witness Name'
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='witnessMobileNo' label='Witness Mobile No.'
-                            InputLabelProps={{ shrink: true }} />
               <Controller
                 name='nextInterestPayDate'
                 control={control}
@@ -313,7 +289,25 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                   />
                 )}
               />
-              <RHFTextField name='review' label='Review' InputLabelProps={{ shrink: true }} />
+              <Controller
+                name='renewDate'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <DatePicker
+                    label='Renew Date'
+                    value={field.value}
+                    onChange={(newValue) => field.onChange(newValue)}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!error,
+                        InputLabelProps:{ shrink: true },
+                        helperText: error?.message,
+                      },
+                    }}
+                  />
+                )}
+              />
               <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} />
             </Box>
           </Card>

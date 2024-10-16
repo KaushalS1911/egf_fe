@@ -22,6 +22,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useRouter } from '../../../routes/hooks';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetAllInterest } from '../../../api/interest-pay';
+import { useGetBranch } from '../../../api/branch';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -43,7 +44,7 @@ function InterestPayDetailsForm({ currentLoan }) {
   const { penalty } = useGetPenalty();
   const {id} = useParams();
   const [interests,setInterests] = useState([]);
-
+  const {branch} = useGetBranch();
   const {loanInterest , mutate} = useGetAllInterest(id);
   const { user } = useAuthContext();
   const router = useRouter();
@@ -63,14 +64,6 @@ function InterestPayDetailsForm({ currentLoan }) {
     payAfterAdjusted1: Yup.string().required('Pay After Adjusted 1 is required'),
     oldCrDr: Yup.string().required('Old CR/DR is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    accountName: Yup.string().test(
-      'accountNameRequired',
-      'Account name is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
 
     cashAmount: Yup.string().test(
       'cashAmountRequired',
@@ -81,41 +74,15 @@ function InterestPayDetailsForm({ currentLoan }) {
       }
     ),
 
-    accountNo: Yup.string().test(
-      'accountNoRequired',
-      'Account number is required',
+    account: Yup.object().test(
+      'accountRequired',
+      'Account is required',
       function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
       }
     ),
 
-    accountType: Yup.string().test(
-      'accountTypeRequired',
-      'Account type is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    IFSC: Yup.string().test(
-      'ifscRequired',
-      'IFSC code is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    bankName: Yup.string().test(
-      'bankNameRequired',
-      'Bank name is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
   });
   const defaultValues = {
     from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0].to),
@@ -131,11 +98,7 @@ function InterestPayDetailsForm({ currentLoan }) {
     payAfterAdjusted1: '',
     oldCrDr: 0,
     paymentMode: '',
-    accountName: '',
-    accountNo: '',
-    accountType: '',
-    IFSC: '',
-    bankName: '',
+    account: '',
     cashAmount: '',
   };
 
@@ -193,8 +156,7 @@ function InterestPayDetailsForm({ currentLoan }) {
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
-  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
-
+  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr'), watch('consultingCharge')]);
 
 
   const onSubmit = handleSubmit(async (data) => {
@@ -211,21 +173,13 @@ function InterestPayDetailsForm({ currentLoan }) {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     }
 
@@ -346,45 +300,30 @@ function InterestPayDetailsForm({ currentLoan }) {
         <Box sx={{mt:8}}>
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
             <>
-              <RHFTextField name='cashAmount' label='Cash Amount'  sx={{ width: '25%' }} InputLabelProps={{ shrink: true,readOnly: true }}/>
+              <RHFTextField name='cashAmount' label='Cash Amount'  sx={{ width: '25%' }} req={'red'}/>
             </>
           )}
             {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-              <Grid container sx={{ mt: 8 }}>
-                <Grid item xs={12} md={4}>
-                  <Typography variant='h6' sx={{ mb: 0.5 }}>
-                    Bank Account Details
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} md={8}>
-                  <Box
-                    rowGap={3}
-                    columnGap={2}
-                    display='grid'
-                    gridTemplateColumns={{
-                      xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(2, 1fr)',
-                    }}
-                  >
-                    <RHFTextField name='accountName' label='Account Name' req={'red'} />
-                    <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-                    <RHFAutocomplete
-                      name='accountType'
-                      label='Account Type'
-                      req={'red'}
-                      options={['Saving', 'Current']}
-                      getOptionLabel={(option) => option}
-                      renderOption={(props, option) => (
-                        <li {...props} key={option}>
-                          {option}
-                        </li>
-                      )}
-                    />
-                    <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-                    <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-                  </Box>
-                </Grid>
-              </Grid>
+              <Box sx={{ mt: 8 }}>
+                <RHFAutocomplete
+                  name='account'
+                  label='Account'
+                  req={'red'}
+                  fullWidth
+                  sx={{width: "25%"}}
+                  options={branch.flatMap((item) => item.company.bankAccounts)}
+                  getOptionLabel={(option) => option.bankName || ''}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id || option.bankName}>
+                      {option.bankName}
+                    </li>
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  onChange={(event, value) => {
+                    setValue('account', value);
+                  }}
+                />
+              </Box>
             )}
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>

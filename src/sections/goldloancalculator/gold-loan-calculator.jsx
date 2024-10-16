@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   TextField,
@@ -23,7 +23,7 @@ function GoldLoanCalculator() {
   const [goldGramsTables, setGoldGramsTables] = useState([[{ netGram: 0, goldGram: '' }]]);
   const [totalNetGram, setTotalNetGram] = useState(0);
   const [financeTables, setFinanceTables] = useState([[{ netGram: '' }]]);
-  const [totalNetGram2, setTotalNetGram2] = useState(0);
+  const [totalFinance, setTotalFinance] = useState(0); // Track total finance
 
   const handleGoldGramChange = (tableIndex, rowIndex, value) => {
     const updatedTables = [...goldGramsTables];
@@ -50,12 +50,20 @@ function GoldLoanCalculator() {
     };
 
     setFinanceTables(updatedTables);
+    calculateTotalFinance(updatedTables);
+  };
 
-    const totalNetGram2 = updatedTables.flat().reduce(
-      (sum, table) => sum + (Number(table.netGram) || 0),
-      0,
-    );
-    setTotalNetGram2(totalNetGram2);
+  const calculateTotalFinance = (tables) => {
+    let total = 0;
+    tables.forEach((table, tableIndex) => {
+      table.forEach((row, rowIndex) => {
+        const ratePerGram = scheme[rowIndex]?.ratePerGram || 0;
+        if (row.netGram && ratePerGram) {
+          total += Number(row.netGram) * Number(ratePerGram);
+        }
+      });
+    });
+    setTotalFinance(total.toFixed(2));
   };
 
   const addTable = () => {
@@ -67,7 +75,7 @@ function GoldLoanCalculator() {
     setGoldGramsTables([[{ netGram: 0, goldGram: '' }]]);
     setFinanceTables([[{ netGram: '' }]]);
     setTotalNetGram(0);
-    setTotalNetGram2(0);
+    setTotalFinance(0);
   };
 
   const renderTable = (rows, tableIndex, handleChange, dataTable, type) => (
@@ -104,7 +112,7 @@ function GoldLoanCalculator() {
                 <TextField
                   variant='outlined'
                   size='small'
-                  value={dataTable[tableIndex][rowIndex]?.netGram || 0}
+                  value={dataTable[tableIndex][rowIndex]?.netGram || ''}
                   onChange={(e) => type === 'finance' && handleChange(tableIndex, rowIndex, e.target.value)}
                   readOnly={type === 'gold'}
                   InputProps={{ sx: { color: 'red' } }}
@@ -115,7 +123,11 @@ function GoldLoanCalculator() {
                   <TextField
                     variant='outlined'
                     size='small'
-                    value={(Number(dataTable[tableIndex][rowIndex]?.netGram || 0) * row.ratePerGram).toFixed(2)}
+                    value={
+                      dataTable[tableIndex]?.[rowIndex]?.netGram && row?.ratePerGram
+                        ? (Number(dataTable[tableIndex][rowIndex].netGram) * Number(row.ratePerGram)).toFixed(2)
+                        : ''
+                    }
                     readOnly
                     InputProps={{ sx: { color: 'red' } }}
                   />
@@ -168,7 +180,7 @@ function GoldLoanCalculator() {
 
       <Box mt={4}>
         <Typography variant='h6' gutterBottom>
-          Total Net Gram (Finance): {(totalNetGram2).toFixed(2)}
+          Total Finance: {totalFinance}
         </Typography>
       </Box>
     </Box>

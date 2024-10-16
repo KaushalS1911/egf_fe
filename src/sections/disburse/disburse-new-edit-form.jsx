@@ -76,9 +76,15 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     loanAmount: Yup.string().required('Loan Amount is required'),
     interest: Yup.string().required('Interest is required'),
     scheme: Yup.string().required('Scheme Name is required'),
-    // valuation: Yup.string().required('Valuation is required'),
+    valuation: Yup.string().required('Valuation is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
     items: Yup.array().of(
       Yup.object().shape({
         propertyName: Yup.string().required('Property Name is required'),
@@ -89,7 +95,10 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
       }),
     ).required('At least one item is required'),
-    ...paymentSchema,
+    companyBankDetail: Yup.object().shape({
+      account: Yup.string().required('Account Number is required'),
+      transactionID: Yup.string().required('Transaction ID is required'),
+    }),
 
   });
 
@@ -161,7 +170,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     });
   };
   const onSubmit = handleSubmit(async (data) => {
-    console.log('PAY ', data);
     try {
       const payload = {
         loan: currentDisburse._id,

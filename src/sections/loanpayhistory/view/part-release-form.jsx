@@ -31,6 +31,7 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetAllPartRelease } from '../../../api/part-release';
+import { useGetBranch } from '../../../api/branch';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -54,19 +55,21 @@ const TABLE_HEAD = [
 function PartReleaseForm({ currentLoan }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [file, setFile] = useState(null);
+  const {branch} = useGetBranch();
   const {id} = useParams();
   const {partRelease,mutate} = useGetAllPartRelease(id);
   const selectedTotals = useMemo(() => {
     return selectedRows.reduce(
-      (totals, row) => {
-          totals.pcs += Number(row.pcs) || 0;
-          totals.totalWeight += Number(row.totalWeight) || 0;
-          totals.netWeight += Number(row.netWeight) || 0;
-          totals.grossAmount += Number(row.grossAmount) || 0;
-          totals.netAmount += Number(row.netAmount) || 0;
+      (totals, index) => {
+        const row = currentLoan.propertyDetails[index];
+        totals.pcs += Number(row.pcs) || 0;
+        totals.totalWeight += Number(row.totalWeight) || 0;
+        totals.netWeight += Number(row.netWeight) || 0;
+        totals.grossAmount += Number(row.grossAmount) || 0;
+        totals.netAmount += Number(row.netAmount) || 0;
         return totals;
       },
-      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 },
+      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 }
     );
   }, [selectedRows, currentLoan.propertyDetails]);
   const NewPartReleaseSchema = Yup.object().shape({
@@ -77,14 +80,6 @@ function PartReleaseForm({ currentLoan }) {
       .typeError('Pay amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    accountName: Yup.string().test(
-      'accountNameRequired',
-      'Account name is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
 
     cashAmount: Yup.string().test(
       'cashAmountRequired',
@@ -94,37 +89,9 @@ function PartReleaseForm({ currentLoan }) {
         return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
       }
     ),
-
-    accountNo: Yup.string().test(
-      'accountNoRequired',
-      'Account number is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    accountType: Yup.string().test(
-      'accountTypeRequired',
-      'Account type is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    IFSC: Yup.string().test(
-      'ifscRequired',
-      'IFSC code is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    bankName: Yup.string().test(
-      'bankNameRequired',
-      'Bank name is required',
+    account: Yup.object().test(
+      'accountRequired',
+      'Account is required',
       function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
@@ -137,11 +104,7 @@ function PartReleaseForm({ currentLoan }) {
     remark: '',
     paymentMode: '',
     cashAmount: '',
-    accountName: '',
-    accountNo: '',
-    accountType: '',
-    IFSC: '',
-    bankName: '',
+    account: '',
   };
 
   const methods = useForm({
@@ -153,9 +116,11 @@ function PartReleaseForm({ currentLoan }) {
     control,
     watch,
     reset,
+    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode
@@ -169,27 +134,20 @@ function PartReleaseForm({ currentLoan }) {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     }
 
 
     const formData = new FormData();
-    selectedRows.forEach((row, index) => {
+    selectedRows.forEach((index) => {
+      const row = currentLoan.propertyDetails[index];
       formData.append(`property[${index}][type]`, row.type);
       formData.append(`property[${index}][carat]`, row.carat);
       formData.append(`property[${index}][pcs]`, row.pcs);
@@ -221,13 +179,15 @@ function PartReleaseForm({ currentLoan }) {
 
       const response = await axios(config);
       mutate();
+      setSelectedRows([]);
+      setFile(null);
       reset();
-      enqueueSnackbar(response?.data.message);
+      enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
       console.error(error);
+      enqueueSnackbar("Failed to part release", { variant: 'error' });
     }
   });
-
 
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const newFile = acceptedFiles[0];
@@ -240,11 +200,11 @@ function PartReleaseForm({ currentLoan }) {
     }
   }, []);
 
-  const handleCheckboxClick = (row) => {
+  const handleCheckboxClick = (index) => {
     setSelectedRows((prevSelected) =>
-      prevSelected.find((selectedRow) => selectedRow._id === row._id)
-        ? prevSelected.filter((selectedRow) => selectedRow._id !== row._id)
-        : [...prevSelected, row],
+      prevSelected.includes(index)
+        ? prevSelected.filter((selectedIndex) => selectedIndex !== index)
+        : [...prevSelected, index]
     );
   };
 
@@ -252,10 +212,11 @@ function PartReleaseForm({ currentLoan }) {
     if (selectedRows.length === currentLoan.propertyDetails.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(currentLoan.propertyDetails);
+      setSelectedRows(currentLoan.propertyDetails.map((_, index) => index));
     }
   };
-  const isRowSelected = (id) => selectedRows.some((row) => row._id === id);
+
+  const isRowSelected = (index) => selectedRows.includes(index);
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -268,8 +229,7 @@ function PartReleaseForm({ currentLoan }) {
                     <TableRow>
                       <TableCell padding='checkbox'>
                         <Checkbox
-                          indeterminate={selectedRows.length > 0 && selectedRows.length < currentLoan.propertyDetails.length}
-                          checked={currentLoan.propertyDetails.length > 0 && selectedRows.length === currentLoan.propertyDetails.length}
+                          checked={selectedRows.length === currentLoan.propertyDetails.length}
                           onChange={handleSelectAllClick}
                         />
                       </TableCell>
@@ -279,24 +239,33 @@ function PartReleaseForm({ currentLoan }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {currentLoan.propertyDetails && currentLoan.propertyDetails?.map((row) => (
-                      <TableRow key={row.id} selected={isRowSelected(row.id)}>
-                        <TableCell padding='checkbox'>
-                          <Checkbox
-                            checked={isRowSelected(row.id)}
-                            onChange={() => handleCheckboxClick(row)}
-                          />
+                    {currentLoan.propertyDetails && currentLoan.propertyDetails.length > 0 ? (
+                      currentLoan.propertyDetails.map((row,index) => (
+                        <TableRow key={row._id} selected={isRowSelected(index)}>
+                          <TableCell padding='checkbox'>
+                            <Checkbox
+                              checked={isRowSelected(index)}
+                              onChange={() => handleCheckboxClick(index)}
+                            />
+                          </TableCell>
+                          <TableCell>{currentLoan.loanNo}</TableCell>
+                          <TableCell>{row.type}</TableCell>
+                          <TableCell>{row.carat}</TableCell>
+                          <TableCell>{row.pcs}</TableCell>
+                          <TableCell>{row.totalWeight}</TableCell>
+                          <TableCell>{row.netWeight}</TableCell>
+                          <TableCell>{row.grossAmount}</TableCell>
+                          <TableCell>{row.netAmount}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={9} align="center">
+                          No Property Available
                         </TableCell>
-                        <TableCell>{currentLoan.loanNo}</TableCell>
-                        <TableCell>{row.type}</TableCell>
-                        <TableCell>{row.carat}</TableCell>
-                        <TableCell>{row.pcs}</TableCell>
-                        <TableCell>{row.totalWeight}</TableCell>
-                        <TableCell>{row.netWeight}</TableCell>
-                        <TableCell>{row.grossAmount}</TableCell>
-                        <TableCell>{row.netAmount}</TableCell>
                       </TableRow>
-                    ))}
+                    )}
+
                     <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
                       <TableCell padding='checkbox' />
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>TOTAL AMOUNT</TableCell>
@@ -309,6 +278,7 @@ function PartReleaseForm({ currentLoan }) {
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.netAmount}</TableCell>
                     </TableRow>
                   </TableBody>
+
                 </Table>
               </TableContainer>
             </Box>
@@ -380,41 +350,26 @@ function PartReleaseForm({ currentLoan }) {
             </>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Grid container sx={{ mt: 8 }}>
-              <Grid item xs={12} md={4}>
-                <Typography variant='h6' sx={{ mb: 0.5 }}>
-                  Bank Account Details
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display='grid'
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(2, 1fr)',
-                  }}
-                >
-                  <RHFTextField name='accountName' label='Account Name' req={'red'} />
-                  <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-                  <RHFAutocomplete
-                    name='accountType'
-                    label='Account Type'
-                    req={'red'}
-                    options={['Saving', 'Current']}
-                    getOptionLabel={(option) => option}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option}>
-                        {option}
-                      </li>
-                    )}
-                  />
-                  <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-                  <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-                </Box>
-              </Grid>
-            </Grid>
+            <Box sx={{ mt: 8 }}>
+              <RHFAutocomplete
+                name='account'
+                label='Account'
+                req={'red'}
+                fullWidth
+                sx={{width: "25%"}}
+                options={branch.flatMap((item) => item.company.bankAccounts)}
+                getOptionLabel={(option) => option.bankName || ''}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id || option.bankName}>
+                    {option.bankName}
+                  </li>
+                )}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(event, value) => {
+                  setValue('account', value);
+                }}
+              />
+            </Box>
           )}
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
