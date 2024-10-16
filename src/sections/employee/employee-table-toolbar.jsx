@@ -16,7 +16,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 export default function EmployeeTableToolbar({ filters, onFilters}) {
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('userName', event.target.value);
+      onFilters('name', event.target.value);
     },
     [onFilters],
   );

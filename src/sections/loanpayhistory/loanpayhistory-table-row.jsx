@@ -25,9 +25,6 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   return (
     <>
       <TableRow hover selected={selected} >
-        <TableCell padding="checkbox" >
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
 
           <TableCell>
             {index + 1}
@@ -39,12 +36,6 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
       </TableRow>
 
 

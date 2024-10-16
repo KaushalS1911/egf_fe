@@ -52,7 +52,7 @@ const TABLE_HEAD = [
 ];
 
 const defaultFilters = {
-  username: '',
+  name: '',
 };
 // ----------------------------------------------------------------------
 
@@ -130,7 +130,6 @@ export default function EmployeeListView() {
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = employee.filter((row) => table.selected.includes(row._id));
-    console.log("deleteRowsdeleteRows : ",deleteRows)
     const deleteIds = deleteRows.map((row) => row.user._id);
     handleDelete(deleteIds)
     setTableData(deleteRows);
@@ -293,7 +292,7 @@ export default function EmployeeListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const {  username } = filters;
+  const {  name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -302,11 +301,12 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-  if (username && username.trim()) {
+  console.log("ASAS :",name);
+  if (name && name.trim()) {
     inputData = inputData.filter(
-      (inq) =>
-        inq.username.toLowerCase().includes(username.toLowerCase())
-        // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
+      (item) =>
+        item.user.firstName.toLowerCase().includes(name.toLowerCase()) ||
+        item.user.lastName.toLowerCase().includes(name.toLowerCase())
     );
   }
   return inputData;

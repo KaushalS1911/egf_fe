@@ -16,7 +16,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('userName', event.target.value);
+      onFilters('username', event.target.value);
     },
     [onFilters],
   );
