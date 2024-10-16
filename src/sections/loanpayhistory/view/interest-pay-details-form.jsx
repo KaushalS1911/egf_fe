@@ -156,7 +156,7 @@ function InterestPayDetailsForm({ currentLoan }) {
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
-  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
+  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr'), watch('consultingCharge')]);
 
 
   const onSubmit = handleSubmit(async (data) => {
