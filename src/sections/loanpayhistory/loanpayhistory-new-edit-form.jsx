@@ -156,13 +156,13 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                 md: 'repeat(3, 1fr)',
               }}
             >
-              <RHFTextField name='loanNo' label='Loan No.' InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='customerName' label='Customer Name' InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='address' label='Address' InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='loanNo' label='Loan No.' InputLabelProps={{ shrink: true,readOnly: true }} />
+              <RHFTextField name='customerName' label='Customer Name' InputLabelProps={{ shrink: true,readOnly: true }} />
+              <RHFTextField name='address' label='Address' InputLabelProps={{ shrink: true,readOnly: true }} />
               <RHFTextField
                 name='contact'
                 label='Mobile No.'
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{ shrink: true,readOnly: true }}
                 inputProps={{ maxLength: 16 }}
               />
               <Controller
@@ -177,7 +177,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                       textField: {
                         fullWidth: true,
                         error: !!error,
-                        InputLabelProps:{ shrink: true },
+                        InputLabelProps:{ shrink: true,readOnly: true },
                         helperText: error?.message,
                       },
                     }}
@@ -187,7 +187,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <RHFTextField
                 name='schemeName'
                 label='Scheme Name'
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{ shrink: true,readOnly: true }}
                 inputProps={{ minLength: 10, maxLength: 10 }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
@@ -198,7 +198,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <RHFTextField
                 name='oldLoanNo'
                 label='Old Loan No'
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{ shrink: true,readOnly: true }}
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
