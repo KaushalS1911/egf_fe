@@ -93,15 +93,15 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     businessType: currentCustomer?.businessType || '',
     PerStreet: currentCustomer?.permanentAddress?.street || '',
     PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
-    PerCountry: currentCustomer?.permanentAddress?.country || 'India',
-    PerState: currentCustomer?.permanentAddress?.state || 'Gujarat',
-    PerCity: currentCustomer?.permanentAddress?.city || 'Surat',
+    PerCountry: currentCustomer?.permanentAddress?.country || '',
+    PerState: currentCustomer?.permanentAddress?.state || '',
+    PerCity: currentCustomer?.permanentAddress?.city || '',
     PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
     tempStreet: currentCustomer?.temporaryAddress?.street || '',
     tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
-    tempCountry: currentCustomer?.temporaryAddress?.country || 'India',
-    tempState: currentCustomer?.temporaryAddress?.state || 'Gujarat',
-    tempCity: currentCustomer?.temporaryAddress?.city || 'Surat',
+    tempCountry: currentCustomer?.temporaryAddress?.country || '',
+    tempState: currentCustomer?.temporaryAddress?.state || '',
+    tempCity: currentCustomer?.temporaryAddress?.city || '',
     tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
     bankName: currentCustomer?.bankDetails?.bankName || '',
     IFSC: currentCustomer?.bankDetails?.IFSC || '',
@@ -231,6 +231,44 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       }
     }
   }, [setValue]);
+
+  const checkZipcode = async (zipcode, type = 'permanent') => {
+    try {
+      const response = await axios.get(`https://api.postalpincode.in/pincode/${zipcode}`);
+      const data = response.data[0];
+
+      if (data.Status === 'Success') {
+        if (type === 'permanent') {
+          setValue('PerCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
+          setValue('PerState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+        } else if (type === 'temporary') {
+          setValue('tempCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
+          setValue('tempState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+        }
+      } else {
+        if (type === 'permanent') {
+          setValue('PerCountry', '', { shouldValidate: true });
+          setValue('PerState', '', { shouldValidate: true });
+        } else if (type === 'temporary') {
+          setValue('tempCountry', '', { shouldValidate: true });
+          setValue('tempState', '', { shouldValidate: true });
+        }
+        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
+      }
+    } catch (error) {
+      console.error('Error fetching country and state:', error);
+
+      if (type === 'permanent') {
+        setValue('PerCountry', '', { shouldValidate: true });
+        setValue('PerState', '', { shouldValidate: true });
+      } else if (type === 'temporary') {
+        setValue('tempCountry', '', { shouldValidate: true });
+        setValue('tempState', '', { shouldValidate: true });
+      }
+
+      enqueueSnackbar('Failed to fetch country and state details.', { variant: 'error' });
+    }
+  };
 
   const PersonalDetails = (
     <>
@@ -501,6 +539,41 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             >
               <RHFTextField name='PerStreet' label='Street' req={'red'} />
               <RHFTextField name='PerLandmark' label='landmark' req={'red'} />
+              <RHFTextField
+                name='PerZipcode'
+                label={
+                  <span>
+      Zipcode<span style={{ color: 'red' }}>*</span>
+    </span>
+                }
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  maxLength: 6,
+                }}
+                rules={{
+                  required: 'Zipcode is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Zipcode must be exactly 6 digits',
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: 'Zipcode cannot be more than 6 digits',
+                  },
+                }}
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onBlur={(event) => {
+                  const zip = event.target.value;
+                  if (zip.length === 6) {
+                    checkZipcode(zip);
+                  }
+                }}
+              />
               <RHFAutocomplete
                 name='PerCountry'
                 req={'red'}
@@ -541,17 +614,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 defaultValue='Surat'
                 isOptionEqualToValue={(option, value) => option === value}
               />
-              <RHFTextField
-                req={'red'}
-                name='PerZipcode'
-                label='Zipcode'
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-              />
             </Box>
           </Stack>
           <Stack spacing={3} sx={{ p: 3 }}>
@@ -569,6 +631,37 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             >
               <RHFTextField name='tempStreet' label='Street' />
               <RHFTextField name='tempLandmark' label='landmark' />
+              <RHFTextField
+                name='tempZipcode'
+                label='Zipcode'
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  maxLength: 6,
+                }}
+                rules={{
+                  required: 'Zipcode is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Zipcode must be at least 6 digits',
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: 'Zipcode cannot be more than 6 digits',
+                  },
+                }}
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onBlur={(event) => {
+                  const zip = event.target.value;
+                  if (zip.length === 6) {
+                    checkZipcode(zip, 'temporary');
+                  }
+                }}
+              />
               <RHFAutocomplete
                 name='tempCountry'
                 label='Country'
@@ -605,16 +698,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 }
                 defaultValue='Surat'
                 isOptionEqualToValue={(option, value) => option === value}
-              />
-              <RHFTextField
-                name='tempZipcode'
-                label='Zipcode'
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
               />
             </Box>
           </Stack>
