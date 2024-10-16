@@ -33,7 +33,7 @@ export default function SchemeEditView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Scheme',
+            name: 'Scheme List',
             href: paths.dashboard.scheme.root,
           },
           { name: currentScheme?.name },

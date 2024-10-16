@@ -7,19 +7,14 @@ import Tabs from '@mui/material/Tabs';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 import CompanyProfile from './company-profile-create-view';
-import MyProfile from './my-profile-create-view';
 import PermissionView from './permission-view';
 import Rolescreatepage from './roles-crete-view';
 import BusinessTypeCreteView from './business-type-crete-view';
 import BranchCreateView from './branch-create-view';
 import LoanTypeView from './loan-type-view';
+import MyProfile from './my-profile-create-view';
 
 const TABS = [
-  {
-    value: 'My Profile',
-    label: 'My Profile',
-    icon: <Iconify icon='carbon:user-profile' width={24} />,
-  },
   {
     value: 'Company Profile',
     label: 'Company Profile',
@@ -54,7 +49,7 @@ const TABS = [
 
 export default function SettingsPage() {
   const settings = useSettingsContext();
-  const [currentTab, setCurrentTab] = useState('My Profile');
+  const [currentTab, setCurrentTab] = useState('Company Profile');
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
@@ -81,7 +76,6 @@ export default function SettingsPage() {
             <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
           ))}
         </Tabs>
-        {currentTab === 'My Profile' && <MyProfile />}
         {currentTab === 'Company Profile' && <CompanyProfile />}
         {currentTab === 'Roles' && <Rolescreatepage setTab={setCurrentTab} />}
         {currentTab === 'Permission' && <PermissionView />}

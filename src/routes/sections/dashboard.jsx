@@ -70,7 +70,8 @@ const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-lis
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
 const PenaltyEditView = lazy(()=>import('../../sections/penalty/view/penalty-edit-view'))
 // DISBURSE
-const DisburseEditView = lazy(()=>import('../../sections/disburse/view/disburse-edit-view'))
+const DisburseCreateView = lazy(()=>import('../../sections/disburse/view/disburse-create-view'))
+const DisburseListView = lazy(()=>import('../../sections/disburse/view/disburse-list-view'))
 // REMINDER
 const ReminderListView = lazy(()=>import('../../sections/reminder/view/reminder-list-view'))
 // LOAN ISSUE
@@ -101,7 +102,8 @@ const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
 const MailPage = lazy(() => import('src/pages/dashboard/mail'));
 const CalendarPage = lazy(() => import('src/pages/dashboard/calendar'));
 const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
-
+//MYPROFILE
+const MyProfile = lazy(()=>import('src/sections/settings/view/my-profile-create-view'))
 
 // ----------------------------------------------------------------------
 
@@ -180,10 +182,10 @@ export const dashboardRoutes = [
       {
         path: 'disburse',
         children: [
-          { element: <LoanissueListView />, index: true },
-          { path: 'list', element: <LoanissueListView /> },
+          { element: <DisburseListView />, index: true },
+          { path: 'list', element: <DisburseListView /> },
           // { path: 'new', element: <DisbursecreateView/> },
-          { path: ':id/new', element: <DisburseEditView /> },
+          { path: ':id/new', element: <DisburseCreateView /> },
         ],
       },
       {
@@ -228,6 +230,7 @@ export const dashboardRoutes = [
           { path: ':id/new', element: <LoanpayhistoryCreateView /> },
         ],
       },
+
       {
         path: 'user',
         children: [
@@ -247,6 +250,7 @@ export const dashboardRoutes = [
           { path: 'list', element: <CustomerListView /> },
           { path: 'new', element: <CustomerCreateView /> },
           { path: ':id/edit', element: <CustomerEditView /> },
+          { path: 'profile', element: <MyProfile /> },
         ],
       },
       {

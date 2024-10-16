@@ -245,7 +245,7 @@ export default function ReminderListView() {
                   }
                 />
                 <TableBody>
-                  {/*{filters.startDate && filters.endDate || filters.name ?*/}
+                  {filters.startDate && filters.endDate || filters.name ?
                     <>      {dataFiltered
                       .slice(
                         table.page * table.rowsPerPage,
@@ -266,9 +266,9 @@ export default function ReminderListView() {
                         height={denseHeight}
                         emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                       /></>
-                  {/*:*/}
-                  {/*<TableNoData notFound={true} />*/}
-                  {/*}*/}
+                  :
+                  <TableNoData notFound={true}  />
+                  }
                 </TableBody>
               </Table>
             </Scrollbar>

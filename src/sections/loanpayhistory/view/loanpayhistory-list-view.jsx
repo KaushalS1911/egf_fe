@@ -163,8 +163,8 @@ export default function LoanpayhistoryListView() {
           heading="Loan Pay History"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Masters', href: paths.dashboard.loanPayHistory.root },
-            { name: 'Loan Pay History List' },
+            { name: 'Loan Pay History', href: paths.dashboard.loanPayHistory.root },
+            { name: 'List' },
           ]}
           // action={
           //   <Button

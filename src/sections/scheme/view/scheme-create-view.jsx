@@ -22,7 +22,7 @@ export default function SchemeCreateView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Scheme',
+            name: 'Scheme List',
             href: paths.dashboard.scheme.root,
           },
           { name: 'New Scheme' },

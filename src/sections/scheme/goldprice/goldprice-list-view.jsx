@@ -181,7 +181,7 @@ const handleDelete = (id) =>{
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Scheme List'
+          heading='Change Golg Price'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Scheme', href: paths.dashboard.scheme.root },

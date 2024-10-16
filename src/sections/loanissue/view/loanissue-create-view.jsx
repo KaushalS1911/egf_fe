@@ -25,7 +25,7 @@ export default function LoanissueCreateView() {
             name: 'Loanissue List',
             href: paths.dashboard.loanissue.root,
           },
-          { name: 'Create New Loanissue' },
+          { name: 'New Loanissue' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

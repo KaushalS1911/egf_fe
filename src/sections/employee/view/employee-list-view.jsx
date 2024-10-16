@@ -44,9 +44,9 @@ import { useAuthContext } from '../../../auth/hooks';
 
 
 const TABLE_HEAD = [
-  { id: 'username', label: 'UserName' },
-  { id: 'contact', label: 'Phone Number'},
-  { id: 'joinDate', label: 'Join Date'},
+  { id: 'username', label: 'User Name' },
+  { id: 'contact', label: 'Contact'},
+  { id: 'joinDate', label: 'Joining Date'},
   { id: 'role', label: 'Role'},
   { id: '', width: 88 },
 ];
@@ -156,8 +156,8 @@ export default function EmployeeListView() {
           heading="Employee List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Masters', href: paths.dashboard.employee.root },
-            { name: 'Employee List' },
+            { name: 'Employee', href: paths.dashboard.employee.root },
+            { name: 'List' },
           ]}
           action={
             <Button
