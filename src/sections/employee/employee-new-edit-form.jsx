@@ -76,7 +76,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     tempCity: Yup.string(),
     tempZipcode: Yup.string(),
   });
-
+  console.log("curr : ",currentEmployee)
   const defaultValues = useMemo(() => ({
     branchId: currentEmployee ? {
       label: currentEmployee?.branch?.name,

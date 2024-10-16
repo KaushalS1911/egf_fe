@@ -301,7 +301,6 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-  console.log("ASAS :",name);
   if (name && name.trim()) {
     inputData = inputData.filter(
       (item) =>
