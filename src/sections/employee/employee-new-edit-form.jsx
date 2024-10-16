@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -76,7 +76,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     tempCity: Yup.string(),
     tempZipcode: Yup.string(),
   });
-
+  console.log("curr : ",currentEmployee)
   const defaultValues = useMemo(() => ({
     branchId: currentEmployee ? {
       label: currentEmployee?.branch?.name,
@@ -101,15 +101,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     leaveDate: new Date(currentEmployee?.leaveDate) || new Date(),
     permanentStreet: currentEmployee?.permanentAddress.street || '',
     permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
-    permanentCountry: currentEmployee?.permanentAddress.country || 'India',
-    permanentState: currentEmployee?.permanentAddress.state || 'Gujarat',
-    permanentCity: currentEmployee?.permanentAddress.city || 'Surat',
+    permanentCountry: currentEmployee?.permanentAddress.country || '',
+    permanentState: currentEmployee?.permanentAddress.state || '',
+    permanentCity: currentEmployee?.permanentAddress.city || '',
     permanentZipcode: currentEmployee?.permanentAddress.zipcode || '',
     tempStreet: currentEmployee?.temporaryAddress.street || '',
     tempLandmark: currentEmployee?.temporaryAddress.landmark || '',
-    tempCountry: currentEmployee?.temporaryAddress.country || 'India',
-    tempState: currentEmployee?.temporaryAddress.state || 'Gujarat',
-    tempCity: currentEmployee?.temporaryAddress.city || 'Surat',
+    tempCountry: currentEmployee?.temporaryAddress.country || '',
+    tempState: currentEmployee?.temporaryAddress.state || '',
+    tempCity: currentEmployee?.temporaryAddress.city || '',
     tempZipcode: currentEmployee?.temporaryAddress.zipcode || '',
   }), [currentEmployee]);
 
@@ -226,7 +226,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     }
   });
 
-
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -244,6 +243,43 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     },
     [setValue],
   );
+
+  const checkZipcode = async (zipcode, type = 'permanent') => {
+    try {
+      const response = await axios.get(`https://api.postalpincode.in/pincode/${zipcode}`);
+      const data = response.data[0];
+
+      if (data.Status === 'Success') {
+        if (type === 'permanent') {
+          setValue('permanentCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
+          setValue('permanentState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+        } else if (type === 'temporary') {
+          setValue('tempCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
+          setValue('tempState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+        }
+      } else {
+        if (type === 'permanent') {
+          setValue('permanentCountry', '', { shouldValidate: true });
+          setValue('permanentState', '', { shouldValidate: true });
+        } else if (type === 'temporary') {
+          setValue('tempCountry', '', { shouldValidate: true });
+          setValue('tempState', '', { shouldValidate: true });
+        }
+        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
+      }
+    } catch (error) {
+      console.error('Error fetching country and state:', error);
+
+      if (type === 'permanent') {
+        setValue('PerCountry', '', { shouldValidate: true });
+        setValue('PerState', '', { shouldValidate: true });
+      } else if (type === 'temporary') {
+        setValue('tempCountry', '', { shouldValidate: true });
+        setValue('tempState', '', { shouldValidate: true });
+      }
+      enqueueSnackbar('Failed to fetch country and state details.', { variant: 'error' });
+    }
+  };
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -447,8 +483,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             </Box>
           </Card>
         </Grid>
-
-
         <Grid item xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
             Address Details
@@ -470,6 +504,41 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             >
               <RHFTextField name='permanentStreet' label='Address' req={'red'} />
               <RHFTextField name='permanentLandmark' label='Landmark' />
+              <RHFTextField
+                name='permanentZipcode'
+                label={
+                  <span>
+      Zipcode<span style={{ color: 'red' }}>*</span>
+    </span>
+                }
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  maxLength: 6,
+                }}
+                rules={{
+                  required: 'Zipcode is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Zipcode must be exactly 6 digits',
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: 'Zipcode cannot be more than 6 digits',
+                  },
+                }}
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onBlur={(event) => {
+                  const zip = event.target.value;
+                  if (zip.length === 6) {
+                    checkZipcode(zip);
+                  }
+                }}
+              />
               <RHFAutocomplete
                 name='permanentCountry'
                 label='Country'
@@ -522,7 +591,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   </li>
                 )}
               />
-              <RHFTextField name='permanentZipcode' label='Zipcode' req={'red'} />
             </Box>
             <Typography gutterBottom sx={{ mt: 3, mb: 2, fontSize: '17px', fontWeight: '700' }}>
               Temporary Address
@@ -538,6 +606,37 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             >
               <RHFTextField name='tempStreet' label='Address' />
               <RHFTextField name='tempLandmark' label='Landmark' />
+              <RHFTextField
+                name='tempZipcode'
+                label='Zipcode'
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  maxLength: 6,
+                }}
+                rules={{
+                  required: 'Zipcode is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Zipcode must be at least 6 digits',
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: 'Zipcode cannot be more than 6 digits',
+                  },
+                }}
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onBlur={(event) => {
+                  const zip = event.target.value;
+                  if (zip.length === 6) {
+                    checkZipcode(zip, 'temporary');
+                  }
+                }}
+              />
               <Controller
                 name='tempCountry'
                 control={control}
@@ -596,7 +695,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   />
                 )}
               />
-              <RHFTextField name='tempZipcode' label='Zipcode' />
             </Box>
           </Card>
         </Grid>

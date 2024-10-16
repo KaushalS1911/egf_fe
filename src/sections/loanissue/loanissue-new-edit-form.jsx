@@ -66,7 +66,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     customer: Yup.object().required('Customer is required'),
     scheme: Yup.object().required('Scheme is required'),
     issueDate: Yup.date().required('Issue Date is required'),
-    nextInstallmentDate: Yup.date().required('Next Installment Date is required'),
     jewellerName: Yup.string().required('Jeweller Name is required'),
     loanAmount: Yup.number().required('Loan Amount is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
@@ -523,7 +522,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='loanNo' label='Loan No.' req={'red'} InputProps={{ readOnly: true }} />
+              <RHFTextField
+                name='loanNo'
+                label='Loan No.'
+                req={'red'}
+                InputProps={{ readOnly: true }}
+                disabled
+              />
               <Controller
                 name='issueDate'
                 control={control}
@@ -591,6 +596,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
+                    readOnly={true}
                     label='Next INT.Date'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
@@ -600,7 +606,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         error: !!error,
                         helperText: error?.message,
                         className: 'req',
-                        disabled: !isFieldsEnabled,
+                        disabled: true,
                       },
                     }}
                   />
@@ -669,8 +675,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               <li {...props} key={option}>{option}</li>
                             )}
                             onChange={(event, value) => {
+                              if (value === null) {
+                                handleReset(index);
+                              }
                               setValue(`propertyDetails[${index}].type`, value);
-                              if (!getValues(`propertyDetails[${index}].pcs`)) {
+                              if (!watch(`propertyDetails[${index}].pcs`)) {
                                 setValue(`propertyDetails[${index}].pcs`, 1);
                               }
                             }}
@@ -681,14 +690,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             name={`propertyDetails[${index}].carat`}
                             label='Carat'
                             autoHighlight
-                            disabled={!isFieldsEnabled}
+                            disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].type`) === ''}
                             options={carat?.map((e) => e?.name)}
                             getOptionLabel={(option) => option}
                             renderOption={(props, option) => (
                               <li {...props} key={option}>{option}</li>
                             )}
                             onChange={(event, value) => {
-                              const gw = parseFloat(getValues(`propertyDetails[${index}].grossWeight`)) || 0;
+                              if (value === null) {
+                                handleReset(index);
+                              }
+
+                              const gw = parseFloat(watch(`propertyDetails[${index}].grossWeight`)) || 0;
                               const caratValue = parseFloat(value) || 0;
                               setValue(`propertyDetails[${index}].carat`, caratValue);
                               const netWeight = gw * caratValue;
@@ -700,16 +713,20 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                           <RHFTextField
                             name={`propertyDetails[${index}].pcs`}
                             label='Pcs'
-                            disabled={!isFieldsEnabled}
+                            disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].carat`) === ''}
                             onChange={(e) => {
+                              if (e.target.value === '') {
+                                handleReset(index);
+                              }
+
                               const pcs = parseFloat(e.target.value) || 0;
                               setValue(`propertyDetails[${index}].pcs`, pcs);
 
-                              const grossWeight = parseFloat(getValues(`propertyDetails[${index}].grossWeight`)) || 0;
+                              const grossWeight = parseFloat(watch(`propertyDetails[${index}].grossWeight`)) || 0;
                               const grossAmount = grossWeight * pcs * configs.goldRate;
                               setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
 
-                              const netWeight = parseFloat(getValues(`propertyDetails[${index}].netWeight`)) || 0;
+                              const netWeight = parseFloat(watch(`propertyDetails[${index}].netWeight`)) || 0;
                               const netAmount = netWeight * pcs * configs.goldRate;
                               setValue(`propertyDetails[${index}].netAmount`, netAmount);
                             }}
@@ -740,16 +757,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                 setValue(`propertyDetails[${index}].totalWeight`, inputValue);
 
                                 if (!isNaN(totalWeight) && totalWeight >= 0) {
-                                  const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
+                                  const lossWeight = parseFloat(watch(`propertyDetails[${index}].lossWeight`)) || 0;
 
                                   if (lossWeight > totalWeight) {
                                     setTotalWeightError('Loss weight cannot be greater than total weight.');
                                   } else {
                                     const grossWeight = totalWeight - lossWeight;
                                     setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
-                                    const caratValue = parseFloat(getValues(`propertyDetails[${index}].carat`)) || 0;
-                                    const netWeight = grossWeight * caratValue;
+                                    const caratValue = carat?.find((item) => item.name == parseFloat(watch(`propertyDetails[${index}].carat`))) || 0;
+                                    const netWeight = grossWeight * (caratValue.caratPercentage / 100);
                                     setValue(`propertyDetails[${index}].netWeight`, netWeight);
+                                    const pcs = parseFloat(watch(`propertyDetails[${index}].pcs`)) || 0;
+                                    const grossAmount = grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                    setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
+                                    const netAmount = netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                    setValue(`propertyDetails[${index}].netAmount`, netAmount);
                                     setTotalWeightError('');
                                   }
                                 }
@@ -782,15 +804,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               if (/^-?\d*\.?\d*$/.test(inputValue)) {
                                 const lossWeight = parseFloat(inputValue);
                                 setValue(`propertyDetails[${index}].lossWeight`, inputValue);
-
-                                const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
+                                const totalWeight = parseFloat(watch(`propertyDetails[${index}].totalWeight`)) || 0;
 
                                 if (lossWeight > totalWeight) {
                                   setLossWeightError('Loss weight cannot be greater than total weight.');
                                 } else {
                                   const grossWeight = totalWeight - lossWeight;
                                   setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
-                                  const caratValue = carat?.find((item) => item.name == parseFloat(getValues(`propertyDetails[${index}].carat`))) || 0;
+                                  const caratValue = carat?.find((item) => item.name == parseFloat(watch(`propertyDetails[${index}].carat`))) || 0;
                                   const netWeight = grossWeight * (caratValue.caratPercentage / 100);
                                   setValue(`propertyDetails[${index}].netWeight`, netWeight);
                                   const pcs = parseFloat(getValues(`propertyDetails[${index}].pcs`)) || 0;
@@ -1066,7 +1087,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       </Grid>
       <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
         <LoadingButton disabled={!isFieldsEnabled} type='submit' variant='contained' loading={isSubmitting}>
-          {!currentLoanIssue ? 'Create Loanissue' : 'Save Changes'}
+          {!currentLoanIssue ? 'issue Loan' : 'Save Changes'}
         </LoadingButton>
       </Box>
     </FormProvider>
