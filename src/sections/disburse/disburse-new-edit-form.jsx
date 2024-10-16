@@ -23,7 +23,16 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetBranch } from '../../api/branch';
 import Iconify from '../../components/iconify';
 import CardContent from '@mui/material/CardContent';
-import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  CardActions,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
 import { useGetScheme } from '../../api/scheme';
@@ -31,7 +40,33 @@ import { useGetScheme } from '../../api/scheme';
 // ----------------------------------------------------------------------
 
 export default function DisburseNewEditForm({ currentDisburse }) {
-
+  console.log(currentDisburse);
+  const paymentSchema = currentDisburse.paymentMode === 'Bank' ? {
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    companyBankDetail: Yup.object().shape({
+      account: Yup.object().required('Account    is required'),
+      transactionID: Yup.string().required('Transaction ID is required'),
+    }),
+  } : currentDisburse.paymentMode === 'Cash' ? {
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+  } : {
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    companyBankDetail: Yup.object().shape({
+      account: Yup.object().required('Account Number is required'),
+      transactionID: Yup.string().required('Transaction ID is required'),
+    }),
+  };
+  console.log(paymentSchema);
+  console.log(currentDisburse);
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { branch } = useGetBranch();
@@ -44,69 +79,29 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     valuation: Yup.string().required('Valuation is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-
-    bankNetAmount: Yup.number().test(
-      'bankNetAmountRequired',
-      'Bank Net Amount is required',
-      function (value) {
-        return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-    bankPayingAmount: Yup.number().test(
-      'bankPayingAmountRequired',
-      'Bank Paying Amount is required',
-      function (value) {
-        return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-    bankPendingAmount: Yup.number().test(
-      'bankPendingAmountRequired',
-      'Bank Pending Amount is required',
-      function (value) {
-        return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    // Conditional validation for cash-related fields
-    cashNetAmount: Yup.number().test(
-      'cashNetAmountRequired',
-      'Cash Net Amount is required',
-      function (value) {
-        return currentDisburse?.paymentMode !== 'Cash' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-    cashPayingAmount: Yup.number().test(
-      'cashPayingAmountRequired',
-      'Cash Paying Amount is required',
-      function (value) {
-        return currentDisburse?.paymentMode !== 'Cash' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-    cashPendingAmount: Yup.number().test(
-      'cashPendingAmountRequired',
-      'Cash Pending Amount is required',
-      function (value) {
-        return currentDisburse?.paymentMode !== 'Cash' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+    items: Yup.array().of(
+      Yup.object().shape({
+        propertyName: Yup.string().required('Property Name is required'),
+        totalWeight: Yup.string().required('Total Weight is required'),
+        loseWeight: Yup.string().required('Lose Weight is required'),
+        grossWeight: Yup.string().required('Gross Weight is required'),
+        netWeight: Yup.string().required('Net Weight is required'),
+        loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
+      }),
+    ).required('At least one item is required'),
     companyBankDetail: Yup.object().shape({
-      account: Yup.string().test(
-        'accountRequired',
-        'Account Number is required',
-        function (value) {
-          return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-        }
-      ),
-      transactionID: Yup.string().test(
-        'transactionIDRequired',
-        'Transaction ID is required',
-        function (value) {
-          return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
-        }
-      ),
+      account: Yup.string().required('Account Number is required'),
+      transactionID: Yup.string().required('Transaction ID is required'),
     }),
+
   });
+
   const defaultValues = useMemo(
     () => (
       {
@@ -117,7 +112,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         scheme: currentDisburse?.scheme?.name || '',
         valuation: currentDisburse?.valuation || '',
         address: currentDisburse?.customer?.permanentAddress?.street || '',
-        branch: currentDisburse?.branch || '',
+        branch: currentDisburse?.customer?.branch?.name || '',
         bankNetAmount: currentDisburse?.bankAmount || 0,
         bankPayingAmount: currentDisburse?.bankPayingAmount || 0,
         bankPendingAmount: currentDisburse?.pendingAmount || 0,
@@ -144,7 +139,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   );
 
   const methods = useForm({
-    // resolver: yupResolver(NewDisburse),
+    resolver: yupResolver(NewDisburse),
     defaultValues,
   });
 
@@ -181,13 +176,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         companyBankDetail: data.companyBankDetail,
         bankAmount: data.bankAmount,
         cashAmount: data.cashAmount,
-        customer: currentDisburse.customer._id,
         pendingBankAmount: data.bankPendingAmount,
         pendingCashAmount: data.cashPendingAmount,
-        loanAmount: data.loanAmount,
-        interest: data.interest,
-        scheme: data.scheme,
-        address: data.address,
       };
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
       router.push(paths.dashboard.disburse.list);
@@ -224,136 +214,97 @@ export default function DisburseNewEditForm({ currentDisburse }) {
               <RHFTextField name='loanAmount' label='Loan Amount' req={'red'} />
               <RHFTextField name='interest' label='Interest' req={'red'} />
               <RHFTextField name='scheme' label='Scheme Name' req={'red'} />
-              {/*<RHFAutocomplete*/}
-              {/*  name='scheme'*/}
-              {/*  label='Scheme Name'*/}
-              {/*  req={'red'}*/}
-              {/*  fullWidth*/}
-              {/*  options={scheme?.map((item) => item.name)}*/}
-              {/*  getOptionLabel={(option) => option}*/}
-              {/*  renderOption={(props, option) => (*/}
-              {/*    <li {...props} key={option}>*/}
-              {/*      {option}*/}
-              {/*    </li>*/}
-              {/*  )}*/}
-              {/*/>*/}
               <RHFTextField name='address' label='Address' req={'red'} />
-              <RHFAutocomplete
-                name='branch'
-                label='Branch'
-                req={'red'}
-                fullWidth
-                options={branch.map((item) => item.name)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
+              <RHFTextField name='branch' label='Branch' req={'red'} />
+
             </Box>
           </Card>
         </Grid>
 
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }} py={2}>
-            <Typography variant='h6' gutterBottom>
-              Property Details
-            </Typography>
-            <Button
-              size='small'
-              variant='contained'
-              color='primary'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-              onClick={handleAdd}
-            >
-              Add Property
-            </Button>
+        <Grid item xs={12} md={12}>
+          <Card
+            sx={{ margin: '0px 0px 20px 0px' }}
+          >
+            <CardContent>
+              <Typography variant='h6' gutterBottom>
+                Property Details
+              </Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
+                      <TableCell><strong>Property Name</strong></TableCell>
+                      <TableCell><strong>Total Weight</strong></TableCell>
+                      <TableCell><strong>Lose Weight</strong></TableCell>
+                      <TableCell><strong>Gross Weight</strong></TableCell>
+                      <TableCell><strong>Net Weight</strong></TableCell>
+                      <TableCell width={200}><strong>Loan Applicable amount</strong></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {fields.map((row, index) => (
+                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.propertyName`}
+                            label='Property Name'
+                            defaultValue={row.propertyName || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.totalWeight`}
+                            label='Total Weight'
+                            defaultValue={row.totalWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.loseWeight`}
+                            label='Lose Weight'
+                            defaultValue={row.loseWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.grossWeight`}
+                            label='Gross Weight'
+                            defaultValue={row.grossWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.netWeight`}
+                            label='Net Weight'
+                            defaultValue={row.netWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.loanApplicableAmount`}
+                            label='Loan Applicable Amount'
+                            defaultValue={row.loanApplicableAmount || ''}
+                            disabled={true}
 
-          </Box>
-          <TableContainer>
+                          />
+                        </TableCell>
+                        <TableCell>
 
-            <Table>
-              <TableHead>
-                <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                  <TableCell><strong>Property Name</strong></TableCell>
-                  <TableCell><strong>Total Weight</strong></TableCell>
-                  <TableCell><strong>Lose Weight</strong></TableCell>
-                  <TableCell><strong>Gross Weight</strong></TableCell>
-                  <TableCell><strong>Net Weight</strong></TableCell>
-                  <TableCell><strong>Loan Applicable amount</strong></TableCell>
-                  <TableCell><strong>Actions</strong></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {fields.map((row, index) => (
-                  <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.propertyName`}
-                        label='Property Name'
-                        defaultValue={row.propertyName || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.totalWeight`}
-                        label='Total Weight'
-                        defaultValue={row.totalWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.loseWeight`}
-                        label='Lose Weight'
-                        defaultValue={row.loseWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.grossWeight`}
-                        label='Gross Weight'
-                        defaultValue={row.grossWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.netWeight`}
-                        label='Net Weight'
-                        defaultValue={row.netWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.loanApplicableAmount`}
-                        label='Loan Applicable Amount'
-                        defaultValue={row.loanApplicableAmount || ''}
-                        disabled={true}
 
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {/*<IconButton onClick={() => handleReset(index)}>*/}
-                      {/*  <Iconify icon='ic:baseline-refresh' />*/}
-                      {/*</IconButton>*/}
-                      <IconButton
-                        color='error'
-                        onClick={() => handleRemove(index)}
-                      >
-                        <Iconify icon='solar:trash-bin-trash-bold' />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
         <Grid xs={12} md={4} py={5}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
             Transaction Type
@@ -389,19 +340,23 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                     <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}
                                   value={watch('bankNetAmount') - watch('bankPayingAmount') || 0}
                                   InputLabelProps={{ shrink: true }} />
-                    {branch.find((item) => item.name === watch('branch')) && <RHFAutocomplete
+                    <RHFAutocomplete
                       name='companyBankDetail.account'
                       label='Account'
                       req={'red'}
                       fullWidth
-                      options={branch.find((item) => item.name === watch('branch'))?.company.bankAccounts.map((item) => item)}
-                      getOptionLabel={(option) => option.bankName}
+                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
-                        <li {...props} key={option}>
+                        <li {...props} key={option.id || option.bankName}>
                           {option.bankName}
                         </li>
                       )}
-                    />}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      onChange={(event, value) => {
+                        setValue('companyBankDetail.account', value);
+                      }}
+                    />
                     <RHFTextField name='companyBankDetail.transactionID' label='Transaction ID' req={'red'} />
                     <Controller
                       name='bankDate'

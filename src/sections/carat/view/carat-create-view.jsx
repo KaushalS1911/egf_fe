@@ -22,7 +22,7 @@ export default function CaratCreateView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Carat',
+            name: 'Carat List',
             href: paths.dashboard.carat.root,
           },
           { name: 'New Carat' },

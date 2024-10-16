@@ -11,7 +11,7 @@ import { shortDateLabel } from '../../components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function ReminderTableFiltersResult({
+export default function ReminderDetailsTableFiltersResult({
   filters,
   onFilters,
   onResetFilters,
@@ -57,7 +57,7 @@ export default function ReminderTableFiltersResult({
           </Block>
         )}
         {!!filters.name && (
-          <Block label="Customer Name:">
+          <Block label="User Name:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
@@ -73,7 +73,7 @@ export default function ReminderTableFiltersResult({
   );
 }
 
-ReminderTableFiltersResult.propTypes = {
+ReminderDetailsTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

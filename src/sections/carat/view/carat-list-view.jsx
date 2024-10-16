@@ -176,7 +176,7 @@ export default function CaratListView() {
           heading='Carat List'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'carat', href: paths.dashboard.carat.root },
+            { name: 'Carat', href: paths.dashboard.carat.root },
             { name: 'List' },
           ]}
           action={

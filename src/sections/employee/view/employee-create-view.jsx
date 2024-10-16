@@ -25,7 +25,7 @@ export default function EmployeeCreateView() {
             name: 'Employee List',
             href: paths.dashboard.employee.root,
           },
-          { name: 'Create New Employee' },
+          { name: 'New Employee' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

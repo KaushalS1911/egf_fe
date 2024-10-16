@@ -25,7 +25,7 @@ export default function PropertyCreateView() {
             name: 'Property List',
             href: paths.dashboard.property.root,
           },
-          { name: 'Property' },
+          { name: 'New Property' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

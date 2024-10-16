@@ -22,7 +22,7 @@ export default function PenaltyCreateView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Penalty',
+            name: 'Penalty List',
             href: paths.dashboard.penalty.root,
           },
           { name: 'New Penalty' },
