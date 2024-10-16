@@ -17,11 +17,7 @@ import SearchNotFound from 'src/components/search-not-found';
 // ----------------------------------------------------------------------
 
 export default function ProductSearch({ query, results, onSearch, hrefItem, loading }) {
-  const router = useRouter();
-
-  const handleClick = (id) => {
     router.push(hrefItem(id));
-  };
 
   const handleKeyUp = (event) => {
     if (query) {

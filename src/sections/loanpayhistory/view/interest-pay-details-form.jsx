@@ -22,6 +22,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useRouter } from '../../../routes/hooks';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetAllInterest } from '../../../api/interest-pay';
+import { useGetBranch } from '../../../api/branch';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -39,15 +40,22 @@ const TABLE_HEAD = [
   { id: 'totalPay', label: 'Total Pay' },
   { id: 'adjustedPay', label: 'Adjusted Pay' },
 ];
+
 function InterestPayDetailsForm({ currentLoan }) {
   const { penalty } = useGetPenalty();
-  const {id} = useParams();
-  const [interests,setInterests] = useState([]);
+  const { id } = useParams();
+  const [paymentMode, setPaymentMode] = useState('');
+  const { branch } = useGetBranch();
+  const { loanInterest, mutate } = useGetAllInterest(id);
 
-  const {loanInterest , mutate} = useGetAllInterest(id);
-  const { user } = useAuthContext();
-  const router = useRouter();
-
+  const paymentSchema = paymentMode === 'Bank' ? {
+    account: Yup.object().required('Account is required'),
+  } : paymentMode === 'Cash' ? {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+  } : {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+    account: Yup.object().required('Account is required'),
+  };
 
   const NewInterestPayDetailsSchema = Yup.object().shape({
     from: Yup.date().required('From Date is required'),
@@ -63,63 +71,12 @@ function InterestPayDetailsForm({ currentLoan }) {
     payAfterAdjusted1: Yup.string().required('Pay After Adjusted 1 is required'),
     oldCrDr: Yup.string().required('Old CR/DR is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    accountName: Yup.string().test(
-      'accountNameRequired',
-      'Account name is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    cashAmount: Yup.string().test(
-      'cashAmountRequired',
-      'Cash Amount is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    accountNo: Yup.string().test(
-      'accountNoRequired',
-      'Account number is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    accountType: Yup.string().test(
-      'accountTypeRequired',
-      'Account type is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    IFSC: Yup.string().test(
-      'ifscRequired',
-      'IFSC code is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    bankName: Yup.string().test(
-      'bankNameRequired',
-      'Bank name is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
+    ...paymentSchema
   });
+
   const defaultValues = {
-    from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0].to),
-    to: currentLoan?.nextInstallmentDate ? new Date(currentLoan.nextInstallmentDate) : new Date(),
+    from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to),
+    to: (currentLoan?.nextInstallmentDate > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
     days: '',
     amountPaid: '',
     interestAmount: currentLoan?.scheme.interestRate || '',
@@ -129,16 +86,11 @@ function InterestPayDetailsForm({ currentLoan }) {
     cr_dr: '',
     totalPay: '',
     payAfterAdjusted1: '',
-    oldCrDr: 0,
+    oldCrDr: loanInterest[0]?.cr_dr || 0,
     paymentMode: '',
-    accountName: '',
-    accountNo: '',
-    accountType: '',
-    IFSC: '',
-    bankName: '',
-    cashAmount: '',
+    account: null,
+    cashAmount: null,
   };
-
   const methods = useForm({
     resolver: yupResolver(NewInterestPayDetailsSchema),
     defaultValues,
@@ -163,6 +115,13 @@ function InterestPayDetailsForm({ currentLoan }) {
     return penalty.toFixed(2);
   }
 
+  useEffect(() => {
+    if (loanInterest && currentLoan) {
+      setValue('from', (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to));
+      setValue('to', (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date());
+      setValue('oldCrDr', loanInterest[0]?.cr_dr || 0);
+    }
+  }, [loanInterest, currentLoan, setValue]);
 
   useEffect(() => {
     const startDate = new Date(from);
@@ -193,14 +152,13 @@ function InterestPayDetailsForm({ currentLoan }) {
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
-  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
-
+  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr'), watch('consultingCharge')]);
 
 
   const onSubmit = handleSubmit(async (data) => {
 
     let paymentDetail = {
-      paymentMode: data.paymentMode
+      paymentMode: data.paymentMode,
     };
 
     if (data.paymentMode === 'Cash') {
@@ -211,21 +169,13 @@ function InterestPayDetailsForm({ currentLoan }) {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account,
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account,
       };
     }
 
@@ -238,7 +188,7 @@ function InterestPayDetailsForm({ currentLoan }) {
       amountPaid: data.amountPaid,
       penalty: data.penalty,
       cr_dr: data.cr_dr,
-      paymentDetail
+      paymentDetail,
     };
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/interest-payment`;
@@ -255,7 +205,7 @@ function InterestPayDetailsForm({ currentLoan }) {
       enqueueSnackbar(response?.data.message);
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("Failed to pay interest",{variant: "error"});
+      enqueueSnackbar('Failed to pay interest', { variant: 'error' });
     }
 
   });
@@ -334,7 +284,11 @@ function InterestPayDetailsForm({ currentLoan }) {
             label='Payment Mode'
             req={'red'}
             sx={{ width: '25%' }}
-            options={['Cash', 'Bank','Both']}
+            onChange={(event, newValue) => {
+              setPaymentMode(newValue);
+              setValue('paymentMode', newValue);
+            }}
+            options={['Cash', 'Bank', 'Both']}
             getOptionLabel={(option) => option}
             renderOption={(props, option) => (
               <li {...props} key={option}>
@@ -343,49 +297,34 @@ function InterestPayDetailsForm({ currentLoan }) {
             )}
           />
         </Box>
-        <Box sx={{mt:8}}>
+        <Box sx={{ mt: 8 }}>
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
             <>
-              <RHFTextField name='cashAmount' label='Cash Amount'  sx={{ width: '25%' }} InputLabelProps={{ shrink: true,readOnly: true }}/>
+              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }} req={'red'} />
             </>
           )}
-            {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-              <Grid container sx={{ mt: 8 }}>
-                <Grid item xs={12} md={4}>
-                  <Typography variant='h6' sx={{ mb: 0.5 }}>
-                    Bank Account Details
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} md={8}>
-                  <Box
-                    rowGap={3}
-                    columnGap={2}
-                    display='grid'
-                    gridTemplateColumns={{
-                      xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(2, 1fr)',
-                    }}
-                  >
-                    <RHFTextField name='accountName' label='Account Name' req={'red'} />
-                    <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-                    <RHFAutocomplete
-                      name='accountType'
-                      label='Account Type'
-                      req={'red'}
-                      options={['Saving', 'Current']}
-                      getOptionLabel={(option) => option}
-                      renderOption={(props, option) => (
-                        <li {...props} key={option}>
-                          {option}
-                        </li>
-                      )}
-                    />
-                    <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-                    <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-                  </Box>
-                </Grid>
-              </Grid>
-            )}
+          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+            <Box sx={{ mt: 8 }}>
+              <RHFAutocomplete
+                name='account'
+                label='Account'
+                req={'red'}
+                fullWidth
+                sx={{ width: '25%' }}
+                options={branch.flatMap((item) => item.company.bankAccounts)}
+                getOptionLabel={(option) => option.bankName || ''}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id || option.bankName}>
+                    {option.bankName}
+                  </li>
+                )}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(event, value) => {
+                  setValue('account', value);
+                }}
+              />
+            </Box>
+          )}
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>

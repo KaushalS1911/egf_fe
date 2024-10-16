@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -11,53 +11,21 @@ import { fDate } from '../../../utils/format-time';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
-const dummyTableData = [
-  {
-    loanAmount: '5000 USD',
-    payAmount: '1000 USD',
-    payDate: '05 Aug 2024',
-    entryDate: '05 Jul 2024',
-    remarks: '1 Chain close',
-  },
-  {
-    loanAmount: '8000 USD',
-    payAmount: '1500 USD',
-    payDate: '10 Aug 2024',
-    entryDate: '10 Jul 2024',
-    remarks: 'Partial payment',
-  },
-  {
-    loanAmount: '6000 USD',
-    payAmount: '1200 USD',
-    payDate: '12 Aug 2024',
-    entryDate: '12 Jul 2024',
-    remarks: 'Overdue',
-  },
-  {
-    loanAmount: '7000 USD',
-    payAmount: '1400 USD',
-    payDate: '15 Aug 2024',
-    entryDate: '15 Jul 2024',
-    remarks: 'Advance payment',
-  },
-  {
-    loanAmount: '9000 USD',
-    payAmount: '1600 USD',
-    payDate: '18 Aug 2024',
-    entryDate: '18 Jul 2024',
-    remarks: 'Full settlement',
-  }
-];
-const TABLE_HEAD = [
-  { id: 'loanAmount', label: 'Loan Amount' },
-  { id: 'payAmount', label: 'Pay Amount' },
-  { id: 'payDate', label: 'Pay date' },
-  { id: 'entryDate', label: 'Entry Date' },
-  { id: 'remarks', label: 'Remarks' },
-];
+import { useGetBranch } from '../../../api/branch';
 
 function UchakInterestPayForm() {
   const { id } = useParams();
+  const {branch} = useGetBranch();
+  const [paymentMode, setPaymentMode] = useState('');
+
+  const paymentSchema = paymentMode === 'Bank' ? {
+    account: Yup.object().required('Account is required'),
+  } : paymentMode === 'Cash' ? {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+  } : {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+    account: Yup.object().required('Account is required'),
+  };
   const NewUchakSchema = Yup.object().shape({
     uchakPayDate: Yup.date().nullable().required('Uchak Pay date is required'),
     uchakInterestAmount: Yup.number()
@@ -66,9 +34,9 @@ function UchakInterestPayForm() {
       .typeError('Uchak Interest Pay Amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    accountName: Yup.string().test(
-      'accountNameRequired',
-      'Account name is required',
+    account: Yup.object().test(
+      'accountRequired',
+      'Account is required',
       function (value) {
         const { paymentMode } = this.parent;
         return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
@@ -84,41 +52,7 @@ function UchakInterestPayForm() {
       }
     ),
 
-    accountNo: Yup.string().test(
-      'accountNoRequired',
-      'Account number is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
 
-    accountType: Yup.string().test(
-      'accountTypeRequired',
-      'Account type is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    IFSC: Yup.string().test(
-      'ifscRequired',
-      'IFSC code is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    bankName: Yup.string().test(
-      'bankNameRequired',
-      'Bank name is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
   });
 
   const defaultValues = {
@@ -127,11 +61,7 @@ function UchakInterestPayForm() {
     remark: '',
     paymentMode: '',
     cashAmount: '',
-    accountName: '',
-    accountNo: '',
-    accountType: '',
-    IFSC: '',
-    bankName: '',
+    account: null,
   };
 
   const methods = useForm({
@@ -144,6 +74,7 @@ function UchakInterestPayForm() {
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
@@ -160,21 +91,13 @@ function UchakInterestPayForm() {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     }
 
@@ -194,11 +117,11 @@ function UchakInterestPayForm() {
       };
 
       const response = await axios(config);
-      mutate();
       reset();
-      enqueueSnackbar(response?.data.message);
+      enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
       console.error(error);
+      enqueueSnackbar("Failed to uchak interest pay", { variant: 'error' });
     }
   });
   return (
@@ -241,6 +164,10 @@ function UchakInterestPayForm() {
             label='Payment Mode'
             req={'red'}
             options={['Cash', 'Bank','Both']}
+            onChange={(event, newValue) => {
+              setPaymentMode(newValue);
+              setValue('paymentMode', newValue);
+            }}
             getOptionLabel={(option) => option}
             renderOption={(props, option) => (
               <li {...props} key={option}>
@@ -258,41 +185,26 @@ function UchakInterestPayForm() {
             </>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Grid container sx={{ mt: 8 }}>
-              <Grid item xs={12} md={4}>
-                <Typography variant='h6' sx={{ mb: 0.5 }}>
-                  Bank Account Details
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display='grid'
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(2, 1fr)',
-                  }}
-                >
-                  <RHFTextField name='accountName' label='Account Name' req={'red'} />
-                  <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-                  <RHFAutocomplete
-                    name='accountType'
-                    label='Account Type'
-                    req={'red'}
-                    options={['Saving', 'Current']}
-                    getOptionLabel={(option) => option}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option}>
-                        {option}
-                      </li>
-                    )}
-                  />
-                  <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-                  <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-                </Box>
-              </Grid>
-            </Grid>
+            <Box sx={{ mt: 8 }}>
+              <RHFAutocomplete
+                name='account'
+                label='Account'
+                req={'red'}
+                fullWidth
+                sx={{width: "25%"}}
+                options={branch.flatMap((item) => item.company.bankAccounts)}
+                getOptionLabel={(option) => option.bankName || ''}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id || option.bankName}>
+                    {option.bankName}
+                  </li>
+                )}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(event, value) => {
+                  setValue('account', value);
+                }}
+              />
+            </Box>
           )}
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
@@ -301,21 +213,6 @@ function UchakInterestPayForm() {
           </LoadingButton>
         </Box>
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 8 }}>
-        <TableHeadCustom headLabel={TABLE_HEAD} />
-        <TableBody>
-          {dummyTableData.map((row, index) => (
-            <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.payAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.payDate)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.entryDate)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remarks}</TableCell>
-            </TableRow>
-          ))}
-
-        </TableBody>
-      </Table>
     </>
   );
 }

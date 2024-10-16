@@ -56,7 +56,7 @@ const STATUS_OPTIONS = [
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number', width: 180 },
+  { id: 'contact', label: 'Contact No.', width: 180 },
   { id: 'CustomerCode', label: 'Customer Code', width: 220 },
   { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 120 },
@@ -163,9 +163,10 @@ export default function CustomerListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='List'
+          heading='Customer List'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Customer', href: paths.dashboard.customer.root },
             { name: 'List' },
           ]}
           action={

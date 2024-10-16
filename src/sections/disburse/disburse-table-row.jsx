@@ -8,70 +8,54 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { Box } from '@mui/material';
+import { RouterLink } from '../../routes/components';
+import { paths } from '../../routes/paths';
+import { useRouter } from '../../routes/hooks';
+import { Link } from 'react-router-dom';
 
 
 // ----------------------------------------------------------------------
 
-export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const {name,caratPercentage,remark,isActive} = row;
-
+export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount ,_id} = row;
   const confirm = useBoolean();
-
-  const quickEdit = useBoolean();
-
   const popover = usePopover();
 
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{caratPercentage}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ remark || "-"}</TableCell>
-        <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (isActive == true && 'success' ) ||
-              (isActive == false && 'error') ||
-              'default'
-            }
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Link
+            to={paths.dashboard.disburse.new(_id)}
+            style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}
           >
-            {isActive?"Yes":"No"}
-          </Label>
+            {loanNo}
+          </Link>
         </TableCell>
-
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
-          {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
-          {/*    <Iconify icon="solar:pen-bold" />*/}
-          {/*  </IconButton>*/}
-          {/*</Tooltip>*/}
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
+        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
 
-
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -81,7 +65,7 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon="solar:trash-bin-trash-bold" />
+          <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
         </MenuItem>
 
@@ -91,7 +75,7 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:pen-bold" />
+          <Iconify icon='solar:pen-bold' />
           Edit
         </MenuItem>
       </CustomPopover>
@@ -99,10 +83,10 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -111,7 +95,7 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
   );
 }
 
-CaratTableRow.propTypes = {
+DisburseTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

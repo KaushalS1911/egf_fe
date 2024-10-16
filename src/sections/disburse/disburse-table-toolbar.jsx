@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback , useState} from 'react';
+import { useCallback, useState } from 'react';
 
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -13,14 +13,14 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableToolbar({ filters, onFilters}) {
+export default function DisburseTableToolbar({ filters, onFilters }) {
+
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('name', event.target.value);
+      onFilters('userName', event.target.value);
     },
     [onFilters],
   );
-
 
   return (
     <>
@@ -63,7 +63,7 @@ export default function EmployeeTableToolbar({ filters, onFilters}) {
   );
 }
 
-EmployeeTableToolbar.propTypes = {
+DisburseTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

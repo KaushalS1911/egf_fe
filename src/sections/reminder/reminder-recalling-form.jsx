@@ -14,31 +14,44 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import { countries } from 'src/assets/data';
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { date } from 'yup';
+import axios from 'axios';
+import { useAuthContext } from '../../auth/hooks';
+import { paths } from '../../routes/paths';
+import { useRouter } from '../../routes/hooks';
+import { mutate } from 'swr';
 
 // ----------------------------------------------------------------------
 
-export default function ReminderRecallingForm({currentReminder, open, onClose }) {
+export default function ReminderRecallingForm({currentReminderDetails,currentReminder, open, setOpen }) {
+  console.log(currentReminder,"5454");
   const { enqueueSnackbar } = useSnackbar();
-
+  const { user } = useAuthContext();
+  const router = useRouter();
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    nextRecallingDate: Yup.date()
+        .required('Next Recalling Date is required')
+        .nullable()
+        .typeError('Date is required'),
+    remark: Yup.string().required('Remark is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      ate:  "" || new Date(),
-      remark: '',
+      nextRecallingDate: new Date(currentReminderDetails?.nextRecallingDate)||'',
+      remark:  currentReminderDetails?.remark||'',
     }),
-    []
+    [currentReminderDetails]
   );
-
+const onClose = ()=>{
+  setOpen(false)
+  reset()
+}
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
@@ -51,12 +64,30 @@ export default function ReminderRecallingForm({currentReminder, open, onClose })
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
+      if (currentReminderDetails){
+        const payload2={
+          nextRecallingDate:data.nextRecallingDate,
+          remark:data.remark
+        }
+        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder/${currentReminderDetails._id}`, payload2);
+        mutate(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`);
+        onClose();
+        enqueueSnackbar(res?.data.message);
+      }
+      else {
+        const payload={
+          loan:currentReminder._id,
+          nextRecallingDate:data.nextRecallingDate,
+          remark:data.remark
+        }
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`,payload)
       onClose();
-      enqueueSnackbar('Created success!');
+      reset();
+      enqueueSnackbar(res?.data.message);
       console.info('DATA', data);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -90,7 +121,7 @@ export default function ReminderRecallingForm({currentReminder, open, onClose })
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <DatePicker
-                  label='Date'
+                  label='Next Recalling Date'
                   value={field.value}
                   onChange={(newValue) => field.onChange(newValue)}
                   slotProps={{
@@ -112,7 +143,7 @@ export default function ReminderRecallingForm({currentReminder, open, onClose })
             Cancel
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Submit
+            {currentReminderDetails ? "Save":"Submit"}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

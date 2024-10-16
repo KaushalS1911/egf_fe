@@ -1,13 +1,12 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useForm, Controller, useFieldArray, useWatch } from 'react-hook-form';
+import React, { useMemo } from 'react';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -16,22 +15,53 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
-  RHFAutocomplete, RHFSelect, RHFSwitch,
+  RHFAutocomplete,
   RHFTextField,
 } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetBranch } from '../../api/branch';
-import Iconify from '../../components/iconify';
 import CardContent from '@mui/material/CardContent';
-import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
-import { useGetScheme } from '../../api/scheme';
 
 // ----------------------------------------------------------------------
 
 export default function DisburseNewEditForm({ currentDisburse }) {
-
+  console.log(currentDisburse);
+  const paymentSchema = currentDisburse.paymentMode === 'Bank' ? {
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    companyBankDetail: Yup.object().shape({
+      account: Yup.object().required('Account    is required'),
+      transactionID: Yup.string().required('Transaction ID is required'),
+    }),
+  } : currentDisburse.paymentMode === 'Cash' ? {
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+  } : {
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    companyBankDetail: Yup.object().shape({
+      account: Yup.object().required('Account Number is required'),
+      transactionID: Yup.string().required('Transaction ID is required'),
+    }),
+  };
+  console.log(paymentSchema);
+  console.log(currentDisburse);
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { branch } = useGetBranch();
@@ -41,15 +71,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     loanAmount: Yup.string().required('Loan Amount is required'),
     interest: Yup.string().required('Interest is required'),
     scheme: Yup.string().required('Scheme Name is required'),
-    valuation: Yup.string().required('Valuation is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
-    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
-    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
-    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
     items: Yup.array().of(
       Yup.object().shape({
         propertyName: Yup.string().required('Property Name is required'),
@@ -60,12 +83,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
       }),
     ).required('At least one item is required'),
-    companyBankDetail: Yup.object().shape({
-      account: Yup.string().required('Account Number is required'),
-      transactionID: Yup.string().required('Transaction ID is required'),
-    }),
-
   });
+
   const defaultValues = useMemo(
     () => (
       {
@@ -76,7 +95,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         scheme: currentDisburse?.scheme?.name || '',
         valuation: currentDisburse?.valuation || '',
         address: currentDisburse?.customer?.permanentAddress?.street || '',
-        branch: currentDisburse?.branch || '',
+        branch: currentDisburse?.customer?.branch?.name || '',
         bankNetAmount: currentDisburse?.bankAmount || 0,
         bankPayingAmount: currentDisburse?.bankPayingAmount || 0,
         bankPendingAmount: currentDisburse?.pendingAmount || 0,
@@ -103,7 +122,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   );
 
   const methods = useForm({
-    // resolver: yupResolver(NewDisburse),
+    resolver: yupResolver(NewDisburse),
     defaultValues,
   });
 
@@ -140,13 +159,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         companyBankDetail: data.companyBankDetail,
         bankAmount: data.bankAmount,
         cashAmount: data.cashAmount,
-        customer: currentDisburse.customer._id,
         pendingBankAmount: data.bankPendingAmount,
         pendingCashAmount: data.cashPendingAmount,
-        loanAmount: data.loanAmount,
-        interest: data.interest,
-        scheme: data.scheme,
-        address: data.address,
       };
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
       router.push(paths.dashboard.disburse.list);
@@ -158,7 +172,24 @@ export default function DisburseNewEditForm({ currentDisburse }) {
       console.error(error, 'ree');
     }
   });
+  const handleCashAmountChange = (event) => {
+    const cashPayingAmount = parseFloat(event.target.value) || '';
+    const cashNetAmount = parseFloat(getValues('cashNetAmount')) || '';
 
+    if (cashPayingAmount > cashNetAmount) {
+      setValue('cashPayingAmount', cashNetAmount);
+      enqueueSnackbar('Cash paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
+    }
+  };
+  const handleBankAmountChange = (event) => {
+    const bankPayingAmount = parseFloat(event.target.value) || '';
+    const bankNetAmount = parseFloat(getValues('bankNetAmount')) || '';
+
+    if (bankPayingAmount > bankNetAmount) {
+      setValue('bankPayingAmount', bankNetAmount);
+      enqueueSnackbar('Bank paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
+    }
+  };
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -183,136 +214,97 @@ export default function DisburseNewEditForm({ currentDisburse }) {
               <RHFTextField name='loanAmount' label='Loan Amount' req={'red'} />
               <RHFTextField name='interest' label='Interest' req={'red'} />
               <RHFTextField name='scheme' label='Scheme Name' req={'red'} />
-              {/*<RHFAutocomplete*/}
-              {/*  name='scheme'*/}
-              {/*  label='Scheme Name'*/}
-              {/*  req={'red'}*/}
-              {/*  fullWidth*/}
-              {/*  options={scheme?.map((item) => item.name)}*/}
-              {/*  getOptionLabel={(option) => option}*/}
-              {/*  renderOption={(props, option) => (*/}
-              {/*    <li {...props} key={option}>*/}
-              {/*      {option}*/}
-              {/*    </li>*/}
-              {/*  )}*/}
-              {/*/>*/}
               <RHFTextField name='address' label='Address' req={'red'} />
-              <RHFAutocomplete
-                name='branch'
-                label='Branch'
-                req={'red'}
-                fullWidth
-                options={branch.map((item) => item.name)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
+              <RHFTextField name='branch' label='Branch' req={'red'} />
+
             </Box>
           </Card>
         </Grid>
 
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }} py={2}>
-            <Typography variant='h6' gutterBottom>
-              Property Details
-            </Typography>
-            <Button
-              size='small'
-              variant='contained'
-              color='primary'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-              onClick={handleAdd}
-            >
-              Add Property
-            </Button>
+        <Grid item xs={12} md={12}>
+          <Card
+            sx={{ margin: '0px 0px 20px 0px' }}
+          >
+            <CardContent>
+              <Typography variant='h6' gutterBottom>
+                Property Details
+              </Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
+                      <TableCell><strong>Property Name</strong></TableCell>
+                      <TableCell><strong>Total Weight</strong></TableCell>
+                      <TableCell><strong>Lose Weight</strong></TableCell>
+                      <TableCell><strong>Gross Weight</strong></TableCell>
+                      <TableCell><strong>Net Weight</strong></TableCell>
+                      <TableCell width={200}><strong>Loan Applicable amount</strong></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {fields.map((row, index) => (
+                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.propertyName`}
+                            label='Property Name'
+                            defaultValue={row.propertyName || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.totalWeight`}
+                            label='Total Weight'
+                            defaultValue={row.totalWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.loseWeight`}
+                            label='Lose Weight'
+                            defaultValue={row.loseWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.grossWeight`}
+                            label='Gross Weight'
+                            defaultValue={row.grossWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.netWeight`}
+                            label='Net Weight'
+                            defaultValue={row.netWeight || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.loanApplicableAmount`}
+                            label='Loan Applicable Amount'
+                            defaultValue={row.loanApplicableAmount || ''}
+                            disabled={true}
 
-          </Box>
-          <TableContainer>
+                          />
+                        </TableCell>
+                        <TableCell>
 
-            <Table>
-              <TableHead>
-                <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                  <TableCell><strong>Property Name</strong></TableCell>
-                  <TableCell><strong>Total Weight</strong></TableCell>
-                  <TableCell><strong>Lose Weight</strong></TableCell>
-                  <TableCell><strong>Gross Weight</strong></TableCell>
-                  <TableCell><strong>Net Weight</strong></TableCell>
-                  <TableCell><strong>Loan Applicable amount</strong></TableCell>
-                  <TableCell><strong>Actions</strong></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {fields.map((row, index) => (
-                  <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.propertyName`}
-                        label='Property Name'
-                        defaultValue={row.propertyName || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.totalWeight`}
-                        label='Total Weight'
-                        defaultValue={row.totalWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.loseWeight`}
-                        label='Lose Weight'
-                        defaultValue={row.loseWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.grossWeight`}
-                        label='Gross Weight'
-                        defaultValue={row.grossWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.netWeight`}
-                        label='Net Weight'
-                        defaultValue={row.netWeight || ''}
-                        disabled={true}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RHFTextField
-                        name={`propertyDetails.${index}.loanApplicableAmount`}
-                        label='Loan Applicable Amount'
-                        defaultValue={row.loanApplicableAmount || ''}
-                        disabled={true}
 
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {/*<IconButton onClick={() => handleReset(index)}>*/}
-                      {/*  <Iconify icon='ic:baseline-refresh' />*/}
-                      {/*</IconButton>*/}
-                      <IconButton
-                        color='error'
-                        onClick={() => handleRemove(index)}
-                      >
-                        <Iconify icon='solar:trash-bin-trash-bold' />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
         <Grid xs={12} md={4} py={5}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
             Transaction Type
@@ -340,27 +332,48 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         e.preventDefault();
                       }
                     }} />
-                    <RHFTextField name='bankPayingAmount' label='Paying Amount' req={'red'} onKeyPress={(e) => {
-                      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                        e.preventDefault();
-                      }
-                    }} />
+                    <Controller
+                      name='bankPayingAmount'
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          {...field}
+                          label='Paying Amount'
+                          req={'red'}
+                          type='number'
+                          inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleBankAmountChange(e);
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      )}
+                    />
                     <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}
                                   value={watch('bankNetAmount') - watch('bankPayingAmount') || 0}
                                   InputLabelProps={{ shrink: true }} />
-                    {branch.find((item) => item.name === watch('branch')) && <RHFAutocomplete
+                    <RHFAutocomplete
                       name='companyBankDetail.account'
                       label='Account'
                       req={'red'}
                       fullWidth
-                      options={branch.find((item) => item.name === watch('branch'))?.company.bankAccounts.map((item) => item)}
-                      getOptionLabel={(option) => option.bankName}
+                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
-                        <li {...props} key={option}>
+                        <li {...props} key={option.id || option.bankName}>
                           {option.bankName}
                         </li>
                       )}
-                    />}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      onChange={(event, value) => {
+                        setValue('companyBankDetail.account', value);
+                      }}
+                    />
                     <RHFTextField name='companyBankDetail.transactionID' label='Transaction ID' req={'red'} />
                     <Controller
                       name='bankDate'
@@ -398,6 +411,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       sm: 'repeat(2, 1fr)',
                     }}
                   >
+
                     <RHFTextField name='cashNetAmount' label='Net Amount' req={'red'}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -405,13 +419,30 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                                     }
                                   }}
                     />
-                    <RHFTextField name='cashPayingAmount' label='Paying Amount' req={'red'}
-                                  onKeyPress={(e) => {
-                                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                                      e.preventDefault();
-                                    }
-                                  }}
+                    <Controller
+                      name='cashPayingAmount'
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          {...field}
+                          label='Paying Amount'
+                          req={'red'}
+                          type='number'
+                          inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleCashAmountChange(e);
+                          }}
+                        />
+                      )}
                     />
+                    {/*<RHFTextField name='cashPayingAmount' label='Paying Amount' req={'red'}*/}
+                    {/*              onKeyPress={(e) => {*/}
+                    {/*                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
+                    {/*                  e.preventDefault();*/}
+                    {/*                }*/}
+                    {/*              }}*/}
+                    {/*/>*/}
                     <RHFTextField name='cashPendingAmount' label='Pending Amount' req={'red'}
                                   value={parseFloat(watch('cashNetAmount') - watch('cashPayingAmount') || 0)}
                                   InputLabelProps={{ shrink: true }}

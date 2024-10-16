@@ -37,26 +37,15 @@ import {
 import ReminderTableToolbar from '../reminder-table-toolbar';
 import ReminderTableFiltersResult from '../reminder-table-filters-result';
 import ReminderTableRow from '../reminder-table-row';
-import { Box} from '@mui/material';
-import Label from '../../../components/label';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { useGetScheme } from '../../../api/scheme';
-import axios from 'axios';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
 import { isAfter, isBetween } from '../../../utils/format-time';
 import { useGetDisburseLoan } from '../../../api/disburseLoan';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-  value: 'false',
-  label: 'Non Active',
-}];
+
 
 const TABLE_HEAD = [
+  { id: '#', label: '#' },
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'customerName', label: 'Customer Name' },
   { id: 'otpNo.', label: 'OTP No.' },
@@ -81,8 +70,6 @@ export default function ReminderListView() {
   const {disburseLoan} = useGetDisburseLoan()
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -91,7 +78,6 @@ export default function ReminderListView() {
 
   const confirm = useBoolean();
 
-  // const {scheme,mutate} = useGetScheme()
 
   const [tableData, setTableData] = useState(disburseLoan);
 
@@ -177,7 +163,12 @@ export default function ReminderListView() {
     },
     [handleFilters],
   );
-  console.log(filters);
+  const handleClick = useCallback(
+    (id) => {
+      router.push(paths.dashboard.reminder_details.list(id));
+    },
+    [router],
+  );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -235,36 +226,46 @@ export default function ReminderListView() {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row._id),
-                    )
-                  }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(
+                  //     checked,
+                  //     dataFiltered.map((row) => row._id),
+                  //   )
+                  // }
                 />
                 <TableBody>
-                  {filters.startDate && filters.endDate || filters.name ?
-                    <>      {dataFiltered
-                      .slice(
-                        table.page * table.rowsPerPage,
-                        table.page * table.rowsPerPage + table.rowsPerPage,
-                      )
-                      .map((row) => (
-                        <ReminderTableRow
-                          key={row._id}
-                          row={row}
-                          selected={table.selected.includes(row._id)}
-                          onSelectRow={() => table.onSelectRow(row._id)}
-                          onDeleteRow={() => handleDeleteRow(row._id)}
-                          onEditRow={() => handleEditRow(row._id)}
+                  {(filters.startDate && filters.endDate || filters.name) ? (
+                    dataFiltered.length > 0 ? (
+                      <>
+                        {dataFiltered
+                          .slice(
+                            table.page * table.rowsPerPage,
+                            table.page * table.rowsPerPage + table.rowsPerPage,
+                          )
+                          .map((row,index) => (
+                            <ReminderTableRow
+                              index={index + 1}
+                              key={row._id}
+                              row={row}
+                              handleClick={() => handleClick(row._id)}
+                              selected={table.selected.includes(row._id)}
+                              onSelectRow={() => table.onSelectRow(row._id)}
+                              onDeleteRow={() => handleDeleteRow(row._id)}
+                              onEditRow={() => handleEditRow(row._id)}
+                            />
+                          ))}
+                        <TableEmptyRows
+                          height={denseHeight}
+                          emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                         />
-                      ))}
-                      <TableEmptyRows
-                        height={denseHeight}
-                        emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                      /></>:
-                  <TableNoData notFound={true} />
-                  }
+                      </>
+                    ) : (
+                      <TableNoData notFound={notFound} />
+                    )
+                  ) : (
+                    <TableNoData notFound={true} />
+                  )}
+
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -309,8 +310,6 @@ export default function ReminderListView() {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters ,dateError}) {
   const { startDate, endDate,name} = filters;
-
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -323,14 +322,13 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>
-        rem.customerName.toLowerCase().includes(name.toLowerCase()),
+        rem.customer.firstName.toLowerCase().includes(name.toLowerCase()),
     );
   }
     if (!dateError && startDate && endDate) {
       inputData = inputData.filter((order) =>
-        isBetween(new Date(order.nextInterestPayDate), startDate, endDate),
+        isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
       );
-      console.log(inputData, 'order') ;
   }
   return inputData;
 }

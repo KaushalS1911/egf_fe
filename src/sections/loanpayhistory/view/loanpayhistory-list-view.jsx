@@ -57,7 +57,6 @@ const TABLE_HEAD = [
   { id: 'interestRate', label: 'Interest Rate'},
   { id: 'cashAmount', label: 'Cash Amount'},
   { id: 'bankAmount', label: 'Bank Amount'},
-  { id: '', width: 88 },
 ];
 
 const defaultFilters = {
@@ -163,8 +162,8 @@ export default function LoanpayhistoryListView() {
           heading="Loan Pay History"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Masters', href: paths.dashboard.loanPayHistory.root },
-            { name: 'Loan Pay History List' },
+            { name: 'Loan Pay History', href: paths.dashboard.loanPayHistory.root },
+            { name: 'List' },
           ]}
           // action={
           //   <Button
@@ -259,12 +258,6 @@ export default function LoanpayhistoryListView() {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row._id)
-                    )
-                  }
                 />
 
                 <TableBody>
@@ -337,21 +330,21 @@ export default function LoanpayhistoryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  // const {  username } = filters;
-  //
-  // const stabilizedThis = inputData.map((el, index) => [el, index]);
-  // stabilizedThis.sort((a, b) => {
-  //   const order = comparator(a[0], b[0]);
-  //   if (order !== 0) return order;
-  //   return a[1] - b[1];
-  // });
-  // inputData = stabilizedThis.map((el) => el[0]);
-  // if (username && username.trim()) {
-  //   inputData = inputData.filter(
-  //     (inq) =>
-  //       inq.username.toLowerCase().includes(username.toLowerCase())
-  //       // inq.phoneNumber.toLowerCase().includes(name.toLowerCase())
-  //   );
-  // }
+  const {  username } = filters;
+
+  const stabilizedThis = inputData.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  inputData = stabilizedThis.map((el) => el[0]);
+  if (username && username.trim()) {
+    inputData = inputData.filter(
+      (item) =>
+        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.lastName.toLowerCase().includes(username.toLowerCase())
+    );
+  }
   return inputData;
 }

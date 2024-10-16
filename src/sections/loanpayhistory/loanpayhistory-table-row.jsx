@@ -11,6 +11,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
+import { Link } from 'react-router-dom';
 
 
 // ----------------------------------------------------------------------
@@ -23,27 +24,18 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
 
   return (
     <>
-      <TableRow hover selected={selected} sx={{cursor: "pointer"}} onClick={() => router.push(paths.dashboard.loanPayHistory.edit(_id))}>
-        <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
+      <TableRow hover selected={selected} >
 
           <TableCell>
             {index + 1}
           </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ <Link to={paths.dashboard.loanPayHistory.edit(_id)} style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}>{loanNo}</Link>} </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
       </TableRow>
 
 
