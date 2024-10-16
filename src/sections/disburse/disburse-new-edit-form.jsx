@@ -41,7 +41,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
-      account: Yup.object().required('Account    is required'),
+      account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
     }),
   } : currentDisburse.paymentMode === 'Cash' ? {
@@ -56,11 +56,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
-      account: Yup.object().required('Account Number is required'),
+      account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
     }),
   };
-  console.log(paymentSchema);
+  console.log(paymentSchema,"iygtyutu");
   console.log(currentDisburse);
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -73,16 +73,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     scheme: Yup.string().required('Scheme Name is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-    items: Yup.array().of(
-      Yup.object().shape({
-        propertyName: Yup.string().required('Property Name is required'),
-        totalWeight: Yup.string().required('Total Weight is required'),
-        loseWeight: Yup.string().required('Lose Weight is required'),
-        grossWeight: Yup.string().required('Gross Weight is required'),
-        netWeight: Yup.string().required('Net Weight is required'),
-        loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
-      }),
-    ).required('At least one item is required'),
+    ...paymentSchema
   });
 
   const defaultValues = useMemo(
@@ -153,6 +144,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     });
   };
   const onSubmit = handleSubmit(async (data) => {
+    alert()
     try {
       const payload = {
         loan: currentDisburse._id,
@@ -436,13 +428,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         />
                       )}
                     />
-                    {/*<RHFTextField name='cashPayingAmount' label='Paying Amount' req={'red'}*/}
-                    {/*              onKeyPress={(e) => {*/}
-                    {/*                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
-                    {/*                  e.preventDefault();*/}
-                    {/*                }*/}
-                    {/*              }}*/}
-                    {/*/>*/}
+
                     <RHFTextField name='cashPendingAmount' label='Pending Amount' req={'red'}
                                   value={parseFloat(watch('cashNetAmount') - watch('cashPayingAmount') || 0)}
                                   InputLabelProps={{ shrink: true }}

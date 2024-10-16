@@ -29,7 +29,6 @@ import { mutate } from 'swr';
 // ----------------------------------------------------------------------
 
 export default function ReminderRecallingForm({currentReminderDetails,currentReminder, open, setOpen }) {
-  console.log(currentReminder,"5454");
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const router = useRouter();
@@ -151,8 +150,8 @@ const onClose = ()=>{
   );
 }
 
-ReminderRecallingForm.propTypes = {
-  open: PropTypes.bool,
-  onClose: PropTypes.func,
-  currentUser: PropTypes.object,
-};
+  ReminderRecallingForm.propTypes = {
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    currentUser: PropTypes.object,
+  };

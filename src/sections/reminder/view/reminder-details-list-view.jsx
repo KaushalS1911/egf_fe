@@ -52,11 +52,6 @@ import { useGetReminder } from '../../../api/reminder';
 
 // ----------------------------------------------------------------------
 
-// const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-//   value: 'false',
-//   label: 'Non Active',
-// }];
-
 const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'entryDate', label: 'Entry Date' },
@@ -79,7 +74,6 @@ export default function ReminderDetailsListView() {
   const { user } = useAuthContext();
   const {id} = useParams()
   const reminderDetails = reminder.filter((item) => item.loan._id === id);
-  console.log(reminderDetails,"8520");
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
@@ -176,7 +170,7 @@ export default function ReminderDetailsListView() {
           heading='Reminders'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reminder', href: paths.dashboard.reminder.list},
+            { name: 'Reminder Details', href: paths.dashboard.reminder.list},
             { name: 'List' },
           ]}
 
