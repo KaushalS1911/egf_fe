@@ -29,7 +29,7 @@ export default function CustomerEditView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Customer',
+            name: 'Customer List',
             href: paths.dashboard.customer.root,
           },
           { name: currentCustomer?.firstName },

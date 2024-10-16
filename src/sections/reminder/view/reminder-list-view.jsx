@@ -81,8 +81,6 @@ export default function ReminderListView() {
   const {disburseLoan} = useGetDisburseLoan()
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -91,7 +89,6 @@ export default function ReminderListView() {
 
   const confirm = useBoolean();
 
-  // const {scheme,mutate} = useGetScheme()
 
   const [tableData, setTableData] = useState(disburseLoan);
 
@@ -177,7 +174,12 @@ export default function ReminderListView() {
     },
     [handleFilters],
   );
-  console.log(filters);
+  const handleClick = useCallback(
+    (id) => {
+      router.push(paths.dashboard.reminder_details.list(id));
+    },
+    [router],
+  );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -253,6 +255,7 @@ export default function ReminderListView() {
                         <ReminderTableRow
                           key={row._id}
                           row={row}
+                          handleClick={() => handleClick(row._id)}
                           selected={table.selected.includes(row._id)}
                           onSelectRow={() => table.onSelectRow(row._id)}
                           onDeleteRow={() => handleDeleteRow(row._id)}
@@ -262,8 +265,9 @@ export default function ReminderListView() {
                       <TableEmptyRows
                         height={denseHeight}
                         emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                      /></>:
-                  <TableNoData notFound={true} />
+                      /></>
+                  :
+                  <TableNoData notFound={true}  />
                   }
                 </TableBody>
               </Table>
@@ -309,8 +313,6 @@ export default function ReminderListView() {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters ,dateError}) {
   const { startDate, endDate,name} = filters;
-
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -328,9 +330,8 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   }
     if (!dateError && startDate && endDate) {
       inputData = inputData.filter((order) =>
-        isBetween(new Date(order.nextInterestPayDate), startDate, endDate),
+        isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
       );
-      console.log(inputData, 'order') ;
   }
   return inputData;
 }

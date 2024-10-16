@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { TextField, Button, Grid, Box, Card, Typography } from '@mui/material';
+import { TextField, Button, Grid, Box, Card, Typography, Container } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
@@ -152,6 +152,7 @@ export default function MyProfile() {
   };
 
   return (
+    <Container maxWidth={"lg"}>
     <Grid container spacing={5}>
       <Grid item xs={12} md={8}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitPersonalDetails)}>
@@ -232,5 +233,6 @@ export default function MyProfile() {
         </FormProvider>
       </Grid>
     </Grid>
+    </Container>
   );
 }

@@ -155,8 +155,8 @@ export default function LoanissueListView() {
           heading='Loan Issue List'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Masters', href: paths.dashboard.loanissue.root },
-            { name: 'Loan issue List' },
+            { name: 'Loan Issue', href: paths.dashboard.loanissue.root },
+            { name: ' List' },
           ]}
           action={
             <Button
