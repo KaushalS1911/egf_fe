@@ -18,7 +18,6 @@ import SearchNotFound from 'src/components/search-not-found';
 
 export default function ProductSearch({ query, results, onSearch, hrefItem, loading }) {
     router.push(hrefItem(id));
-  };
 
   const handleKeyUp = (event) => {
     if (query) {
