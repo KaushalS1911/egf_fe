@@ -1,13 +1,12 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useForm, Controller, useFieldArray, useWatch } from 'react-hook-form';
+import React, { useMemo } from 'react';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -16,16 +15,13 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
-  RHFAutocomplete, RHFSelect, RHFSwitch,
+  RHFAutocomplete,
   RHFTextField,
 } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetBranch } from '../../api/branch';
-import Iconify from '../../components/iconify';
 import CardContent from '@mui/material/CardContent';
 import {
-  CardActions,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -35,7 +31,6 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
-import { useGetScheme } from '../../api/scheme';
 
 // ----------------------------------------------------------------------
 
@@ -76,15 +71,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     loanAmount: Yup.string().required('Loan Amount is required'),
     interest: Yup.string().required('Interest is required'),
     scheme: Yup.string().required('Scheme Name is required'),
-    valuation: Yup.string().required('Valuation is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
-    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
-    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
-    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
     items: Yup.array().of(
       Yup.object().shape({
         propertyName: Yup.string().required('Property Name is required'),
@@ -95,11 +83,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
       }),
     ).required('At least one item is required'),
-    companyBankDetail: Yup.object().shape({
-      account: Yup.string().required('Account Number is required'),
-      transactionID: Yup.string().required('Transaction ID is required'),
-    }),
-
   });
 
   const defaultValues = useMemo(
@@ -189,7 +172,24 @@ export default function DisburseNewEditForm({ currentDisburse }) {
       console.error(error, 'ree');
     }
   });
+  const handleCashAmountChange = (event) => {
+    const cashPayingAmount = parseFloat(event.target.value) || '';
+    const cashNetAmount = parseFloat(getValues('cashNetAmount')) || '';
 
+    if (cashPayingAmount > cashNetAmount) {
+      setValue('cashPayingAmount', cashNetAmount);
+      enqueueSnackbar('Cash paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
+    }
+  };
+  const handleBankAmountChange = (event) => {
+    const bankPayingAmount = parseFloat(event.target.value) || '';
+    const bankNetAmount = parseFloat(getValues('bankNetAmount')) || '';
+
+    if (bankPayingAmount > bankNetAmount) {
+      setValue('bankPayingAmount', bankNetAmount);
+      enqueueSnackbar('Bank paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
+    }
+  };
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -332,11 +332,28 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         e.preventDefault();
                       }
                     }} />
-                    <RHFTextField name='bankPayingAmount' label='Paying Amount' req={'red'} onKeyPress={(e) => {
-                      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                        e.preventDefault();
-                      }
-                    }} />
+                    <Controller
+                      name='bankPayingAmount'
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          {...field}
+                          label='Paying Amount'
+                          req={'red'}
+                          type='number'
+                          inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleBankAmountChange(e);
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      )}
+                    />
                     <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}
                                   value={watch('bankNetAmount') - watch('bankPayingAmount') || 0}
                                   InputLabelProps={{ shrink: true }} />
@@ -394,6 +411,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       sm: 'repeat(2, 1fr)',
                     }}
                   >
+
                     <RHFTextField name='cashNetAmount' label='Net Amount' req={'red'}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -401,13 +419,30 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                                     }
                                   }}
                     />
-                    <RHFTextField name='cashPayingAmount' label='Paying Amount' req={'red'}
-                                  onKeyPress={(e) => {
-                                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                                      e.preventDefault();
-                                    }
-                                  }}
+                    <Controller
+                      name='cashPayingAmount'
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          {...field}
+                          label='Paying Amount'
+                          req={'red'}
+                          type='number'
+                          inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleCashAmountChange(e);
+                          }}
+                        />
+                      )}
                     />
+                    {/*<RHFTextField name='cashPayingAmount' label='Paying Amount' req={'red'}*/}
+                    {/*              onKeyPress={(e) => {*/}
+                    {/*                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
+                    {/*                  e.preventDefault();*/}
+                    {/*                }*/}
+                    {/*              }}*/}
+                    {/*/>*/}
                     <RHFTextField name='cashPendingAmount' label='Pending Amount' req={'red'}
                                   value={parseFloat(watch('cashNetAmount') - watch('cashPayingAmount') || 0)}
                                   InputLabelProps={{ shrink: true }}

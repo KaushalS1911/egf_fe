@@ -15,7 +15,7 @@ import { fDate } from '../../utils/format-time';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
 
-export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,handleClick}) {
+export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,handleClick,index}) {
   const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate} = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
@@ -30,10 +30,11 @@ export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
+        {/*<TableCell padding='checkbox'>*/}
+        {/*  <Checkbox checked={selected} onClick={onSelectRow} />*/}
+        {/*</TableCell>*/}
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.firstName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
@@ -42,7 +43,7 @@ export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow
           {calculateDateDifference(new Date(), nextInstallmentDate)}
         </TableCell> <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(lastInstallmentDate)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap',textAlign:"center" }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
 
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
