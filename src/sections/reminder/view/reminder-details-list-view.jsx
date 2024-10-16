@@ -133,9 +133,9 @@ export default function ReminderDetailsListView() {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`, {
         data: { ids: id },
       });
-      enqueueSnackbar(res.data.message);
-      confirm.onFalse();
       mutate();
+      confirm.onFalse();
+      enqueueSnackbar(res.data.message);
     } catch (err) {
       enqueueSnackbar("Failed to delete Scheme");
     }
@@ -150,7 +150,7 @@ export default function ReminderDetailsListView() {
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+    const deleteRows = reminder.filter((row) => table.selected.includes(row._id));
      const deleteIds = deleteRows.map((row) => row._id);
      handleDelete(deleteIds)
     setTableData(deleteRows);
@@ -160,13 +160,6 @@ export default function ReminderDetailsListView() {
       totalRowsFiltered: dataFiltered.length,
     });
   }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
-
-  const handleEditRow = useCallback(
-    (id) => {
-      // router.push(paths.dashboard.scheme.edit(id));
-    },
-    [router],
-  );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {

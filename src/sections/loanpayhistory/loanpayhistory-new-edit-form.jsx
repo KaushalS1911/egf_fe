@@ -84,7 +84,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
       .required('Last Interest Pay Date is required')
       .typeError('Invalid Last Interest Pay Date'),
   });
-
   const defaultValues = useMemo(() => ({
     loanNo: currentLoan?.loanNo || '',
     customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.lastName || '',
@@ -92,7 +91,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     contact: currentLoan?.customer.contact || '',
     issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
     schemeName: currentLoan?.scheme.name || '',
-    closedBy: (user?.firstName + ' ' + user?.lastName) || '',
+    closedBy: currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) :  null,
     oldLoanNo: currentLoan?.oldLoanNo || '',
     interest: currentLoan?.scheme.interestRate || '',
     consultCharge: currentLoan?.consultingCharge || '',
@@ -103,7 +102,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     createdBy: (user?.firstName + ' ' + user?.lastName) || null,
     renewDate: currentLoan?.issueDate ? new Date(new Date(currentLoan.issueDate).setMonth(new Date(currentLoan.issueDate).getMonth() + 6)) : null,
     nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
-    lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : new Date(),
+    lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : null,
   }), [currentLoan]);
   const methods = useForm({
     resolver: yupResolver(NewLoanPayHistorySchema),
@@ -337,11 +336,11 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <Tab label='Loan Part Payment' />
               <Tab label='Loan Close' />
             </Tabs>
-            {activeTab === 0 && <InterestPayDetailsForm  currentLoan={currentLoan}/>}
-            {activeTab === 1 && <PartReleaseForm  currentLoan={currentLoan}/>}
-            {activeTab === 2 && <UchakInterestPayForm currentLoan={currentLoan} />}
-            {activeTab === 3 && <LoanPartPaymentForm  currentLoan={currentLoan}/>}
-            {activeTab === 4 && <LoanCloseForm  currentLoan={currentLoan}/>}
+            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm  currentLoan={currentLoan} />}
+            {(activeTab === 1 && currentLoan) && <PartReleaseForm  currentLoan={currentLoan}/>}
+            {(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} />}
+            {(activeTab === 3 && currentLoan) && <LoanPartPaymentForm  currentLoan={currentLoan}/>}
+            {(activeTab === 4 && currentLoan) && <LoanCloseForm  currentLoan={currentLoan}/>}
           </Card>
         </Grid>
       </Grid>
