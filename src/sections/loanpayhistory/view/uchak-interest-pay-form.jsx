@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,7 +16,16 @@ import { useGetBranch } from '../../../api/branch';
 function UchakInterestPayForm() {
   const { id } = useParams();
   const {branch} = useGetBranch();
+  const [paymentMode, setPaymentMode] = useState('');
 
+  const paymentSchema = paymentMode === 'Bank' ? {
+    account: Yup.object().required('Account is required'),
+  } : paymentMode === 'Cash' ? {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+  } : {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+    account: Yup.object().required('Account is required'),
+  };
   const NewUchakSchema = Yup.object().shape({
     uchakPayDate: Yup.date().nullable().required('Uchak Pay date is required'),
     uchakInterestAmount: Yup.number()
@@ -52,7 +61,7 @@ function UchakInterestPayForm() {
     remark: '',
     paymentMode: '',
     cashAmount: '',
-    account: '',
+    account: null,
   };
 
   const methods = useForm({
@@ -155,6 +164,10 @@ function UchakInterestPayForm() {
             label='Payment Mode'
             req={'red'}
             options={['Cash', 'Bank','Both']}
+            onChange={(event, newValue) => {
+              setPaymentMode(newValue);
+              setValue('paymentMode', newValue);
+            }}
             getOptionLabel={(option) => option}
             renderOption={(props, option) => (
               <li {...props} key={option}>

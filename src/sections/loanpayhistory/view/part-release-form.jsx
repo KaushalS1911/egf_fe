@@ -55,9 +55,20 @@ const TABLE_HEAD = [
 function PartReleaseForm({ currentLoan }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [file, setFile] = useState(null);
+  const [paymentMode, setPaymentMode] = useState('');
   const {branch} = useGetBranch();
   const {id} = useParams();
   const {partRelease,mutate} = useGetAllPartRelease(id);
+
+  const paymentSchema = paymentMode === 'Bank' ? {
+    account: Yup.object().required('Account is required'),
+  } : paymentMode === 'Cash' ? {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+  } : {
+    cashAmount: Yup.string().required('Cash Amount is required'),
+    account: Yup.object().required('Account is required'),
+  };
+
   const selectedTotals = useMemo(() => {
     return selectedRows.reduce(
       (totals, index) => {
@@ -80,23 +91,7 @@ function PartReleaseForm({ currentLoan }) {
       .typeError('Pay amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-
-    cashAmount: Yup.string().test(
-      'cashAmountRequired',
-      'Cash amount is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-    account: Yup.object().test(
-      'accountRequired',
-      'Account is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
+    ...paymentSchema
   });
   const defaultValues = {
     date: null,
@@ -104,7 +99,7 @@ function PartReleaseForm({ currentLoan }) {
     remark: '',
     paymentMode: '',
     cashAmount: '',
-    account: '',
+    account: null,
   };
 
   const methods = useForm({
@@ -324,6 +319,10 @@ function PartReleaseForm({ currentLoan }) {
                         label='Payment Mode'
                         req={'red'}
                         options={['Cash', 'Bank', 'Both']}
+                        onChange={(event, newValue) => {
+                          setPaymentMode(newValue);
+                          setValue('paymentMode', newValue);
+                        }}
                         getOptionLabel={(option) => option}
                         renderOption={(props, option) => (
                           <li {...props} key={option}>
