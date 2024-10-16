@@ -39,7 +39,7 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{caratPercentage}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark ? remark : "-"}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ remark || "-"}</TableCell>
         <TableCell>
           <Label
             variant="soft"
