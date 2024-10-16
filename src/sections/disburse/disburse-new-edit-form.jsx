@@ -44,27 +44,68 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     valuation: Yup.string().required('Valuation is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
-    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
-    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
-    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
-    items: Yup.array().of(
-      Yup.object().shape({
-        propertyName: Yup.string().required('Property Name is required'),
-        totalWeight: Yup.string().required('Total Weight is required'),
-        loseWeight: Yup.string().required('Lose Weight is required'),
-        grossWeight: Yup.string().required('Gross Weight is required'),
-        netWeight: Yup.string().required('Net Weight is required'),
-        loanApplicableAmount: Yup.string().required('Loan Applicable Amount is required'),
-      }),
-    ).required('At least one item is required'),
-    companyBankDetail: Yup.object().shape({
-      account: Yup.string().required('Account Number is required'),
-      transactionID: Yup.string().required('Transaction ID is required'),
-    }),
 
+    bankNetAmount: Yup.number().test(
+      'bankNetAmountRequired',
+      'Bank Net Amount is required',
+      function (value) {
+        return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+    bankPayingAmount: Yup.number().test(
+      'bankPayingAmountRequired',
+      'Bank Paying Amount is required',
+      function (value) {
+        return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+    bankPendingAmount: Yup.number().test(
+      'bankPendingAmountRequired',
+      'Bank Pending Amount is required',
+      function (value) {
+        return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    // Conditional validation for cash-related fields
+    cashNetAmount: Yup.number().test(
+      'cashNetAmountRequired',
+      'Cash Net Amount is required',
+      function (value) {
+        return currentDisburse?.paymentMode !== 'Cash' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+    cashPayingAmount: Yup.number().test(
+      'cashPayingAmountRequired',
+      'Cash Paying Amount is required',
+      function (value) {
+        return currentDisburse?.paymentMode !== 'Cash' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+    cashPendingAmount: Yup.number().test(
+      'cashPendingAmountRequired',
+      'Cash Pending Amount is required',
+      function (value) {
+        return currentDisburse?.paymentMode !== 'Cash' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    companyBankDetail: Yup.object().shape({
+      account: Yup.string().test(
+        'accountRequired',
+        'Account Number is required',
+        function (value) {
+          return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+        }
+      ),
+      transactionID: Yup.string().test(
+        'transactionIDRequired',
+        'Transaction ID is required',
+        function (value) {
+          return currentDisburse?.paymentMode !== 'Bank' && currentDisburse?.paymentMode !== 'Both' ? true : !!value;
+        }
+      ),
+    }),
   });
   const defaultValues = useMemo(
     () => (

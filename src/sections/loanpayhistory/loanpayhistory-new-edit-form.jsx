@@ -98,18 +98,18 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     consultCharge: currentLoan?.consultingCharge || '',
     loanAmount: currentLoan?.loanAmount || '',
     interestLoanAmount: currentLoan?.interestLoanAmount || '',
-    loanPeriod: currentLoan?.loanPeriod || '',
-    IntPeriodTime: currentLoan?.IntPeriodTime || '',
+    loanPeriod: currentLoan?.scheme.renewalTime || '',
+    IntPeriodTime: currentLoan?.scheme.interestPeriod || '',
     createdBy: (user?.firstName + ' ' + user?.lastName) || null,
+    renewDate: currentLoan?.issueDate ? new Date(new Date(currentLoan.issueDate).setMonth(new Date(currentLoan.issueDate).getMonth() + 6)) : null,
     nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
     lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : new Date(),
   }), [currentLoan]);
-
   const methods = useForm({
     resolver: yupResolver(NewLoanPayHistorySchema),
     defaultValues,
   });
-
+  console.log("")
   const {
     reset,
     watch,
@@ -289,7 +289,25 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                   />
                 )}
               />
-              <RHFTextField name='review' label='Review' InputLabelProps={{ shrink: true }} />
+              <Controller
+                name='renewDate'
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <DatePicker
+                    label='Renew Date'
+                    value={field.value}
+                    onChange={(newValue) => field.onChange(newValue)}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!error,
+                        InputLabelProps:{ shrink: true },
+                        helperText: error?.message,
+                      },
+                    }}
+                  />
+                )}
+              />
               <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} />
             </Box>
           </Card>

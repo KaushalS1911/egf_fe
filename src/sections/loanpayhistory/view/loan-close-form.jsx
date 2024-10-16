@@ -11,9 +11,12 @@ import { fDate } from '../../../utils/format-time';
 import { useAuthContext } from '../../../auth/hooks';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
+import { useGetBranch } from '../../../api/branch';
 
 function LoanCloseForm({currentLoan}) {
   const {user} = useAuthContext();
+  const {branch} = useGetBranch();
+
   const NewLoanCloseSchema = Yup.object().shape({
     totalLoanAmount: Yup.number()
       .min(1, 'Total Loan Amount must be greater than 0')
@@ -33,6 +36,23 @@ function LoanCloseForm({currentLoan}) {
       .typeError('Closing Charge must be a number'),
     closeRemarks: Yup.string().required('Close Remarks are required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
+    account: Yup.object().test(
+      'accountRequired',
+      'Account is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
+
+    cashAmount: Yup.string().test(
+      'cashAmountRequired',
+      'Cash amount is required',
+      function (value) {
+        const { paymentMode } = this.parent;
+        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
+      }
+    ),
   });
   const defaultValues = {
     totalLoanAmount: currentLoan?.loanAmount || '',
@@ -41,6 +61,8 @@ function LoanCloseForm({currentLoan}) {
     closingCharge: '',
     closeRemarks: '',
     paymentMode: '',
+    cashAmount: '',
+    account: '',
   };
 
   const methods = useForm({
@@ -52,6 +74,7 @@ function LoanCloseForm({currentLoan}) {
     control,
     handleSubmit,
     watch,
+    setValue,
     reset,
     formState: { isSubmitting },
   } = methods;
@@ -69,21 +92,13 @@ function LoanCloseForm({currentLoan}) {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        accountName: data.accountName,
-        accountNo: data.accountNo,
-        accountType: data.accountType,
-        IFSC: data.IFSC,
-        bankName: data.bankName,
+        ...data.account
       };
     }
 
@@ -106,7 +121,7 @@ function LoanCloseForm({currentLoan}) {
 
       const response = await axios(config);
       reset();
-      enqueueSnackbar(response?.data.message);
+      enqueueSnackbar(response?.data.message,{variant: "success"});
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to close Loan',{variant: "error"});
@@ -154,46 +169,31 @@ function LoanCloseForm({currentLoan}) {
         <Box sx={{ mt: 8}}>
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
             <>
-              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }}
+              <RHFTextField name='cashAmount' label='Cash Amount'  sx={{ width: { xs: '100%', sm: '50%', md: '25%'}}}
                             InputLabelProps={{ shrink: true, readOnly: true }} />
             </>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Grid container sx={{ mt: 8 }}>
-              <Grid item xs={12} md={4}>
-                <Typography variant='h6' sx={{ mb: 0.5 }}>
-                  Bank Account Details
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display='grid'
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(2, 1fr)',
-                  }}
-                >
-                  <RHFTextField name='accountName' label='Account Name' req={'red'} />
-                  <RHFTextField name='accountNo' label='Account No.' req={'red'} />
-                  <RHFAutocomplete
-                    name='accountType'
-                    label='Account Type'
-                    req={'red'}
-                    options={['Saving', 'Current']}
-                    getOptionLabel={(option) => option}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option}>
-                        {option}
-                      </li>
-                    )}
-                  />
-                  <RHFTextField name='IFSC' label='IFSC Code' req={'red'} />
-                  <RHFTextField name='bankName' label='Bank Name' req={'red'} />
-                </Box>
-              </Grid>
-            </Grid>
+            <Box sx={{ mt: 8 }}>
+              <RHFAutocomplete
+                name='account'
+                label='Account'
+                req={'red'}
+                fullWidth
+                sx={{ width: { xs: '100%', sm: '50%', md: '25%'}}}
+                options={branch.flatMap((item) => item.company.bankAccounts)}
+                getOptionLabel={(option) => option.bankName || ''}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id || option.bankName}>
+                    {option.bankName}
+                  </li>
+                )}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(event, value) => {
+                  setValue('account', value);
+                }}
+              />
+            </Box>
           )}
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
