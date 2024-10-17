@@ -176,7 +176,7 @@ export default function ReminderListView() {
           heading='Reminders'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'reminder', href: paths.dashboard.reminder.list},
+            { name: 'Reminder', href: paths.dashboard.reminder.list},
             { name: 'List' },
           ]}
 
