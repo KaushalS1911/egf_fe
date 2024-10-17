@@ -13,7 +13,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetBranch } from '../../../api/branch';
 
-function UchakInterestPayForm() {
+function UchakInterestPayForm({mutate}) {
   const { id } = useParams();
   const {branch} = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
@@ -102,6 +102,7 @@ function UchakInterestPayForm() {
 
       const response = await axios(config);
       reset();
+      mutate();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
       console.error(error);

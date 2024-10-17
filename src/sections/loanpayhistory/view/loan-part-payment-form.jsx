@@ -21,10 +21,10 @@ const TABLE_HEAD = [
   { id: 'remarks', label: 'Remarks' },
 ];
 
-function LoanPartPaymentForm() {
+function LoanPartPaymentForm({mutate}) {
   const {id} = useParams();
   const {branch} = useGetBranch();
-  const { partPayment , mutate} = useGetAllPartPayment(id);
+  const { partPayment , refetchPartPayment} = useGetAllPartPayment(id);
   const [paymentMode, setPaymentMode] = useState('');
 
   const paymentSchema = paymentMode === 'Bank' ? {
@@ -109,6 +109,7 @@ function LoanPartPaymentForm() {
 
       const response = await axios(config);
       mutate();
+      refetchPartPayment();
       reset();
       enqueueSnackbar(response?.data.message);
     } catch (error) {

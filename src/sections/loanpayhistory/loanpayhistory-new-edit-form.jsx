@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -44,7 +44,7 @@ import LoanCloseForm from './view/loan-close-form';
 // ----------------------------------------------------------------------
 
 
-export default function LoanpayhistoryNewEditForm({ currentLoan }) {
+export default function LoanpayhistoryNewEditForm({ currentLoan , mutate }) {
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuthContext();
   const [file, setFile] = useState(currentLoan.propertyImage);
@@ -108,7 +108,8 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     resolver: yupResolver(NewLoanPayHistorySchema),
     defaultValues,
   });
-  console.log("")
+
+
   const {
     reset,
     watch,
@@ -118,6 +119,11 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    if (currentLoan) {
+      reset(defaultValues);
+    }
+  }, [currentLoan, reset, defaultValues]);
 
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
@@ -335,11 +341,11 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <Tab label='Loan Part Payment' />
               <Tab label='Loan Close' />
             </Tabs>
-            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm  currentLoan={currentLoan} />}
-            {(activeTab === 1 && currentLoan) && <PartReleaseForm  currentLoan={currentLoan}/>}
-            {(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} />}
-            {(activeTab === 3 && currentLoan) && <LoanPartPaymentForm  currentLoan={currentLoan}/>}
-            {(activeTab === 4 && currentLoan) && <LoanCloseForm  currentLoan={currentLoan}/>}
+            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm  currentLoan={currentLoan} mutate={mutate}/>}
+            {(activeTab === 1 && currentLoan) && <PartReleaseForm  currentLoan={currentLoan} mutate={mutate}/>}
+            {(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} mutate={mutate}/>}
+            {(activeTab === 3 && currentLoan) && <LoanPartPaymentForm  currentLoan={currentLoan} mutate={mutate}/>}
+            {(activeTab === 4 && currentLoan) && <LoanCloseForm  currentLoan={currentLoan} mutate={mutate}/>}
           </Card>
         </Grid>
       </Grid>
