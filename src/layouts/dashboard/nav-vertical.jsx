@@ -41,14 +41,22 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const selectedBranch = watch('branchId');
 
   useEffect(() => {
-    if (selectedBranch?.value) {
-      sessionStorage.setItem('selectedBranch', selectedBranch.value);
-      router.replace(paths.dashboard);
-    } else {
-      sessionStorage.removeItem('selectedBranch');
-      setValue('branchId', { label: 'All', value: 'all' });
+    const currentBranch = selectedBranch?.value;
+    const storedBranch = sessionStorage.getItem('selectedBranch');
+
+    if (user?.role === 'Admin' && !user?.branch && currentBranch !== storedBranch) {
+      if (currentBranch) {
+        sessionStorage.setItem('selectedBranch', currentBranch);
+        router.replace(paths.dashboard);
+      } else {
+        sessionStorage.removeItem('selectedBranch');
+        setValue('branchId', { label: 'All', value: 'all' });
+      }
+    } else if (user?.branch && currentBranch !== user?.branch?._id) {
+      sessionStorage.setItem('selectedBranch', user?.branch?._id);
+      setValue('branchId', { label: user?.branch?.name, value: user?.branch?._id });
     }
-  }, [selectedBranch]);
+  }, [selectedBranch, user, setValue, router]);
 
   useEffect(() => {
     if (branch && storedBranch) {
@@ -64,7 +72,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
         }
       }
     }
-  }, [branch, setValue]);
+  }, [branch, setValue, storedBranch]);
 
   useEffect(() => {
     if (openNav) {

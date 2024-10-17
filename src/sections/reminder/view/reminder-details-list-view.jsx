@@ -49,6 +49,7 @@ import ReminderDetailsTableRow from '../reminder-details-table-row';
 import ReminderDetailsTableToolbar from '../reminder-table-toolbar';
 import ReminderDetailsTableFiltersResult from '../reminder-details-table-filters-result';
 import { useGetReminder } from '../../../api/reminder';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -70,7 +71,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function ReminderDetailsListView() {
-  const {reminder,mutate} = useGetReminder()
+  const {reminder,mutate,reminderLoading} = useGetReminder()
   const { user } = useAuthContext();
   const {id} = useParams()
   const reminderDetails = reminder.filter((item) => item.loan._id === id);
@@ -137,8 +138,6 @@ export default function ReminderDetailsListView() {
   const handleDeleteRow = useCallback(
     (id) => {
     handleDelete([id])
-      setTableData(deleteRow);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
@@ -161,7 +160,11 @@ export default function ReminderDetailsListView() {
     },
     [handleFilters],
   );
-
+  if(reminderLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
 
   return (
     <>

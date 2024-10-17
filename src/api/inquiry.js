@@ -18,7 +18,7 @@ export function useGetInquiry() {
 
   const branchQuery = parsedBranch && parsedBranch === 'all'
     ? ''
-    : `&branch=${parsedBranch}`;
+    : `branch=${parsedBranch}`;
 
   const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${branchQuery}`;
 

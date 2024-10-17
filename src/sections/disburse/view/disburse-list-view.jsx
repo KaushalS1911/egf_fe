@@ -39,6 +39,7 @@ import { useGetLoanissue } from '../../../api/loanissue';
 import DisburseTableRow from '../disburse-table-row';
 import DisburseTableToolbar from '../disburse-table-toolbar';
 import DisburseTableFiltersResult from '../disburse-table-filters-result';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ import DisburseTableFiltersResult from '../disburse-table-filters-result';
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer Name' },
-  { id: 'MobileNo', label: 'Mobile No.' },
+  { id: 'ContactNo', label: 'Contact No.' },
   { id: 'InterestLoanAmount', label: 'Interest Loan Amount' },
   { id: 'InterestRate', label: 'Interest Rate' },
   { id: 'CashAmount', label: 'Cash Amount' },
@@ -63,7 +64,7 @@ export default function DisburseListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { Loanissue, mutate } = useGetLoanissue();
+  const { Loanissue, mutate,LoanissueLoading } = useGetLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -146,7 +147,11 @@ export default function DisburseListView() {
     },
     [router],
   );
-
+  if(LoanissueLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

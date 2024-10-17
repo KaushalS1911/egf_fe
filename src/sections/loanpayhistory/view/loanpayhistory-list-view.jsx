@@ -43,6 +43,7 @@ import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
 import { useGetDisburseLoan } from '../../../api/disburseLoan';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +53,7 @@ const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan No.'},
   { id: 'customerName', label: 'Customer Name'},
-  { id: 'contact', label: 'Mobile No.'},
+  { id: 'ContactNo', label: 'Contact No.' },
   { id: 'interestLoanAmount', label: 'Interest Loan Amount'},
   { id: 'interestRate', label: 'Interest Rate'},
   { id: 'cashAmount', label: 'Cash Amount'},
@@ -69,7 +70,7 @@ export default function LoanpayhistoryListView() {
 
   const table = useTable();
   const {user} = useAuthContext();
-  const { disburseLoan , mutate} = useGetDisburseLoan();
+  const { disburseLoan , mutate,disburseLoanLoading} = useGetDisburseLoan();
   const settings = useSettingsContext();
   const router = useRouter();
 
@@ -154,7 +155,11 @@ export default function LoanpayhistoryListView() {
     [router]
   );
 
-
+  if(disburseLoanLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

@@ -38,6 +38,7 @@ import EmployeeTableFiltersResult from '../employee-table-filters-result';
 import {useGetEmployee} from 'src/api/employee'
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -45,7 +46,7 @@ import { useAuthContext } from '../../../auth/hooks';
 
 const TABLE_HEAD = [
   { id: 'username', label: 'User Name' },
-  { id: 'contact', label: 'Contact'},
+  { id: 'ContactNo', label: 'Contact No.' },
   { id: 'joinDate', label: 'Joining Date'},
   { id: 'role', label: 'Role'},
   { id: '', width: 88 },
@@ -61,7 +62,7 @@ export default function EmployeeListView() {
 
   const table = useTable();
   const {user} = useAuthContext();
-  const {employee, mutate} = useGetEmployee();
+  const {employee, mutate,employeeLoading} = useGetEmployee();
   const settings = useSettingsContext();
 
   const router = useRouter();
@@ -147,7 +148,11 @@ export default function EmployeeListView() {
     [router]
   );
 
-
+  if(employeeLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

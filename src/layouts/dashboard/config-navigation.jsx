@@ -51,7 +51,8 @@ const ICONS = {
   loanType: <Iconify icon='mdi:currency-usd-outline' sx={{ width: 1, height: 1 }} />, // Loan Type icon (dollar currency symbol)
   property: <Iconify icon='clarity:building-solid' sx={{ width: 1, height: 1 }} />, // Property icon (cityscape for real estate/property)
   penalty: <Iconify icon='icon-park-outline:gavel' sx={{ width: 1, height: 1 }} />, // Penalty icon (justice scale for penalties and fines)
-  loanissue: <Iconify icon='streamline:bank-solid' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
+  loanissue: <Iconify icon='streamline:bank-solid' />, // Loan Issue icon (bank transfer symbol for issuing loans)
+  disburse: <Iconify icon='mdi:bank-transfer-out' sx={{ width: "30px", height: "30px" }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
   goldLoanCalculator: <Iconify icon='icon-park-solid:calculator' width={24} />,
@@ -285,13 +286,7 @@ export function useNavData() {
           {
             title: t('disburse'),
             path: paths.dashboard.disburse.root,
-            icon: ICONS.user,
-          },
-          // REMINDER
-          {
-            title: t('reminder'),
-            path: paths.dashboard.reminder.list,
-            icon: ICONS.reminder,
+            icon: ICONS.disburse,
           },
           // LOAN PAY HISTORY
           {
@@ -299,6 +294,18 @@ export function useNavData() {
             path: paths.dashboard.loanPayHistory.list,
             icon: ICONS.loanPayHistory,
           },
+        ],
+      },{
+        subheader: t('Loan Utilities'),
+        items: [
+
+          // REMINDER
+          {
+            title: t('reminder'),
+            path: paths.dashboard.reminder.list,
+            icon: ICONS.reminder,
+          },
+
           // GOLD LOAN CALCULATOR
           {
             title: t('Gold Loan Calculator'),

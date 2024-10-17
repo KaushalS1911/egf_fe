@@ -89,7 +89,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     customerCode: currentCustomer?.customerCode || '',
     drivingLicense: currentCustomer?.drivingLicense || '',
     landline: currentCustomer?.landline || '',
-    joiningDate: new Date(currentCustomer?.joiningDate) || '',
+    joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
     businessType: currentCustomer?.businessType || '',
     PerStreet: currentCustomer?.permanentAddress?.street || '',
     PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
@@ -199,8 +199,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       }
 
       const branchQuery = parsedBranch && parsedBranch === 'all'
-        ? `&branch=${mainbranchid?._id}`
-        : `&branch=${parsedBranch}`;
+        ? `branch=${mainbranchid?._id}`
+        : `branch=${parsedBranch}`;
 
       const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?${branchQuery}`;
 

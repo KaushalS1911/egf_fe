@@ -46,6 +46,7 @@ import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -76,8 +77,8 @@ const defaultFilters = {
 
 export default function SchemeListView() {
   const { enqueueSnackbar } = useSnackbar();
-
   const { user } = useAuthContext();
+  const {scheme,mutate,schemeLoading} = useGetScheme()
   const { configs } = useGetConfigs();
   const table = useTable();
 
@@ -87,7 +88,6 @@ export default function SchemeListView() {
 
   const confirm = useBoolean();
 
-  const {scheme,mutate} = useGetScheme()
 
   const [tableData, setTableData] = useState(scheme);
 
@@ -141,7 +141,6 @@ export default function SchemeListView() {
   const handleDeleteRow = useCallback(
     (id) => {
     handleDelete([id])
-      setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
@@ -172,7 +171,11 @@ export default function SchemeListView() {
     },
     [handleFilters],
   );
-
+  if(schemeLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
