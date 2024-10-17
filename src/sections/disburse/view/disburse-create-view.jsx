@@ -4,13 +4,11 @@ import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
-import { _userList } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import DisburseNewEditForm from '../disburse-new-edit-form';
-import { useGetScheme } from '../../../api/scheme';
 import { useParams } from '../../../routes/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { Box } from '@mui/material';
@@ -26,7 +24,7 @@ import { useGetLoanissue } from '../../../api/loanissue';
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create New Disbuese"
+        heading="Create New Disburse"
         links={[
           {
             name: 'Dashboard',
