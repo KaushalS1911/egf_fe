@@ -69,10 +69,12 @@ function PartReleaseForm({ currentLoan, mutate }) {
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
+    bankAmount: Yup.string().required('Bank Account is required'),
   } : paymentMode === 'Cash' ? {
     cashAmount: Yup.string().required('Cash Amount is required'),
   } : {
     cashAmount: Yup.string().required('Cash Amount is required'),
+    bankAmount: Yup.string().required('Bank Account is required'),
     account: Yup.object().required('Account is required'),
   };
 
@@ -96,7 +98,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
       .min(1, 'Pay amount must be greater than 0')
       .required('Pay amount is required')
       .typeError('Pay amount must be a number'),
-    remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     ...paymentSchema,
   });
@@ -106,6 +107,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
     remark: '',
     paymentMode: '',
     cashAmount: '',
+    bankAmount: null,
     account: null,
   };
 
@@ -145,12 +147,14 @@ function PartReleaseForm({ currentLoan, mutate }) {
       paymentDetail = {
         ...paymentDetail,
         ...data.account,
+        bankAmount: data.bankAmount
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
         ...data.account,
+        bankAmount: data.bankAmount
       };
     }
 
@@ -334,12 +338,13 @@ function PartReleaseForm({ currentLoan, mutate }) {
                       <RHFTextField name='amountPaid' label='Pay amount' req={'red'} />
                     </Grid>
                     <Grid item xs={4}>
-                      <RHFTextField name='remark' label='Remark' req={'red'} />
+                      <RHFTextField name='remark' label='Remark' />
                     </Grid>
                     <Grid item xs={4}>
                       <Typography variant='h6' sx={{ mt: 5, mb: 2 }}>
                         Payment Details
                       </Typography>
+                      <Box>
                       <RHFAutocomplete
                         name='paymentMode'
                         label='Payment Mode'
@@ -356,6 +361,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                           </li>
                         )}
                       />
+                      </Box>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -369,31 +375,52 @@ function PartReleaseForm({ currentLoan, mutate }) {
         </Box>
         <Box sx={{ p: 3 }}>
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <>
-              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }}
-                            InputLabelProps={{ shrink: true, readOnly: true }} />
-            </>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(4, 1fr)',
+              }}>
+              <RHFTextField name='cashAmount' label='Cash Amount' req={"red"}/>
+            </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Box sx={{ mt: 8 }}>
-              <RHFAutocomplete
-                name='account'
-                label='Account'
-                req={'red'}
-                fullWidth
-                sx={{ width: '25%' }}
-                options={branch.flatMap((item) => item.company.bankAccounts)}
-                getOptionLabel={(option) => option.bankName || ''}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.id || option.bankName}>
-                    {option.bankName}
-                  </li>
-                )}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={(event, value) => {
-                  setValue('account', value);
-                }}
-              />
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(4, 1fr)',
+              }}
+              sx={{ mt: 3 }}
+            >
+              <Box>
+                <RHFAutocomplete
+                  name='account'
+                  label='Account'
+                  req={'red'}
+                  fullWidth
+                  options={branch.flatMap((item) => item.company.bankAccounts)}
+                  getOptionLabel={(option) => option.bankName || ''}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id || option.bankName}>
+                      {option.bankName}
+                    </li>
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  onChange={(event, value) => {
+                    setValue('account', value);
+                  }}
+                />
+              </Box>
+              <Box>
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+              </Box>
             </Box>
           )}
         </Box>

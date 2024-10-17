@@ -41,19 +41,21 @@ const TABLE_HEAD = [
   { id: 'adjustedPay', label: 'Adjusted Pay' },
 ];
 
-function InterestPayDetailsForm({ currentLoan,mutate }) {
+function InterestPayDetailsForm({ currentLoan, mutate }) {
   const { penalty } = useGetPenalty();
   const { id } = useParams();
   const [paymentMode, setPaymentMode] = useState('');
   const { branch } = useGetBranch();
-  const { loanInterest ,refetchLoanInterest } = useGetAllInterest(id);
+  const { loanInterest, refetchLoanInterest } = useGetAllInterest(id);
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
+    bankAmount: Yup.string().required('Bank Account is required'),
   } : paymentMode === 'Cash' ? {
     cashAmount: Yup.string().required('Cash Amount is required'),
   } : {
     cashAmount: Yup.string().required('Cash Amount is required'),
+    bankAmount: Yup.string().required('Bank Account is required'),
     account: Yup.object().required('Account is required'),
   };
 
@@ -71,12 +73,12 @@ function InterestPayDetailsForm({ currentLoan,mutate }) {
     payAfterAdjusted1: Yup.string().required('Pay After Adjusted 1 is required'),
     oldCrDr: Yup.string().required('Old CR/DR is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    ...paymentSchema
+    ...paymentSchema,
   });
 
   const defaultValues = {
     from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to),
-    to: (currentLoan?.nextInstallmentDate > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
+    to: (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
     days: '',
     amountPaid: '',
     interestAmount: currentLoan?.scheme.interestRate || '',
@@ -90,6 +92,7 @@ function InterestPayDetailsForm({ currentLoan,mutate }) {
     paymentMode: '',
     account: null,
     cashAmount: null,
+    bankAmount: null,
   };
   const methods = useForm({
     resolver: yupResolver(NewInterestPayDetailsSchema),
@@ -117,7 +120,7 @@ function InterestPayDetailsForm({ currentLoan,mutate }) {
 
   useEffect(() => {
     if (loanInterest && currentLoan) {
-      reset(defaultValues)
+      reset(defaultValues);
     }
   }, [loanInterest, currentLoan, setValue]);
 
@@ -168,12 +171,14 @@ function InterestPayDetailsForm({ currentLoan,mutate }) {
       paymentDetail = {
         ...paymentDetail,
         ...data.account,
+        bankAmount: data.bankAmount,
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
         ...data.account,
+        bankAmount: data.bankAmount,
       };
     }
 
@@ -278,50 +283,82 @@ function InterestPayDetailsForm({ currentLoan,mutate }) {
           <Typography variant='h6' sx={{ mt: 8, mb: 2 }}>
             Payment Details
           </Typography>
-          <RHFAutocomplete
-            name='paymentMode'
-            label='Payment Mode'
-            req={'red'}
-            sx={{ width: '25%' }}
-            onChange={(event, newValue) => {
-              setPaymentMode(newValue);
-              setValue('paymentMode', newValue);
+          <Box
+            rowGap={3}
+            columnGap={2}
+            display='grid'
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)',
+              sm: 'repeat(3, 1fr)',
+              md: 'repeat(4, 1fr)',
             }}
-            options={['Cash', 'Bank', 'Both']}
-            getOptionLabel={(option) => option}
-            renderOption={(props, option) => (
-              <li {...props} key={option}>
-                {option}
-              </li>
-            )}
-          />
+            sx={{ mt: 3 }}>
+            <RHFAutocomplete
+              name='paymentMode'
+              label='Payment Mode'
+              req={'red'}
+              onChange={(event, newValue) => {
+                setPaymentMode(newValue);
+                setValue('paymentMode', newValue);
+              }}
+              options={['Cash', 'Bank', 'Both']}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+            />
+          </Box>
         </Box>
-        <Box sx={{ mt: 8 }}>
+        <Box sx={{ mt: 3 }}>
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <>
-              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }} req={'red'} />
-            </>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(4, 1fr)',
+              }}>
+              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} />
+            </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Box sx={{ mt: 8 }}>
-              <RHFAutocomplete
-                name='account'
-                label='Account'
-                req={'red'}
-                fullWidth
-                sx={{ width: '25%' }}
-                options={branch.flatMap((item) => item.company.bankAccounts)}
-                getOptionLabel={(option) => option.bankName || ''}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.id || option.bankName}>
-                    {option.bankName}
-                  </li>
-                )}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={(event, value) => {
-                  setValue('account', value);
-                }}
-              />
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(4, 1fr)',
+              }}
+              sx={{ mt: 3 }}
+            >
+              <Box>
+                <RHFAutocomplete
+                  name='account'
+                  label='Account'
+                  req={'red'}
+                  fullWidth
+                  options={branch.flatMap((item) => item.company.bankAccounts)}
+                  getOptionLabel={(option) => option.bankName || ''}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id || option.bankName}>
+                      {option.bankName}
+                    </li>
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  onChange={(event, value) => {
+                    setValue('account', value);
+                  }}
+                />
+              </Box>
+              <Box>
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+              </Box>
             </Box>
           )}
         </Box>
