@@ -1129,7 +1129,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       </Grid>
       <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
         <LoadingButton disabled={!isFieldsEnabled} type='submit' variant='contained' loading={isSubmitting}>
-          {!currentLoanIssue ? 'issue Loan' : 'Save Changes'}
+          {!currentLoanIssue ? 'Issue Loan' : 'Save Changes'}
         </LoadingButton>
       </Box>
     </FormProvider>
