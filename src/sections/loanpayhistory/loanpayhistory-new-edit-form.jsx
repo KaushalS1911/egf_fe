@@ -321,7 +321,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan , mutate }) {
           <Card>
             <CardHeader title='Property Images' />
             <CardContent>
-              <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} />
+              <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} InputProps={{ readOnly: true }} />
             </CardContent>
           </Card>
         </Grid>
