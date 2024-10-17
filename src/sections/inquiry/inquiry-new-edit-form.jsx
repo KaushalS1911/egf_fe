@@ -49,7 +49,6 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       .nullable()
       .typeError('Date is required'),
     inquiryFor: Yup.string().required('Inquiry field is required'),
-    remark: Yup.string().required('Remark is required'),
   });
 
   const defaultValues = useMemo(
@@ -231,7 +230,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                 (watch('inquiryFor') === 'Other') &&
                 <RHFTextField name='other' label='Other' req={'red'} />
               }
-              <RHFTextField name='remark' label='Remark' req={'red'} />
+              <RHFTextField name='remark' label='Remark' />
             </Box>
 
             <Stack alignItems='flex-end' sx={{ mt: 3 }}>
