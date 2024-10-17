@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Typography,
@@ -52,13 +52,20 @@ const TABLE_HEAD = [
   { id: 'remarks', label: 'Remarks' },
 ];
 
-function PartReleaseForm({ currentLoan }) {
+function PartReleaseForm({ currentLoan , mutate }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [file, setFile] = useState(null);
   const [paymentMode, setPaymentMode] = useState('');
+  const [properties,setProperties] = useState([]);
   const {branch} = useGetBranch();
   const {id} = useParams();
-  const {partRelease,mutate} = useGetAllPartRelease(id);
+  const {partRelease,refetchPartRelease} = useGetAllPartRelease(id);
+
+  useEffect(() => {
+    if(currentLoan.propertyDetails){
+    setProperties(currentLoan.propertyDetails);
+    }
+  },[currentLoan])
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -174,7 +181,9 @@ function PartReleaseForm({ currentLoan }) {
 
       const response = await axios(config);
       mutate();
+      refetchPartRelease();
       setSelectedRows([]);
+      setProperties(response.data.data.loan.propertyDetails)
       setFile(null);
       reset();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
@@ -234,8 +243,8 @@ function PartReleaseForm({ currentLoan }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {currentLoan.propertyDetails && currentLoan.propertyDetails.length > 0 ? (
-                      currentLoan.propertyDetails.map((row,index) => (
+                    {properties && properties.length > 0 ? (
+                      properties.map((row,index) => (
                         <TableRow key={row._id} selected={isRowSelected(index)}>
                           <TableCell padding='checkbox'>
                             <Checkbox
@@ -247,10 +256,10 @@ function PartReleaseForm({ currentLoan }) {
                           <TableCell>{row.type}</TableCell>
                           <TableCell>{row.carat}</TableCell>
                           <TableCell>{row.pcs}</TableCell>
-                          <TableCell>{row.totalWeight}</TableCell>
-                          <TableCell>{row.netWeight}</TableCell>
-                          <TableCell>{row.grossAmount}</TableCell>
-                          <TableCell>{row.netAmount}</TableCell>
+                          <TableCell>{parseFloat(row.totalWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell>{parseFloat(row.netWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell>{parseFloat(row.grossAmount || 0).toFixed(2)}</TableCell>
+                          <TableCell>{parseFloat(row.netAmount || 0).toFixed(2)}</TableCell>
                         </TableRow>
                       ))
                     ) : (
@@ -267,10 +276,10 @@ function PartReleaseForm({ currentLoan }) {
                       <TableCell />
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.carat}</TableCell>
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.pcs}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.totalWeight}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.netWeight}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.grossAmount}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.netAmount}</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.totalWeight).toFixed(2)}</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.netWeight).toFixed(2)}</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.grossAmount).toFixed(2)}</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.netAmount).toFixed(2)}</TableCell>
                     </TableRow>
                   </TableBody>
 

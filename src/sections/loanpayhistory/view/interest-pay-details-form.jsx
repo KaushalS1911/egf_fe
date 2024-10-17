@@ -41,12 +41,12 @@ const TABLE_HEAD = [
   { id: 'adjustedPay', label: 'Adjusted Pay' },
 ];
 
-function InterestPayDetailsForm({ currentLoan }) {
+function InterestPayDetailsForm({ currentLoan,mutate }) {
   const { penalty } = useGetPenalty();
   const { id } = useParams();
   const [paymentMode, setPaymentMode] = useState('');
   const { branch } = useGetBranch();
-  const { loanInterest, mutate } = useGetAllInterest(id);
+  const { loanInterest ,refetchLoanInterest } = useGetAllInterest(id);
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -117,9 +117,7 @@ function InterestPayDetailsForm({ currentLoan }) {
 
   useEffect(() => {
     if (loanInterest && currentLoan) {
-      setValue('from', (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to));
-      setValue('to', (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date());
-      setValue('oldCrDr', loanInterest[0]?.cr_dr || 0);
+      reset(defaultValues)
     }
   }, [loanInterest, currentLoan, setValue]);
 
@@ -202,6 +200,7 @@ function InterestPayDetailsForm({ currentLoan }) {
       const response = await axios(config);
       reset();
       mutate();
+      refetchLoanInterest();
       enqueueSnackbar(response?.data.message);
     } catch (error) {
       console.error(error);
