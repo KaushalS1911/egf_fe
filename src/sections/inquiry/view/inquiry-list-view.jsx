@@ -165,7 +165,7 @@ export default function InquiryListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Inquiry List"
+          heading="Inquiries"
           links={[
             {name: 'Dashboard', href: paths.dashboard.root},
             {name: 'Inquiry', href: paths.dashboard.inquiry.root},
@@ -178,7 +178,7 @@ export default function InquiryListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line"/>}
             >
-              New Inquiry
+              Add Inquiry
             </Button>
           }
           sx={{

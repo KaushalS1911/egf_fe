@@ -176,7 +176,7 @@ export default function PropertyListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Property List'
+          heading='Properties'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Property', href: paths.dashboard.property.root },
@@ -190,7 +190,7 @@ export default function PropertyListView() {
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
-                Create Property
+                Add Property
               </Button>
             </Box>
           }

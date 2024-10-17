@@ -157,7 +157,7 @@ export default function LoanissueListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Loan Issue List'
+          heading='Issued Loans'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Loan Issue', href: paths.dashboard.loanissue.root },
@@ -170,7 +170,7 @@ export default function LoanissueListView() {
               variant='contained'
               startIcon={<Iconify icon='mingcute:add-line' />}
             >
-              Create Loan issue
+              Add Loan issue
             </Button>
           }
           sx={{

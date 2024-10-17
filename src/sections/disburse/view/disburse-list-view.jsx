@@ -156,7 +156,7 @@ export default function DisburseListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Loan Issue List'
+          heading='Disbursed Loans'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Disburse', href: paths.dashboard.disburse.root },

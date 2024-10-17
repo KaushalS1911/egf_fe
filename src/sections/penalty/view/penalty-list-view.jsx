@@ -175,7 +175,7 @@ export default function PenaltyListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Penalty List'
+          heading='Penalties'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Penalty', href: paths.dashboard.penalty.root },
@@ -189,7 +189,7 @@ export default function PenaltyListView() {
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
-                Create Penalty
+                Add Penalty
               </Button>
             </Box>
           }
