@@ -151,6 +151,7 @@ function PartReleaseForm({ currentLoan , mutate }) {
     selectedRows.forEach((index) => {
       const row = currentLoan.propertyDetails[index];
       formData.append(`property[${index}][type]`, row.type);
+      formData.append(`property[${index}][id]`, row.id);
       formData.append(`property[${index}][carat]`, row.carat);
       formData.append(`property[${index}][pcs]`, row.pcs);
       formData.append(`property[${index}][totalWeight]`, row.totalWeight);
