@@ -17,7 +17,7 @@ import { LoadingScreen } from '../../../components/loading-screen';
 export default function LoanpayhistoryCreateView() {
   const settings = useSettingsContext();
   const {id} = useParams()
-  const {disburseLoan} = useGetDisburseLoan();
+  const {disburseLoan , mutate} = useGetDisburseLoan();
   const currentLoan = disburseLoan.find((item) => item._id == id);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -39,7 +39,7 @@ export default function LoanpayhistoryCreateView() {
         }}
       />
 
-      {currentLoan ? <LoanpayhistoryNewEditForm currentLoan={currentLoan} /> :
+      {currentLoan ? <LoanpayhistoryNewEditForm currentLoan={currentLoan} mutate={mutate}/> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>

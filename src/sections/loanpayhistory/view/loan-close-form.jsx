@@ -13,7 +13,7 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useGetBranch } from '../../../api/branch';
 
-function LoanCloseForm({currentLoan}) {
+function LoanCloseForm({currentLoan,mutate}) {
   const {user} = useAuthContext();
   const {branch} = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
@@ -115,6 +115,7 @@ function LoanCloseForm({currentLoan}) {
 
       const response = await axios(config);
       reset();
+      mutate();
       enqueueSnackbar(response?.data.message,{variant: "success"});
     } catch (error) {
       console.error(error);

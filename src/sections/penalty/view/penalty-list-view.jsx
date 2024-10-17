@@ -44,6 +44,7 @@ import { alpha } from '@mui/material/styles';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetPenalty } from '../../../api/penalty';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ export default function PenaltyListView() {
 
   const confirm = useBoolean();
 
-  const {penalty,mutate} = useGetPenalty()
+  const {penalty,mutate,penaltyLoading} = useGetPenalty()
 
   const [tableData, setTableData] = useState(penalty);
 
@@ -135,7 +136,6 @@ export default function PenaltyListView() {
   const handleDeleteRow = useCallback(
     (id) => {
     handleDelete([id])
-      setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
@@ -166,7 +166,11 @@ export default function PenaltyListView() {
     },
     [handleFilters],
   );
-
+  if(penaltyLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

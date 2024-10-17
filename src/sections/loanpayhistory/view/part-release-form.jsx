@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Typography,
@@ -52,13 +52,20 @@ const TABLE_HEAD = [
   { id: 'remarks', label: 'Remarks' },
 ];
 
-function PartReleaseForm({ currentLoan }) {
+function PartReleaseForm({ currentLoan, mutate }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [file, setFile] = useState(null);
   const [paymentMode, setPaymentMode] = useState('');
-  const {branch} = useGetBranch();
-  const {id} = useParams();
-  const {partRelease,mutate} = useGetAllPartRelease(id);
+  const [properties, setProperties] = useState([]);
+  const { branch } = useGetBranch();
+  const { id } = useParams();
+  const { partRelease, refetchPartRelease } = useGetAllPartRelease(id);
+
+  useEffect(() => {
+    if (currentLoan.propertyDetails) {
+      setProperties(currentLoan.propertyDetails);
+    }
+  }, [currentLoan]);
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -80,7 +87,7 @@ function PartReleaseForm({ currentLoan }) {
         totals.netAmount += Number(row.netAmount) || 0;
         return totals;
       },
-      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 }
+      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 },
     );
   }, [selectedRows, currentLoan.propertyDetails]);
   const NewPartReleaseSchema = Yup.object().shape({
@@ -91,7 +98,7 @@ function PartReleaseForm({ currentLoan }) {
       .typeError('Pay amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    ...paymentSchema
+    ...paymentSchema,
   });
   const defaultValues = {
     date: null,
@@ -117,8 +124,16 @@ function PartReleaseForm({ currentLoan }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    if (selectedRows.length === 0) {
+      enqueueSnackbar('At least one property must be selected', { variant: 'error' });
+      return;
+    }
+    if (!file) {
+      enqueueSnackbar('Please select at least one file or property.', { variant: 'error' });
+      return;
+    }
     let paymentDetail = {
-      paymentMode: data.paymentMode
+      paymentMode: data.paymentMode,
     };
 
     if (data.paymentMode === 'Cash') {
@@ -129,13 +144,13 @@ function PartReleaseForm({ currentLoan }) {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        ...data.account
+        ...data.account,
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        ...data.account
+        ...data.account,
       };
     }
 
@@ -144,6 +159,7 @@ function PartReleaseForm({ currentLoan }) {
     selectedRows.forEach((index) => {
       const row = currentLoan.propertyDetails[index];
       formData.append(`property[${index}][type]`, row.type);
+      formData.append(`property[${index}][id]`, row.id);
       formData.append(`property[${index}][carat]`, row.carat);
       formData.append(`property[${index}][pcs]`, row.pcs);
       formData.append(`property[${index}][totalWeight]`, row.totalWeight);
@@ -174,13 +190,15 @@ function PartReleaseForm({ currentLoan }) {
 
       const response = await axios(config);
       mutate();
+      refetchPartRelease();
       setSelectedRows([]);
+      setProperties(response.data.data.loan.propertyDetails);
       setFile(null);
       reset();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("Failed to part release", { variant: 'error' });
+      enqueueSnackbar('Failed to part release', { variant: 'error' });
     }
   });
 
@@ -199,7 +217,7 @@ function PartReleaseForm({ currentLoan }) {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(index)
         ? prevSelected.filter((selectedIndex) => selectedIndex !== index)
-        : [...prevSelected, index]
+        : [...prevSelected, index],
     );
   };
 
@@ -234,8 +252,8 @@ function PartReleaseForm({ currentLoan }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {currentLoan.propertyDetails && currentLoan.propertyDetails.length > 0 ? (
-                      currentLoan.propertyDetails.map((row,index) => (
+                    {properties && properties.length > 0 ? (
+                      properties.map((row, index) => (
                         <TableRow key={row._id} selected={isRowSelected(index)}>
                           <TableCell padding='checkbox'>
                             <Checkbox
@@ -247,15 +265,15 @@ function PartReleaseForm({ currentLoan }) {
                           <TableCell>{row.type}</TableCell>
                           <TableCell>{row.carat}</TableCell>
                           <TableCell>{row.pcs}</TableCell>
-                          <TableCell>{row.totalWeight}</TableCell>
-                          <TableCell>{row.netWeight}</TableCell>
-                          <TableCell>{row.grossAmount}</TableCell>
-                          <TableCell>{row.netAmount}</TableCell>
+                          <TableCell>{parseFloat(row.totalWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell>{parseFloat(row.netWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell>{parseFloat(row.grossAmount || 0).toFixed(2)}</TableCell>
+                          <TableCell>{parseFloat(row.netAmount || 0).toFixed(2)}</TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={9} align="center">
+                        <TableCell colSpan={9} align='center'>
                           No Property Available
                         </TableCell>
                       </TableRow>
@@ -267,10 +285,18 @@ function PartReleaseForm({ currentLoan }) {
                       <TableCell />
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.carat}</TableCell>
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.pcs}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.totalWeight}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.netWeight}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.grossAmount}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.netAmount}</TableCell>
+                      <TableCell sx={{
+                        fontWeight: '600',
+                        color: '#637381',
+                      }}>{(selectedTotals.totalWeight).toFixed(2)}</TableCell>
+                      <TableCell
+                        sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.netWeight).toFixed(2)}</TableCell>
+                      <TableCell sx={{
+                        fontWeight: '600',
+                        color: '#637381',
+                      }}>{(selectedTotals.grossAmount).toFixed(2)}</TableCell>
+                      <TableCell
+                        sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.netAmount).toFixed(2)}</TableCell>
                     </TableRow>
                   </TableBody>
 
@@ -355,7 +381,7 @@ function PartReleaseForm({ currentLoan }) {
                 label='Account'
                 req={'red'}
                 fullWidth
-                sx={{width: "25%"}}
+                sx={{ width: '25%' }}
                 options={branch.flatMap((item) => item.company.bankAccounts)}
                 getOptionLabel={(option) => option.bankName || ''}
                 renderOption={(props, option) => (

@@ -287,18 +287,24 @@ export function useNavData() {
             path: paths.dashboard.disburse.root,
             icon: ICONS.user,
           },
-          // REMINDER
-          {
-            title: t('reminder'),
-            path: paths.dashboard.reminder.list,
-            icon: ICONS.reminder,
-          },
           // LOAN PAY HISTORY
           {
             title: t('Loan Pay History'),
             path: paths.dashboard.loanPayHistory.list,
             icon: ICONS.loanPayHistory,
           },
+        ],
+      },{
+        subheader: t('Loan Utilities'),
+        items: [
+
+          // REMINDER
+          {
+            title: t('reminder'),
+            path: paths.dashboard.reminder.list,
+            icon: ICONS.reminder,
+          },
+
           // GOLD LOAN CALCULATOR
           {
             title: t('Gold Loan Calculator'),

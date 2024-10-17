@@ -46,6 +46,7 @@ import { alpha } from '@mui/material/styles';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetAllProperty } from '../../../api/property';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ export default function PropertyListView() {
 
   const confirm = useBoolean();
 
-  const {property,mutate} = useGetAllProperty()
+  const {property,mutate,propertyLoading} = useGetAllProperty()
 
   const [tableData, setTableData] = useState(property);
 
@@ -166,7 +167,11 @@ export default function PropertyListView() {
     },
     [handleFilters],
   );
-
+  if(propertyLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

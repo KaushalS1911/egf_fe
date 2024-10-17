@@ -45,6 +45,7 @@ import CustomerTableRow from '../customer-table-row';
 import { useGetCustomer } from '../../../api/customer';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -74,7 +75,7 @@ export default function CustomerListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { customer, mutate } = useGetCustomer();
+  const { customer, mutate,customerLoading } = useGetCustomer();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -158,7 +159,11 @@ export default function CustomerListView() {
     },
     [handleFilters],
   );
-
+  if(customerLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
