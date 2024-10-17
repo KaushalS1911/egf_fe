@@ -76,7 +76,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     tempCity: Yup.string(),
     tempZipcode: Yup.string(),
   });
-  console.log("curr : ",currentEmployee)
+
   const defaultValues = useMemo(() => ({
     branchId: currentEmployee ? {
       label: currentEmployee?.branch?.name,
@@ -91,14 +91,14 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     panCard: currentEmployee?.panCard || '',
     aadharCard: currentEmployee?.aadharCard || '',
     contact: currentEmployee?.user.contact || '',
-    dob: new Date(currentEmployee?.dob) || new Date(),
+    dob: new Date(currentEmployee?.dob) || '',
     remark: currentEmployee?.remark || '',
     role: currentEmployee?.user.role || '',
     reportingTo: currentEmployee?.reportingTo || null,
     email: currentEmployee?.user.email || '',
     password: '',
-    joiningDate: new Date(currentEmployee?.joiningDate) || new Date(),
-    leaveDate: new Date(currentEmployee?.leaveDate) || new Date(),
+    joiningDate: currentEmployee ? new Date(currentEmployee?.joiningDate) : new Date(),
+    leaveDate: new Date(currentEmployee?.leaveDate) || '',
     permanentStreet: currentEmployee?.permanentAddress.street || '',
     permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
     permanentCountry: currentEmployee?.permanentAddress.country || '',
@@ -201,8 +201,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       }
 
       const branchQuery = parsedBranch && parsedBranch === 'all'
-        ? `&branch=${mainbranchid?._id}`
-        : `&branch=${parsedBranch}`;
+        ? `branch=${mainbranchid?._id}`
+        : `branch=${parsedBranch}`;
 
       const url = currentEmployee
         ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee/${currentEmployee._id}?${branchQuery}`
