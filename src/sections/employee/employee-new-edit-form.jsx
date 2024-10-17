@@ -51,7 +51,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       .required('Date of Birth is required')
       .nullable()
       .typeError('Date of Birth is required'),
-    remark: Yup.string(),
     role: Yup.string().required('Role is required'),
     reportingTo: Yup.object().required('Reporting to is required'),
     email: Yup.string().email('Invalid email format').required('Email is required'),

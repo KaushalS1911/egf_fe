@@ -13,18 +13,20 @@ import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetBranch } from '../../../api/branch';
 
-function UchakInterestPayForm({mutate}) {
+function UchakInterestPayForm({ mutate }) {
   const { id } = useParams();
-  const {branch} = useGetBranch();
+  const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
+    bankAmount: Yup.string().required('Bank Account is required'),
   } : paymentMode === 'Cash' ? {
     cashAmount: Yup.string().required('Cash Amount is required'),
   } : {
     cashAmount: Yup.string().required('Cash Amount is required'),
     account: Yup.object().required('Account is required'),
+    bankAmount: Yup.string().required('Bank Account is required'),
   };
   const NewUchakSchema = Yup.object().shape({
     uchakPayDate: Yup.date().nullable().required('Uchak Pay date is required'),
@@ -32,9 +34,8 @@ function UchakInterestPayForm({mutate}) {
       .min(1, 'Uchak Interest Pay Amount must be greater than 0')
       .required('Uchak Interest Pay Amount is required')
       .typeError('Uchak Interest Pay Amount must be a number'),
-    remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    ...paymentSchema
+    ...paymentSchema,
 
 
   });
@@ -45,6 +46,7 @@ function UchakInterestPayForm({mutate}) {
     remark: '',
     paymentMode: '',
     cashAmount: '',
+    bankAmount: null,
     account: null,
   };
 
@@ -64,7 +66,7 @@ function UchakInterestPayForm({mutate}) {
 
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
-      paymentMode: data.paymentMode
+      paymentMode: data.paymentMode,
     };
 
     if (data.paymentMode === 'Cash') {
@@ -75,13 +77,15 @@ function UchakInterestPayForm({mutate}) {
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        ...data.account
+        ...data.account,
+        bankAmount: data.bankAmount,
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
         cashAmount: data.cashAmount,
-        ...data.account
+        ...data.account,
+        bankAmount: data.bankAmount,
       };
     }
 
@@ -89,8 +93,8 @@ function UchakInterestPayForm({mutate}) {
       remark: data.remark,
       date: data.uchakPayDate,
       amountPaid: data.uchakInterestAmount,
-      paymentDetail : paymentDetail,
-    }
+      paymentDetail: paymentDetail,
+    };
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/uchak-interest-payment`;
 
@@ -106,89 +110,110 @@ function UchakInterestPayForm({mutate}) {
       enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("Failed to uchak interest pay", { variant: 'error' });
+      enqueueSnackbar('Failed to uchak interest pay', { variant: 'error' });
     }
   });
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
-        <Grid item xs={4}>
-          <Controller
-            name='uchakPayDate'
-            control={control}
-            render={({ field, fieldState: { error } }) => (
-              <DatePicker
-                label='Uchak Pay date'
-                value={field.value}
-                onChange={(newValue) => field.onChange(newValue)}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    error: !!error,
-                    helperText: error?.message,
-                    className: 'req',
-                  },
-                }}
-              />
-            )}
-          />
+        <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
+          <Grid item xs={4}>
+            <Controller
+              name='uchakPayDate'
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <DatePicker
+                  label='Uchak Pay date'
+                  value={field.value}
+                  onChange={(newValue) => field.onChange(newValue)}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!error,
+                      helperText: error?.message,
+                      className: 'req',
+                    },
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <RHFTextField name='uchakInterestAmount' label='Uchak Interest Amount' req={'red'} />
+          </Grid>
+          <Grid item xs={4}>
+            <RHFTextField name='remark' label='Remark' />
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant='h6' sx={{ mt: 5, mb: 2 }}>
+              Payment Details
+            </Typography>
+            <RHFAutocomplete
+              name='paymentMode'
+              label='Payment Mode'
+              req={'red'}
+              options={['Cash', 'Bank', 'Both']}
+              onChange={(event, newValue) => {
+                setPaymentMode(newValue);
+                setValue('paymentMode', newValue);
+              }}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={4}>
-          <RHFTextField name='uchakInterestAmount' label='Uchak Interest Amount' req={'red'} />
-        </Grid>
-        <Grid item xs={4}>
-          <RHFTextField name='remark' label='Remark' req={'red'} />
-        </Grid>
-        <Grid item xs={4}>
-          <Typography variant='h6' sx={{ mt: 5, mb: 2 }}>
-            Payment Details
-          </Typography>
-          <RHFAutocomplete
-            name='paymentMode'
-            label='Payment Mode'
-            req={'red'}
-            options={['Cash', 'Bank','Both']}
-            onChange={(event, newValue) => {
-              setPaymentMode(newValue);
-              setValue('paymentMode', newValue);
-            }}
-            getOptionLabel={(option) => option}
-            renderOption={(props, option) => (
-              <li {...props} key={option}>
-                {option}
-              </li>
-            )}
-          />
-        </Grid>
-      </Grid>
         <Box sx={{ p: 3 }}>
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <>
-              <RHFTextField name='cashAmount' label='Cash Amount' sx={{ width: '25%' }}
-                            InputLabelProps={{ shrink: true, readOnly: true }} />
-            </>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(4, 1fr)',
+              }}>
+              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} />
+            </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Box sx={{ mt: 8 }}>
-              <RHFAutocomplete
-                name='account'
-                label='Account'
-                req={'red'}
-                fullWidth
-                sx={{width: "25%"}}
-                options={branch.flatMap((item) => item.company.bankAccounts)}
-                getOptionLabel={(option) => option.bankName || ''}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.id || option.bankName}>
-                    {option.bankName}
-                  </li>
-                )}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={(event, value) => {
-                  setValue('account', value);
-                }}
-              />
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(4, 1fr)',
+              }}
+              sx={{mt: 3}}
+            >
+              <Box>
+                <RHFAutocomplete
+                  name='account'
+                  label='Account'
+                  req={'red'}
+                  fullWidth
+                  options={branch.flatMap((item) => item.company.bankAccounts)}
+                  getOptionLabel={(option) => option.bankName || ''}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id || option.bankName}>
+                      {option.bankName}
+                    </li>
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  onChange={(event, value) => {
+                    setValue('account', value);
+                  }}
+                />
+              </Box>
+              <Box>
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+              </Box>
             </Box>
           )}
         </Box>

@@ -37,7 +37,6 @@ export default function ReminderRecallingForm({currentReminderDetails,currentRem
         .required('Next Recalling Date is required')
         .nullable()
         .typeError('Date is required'),
-    remark: Yup.string().required('Remark is required'),
   });
 
   const defaultValues = useMemo(
@@ -134,7 +133,7 @@ const onClose = ()=>{
                 />
               )}
             />
-            <RHFTextField name="remark" label="Remark" req={'red'} />
+            <RHFTextField name="remark" label="Remark" />
           </Box>
         </DialogContent>
         <DialogActions>
