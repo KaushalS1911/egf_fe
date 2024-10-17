@@ -48,6 +48,7 @@ import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetCarat } from '../../../api/carat';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -84,7 +85,7 @@ export default function CaratListView() {
 
   const confirm = useBoolean();
 
-  const {carat,mutate} = useGetCarat()
+  const {carat,mutate,caratLoading} = useGetCarat()
 
   const [tableData, setTableData] = useState(carat);
 
@@ -137,7 +138,6 @@ export default function CaratListView() {
   const handleDeleteRow = useCallback(
     (id) => {
     handleDelete([id])
-      setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
@@ -168,7 +168,11 @@ export default function CaratListView() {
     },
     [handleFilters],
   );
-
+  if(caratLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

@@ -37,6 +37,7 @@ import InquiryTableRow from '../inquiry-table-row';
 import InquiryTableToolbar from '../inquiry-table-toolbar';
 import InquiryTableFiltersResult from '../inquiry-table-filters-result';
 import {isAfter, isBetween} from '../../../utils/format-time';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -62,7 +63,7 @@ const defaultFilters = {
 
 export default function InquiryListView() {
   const {enqueueSnackbar} = useSnackbar();
-  const {inquiry, mutate} = useGetInquiry();
+  const {inquiry, mutate , inquiryLoading} = useGetInquiry();
   const table = useTable();
   const {user} = useAuthContext();
   const settings = useSettingsContext();
@@ -155,6 +156,11 @@ export default function InquiryListView() {
     [handleFilters]
   );
 
+  if(inquiryLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -254,8 +260,7 @@ export default function InquiryListView() {
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
-                  <TableNoData notFound={notFound}/>
+                   <TableNoData notFound={notFound}/>
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -267,7 +272,6 @@ export default function InquiryListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />

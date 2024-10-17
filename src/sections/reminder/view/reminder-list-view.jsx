@@ -39,6 +39,7 @@ import ReminderTableFiltersResult from '../reminder-table-filters-result';
 import ReminderTableRow from '../reminder-table-row';
 import { isAfter, isBetween } from '../../../utils/format-time';
 import { useGetDisburseLoan } from '../../../api/disburseLoan';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -67,7 +68,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function ReminderListView() {
-  const {disburseLoan} = useGetDisburseLoan()
+  const {disburseLoan,disburseLoanLoading} = useGetDisburseLoan()
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
@@ -131,7 +132,6 @@ export default function ReminderListView() {
   const handleDeleteRow = useCallback(
     (id) => {
     // handleDelete([id])
-      setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
@@ -169,6 +169,11 @@ export default function ReminderListView() {
     },
     [router],
   );
+  if(disburseLoanLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

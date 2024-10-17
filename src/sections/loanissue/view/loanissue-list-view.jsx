@@ -39,6 +39,7 @@ import { useGetEmployee } from 'src/api/employee';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetLoanissue } from '../../../api/loanissue';
+import { LoadingScreen } from '../../../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ import { useGetLoanissue } from '../../../api/loanissue';
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer Name' },
-  { id: 'MobileNo', label: 'Mobile No.' },
+  { id: 'ContactNo', label: 'Contact No.' },
   { id: 'InterestLoanAmount', label: 'Interest Loan Amount' },
   { id: 'InterestRate', label: 'Interest Rate' },
   { id: 'CashAmount', label: 'Cash Amount' },
@@ -64,7 +65,7 @@ export default function LoanissueListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { Loanissue, mutate } = useGetLoanissue();
+  const { Loanissue, mutate,LoanissueLoading } = useGetLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -147,7 +148,11 @@ export default function LoanissueListView() {
     },
     [router],
   );
-
+  if(LoanissueLoading){
+    return (
+      <LoadingScreen/>
+    )
+  }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
