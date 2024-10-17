@@ -14,10 +14,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFAutocomplete, RHFSwitch,
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFSwitch, RHFTextField} from 'src/components/hook-form';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
 

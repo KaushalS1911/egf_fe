@@ -63,8 +63,6 @@ const  PropertyListView = lazy(()=>import('../../sections/property/view/property
 //LOAN PAY HISTORY
 const  LoanpayhistoryListView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-list-view'))
 const  LoanpayhistoryCreateView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-create-view'))
-const  { LoanpayhistoryEditView }  = lazy(()=>import('../../sections/loanpayhistory/view'))
-
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
@@ -184,7 +182,6 @@ export const dashboardRoutes = [
         children: [
           { element: <DisburseListView />, index: true },
           { path: 'list', element: <DisburseListView /> },
-          // { path: 'new', element: <DisbursecreateView/> },
           { path: ':id/new', element: <DisburseCreateView /> },
         ],
       },
@@ -199,8 +196,6 @@ export const dashboardRoutes = [
         children: [
           { element: <ReminderDetailsListView />, index: true },
           { path: ':id/list', element: <ReminderDetailsListView /> },
-          // { path: 'new', element: <EmployeeCreateView /> },
-          // { path: ':id/edit', element: <EmployeeEditView /> },
         ],
       },
       {
@@ -226,23 +221,10 @@ export const dashboardRoutes = [
         children: [
           { element: <LoanpayhistoryListView />, index: true },
           { path: 'list', element: <LoanpayhistoryListView /> },
-          // { path: 'new', element: <LoanpayhistoryCreateView /> },
           { path: ':id/new', element: <LoanpayhistoryCreateView /> },
         ],
       },
 
-      {
-        path: 'user',
-        children: [
-          { element: <UserProfilePage />, index: true },
-          { path: 'profile', element: <UserProfilePage /> },
-          { path: 'cards', element: <UserCardsPage /> },
-          { path: 'list', element: <UserListPage /> },
-          { path: 'new', element: <UserCreatePage /> },
-          { path: ':id/edit', element: <UserEditPage /> },
-          { path: 'account', element: <UserAccountPage /> },
-        ],
-      },
       {
         path: 'customer',
         children: [
@@ -253,69 +235,18 @@ export const dashboardRoutes = [
           { path: 'profile', element: <MyProfile /> },
         ],
       },
-      {
-        path: 'product',
-        children: [
-          { element: <ProductListPage />, index: true },
-          { path: 'list', element: <ProductListPage /> },
-          { path: ':id', element: <ProductDetailsPage /> },
-          { path: 'new', element: <ProductCreatePage /> },
-          { path: ':id/edit', element: <ProductEditPage /> },
-        ],
-      },
-      {
-        path: 'order',
-        children: [
-          { element: <OrderListPage />, index: true },
-          { path: 'list', element: <OrderListPage /> },
-          { path: ':id', element: <OrderDetailsPage /> },
-        ],
-      },
-      {
-        path: 'invoice',
-        children: [
-          { element: <InvoiceListPage />, index: true },
-          { path: 'list', element: <InvoiceListPage /> },
-          { path: ':id', element: <InvoiceDetailsPage /> },
-          { path: ':id/edit', element: <InvoiceEditPage /> },
-          { path: 'new', element: <InvoiceCreatePage /> },
-        ],
-      },
-      {
-        path: 'post',
-        children: [
-          { element: <BlogPostsPage />, index: true },
-          { path: 'list', element: <BlogPostsPage /> },
-          { path: ':title', element: <BlogPostPage /> },
-          { path: ':title/edit', element: <BlogEditPostPage /> },
-          { path: 'new', element: <BlogNewPostPage /> },
-        ],
-      },
-      {
-        path: 'job',
-        children: [
-          { element: <JobListPage />, index: true },
-          { path: 'list', element: <JobListPage /> },
-          { path: ':id', element: <JobDetailsPage /> },
-          { path: 'new', element: <JobCreatePage /> },
-          { path: ':id/edit', element: <JobEditPage /> },
-        ],
-      },
-      {
-        path: 'tour',
-        children: [
-          { element: <TourListPage />, index: true },
-          { path: 'list', element: <TourListPage /> },
-          { path: ':id', element: <TourDetailsPage /> },
-          { path: 'new', element: <TourCreatePage /> },
-          { path: ':id/edit', element: <TourEditPage /> },
-        ],
-      },
-      { path: 'file-manager', element: <FileManagerPage /> },
-      { path: 'mail', element: <MailPage /> },
-      { path: 'chat', element: <ChatPage /> },
-      { path: 'calendar', element: <CalendarPage /> },
-      { path: 'kanban', element: <KanbanPage /> },
+
+      // {
+      //   path: 'invoice',
+      //   children: [
+      //     { element: <InvoiceListPage />, index: true },
+      //     { path: 'list', element: <InvoiceListPage /> },
+      //     { path: ':id', element: <InvoiceDetailsPage /> },
+      //     { path: ':id/edit', element: <InvoiceEditPage /> },
+      //     { path: 'new', element: <InvoiceCreatePage /> },
+      //   ],
+      // },
+
       { path: 'setting', element: <SettingsPage /> },
       { path: 'goldLoanCalculator', element: <GoldLoanCalculator /> },
     ],
