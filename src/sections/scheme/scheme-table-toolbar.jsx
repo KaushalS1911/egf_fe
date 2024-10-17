@@ -61,10 +61,6 @@ export default function   SchemeTableToolbar({
               ),
             }}
           />
-
-          {/*<IconButton onClick={popover.onOpen}>*/}
-          {/*  <Iconify icon="eva:more-vertical-fill" />*/}
-          {/*</IconButton>*/}
         </Stack>
       </Stack>
 

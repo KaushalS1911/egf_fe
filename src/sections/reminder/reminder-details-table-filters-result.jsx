@@ -23,23 +23,12 @@ export default function ReminderDetailsTableFiltersResult({
     onFilters('name', '');
   }, [onFilters]);
 
-  const handleRemoveStatus = useCallback(() => {
-    onFilters('isActive', 'all');
-  }, [onFilters]);
   const handleRemoveDate = useCallback(() => {
     onFilters('startDate', null);
     onFilters('endDate', null);
   }, [onFilters]);
 
-
-  const handleRemoveRole = useCallback(
-    (inputValue) => {
-      const newValue = filters.role.filter((item) => item !== inputValue);
-
-      onFilters('role', newValue);
-    },
-    [filters.role, onFilters]
-  );
+  
 
   return (
     <Stack spacing={1.5} {...other}>

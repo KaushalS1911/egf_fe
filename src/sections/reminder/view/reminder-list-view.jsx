@@ -2,24 +2,15 @@ import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { useSnackbar } from 'src/components/snackbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
@@ -29,7 +20,6 @@ import {
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 
@@ -69,7 +59,6 @@ const defaultFilters = {
 
 export default function ReminderListView() {
   const {disburseLoan,disburseLoanLoading} = useGetDisburseLoan()
-  const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
 
@@ -79,8 +68,6 @@ export default function ReminderListView() {
 
   const confirm = useBoolean();
 
-
-  const [tableData, setTableData] = useState(disburseLoan);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -117,52 +104,7 @@ export default function ReminderListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-  const handleDelete = async (id) => {
-    try {
-      // const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
-      //   data: { ids: id },
-      // });
-      // enqueueSnackbar(res.data.message);
-      // confirm.onFalse();
-      mutate();
-    } catch (err) {
-      // enqueueSnackbar("Failed to delete Scheme");
-    }
-  };
-  const handleDeleteRow = useCallback(
-    (id) => {
-    // handleDelete([id])
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
-  );
-  const handleDeleteRows = useCallback(() => {
-    // const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-    //  const deleteIds = deleteRows.map((row) => row._id);
-    // console.log("yhbjuyh",deleteIds);
-    //  handleDelete(deleteIds)
-    // setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
-
-  const handleEditRow = useCallback(
-    (id) => {
-      // router.push(paths.dashboard.scheme.edit(id));
-    },
-    [router],
-  );
-
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters],
-  );
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.reminder_details.list(id));
@@ -203,25 +145,6 @@ export default function ReminderListView() {
             />
           )}
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row._id)
-                  ,
-                )
-              }
-              action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -231,12 +154,6 @@ export default function ReminderListView() {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(
-                  //     checked,
-                  //     dataFiltered.map((row) => row._id),
-                  //   )
-                  // }
                 />
                 <TableBody>
                   {(filters.startDate && filters.endDate || filters.name) ? (
@@ -253,10 +170,6 @@ export default function ReminderListView() {
                               key={row._id}
                               row={row}
                               handleClick={() => handleClick(row._id)}
-                              selected={table.selected.includes(row._id)}
-                              onSelectRow={() => table.onSelectRow(row._id)}
-                              onDeleteRow={() => handleDeleteRow(row._id)}
-                              onEditRow={() => handleEditRow(row._id)}
                             />
                           ))}
                         <TableEmptyRows
@@ -286,28 +199,6 @@ export default function ReminderListView() {
           />
         </Card>
       </Container>
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title='Delete'
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant='contained'
-            color='error'
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 };
@@ -323,7 +214,6 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   });
   inputData = stabilizedThis.map((el) => el[0]);
 
-  // Filter by scheme name if provided
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>

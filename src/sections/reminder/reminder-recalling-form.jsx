@@ -5,10 +5,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import MenuItem from '@mui/material/MenuItem';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -17,12 +15,10 @@ import DialogContent from '@mui/material/DialogContent';
 
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import FormProvider, {  RHFTextField } from 'src/components/hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { date } from 'yup';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
-import { paths } from '../../routes/paths';
 import { useRouter } from '../../routes/hooks';
 import { mutate } from 'swr';
 
@@ -31,7 +27,6 @@ import { mutate } from 'swr';
 export default function ReminderRecallingForm({currentReminderDetails,currentReminder, open, setOpen }) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const router = useRouter();
   const NewUserSchema = Yup.object().shape({
     nextRecallingDate: Yup.date()
         .required('Next Recalling Date is required')

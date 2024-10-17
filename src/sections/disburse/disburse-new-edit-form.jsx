@@ -86,11 +86,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         branch: currentDisburse?.customer?.branch?.name || '',
         bankNetAmount: currentDisburse?.bankAmount || 0,
         bankPayingAmount: currentDisburse?.bankPayingAmount || 0,
-        bankPendingAmount: currentDisburse?.pendingAmount || 0,
+        bankPendingAmount: currentDisburse?.bankPendingAmount || 0,
         bankDate: currentDisburse?.issueDate ? new Date(currentDisburse.issueDate) : new Date(),
         cashNetAmount: currentDisburse?.cashAmount || 0,
         cashPayingAmount: currentDisburse?.cashPayingAmount || 0,
-        cashPendingAmount: currentDisburse?.pendingAmount || 0,
+        cashPendingAmount: currentDisburse?.cashPendingAmount || 0,
         cashDate: currentDisburse?.date ? new Date(currentDisburse.issueDate) : new Date(),
         items: currentDisburse?.propertyDetails?.map(item => ({
           propertyName: item.type || '',
@@ -101,8 +101,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
           loanApplicableAmount: item.netAmount || '',
         })) || [],
         companyBankDetail: {
-          account: currentDisburse?.account || null,
-          transactionID: currentDisburse?.transactionID || '',
+          account: currentDisburse?.companyBankDetail?.account || null,
+          transactionID: currentDisburse?.companyBankDetail?.transactionID || '',
         },
       }
     ),
@@ -149,6 +149,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         cashAmount: data.cashAmount,
         pendingBankAmount: data.bankPendingAmount,
         pendingCashAmount: data.cashPendingAmount,
+        bankPayingAmount: data.bankPayingAmount,
+        cashPayingAmount:data.cashPayingAmount,
+
       };
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
       router.push(paths.dashboard.disburse.list);
@@ -461,7 +464,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
           </Card>
           <Stack alignItems='flex-end' sx={{ mt: 3 }}>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              {currentDisburse ? 'Save Disburse' : 'Create Disburse'}
+              Disburse Loan
             </LoadingButton>
           </Stack>
         </Grid>
