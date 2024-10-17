@@ -466,13 +466,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 </li>
               )}
             />
-            <Box display="flex" justifyContent="center" alignItems="center">
+            <Box display="flex" justifyContent="end" >
               <Link
                 to={paths.dashboard.customer.new}
                 onClick={handleAdd}
                 style={{
-                  textDecoration: 'none',
                   fontWeight: 'bold',
+                  textDecoration: 'none',
                   color: 'inherit',
                 }}
               >
