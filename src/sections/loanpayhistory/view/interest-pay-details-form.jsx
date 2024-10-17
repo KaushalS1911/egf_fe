@@ -78,7 +78,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
   const defaultValues = {
     from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to),
-    to: (currentLoan?.nextInstallmentDate > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
+    to: (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
     days: '',
     amountPaid: '',
     interestAmount: currentLoan?.scheme.interestRate || '',
