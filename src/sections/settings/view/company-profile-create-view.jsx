@@ -238,7 +238,21 @@ export default function CompanyProfile() {
           <Grid item md={4} xs={12}>
             <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
               <Box display='flex' flexDirection='column' gap={2}>
-                <RHFTextField name='accountNumber' label='Account Number' />
+                <RHFTextField
+                  name="accountNumber"
+                  label="Account Number"
+                  inputProps={{ inputMode: 'numeric' }}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                  }}
+                  rules={{
+                    required: 'Account Number is required',
+                    pattern: {
+                      value: /^[0-9]*$/,
+                      message: 'Only numeric values are allowed',
+                    },
+                  }}
+                />
                 <RHFAutocomplete
                   name='accountType'
                   label='Account Type'
@@ -247,7 +261,14 @@ export default function CompanyProfile() {
                 />
                 <RHFTextField name='accountHolderName' label='Account Holder Name' />
                 <RHFTextField name='bankName' label='Bank Name' />
-                <RHFTextField name='IFSC' label='IFSC Code' />
+                <RHFTextField
+                  name='IFSC'
+                  label='IFSC Code'
+                  inputProps={{
+                    style: { textTransform: 'uppercase' },
+                  }}
+                />
+
                 <RHFTextField name='branchName' label='Branch Name' />
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'end' }}>
                   <LoadingButton onClick={handleSubmitBankDetails(onSubmitBankDetails)} variant='contained'
