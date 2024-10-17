@@ -23,7 +23,6 @@ import { useGetLoanissue } from '../../../api/loanissue';
   const { Loanissue } = useGetLoanissue();
   const {id} = useParams()
   const currentDisburse = Loanissue.find((loanissue) => loanissue._id === id);
-    console.log(currentDisburse);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
