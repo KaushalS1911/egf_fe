@@ -35,7 +35,6 @@ import { paths } from '../../routes/paths';
 // ----------------------------------------------------------------------
 
 export default function DisburseNewEditForm({ currentDisburse }) {
-  console.log(currentDisburse);
   const paymentSchema = currentDisburse.paymentMode === 'Bank' ? {
     bankNetAmount: Yup.number().required('Bank Net Amount is required'),
     bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
@@ -60,8 +59,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
       transactionID: Yup.string().required('Transaction ID is required'),
     }),
   };
-  console.log(paymentSchema,"iygtyutu");
-  console.log(currentDisburse);
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { branch } = useGetBranch();
