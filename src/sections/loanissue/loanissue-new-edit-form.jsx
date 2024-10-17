@@ -12,7 +12,7 @@ import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload, RHFUploadAvatar
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSnackbar } from 'src/components/snackbar';
 import {
-  CardActions,
+  CardActions, Dialog, DialogActions, DialogContent, DialogTitle,
   IconButton,
   Table,
   TableBody,
@@ -36,6 +36,7 @@ import { useGetConfigs } from '../../api/config';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
+import { v4 as uuidv4 } from 'uuid';
 
 // ----------------------------------------------------------------------
 
@@ -56,6 +57,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
   const [totalWeightError, setTotalWeightError] = useState('');
   const [lossWeightError, setLossWeightError] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const uuid = uuidv4();
   const storedBranch = sessionStorage.getItem('selectedBranch');
 
   useEffect(() => {
@@ -127,6 +130,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           netWeight: '',
           grossAmount: '',
           netAmount: '',
+          id: uuid,
         },
       ],
     };
@@ -209,6 +213,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       payload.append(`propertyDetails[${index}][netWeight]`, field.netWeight);
       payload.append(`propertyDetails[${index}][grossAmount]`, field.grossAmount);
       payload.append(`propertyDetails[${index}][netAmount]`, field.netAmount);
+      payload.append(`propertyDetails[${index}][id]`, field.id);
     });
 
     if (data.property_image) {
@@ -267,6 +272,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     },
     [setValue],
   );
+
+  useEffect(() => {
+    if (currentLoanIssue) {
+      setOpenDialog(false);
+    } else {
+      setOpenDialog(true);
+    }
+  }, []);
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -433,6 +446,24 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth='sm' fullWidth>
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Select a Customer</DialogTitle>
+        <DialogContent dividers sx={{ padding: '16px 24px' }}>
+          <Typography variant='body1' gutterBottom>
+            Please select a customer to proceed with the loan issuance.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ padding: '8px 24px', justifyContent: 'flex-end' }}>
+          <Button
+            onClick={() => setOpenDialog(false)}
+            variant='contained'
+            color='primary'
+            sx={{ textTransform: 'none' }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 3 }}>
