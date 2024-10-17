@@ -155,13 +155,13 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                 md: 'repeat(3, 1fr)',
               }}
             >
-              <RHFTextField name='loanNo' label='Loan No.' InputLabelProps={{ shrink: true,readOnly: true }} />
-              <RHFTextField name='customerName' label='Customer Name' InputLabelProps={{ shrink: true,readOnly: true }} />
-              <RHFTextField name='address' label='Address' InputLabelProps={{ shrink: true,readOnly: true }} />
+              <RHFTextField name='loanNo' label='Loan No.' InputProps={{ readOnly: true }} />
+              <RHFTextField name='customerName' label='Customer Name' InputProps={{ readOnly: true }} />
+              <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
               <RHFTextField
                 name='contact'
                 label='Mobile No.'
-                InputLabelProps={{ shrink: true,readOnly: true }}
+                InputLabelProps={{readOnly: true }}
                 inputProps={{ maxLength: 16 }}
               />
               <Controller
@@ -176,7 +176,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                       textField: {
                         fullWidth: true,
                         error: !!error,
-                        InputLabelProps:{ shrink: true,readOnly: true },
+                        InputProps:{readOnly: true },
                         helperText: error?.message,
                       },
                     }}
@@ -186,17 +186,17 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <RHFTextField
                 name='schemeName'
                 label='Scheme Name'
-                InputLabelProps={{ shrink: true,readOnly: true }}
+                InputProps={{ readOnly: true }}
                 inputProps={{ minLength: 10, maxLength: 10 }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
                   methods.setValue('panCard', value, { shouldValidate: true });
                 }} />
-              <RHFTextField name='closedBy' label='Closed by'
-                            InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='closedBy' label='Closed by' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
               <RHFTextField
                 name='oldLoanNo'
                 label='Old Loan No'
+                InputProps={{ readOnly: true }}
                 InputLabelProps={{ shrink: true,readOnly: true }}
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
@@ -221,6 +221,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
               <RHFTextField
                 name='interest'
                 label='Interest %'
+                InputProps={{ readOnly: true }}
                 InputLabelProps={{ shrink: true }}
                 inputProps={{
                   maxLength: 10,
@@ -240,21 +241,17 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                   }
                 }} />
 
-              <RHFTextField name='consultCharge' label='Consult Charge %'
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='loanAmount' label='Loan Amount'
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='interestLoanAmount' label='Interest Loan Amt'
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='loanPeriod' label='Loan Period (Month)'
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='IntPeriodTime' label='INT. Period Time'
-                            InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='consultCharge'  InputProps={{ readOnly: true }} label='Consult Charge %' InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='loanAmount' label='Loan Amount'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='interestLoanAmount' label='Interest Loan Amt'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='loanPeriod' label='Loan Period (Month)'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='IntPeriodTime' label='INT. Period Time'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
               <Controller
                 name='nextInterestPayDate'
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
+                    readOnly={true}
                     label='Next Interest Pay Date'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
@@ -274,6 +271,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
+                    readOnly={true}
                     label='Last Interest Pay Date'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
@@ -293,6 +291,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
+                    readOnly={true}
                     label='Renew Date'
                     value={field.value}
                     onChange={(newValue) => field.onChange(newValue)}
@@ -307,7 +306,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan }) {
                   />
                 )}
               />
-              <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} />
+              <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
             </Box>
           </Card>
     </FormProvider>

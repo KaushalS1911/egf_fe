@@ -29,7 +29,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Iconify from '../../components/iconify';
 import { useGetCustomer } from '../../api/customer';
-import { ACCOUNT_TYPE_OPTIONS, paymentMethods } from '../../_mock';
+import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
 import { useGetAllProperty } from '../../api/property';
 import { useGetCarat } from '../../api/carat';
 import { useGetConfigs } from '../../api/config';
@@ -70,6 +70,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     loanAmount: Yup.number().required('Loan Amount is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     cashAmount: Yup.number().required('Cash Amount is required'),
+    propertyDetails: Yup.array().of(
+      Yup.object().shape({
+        type: Yup.string().required('Type is required'),
+        carat: Yup.string().required('Carat is required'),
+        pcs: Yup.string().required('Pieces are required'),
+        grossWeight: Yup.string().required('Gross Weight is required'),
+        netWeight: Yup.string().required('Net Weight is required'),
+        grossAmount: Yup.string().required('Gross Amount is required'),
+        netAmount: Yup.string().required('Net Amount is required'),
+      }),
+    ),
   });
 
   const defaultValues = useMemo(() => {
@@ -91,7 +102,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       } : null,
       scheme: currentLoanIssue ? currentLoanIssue?.scheme : null,
       loanNo: currentLoanIssue?.loanNo || '',
-      issueDate: currentLoanIssue ? new Date(currentLoanIssue?.issueDate) : null,
+      issueDate: currentLoanIssue ? new Date(currentLoanIssue?.issueDate) : new Date(),
       consultingCharge: currentLoanIssue?.consultingCharge || 200,
       nextInstallmentDate: currentLoanIssue ? new Date(currentLoanIssue?.nextInstallmentDate) : null,
       jewellerName: currentLoanIssue?.jewellerName || '',
@@ -359,14 +370,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setValue('bankAmount', newLoanAmount);
       setValue('cashAmount', 0);
     } else if (paymentMode === 'Both') {
-      setValue('cashAmount', newLoanAmount / 2);
-      setValue('bankAmount', newLoanAmount / 2);
+      setValue('cashAmount', newLoanAmount);
     }
   };
 
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
-    const currentLoanAmount = parseFloat(getValues('loanAmount')) || '';
+    const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
 
     if (newCashAmount > currentLoanAmount) {
       setValue('cashAmount', currentLoanAmount);
@@ -605,7 +615,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         fullWidth: true,
                         error: !!error,
                         helperText: error?.message,
-                        className: 'req',
                         disabled: true,
                       },
                     }}
@@ -715,10 +724,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             label='Pcs'
                             disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].carat`) === ''}
                             onChange={(e) => {
-                              if (e.target.value === '') {
-                                handleReset(index);
-                              }
-
                               const pcs = parseFloat(e.target.value) || 0;
                               setValue(`propertyDetails[${index}].pcs`, pcs);
 
@@ -1067,7 +1072,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   name='IFSC'
                   inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                   onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase(); // Allows only alphanumeric and converts to uppercase
+                    e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
                   label='IFSC Code'
                   req={'red'}
