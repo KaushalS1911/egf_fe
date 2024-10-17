@@ -32,18 +32,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
-
-import { isAfter, isBetween } from '../../../utils/format-time';
-import SchemeTableToolbar from '../scheme-table-toolbar';
-import SchemeTableFiltersResult from '../scheme-table-filters-result';
-import SchemeTableRow from '../scheme-table-row';
-import { Box, CircularProgress } from '@mui/material';
-import Label from '../../../components/label';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { valueToPercent } from '@mui/material/Slider/useSlider';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
@@ -306,9 +294,7 @@ const handleDelete = (id) =>{
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, name } = filters;
 
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -317,7 +303,6 @@ function applyFilter({ inputData, comparator, filters }) {
   });
   inputData = stabilizedThis.map((el) => el[0]);
 
-  // Filter by scheme name if provided
 
   return inputData;
 }

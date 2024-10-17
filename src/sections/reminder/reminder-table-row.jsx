@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -13,9 +12,8 @@ import ReminderRecallingForm from './reminder-recalling-form';
 import { useState } from 'react';
 import { fDate } from '../../utils/format-time';
 import { useRouter } from '../../routes/hooks';
-import { paths } from '../../routes/paths';
 
-export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,handleClick,index}) {
+export default function ReminderTableRow({ row, selected, onDeleteRow ,handleClick,index}) {
   const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate} = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
@@ -30,10 +28,6 @@ export default function ReminderTableRow({ row, selected, onEditRow, onSelectRow
   return (
     <>
       <TableRow hover selected={selected}>
-        {/*<TableCell padding='checkbox'>*/}
-        {/*  <Checkbox checked={selected} onClick={onSelectRow} />*/}
-        {/*</TableCell>*/}
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.firstName}</TableCell>

@@ -34,17 +34,14 @@ import {
 } from 'src/components/table';
 
 
-import { isAfter, isBetween } from '../../../utils/format-time';
 import CaratTableToolbar from '../carat-table-toolbar';
 import CaratTableFiltersResult from '../carat-table-filters-result';
 import CaratTableRow from '../carat-table-row';
-import { Box, CircularProgress } from '@mui/material';
+import { Box} from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
-import { valueToPercent } from '@mui/material/Slider/useSlider';
-import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetCarat } from '../../../api/carat';
@@ -357,7 +354,6 @@ export default function CaratListView() {
 function applyFilter({ inputData, comparator, filters }) {
   const { isActive, name } = filters;
 
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);

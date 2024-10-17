@@ -75,7 +75,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     ...paymentSchema,
   });
-
   const defaultValues = {
     from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to),
     to: (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
@@ -84,7 +83,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     interestAmount: currentLoan?.scheme.interestRate || '',
     consultingCharge: currentLoan?.consultingCharge || '',
     penalty: '',
-    uchakAmount: 0,
+    uchakAmount: currentLoan?.uchakInterestAmount || 0,
     cr_dr: '',
     totalPay: '',
     payAfterAdjusted1: '',

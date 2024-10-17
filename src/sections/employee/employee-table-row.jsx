@@ -22,8 +22,8 @@ import { fDate } from '../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { user , joiningDate} = row;
-  const {avatar_url , contact , firstName , lastName , middleName , role , email } = user;
+  const { user , joiningDate , branch} = row;
+  const {avatar_url , contact , firstName , lastName , middleName , role , email  } = user;
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -48,6 +48,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
               }}
             />
           </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{branch?.name}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>

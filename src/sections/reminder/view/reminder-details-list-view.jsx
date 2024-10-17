@@ -32,19 +32,9 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
-
-import { Box} from '@mui/material';
-import Label from '../../../components/label';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
 import { isAfter, isBetween } from '../../../utils/format-time';
-import { useGetDisburseLoan } from '../../../api/disburseLoan';
 import ReminderDetailsTableRow from '../reminder-details-table-row';
 import ReminderDetailsTableToolbar from '../reminder-table-toolbar';
 import ReminderDetailsTableFiltersResult from '../reminder-details-table-filters-result';
@@ -231,7 +221,6 @@ export default function ReminderDetailsListView() {
                   }
                 />
                 <TableBody>
-                  {/*{filters.startDate && filters.endDate || filters.name ?*/}
                     <>      {dataFiltered
                       .slice(
                         table.page * table.rowsPerPage,
@@ -304,8 +293,6 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-
-  // Filter by scheme name if provided
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>

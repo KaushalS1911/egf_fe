@@ -367,7 +367,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 </Grid>
 
                 <Grid item xs={3}>
-                  <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} />
+                  <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} sx={{' .css-16lfxc8':{height: "200px"}}} />
                 </Grid>
               </Grid>
             </Box>

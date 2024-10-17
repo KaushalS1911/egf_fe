@@ -14,9 +14,7 @@ import Iconify from 'src/components/iconify';
 export default function GoldpriceTableFiltersResult({
   filters,
   onFilters,
-  //
   onResetFilters,
-  //
   results,
   ...other
 }) {

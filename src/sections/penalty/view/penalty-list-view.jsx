@@ -36,7 +36,7 @@ import {
 import PenaltyTableToolbar from '../penalty-table-toolbar';
 import PenaltyTableFiltersResult from '../penalty-table-filters-result';
 import PenaltyTableRow from '../penalty-table-row';
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
