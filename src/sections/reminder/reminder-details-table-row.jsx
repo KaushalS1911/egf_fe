@@ -19,10 +19,7 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
   const confirm = useBoolean();
   const popover = usePopover();
   const recallingPopover = usePopover();
-  const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
-  };
+
   return (
     <>
       <TableRow hover selected={selected}>
@@ -70,26 +67,6 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
         </MenuItem>
-        {/*<MenuItem*/}
-        {/*  onClick={() => {*/}
-        {/*    onEditRow();*/}
-        {/*    popover.onClose();*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  <Iconify icon='solar:pen-bold' />*/}
-        {/*  Edit*/}
-        {/*</MenuItem>*/}
-
-        {/*<MenuItem*/}
-        {/*  onClick={() => {*/}
-        {/*    popover.onClose();*/}
-        {/*    recallingPopover.onOpen(ReminderRecallingForm);*/}
-        {/*    setOpen(true);*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  <Iconify icon='carbon:view-filled' />*/}
-        {/*   Details*/}
-        {/*</MenuItem>*/}
       </CustomPopover>
 
       <CustomPopover
@@ -100,7 +77,7 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
       >
         <ReminderRecallingForm onClose={recallingPopover.onClose} />
       </CustomPopover>
-      <ReminderRecallingForm currentReminderDetails={row} open={open} onClose={() => setOpen(false)} />
+      <ReminderRecallingForm currentReminderDetails={row} open={open} setOpen={() => setOpen(false)} />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
