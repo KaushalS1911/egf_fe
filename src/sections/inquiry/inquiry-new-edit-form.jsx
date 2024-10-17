@@ -63,7 +63,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       contact: currentInquiry?.contact || '',
       email: currentInquiry?.email || '',
       other: checkInquiryFor(currentInquiry?.inquiryFor) ? currentInquiry?.inquiryFor : null || '',
-      date: new Date(currentInquiry?.date) || '',
+      date: currentInquiry ? new Date(currentInquiry?.date) : new Date(),
       inquiryFor: (currentInquiry && checkInquiryFor(currentInquiry?.inquiryFor) ? 'Other' : currentInquiry?.inquiryFor) || '',
       remark: currentInquiry?.remark || '',
     }),
@@ -106,8 +106,8 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     }
 
     const branchQuery = parsedBranch && parsedBranch === 'all'
-      ? `&branch=${mainbranchid?._id}`
-      : `&branch=${parsedBranch}`;
+      ? `branch=${mainbranchid?._id}`
+      : `branch=${parsedBranch}`;
 
     try {
       if (currentInquiry) {
@@ -175,10 +175,10 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                 label='Mobile No.'
                 req={'red'}
                 inputProps={{
-                maxLength: 10,
-                inputMode: 'numeric',
-                pattern: '[0-9]*',
-              }}
+                  maxLength: 10,
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                }}
                 rules={{
                   required: 'Mobile number is required',
                   pattern: {

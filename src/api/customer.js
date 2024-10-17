@@ -18,7 +18,7 @@ export function useGetCustomer() {
 
   const branchQuery = parsedBranch && parsedBranch === 'all'
     ? ''
-    : `&branch=${parsedBranch}`;
+    : `branch=${parsedBranch}`;
 
   const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?${branchQuery}`;
   const { data, error, isValidating, mutate } = useSWR(URL, fetcher);
@@ -58,7 +58,7 @@ export function useGetSingleCustomer(customerData) {
 
   const branchQuery = parsedBranch && parsedBranch === 'all'
     ? ''
-    : `&branch=${parsedBranch}`;
+    : `branch=${parsedBranch}`;
 
   const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?.id}?${branchQuery}`;
   const { data, error, isValidating, mutate } = useSWR(URL, fetcher);

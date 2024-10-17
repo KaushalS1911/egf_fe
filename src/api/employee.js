@@ -18,7 +18,7 @@ export function useGetEmployee() {
 
   const branchQuery = parsedBranch && parsedBranch === 'all'
     ? ''
-    : `&branch=${parsedBranch}`;
+    : `branch=${parsedBranch}`;
 
   const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee?${branchQuery}`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
