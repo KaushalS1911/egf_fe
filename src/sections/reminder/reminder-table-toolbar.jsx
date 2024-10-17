@@ -14,7 +14,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // ----------------------------------------------------------------------
 
 export default function ReminderTableToolbar({ filters, onFilters, roleOptions, dateError }) {
-  console.log(filters);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const handleFilterName = useCallback(
