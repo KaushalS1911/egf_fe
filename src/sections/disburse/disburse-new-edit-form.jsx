@@ -144,7 +144,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     });
   };
   const onSubmit = handleSubmit(async (data) => {
-    alert()
     try {
       const payload = {
         loan: currentDisburse._id,
