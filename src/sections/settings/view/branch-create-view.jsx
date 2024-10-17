@@ -218,7 +218,20 @@ export default function BranchCreateView() {
                   <RHFTextField name='address.landmark' label='Landmark' fullWidth sx={{ mb: 2 }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='address.zipcode' label='Zipcode' fullWidth sx={{ mb: 2 }} />
+                  <RHFTextField
+                    name='address.zipcode'
+                    label='Zipcode'
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    inputProps={{
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      maxLength: 6
+                    }}
+                    onInput={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    }}
+                  />
                 </Grid>
                 {editingBranch && (
                   <Grid item xs={12}>
