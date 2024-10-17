@@ -36,6 +36,7 @@ import { useGetConfigs } from '../../api/config';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
+import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 // ----------------------------------------------------------------------
@@ -496,14 +497,19 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 </li>
               )}
             />
-            <Button
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-              onClick={handleAdd}
-              href={paths.dashboard.customer.new}
-            >
-              Add Customer
-            </Button>
+            <Box display="flex" justifyContent="end" >
+              <Link
+                to={paths.dashboard.customer.new}
+                onClick={handleAdd}
+                style={{
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                }}
+              >
+                + Add Customer
+              </Link>
+            </Box>
           </Box>
         </Card>
         </Grid>

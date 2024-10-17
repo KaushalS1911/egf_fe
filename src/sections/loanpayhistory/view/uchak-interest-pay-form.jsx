@@ -34,23 +34,7 @@ function UchakInterestPayForm() {
       .typeError('Uchak Interest Pay Amount must be a number'),
     remark: Yup.string().required('Remark is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    account: Yup.object().test(
-      'accountRequired',
-      'Account is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Bank' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
-
-    cashAmount: Yup.string().test(
-      'cashAmountRequired',
-      'Cash amount is required',
-      function (value) {
-        const { paymentMode } = this.parent;
-        return paymentMode !== 'Cash' && paymentMode !== 'Both' ? true : !!value;
-      }
-    ),
+    ...paymentSchema
 
 
   });
