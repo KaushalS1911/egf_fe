@@ -22,6 +22,7 @@ import AccountPopover from '../common/account-popover';
 import ContactsPopover from '../common/contacts-popover';
 import LanguagePopover from '../common/language-popover';
 import NotificationsPopover from '../common/notifications-popover';
+import { Box } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -42,8 +43,7 @@ export default function Header({ onOpenNav }) {
 
   const renderContent = (
     <>
-      {lgUp && isNavHorizontal && <Logo sx={{ mr: 2.5 }} />}
-
+      {lgUp && isNavHorizontal && <Box sx={{height:"70px",width:"70px",mb:"30px"}}><Logo sx={{ mr: 2.5, height: "40px !important" }} /></Box>}
       {!lgUp && (
         <IconButton onClick={onOpenNav}>
           <SvgColor src="/assets/icons/navbar/ic_menu_item.svg" />

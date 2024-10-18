@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -31,14 +31,16 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
-import Button from '@mui/material/Button';
 
 // ----------------------------------------------------------------------
 
 export default function DisburseNewEditForm({ currentDisburse }) {
+  const [cashPendingAmt,setCashPendingAmt] = useState(0)
+  const [bankPendingAmt,setBankPendingAmt] = useState(0)
+
   const paymentSchema = currentDisburse.paymentMode === 'Bank' ? {
     bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    payingBankAmount: Yup.number().required('Bank Paying Amount is required'),
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
@@ -46,14 +48,14 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     }),
   } : currentDisburse.paymentMode === 'Cash' ? {
     cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
+    payingCashAmount: Yup.number().required('Cash Paying Amount is required'),
     cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
   } : {
     cashNetAmount: Yup.number().required('Cash Net Amount is required'),
     cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
     cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
     bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-    bankPayingAmount: Yup.number().required('Bank Paying Amount is required'),
+    payingBankAmount: Yup.number().required('Bank Paying Amount is required'),
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
@@ -86,11 +88,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         address: currentDisburse?.customer?.permanentAddress?.street || '',
         branch: currentDisburse?.customer?.branch?.name || '',
         bankNetAmount: currentDisburse?.bankAmount || 0,
-        bankPayingAmount: currentDisburse?.bankPayingAmount || 0,
+        payingBankAmount: currentDisburse?.payingBankAmount || 0,
         bankPendingAmount: currentDisburse?.bankPendingAmount || 0,
         bankDate: currentDisburse?.issueDate ? new Date(currentDisburse.issueDate) : new Date(),
         cashNetAmount: currentDisburse?.cashAmount || 0,
-        cashPayingAmount: currentDisburse?.cashPayingAmount || 0,
+        payingCashAmount: currentDisburse?.payingCashAmount || 0,
         cashPendingAmount: currentDisburse?.cashPendingAmount || 0,
         cashDate: currentDisburse?.date ? new Date(currentDisburse.issueDate) : new Date(),
         items: currentDisburse?.propertyDetails?.map(item => ({
@@ -128,6 +130,14 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     control,
     name: 'items',
   });
+
+  useEffect(() => {
+    setCashPendingAmt(watch('cashNetAmount') - watch('payingCashAmount'))
+  },[watch('cashNetAmount') , watch('payingCashAmount')])
+  useEffect(() => {
+    setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'))
+  },[watch('bankNetAmount') , watch('payingBankAmount')])
+  console.log();
   const handleRemove = (index) => {
     remove(index);
   };
@@ -148,10 +158,10 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         companyBankDetail: data.companyBankDetail,
         bankAmount: data.bankAmount,
         cashAmount: data.cashAmount,
-        pendingBankAmount: data.bankPendingAmount,
-        pendingCashAmount: data.cashPendingAmount,
-        bankPayingAmount: data.bankPayingAmount,
-        cashPayingAmount:data.cashPayingAmount,
+        pendingBankAmount: bankPendingAmt,
+        pendingCashAmount: cashPendingAmt,
+        payingBankAmount: data.payingBankAmount,
+        payingCashAmount:data.payingCashAmount,
 
       };
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
@@ -325,7 +335,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       }
                     }} />
                     <Controller
-                      name='bankPayingAmount'
+                      name='payingBankAmount'
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
@@ -347,7 +357,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       )}
                     />
                     <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}
-                                  value={watch('bankNetAmount') - watch('bankPayingAmount') || 0}
+                                  value={watch('bankNetAmount') - watch('payingBankAmount') || 0}
                                   InputLabelProps={{ shrink: true }} />
                     <RHFAutocomplete
                       name='companyBankDetail.account'
@@ -412,7 +422,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                                   }}
                     />
                     <Controller
-                      name='cashPayingAmount'
+                      name='payingCashAmount'
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
@@ -430,7 +440,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                     />
 
                     <RHFTextField name='cashPendingAmount' label='Pending Amount' req={'red'}
-                                  value={parseFloat(watch('cashNetAmount') - watch('cashPayingAmount') || 0)}
+                                  value={parseFloat(watch('cashNetAmount') - watch('payingCashAmount') || 0)}
                                   InputLabelProps={{ shrink: true }}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -463,6 +473,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
 
 
           </Card>
+
           <Stack alignItems={"end"} mt={3}>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
               Submit

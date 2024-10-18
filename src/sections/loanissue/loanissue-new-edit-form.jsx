@@ -38,6 +38,7 @@ import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import Swal from 'sweetalert2';
 
 // ----------------------------------------------------------------------
 
@@ -275,12 +276,24 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   );
 
   useEffect(() => {
-    if (currentLoanIssue) {
-      setOpenDialog(false);
-    } else {
+    if (!currentLoanIssue) {
+      Swal.fire({
+        title: 'Select a Customer',
+        text: 'Please select a customer to proceed with the loan issuance.',
+        icon: 'info',
+        confirmButtonText: 'Close',
+        confirmButtonColor: '#454F5B',
+        color: '#000',
+        iconColor: '#f39c12',
+        customClass: {
+          popup: 'swal2-yellow-theme',
+        },
+      }).then(() => {
+        setOpenDialog(false);
+      });
       setOpenDialog(true);
     }
-  }, []);
+  }, [currentLoanIssue]);
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -447,24 +460,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth='sm' fullWidth>
-        <DialogTitle sx={{ fontWeight: 'bold' }}>Select a Customer</DialogTitle>
-        <DialogContent dividers sx={{ padding: '16px 24px' }}>
-          <Typography variant='body1' gutterBottom>
-            Please select a customer to proceed with the loan issuance.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ padding: '8px 24px', justifyContent: 'flex-end' }}>
-          <Button
-            onClick={() => setOpenDialog(false)}
-            variant='contained'
-            color='primary'
-            sx={{ textTransform: 'none' }}
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 3 }}>
@@ -497,7 +492,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 </li>
               )}
             />
-            <Box display="flex" justifyContent="end" >
+            <Box display='flex' justifyContent='end'>
               <Link
                 to={paths.dashboard.customer.new}
                 onClick={handleAdd}
@@ -638,7 +633,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 type='number'
                 inputProps={{ min: 0 }}
               />}
-              <Controller
+              {currentLoanIssue && <Controller
                 name='nextInstallmentDate'
                 control={control}
                 render={({ field, fieldState: { error } }) => (
@@ -657,7 +652,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     }}
                   />
                 )}
-              />
+              />}
               <RHFTextField name='jewellerName' label='Jeweller Name' req={'red'} disabled={!isFieldsEnabled} />
             </Box>
           </Card>
@@ -1127,8 +1122,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Card>
           </Grid></>}
       </Grid>
-      <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-        <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+      <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+        <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                 disabled={!isFieldsEnabled}
                 variant='outlined' onClick={() => reset()}>Reset</Button>
         <LoadingButton disabled={!isFieldsEnabled} type='submit' variant='contained' loading={isSubmitting}>
