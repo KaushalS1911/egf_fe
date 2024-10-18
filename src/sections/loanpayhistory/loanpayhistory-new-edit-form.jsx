@@ -44,7 +44,7 @@ import LoanCloseForm from './view/loan-close-form';
 // ----------------------------------------------------------------------
 
 
-export default function LoanpayhistoryNewEditForm({ currentLoan , mutate }) {
+export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuthContext();
   const [file, setFile] = useState(currentLoan.propertyImage);
@@ -91,7 +91,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan , mutate }) {
     contact: currentLoan?.customer.contact || '',
     issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
     schemeName: currentLoan?.scheme.name || '',
-    closedBy: currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) :  null,
+    closedBy: currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) : null,
     oldLoanNo: currentLoan?.oldLoanNo || '',
     interest: currentLoan?.scheme.interestRate || '',
     consultCharge: currentLoan?.consultingCharge || '',
@@ -145,186 +145,218 @@ export default function LoanpayhistoryNewEditForm({ currentLoan , mutate }) {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-          <Card sx={{ p: 3 }}>
-            <Box variant='div' sx={{ mb: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              Customer details
-            </Box>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-              }}
-            >
-              <RHFTextField name='loanNo' label='Loan No.' InputProps={{ readOnly: true }} />
-              <RHFTextField name='customerName' label='Customer Name' InputProps={{ readOnly: true }} />
-              <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
-              <RHFTextField
-                name='contact'
-                label='Mobile No.'
-                InputLabelProps={{readOnly: true }}
-                inputProps={{ maxLength: 16 }}
-              />
-              <Controller
-                name='issueDate'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Issue Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        InputProps:{readOnly: true },
-                        helperText: error?.message,
-                      },
-                    }}
-                  />
-                )}
-              />
-              <RHFTextField
-                name='schemeName'
-                label='Scheme Name'
-                InputProps={{ readOnly: true }}
-                inputProps={{ minLength: 10, maxLength: 10 }}
-                onChange={(e) => {
-                  const value = e.target.value.toUpperCase();
-                  methods.setValue('panCard', value, { shouldValidate: true });
-                }} />
-              <RHFTextField name='closedBy' label='Closed by' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
-              <RHFTextField
-                name='oldLoanNo'
-                label='Old Loan No'
-                InputProps={{ readOnly: true }}
-                InputLabelProps={{ shrink: true,readOnly: true }}
-                inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
-                onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                }}
-              />
-            </Box>
-            <Box variant='div' sx={{ mt: 2.5, fontSize: '18px', fontWeight: '700' }}>
-              Loan Details
-            </Box>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              sx={{ py: 3 }}
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-              }}
-            >
-              <RHFTextField
-                name='interest'
-                label='Interest %'
-                InputProps={{ readOnly: true }}
-                InputLabelProps={{ shrink: true }}
-                inputProps={{
-                  maxLength: 10,
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                }}
-                rules={{
-                  required: 'OTP is required',
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: 'Please enter a valid 10-digit OTP',
-                  },
-                }}
-                onKeyPress={(e) => {
-                  if (!/[0-9]/.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }} />
+        <Grid item xs={12} md={8}>
+          <FormProvider methods={methods} onSubmit={onSubmit}>
+            <Card sx={{ p: 3 }}>
+              <Box sx={{ mb: 2.5, fontSize: '18px', fontWeight: '700' }}>
+                Customer details
+              </Box>
 
-              <RHFTextField name='consultCharge'  InputProps={{ readOnly: true }} label='Consult Charge %' InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='loanAmount' label='Loan Amount'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='interestLoanAmount' label='Interest Loan Amt'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='loanPeriod' label='Loan Period (Month)'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='IntPeriodTime' label='INT. Period Time'  InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
-              <Controller
-                name='nextInterestPayDate'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    readOnly={true}
-                    label='Next Interest Pay Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        InputLabelProps:{ shrink: true },
-                        helperText: error?.message,
-                      },
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='loanNo' label='Loan No.' InputProps={{ readOnly: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='customerName' label='Customer Name' InputProps={{ readOnly: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField
+                    name='contact'
+                    label='Mobile No.'
+                    InputProps={{ readOnly: true }}
+                    inputProps={{ maxLength: 16 }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Controller
+                    name='issueDate'
+                    control={control}
+                    render={({ field, fieldState: { error } }) => (
+                      <DatePicker
+                        label='Issue Date'
+                        value={field.value}
+                        onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            error: !!error,
+                            InputProps: { readOnly: true },
+                            helperText: error?.message,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField
+                    name='schemeName'
+                    label='Scheme Name'
+                    InputProps={{ readOnly: true }}
+                    inputProps={{ minLength: 10, maxLength: 10 }}
+                    onChange={(e) => {
+                      const value = e.target.value.toUpperCase();
+                      methods.setValue('panCard', value, { shouldValidate: true });
                     }}
                   />
-                )}
-              />
-              <Controller
-                name='lastInterestPayDate'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    readOnly={true}
-                    label='Last Interest Pay Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        InputLabelProps:{ shrink: true },
-                        helperText: error?.message,
-                      },
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='closedBy' label='Closed by' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField
+                    name='oldLoanNo'
+                    label='Old Loan No'
+                    InputProps={{ readOnly: true }}
+                    InputLabelProps={{ shrink: true }}
+                    inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
+                    onInput={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
                     }}
                   />
-                )}
-              />
-              <Controller
-                name='renewDate'
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    readOnly={true}
-                    label='Renew Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        InputLabelProps:{ shrink: true },
-                        helperText: error?.message,
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 2.5, fontSize: '18px', fontWeight: '700' }}>
+                Loan Details
+              </Box>
+
+              <Grid container spacing={2} sx={{ py: 3 }}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField
+                    name='interest'
+                    label='Interest %'
+                    InputProps={{ readOnly: true }}
+                    InputLabelProps={{ shrink: true }}
+                    inputProps={{
+                      maxLength: 10,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                    }}
+                    rules={{
+                      required: 'Interest % is required',
+                      pattern: {
+                        value: /^[0-9]+$/,
+                        message: 'Please enter a valid interest percentage',
                       },
                     }}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
-                )}
-              />
-              <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
-            </Box>
-          </Card>
-    </FormProvider>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='consultCharge' label='Consult Charge %' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='interestLoanAmount' label='Interest Loan Amt' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='IntPeriodTime' label='INT. Period Time' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Controller
+                    name='nextInterestPayDate'
+                    control={control}
+                    render={({ field, fieldState: { error } }) => (
+                      <DatePicker
+                        readOnly
+                        label='Next Interest Pay Date'
+                        value={field.value}
+                        onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            error: !!error,
+                            InputLabelProps: { shrink: true },
+                            helperText: error?.message,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Controller
+                    name='lastInterestPayDate'
+                    control={control}
+                    render={({ field, fieldState: { error } }) => (
+                      <DatePicker
+                        readOnly
+                        label='Last Interest Pay Date'
+                        value={field.value}
+                        onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            error: !!error,
+                            InputLabelProps: { shrink: true },
+                            helperText: error?.message,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Controller
+                    name='renewDate'
+                    control={control}
+                    render={({ field, fieldState: { error } }) => (
+                      <DatePicker
+                        readOnly
+                        label='Renew Date'
+                        value={field.value}
+                        onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            error: !!error,
+                            InputLabelProps: { shrink: true },
+                            helperText: error?.message,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }}
+                                InputProps={{ readOnly: true }} />
+                </Grid>
+              </Grid>
+            </Card>
+
+          </FormProvider>
         </Grid>
         <Grid item xs={12} md={4}>
           <Card>
             <CardHeader title='Property Images' />
             <CardContent>
-              <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} InputProps={{ readOnly: true }} />
+              <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)}
+                      InputProps={{ readOnly: true }} />
             </CardContent>
           </Card>
         </Grid>
+      </Grid>
+      <Grid container spacing={3} sx={{ mt: 3 }}>
         <Grid item xs={12}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
             Loan Pay Details
@@ -339,14 +371,15 @@ export default function LoanpayhistoryNewEditForm({ currentLoan , mutate }) {
               <Tab label='Loan Part Payment' />
               <Tab label='Loan Close' />
             </Tabs>
-            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm  currentLoan={currentLoan} mutate={mutate}/>}
-            {(activeTab === 1 && currentLoan) && <PartReleaseForm  currentLoan={currentLoan} mutate={mutate}/>}
-            {(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} mutate={mutate}/>}
-            {(activeTab === 3 && currentLoan) && <LoanPartPaymentForm  currentLoan={currentLoan} mutate={mutate}/>}
-            {(activeTab === 4 && currentLoan) && <LoanCloseForm  currentLoan={currentLoan} mutate={mutate}/>}
+            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm currentLoan={currentLoan} mutate={mutate} />}
+            {(activeTab === 1 && currentLoan) && <PartReleaseForm currentLoan={currentLoan} mutate={mutate} />}
+            {(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} mutate={mutate} />}
+            {(activeTab === 3 && currentLoan) && <LoanPartPaymentForm currentLoan={currentLoan} mutate={mutate} />}
+            {(activeTab === 4 && currentLoan) && <LoanCloseForm currentLoan={currentLoan} mutate={mutate} />}
           </Card>
         </Grid>
       </Grid>
+
 
     </>
   );
