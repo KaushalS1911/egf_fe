@@ -31,6 +31,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
+import Button from '@mui/material/Button';
 
 // ----------------------------------------------------------------------
 
@@ -39,24 +40,49 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   const [bankPendingAmt,setBankPendingAmt] = useState(0)
 
   const paymentSchema = currentDisburse.paymentMode === 'Bank' ? {
-    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-    payingBankAmount: Yup.number().required('Bank Paying Amount is required'),
-    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    bankNetAmount: Yup.string()
+      .required('Bank Net Amount is required')
+      .min(0, 'Bank Net Amount must be a positive number'),
+    bankPayingAmount: Yup.string()
+      .required('Bank Paying Amount is required')
+      .min(0, 'Bank Paying Amount must be a positive number'),
+    bankPendingAmount: Yup.string()
+      .required('Bank Pending Amount is required')
+      .min(0, 'Bank Pending Amount must be a positive number'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
     }),
   } : currentDisburse.paymentMode === 'Cash' ? {
-    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-    payingCashAmount: Yup.number().required('Cash Paying Amount is required'),
-    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+    cashNetAmount: Yup.string()
+      .required('Cash Net Amount is required')
+      .min(0, 'Cash Net Amount must be a positive number'),
+    cashPayingAmount: Yup.string()
+      .required('Cash Paying Amount is required')
+      .min(0, 'Cash Paying Amount must be a positive number'),
+    cashPendingAmount: Yup.string()
+      .required('Cash Pending Amount is required')
+      .min(0, 'Cash Pending Amount must be a positive number'),
   } : {
-    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-    cashPayingAmount: Yup.number().required('Cash Paying Amount is required'),
-    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
-    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-    payingBankAmount: Yup.number().required('Bank Paying Amount is required'),
-    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+    // Fallback when both Cash and Bank payment modes are applicable
+    cashNetAmount: Yup.string()
+      .required('Cash Net Amount is required')
+      .min(0, 'Cash Net Amount must be a positive number'),
+    cashPayingAmount: Yup.string()
+      .required('Cash Paying Amount is required')
+      .min(0, 'Cash Paying Amount must be a positive number'),
+    cashPendingAmount: Yup.string()
+      .required('Cash Pending Amount is required')
+      .min(0, 'Cash Pending Amount must be a positive number'),
+    bankNetAmount: Yup.string()
+      .required('Bank Net Amount is required')
+      .min(0, 'Bank Net Amount must be a positive number'),
+    bankPayingAmount: Yup.string()
+      .required('Bank Paying Amount is required')
+      .min(0, 'Bank Paying Amount must be a positive number'),
+    bankPendingAmount: Yup.string()
+      .required('Bank Pending Amount is required')
+      .min(0, 'Bank Pending Amount must be a positive number'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
@@ -73,7 +99,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     scheme: Yup.string().required('Scheme Name is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-    ...paymentSchema
+    ...paymentSchema,
   });
 
   const defaultValues = useMemo(
