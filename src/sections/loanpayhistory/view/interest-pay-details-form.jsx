@@ -147,8 +147,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     setValue('totalPay', (
       Number(watch('interestAmount')) +
       Number(watch('consultingCharge')) +
-      Number(watch('penalty')) -
-      Number(watch('uchakAmount'))
+      Number(watch('penalty'))
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
@@ -185,6 +184,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
       to: data.to,
       adjustedPay: data.payAfterAdjusted1,
       days: data.days,
+      uchakInterestAmount: data.uchakAmount,
       interestAmount: data.interestAmount,
       from: data.from,
       amountPaid: data.amountPaid,
