@@ -178,7 +178,18 @@ export default function NavVertical({ openNav, onCloseNav }) {
             },
           }}
         >
-          {renderContent}
+          <Stack
+            sx={{
+              height: 1,
+              position: 'fixed',
+              width: NAV.W_VERTICAL,
+              backgroundColor:(theme)=>theme.palette.mode === 'light' ? "#393939":"#212b36",
+              paddingBottom:"15px",
+              borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
+            }}
+          >
+            {renderContent}
+          </Stack>
         </Drawer>
       )}
     </Box>

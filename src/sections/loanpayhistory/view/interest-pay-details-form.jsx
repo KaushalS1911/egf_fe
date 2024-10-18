@@ -145,6 +145,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
     setValue('interestAmount', (currentLoan?.scheme.interestRate * currentLoan.loanAmount / 100 * differenceInDays / 30).toFixed(2));
     setValue('penalty', penaltyPer);
+    if (new Date(from) > new Date()) {
+      setValue('penalty', 0);
+    }
     setValue('totalPay', (
       Number(watch('interestAmount')) +
       Number(watch('consultingCharge')) +
@@ -365,8 +368,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             </Box>
           )}
         </Box>
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+          <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
