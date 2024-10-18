@@ -51,12 +51,22 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
-    bankAmount: Yup.string().required('Bank Account is required'),
+    bankAmount: Yup.string()
+      .required('Bank Amount is required')
+      .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
   } : paymentMode === 'Cash' ? {
-    cashAmount: Yup.string().required('Cash Amount is required'),
+    cashAmount: Yup.string()
+      .required('Cash Amount is required')
+      .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
+
   } : {
-    cashAmount: Yup.string().required('Cash Amount is required'),
-    bankAmount: Yup.string().required('Bank Account is required'),
+    cashAmount: Yup.string()
+      .required('Cash Amount is required')
+      .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
+
+    bankAmount: Yup.string()
+      .required('Bank Amount is required')
+      .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
     account: Yup.object().required('Account is required'),
   };
 
@@ -64,7 +74,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     from: Yup.date().required('From Date is required'),
     to: Yup.date().required('To Date is required'),
     days: Yup.string().required('Days is required'),
-    amountPaid: Yup.string().required('Total is required'),
+    amountPaid: Yup.string()
+      .required('Total is required')
+      .test('is-positive', 'Amount must be a positive number', value => parseFloat(value) >= 0),
     interestAmount: Yup.string().required('Interest is required'),
     consultingCharge: Yup.string().required('Consult Charge is required'),
     penalty: Yup.string().required('Penalty is required'),
@@ -271,14 +283,14 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           />
 
           <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} />
-          <RHFTextField name='interestAmount' label='Interest' req={'red'} />
+          <RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} InputProps={{ readOnly: true }}/>
+          <RHFTextField name='interestAmount' label='Interest' req={'red'} InputProps={{ readOnly: true }}/>
           <RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} />
-          <RHFTextField name='penalty' label='Penalty' req={'red'} />
-          <RHFTextField name='totalPay' label='Total Pay' req={'red'} />
-          <RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} />
-          <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'} />
-          <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} />
+          <RHFTextField name='penalty' label='Penalty' req={'red'} InputProps={{ readOnly: true }}/>
+          <RHFTextField name='totalPay' label='Total Pay' req={'red'} InputProps={{ readOnly: true }}/>
+          <RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} InputProps={{ readOnly: true }}/>
+          <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'} InputProps={{ readOnly: true }}/>
+          <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }}/>
           <RHFTextField name='amountPaid' label='Total' req={'red'} />
         </Box>
 
