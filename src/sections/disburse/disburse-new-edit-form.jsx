@@ -435,6 +435,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                             field.onChange(e);
                             handleCashAmountChange(e);
                           }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                              e.preventDefault();
+                            }
+                          }}
                         />
                       )}
                     />
@@ -470,17 +475,16 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                 </>
               )}
             </Stack>
-
-
           </Card>
-
+          {
+            currentDisburse.status !== "Disbursed" &&
           <Stack alignItems={"end"} mt={3}>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
               Submit
             </LoadingButton>
           </Stack>
+          }
         </Grid>
-
       </Grid>
     </FormProvider>
   );
