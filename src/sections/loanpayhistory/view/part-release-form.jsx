@@ -69,12 +69,22 @@ function PartReleaseForm({ currentLoan, mutate }) {
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
-    bankAmount: Yup.string().required('Bank Account is required'),
+    bankAmount: Yup.string()
+      .required('Bank Amount is required')
+      .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
   } : paymentMode === 'Cash' ? {
-    cashAmount: Yup.string().required('Cash Amount is required'),
+    cashAmount: Yup.string()
+      .required('Cash Amount is required')
+      .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
+
   } : {
-    cashAmount: Yup.string().required('Cash Amount is required'),
-    bankAmount: Yup.string().required('Bank Account is required'),
+    cashAmount: Yup.string()
+      .required('Cash Amount is required')
+      .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
+
+    bankAmount: Yup.string()
+      .required('Bank Amount is required')
+      .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
     account: Yup.object().required('Account is required'),
   };
 
