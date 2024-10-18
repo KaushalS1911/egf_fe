@@ -17,7 +17,7 @@ import { RouterLink } from '../../routes/components';
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow,handleClick }) {
+export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -37,9 +37,9 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <Button
           onClick={handleClick}
-          sx={{ my: 2,textWrap:"nowrap" }}
-          variant="outlined"
-          startIcon={<Iconify icon='mingcute:add-line' />}
+          sx={{ my: 2, textWrap: 'nowrap', fontSize: '11px' }}
+          variant='outlined'
+          startIcon={<Iconify sx={{ width: '15px' }} icon='mingcute:add-line' />}
         >
           Loan Disburse
         </Button>

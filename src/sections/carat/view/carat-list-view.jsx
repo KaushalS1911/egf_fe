@@ -82,7 +82,7 @@ export default function CaratListView() {
 
   const confirm = useBoolean();
 
-  const {carat,mutate,caratLoading} = useGetCarat()
+  const { carat, mutate, caratLoading } = useGetCarat();
 
   const [tableData, setTableData] = useState(carat);
 
@@ -107,34 +107,34 @@ export default function CaratListView() {
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
   const
     handleFilters = useCallback(
-    (name, value) => {
-      console.log("name",value)
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table],
-  );
+      (name, value) => {
+        console.log('name', value);
+        table.onResetPage();
+        setFilters((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      },
+      [table],
+    );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
- const handleDelete =async (id) =>{
-   try {
-   const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } });
       mutate();
       confirm.onFalse();
-      enqueueSnackbar(res.data.message)
-   } catch (error){
-      enqueueSnackbar("Failed to Delete carat")
+      enqueueSnackbar(res.data.message);
+    } catch (error) {
+      enqueueSnackbar('Failed to Delete carat');
 
-   }
-}
+    }
+  };
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
+      handleDelete([id]);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
@@ -142,8 +142,8 @@ export default function CaratListView() {
   );
   const handleDeleteRows = useCallback(() => {
     const deleteRows = carat.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-     handleDelete(deleteIds)
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds);
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -165,16 +165,16 @@ export default function CaratListView() {
     },
     [handleFilters],
   );
-  if(caratLoading){
+  if (caratLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Carat List'
+          heading="Carats"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Carat', href: paths.dashboard.carat.root },
@@ -188,7 +188,7 @@ export default function CaratListView() {
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
-                Create Carat
+                Add Carat
               </Button>
             </Box>
           }
@@ -224,7 +224,7 @@ export default function CaratListView() {
                         'default'
                       }
                     >
-                      {['false','true'].includes(tab.value)
+                      {['false', 'true'].includes(tab.value)
                         ? carat.filter((emp) => String(emp.isActive) == tab.value).length
                         : carat.length}
                     </Label>
@@ -237,7 +237,7 @@ export default function CaratListView() {
             filters={filters} onFilters={handleFilters}
           />
 
-         {canReset && (
+          {canReset && (
             <CaratTableFiltersResult
               filters={filters}
               onFilters={handleFilters}

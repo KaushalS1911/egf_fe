@@ -168,7 +168,7 @@ export default function CustomerListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Customer List'
+          heading='Customers'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Customer', href: paths.dashboard.customer.root },
@@ -181,7 +181,7 @@ export default function CustomerListView() {
               variant='contained'
               startIcon={<Iconify icon='mingcute:add-line' />}
             >
-              Create Customer
+              Add Customer
             </Button>
           }
           sx={{
