@@ -49,7 +49,7 @@ export default function SchemeTableFiltersResult({
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.isActive !== 'all' && (
           <Block label="Active">
-            <Chip size="small" label={filters.isActive === "true"?"Active":"Non Active"} onDelete={handleRemoveStatus} />
+            <Chip size="small" label={filters.isActive === "true"?"Active":"In Active"} onDelete={handleRemoveStatus} />
           </Block>
         )}
 

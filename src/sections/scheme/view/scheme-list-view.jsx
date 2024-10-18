@@ -15,7 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -52,7 +51,7 @@ import { LoadingScreen } from '../../../components/loading-screen';
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
   value: 'false',
-  label: 'Non Active',
+  label: 'In Active',
 }];
 
 const TABLE_HEAD = [

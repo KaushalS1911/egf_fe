@@ -65,7 +65,7 @@ function Group({ subheader, items, slotProps }) {
                   duration: theme.transitions.duration.shortest,
                 }),
               '&:hover': {
-                color: 'text.primary',
+                color: '#ffff',
               },
               ...slotProps?.subheader,
             }}

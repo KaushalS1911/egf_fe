@@ -21,6 +21,7 @@ import FormProvider, {
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
+import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -131,11 +132,13 @@ export default function PropertyNewEditForm({ currentProperty }) {
             </Box>
             <RHFSwitch name='isQtyEdit' label={'Is Qty Edit'} sx={{ m: 0 }} />
           </Card>
-          <Stack alignItems='flex-end' sx={{ mt: 3 }}>
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+            <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                    variant='outlined' onClick={() => reset()}>Reset</Button>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              {currentProperty ? 'Save Changes' : 'Create Property'}
+              {currentProperty ? 'Save' : 'Submit'}
             </LoadingButton>
-          </Stack>
+          </Box>
         </Grid>
       </Grid>
     </FormProvider>

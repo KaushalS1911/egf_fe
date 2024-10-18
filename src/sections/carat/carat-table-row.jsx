@@ -16,7 +16,6 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { Box } from '@mui/material';
 
 
 // ----------------------------------------------------------------------
@@ -49,16 +48,12 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
               'default'
             }
           >
-            {isActive?"Yes":"No"}
+            {isActive?"Active":"In Active"}
           </Label>
         </TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {/*<Tooltip title="Quick Edit" placement="top" arrow>*/}
-          {/*  <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>*/}
-          {/*    <Iconify icon="solar:pen-bold" />*/}
-          {/*  </IconButton>*/}
-          {/*</Tooltip>*/}
+
 
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

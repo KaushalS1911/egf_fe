@@ -96,11 +96,11 @@ export default function NavVertical({ openNav, onCloseNav }) {
 
       {user?.role === 'Admin' && branch && (
         <FormProvider {...methods}>
-          <Box sx={{ mt: 2, mx: 4 }}>
+          <Box sx={{ mt: 2, mx: 4}}>
             <RHFAutocomplete
-              name='branchId'
-              label='Branch'
-              placeholder='Choose a Branch'
+              name="branchId"
+              label="Branch"
+              placeholder="Choose a Branch"
               options={[
                 { label: 'All', value: 'all' },
                 ...branch?.map((branchItem) => ({
@@ -109,7 +109,28 @@ export default function NavVertical({ openNav, onCloseNav }) {
                 })),
               ]}
               isOptionEqualToValue={(option, value) => option?.value === value?.value}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: 'white', // Default text color
+                  '& fieldset': {
+                    borderColor: 'gray', // Default outline color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'white', // Outline color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white', // Outline color when focused
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'white', // Label color
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'white', // Label color when focused
+                },
+              }}
             />
+
           </Box>
         </FormProvider>
       )}
@@ -140,6 +161,8 @@ export default function NavVertical({ openNav, onCloseNav }) {
             height: 1,
             position: 'fixed',
             width: NAV.W_VERTICAL,
+            backgroundColor:(theme)=>theme.palette.mode === 'light' ? "#393939":"#212b36",
+            paddingBottom:"15px",
             borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           }}
         >

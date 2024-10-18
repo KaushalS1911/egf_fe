@@ -23,6 +23,7 @@ import { useRouter } from '../../../routes/hooks';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
+import Button from '@mui/material/Button';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -147,8 +148,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     setValue('totalPay', (
       Number(watch('interestAmount')) +
       Number(watch('consultingCharge')) +
-      Number(watch('penalty')) -
-      Number(watch('uchakAmount'))
+      Number(watch('penalty'))
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
@@ -185,6 +185,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
       to: data.to,
       adjustedPay: data.payAfterAdjusted1,
       days: data.days,
+      uchakInterestAmount: data.uchakAmount,
       interestAmount: data.interestAmount,
       from: data.from,
       amountPaid: data.amountPaid,
@@ -361,10 +362,15 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             </Box>
           )}
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                  variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
           </LoadingButton>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+
         </Box>
       </FormProvider>
       <Box>
