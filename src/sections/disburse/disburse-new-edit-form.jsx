@@ -31,6 +31,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
+import Button from '@mui/material/Button';
 
 // ----------------------------------------------------------------------
 
@@ -462,9 +463,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
 
 
           </Card>
-          <Stack alignItems='flex-end' sx={{ mt: 3 }}>
+          <Stack alignItems={"end"} mt={3}>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              Disburse Loan
+              Submit
             </LoadingButton>
           </Stack>
         </Grid>

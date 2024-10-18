@@ -47,13 +47,14 @@ const NavItem = forwardRef(
         {...other}
       >
         {icon && (
-          <Box component="span" className="icon">
+          <Box component="span" className="icon" color={"#ffff"}
+          >
             {icon}
           </Box>
         )}
 
         {title && (
-          <Box component="span" className="label">
+          <Box component="span" className="label" color={"#ffff"}>
             {title}
           </Box>
         )}
@@ -207,10 +208,10 @@ const StyledNavItem = styled(ListItemButton, {
       },
       ...(active && {
         fontWeight: theme.typography.fontWeightBold,
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
-        color: lightMode ? theme.palette.primary.main : theme.palette.primary.light,
+        backgroundColor: alpha("#ffff", 0.08),
+        color: lightMode ? "#ffff" : theme.palette.primary.light,
         '&:hover': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.16),
+          backgroundColor: alpha("#ffff", 0.16),
         },
       }),
       ...(opened && {

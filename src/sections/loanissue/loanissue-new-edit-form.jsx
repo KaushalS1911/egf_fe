@@ -1127,9 +1127,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Card>
           </Grid></>}
       </Grid>
-      <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+      <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+        <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                disabled={!isFieldsEnabled}
+                variant='outlined' onClick={() => reset()}>Reset</Button>
         <LoadingButton disabled={!isFieldsEnabled} type='submit' variant='contained' loading={isSubmitting}>
-          {!currentLoanIssue ? 'Issue Loan' : 'Save Changes'}
+          {!currentLoanIssue ? 'Submit' : 'Save'}
         </LoadingButton>
       </Box>
     </FormProvider>

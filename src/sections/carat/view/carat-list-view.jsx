@@ -51,7 +51,7 @@ import { LoadingScreen } from '../../../components/loading-screen';
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
   value: 'false',
-  label: 'Non Active',
+  label: 'In Active',
 }];
 
 const TABLE_HEAD = [

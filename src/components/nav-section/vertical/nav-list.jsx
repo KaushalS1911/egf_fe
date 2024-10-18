@@ -63,7 +63,7 @@ export default function NavList({ data, depth, slotProps }) {
 
       {!!data.children && (
         <Collapse in={openMenu} unmountOnExit>
-          <NavSubList data={data.children} depth={depth} slotProps={slotProps} />
+          <NavSubList data={data.children} depth={depth} slotProps={slotProps}/>
         </Collapse>
       )}
     </>

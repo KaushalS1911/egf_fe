@@ -55,7 +55,7 @@ export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, 
               'default'
             }
           >
-            {isActive?"Yes":"No"}
+            {isActive?"Active":"In Active"}
           </Label>
         </TableCell>
 

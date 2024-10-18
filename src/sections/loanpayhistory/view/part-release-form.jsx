@@ -424,7 +424,9 @@ function PartReleaseForm({ currentLoan, mutate }) {
             </Box>
           )}
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                  variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
           </LoadingButton>

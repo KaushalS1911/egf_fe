@@ -51,7 +51,7 @@ export default function PenaltyTableRow({ row, selected, onEditRow, onSelectRow,
               'default'
             }
           >
-            {isActive?"Yes":"No"}
+            {isActive?"Active":"in Active"}
           </Label>
         </TableCell>
 

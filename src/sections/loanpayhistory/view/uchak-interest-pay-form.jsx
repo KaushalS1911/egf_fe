@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { Box, Button, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -217,7 +217,9 @@ function UchakInterestPayForm({ mutate }) {
             </Box>
           )}
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                  variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
           </LoadingButton>

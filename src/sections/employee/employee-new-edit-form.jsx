@@ -18,7 +18,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, Button, TextField } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
@@ -699,9 +699,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         </Grid>
 
       </Grid>
-      <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+      <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+        <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                variant='outlined' onClick={() => reset()}>Reset</Button>
         <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-          {!currentEmployee ? 'Create Employee' : 'Save Changes'}
+          {!currentEmployee ? 'Submit' : 'Save'}
         </LoadingButton>
       </Box>
     </FormProvider>

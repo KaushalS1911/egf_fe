@@ -47,7 +47,7 @@ const NavItem = forwardRef(
         {...other}
       >
         {!subItem && icon && (
-          <Box component="span" className="icon">
+          <Box component="span" className="icon" color={"#ffff"}>
             {icon}
           </Box>
         )}
@@ -62,7 +62,7 @@ const NavItem = forwardRef(
 
         {title && (
           <Box component="span" sx={{ flex: '1 1 auto', minWidth: 0 }}>
-            <Box component="span" className="label">
+            <Box component="span" className="label" color={"#ffff"}>
               {title}
             </Box>
 
@@ -179,7 +179,7 @@ const StyledNavItem = styled(ListItemButton, {
     item: {
       marginBottom: 4,
       borderRadius: 8,
-      color: theme.palette.text.secondary,
+      color: "#ffff",
       padding: theme.spacing(0.5, 1, 0.5, 1.5),
     },
     icon: {
@@ -233,16 +233,15 @@ const StyledNavItem = styled(ListItemButton, {
         ...baseStyles.arrow,
       },
       ...(active && {
-        color:
-          theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light,
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        color:"#ffff",
+        backgroundColor: alpha("#ffff", 0.08),
         '&:hover': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.16),
+          backgroundColor: alpha("#ffff", 0.16),
         },
       }),
       ...(opened && {
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.action.hover,
+        color: "#ffff",
+        backgroundColor: "#ffff"
       }),
     }),
 
@@ -269,7 +268,7 @@ const StyledNavItem = styled(ListItemButton, {
           }),
           ...(active && {
             transform: 'scale(2)',
-            backgroundColor: theme.palette.primary.main,
+            backgroundColor: "#ffff",
           }),
         },
       },
@@ -286,7 +285,7 @@ const StyledNavItem = styled(ListItemButton, {
         ...baseStyles.arrow,
       },
       ...(active && {
-        color: theme.palette.text.primary,
+        color: "#ffff",
       }),
     }),
 

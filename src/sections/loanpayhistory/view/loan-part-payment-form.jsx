@@ -13,6 +13,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetAllPartPayment } from '../../../api/part-payment';
 import { useGetBranch } from '../../../api/branch';
+import Button from '@mui/material/Button';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -225,11 +226,13 @@ function LoanPartPaymentForm({ mutate }) {
             </Box>
           )}
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-            Submit
-          </LoadingButton>
-        </Box>
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+        <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                variant='outlined' onClick={() => reset()}>Reset</Button>
+        <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+          Submit
+        </LoadingButton>
+      </Box>
       </FormProvider>
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 8 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />

@@ -17,6 +17,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSwitch, RHFTextField} from 'src/components/hook-form';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
+import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -101,18 +102,26 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='afterDueDateFromDate' label='After Due Date From Date' req={'red'}/>
-              <RHFTextField name='afterDueDateToDate' label='After Due Date To Date' req={'red'} />
+              <RHFTextField name='afterDueDateFromDate' label='After Due Date From Date' req={'red'}
+                            onKeyPress={(e) => {
+                              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                                e.preventDefault();
+                              }
+                            }}/>
+              <RHFTextField name='afterDueDateToDate' label='After Due Date To Date' req={'red'}
+                            onKeyPress={(e) => {
+                              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                                e.preventDefault();
+                              }
+                            }}/>
               <RHFTextField
                 name='penaltyInterest'
                 label='Penalty Interest'
                 req={'red'}
                 inputProps={{ inputMode: 'decimal', pattern: '[0-9.]*' }}
-                onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^0-9.]/g, '');
-
-                  if (e.target.value.split('.').length > 2) {
-                    e.target.value = e.target.value.slice(0, -1);
+                onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
                   }
                 }}
               />
@@ -128,11 +137,13 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
 
             </Box>
           </Card>
-          <Stack alignItems='flex-end' sx={{ mt: 3 }}>
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
+            <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+                    variant='outlined' onClick={() => reset()}>Reset</Button>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              {currentPenalty ? 'Save Changes' : 'Create Penalty'}
+              {currentPenalty ? 'Save' : 'Submit'}
             </LoadingButton>
-          </Stack>
+          </Box>
         </Grid>
       </Grid>
     </FormProvider>
