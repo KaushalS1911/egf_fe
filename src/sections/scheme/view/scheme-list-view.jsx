@@ -179,7 +179,7 @@ export default function SchemeListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Scheme List'
+          heading='Schemes'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Scheme', href: paths.dashboard.scheme.root },
@@ -201,7 +201,7 @@ export default function SchemeListView() {
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
-                Create Scheme
+                Add Scheme
               </Button>
             </Box>
           }

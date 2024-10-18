@@ -164,7 +164,7 @@ export default function LoanpayhistoryListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Loan Pay History"
+          heading="Loan pay history"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Loan Pay History', href: paths.dashboard.loanPayHistory.root },

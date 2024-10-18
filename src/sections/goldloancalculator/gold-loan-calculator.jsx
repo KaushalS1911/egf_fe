@@ -148,7 +148,7 @@ function GoldLoanCalculator() {
         </Typography>
         <Box>
           <Button variant='contained' onClick={addTable}>
-            Add Table
+            Add
           </Button>
           <Button variant='outlined' onClick={resetTables} style={{ marginLeft: '10px' }}>
             Reset
