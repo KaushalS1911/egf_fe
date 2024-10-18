@@ -38,7 +38,7 @@ export default function NavMini() {
           pb: 2,
           height: 1,
           position: 'fixed',
-          backgroundColor:"#393939",
+          backgroundColor:(theme)=>theme.palette.mode === 'light' ? "#393939":"#212b36",
           width: NAV.W_MINI,
           borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           ...hideScroll.x,
