@@ -451,10 +451,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           'Content-Type': 'application/json',
         },
       });
-      enqueueSnackbar('Save Customer Bank Details successfully!', { variant: 'success' });
+      enqueueSnackbar(response.status, { variant: 'success' });
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Failed to process loan.', { variant: 'error' });
+      enqueueSnackbar(error, { variant: 'error' });
     }
   };
 
