@@ -17,7 +17,7 @@ export default function LoanissueTableToolbar({ filters, onFilters }) {
 
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('userName', event.target.value);
+      onFilters('username', event.target.value);
     },
     [onFilters],
   );
@@ -45,7 +45,7 @@ export default function LoanissueTableToolbar({ filters, onFilters }) {
         >
           <TextField
             fullWidth
-            value={filters.userName}
+            value={filters.username}
             onChange={handleFilterName}
             placeholder='Search...'
             InputProps={{

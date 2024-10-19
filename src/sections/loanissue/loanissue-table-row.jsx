@@ -49,7 +49,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
-      </TableRow>ku
+      </TableRow>
 
       <CustomPopover
         open={popover.open}
