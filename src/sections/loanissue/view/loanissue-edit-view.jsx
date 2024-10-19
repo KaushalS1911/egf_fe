@@ -23,7 +23,7 @@ export default function LoanissueEditView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading='Create New Loanissue'
+        heading='Edit Loanissue'
         links={[
           {
             name: 'Dashboard',
@@ -33,7 +33,7 @@ export default function LoanissueEditView() {
             name: 'Loanissue List',
             href: paths.dashboard.loanissue.root,
           },
-          { name: 'Create New Loanissue' },
+          { name: 'Edit Loanissue' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
