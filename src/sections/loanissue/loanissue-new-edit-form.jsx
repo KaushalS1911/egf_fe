@@ -12,7 +12,7 @@ import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload, RHFUploadAvatar
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSnackbar } from 'src/components/snackbar';
 import {
-  CardActions, Dialog, DialogActions, DialogContent, DialogTitle,
+  CardActions,
   IconButton,
   Table,
   TableBody,
@@ -463,7 +463,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 3 }}>
-            Fetch Customer
           </Typography>
         </Grid>
         <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
@@ -1081,6 +1080,20 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   sm: 'repeat(2, 1fr)',
                 }}
               >
+                <Box></Box>
+                <Box sx={{ justifyContent: 'end', display: 'flex' }}>
+                  <Link
+                    disabled={!isFieldsEnabled}
+                    onClick={() => saveCustomerBankDetails()}
+                    style={{
+                      fontWeight: 'bold',
+                      textDecoration: 'none',
+                      color: 'inherit',
+                    }}
+                  >
+                    Add beneficiary
+                  </Link>
+                </Box>
                 <RHFTextField name='accountNumber' label='Account No.' req={'red'} disabled={!isFieldsEnabled}
                               type='number'
                               inputProps={{ min: 0 }} />
@@ -1112,12 +1125,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 />
                 <RHFTextField name='bankName' label='Bank Name' req={'red'} disabled={!isFieldsEnabled} />
                 <RHFTextField name='branchName' label='Branch Name' req={'red'} disabled={!isFieldsEnabled} />
-                <Box></Box>
-                <Box sx={{ justifyContent: 'end', display: 'flex' }}>
-                  <Button disabled={!isFieldsEnabled} variant='contained' onClick={() => saveCustomerBankDetails()}>
-                    Save Customer Bank
-                  </Button>
-                </Box>
               </Box>
             </Card>
           </Grid></>}
