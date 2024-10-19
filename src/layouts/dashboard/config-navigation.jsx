@@ -6,8 +6,8 @@ import { useTranslate } from 'src/locales';
 
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
-import { useGetConfigs } from '../../api/config';
 import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ const ICONS = {
   property: <Iconify icon='clarity:building-solid' sx={{ width: 1, height: 1 }} />, // Property icon (cityscape for real estate/property)
   penalty: <Iconify icon='icon-park-outline:gavel' sx={{ width: 1, height: 1 }} />, // Penalty icon (justice scale for penalties and fines)
   loanissue: <Iconify icon='streamline:bank-solid' />, // Loan Issue icon (bank transfer symbol for issuing loans)
-  disburse: <Iconify icon='mdi:bank-transfer-out' sx={{ width: "30px", height: "30px" }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
+  disburse: <Iconify icon='mdi:bank-transfer-out' sx={{ width: '30px', height: '30px' }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />, // Loan Issue icon (bank transfer symbol for issuing loans)
   setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
   goldLoanCalculator: <Iconify icon='icon-park-solid:calculator' width={24} />,
@@ -61,7 +61,6 @@ const ICONS = {
 export function useNavData() {
   const { t } = useTranslate();
   const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
 
   const data = useMemo(
     () => [
@@ -138,7 +137,7 @@ export function useNavData() {
             icon: ICONS.loanPayHistory,
           },
         ],
-      },{
+      }, {
         subheader: t('Loan Utilities'),
         items: [
 
@@ -170,17 +169,103 @@ export function useNavData() {
     ],
     [t],
   );
+  const data1 = useMemo(
+    () => [
 
-  const module = user?.role !== 'Admin' && data?.map((data) => {
-    if (!data) return null;
-    return {
-      subheader: data?.subheader,
-      items: data?.items?.filter((item) => {
-        return configs?.permissions?.[user?.role]?.sections?.includes(item?.title);
-      }),
-    };
-  }).filter(Boolean);
+      // MASTER
+      // ----------------------------------------------------------------------
+      {
+        subheader: t('Masters'),
+        items: [
+          {
+            title: t('Inquiry'),
+            path: paths.dashboard.inquiry.root,
+            icon: ICONS.inquiry,
+          },
+          {
+            title: t('Customer'),
+            path: paths.dashboard.customer.root,
+            icon: ICONS.customer,
+          },
+          {
+            title: t('Employee'),
+            path: paths.dashboard.employee.root,
+            icon: ICONS.employee,
+          },
 
-  const moduleFilter = user?.role !== 'Admin' && module?.filter((data) => data?.items?.length > 0);
-  return user?.role === 'Admin' ? data : moduleFilter;
+          // SCHEME
+          {
+            title: t('scheme'),
+            path: paths.dashboard.scheme.root,
+            icon: ICONS.scheme,
+          },
+          // CREATE
+          {
+            title: t('carat'),
+            path: paths.dashboard.carat.root,
+            icon: ICONS.carat,
+          },
+
+
+          // PROPERTY
+          {
+            title: t('property'),
+            path: paths.dashboard.property.root,
+            icon: ICONS.property,
+          },
+          // PENALTY
+          {
+            title: t('penalty'),
+            path: paths.dashboard.penalty.root,
+            icon: ICONS.penalty,
+          },
+
+        ],
+      },
+      {
+        subheader: t('Transaction'),
+        items: [
+          {
+            title: t('Loan issue'),
+            path: paths.dashboard.loanissue.root,
+            icon: ICONS.loanissue,
+          },
+
+          // DISBURSE
+          {
+            title: t('disburse'),
+            path: paths.dashboard.disburse.root,
+            icon: ICONS.disburse,
+          },
+          // LOAN PAY HISTORY
+          {
+            title: t('Loan Pay History'),
+            path: paths.dashboard.loanPayHistory.list,
+            icon: ICONS.loanPayHistory,
+          },
+        ],
+      }, {
+        subheader: t('Loan Utilities'),
+        items: [
+
+          // REMINDER
+          {
+            title: t('reminder'),
+            path: paths.dashboard.reminder.list,
+            icon: ICONS.reminder,
+          },
+
+          // GOLD LOAN CALCULATOR
+          {
+            title: t('Gold Loan Calculator'),
+            path: paths.dashboard.goldLoanCalculator,
+            icon: ICONS.goldLoanCalculator,
+          },
+        ],
+      },
+    ],
+    [t],
+  );
+
+  return user?.role === 'Admin' ? data : data1;
 }
