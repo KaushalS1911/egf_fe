@@ -20,7 +20,10 @@ export default function LoanpayhistoryCreateView() {
   const { Loanissue, mutate } = useGetLoanissue(loanPayHistory);
   const currentLoan = Loanissue.find((item) => item._id == id);
 
-  console.log("currentLoan: ",  currentLoan.customer._id);
+  const prevLoan = Loanissue.find((item) => item.customer._id === currentLoan.customer._id && item._id !== id);
+  if(prevLoan){
+    currentLoan.oldLoanNo = prevLoan.loanNo;
+  }
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
