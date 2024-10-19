@@ -6,6 +6,8 @@ import { useTranslate } from 'src/locales';
 
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
+import { useGetConfigs } from '../../api/config';
+import { useAuthContext } from '../../auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -58,6 +60,8 @@ const ICONS = {
 
 export function useNavData() {
   const { t } = useTranslate();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   const data = useMemo(
     () => [
@@ -167,5 +171,16 @@ export function useNavData() {
     [t],
   );
 
-  return data;
+  const module = user?.role !== 'Admin' && data?.map((data) => {
+    if (!data) return null;
+    return {
+      subheader: data?.subheader,
+      items: data?.items?.filter((item) => {
+        return configs?.permissions?.[user?.role]?.sections?.includes(item?.title);
+      }),
+    };
+  }).filter(Boolean);
+
+  const moduleFilter = user?.role !== 'Admin' && module?.filter((data) => data?.items?.length > 0);
+  return user?.role === 'Admin' ? data : moduleFilter;
 }

@@ -40,49 +40,24 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   const [bankPendingAmt,setBankPendingAmt] = useState(0)
 
   const paymentSchema = currentDisburse.paymentMode === 'Bank' ? {
-    bankNetAmount: Yup.string()
-      .required('Bank Net Amount is required')
-      .min(0, 'Bank Net Amount must be a positive number'),
-    bankPayingAmount: Yup.string()
-      .required('Bank Paying Amount is required')
-      .min(0, 'Bank Paying Amount must be a positive number'),
-    bankPendingAmount: Yup.string()
-      .required('Bank Pending Amount is required')
-      .min(0, 'Bank Pending Amount must be a positive number'),
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    payingBankAmount: Yup.string().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
     }),
   } : currentDisburse.paymentMode === 'Cash' ? {
-    cashNetAmount: Yup.string()
-      .required('Cash Net Amount is required')
-      .min(0, 'Cash Net Amount must be a positive number'),
-    cashPayingAmount: Yup.string()
-      .required('Cash Paying Amount is required')
-      .min(0, 'Cash Paying Amount must be a positive number'),
-    cashPendingAmount: Yup.string()
-      .required('Cash Pending Amount is required')
-      .min(0, 'Cash Pending Amount must be a positive number'),
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    payingCashAmount: Yup.string().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
   } : {
-    // Fallback when both Cash and Bank payment modes are applicable
-    cashNetAmount: Yup.string()
-      .required('Cash Net Amount is required')
-      .min(0, 'Cash Net Amount must be a positive number'),
-    cashPayingAmount: Yup.string()
-      .required('Cash Paying Amount is required')
-      .min(0, 'Cash Paying Amount must be a positive number'),
-    cashPendingAmount: Yup.string()
-      .required('Cash Pending Amount is required')
-      .min(0, 'Cash Pending Amount must be a positive number'),
-    bankNetAmount: Yup.string()
-      .required('Bank Net Amount is required')
-      .min(0, 'Bank Net Amount must be a positive number'),
-    bankPayingAmount: Yup.string()
-      .required('Bank Paying Amount is required')
-      .min(0, 'Bank Paying Amount must be a positive number'),
-    bankPendingAmount: Yup.string()
-      .required('Bank Pending Amount is required')
-      .min(0, 'Bank Pending Amount must be a positive number'),
+    cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+    payingCashAmount: Yup.string().required('Cash Paying Amount is required'),
+    cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+    bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+    payingBankAmount: Yup.string().required('Bank Paying Amount is required'),
+    bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
@@ -99,7 +74,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     scheme: Yup.string().required('Scheme Name is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-    ...paymentSchema,
+    ...paymentSchema
   });
 
   const defaultValues = useMemo(
@@ -205,7 +180,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     const cashNetAmount = parseFloat(getValues('cashNetAmount')) || '';
 
     if (cashPayingAmount > cashNetAmount) {
-      setValue('cashPayingAmount', cashNetAmount);
+      setValue('payingCashAmount', cashNetAmount);
       enqueueSnackbar('Cash paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
     }
   };
@@ -214,7 +189,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     const bankNetAmount = parseFloat(getValues('bankNetAmount')) || '';
 
     if (bankPayingAmount > bankNetAmount) {
-      setValue('bankPayingAmount', bankNetAmount);
+      setValue('payingBankAmount', bankNetAmount);
       enqueueSnackbar('Bank paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
     }
   };
@@ -284,7 +259,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.totalWeight`}
                             label='Total Weight'
-                            defaultValue={row.totalWeight || ''}
+                            defaultValue={(parseFloat(row.totalWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -292,7 +267,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.loseWeight`}
                             label='Lose Weight'
-                            defaultValue={row.loseWeight || ''}
+                            defaultValue={(parseFloat(row.loseWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -300,7 +275,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.grossWeight`}
                             label='Gross Weight'
-                            defaultValue={row.grossWeight || ''}
+                            defaultValue={(parseFloat(row.grossWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -308,7 +283,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.netWeight`}
                             label='Net Weight'
-                            defaultValue={row.netWeight || ''}
+                            defaultValue={(parseFloat(row.netWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -316,7 +291,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.loanApplicableAmount`}
                             label='Loan Applicable Amount'
-                            defaultValue={row.loanApplicableAmount || ''}
+                            defaultValue={(parseFloat(row.loanApplicableAmount) || 0.00).toFixed(2)}
                             disabled={true}
 
                           />
@@ -461,6 +436,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                             field.onChange(e);
                             handleCashAmountChange(e);
                           }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                              e.preventDefault();
+                            }
+                          }}
                         />
                       )}
                     />
@@ -496,17 +476,16 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                 </>
               )}
             </Stack>
-
-
           </Card>
-
+          {
+            currentDisburse.status !== "Disbursed" &&
           <Stack alignItems={"end"} mt={3}>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
               Submit
             </LoadingButton>
           </Stack>
+          }
         </Grid>
-
       </Grid>
     </FormProvider>
   );

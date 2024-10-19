@@ -14,7 +14,6 @@ import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 export default function LoanissueTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
 
-
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
   }, [onFilters]);
@@ -30,7 +29,6 @@ export default function LoanissueTableFiltersResult({ filters, onFilters, onRese
   const handleRemoveStatus = useCallback(() => {
     onFilters('status', 'all');
   }, [onFilters]);
-
 
   return (
     <Stack spacing={1.5} {...other}>
