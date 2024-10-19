@@ -44,7 +44,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     payingBankAmount: Yup.string().required('Bank Paying Amount is required'),
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
-      account: Yup.string().required('Account is required'),
+      account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
     }),
   } : currentDisburse.paymentMode === 'Cash' ? {
@@ -59,7 +59,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     payingBankAmount: Yup.string().required('Bank Paying Amount is required'),
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
-      account: Yup.string().required('Account is required'),
+      account: Yup.object().required('Account is required'),
       transactionID: Yup.string().required('Transaction ID is required'),
     }),
   };
@@ -259,7 +259,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.totalWeight`}
                             label='Total Weight'
-                            defaultValue={row.totalWeight || ''}
+                            defaultValue={(parseFloat(row.totalWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -267,7 +267,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.loseWeight`}
                             label='Lose Weight'
-                            defaultValue={row.loseWeight || ''}
+                            defaultValue={(parseFloat(row.loseWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -275,7 +275,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.grossWeight`}
                             label='Gross Weight'
-                            defaultValue={row.grossWeight || ''}
+                            defaultValue={(parseFloat(row.grossWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -283,7 +283,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.netWeight`}
                             label='Net Weight'
-                            defaultValue={row.netWeight || ''}
+                            defaultValue={(parseFloat(row.netWeight) || 0.00).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>
@@ -291,7 +291,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.loanApplicableAmount`}
                             label='Loan Applicable Amount'
-                            defaultValue={row.loanApplicableAmount || ''}
+                            defaultValue={(parseFloat(row.loanApplicableAmount) || 0.00).toFixed(2)}
                             disabled={true}
 
                           />
