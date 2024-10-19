@@ -28,8 +28,8 @@ import ReminderTableToolbar from '../reminder-table-toolbar';
 import ReminderTableFiltersResult from '../reminder-table-filters-result';
 import ReminderTableRow from '../reminder-table-row';
 import { isAfter, isBetween } from '../../../utils/format-time';
-import { useGetDisburseLoan } from '../../../api/disburseLoan';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetLoanissue } from '../../../api/loanissue';
 
 // ----------------------------------------------------------------------
 
@@ -58,7 +58,10 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function ReminderListView() {
-  const {disburseLoan,disburseLoanLoading} = useGetDisburseLoan()
+  const loanPayHistory = false;
+  const reminder = true;
+
+  const {Loanissue,LoanissueLoading} = useGetLoanissue(loanPayHistory,reminder)
 
   const table = useTable();
 
@@ -73,7 +76,7 @@ export default function ReminderListView() {
 
 
   const dataFiltered = applyFilter({
-    inputData: disburseLoan,
+    inputData: Loanissue,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -111,7 +114,7 @@ export default function ReminderListView() {
     },
     [router],
   );
-  if(disburseLoanLoading){
+  if(LoanissueLoading){
     return (
       <LoadingScreen/>
     )

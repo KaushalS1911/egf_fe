@@ -12,12 +12,14 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
 import { Link } from 'react-router-dom';
+import Chip from '@mui/material/Chip';
+import Label from '../../components/label';
 
 
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,index}) {
-  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount , _id} = row;
+  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount , _id , status} = row;
   const confirm = useBoolean();
   const router = useRouter();
   const popover = usePopover();
@@ -25,7 +27,6 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   return (
     <>
       <TableRow hover selected={selected} >
-
           <TableCell>
             {index + 1}
           </TableCell>
@@ -36,6 +37,17 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Label
+          variant='soft'
+          color={
+            (status === 'Disbursed' && 'success') ||
+            (status === 'Closed' && 'error') ||
+            'default'
+          }
+        >
+          {status}
+        </Label></TableCell>
       </TableRow>
 
 

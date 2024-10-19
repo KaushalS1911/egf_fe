@@ -35,33 +35,37 @@ import {
 import LoanpayhistoryTableRow from '../loanpayhistory-table-row';
 import LoanpayhistoryTableToolbar from '../loanpayhistory-table-toolbar';
 import LoanpayhistoryTableFiltersResult from '../loanpayhistory-table-filters-result';
-import {useGetEmployee} from 'src/api/employee'
+import { useGetEmployee } from 'src/api/employee';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
-import { useGetDisburseLoan } from '../../../api/disburseLoan';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetLoanissue } from '../../../api/loanissue';
 
 // ----------------------------------------------------------------------
 
 
-
 const TABLE_HEAD = [
   { id: '', label: '#' },
-  { id: 'loanNo', label: 'Loan No.'},
-  { id: 'customerName', label: 'Customer Name'},
+  { id: 'loanNo', label: 'Loan No.' },
+  { id: 'customerName', label: 'Customer Name' },
   { id: 'ContactNo', label: 'Contact No.' },
-  { id: 'interestLoanAmount', label: 'Interest Loan Amount'},
-  { id: 'interestRate', label: 'Interest Rate'},
-  { id: 'cashAmount', label: 'Cash Amount'},
-  { id: 'bankAmount', label: 'Bank Amount'},
+  { id: 'interestLoanAmount', label: 'Interest Loan Amount' },
+  { id: 'interestRate', label: 'Interest Rate' },
+  { id: 'cashAmount', label: 'Cash Amount' },
+  { id: 'bankAmount', label: 'Bank Amount' },
+  { id: 'status', label: 'Status' },
 ];
-
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disburse' }, {
+  value: 'Closed',
+  label: 'Closed',
+}];
 const defaultFilters = {
   username: '',
+  status: 'all',
 };
 // ----------------------------------------------------------------------
 
@@ -69,26 +73,28 @@ export default function LoanpayhistoryListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
-  const {user} = useAuthContext();
-  const { disburseLoan , mutate,disburseLoanLoading} = useGetDisburseLoan();
+  const { user } = useAuthContext();
+  const loanPayHistory = true;
+  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(loanPayHistory);
+
   const settings = useSettingsContext();
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(disburseLoan);
+  const [tableData, setTableData] = useState(Loanissue);
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: disburseLoan,
+    inputData: Loanissue,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
+    table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -105,7 +111,7 @@ export default function LoanpayhistoryListView() {
         [name]: value,
       }));
     },
-    [table]
+    [table],
   );
 
   const handleResetFilters = useCallback(() => {
@@ -120,10 +126,16 @@ export default function LoanpayhistoryListView() {
       mutate();
       enqueueSnackbar(res.data.message);
     } catch (err) {
-      enqueueSnackbar("Failed to delete Employee");
+      enqueueSnackbar('Failed to delete Employee');
     }
   };
 
+  const handleFilterStatus = useCallback(
+    (event, newValue) => {
+      handleFilters('status', newValue);
+    },
+    [handleFilters],
+  );
 
   const handleDeleteRow = useCallback(
     (id) => {
@@ -133,13 +145,13 @@ export default function LoanpayhistoryListView() {
       }
 
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage.length, enqueueSnackbar, table, tableData],
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = disburseLoan.filter((row) => table.selected.includes(row._id));
+    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
-    handleDelete(deleteIds)
+    handleDelete(deleteIds);
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -152,76 +164,67 @@ export default function LoanpayhistoryListView() {
     (id) => {
       router.push(paths.dashboard.loanPayHistory.edit(id));
     },
-    [router]
+    [router],
   );
 
-  if(disburseLoanLoading){
+  if (LoanissueLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Loan pay history"
+          heading='Loan pay history'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Loan Pay History', href: paths.dashboard.loanPayHistory.root },
             { name: 'List' },
           ]}
-          // action={
-          //   <Button
-          //     component={RouterLink}
-          //     href={paths.dashboard.employee.new}
-          //     variant="contained"
-          //     startIcon={<Iconify icon="mingcute:add-line" />}
-          //   >
-          //     Add Loan
-          //   </Button>
-          // }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
 
         <Card>
-          {/*<Tabs*/}
-          {/*  value={filters.isActive}*/}
-          {/*  onChange={handleFilterStatus}*/}
-          {/*  sx={{*/}
-          {/*    px: 2.5,*/}
-          {/*    boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {STATUS_OPTIONS.map((tab) => (*/}
-          {/*    <Tab*/}
-          {/*      key={tab.value}*/}
-          {/*      iconPosition='end'*/}
-          {/*      value={tab.value}*/}
-          {/*      label={tab.label}*/}
-          {/*      icon={*/}
-          {/*        <>*/}
-          {/*          <Label*/}
-          {/*            style={{ margin: '5px' }}*/}
-          {/*            variant={*/}
-          {/*              ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'*/}
-          {/*            }*/}
-          {/*            color={*/}
-          {/*              (tab.value == 'true' && 'success') ||*/}
-          {/*              (tab.value == 'false' && 'error') ||*/}
-          {/*              'default'*/}
-          {/*            }*/}
-          {/*          >*/}
-          {/*            {['false','true'].includes(tab.value)*/}
-          {/*              ? property.filter((emp) => String(emp.isActive) == tab.value).length*/}
-          {/*              : property.length}*/}
-          {/*          </Label>*/}
-          {/*        </>*/}
-          {/*      }*/}
-          {/*    />*/}
-          {/*  ))}*/}
-          {/*</Tabs>*/}
+          <Tabs
+            value={filters.status}
+            onChange={handleFilterStatus}
+            sx={{
+              px: 2.5,
+              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+            }}
+          >
+            {STATUS_OPTIONS.map((tab) => (
+              <Tab
+                key={tab.value}
+                iconPosition='end'
+                value={tab.value}
+                label={tab.label}
+                icon={
+                  <>
+                    <Label
+                      style={{ margin: '5px' }}
+                      variant={
+                        ((tab.value === 'all' || tab.value == filters.status) && 'filled') || 'soft'
+                      }
+                      color={
+                        (tab.value === 'Disbursed' && 'success') ||
+                        (tab.value === 'Closed' && 'error') ||
+                        'default'
+                      }
+                    >
+                      {['Disbursed', 'Closed'].includes(tab.value)
+                        ? Loanissue.filter((item) => item.status === tab.value).length
+                        : Loanissue.length}
+                    </Label>
+                  </>
+                }
+              />
+            ))}
+          </Tabs>
           <LoanpayhistoryTableToolbar filters={filters} onFilters={handleFilters} />
 
           {canReset && (
@@ -242,13 +245,13 @@ export default function LoanpayhistoryListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row.id),
                 )
               }
               action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                <Tooltip title='Delete'>
+                  <IconButton color='primary' onClick={confirm.onTrue}>
+                    <Iconify icon='solar:trash-bin-trash-bold' />
                   </IconButton>
                 </Tooltip>
               }
@@ -269,9 +272,9 @@ export default function LoanpayhistoryListView() {
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
+                      table.page * table.rowsPerPage + table.rowsPerPage,
                     )
-                    .map((row,index) => (
+                    .map((row, index) => (
                       <LoanpayhistoryTableRow
                         key={row._id}
                         index={index}
@@ -310,7 +313,7 @@ export default function LoanpayhistoryListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title='Delete'
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -318,8 +321,8 @@ export default function LoanpayhistoryListView() {
         }
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -335,7 +338,7 @@ export default function LoanpayhistoryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const {  username } = filters;
+  const { username, status } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -348,8 +351,11 @@ function applyFilter({ inputData, comparator, filters }) {
     inputData = inputData.filter(
       (item) =>
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase())
+        item.customer.lastName.toLowerCase().includes(username.toLowerCase()),
     );
+  }
+  if (status && status !== 'all') {
+    inputData = inputData.filter((item) => item.status === status);
   }
   return inputData;
 }
