@@ -186,6 +186,11 @@ export default function LoanpayhistoryListView() {
           sx={{
             mb: { xs: 3, md: 5 },
           }}
+          action={
+            <Button variant="contained" startIcon={<Iconify icon="mingcute:add-line" />}>
+              Bulk Interest Pay
+            </Button>
+          }
         />
 
         <Card>

@@ -379,8 +379,6 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
           </Card>
         </Grid>
       </Grid>
-
-
     </>
   );
 }

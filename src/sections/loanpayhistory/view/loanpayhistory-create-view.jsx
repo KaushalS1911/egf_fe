@@ -15,19 +15,19 @@ import { useGetLoanissue } from '../../../api/loanissue';
 
 export default function LoanpayhistoryCreateView() {
   const settings = useSettingsContext();
-  const {id} = useParams()
+  const { id } = useParams();
   const loanPayHistory = true;
   const { Loanissue, mutate } = useGetLoanissue(loanPayHistory);
-  const currentLoan = Loanissue.find((item) => item._id == id);
+  const currentLoan = Loanissue.find((item) => item._id === id);
 
   const prevLoan = Loanissue.find((item) => item.customer._id === currentLoan.customer._id && item._id !== id);
-  if(prevLoan){
+  if (prevLoan) {
     currentLoan.oldLoanNo = prevLoan.loanNo;
   }
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Loan Pay History"
+        heading='Loan Pay History'
         links={[
           {
             name: 'Dashboard',
@@ -44,7 +44,7 @@ export default function LoanpayhistoryCreateView() {
         }}
       />
 
-      {currentLoan ? <LoanpayhistoryNewEditForm currentLoan={currentLoan} mutate={mutate}/> :
+      {currentLoan ? <LoanpayhistoryNewEditForm currentLoan={currentLoan} mutate={mutate} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>
