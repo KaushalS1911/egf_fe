@@ -14,6 +14,7 @@ import { useParams } from 'react-router';
 import { useGetAllPartPayment } from '../../../api/part-payment';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
+import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -137,24 +138,11 @@ function LoanPartPaymentForm({ mutate }) {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
           <Grid item xs={4}>
-            <Controller
-              name='date'
+            <RHFDatePicker
+              name="date"
               control={control}
-              render={({ field, fieldState: { error } }) => (
-                <DatePicker
-                  label='Pay date'
-                  value={field.value}
-                  onChange={(newValue) => field.onChange(newValue)}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: !!error,
-                      helperText: error?.message,
-                      className: 'req',
-                    },
-                  }}
-                />
-              )}
+              label="Pay date"
+              req={"red"}
             />
           </Grid>
           <Grid item xs={4}>

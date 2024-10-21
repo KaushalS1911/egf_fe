@@ -30,6 +30,7 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useGetConfigs } from '../../api/config';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -362,26 +363,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 req={'red'}
               />
               <RHFTextField name='email' label='Email' req={'red'} />
-              <Controller
-                name='dob'
+              <RHFDatePicker
+                name="dob"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Date of Birth'
-                    value={field.value}
-                    onChange={(newValue) => {
-                      field.onChange(newValue);
-                    }}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                        className: 'req',
-                      },
-                    }}
-                  />
-                )}
+                label="Date of Birth"
+                req={"red"}
               />
               <RHFTextField
                 name='drivingLicense'
@@ -426,25 +412,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   methods.setValue('panCard', value, { shouldValidate: true });
                 }}
               />
-              <Controller
-                name='joiningDate'
+              <RHFDatePicker
+                name="joiningDate"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Joining Date'
-                    value={field.value}
-                    onChange={(newValue) => {
-                      field.onChange(newValue);
-                    }}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                      },
-                    }}
-                  />
-                )}
+                label="Joining Date"
+                req={"red"}
               />
               <RHFTextField
                 name='aadharCard'

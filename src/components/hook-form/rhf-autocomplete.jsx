@@ -121,9 +121,11 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
               <TextField
                 {...params}
                 label={label}
-            sx={{
-              ':not(:focus-within) label ~ div:first-of-type': customStyle,
-            }}
+                sx={{
+                  ':not(:focus-within) label ~ div:first-of-type': customStyle,
+                  " label" : {mt:-0.8,fontSize:"14px"},
+                  " input" : {height:7},
+                }}
                 placeholder={placeholder}
                 error={!!error}
                 helperText={error ? error?.message : helperText}

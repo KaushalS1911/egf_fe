@@ -44,9 +44,9 @@ import { LoadingScreen } from '../../../components/loading-screen';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'loanNo', label: 'Loan No.' },
-  { id: 'entryDate', label: 'Entry Date' },
-  { id: 'nextFollowUpDate.', label: 'Next Follow up date' },
+  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'entryDate', label: 'Entry date' },
+  { id: 'nextFollowUpDate.', label: 'Next follow up date' },
   { id: 'remarks', label: 'Remarks' },
   { id: 'user', label: 'User'},
   { id: ''},

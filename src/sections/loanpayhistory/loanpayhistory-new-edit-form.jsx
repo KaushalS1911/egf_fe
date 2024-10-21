@@ -40,6 +40,7 @@ import PartReleaseForm from './view/part-release-form';
 import UchakInterestPayForm from './view/uchak-interest-pay-form';
 import LoanPartPaymentForm from './view/loan-part-payment-form';
 import LoanCloseForm from './view/loan-close-form';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -171,24 +172,10 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='issueDate'
+                  <RHFDatePicker
+                    name="issueDate"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        label='Issue Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputProps: { readOnly: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
+                    label="Issue Date"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
@@ -272,69 +259,26 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                                 InputLabelProps={{ shrink: true }} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='nextInterestPayDate'
+                  <RHFDatePicker
+                    name="nextInterestPayDate"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        readOnly
-                        label='Next Interest Pay Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputLabelProps: { shrink: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
+                    label="Next Interest Pay Date"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='lastInterestPayDate'
+                  <RHFDatePicker
+                    name="lastInterestPayDate"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        readOnly
-                        label='Last Interest Pay Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputLabelProps: { shrink: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
-                  />
+                    label="Last Interest Pay Date"
+                    InputLabelShrink={true}
+                />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='renewDate'
+                  <RHFDatePicker
+                    name="renewDate"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        readOnly
-                        label='Renew Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputLabelProps: { shrink: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
+                    label="Renew Date"
+                    InputLabelShrink={true}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>

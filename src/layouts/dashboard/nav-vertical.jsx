@@ -161,7 +161,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
             height: 1,
             position: 'fixed',
             width: NAV.W_VERTICAL,
-            backgroundColor:(theme)=>theme.palette.mode === 'light' ? "#393939":"#212b36",
+            backgroundColor:(theme)=>theme.palette.mode === 'light' ? "#0c0c1d":"#212b36",
             paddingBottom:"15px",
             borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           }}

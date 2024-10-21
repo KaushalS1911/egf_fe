@@ -48,7 +48,7 @@ export default function CaratTableFiltersResult({
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.isActive !== 'all' && (
-          <Block label="Active">
+          <Block label="Status">
             <Chip size="small" label={filters.isActive === "true"?"Active":"In Active"} onDelete={handleRemoveStatus} />
           </Block>
         )}

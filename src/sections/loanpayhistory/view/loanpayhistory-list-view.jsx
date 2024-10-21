@@ -50,16 +50,16 @@ import { useGetLoanissue } from '../../../api/loanissue';
 
 const TABLE_HEAD = [
   { id: '', label: '#' },
-  { id: 'loanNo', label: 'Loan No.' },
-  { id: 'customerName', label: 'Customer Name' },
-  { id: 'ContactNo', label: 'Contact No.' },
-  { id: 'interestLoanAmount', label: 'Interest Loan Amount' },
-  { id: 'interestRate', label: 'Interest Rate' },
-  { id: 'cashAmount', label: 'Cash Amount' },
-  { id: 'bankAmount', label: 'Bank Amount' },
+  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'customerName', label: 'Customer name' },
+  { id: 'ContactNo', label: 'Contact' },
+  { id: 'interestLoanAmount', label: 'Interest loan amount' },
+  { id: 'interestRate', label: 'Interest rate' },
+  { id: 'cashAmount', label: 'Cash amount' },
+  { id: 'bankAmount', label: 'Bank amount' },
   { id: 'status', label: 'Status' },
 ];
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disburse' }, {
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, {
   value: 'Closed',
   label: 'Closed',
 }];

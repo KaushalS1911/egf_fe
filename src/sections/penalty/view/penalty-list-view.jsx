@@ -54,12 +54,12 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 
 }];
 
 const TABLE_HEAD = [
-  { id: 'penalty name', label: 'Penalty Name' },
-  { id: 'after due date from day', label: 'After Due Date from Day' },
-  { id: 'after due date to day', label: 'After Due Date to Day' },
-  { id: 'penalty interest', label: 'Penalty Interest %' },
+  { id: 'penalty name', label: 'Name' },
+  { id: 'after due date from day', label: 'After due date from day' },
+  { id: 'after due date to day', label: 'After due date to day' },
+  { id: 'penalty interest', label: 'Penalty interest (%)' },
   { id: 'remark', label: 'Remark' },
-  { id: 'active', label: 'Active' },
+  { id: 'active', label: 'Status' },
   { id: '', width: 88 },
 ];
 

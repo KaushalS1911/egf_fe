@@ -48,7 +48,7 @@ export default function PropertyTableFiltersResult({
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.isActive !== 'all' && (
-          <Block label="Active">
+          <Block label="Status">
             <Chip size="small" label={filters.isActive === "true"?"Active":"Non Active"} onDelete={handleRemoveStatus} />
           </Block>
         )}
