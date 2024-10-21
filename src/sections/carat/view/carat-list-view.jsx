@@ -56,9 +56,9 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 
 
 const TABLE_HEAD = [
   { id: 'cara', label: 'Carat' },
-  { id: 'caratPercentage', label: 'Create%' },
+  { id: 'caratPercentage', label: 'Carat (%)' },
   { id: 'remarks', label: 'Remarks' },
-  { id: 'active', label: 'Active' },
+  { id: 'active', label: 'Status' },
   { id: '', width: 88 },
 ];
 

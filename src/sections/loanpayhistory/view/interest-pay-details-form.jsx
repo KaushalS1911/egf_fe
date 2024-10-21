@@ -24,6 +24,7 @@ import { useAuthContext } from '../../../auth/hooks';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
+import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -230,44 +231,17 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             md: 'repeat(4, 1fr)',
           }}
         >
-          <Controller
-            name='from'
+          <RHFDatePicker
+            name="from"
             control={control}
-            render={({ field, fieldState: { error } }) => (
-              <DatePicker
-                label='From Date'
-                value={field.value}
-                onChange={(newValue) => field.onChange(newValue)}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    error: !!error,
-                    helperText: error?.message,
-                    className: 'req',
-                  },
-                }}
-              />
-            )}
+            label="From Date"
+            req={"red"}
           />
-
-          <Controller
-            name='to'
+          <RHFDatePicker
+            name="to"
             control={control}
-            render={({ field, fieldState: { error } }) => (
-              <DatePicker
-                label='To Date'
-                value={field.value}
-                onChange={(newValue) => field.onChange(newValue)}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    error: !!error,
-                    helperText: error?.message,
-                    className: 'req',
-                  },
-                }}
-              />
-            )}
+            label="To Date"
+            req={"red"}
           />
 
           <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />

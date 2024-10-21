@@ -42,13 +42,13 @@ import { LoadingScreen } from '../../../components/loading-screen';
 
 
 const TABLE_HEAD = [
-  { id: 'LoanNo', label: 'Loan No.' },
-  { id: 'CustomerName', label: 'Customer Name' },
-  { id: 'ContactNo', label: 'Contact No.' },
-  { id: 'InterestLoanAmount', label: 'Interest Loan Amount' },
-  { id: 'InterestRate', label: 'Interest Rate' },
-  { id: 'CashAmount', label: 'Cash Amount' },
-  { id: 'BankAmount', label: 'Bank Amount' },
+  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'CustomerName', label: 'Customer name' },
+  { id: 'ContactNo', label: 'Contact' },
+  { id: 'InterestLoanAmount', label: 'Interest loan amount' },
+  { id: 'InterestRate', label: 'Interest rate' },
+  { id: 'CashAmount', label: 'Cash amount' },
+  { id: 'BankAmount', label: 'Bank amount' },
   { id: '', width: 88 },
 ];
 

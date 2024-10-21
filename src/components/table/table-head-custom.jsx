@@ -6,6 +6,7 @@ import Checkbox from '@mui/material/Checkbox';
 import TableHead from '@mui/material/TableHead';
 import TableCell from '@mui/material/TableCell';
 import TableSortLabel from '@mui/material/TableSortLabel';
+import { grey } from '../../theme/palette';
 
 // ----------------------------------------------------------------------
 
@@ -34,8 +35,8 @@ export default function TableHeadCustom({
   sx,
 }) {
   return (
-    <TableHead sx={sx}>
-      <TableRow>
+    <TableHead sx={sx} >
+      <TableRow >
         {onSelectAllRows && (
           <TableCell padding="checkbox">
             <Checkbox
@@ -51,7 +52,7 @@ export default function TableHeadCustom({
             key={headCell.id}
             align={headCell.align || 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ width: headCell.width, minWidth: headCell.minWidth }}
+            sx={{ width: headCell.width, minWidth: headCell.minWidth ,color:'#000'}}
           >
             {onSort ? (
               <TableSortLabel

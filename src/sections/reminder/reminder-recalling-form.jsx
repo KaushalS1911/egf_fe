@@ -21,6 +21,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
 import { useRouter } from '../../routes/hooks';
 import { mutate } from 'swr';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -107,27 +108,14 @@ const onClose = ()=>{
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(2, 1fr)',
             }}
-            mt={1}
+            mt={2}
           >
-            <Controller
-              name='nextRecallingDate'
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <DatePicker
-                  label='Next Recalling Date'
-                  value={field.value}
-                  onChange={(newValue) => field.onChange(newValue)}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: !!error,
-                      helperText: error?.message,
-                      className: `req`,
-                    },
-                  }}
-                />
-              )}
-            />
+            <RHFDatePicker
+            name="nextRecallingDate"
+            control={control}
+            label="Next Recalling Date"
+            req={"red"}
+          />
             <RHFTextField name="remark" label="Remark" />
           </Box>
         </DialogContent>

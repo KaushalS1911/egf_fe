@@ -19,6 +19,8 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
           fullWidth
           sx={{
             ':not(:focus-within) label ~ div:first-of-type': customStyle,
+            " label" : {mt:-0.8,fontSize:"14px"},
+            " input" : {height:7},
           }}
           type={type}
           value={type === 'number' && field.value === 0 ? '' : field.value}
@@ -36,7 +38,7 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
       )}
     />
   );
-}
+};
 
 RHFTextField.propTypes = {
   helperText: PropTypes.string,

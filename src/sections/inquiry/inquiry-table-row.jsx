@@ -38,7 +38,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{email}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

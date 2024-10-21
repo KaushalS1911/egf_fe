@@ -47,14 +47,20 @@ const NavItem = forwardRef(
         {...other}
       >
         {icon && (
-          <Box component="span" className="icon" color={"#ffff"}
+          <Box component="span" className="icon"  sx={{
+            color: "#ffff",
+            opacity: 0.9, // Set opacity here
+          }}
           >
             {icon}
           </Box>
         )}
 
         {title && (
-          <Box component="span" className="label" color={"#ffff"}>
+          <Box component="span" className="label" sx={{
+            color: "#ffff",
+            opacity: 0.9, // Set opacity here
+          }}>
             {title}
           </Box>
         )}

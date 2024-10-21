@@ -32,6 +32,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetAllPartRelease } from '../../../api/part-release';
 import { useGetBranch } from '../../../api/branch';
+import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -329,29 +330,16 @@ function PartReleaseForm({ currentLoan, mutate }) {
             </Box>
 
 
-            <Box sx={{ mt: { xs: 4, md: 8 } }}>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={9}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6} md={4}>
-                      <Controller
+            <Box sx={{ mt: 8 }}>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={9}>
+                  <Grid container rowSpacing={3} columnSpacing={2}>
+                    <Grid item xs={4}>
+                      <RHFDatePicker
                         name="date"
                         control={control}
-                        render={({ field, fieldState: { error } }) => (
-                          <DatePicker
-                            label="Pay date"
-                            value={field.value}
-                            onChange={(newValue) => field.onChange(newValue)}
-                            slotProps={{
-                              textField: {
-                                fullWidth: true,
-                                error: !!error,
-                                helperText: error?.message,
-                                className: 'req',
-                              },
-                            }}
-                          />
-                        )}
+                        label="Pay Date"
+                        req={"red"}
                       />
                     </Grid>
 

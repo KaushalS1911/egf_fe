@@ -20,6 +20,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
 import { Button } from '@mui/material';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +51,15 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       .nullable()
       .typeError('Date is required'),
     inquiryFor: Yup.string().required('Inquiry field is required'),
+    branchId: Yup.object()
+      .shape({
+        label: Yup.string().required('Branch name is required'),
+        value: Yup.string().required('Branch ID is required'),
+      })
+      .nullable()
+      .required('Branch selection is required'),
   });
+
 
   const defaultValues = useMemo(
     () => ({
@@ -192,28 +201,33 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                   }
                 }} />
               <RHFTextField name='email' label='Email' req={'red'} />
-
-              <Controller
-                name='date'
+              <RHFDatePicker
+                name="date"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Date'
-                    value={field.value}
-                    onChange={(newValue) => {
-                      field.onChange(newValue);
-                    }}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                        className: `req`,
-                      },
-                    }}
-                  />
-                )}
+                label="Date"
+                req={"red"}
               />
+              {/*<Controller*/}
+              {/*  name='date'*/}
+              {/*  control={control}*/}
+              {/*  render={({ field, fieldState: { error } }) => (*/}
+              {/*    <DatePicker*/}
+              {/*      label='Date'*/}
+              {/*      value={field.value}*/}
+              {/*      onChange={(newValue) => {*/}
+              {/*        field.onChange(newValue);*/}
+              {/*      }}*/}
+              {/*      slotProps={{*/}
+              {/*        textField: {*/}
+              {/*          fullWidth: true,*/}
+              {/*          error: !!error,*/}
+              {/*          helperText: error?.message,*/}
+              {/*          className: `req`,*/}
+              {/*        },*/}
+              {/*      }}*/}
+              {/*    />*/}
+              {/*  )}*/}
+              {/*/>*/}
               {configs.loanTypes && <RHFAutocomplete
                 name='inquiryFor'
                 label={'Inquiry For'}

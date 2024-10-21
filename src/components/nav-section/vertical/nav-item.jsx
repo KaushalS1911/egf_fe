@@ -47,7 +47,10 @@ const NavItem = forwardRef(
         {...other}
       >
         {!subItem && icon && (
-          <Box component="span" className="icon" color={"#ffff"}>
+          <Box component="span" className="icon" sx={{
+            color: "#ffff",
+            opacity: 0.8,
+          }}>
             {icon}
           </Box>
         )}
@@ -62,7 +65,10 @@ const NavItem = forwardRef(
 
         {title && (
           <Box component="span" sx={{ flex: '1 1 auto', minWidth: 0 }}>
-            <Box component="span" className="label" color={"#ffff"}>
+            <Box component="span" className="label"  sx={{
+              color: "#ffff",
+              opacity: 0.9,
+            }}>
               {title}
             </Box>
 
