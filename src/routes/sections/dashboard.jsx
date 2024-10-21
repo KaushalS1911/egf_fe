@@ -63,6 +63,7 @@ const  PropertyListView = lazy(()=>import('../../sections/property/view/property
 //LOAN PAY HISTORY
 const  LoanpayhistoryListView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-list-view'))
 const  LoanpayhistoryCreateView = lazy(()=>import('../../sections/loanpayhistory/view/loanpayhistory-create-view'))
+const  BulkInterestPay = lazy(()=>import('../../sections/loanpayhistory/bulk-interest-pay/bulk-interest-pay'))
 // PENALTY
 const PenaltyListView = lazy(()=>import('../../sections/penalty/view/penalty-list-view'))
 const PenaltyCreateview = lazy(()=>import('../../sections/penalty/view/penalty-create-view'))
@@ -222,6 +223,7 @@ export const dashboardRoutes = [
           { element: <LoanpayhistoryListView />, index: true },
           { path: 'list', element: <LoanpayhistoryListView /> },
           { path: ':id/new', element: <LoanpayhistoryCreateView /> },
+          { path: 'bulkInterest/new', element: <BulkInterestPay /> },
         ],
       },
 
