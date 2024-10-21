@@ -44,6 +44,8 @@ import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
+import ReminderRecallingForm from '../../reminder/reminder-recalling-form';
+import BulkInterestModel from '../bulk-interest-pay/bulk-interest-model';
 
 // ----------------------------------------------------------------------
 
@@ -71,7 +73,7 @@ const defaultFilters = {
 
 export default function LoanpayhistoryListView() {
   const { enqueueSnackbar } = useSnackbar();
-
+  const [open, setOpen] = useState(false);
   const table = useTable();
   const { user } = useAuthContext();
   const loanPayHistory = true;
@@ -187,7 +189,7 @@ export default function LoanpayhistoryListView() {
             mb: { xs: 3, md: 5 },
           }}
           action={
-            <Button variant="contained" startIcon={<Iconify icon="mingcute:add-line" />}>
+            <Button variant='contained' startIcon={<Iconify icon='mingcute:add-line' />} onClick={() => setOpen(true)}>
               Bulk Interest Pay
             </Button>
           }
@@ -314,7 +316,7 @@ export default function LoanpayhistoryListView() {
           />
         </Card>
       </Container>
-
+      <BulkInterestModel open={open} setOpen={() => setOpen(false)} />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

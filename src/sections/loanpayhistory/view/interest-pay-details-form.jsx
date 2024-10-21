@@ -44,10 +44,9 @@ const TABLE_HEAD = [
 
 function InterestPayDetailsForm({ currentLoan, mutate }) {
   const { penalty } = useGetPenalty();
-  const { id } = useParams();
   const [paymentMode, setPaymentMode] = useState('');
   const { branch } = useGetBranch();
-  const { loanInterest, refetchLoanInterest } = useGetAllInterest(id);
+  const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -117,16 +116,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const to = watch('to');
 
   function calculatePenalty(loanAmount, interestRate) {
-    let dayDifference = 0;
-    if (watch('to') && currentLoan.nextInstallmentDate) {
-      const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
-      const to = new Date(watch('to'));
-      const timeDifference = to.getTime() - nextInstallmentDate.getTime();
-      dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
-      dayDifference = Math.abs(dayDifference);
-    }
     const monthlyInterest = (loanAmount * interestRate) / 100;
-    const penalty = (dayDifference / 30) * monthlyInterest;
+    const penalty = (Number(watch('days')) / 30) * monthlyInterest;
     return penalty.toFixed(2);
   }
 
@@ -142,35 +133,29 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     const differenceInTime = Math.abs(endDate - startDate);
     const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
 
-    const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
-    const differenceInTime2 = Math.abs(new Date(to) - nextInstallmentDate);
-    const differenceInDays2 = Math.floor(differenceInTime2 / (1000 * 3600 * 24));
-
     setValue('days', differenceInDays.toString());
-
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
-      if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate) {
+      if (Number(watch('days')) >= penaltyItem.afterDueDateFromDate && Number(watch('days')) <= penaltyItem.afterDueDateToDate) {
         penaltyPer = calculatePenalty(currentLoan.loanAmount, penaltyItem.penaltyInterest);
       }
     });
 
     setValue('interestAmount', (currentLoan?.scheme.interestRate * currentLoan.loanAmount / 100 * differenceInDays / 30).toFixed(2));
     setValue('penalty', penaltyPer);
-    if (new Date(from) > new Date()) {
+    if (new Date(from) >= new Date()) {
       setValue('penalty', 0);
     }
     setValue('totalPay', (
       Number(watch('interestAmount')) +
-      Number(watch('consultingCharge')) +
       Number(watch('penalty'))
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
-    if(startDate > new Date()){
-      setValue('penalty',0)
+    if (startDate > new Date()) {
+      setValue('penalty', 0);
     }
-  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr'), watch('consultingCharge')]);
+  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
 
 
   const onSubmit = handleSubmit(async (data) => {
@@ -212,7 +197,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
       paymentDetail,
     };
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/interest-payment`;
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment`;
 
       const config = {
         method: 'post',
@@ -286,14 +271,15 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           />
 
           <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} InputProps={{ readOnly: true }}/>
-          <RHFTextField name='interestAmount' label='Interest' req={'red'} InputProps={{ readOnly: true }}/>
-          <RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} />
-          <RHFTextField name='penalty' label='Penalty' req={'red'} InputProps={{ readOnly: true }}/>
-          <RHFTextField name='totalPay' label='Total Pay' req={'red'} InputProps={{ readOnly: true }}/>
-          <RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} InputProps={{ readOnly: true }}/>
-          <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'} InputProps={{ readOnly: true }}/>
-          <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }}/>
+          <RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} InputProps={{ readOnly: true }} />
+          <RHFTextField name='interestAmount' label='Interest' req={'red'} InputProps={{ readOnly: true }} />
+          <RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} InputProps={{ readOnly: true }} />
+          <RHFTextField name='penalty' label='Penalty' req={'red'} InputProps={{ readOnly: true }} />
+          <RHFTextField name='totalPay' label='Total Pay' req={'red'} InputProps={{ readOnly: true }} />
+          <RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} InputProps={{ readOnly: true }} />
+          <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'}
+                        InputProps={{ readOnly: true }} />
+          <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='amountPaid' label='Total' req={'red'} />
         </Box>
 

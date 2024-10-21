@@ -13,8 +13,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetBranch } from '../../../api/branch';
 
-function UchakInterestPayForm({ mutate }) {
-  const { id } = useParams();
+function UchakInterestPayForm({currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
 
@@ -107,7 +106,7 @@ function UchakInterestPayForm({ mutate }) {
       paymentDetail: paymentDetail,
     };
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/uchak-interest-payment`;
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest-payment`;
 
       const config = {
         method: 'post',

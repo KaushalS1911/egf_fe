@@ -5,7 +5,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import LoanpayhistoryNewEditForm from '../loanpayhistory-new-edit-form';
+import LoanpayhistoryNew from '../loanpayhistory-new';
 import { useParams } from 'react-router';
 import { Box } from '@mui/material';
 import { LoadingScreen } from '../../../components/loading-screen';
@@ -44,7 +44,7 @@ export default function LoanpayhistoryCreateView() {
         }}
       />
 
-      {currentLoan ? <LoanpayhistoryNewEditForm currentLoan={currentLoan} mutate={mutate} /> :
+      {currentLoan ? <LoanpayhistoryNew currentLoan={currentLoan} mutate={mutate} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>
