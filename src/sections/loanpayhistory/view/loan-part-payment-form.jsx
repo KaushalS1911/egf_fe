@@ -146,10 +146,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
-        <Grid container spacing={2} sx={{ p: { xs: 2, md: 3 } }}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Controller
-              name='date'
         <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
           <Grid item xs={4}>
             <RHFDatePicker
