@@ -39,7 +39,6 @@ import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import Swal from 'sweetalert2';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
@@ -77,7 +76,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     loanAmount: Yup.number().required('Loan Amount is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     cashAmount: Yup.number().required('Cash Amount is required'),
-    assignTo: Yup.number().required('Assign To Amount is required'),
+    approvalCharge: Yup.number().required('Approval Charge To Amount is required'),
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
@@ -112,7 +111,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       loanNo: currentLoanIssue?.loanNo || '',
       issueDate: currentLoanIssue ? new Date(currentLoanIssue?.issueDate) : new Date(),
       consultingCharge: currentLoanIssue?.consultingCharge || '',
-      assignTo: currentLoanIssue?.assignTo || '',
+      approvalCharge: currentLoanIssue?.approvalCharge || '',
       nextInstallmentDate: currentLoanIssue ? new Date(currentLoanIssue?.nextInstallmentDate) : null,
       jewellerName: currentLoanIssue?.jewellerName || '',
       loanAmount: currentLoanIssue?.loanAmount || '',
@@ -207,7 +206,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('issueDate', data.issueDate);
     payload.append('nextInstallmentDate', data.nextInstallmentDate);
     payload.append('consultingCharge', data.consultingCharge);
-    payload.append('assignTo', data.assignTo);
+    payload.append('approvalCharge', data.approvalCharge);
     payload.append('jewellerName', data.jewellerName);
 
     propertyDetails.forEach((field, index) => {
@@ -344,12 +343,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       if (scheme && scheme.length > 0 && schemeId) {
         const findedSch = currentLoanIssue ? scheme?.find((item) => item?._id === schemeId._id) : scheme?.find((item) => item?._id === schemeId.id);
         if (findedSch) {
-          setValue('interestRate', findedSch.interestRate);
           setValue('periodTime', findedSch.interestPeriod);
           setValue('renewalTime', findedSch.renewalTime);
           setValue('loanCloseTime', findedSch.minLoanTime);
         } else {
-          setValue('interestRate', '');
           setValue('periodTime', '');
           setValue('renewalTime', '');
           setValue('loanCloseTime', '');
@@ -584,10 +581,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 disabled
               />
               <RHFDatePicker
-                name="issueDate"
+                name='issueDate'
                 control={control}
-                label="Issue Date"
-                req={"red"}
+                label='Issue Date'
+                req={'red'}
               />
               <RHFAutocomplete
                 name='scheme'
@@ -613,8 +610,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     const interestRate = parseFloat(value.interestRate);
                     if (interestRate <= 1.5) {
                       methods.setValue('consultingCharge', 0);
+                      methods.setValue('interestRate', interestRate);
                     } else {
                       methods.setValue('consultingCharge', (interestRate - '1.5').toFixed(2));
+                      methods.setValue('interestRate', '1.5');
                     }
                   } else {
                     methods.setValue('consultingCharge', '');
