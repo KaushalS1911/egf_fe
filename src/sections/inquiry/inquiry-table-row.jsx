@@ -16,7 +16,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { date , firstName,lastName , contact,email,inquiryFor, remark , _id} = row;
+  const { date, firstName, lastName, contact, email, inquiryFor, remark, _id } = row;
 
   const confirm = useBoolean();
 
@@ -27,7 +27,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
@@ -40,9 +40,9 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
 
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
@@ -51,7 +51,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -61,7 +61,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon="solar:trash-bin-trash-bold" />
+          <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
         </MenuItem>
 
@@ -71,7 +71,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:pen-bold" />
+          <Iconify icon='solar:pen-bold' />
           Edit
         </MenuItem>
       </CustomPopover>
@@ -79,10 +79,10 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }
