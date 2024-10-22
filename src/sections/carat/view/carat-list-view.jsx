@@ -37,7 +37,7 @@ import {
 import CaratTableToolbar from '../carat-table-toolbar';
 import CaratTableFiltersResult from '../carat-table-filters-result';
 import CaratTableRow from '../carat-table-row';
-import { Box} from '@mui/material';
+import { Box } from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -174,7 +174,7 @@ export default function CaratListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Carats"
+          heading='Carats'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Carat', href: paths.dashboard.carat.root },

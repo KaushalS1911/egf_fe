@@ -35,7 +35,7 @@ import {
 import EmployeeTableRow from '../employee-table-row';
 import EmployeeTableToolbar from '../employee-table-toolbar';
 import EmployeeTableFiltersResult from '../employee-table-filters-result';
-import {useGetEmployee} from 'src/api/employee'
+import { useGetEmployee } from 'src/api/employee';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
@@ -43,13 +43,12 @@ import { LoadingScreen } from '../../../components/loading-screen';
 // ----------------------------------------------------------------------
 
 
-
 const TABLE_HEAD = [
   { id: 'username', label: 'User Name' },
   { id: 'branchname', label: 'Branch' },
   { id: 'ContactNo', label: 'Contact No.' },
-  { id: 'joinDate', label: 'Joining Date'},
-  { id: 'role', label: 'Role'},
+  { id: 'joinDate', label: 'Joining Date' },
+  { id: 'role', label: 'Role' },
   { id: '', width: 88 },
 ];
 
@@ -62,8 +61,8 @@ export default function EmployeeListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
-  const {user} = useAuthContext();
-  const {employee, mutate,employeeLoading} = useGetEmployee();
+  const { user } = useAuthContext();
+  const { employee, mutate, employeeLoading } = useGetEmployee();
   const settings = useSettingsContext();
 
   const router = useRouter();
@@ -82,7 +81,7 @@ export default function EmployeeListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
+    table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -99,7 +98,7 @@ export default function EmployeeListView() {
         [name]: value,
       }));
     },
-    [table]
+    [table],
   );
 
   const handleResetFilters = useCallback(() => {
@@ -114,7 +113,7 @@ export default function EmployeeListView() {
       mutate();
       enqueueSnackbar(res.data.message);
     } catch (err) {
-      enqueueSnackbar("Failed to delete Employee");
+      enqueueSnackbar('Failed to delete Employee');
     }
   };
 
@@ -127,13 +126,13 @@ export default function EmployeeListView() {
       }
 
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage.length, enqueueSnackbar, table, tableData],
   );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = employee.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row.user._id);
-    handleDelete(deleteIds)
+    handleDelete(deleteIds);
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -146,19 +145,19 @@ export default function EmployeeListView() {
     (id) => {
       router.push(paths.dashboard.employee.edit(id));
     },
-    [router]
+    [router],
   );
 
-  if(employeeLoading){
+  if (employeeLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Customers"
+          heading='Customers'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Employee', href: paths.dashboard.employee.root },
@@ -168,8 +167,8 @@ export default function EmployeeListView() {
             <Button
               component={RouterLink}
               href={paths.dashboard.employee.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
+              variant='contained'
+              startIcon={<Iconify icon='mingcute:add-line' />}
             >
               Add Employee
             </Button>
@@ -200,13 +199,13 @@ export default function EmployeeListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row.id),
                 )
               }
               action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                <Tooltip title='Delete'>
+                  <IconButton color='primary' onClick={confirm.onTrue}>
+                    <Iconify icon='solar:trash-bin-trash-bold' />
                   </IconButton>
                 </Tooltip>
               }
@@ -224,7 +223,7 @@ export default function EmployeeListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row._id)
+                      dataFiltered.map((row) => row._id),
                     )
                   }
                 />
@@ -233,7 +232,7 @@ export default function EmployeeListView() {
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
+                      table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row) => (
                       <EmployeeTableRow
@@ -273,7 +272,7 @@ export default function EmployeeListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title='Delete'
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -281,8 +280,8 @@ export default function EmployeeListView() {
         }
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -298,7 +297,7 @@ export default function EmployeeListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const {  name } = filters;
+  const { name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -311,7 +310,7 @@ function applyFilter({ inputData, comparator, filters }) {
     inputData = inputData.filter(
       (item) =>
         item.user.firstName.toLowerCase().includes(name.toLowerCase()) ||
-        item.user.lastName.toLowerCase().includes(name.toLowerCase())
+        item.user.lastName.toLowerCase().includes(name.toLowerCase()),
     );
   }
   return inputData;

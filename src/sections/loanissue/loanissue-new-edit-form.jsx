@@ -12,6 +12,7 @@ import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload, RHFUploadAvatar
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSnackbar } from 'src/components/snackbar';
 import {
+  Alert,
   CardActions,
   IconButton,
   Table,
@@ -59,8 +60,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
   const [totalWeightError, setTotalWeightError] = useState('');
   const [lossWeightError, setLossWeightError] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
   const uuid = uuidv4();
+  const [selectedScheme, setSelectedScheme] = useState(null);
   const storedBranch = sessionStorage.getItem('selectedBranch');
 
   useEffect(() => {
@@ -75,6 +76,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     loanAmount: Yup.number().required('Loan Amount is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     cashAmount: Yup.number().required('Cash Amount is required'),
+    assignTo: Yup.number().required('Assign To Amount is required'),
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
@@ -108,7 +110,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       scheme: currentLoanIssue ? currentLoanIssue?.scheme : null,
       loanNo: currentLoanIssue?.loanNo || '',
       issueDate: currentLoanIssue ? new Date(currentLoanIssue?.issueDate) : new Date(),
-      consultingCharge: currentLoanIssue?.consultingCharge || 200,
+      consultingCharge: currentLoanIssue?.consultingCharge || '',
+      assignTo: currentLoanIssue?.assignTo || '',
       nextInstallmentDate: currentLoanIssue ? new Date(currentLoanIssue?.nextInstallmentDate) : null,
       jewellerName: currentLoanIssue?.jewellerName || '',
       loanAmount: currentLoanIssue?.loanAmount || '',
@@ -203,6 +206,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('issueDate', data.issueDate);
     payload.append('nextInstallmentDate', data.nextInstallmentDate);
     payload.append('consultingCharge', data.consultingCharge);
+    payload.append('assignTo', data.assignTo);
     payload.append('jewellerName', data.jewellerName);
 
     propertyDetails.forEach((field, index) => {
@@ -274,26 +278,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     },
     [setValue],
   );
-
-  useEffect(() => {
-    if (!currentLoanIssue) {
-      Swal.fire({
-        title: 'Select a Customer',
-        text: 'Please select a customer to proceed with the loan issuance.',
-        icon: 'info',
-        confirmButtonText: 'Close',
-        confirmButtonColor: '#454F5B',
-        color: '#000',
-        iconColor: '#f39c12',
-        customClass: {
-          popup: 'swal2-yellow-theme',
-        },
-      }).then(() => {
-        setOpenDialog(false);
-      });
-      setOpenDialog(true);
-    }
-  }, [currentLoanIssue]);
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -451,16 +435,44 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           'Content-Type': 'application/json',
         },
       });
-      enqueueSnackbar(response.status, { variant: 'success' });
+      enqueueSnackbar(response.message, { variant: 'success' });
     } catch (error) {
       console.error(error);
       enqueueSnackbar(error, { variant: 'error' });
     }
   };
 
+  const checkIFSC = async (ifscCode) => {
+    if (ifscCode.length === 11) {
+      try {
+        const response = await axios.get(`https://ifsc.razorpay.com/${ifscCode}`);
+        if (response.data) {
+          setValue('branchName', response?.data?.BRANCH || '', { shouldValidate: true });
+          enqueueSnackbar('IFSC code is valid and branch details fetched.', { variant: 'success' });
+        }
+      } catch (error) {
+        setValue('branchName', '', { shouldValidate: true });
+        enqueueSnackbar('Invalid IFSC code. Please check and enter a valid IFSC code.', { variant: 'error' });
+      }
+    } else {
+      enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
+    }
+  };
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
+        {!isFieldsEnabled &&
+        <>
+          <Grid item xs={12} md={4}>
+            <Typography variant='h6' sx={{ mb: 3 }}>
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
+          </Grid>
+        </>
+        }
         <Grid item xs={12} md={4}>
           <Typography variant='h6' sx={{ mb: 3 }}>
           </Typography>
@@ -599,6 +611,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 options={scheme?.map((item) => ({
                   id: item?._id,
                   name: item?.name,
+                  interestRate: item?.interestRate,
                 }))}
                 getOptionLabel={(option) => option?.name}
                 renderOption={(props, option) => (
@@ -606,15 +619,42 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     {option?.name}
                   </li>
                 )}
+                onChange={(event, value) => {
+                  methods.setValue('scheme', value);
+
+                  if (value && value.interestRate) {
+                    const interestRate = parseFloat(value.interestRate);
+                    if (interestRate <= 1.5) {
+                      methods.setValue('consultingCharge', 0);
+                    } else {
+                      methods.setValue('consultingCharge', (interestRate - '1.5').toFixed(2));
+                    }
+                  } else {
+                    methods.setValue('consultingCharge', '');
+                  }
+                }}
               />
               <RHFTextField name='interestRate' label='Instrest Rate' InputProps={{ readOnly: true }} />
+              <RHFTextField
+                name='approvalCharge'
+                label='Approval Charge'
+                disabled={!isFieldsEnabled}
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  onInput: (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9.]/g, '')
+                      .replace(/(\..*?)\..*/g, '$1');
+                  },
+                }}
+              />
               <Controller
                 name='consultingCharge'
                 control={control}
                 render={({ field }) => (
                   <RHFTextField
                     {...field}
-                    disabled={!isFieldsEnabled}
+                    disabled={true}
                     label='Consulting Charge'
                     req={'red'}
                   />
@@ -753,17 +793,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                           <RHFTextField
                             name={`propertyDetails[${index}].pcs`}
                             label='Pcs'
-                            disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].carat`) === ''}
+                            disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].carat`) === '' || currentLoanIssue}
                             onChange={(e) => {
                               const pcs = parseFloat(e.target.value) || 0;
                               setValue(`propertyDetails[${index}].pcs`, pcs);
 
                               const grossWeight = parseFloat(watch(`propertyDetails[${index}].grossWeight`)) || 0;
-                              const grossAmount = grossWeight * pcs * configs.goldRate;
+                              const grossAmount = (grossWeight * pcs * configs.goldRate).toFixed();
                               setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
 
                               const netWeight = parseFloat(watch(`propertyDetails[${index}].netWeight`)) || 0;
-                              const netAmount = netWeight * pcs * configs.goldRate;
+                              const netAmount = (netWeight * pcs * configs.goldRate).toFixed(2);
                               setValue(`propertyDetails[${index}].netAmount`, netAmount);
                             }}
                           />
@@ -798,15 +838,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                   if (lossWeight > totalWeight) {
                                     setTotalWeightError('Loss weight cannot be greater than total weight.');
                                   } else {
-                                    const grossWeight = totalWeight - lossWeight;
+                                    const grossWeight = (totalWeight - lossWeight).toFixed(2);
                                     setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
                                     const caratValue = carat?.find((item) => item.name == parseFloat(watch(`propertyDetails[${index}].carat`))) || 0;
-                                    const netWeight = grossWeight * (caratValue.caratPercentage / 100);
+                                    const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
                                     setValue(`propertyDetails[${index}].netWeight`, netWeight);
                                     const pcs = parseFloat(watch(`propertyDetails[${index}].pcs`)) || 0;
-                                    const grossAmount = grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                    const grossAmount = (grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
                                     setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                    const netAmount = netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                    const netAmount = (netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
                                     setValue(`propertyDetails[${index}].netAmount`, netAmount);
                                     setTotalWeightError('');
                                   }
@@ -845,15 +885,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                 if (lossWeight > totalWeight) {
                                   setLossWeightError('Loss weight cannot be greater than total weight.');
                                 } else {
-                                  const grossWeight = totalWeight - lossWeight;
+                                  const grossWeight = (totalWeight - lossWeight).toFixed(2);
                                   setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
                                   const caratValue = carat?.find((item) => item.name == parseFloat(watch(`propertyDetails[${index}].carat`))) || 0;
-                                  const netWeight = grossWeight * (caratValue.caratPercentage / 100);
+                                  const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
                                   setValue(`propertyDetails[${index}].netWeight`, netWeight);
                                   const pcs = parseFloat(getValues(`propertyDetails[${index}].pcs`)) || 0;
-                                  const grossAmount = grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                  const grossAmount = (grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
                                   setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                  const netAmount = netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100;
+                                  const netAmount = (netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
                                   setValue(`propertyDetails[${index}].netAmount`, netAmount);
                                   setLossWeightError('');
                                 }
@@ -1091,7 +1131,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       color: 'inherit',
                     }}
                   >
-                    Add beneficiary
+                    {customerData?.bankDetails?.accountNumber !== '' ? 'Edit beneficiary' : 'Add beneficiary'}
                   </Link>
                 </Box>
                 <RHFTextField name='accountNumber' label='Account No.' req={'red'} disabled={!isFieldsEnabled}
@@ -1115,13 +1155,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               req={'red'} />
                 <RHFTextField
                   name='IFSC'
+                  label='IFSC Code'
                   inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
-                  label='IFSC Code'
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
+                  onBlur={(e) => checkIFSC(e.target.value)}
                 />
                 <RHFTextField name='bankName' label='Bank Name' req={'red'} disabled={!isFieldsEnabled} />
                 <RHFTextField name='branchName' label='Branch Name' req={'red'} disabled={!isFieldsEnabled} />
