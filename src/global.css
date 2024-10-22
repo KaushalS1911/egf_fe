@@ -23,3 +23,6 @@
   border-left: 2.8px solid red !important;
   border-radius: 8px;
 }
+.black-text {
+  color: #000 !important;
+}

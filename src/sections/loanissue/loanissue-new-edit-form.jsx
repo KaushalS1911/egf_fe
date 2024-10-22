@@ -259,7 +259,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       reset();
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Failed to process loan.', { variant: 'error' });
+      enqueueSnackbar(currentLoanIssue ?'Failed to update loan.' : error.response.data.message, { variant: 'error' });
     }
   });
 
@@ -463,8 +463,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 3 }}>
-          </Typography>
+          {/*<Typography variant='h6' sx={{ mb: 3 }}>*/}
+          {/*</Typography>*/}
         </Grid>
         <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
           <Box
@@ -508,10 +508,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Box>
         </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 3 }}>
-            Customer Details
-          </Typography>
+        <Grid item xs={12} md={3}>
+
           <Card sx={{ pt: 6, pb: 2 }}>
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
@@ -522,15 +520,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
         </Grid>
-        <Grid xs={12} md={8}>
+        <Grid xs={12} md={9}>
           <Card sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
+              Customer Details
+            </Typography>
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
             >
               <RHFTextField name='customerCode' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}
@@ -548,20 +549,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 3 }}>
-            Loan Scheme Details
-          </Typography>
-        </Grid>
-        <Grid xs={12} md={8}>
+        <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{ mb: 2 ,fontWeight:600}}>
+              Loan Scheme Details
+            </Typography>
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(6, 1fr)',
               }}
             >
               <RHFTextField
@@ -644,7 +643,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
             Property Details
           </Typography>
         </Grid>
@@ -675,16 +674,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 <Table>
                   <TableHead>
                     <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                      <TableCell><strong>Type</strong></TableCell>
-                      <TableCell><strong>Carat</strong></TableCell>
-                      <TableCell><strong>Pcs</strong></TableCell>
-                      <TableCell><strong>Total Wt</strong></TableCell>
-                      <TableCell><strong>Loss Wt</strong></TableCell>
-                      <TableCell><strong>Gross Wt</strong></TableCell>
-                      <TableCell><strong>Net Wt</strong></TableCell>
-                      <TableCell><strong>Gross Amt</strong></TableCell>
-                      <TableCell><strong>Net Amt</strong></TableCell>
-                      <TableCell><strong>Actions</strong></TableCell>
+                      <TableCell className="black-text"><strong>Type</strong></TableCell>
+                      <TableCell className="black-text"><strong>Carat</strong></TableCell>
+                      <TableCell className="black-text"><strong>Pcs</strong></TableCell>
+                      <TableCell className="black-text"><strong>Total Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Loss Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Gross Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Net Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Gross Amt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Net Amt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Actions</strong></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -923,20 +922,19 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </CardActions>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+
+        <Grid item xs={12} md={12}>
+          <Card sx={{ p: 3 }}>
+          <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
             Payment Details
           </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
             >
               <Controller
@@ -1051,36 +1049,34 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Card>
         </Grid>
         {['Bank', 'Both'].includes(watch('paymentMode')) && <>
-          <Grid item xs={12} md={4}>
-            <Typography variant='h6' sx={{ mb: 0.5 }}>
+          <Grid item xs={12} md={12}>
+            <Card sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
               Account Details
             </Typography>
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <Card sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'end',pb:3 }}>
+                <Link
+                  disabled={!isFieldsEnabled}
+                  onClick={() => saveCustomerBankDetails()}
+                  style={{
+                    fontWeight: 'bold',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                >
+                  Add beneficiary
+                </Link>
+              </Box>
               <Box
                 rowGap={3}
                 columnGap={2}
                 display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
+                  sm: 'repeat(6, 1fr)',
                 }}
               >
-                <Box></Box>
-                <Box sx={{ justifyContent: 'end', display: 'flex' }}>
-                  <Link
-                    disabled={!isFieldsEnabled}
-                    onClick={() => saveCustomerBankDetails()}
-                    style={{
-                      fontWeight: 'bold',
-                      textDecoration: 'none',
-                      color: 'inherit',
-                    }}
-                  >
-                    Add beneficiary
-                  </Link>
-                </Box>
+
                 <RHFTextField name='accountNumber' label='Account No.' req={'red'} disabled={!isFieldsEnabled}
                               type='number'
                               inputProps={{ min: 0 }} />

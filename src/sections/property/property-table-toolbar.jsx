@@ -44,7 +44,6 @@ export default function   PropertyTableToolbar({
         }}
         sx={{
           p: 2.5,
-          pr: { xs: 2.5, md: 1 },
         }}
       >
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
@@ -62,9 +61,7 @@ export default function   PropertyTableToolbar({
             }}
           />
 
-          {/*<IconButton onClick={popover.onOpen}>*/}
-          {/*  <Iconify icon="eva:more-vertical-fill" />*/}
-          {/*</IconButton>*/}
+
         </Stack>
       </Stack>
 

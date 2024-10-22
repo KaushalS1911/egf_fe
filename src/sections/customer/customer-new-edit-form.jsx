@@ -214,6 +214,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       mutate();
       router.push(paths.dashboard.customer.root);
     } catch (error) {
+      enqueueSnackbar(currentCustomer ? 'Failed To update customer' : error.response.data.message, { variant: 'error' });
       console.error(error);
     }
   });
@@ -273,7 +274,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const PersonalDetails = (
     <>
-      <Grid item md={4} xs={12}>
+      <Grid item md={3} xs={12}>
         <Card sx={{ pt: 5, px: 3, mt: 5 }}>
           <Box sx={{ mb: 5 }}>
             <RHFUploadAvatar
@@ -284,7 +285,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
           </Box>
         </Card>
       </Grid>
-      <Grid item xs={12} md={8}>
+      <Grid item xs={12} md={9}>
         <Card>
           {!mdUp && <CardHeader title='Personal Details' />}
           <Stack spacing={3} sx={{ p: 3 }}>
@@ -294,7 +295,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                md: 'repeat(2, 1fr)',
+                md: 'repeat(4, 1fr)',
               }}
             >
               {user?.role === 'Admin' && branch && storedBranch === 'all' && (
@@ -486,18 +487,12 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const addressDetails = (
     <>
-      {mdUp && (
-        <Grid md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Address Details
-          </Typography>
-        </Grid>
-      )}
-      <Grid xs={12} md={8}>
+
+      <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Properties' />}
           <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant='p' sx={{ mb: 0.5 }}>
+            <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
               Permanent Address
             </Typography>
             <Box
@@ -506,7 +501,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                md: 'repeat(2, 1fr)',
+                md: 'repeat(6, 1fr)',
               }}
             >
               <RHFTextField name='PerStreet' label='Street' req={'red'} />
@@ -589,7 +584,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             </Box>
           </Stack>
           <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant='p' sx={{ mb: 0.5, fontWeight: '500' }}>
+            <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
               Temporary Address
             </Typography>
             <Box
@@ -598,7 +593,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                md: 'repeat(2, 1fr)',
+                md: 'repeat(6, 1fr)',
               }}
             >
               <RHFTextField name='tempStreet' label='Street' />
@@ -680,20 +675,13 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const BankDetails = (
     <>
-      {mdUp && (
-        <Grid md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Bank Account Details
-          </Typography>
-        </Grid>
-      )}
-      <Grid xs={12} md={8}>
+            <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Bank Accounts' />}
           <Stack spacing={3} sx={{ p: 3 }}>
             <Box sx={{ mb: 3 }}>
-              <Typography variant='p' my={2} sx={{ display: 'inline-block' }}>
-                Bank Account
+              <Typography variant='subtitle1' sx={{ my: 2, fontWeight: '600' }}>
+                Bank Account Details
               </Typography>
               <Box
                 columnGap={2}
@@ -701,7 +689,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
-                  md: 'repeat(2, 1fr)',
+                  md: 'repeat(6, 1fr)',
                 }}
               >
                 <RHFTextField
@@ -768,7 +756,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       </Grid>
     </FormProvider>
   );
-}
+};
 
 CustomerNewEditForm.propTypes = {
   currentCustomer: PropTypes.object,

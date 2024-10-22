@@ -148,8 +148,9 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Inquiry Details
+          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+
+          Inquiry Details
           </Typography>
         </Grid>
 

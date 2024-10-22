@@ -228,7 +228,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           gridTemplateColumns={{
             xs: 'repeat(1, 1fr)',
             sm: 'repeat(3, 1fr)',
-            md: 'repeat(4, 1fr)',
+            md: 'repeat(6, 1fr)',
           }}
         >
           <RHFDatePicker

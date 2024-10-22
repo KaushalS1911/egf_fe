@@ -107,7 +107,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
         reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentScheme ? 'Failed To update scheme' : 'Failed to create Scheme', { variant: 'error' });
+      enqueueSnackbar(currentScheme ? 'Failed To update scheme' : error.response.data.message, { variant: 'error' });
       console.error(error);
     }
   });
@@ -116,7 +116,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
             Scheme Info
           </Typography>
         </Grid>
