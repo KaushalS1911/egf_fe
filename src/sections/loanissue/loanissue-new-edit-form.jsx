@@ -13,7 +13,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
-  CardActions,
+  CardActions, Dialog,
   IconButton, Slider,
   Table,
   TableBody,
@@ -56,6 +56,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
+  const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
@@ -277,26 +278,27 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCroppedAreaPixels(croppedAreaPixels);
   };
   const showCroppedImage = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
-
     try {
-      const croppedImageUrl = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-      setCroppedImage(croppedImageUrl);
-      setValue('property_image', croppedImageUrl);
-      enqueueSnackbar('Image saved', { variant: 'success' });
-    } catch (error) {
-      console.error('Error cropping the image:', error);
+      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
+      const croppedUrl = URL.createObjectURL(croppedFile);
+      setCroppedImage(croppedUrl);
+      setValue('property_image', croppedFile);
+      setOpen(false);
+    } catch (e) {
+      console.error(e);
     }
   };
+
   const handleDropSingleFile = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    const fileReader = new FileReader();
-
-    fileReader.onloadend = () => {
-      setImageSrc(fileReader.result);
-    };
-
-    fileReader.readAsDataURL(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setOpen(true);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleCustomerSelect = (selectedCustomer) => {
@@ -306,6 +308,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setIsFieldsEnabled(false);
     }
   };
+  const handleDeleteImage = () => {
+    setImageSrc(null); // Clear the image source
+    setValue('property_image', null, { shouldValidate: true }); // Reset form value
+    setOpen(false);
+    setCroppedImage(null);
+  };
+
 
   useEffect(() => {
     const customer = watch('customer');
@@ -709,55 +718,56 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         </Grid>
         <Grid item xs={12} md={8}>
           <Card>
-            <CardHeader title={'Property Images'} />
+            <CardHeader title="Property Images" />
             <CardContent>
-              {imageSrc ? (
-                <>
-                  <div style={{ position: 'relative', width: '100%', height: 400 }}>
-                    <Cropper
-                      image={imageSrc}
-                      crop={crop}
-                      zoom={zoom}
-                      rotation={rotation}
-                      aspect={4 / 3}
-                      onCropChange={setCrop}
-                      onCropComplete={onCropComplete}
-                      onZoomChange={setZoom}
-                      onRotationChange={setRotation}
-                    />
-                  </div>
-                  <div>
-                    <Typography variant='overline'>Zoom</Typography>
-                    <Slider
-                      value={zoom}
-                      min={1}
-                      max={3}
-                      step={0.1}
-                      onChange={(e, zoom) => setZoom(zoom)}
-                    />
-                    <Typography variant='overline'>Rotation</Typography>
-                    <Slider
-                      value={rotation}
-                      min={0}
-                      max={360}
-                      step={1}
-                      onChange={(e, rotation) => setRotation(rotation)}
-                    />
-                    <Button onClick={showCroppedImage} variant='contained' color='primary'>
-                      Save Cropped Image
-                    </Button>
-                  </div>
-                </>
-              ) : (
+              {croppedImage ? (
                 <RHFUpload
-                  name='property_image'
+                  name="property_image"
                   maxSize={3145728}
+                  file={croppedImage}
+                  onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
                   sx={{ objectFit: 'contain' }}
-                  disabled={!isFieldsEnabled}
-                  onDelete={() => setValue('property_image', null, { shouldValidate: true })}
+                />
+              ) : (
+                <RHFUpload
+                  name="property_image"
+                  maxSize={3145728}
+                  onDelete={handleDeleteImage}
+                  onDrop={handleDropSingleFile}
+                  sx={{ objectFit: 'contain' }}
                 />
               )}
+
+              <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+                <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
+                  <Cropper
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    rotation={rotation}
+                    aspect={4 / 3}
+                    onCropChange={setCrop}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                    onRotationChange={setRotation}
+                  />
+                </Box>
+                <Box sx={{ padding: 2 }}>
+                  <Typography gutterBottom>Zoom</Typography>
+                  <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
+                  <Typography gutterBottom>Rotation</Typography>
+                  <Slider value={rotation} min={0} max={360} step={1} onChange={(e, rotation) => setRotation(rotation)} />
+                  <Box display="flex" justifyContent="space-between" mt={2}>
+                    <Button onClick={() => setOpen(false)} variant="outlined">
+                      Cancel
+                    </Button>
+                    <Button onClick={showCroppedImage} variant="contained" color="primary">
+                      Save Cropped Image
+                    </Button>
+                  </Box>
+                </Box>
+              </Dialog>
             </CardContent>
           </Card>
         </Grid>
