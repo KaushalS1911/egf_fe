@@ -81,6 +81,7 @@ export default function   PropertyTableToolbar({
           <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
+
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -89,6 +90,7 @@ export default function   PropertyTableToolbar({
           <Iconify icon='ant-design:file-pdf-filled' />
           PDF
         </MenuItem>
+
         <MenuItem
           onClick={() => {
             popover.onClose();

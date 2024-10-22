@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 // ----------------------------------------------------------------------
 
 export default function useTable(props) {
-  const [dense, setDense] = useState(!!props?.defaultDense);
+  const [dense, setDense] = useState(true);
 
   const [page, setPage] = useState(props?.defaultCurrentPage || 0);
 
