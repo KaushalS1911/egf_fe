@@ -32,6 +32,7 @@ import {
 import axios from 'axios';
 import { paths } from '../../routes/paths';
 import Button from '@mui/material/Button';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -45,7 +46,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
-      transactionID: Yup.string().required('Transaction ID is required'),
     }),
   } : currentDisburse.paymentMode === 'Cash' ? {
     cashNetAmount: Yup.number().required('Cash Net Amount is required'),
@@ -60,7 +60,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
     companyBankDetail: Yup.object().shape({
       account: Yup.object().required('Account is required'),
-      transactionID: Yup.string().required('Transaction ID is required'),
     }),
   };
   const router = useRouter();
@@ -106,7 +105,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         })) || [],
         companyBankDetail: {
           account: currentDisburse?.companyBankDetail?.account || null,
-          transactionID: currentDisburse?.companyBankDetail?.transactionID || '',
         },
       }
     ),
@@ -377,24 +375,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         setValue('companyBankDetail.account', value);
                       }}
                     />
-                    <RHFTextField name='companyBankDetail.transactionID' label='Transaction ID' req={'red'} />
-                    <Controller
-                      name='bankDate'
+                    <RHFDatePicker
+                      name="bankDate"
                       control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <DatePicker
-                          label='Date'
-                          value={field.value}
-                          onChange={(newValue) => field.onChange(newValue)}
-                          slotProps={{
-                            textField: {
-                              fullWidth: true,
-                              error: !!error,
-                              helperText: error?.message,
-                            },
-                          }}
-                        />
-                      )}
+                      label="Bank Date"
+                      req={"red"}
                     />
                   </Box>
                 </>

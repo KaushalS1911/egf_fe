@@ -32,6 +32,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetAllPartRelease } from '../../../api/part-release';
 import { useGetBranch } from '../../../api/branch';
+import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -58,8 +59,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const [paymentMode, setPaymentMode] = useState('');
   const [properties, setProperties] = useState([]);
   const { branch } = useGetBranch();
-  const { id } = useParams();
-  const { partRelease, refetchPartRelease } = useGetAllPartRelease(id);
+  const { partRelease, refetchPartRelease } = useGetAllPartRelease(currentLoan._id);
 
   useEffect(() => {
     if (currentLoan.propertyDetails) {
@@ -103,6 +103,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
     );
   }, [selectedRows, currentLoan.propertyDetails]);
   const NewPartReleaseSchema = Yup.object().shape({
+    expectPaymentMode: Yup.string().required('Expected Payment Mode is required'),
     date: Yup.date().nullable().required('Pay date is required'),
     amountPaid: Yup.number()
       .min(1, 'Pay amount must be greater than 0')
@@ -119,6 +120,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
     cashAmount: '',
     bankAmount: null,
     account: null,
+    expectPaymentMode: null,
   };
 
   const methods = useForm({
@@ -185,13 +187,14 @@ function PartReleaseForm({ currentLoan, mutate }) {
     });
     formData.append('remark', data.remark);
     formData.append('property-image', file);
+    formData.append('expectPaymentMode', data.expectPaymentMode);
     formData.append('date', data.date);
     formData.append('amountPaid', data.amountPaid);
     for (const [key, value] of Object.entries(paymentDetail)) {
       formData.append(`paymentDetail[${key}]`, value);
     }
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/part-release`;
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release`;
 
       const config = {
         method: 'post',
@@ -247,6 +250,14 @@ function PartReleaseForm({ currentLoan, mutate }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Box sx={{ p: { xs: 2, md: 3 } }}>
+          <Typography variant="body1" gutterBottom sx={{fontWeight: "700"}}>
+            Cash Amount : {currentLoan.cashAmount || 0}
+          </Typography>
+          <Typography variant="body1" gutterBottom sx={{fontWeight: "700"}}>
+            Bank Amount : {currentLoan.bankAmount || 0}
+          </Typography>
+        </Box>
         <Box sx={{ p: 3 }}>
           <Box>
             <Box sx={{ width: '100%' }}>
@@ -324,45 +335,31 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 <Grid item xs={9}>
                   <Grid container rowSpacing={3} columnSpacing={2}>
                     <Grid item xs={4}>
-                      <Controller
-                        name='date'
+                      <RHFDatePicker
+                        name="date"
                         control={control}
-                        render={({ field, fieldState: { error } }) => (
-                          <DatePicker
-                            label='Pay date'
-                            value={field.value}
-                            onChange={(newValue) => field.onChange(newValue)}
-                            slotProps={{
-                              textField: {
-                                fullWidth: true,
-                                error: !!error,
-                                helperText: error?.message,
-                                className: 'req',
-                              },
-                            }}
-                          />
-                        )}
+                        label="Pay Date"
+                        req={"red"}
                       />
                     </Grid>
-                    <Grid item xs={4}>
-                      <RHFTextField name='amountPaid' label='Pay amount' req={'red'} />
+
+                    <Grid item xs={12} sm={6} md={4}>
+                      <RHFTextField name="amountPaid" label="Pay amount" req="red" />
                     </Grid>
-                    <Grid item xs={4}>
-                      <RHFTextField name='remark' label='Remark' />
+
+                    <Grid item xs={12} sm={6} md={4}>
+                      <RHFTextField name="remark" label="Remark" />
                     </Grid>
-                    <Grid item xs={4}>
-                      <Typography variant='h6' sx={{ mt: 5, mb: 2 }}>
-                        Payment Details
-                      </Typography>
-                      <Box>
+
+                    <Grid item xs={12} sm={6} md={4}>
                       <RHFAutocomplete
-                        name='paymentMode'
-                        label='Payment Mode'
-                        req={'red'}
+                        name="expectPaymentMode"
+                        label="Expected Payment Mode"
+                        req="red"
                         options={['Cash', 'Bank', 'Both']}
                         onChange={(event, newValue) => {
                           setPaymentMode(newValue);
-                          setValue('paymentMode', newValue);
+                          setValue('expectPaymentMode', newValue);
                         }}
                         getOptionLabel={(option) => option}
                         renderOption={(props, option) => (
@@ -371,13 +368,46 @@ function PartReleaseForm({ currentLoan, mutate }) {
                           </li>
                         )}
                       />
-                      </Box>
                     </Grid>
                   </Grid>
                 </Grid>
 
-                <Grid item xs={3}>
-                  <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} sx={{' .css-16lfxc8':{height: "200px"}}} />
+                {/* Upload Section */}
+                <Grid item xs={12} md={3}>
+                  <Upload
+                    file={file}
+                    onDrop={handleDropSingleFile}
+                    onDelete={() => setFile(null)}
+                    sx={{
+                      '.css-16lfxc8': { height: { xs: '150px', md: '200px' } }, // Adjust height responsively
+                    }}
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Payment Mode Section */}
+              <Grid container spacing={2} sx={{ mt: 4 }}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Typography variant="h6" sx={{ mb: 3 }}>
+                    Payment Details
+                  </Typography>
+
+                  <RHFAutocomplete
+                    name="paymentMode"
+                    label="Payment Mode"
+                    req="red"
+                    options={['Cash', 'Bank', 'Both']}
+                    onChange={(event, newValue) => {
+                      setPaymentMode(newValue);
+                      setValue('paymentMode', newValue);
+                    }}
+                    getOptionLabel={(option) => option}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option}>
+                        {option}
+                      </li>
+                    )}
+                  />
                 </Grid>
               </Grid>
             </Box>

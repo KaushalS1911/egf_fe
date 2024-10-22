@@ -9,7 +9,7 @@ import { _userList } from 'src/_mock';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import LoanpayhistoryNewEditForm from '../loanpayhistory-new-edit-form';
+import LoanpayhistoryNew from '../loanpayhistory-new';
 import { useParams } from '../../../routes/hooks';
 import { useGetEmployee } from '../../../api/employee';
 import { Box } from '@mui/material';
@@ -43,7 +43,7 @@ export default function LoanpayhistoryEditView() {
         }}
       />
 
-      {currentEmployee ? <LoanpayhistoryNewEditForm currentEmployee={currentEmployee} /> :
+      {currentEmployee ? <LoanpayhistoryNew currentEmployee={currentEmployee} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>

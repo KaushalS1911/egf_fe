@@ -12,9 +12,9 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useGetBranch } from '../../../api/branch';
+import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 
-function UchakInterestPayForm({ mutate }) {
-  const { id } = useParams();
+function UchakInterestPayForm({currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
 
@@ -107,7 +107,7 @@ function UchakInterestPayForm({ mutate }) {
       paymentDetail: paymentDetail,
     };
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/loans/${id}/uchak-interest-payment`;
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest-payment`;
 
       const config = {
         method: 'post',
@@ -129,24 +129,11 @@ function UchakInterestPayForm({ mutate }) {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
           <Grid item xs={4}>
-            <Controller
-              name='uchakPayDate'
+            <RHFDatePicker
+              name="uchakPayDate"
               control={control}
-              render={({ field, fieldState: { error } }) => (
-                <DatePicker
-                  label='Uchak Pay date'
-                  value={field.value}
-                  onChange={(newValue) => field.onChange(newValue)}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: !!error,
-                      helperText: error?.message,
-                      className: 'req',
-                    },
-                  }}
-                />
-              )}
+              label="Uchak Pay date"
+              req={"red"}
             />
           </Grid>
           <Grid item xs={4}>

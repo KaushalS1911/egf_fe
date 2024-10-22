@@ -37,14 +37,14 @@ import { useGetLoanissue } from '../../../api/loanissue';
 
 const TABLE_HEAD = [
   { id: '#', label: '#' },
-  { id: 'loanNo', label: 'Loan No.' },
-  { id: 'customerName', label: 'Customer Name' },
-  { id: 'otpNo.', label: 'OTP No.' },
-  { id: 'loanAmount', label: 'Loan Amount', },
+  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'customerName', label: 'Customer name' },
+  { id: 'otpNo.', label: 'OTP no.' },
+  { id: 'loanAmount', label: 'Loan amount', },
   { id: 'days', label: 'Days' },
-  { id: 'nextInterestPaydate', label: 'Next Interest Pay date'},
-  { id: 'issueDate', label: 'Issue Date' },
-  { id: 'lastInterestDate', label: 'Last Interest date' },
+  { id: 'nextInterestPaydate', label: 'Next interest pay date'},
+  { id: 'issueDate', label: 'Issue date' },
+  { id: 'lastInterestDate', label: 'Last interest date' },
   { id: ''},
 ];
 

@@ -57,10 +57,10 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 
 
 const TABLE_HEAD = [
   { id: 'property', label: 'Property' },
-  { id: 'loanType', label: 'Loan Type' },
+  { id: 'loanType', label: 'Loan type' },
   { id: 'quantity', label: 'Quantity' },
   { id: 'remark', label: 'Remark' },
-  { id: 'active', label: 'Active' },
+  { id: 'active', label: 'Status' },
   { id: '', width: 88 },
 ];
 

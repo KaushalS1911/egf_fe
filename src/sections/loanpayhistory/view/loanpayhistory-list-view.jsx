@@ -44,22 +44,24 @@ import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
+import ReminderRecallingForm from '../../reminder/reminder-recalling-form';
+import BulkInterestModel from '../bulk-interest-pay/bulk-interest-model';
 
 // ----------------------------------------------------------------------
 
 
 const TABLE_HEAD = [
   { id: '', label: '#' },
-  { id: 'loanNo', label: 'Loan No.' },
-  { id: 'customerName', label: 'Customer Name' },
-  { id: 'ContactNo', label: 'Contact No.' },
-  { id: 'interestLoanAmount', label: 'Interest Loan Amount' },
-  { id: 'interestRate', label: 'Interest Rate' },
-  { id: 'cashAmount', label: 'Cash Amount' },
-  { id: 'bankAmount', label: 'Bank Amount' },
+  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'customerName', label: 'Customer name' },
+  { id: 'ContactNo', label: 'Contact' },
+  { id: 'interestLoanAmount', label: 'Interest loan amount' },
+  { id: 'interestRate', label: 'Interest rate' },
+  { id: 'cashAmount', label: 'Cash amount' },
+  { id: 'bankAmount', label: 'Bank amount' },
   { id: 'status', label: 'Status' },
 ];
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disburse' }, {
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, {
   value: 'Closed',
   label: 'Closed',
 }];
@@ -71,7 +73,7 @@ const defaultFilters = {
 
 export default function LoanpayhistoryListView() {
   const { enqueueSnackbar } = useSnackbar();
-
+  const [open, setOpen] = useState(false);
   const table = useTable();
   const { user } = useAuthContext();
   const loanPayHistory = true;
@@ -187,7 +189,7 @@ export default function LoanpayhistoryListView() {
             mb: { xs: 3, md: 5 },
           }}
           action={
-            <Button variant="contained" startIcon={<Iconify icon="mingcute:add-line" />}>
+            <Button variant='contained' startIcon={<Iconify icon='mingcute:add-line' />} onClick={() => setOpen(true)}>
               Bulk Interest Pay
             </Button>
           }
@@ -314,7 +316,7 @@ export default function LoanpayhistoryListView() {
           />
         </Card>
       </Container>
-
+      <BulkInterestModel open={open} setOpen={() => setOpen(false)} />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

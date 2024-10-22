@@ -44,11 +44,11 @@ import { LoadingScreen } from '../../../components/loading-screen';
 
 
 const TABLE_HEAD = [
-  { id: 'username', label: 'User Name' },
+  { id: 'username', label: 'Name' },
   { id: 'branchname', label: 'Branch' },
-  { id: 'ContactNo', label: 'Contact No.' },
-  { id: 'joinDate', label: 'Joining Date' },
-  { id: 'role', label: 'Role' },
+  { id: 'ContactNo', label: 'Contact' },
+  { id: 'joinDate', label: 'Joining date'},
+  { id: 'role', label: 'Role'},
   { id: '', width: 88 },
 ];
 
@@ -157,7 +157,7 @@ export default function EmployeeListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Customers'
+          heading="Employees"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Employee', href: paths.dashboard.employee.root },

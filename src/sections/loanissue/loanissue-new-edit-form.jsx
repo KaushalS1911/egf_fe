@@ -40,6 +40,7 @@ import { useGetBranch } from '../../api/branch';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Swal from 'sweetalert2';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -582,25 +583,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 InputProps={{ readOnly: true }}
                 disabled
               />
-              <Controller
-                name='issueDate'
+              <RHFDatePicker
+                name="issueDate"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Issue Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                        className: 'req',
-                        disabled: !isFieldsEnabled,
-                      },
-                    }}
-                  />
-                )}
+                label="Issue Date"
+                req={"red"}
               />
               <RHFAutocomplete
                 name='scheme'

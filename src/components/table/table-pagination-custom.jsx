@@ -8,21 +8,33 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 // ----------------------------------------------------------------------
 
 export default function TablePaginationCustom({
-  dense,
-  onChangeDense,
-  rowsPerPageOptions = [5, 10, 25],
-  sx,
-  ...other
-}) {
+                                                dense,
+                                                onChangeDense,
+                                                count,
+                                                rowsPerPageOptions = [5, 10, 25, { label: 'All', value: count }],
+                                                rowsPerPage,
+                                                onChangePage,
+                                                onChangeRowsPerPage,
+                                                sx,
+                                                ...other
+                                              }) {
+  const handleChangeRowsPerPage = (event) => {
+    const value = parseInt(event.target.value, 10);
+    onChangeRowsPerPage(event, value === -1 ? count : value);
+  };
   return (
     <Box sx={{ position: 'relative', ...sx }}>
       <TablePagination
         rowsPerPageOptions={rowsPerPageOptions}
         component="div"
-        {...other}
+        count={count}
+        rowsPerPage={rowsPerPage}
+        onPageChange={onChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
         sx={{
           borderTopColor: 'transparent',
         }}
+        {...other}
       />
 
       {onChangeDense && (
@@ -46,6 +58,12 @@ export default function TablePaginationCustom({
 TablePaginationCustom.propTypes = {
   dense: PropTypes.bool,
   onChangeDense: PropTypes.func,
-  rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),
+  rowsPerPageOptions: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.shape({ label: PropTypes.string, value: PropTypes.number })])
+  ),
+  count: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
   sx: PropTypes.object,
 };

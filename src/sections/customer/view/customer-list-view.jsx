@@ -57,8 +57,8 @@ const STATUS_OPTIONS = [
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'contact', label: 'Contact No.', width: 180 },
-  { id: 'CustomerCode', label: 'Customer Code', width: 220 },
+  { id: 'contact', label: 'Contact', width: 180 },
+  { id: 'CustomerCode', label: 'Customer code', width: 220 },
   { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 120 },
 ];

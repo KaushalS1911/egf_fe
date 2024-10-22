@@ -24,6 +24,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -407,24 +408,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     e.preventDefault();
                   }
                 }} />
-              <Controller
-                name='dob'
+              <RHFDatePicker
+                name="dob"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Date of Birth'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                        className: 'req',
-                      },
-                    }}
-                  />
-                )}
+                label="Date of Birth"
+                req={"red"}
               />
               <RHFTextField name='remark' label='Remark' />
             </Box>
@@ -475,43 +463,17 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               />}
               <RHFTextField name='email' label='Email' req={'red'} />
               {!currentEmployee && <RHFTextField name='password' label='Password' req={'red'} />}
-              <Controller
-                name='joiningDate'
+              <RHFDatePicker
+                name="joiningDate"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Join Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                        className: 'req',
-                      },
-                    }}
-                  />
-                )}
+                label="Join Date"
+                req={"red"}
               />
-
-              <Controller
-                name='leaveDate'
+              <RHFDatePicker
+                name="leaveDate"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    label='Leave Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                      },
-                    }}
-                  />
-                )}
+                label="Leave Date"
+                req={"red"}
               />
             </Box>
           </Card>
@@ -680,7 +642,12 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label='Country' variant='outlined' />
+                      <TextField {...params} label='Country' variant='outlined'
+                                 sx={{
+                                   " label" : {mt:-0.8,fontSize:"14px"},
+                                   " input" : {height:7},
+                                 }}
+                      />
                     )}
                   />
                 )}
@@ -701,7 +668,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label='State' variant='outlined' />
+                      <TextField {...params} label='State' variant='outlined'  sx={{
+                        " label" : {mt:-0.8,fontSize:"14px"},
+                        " input" : {height:7},
+                      }} />
                     )}
                   />
                 )}
@@ -723,7 +693,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label='City' variant='outlined' />
+                      <TextField {...params} label='City' variant='outlined'  sx={{
+                        " label" : {mt:-0.8,fontSize:"14px"},
+                        " input" : {height:7},
+                      }} />
                     )}
                   />
                 )}
@@ -733,8 +706,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         </Grid>
 
       </Grid>
-      <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-        <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+      <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+        <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                 variant='outlined' onClick={() => reset()}>Reset</Button>
         <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
           {!currentEmployee ? 'Submit' : 'Save'}

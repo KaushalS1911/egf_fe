@@ -1,32 +1,16 @@
-import * as Yup from 'yup';
-import PropTypes from 'prop-types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import countrystatecity from '../../_mock/map/csc.json';
-import FormProvider, {
-  RHFTextField,
-  RHFUploadAvatar,
-  RHFAutocomplete,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from '../../components/hook-form';
+import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
+import { Controller, useForm } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useRouter } from 'src/routes/hooks';
-import { paths } from 'src/routes/paths';
-import { useSnackbar } from 'src/components/snackbar';
-import { Autocomplete, Tab, Tabs, TextField } from '@mui/material';
-import axios from 'axios';
-import { useAuthContext } from 'src/auth/hooks';
-import { useGetAllUser } from 'src/api/user';
-import { useGetConfigs } from '../../api/config';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import { Upload } from '../../components/upload';
+import { useAuthContext } from '../../auth/hooks';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import Table from '@mui/material/Table';
 import { TableHeadCustom } from '../../components/table';
 import TableBody from '@mui/material/TableBody';
@@ -40,12 +24,11 @@ import PartReleaseForm from './view/part-release-form';
 import UchakInterestPayForm from './view/uchak-interest-pay-form';
 import LoanPartPaymentForm from './view/loan-part-payment-form';
 import LoanCloseForm from './view/loan-close-form';
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
-
-export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
-  const [activeTab, setActiveTab] = useState(0);
+function LoanpayhistoryNewEditForm({currentLoan,mutate}) {
   const { user } = useAuthContext();
   const [file, setFile] = useState(currentLoan.propertyImage);
   const NewLoanPayHistorySchema = Yup.object().shape({
@@ -123,7 +106,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
     if (currentLoan) {
       reset(defaultValues);
     }
-  }, [currentLoan, reset, defaultValues]);
+  }, [currentLoan, reset, defaultValues,mutate]);
 
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
@@ -139,9 +122,7 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       );
     }
   }, []);
-  const handleChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
+
   return (
     <>
       <Grid container spacing={3}>
@@ -171,24 +152,10 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='issueDate'
+                  <RHFDatePicker
+                    name="issueDate"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        label='Issue Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputProps: { readOnly: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
+                    label="Issue Date"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
@@ -272,74 +239,30 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                                 InputLabelProps={{ shrink: true }} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='nextInterestPayDate'
+                  <RHFDatePicker
+                    name="nextInterestPayDate"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        readOnly
-                        label='Next Interest Pay Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputLabelProps: { shrink: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
+                    label="Next Interest Pay Date"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='lastInterestPayDate'
+                  <RHFDatePicker
+                    name="lastInterestPayDate"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        readOnly
-                        label='Last Interest Pay Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputLabelProps: { shrink: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
+                    label="Last Interest Pay Date"
+                    InputLabelShrink={true}
+                />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <RHFDatePicker
+                    name="renewDate"
+                    control={control}
+                    label="Renew Date"
+                    InputLabelShrink={true}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Controller
-                    name='renewDate'
-                    control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <DatePicker
-                        readOnly
-                        label='Renew Date'
-                        value={field.value}
-                        onChange={(newValue) => field.onChange(newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!error,
-                            InputLabelProps: { shrink: true },
-                            helperText: error?.message,
-                          },
-                        }}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }}
-                                InputProps={{ readOnly: true }} />
+                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
                 </Grid>
               </Grid>
             </Card>
@@ -350,32 +273,8 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
           <Card>
             <CardHeader title='Property Images' />
             <CardContent>
-              <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)}
-                      InputProps={{ readOnly: true }} />
+              <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} InputProps={{ readOnly: true }} />
             </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-      <Grid container spacing={3} sx={{ mt: 3 }}>
-        <Grid item xs={12}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Loan Pay Details
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Card sx={{ p: 3 }}>
-            <Tabs value={activeTab} onChange={handleChange} variant='scrollable' scrollButtons='auto' sx={{ mb: 3 }}>
-              <Tab label='Interest Pay Details' />
-              <Tab label='Part Release' />
-              <Tab label='Uchak Interest Pay Details' />
-              <Tab label='Loan Part Payment' />
-              <Tab label='Loan Close' />
-            </Tabs>
-            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm currentLoan={currentLoan} mutate={mutate} />}
-            {(activeTab === 1 && currentLoan) && <PartReleaseForm currentLoan={currentLoan} mutate={mutate} />}
-            {(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} mutate={mutate} />}
-            {(activeTab === 3 && currentLoan) && <LoanPartPaymentForm currentLoan={currentLoan} mutate={mutate} />}
-            {(activeTab === 4 && currentLoan) && <LoanCloseForm currentLoan={currentLoan} mutate={mutate} />}
           </Card>
         </Grid>
       </Grid>
@@ -383,6 +282,4 @@ export default function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   );
 }
 
-LoanpayhistoryNewEditForm.propTypes = {
-  currentLoan: PropTypes.object,
-};
+export default LoanpayhistoryNewEditForm;
