@@ -78,7 +78,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
         reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentProperty ? 'Failed To Edit Property' : 'Failed to create Property',{variant: "error"});
+      enqueueSnackbar(currentProperty ? 'Failed To update Property' : error.response.data.message,{variant: "error"});
       console.error(error);
     }
   });
@@ -86,7 +86,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
             Property Info
           </Typography>
         </Grid>

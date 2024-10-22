@@ -272,7 +272,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         />
                       </TableCell>
                       {tableHeaders.map((header) => (
-                        <TableCell key={header.id}>{header.label}</TableCell>
+                        <TableCell key={header.id} className={"black-text"}>{header.label}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
