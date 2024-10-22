@@ -6,7 +6,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
 import Typography from '@mui/material/Typography';
@@ -21,13 +20,20 @@ import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
 import { Button } from '@mui/material';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import { useGetEmployee } from '../../api/employee';
 
 // ----------------------------------------------------------------------
+
+const STATUS_OPTIONS = [
+  { value: 'Active', label: 'Active' },
+  { value: 'In Active', label: 'In Active' },
+];
 
 export default function InquiryNewEditForm({ currentInquiry }) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
+  const { employee } = useGetEmployee();
   const { enqueueSnackbar } = useSnackbar();
   const { configs } = useGetConfigs();
   const storedBranch = sessionStorage.getItem('selectedBranch');
@@ -60,13 +66,17 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       .required('Branch selection is required'),
   });
 
-
   const defaultValues = useMemo(
     () => ({
       branchId: currentInquiry ? {
         label: currentInquiry?.branch?.name,
         value: currentInquiry?.branch?._id,
       } : null,
+      assignTo: currentInquiry ? {
+        label: currentInquiry?.assignTo?.user?.firstName + ' ' + currentInquiry?.assignTo?.user?.lastName,
+        value: currentInquiry?.assignTo?._id,
+      } : null,
+      response: currentInquiry?.response || 'Active',
       firstName: currentInquiry?.firstName || '',
       lastName: currentInquiry?.lastName || '',
       contact: currentInquiry?.contact || '',
@@ -101,6 +111,8 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       date: data.date,
       inquiryFor: data.inquiryFor === 'Other' ? data.other : data.inquiryFor,
       remark: data.remark,
+      response: data.response,
+      assignTo: data.assignTo.value,
     };
 
     const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
@@ -118,10 +130,16 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       ? `branch=${mainbranchid?._id}`
       : `branch=${parsedBranch}`;
 
+    const employeeQuery = user?.role === 'Admin'
+      ? `&assignTo=${data?.assignTo?.value}`
+      : ``;
+
+    const queryString = `${branchQuery}${employeeQuery}`;
+
     try {
       if (currentInquiry) {
         const res = await axios.put(
-          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?${branchQuery}`,
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?${queryString}`,
           payload,
         );
         enqueueSnackbar(res?.data?.message);
@@ -129,7 +147,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
         reset();
       } else {
         const res = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${branchQuery}`,
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${queryString}`,
           payload,
         );
         enqueueSnackbar(res?.data?.message);
@@ -141,7 +159,6 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       enqueueSnackbar(errorMessage, { variant: 'error' });
       console.error(error);
     }
-
   });
 
   return (
@@ -152,7 +169,6 @@ export default function InquiryNewEditForm({ currentInquiry }) {
             Inquiry Details
           </Typography>
         </Grid>
-
         <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Box
@@ -177,8 +193,39 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 />
               )}
-              <RHFTextField name='firstName' label='First Name' req={'red'} />
-              <RHFTextField name='lastName' label='Last Name' req={'red'} />
+              {user?.role === 'Admin' && employee && (
+                <RHFAutocomplete
+                  name='assignTo'
+                  req={'red'}
+                  label='Employee'
+                  placeholder='Choose a Branch'
+                  options={employee?.map((employeeitem) => ({
+                    label: employeeitem?.user?.firstName + ' ' + employeeitem?.user?.lastName,
+                    value: employeeitem?._id,
+                  })) || []}
+                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                />
+              )}
+              <RHFTextField
+                name='firstName'
+                label='First Name'
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('firstName', e.target.value);
+                }}
+              />
+              <RHFTextField
+                name='lastName'
+                label='Last Name'
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('lastName', e.target.value);
+                }}
+              />
               <RHFTextField
                 name='contact'
                 label='Mobile No.'
@@ -207,27 +254,6 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                 label="Date"
                 req={"red"}
               />
-              {/*<Controller*/}
-              {/*  name='date'*/}
-              {/*  control={control}*/}
-              {/*  render={({ field, fieldState: { error } }) => (*/}
-              {/*    <DatePicker*/}
-              {/*      label='Date'*/}
-              {/*      value={field.value}*/}
-              {/*      onChange={(newValue) => {*/}
-              {/*        field.onChange(newValue);*/}
-              {/*      }}*/}
-              {/*      slotProps={{*/}
-              {/*        textField: {*/}
-              {/*          fullWidth: true,*/}
-              {/*          error: !!error,*/}
-              {/*          helperText: error?.message,*/}
-              {/*          className: `req`,*/}
-              {/*        },*/}
-              {/*      }}*/}
-              {/*    />*/}
-              {/*  )}*/}
-              {/*/>*/}
               {configs.loanTypes && <RHFAutocomplete
                 name='inquiryFor'
                 label={'Inquiry For'}
@@ -241,22 +267,28 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                   </li>
                 )}
               />}
+              <RHFAutocomplete
+                name='response'
+                req={'red'}
+                label='Status'
+                placeholder='Choose a Status'
+                options={STATUS_OPTIONS.map((item) => item.value)}
+                isOptionEqualToValue={(option, value) => option?.value === value?.value}
+              />
               {
                 (watch('inquiryFor') === 'Other') &&
                 <RHFTextField name='other' label='Other' req={'red'} />
               }
               <RHFTextField name='remark' label='Remark' />
             </Box>
-
-
           </Card>
-          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
-                  variant='outlined' onClick={() => reset()}>Reset</Button>
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-            {!currentInquiry ? 'Submit' : 'Save'}
-          </LoadingButton>
-        </Box>
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+            <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
+                    variant='outlined' onClick={() => reset()}>Reset</Button>
+            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+              {!currentInquiry ? 'Submit' : 'Save'}
+            </LoadingButton>
+          </Box>
 
         </Grid>
       </Grid>

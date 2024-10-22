@@ -5,22 +5,24 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Grid } from '@mui/material';
+import { Grid, IconButton, MenuItem } from '@mui/material';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CustomPopover, { usePopover } from '../../components/custom-popover';
 
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
+  const popover = usePopover();
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
     },
     [onFilters],
   );
-
 
   return (
     <>
@@ -56,8 +58,41 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
               ),
             }}
           />
-
+          <IconButton onClick={popover.onOpen}>
+            <Iconify icon='eva:more-vertical-fill' />
+          </IconButton>
         </Stack>
+        <CustomPopover
+          open={popover.open}
+          onClose={popover.onClose}
+          arrow='right-top'
+          sx={{ width: 'auto' }}
+        >
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:printer-minimalistic-bold' />
+            Print
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ant-design:file-pdf-filled' />
+            PDF
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ic:round-whatsapp' />
+            whatsapp share
+          </MenuItem>
+        </CustomPopover>
       </Stack>
     </>
   );

@@ -1,21 +1,24 @@
 import PropTypes from 'prop-types';
-import { useCallback , useState} from 'react';
+import { useCallback, useState } from 'react';
 
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Grid } from '@mui/material';
+import { Grid, IconButton, MenuItem } from '@mui/material';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CustomPopover, { usePopover } from '../../components/custom-popover';
 
 // ----------------------------------------------------------------------
 
 export default function InquiryTableToolbar({ filters, onFilters, roleOptions, dateError }) {
+  const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -29,9 +32,7 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
         onFilters('startDate', null);
         return;
       }
-
       const date = moment(newValue);
-
       if (date.isValid()) {
         onFilters('startDate', date.toDate());
       } else {
@@ -41,15 +42,14 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
     },
     [onFilters],
   );
+
   const handleFilterEndDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
         onFilters('endDate', null);
         return;
       }
-
       const date = moment(newValue);
-
       if (date.isValid()) {
         onFilters('endDate', date.toDate());
       } else {
@@ -95,7 +95,7 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
             }}
           />
           <DatePicker
-            label="Start date"
+            label='Start date'
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
@@ -111,7 +111,7 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
             }}
           />
           <DatePicker
-            label="End date"
+            label='End date'
             value={filters.endDate}
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
@@ -132,7 +132,42 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
               },
             }}
           />
+          <IconButton onClick={popover.onOpen}>
+            <Iconify icon='eva:more-vertical-fill' />
+          </IconButton>
         </Stack>
+
+        <CustomPopover
+          open={popover.open}
+          onClose={popover.onClose}
+          arrow='right-top'
+          sx={{ width: 'auto' }}
+        >
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:printer-minimalistic-bold' />
+            Print
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ant-design:file-pdf-filled' />
+            PDF
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ic:round-whatsapp' />
+            whatsapp share
+          </MenuItem>
+        </CustomPopover>
       </Stack>
     </>
   );

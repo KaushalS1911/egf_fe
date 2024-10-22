@@ -8,10 +8,13 @@ import Iconify from 'src/components/iconify';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CustomPopover, { usePopover } from '../../components/custom-popover';
+import { IconButton, MenuItem } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 export default function ReminderTableToolbar({ filters, onFilters, roleOptions, dateError }) {
+  const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const handleFilterName = useCallback(
@@ -130,7 +133,41 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
               },
             }}
           />
+          <IconButton onClick={popover.onOpen}>
+            <Iconify icon='eva:more-vertical-fill' />
+          </IconButton>
         </Stack>
+        <CustomPopover
+          open={popover.open}
+          onClose={popover.onClose}
+          arrow='right-top'
+          sx={{ width: 'auto' }}
+        >
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:printer-minimalistic-bold' />
+            Print
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ant-design:file-pdf-filled' />
+            PDF
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ic:round-whatsapp' />
+            whatsapp share
+          </MenuItem>
+        </CustomPopover>
       </Stack>
     </>
   );
