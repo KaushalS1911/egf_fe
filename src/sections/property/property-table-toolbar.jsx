@@ -32,7 +32,6 @@ export default function   PropertyTableToolbar({
     [onFilters]
   );
 
-
   return (
     <>
       <Stack
@@ -62,43 +61,41 @@ export default function   PropertyTableToolbar({
             }}
           />
 
-          {/*<IconButton onClick={popover.onOpen}>*/}
-          {/*  <Iconify icon="eva:more-vertical-fill" />*/}
-          {/*</IconButton>*/}
+          <IconButton onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </Stack>
       </Stack>
 
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
-        sx={{ width: 140 }}
+        arrow='right-top'
+        sx={{ width: 'auto' }}
       >
         <MenuItem
           onClick={() => {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:printer-minimalistic-bold" />
+          <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:import-bold" />
-          Import
+          <Iconify icon='ant-design:file-pdf-filled' />
+          PDF
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:export-bold" />
-          Export
+          <Iconify icon='ic:round-whatsapp' />
+          whatsapp share
         </MenuItem>
       </CustomPopover>
     </>
