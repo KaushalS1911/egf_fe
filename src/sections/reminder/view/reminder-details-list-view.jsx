@@ -8,14 +8,9 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useParams, useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -40,6 +35,7 @@ import ReminderDetailsTableToolbar from '../reminder-table-toolbar';
 import ReminderDetailsTableFiltersResult from '../reminder-details-table-filters-result';
 import { useGetReminder } from '../../../api/reminder';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetAllInterest } from '../../../api/interest-pay';
 
 // ----------------------------------------------------------------------
 
@@ -65,6 +61,8 @@ export default function ReminderDetailsListView() {
   const { user } = useAuthContext();
   const {id} = useParams()
   const reminderDetails = reminder.filter((item) => item.loan._id === id);
+  const { loanInterest} = useGetAllInterest(id);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable();
@@ -230,6 +228,7 @@ export default function ReminderDetailsListView() {
                         <ReminderDetailsTableRow
                           key={row._id}
                           row={row}
+                          loanInterest={loanInterest}
                           selected={table.selected.includes(row._id)}
                           onSelectRow={() => table.onSelectRow(row._id)}
                           onDeleteRow={() => handleDeleteRow(row._id)}

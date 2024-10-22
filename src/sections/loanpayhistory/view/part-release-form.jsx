@@ -148,6 +148,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
     }
     let paymentDetail = {
       paymentMode: data.paymentMode,
+      expectPaymentMode: data.expectPaymentMode,
     };
 
     if (data.paymentMode === 'Cash') {
@@ -166,7 +167,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
         ...paymentDetail,
         cashAmount: data.cashAmount,
         ...data.account,
-        bankAmount: data.bankAmount
+        bankAmount: data.bankAmount,
       };
     }
 
@@ -187,7 +188,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
     });
     formData.append('remark', data.remark);
     formData.append('property-image', file);
-    formData.append('expectPaymentMode', data.expectPaymentMode);
     formData.append('date', data.date);
     formData.append('amountPaid', data.amountPaid);
     for (const [key, value] of Object.entries(paymentDetail)) {
@@ -272,7 +272,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         />
                       </TableCell>
                       {tableHeaders.map((header) => (
-                        <TableCell key={header.id}>{header.label}</TableCell>
+                        <TableCell key={header.id} className={"black-text"}>{header.label}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
@@ -385,7 +385,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 </Grid>
               </Grid>
 
-              {/* Payment Mode Section */}
               <Grid container spacing={2} sx={{ mt: 4 }}>
                 <Grid item xs={12} sm={6} md={3}>
                   <Typography variant="h6" sx={{ mb: 3 }}>

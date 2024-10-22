@@ -194,20 +194,18 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+        <Grid xs={12} md={12}>
+          <Card sx={{ p: 3 }}>
+          <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
             Loan Disburse
           </Typography>
-        </Grid>
-        <Grid xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(4, 1fr)',
               }}
             >
               <RHFTextField name='loanNo' label='Loan No' req={'red'} />
@@ -227,24 +225,24 @@ export default function DisburseNewEditForm({ currentDisburse }) {
             sx={{ margin: '0px 0px 20px 0px' }}
           >
             <CardContent>
-              <Typography variant='h6' gutterBottom>
+              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
                 Property Details
               </Typography>
               <TableContainer>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                      <TableCell><strong>Property Name</strong></TableCell>
-                      <TableCell><strong>Total Weight</strong></TableCell>
-                      <TableCell><strong>Lose Weight</strong></TableCell>
-                      <TableCell><strong>Gross Weight</strong></TableCell>
-                      <TableCell><strong>Net Weight</strong></TableCell>
-                      <TableCell width={200}><strong>Loan Applicable amount</strong></TableCell>
+                    <TableRow>
+                      <TableCell className="black-text">Property Name</TableCell>
+                      <TableCell className="black-text">Total Weight</TableCell>
+                      <TableCell className="black-text">Lose Weight</TableCell>
+                      <TableCell className="black-text">Gross Weight</TableCell>
+                      <TableCell className="black-text">Net Weight</TableCell>
+                      <TableCell width={200} className="black-text">Loan Applicable amount</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {fields.map((row, index) => (
-                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
+                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' }}} >
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.propertyName`}
@@ -294,10 +292,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
 
                           />
                         </TableCell>
-                        <TableCell>
-
-
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -306,17 +300,16 @@ export default function DisburseNewEditForm({ currentDisburse }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid xs={12} md={4} py={5}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Transaction Type
-          </Typography>
-        </Grid>
-        <Grid xs={12} md={8} py={5}>
+
+        <Grid xs={12} md={12} py={5}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
+          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+            Transaction Type
+          </Typography>
               {(currentDisburse.paymentMode === 'Bank' || currentDisburse.paymentMode === 'Both') && (
                 <>
-                  <Typography my={2} sx={{ display: 'inline-block' }}>
+                  <Typography variant='subtitle2' sx={{ mb: 0.5, fontWeight: '600' }}>
                     Bank Amount
                   </Typography>
                   <Box
@@ -325,7 +318,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                     display='grid'
                     gridTemplateColumns={{
                       xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(2, 1fr)',
+                      sm: 'repeat(4, 1fr)',
                     }}
                   >
                     <RHFTextField name='bankNetAmount' label='Net Amount' req={'red'} onKeyPress={(e) => {
@@ -387,7 +380,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
 
               {(currentDisburse.paymentMode === 'Cash' || currentDisburse.paymentMode === 'Both') && (
                 <>
-                  <Typography my={2} sx={{ display: 'inline-block' }}>
+                  <Typography variant='subtitle2' sx={{ mb: 0.5, fontWeight: '600' }}>
                     Cash Amount
                   </Typography>
                   <Box
@@ -396,7 +389,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                     display='grid'
                     gridTemplateColumns={{
                       xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(2, 1fr)',
+                      sm: 'repeat(4, 1fr)',
                     }}
                   >
 
@@ -439,23 +432,10 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                                     }
                                   }}
                     />
-                    <Controller
-                      name='cashDate'
+                    <RHFDatePicker
+                      name="cashDate"
                       control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <DatePicker
-                          label='Date'
-                          value={field.value}
-                          onChange={(newValue) => field.onChange(newValue)}
-                          slotProps={{
-                            textField: {
-                              fullWidth: true,
-                              error: !!error,
-                              helperText: error?.message,
-                            },
-                          }}
-                        />
-                      )}
+                      label="Date"
                     />
                   </Box>
                 </>

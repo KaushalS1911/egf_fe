@@ -13,8 +13,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
-  CardActions,
-  IconButton,
+  CardActions, Dialog,
+  IconButton, Slider,
   Table,
   TableBody,
   TableCell,
@@ -40,6 +40,8 @@ import { useGetBranch } from '../../api/branch';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '../../utils/canvasUtils';
 
 // ----------------------------------------------------------------------
 
@@ -48,6 +50,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [customerId, setCustomerID] = useState();
   const [customerData, setCustomerData] = useState();
   const [schemeId, setSchemeID] = useState();
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
@@ -60,6 +69,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
   const [totalWeightError, setTotalWeightError] = useState('');
   const [lossWeightError, setLossWeightError] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
   const uuid = uuidv4();
   const [selectedScheme, setSelectedScheme] = useState(null);
   const storedBranch = sessionStorage.getItem('selectedBranch');
@@ -262,22 +272,35 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       reset();
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Failed to process loan.', { variant: 'error' });
+      enqueueSnackbar(currentLoanIssue ?'Failed to update loan.' : error.response.data.message, { variant: 'error' });
     }
   });
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+  const showCroppedImage = async () => {
+    try {
+      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
+      const croppedUrl = URL.createObjectURL(croppedFile);
+      setCroppedImage(croppedUrl);
+      setValue('property_image', croppedFile);
+      setOpen(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-  const handleDropSingleFile = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-      if (newFile) {
-        setValue('property_image', newFile, { shouldValidate: true });
-      }
-    },
-    [setValue],
-  );
+  const handleDropSingleFile = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setOpen(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -286,6 +309,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setIsFieldsEnabled(false);
     }
   };
+  const handleDeleteImage = () => {
+    setImageSrc(null); // Clear the image source
+    setValue('property_image', null, { shouldValidate: true }); // Reset form value
+    setOpen(false);
+    setCroppedImage(null);
+  };
+
 
   useEffect(() => {
     const customer = watch('customer');
@@ -472,8 +502,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         </>
         }
         <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 3 }}>
-          </Typography>
+          {/*<Typography variant='h6' sx={{ mb: 3 }}>*/}
+          {/*</Typography>*/}
         </Grid>
         <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
           <Box
@@ -517,10 +547,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Box>
         </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 3 }}>
-            Customer Details
-          </Typography>
+        <Grid item xs={12} md={3}>
+
           <Card sx={{ pt: 6, pb: 2 }}>
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
@@ -531,15 +559,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
         </Grid>
-        <Grid xs={12} md={8}>
+        <Grid xs={12} md={9}>
           <Card sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
+              Customer Details
+            </Typography>
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
             >
               <RHFTextField name='customerCode' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}
@@ -557,20 +588,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 3 }}>
-            Loan Scheme Details
-          </Typography>
-        </Grid>
-        <Grid xs={12} md={8}>
+        <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{ mb: 2 ,fontWeight:600}}>
+              Loan Scheme Details
+            </Typography>
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(6, 1fr)',
               }}
             >
               <RHFTextField
@@ -683,22 +712,62 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
             Property Details
           </Typography>
         </Grid>
         <Grid item xs={12} md={8}>
           <Card>
-            <CardHeader title={'Property Images'} />
+            <CardHeader title="Property Images" />
             <CardContent>
-              <RHFUpload
-                name='property_image'
-                maxSize={3145728}
-                sx={{ objectFit: 'contain' }}
-                onDrop={handleDropSingleFile}
-                disabled={!isFieldsEnabled}
-                onDelete={() => setValue('property_image', null, { shouldValidate: true })}
-              />
+              {croppedImage ? (
+                <RHFUpload
+                  name="property_image"
+                  maxSize={3145728}
+                  file={croppedImage}
+                  onDelete={handleDeleteImage}
+                  onDrop={handleDropSingleFile}
+                  sx={{ objectFit: 'contain' }}
+                />
+              ) : (
+                <RHFUpload
+                  name="property_image"
+                  maxSize={3145728}
+                  onDelete={handleDeleteImage}
+                  onDrop={handleDropSingleFile}
+                  sx={{ objectFit: 'contain' }}
+                />
+              )}
+
+              <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+                <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
+                  <Cropper
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    rotation={rotation}
+                    aspect={4 / 3}
+                    onCropChange={setCrop}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                    onRotationChange={setRotation}
+                  />
+                </Box>
+                <Box sx={{ padding: 2 }}>
+                  <Typography gutterBottom>Zoom</Typography>
+                  <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
+                  <Typography gutterBottom>Rotation</Typography>
+                  <Slider value={rotation} min={0} max={360} step={1} onChange={(e, rotation) => setRotation(rotation)} />
+                  <Box display="flex" justifyContent="space-between" mt={2}>
+                    <Button onClick={() => setOpen(false)} variant="outlined">
+                      Cancel
+                    </Button>
+                    <Button onClick={showCroppedImage} variant="contained" color="primary">
+                      Save Cropped Image
+                    </Button>
+                  </Box>
+                </Box>
+              </Dialog>
             </CardContent>
           </Card>
         </Grid>
@@ -714,16 +783,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 <Table>
                   <TableHead>
                     <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                      <TableCell><strong>Type</strong></TableCell>
-                      <TableCell><strong>Carat</strong></TableCell>
-                      <TableCell><strong>Pcs</strong></TableCell>
-                      <TableCell><strong>Total Wt</strong></TableCell>
-                      <TableCell><strong>Loss Wt</strong></TableCell>
-                      <TableCell><strong>Gross Wt</strong></TableCell>
-                      <TableCell><strong>Net Wt</strong></TableCell>
-                      <TableCell><strong>Gross Amt</strong></TableCell>
-                      <TableCell><strong>Net Amt</strong></TableCell>
-                      <TableCell><strong>Actions</strong></TableCell>
+                      <TableCell className="black-text"><strong>Type</strong></TableCell>
+                      <TableCell className="black-text"><strong>Carat</strong></TableCell>
+                      <TableCell className="black-text"><strong>Pcs</strong></TableCell>
+                      <TableCell className="black-text"><strong>Total Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Loss Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Gross Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Net Wt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Gross Amt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Net Amt</strong></TableCell>
+                      <TableCell className="black-text"><strong>Actions</strong></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -962,20 +1031,19 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </CardActions>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+
+        <Grid item xs={12} md={12}>
+          <Card sx={{ p: 3 }}>
+          <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
             Payment Details
           </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
             >
               <Controller
@@ -1090,36 +1158,34 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Card>
         </Grid>
         {['Bank', 'Both'].includes(watch('paymentMode')) && <>
-          <Grid item xs={12} md={4}>
-            <Typography variant='h6' sx={{ mb: 0.5 }}>
+          <Grid item xs={12} md={12}>
+            <Card sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
               Account Details
             </Typography>
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <Card sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'end',pb:3 }}>
+                <Link
+                  disabled={!isFieldsEnabled}
+                  onClick={() => saveCustomerBankDetails()}
+                  style={{
+                    fontWeight: 'bold',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                >
+                  Add beneficiary
+                </Link>
+              </Box>
               <Box
                 rowGap={3}
                 columnGap={2}
                 display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
+                  sm: 'repeat(6, 1fr)',
                 }}
               >
-                <Box></Box>
-                <Box sx={{ justifyContent: 'end', display: 'flex' }}>
-                  <Link
-                    disabled={!isFieldsEnabled}
-                    onClick={() => saveCustomerBankDetails()}
-                    style={{
-                      fontWeight: 'bold',
-                      textDecoration: 'none',
-                      color: 'inherit',
-                    }}
-                  >
-                    {customerData?.bankDetails?.accountNumber !== '' ? 'Edit beneficiary' : 'Add beneficiary'}
-                  </Link>
-                </Box>
+
                 <RHFTextField name='accountNumber' label='Account No.' req={'red'} disabled={!isFieldsEnabled}
                               type='number'
                               inputProps={{ min: 0 }} />
@@ -1164,7 +1230,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       </Box>
     </FormProvider>
   );
-}
+};
 
 LoanissueNewEditForm.propTypes = {
   currentLoanIssue: PropTypes.object,

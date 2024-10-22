@@ -75,7 +75,7 @@ export default function CaratNewEditForm({ currentCarat }) {
           reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentCarat ? 'Failed To Edit Carat' :'Failed to create carat',{variant:'error'});
+      enqueueSnackbar(currentCarat ? 'Failed To update Carat' :error.response.data.message,{variant:'error'});
       console.error(error);
     }
   });
@@ -83,8 +83,8 @@ export default function CaratNewEditForm({ currentCarat }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Scheme Info
+          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+            Carat Info
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>

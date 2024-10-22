@@ -89,6 +89,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
+      expectPaymentMode: data.expectPaymentMode,
     };
 
     if (data.paymentMode === 'Cash') {
@@ -112,7 +113,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     }
     const payload = {
       remark: data.remark,
-      expectPaymentMode: data.expectPaymentMode,
       date: data.date,
       amountPaid: data.amountPaid,
       paymentDetail: paymentDetail,

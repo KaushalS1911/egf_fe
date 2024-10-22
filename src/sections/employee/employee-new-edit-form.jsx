@@ -222,6 +222,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       router.push(paths.dashboard.employee.list);
       reset();
     } catch (error) {
+      enqueueSnackbar(currentEmployee ? 'Failed To update employee' : error.response.data.message, { variant: 'error' });
+
       console.error(error);
     }
   });
@@ -288,7 +290,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3}>
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
@@ -300,7 +302,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           </Card>
         </Grid>
 
-        <Grid xs={12} md={8}>
+        <Grid xs={12} md={9 }>
           <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}
@@ -308,7 +310,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(4, 1fr)',
               }}
             >
               {user?.role === 'Admin' && branch && storedBranch === 'all' && (
@@ -420,19 +422,21 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{ mb: 2 ,fontWeight:600}}>
             Official Info
           </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
+
             <Box
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(6, 1fr)',
               }}
             >
               {configs.roles && <RHFAutocomplete
@@ -478,14 +482,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             </Box>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Address Details
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-            <Typography gutterBottom sx={{ mb: 2, fontSize: '17px', fontWeight: '700' }}>
+            <Typography variant='subtitle1' sx={{ mb: 2 ,fontWeight:600}}>
               Permanent Address
             </Typography>
             <Box
@@ -494,7 +493,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(6, 1fr)',
               }}
             >
               <RHFTextField name='permanentStreet' label='Address' req={'red'} />
@@ -587,7 +586,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 )}
               />
             </Box>
-            <Typography gutterBottom sx={{ mt: 3, mb: 2, fontSize: '17px', fontWeight: '700' }}>
+            <Typography variant='subtitle1' sx={{ my: 2, fontWeight: '600' }}>
               Temporary Address
             </Typography>
             <Box
@@ -596,7 +595,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(6, 1fr)',
               }}
             >
               <RHFTextField name='tempStreet' label='Address' />
@@ -704,7 +703,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             </Box>
           </Card>
         </Grid>
-
       </Grid>
       <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
         <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
