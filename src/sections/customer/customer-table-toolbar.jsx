@@ -108,7 +108,7 @@ export default function CustomerTableToolbar({
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
-        sx={{ width: 140 }}
+        sx={{ width: 'auto' }}
       >
         <MenuItem
           onClick={() => {
@@ -124,8 +124,8 @@ export default function CustomerTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:import-bold' />
-          Import
+          <Iconify icon='ant-design:file-pdf-filled' />
+          PDF
         </MenuItem>
 
         <MenuItem
@@ -133,8 +133,8 @@ export default function CustomerTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:export-bold' />
-          Export
+          <Iconify icon='ic:round-whatsapp' />
+          whatsapp share
         </MenuItem>
       </CustomPopover>
     </>

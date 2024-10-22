@@ -101,7 +101,17 @@ export default function PropertyNewEditForm({ currentProperty }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='propertyType' label='Property' req={'red'} />
+              <RHFTextField
+                name="propertyType"
+                label="Property"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('propertyType', e.target.value);
+                }}
+              />
+
               {configs.loanTypes && <RHFAutocomplete
                 name='loanType'
                 label='Loan Type'

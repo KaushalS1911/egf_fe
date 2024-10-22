@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import {  useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -44,7 +44,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
     valuation: Yup.number()
       .required('valuation is required')
       .typeError('valuation must be a number')
-      .positive('valuation must be greater than zero') ,
+      .positive('valuation must be greater than zero'),
     minLoanTime: Yup.number()
       .typeError('Minimum Loan Time must be a number')
       .required('Minimum Loan Time is required')
@@ -132,7 +132,16 @@ export default function SchemeNewEditForm({ currentScheme }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name='name' label='Scheme Name' req={'red'} />
+              <RHFTextField
+                name='name'
+                label='Scheme Name'
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('name', e.target.value);
+                }}
+              />
               <RHFTextField
                 name='interestRate'
                 label='Interest Rate'
@@ -219,8 +228,8 @@ export default function SchemeNewEditForm({ currentScheme }) {
 
             </Box>
           </Card>
-          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-            <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+            <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                     variant='outlined' onClick={() => reset()}>Reset</Button>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
               {currentScheme ? 'Save' : 'Submit'}

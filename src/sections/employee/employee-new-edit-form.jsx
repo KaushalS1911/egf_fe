@@ -255,17 +255,21 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         if (type === 'permanent') {
           setValue('permanentCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
           setValue('permanentState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+          setValue('permanentCity', data.PostOffice[0]?.District, { shouldValidate: true });
         } else if (type === 'temporary') {
           setValue('tempCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
           setValue('tempState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+          setValue('tempCity', data.PostOffice[0]?.District, { shouldValidate: true });
         }
       } else {
         if (type === 'permanent') {
           setValue('permanentCountry', '', { shouldValidate: true });
           setValue('permanentState', '', { shouldValidate: true });
+          setValue('permanentCity', '', { shouldValidate: true });
         } else if (type === 'temporary') {
           setValue('tempCountry', '', { shouldValidate: true });
           setValue('tempState', '', { shouldValidate: true });
+          setValue('tempCity', '', { shouldValidate: true });
         }
         enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
       }
@@ -322,9 +326,39 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 />
               )}
-              <RHFTextField name='firstName' label='First Name' req={'red'} />
-              <RHFTextField name='middleName' label='Middle Name' req={'red'} />
-              <RHFTextField name='lastName' label='Last Name' req={'red'} />
+              <RHFTextField
+                name="firstName"
+                label="First Name"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('firstName', e.target.value);
+                }}
+              />
+
+              <RHFTextField
+                name="middleName"
+                label="Middle Name"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('middleName', e.target.value);
+                }}
+              />
+
+              <RHFTextField
+                name="lastName"
+                label="Last Name"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+                onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('lastName', e.target.value);
+                }}
+              />
+
               <RHFTextField
                 name='drivingLicense'
                 label='Driving License'

@@ -8,22 +8,22 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { IconButton } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function   PenaltyTableToolbar({
-  filters,
-  onFilters,
-}) {
+export default function PenaltyTableToolbar({
+                                              filters,
+                                              onFilters,
+                                            }) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters]
+    [onFilters],
   );
-
 
   return (
     <>
@@ -38,27 +38,30 @@ export default function   PenaltyTableToolbar({
           p: 2.5,
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search..."
+            placeholder='Search...'
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">
-                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                <InputAdornment position='start'>
+                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
           />
+          <IconButton onClick={popover.onOpen}>
+            <Iconify icon='eva:more-vertical-fill' />
+          </IconButton>
         </Stack>
       </Stack>
 
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -66,7 +69,7 @@ export default function   PenaltyTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:printer-minimalistic-bold" />
+          <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
 
@@ -75,7 +78,7 @@ export default function   PenaltyTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:import-bold" />
+          <Iconify icon='solar:import-bold' />
           Import
         </MenuItem>
 
@@ -84,7 +87,7 @@ export default function   PenaltyTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:export-bold" />
+          <Iconify icon='solar:export-bold' />
           Export
         </MenuItem>
       </CustomPopover>

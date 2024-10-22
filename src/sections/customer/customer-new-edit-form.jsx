@@ -20,7 +20,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFTextField,
   RHFAutocomplete,
-  RHFUploadAvatar,
+  RHFUploadAvatar, RHFRadioGroup,
 } from 'src/components/hook-form';
 import { Button } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -39,6 +39,15 @@ const STATUS_OPTIONS = [
   { value: 'In Active', label: 'In Active' },
   { value: 'Blocked', label: 'Blocked' }];
 
+const INQUIRY_REFERENCE_BY = [
+  { value: 'Google', label: 'Google' },
+  { value: 'Just Dial', label: 'Just Dial' },
+  { value: 'Social Media', label: 'Social Media' },
+  { value: 'Board Banner', label: 'Board Banner' },
+  { value: 'Brochure', label: 'Brochure' },
+  { value: 'Other', label: 'Other' },
+];
+
 export default function CustomerNewEditForm({ currentCustomer }) {
   const router = useRouter();
   const { user } = useAuthContext();
@@ -47,6 +56,9 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const mdUp = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy)
+    ? currentCustomer.referenceBy
+    : 'Other';
 
   const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
@@ -90,6 +102,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     customerCode: currentCustomer?.customerCode || '',
     drivingLicense: currentCustomer?.drivingLicense || '',
     landline: currentCustomer?.landline || '',
+    referenceBy: currentCustomer ? condition : '',
+    otherReferenceBy: currentCustomer ? currentCustomer?.referenceBy : '',
     joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
     businessType: currentCustomer?.businessType || '',
     PerStreet: currentCustomer?.permanentAddress?.street || '',
@@ -144,6 +158,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         businessType: data.businessType,
         loanType: data.loanType,
         remark: data.remark,
+        referenceBy: watch('referenceBy') !== 'Other' ? data?.referenceBy : data?.otherReferenceBy,
         permanentAddress: {
           street: data.PerStreet,
           landmark: data.PerLandmark,
@@ -243,17 +258,21 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         if (type === 'permanent') {
           setValue('PerCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
           setValue('PerState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+          setValue('PerCity', data.PostOffice[0]?.District, { shouldValidate: true });
         } else if (type === 'temporary') {
           setValue('tempCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
           setValue('tempState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+          setValue('tempCity', data.PostOffice[0]?.District, { shouldValidate: true });
         }
       } else {
         if (type === 'permanent') {
           setValue('PerCountry', '', { shouldValidate: true });
           setValue('PerState', '', { shouldValidate: true });
+          setValue('PerCity', '', { shouldValidate: true });
         } else if (type === 'temporary') {
           setValue('tempCountry', '', { shouldValidate: true });
           setValue('tempState', '', { shouldValidate: true });
+          setValue('tempCity', '', { shouldValidate: true });
         }
         enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
       }
@@ -269,6 +288,23 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       }
 
       enqueueSnackbar('Failed to fetch country and state details.', { variant: 'error' });
+    }
+  };
+
+  const checkIFSC = async (ifscCode) => {
+    if (ifscCode.length === 11) {
+      try {
+        const response = await axios.get(`https://ifsc.razorpay.com/${ifscCode}`);
+        if (response.data) {
+          setValue('branchName', response?.data?.BRANCH || '', { shouldValidate: true });
+          enqueueSnackbar('IFSC code is valid and branch details fetched.', { variant: 'success' });
+        }
+      } catch (error) {
+        setValue('branchName', '', { shouldValidate: true });
+        enqueueSnackbar('Invalid IFSC code. Please check and enter a valid IFSC code.', { variant: 'error' });
+      }
+    } else {
+      enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
     }
   };
 
@@ -593,7 +629,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                md: 'repeat(6, 1fr)',
+                md: 'repeat(2, 1fr)',
               }}
             >
               <RHFTextField name='tempStreet' label='Street' />
@@ -673,7 +709,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     </>
   );
 
-  const BankDetails = (
+  const referenceDetails = (
     <>
             <Grid xs={12} md={12}>
         <Card>
@@ -686,45 +722,37 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <Box
                 columnGap={2}
                 rowGap={3}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   md: 'repeat(6, 1fr)',
                 }}
               >
+                <RHFTextField name="accountHolderName" label="Account Holder Name" />
                 <RHFTextField
-                  name='accountHolderName'
-                  label='Account Holder Name'
-                />
-                <RHFTextField
-                  name='accountNumber'
-                  label='Account Number'
-                  type='number'
+                  name="accountNumber"
+                  label="Account Number"
+                  type="number"
                   inputProps={{ min: 0 }}
                 />
                 <RHFAutocomplete
-                  name='accountType'
-                  label='Account Type'
-                  placeholder='Choose a country'
+                  name="accountType"
+                  label="Account Type"
+                  placeholder="Choose account type"
                   options={ACCOUNT_TYPE_OPTIONS}
                   isOptionEqualToValue={(option, value) => option === value}
                 />
                 <RHFTextField
-                  name='IFSC'
-                  label='IFSC Code'
+                  name="IFSC"
+                  label="IFSC Code"
                   inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
+                  onBlur={(e) => checkIFSC(e.target.value)}
                 />
-                <RHFTextField
-                  name='bankName'
-                  label='Bank Name'
-                />
-                <RHFTextField
-                  name='branchName'
-                  label='Branch Name'
-                />
+                <RHFTextField name="bankName" label="Bank Name" />
+                <RHFTextField name="branchName" label="Branch Name" />
               </Box>
             </Box>
           </Stack>
@@ -737,9 +765,9 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' }}>
-        <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+        <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                 variant='outlined' onClick={() => reset()}>Reset</Button>
-        <LoadingButton type='submit' variant='contained' size='large' loading={isSubmitting} sx={{height:"36px"}}>
+        <LoadingButton type='submit' variant='contained' size='large' loading={isSubmitting} sx={{ height: '36px' }}>
           {!currentCustomer ? 'Submit' : 'Save'}
         </LoadingButton>
       </Grid>
@@ -751,6 +779,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       <Grid container spacing={3}>
         {PersonalDetails}
         {addressDetails}
+        {referenceDetails}
         {BankDetails}
         {renderActions}
       </Grid>

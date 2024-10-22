@@ -17,21 +17,20 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function   SchemeTableToolbar({
-  filters,
-  onFilters,
-  //
-  roleOptions,
-}) {
+export default function SchemeTableToolbar({
+                                             filters,
+                                             onFilters,
+                                             //
+                                             roleOptions,
+                                           }) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters]
+    [onFilters],
   );
-
 
   return (
     <>
@@ -46,54 +45,55 @@ export default function   SchemeTableToolbar({
           p: 2.5,
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search..."
+            placeholder='Search...'
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">
-                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                <InputAdornment position='start'>
+                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
           />
         </Stack>
+        <IconButton onClick={popover.onOpen}>
+          <Iconify icon='eva:more-vertical-fill' />
+        </IconButton>
       </Stack>
 
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
-        sx={{ width: 140 }}
+        arrow='right-top'
+        sx={{ width: 'auto' }}
       >
         <MenuItem
           onClick={() => {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:printer-minimalistic-bold" />
+          <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:import-bold" />
-          Import
+          <Iconify icon='ant-design:file-pdf-filled' />
+          PDF
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:export-bold" />
-          Export
+          <Iconify icon='ic:round-whatsapp' />
+          whatsapp share
         </MenuItem>
       </CustomPopover>
     </>

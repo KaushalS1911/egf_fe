@@ -300,7 +300,16 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} />
+              <RHFTextField name='cashAmount' label='Cash Amount'
+                            req={'red'}
+                            onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*\.?\d*$/.test(value)) {
+                  e.target.value = value;
+                } else {
+                  e.preventDefault();
+                }
+              }} />
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
@@ -346,9 +355,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
           </LoadingButton>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-
         </Box>
       </FormProvider>
       <Box>
