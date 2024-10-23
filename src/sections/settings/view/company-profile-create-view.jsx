@@ -212,7 +212,11 @@ export default function CompanyProfile() {
                 >
                   <RHFTextField name='name' label='Company Name' />
                   <RHFTextField name='email' label='Email Address' />
-                  <RHFTextField name='contact' label='Phone Number' />
+                  <RHFTextField name='contact' label='Phone Number'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                onInput={(e) => {
+                                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                                }} />
                 </Box>
               </Stack>
             </Card>
@@ -239,8 +243,8 @@ export default function CompanyProfile() {
             <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
               <Box display='flex' flexDirection='column' gap={2}>
                 <RHFTextField
-                  name="accountNumber"
-                  label="Account Number"
+                  name='accountNumber'
+                  label='Account Number'
                   inputProps={{ inputMode: 'numeric' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
