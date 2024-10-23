@@ -23,7 +23,6 @@ import FormProvider, {
   RHFUploadAvatar, RHFRadioGroup,
 } from 'src/components/hook-form';
 import { Button } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
@@ -401,10 +400,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               />
               <RHFTextField name='email' label='Email' req={'red'} />
               <RHFDatePicker
-                name="dob"
+                name='dob'
                 control={control}
-                label="Date of Birth"
-                req={"red"}
+                label='Date of Birth'
+                req={'red'}
               />
               <RHFTextField
                 name='drivingLicense'
@@ -450,10 +449,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 }}
               />
               <RHFDatePicker
-                name="joiningDate"
+                name='joiningDate'
                 control={control}
-                label="Joining Date"
-                req={"red"}
+                label='Joining Date'
+                req={'red'}
               />
               <RHFTextField
                 name='aadharCard'
@@ -629,7 +628,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                md: 'repeat(2, 1fr)',
+                md: 'repeat(6, 1fr)',
               }}
             >
               <RHFTextField name='tempStreet' label='Street' />
@@ -711,7 +710,52 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const referenceDetails = (
     <>
-            <Grid xs={12} md={12}>
+      {mdUp && (
+        <Grid md={4}>
+          <Typography variant='h6' sx={{ mb: 0.5 }}>
+            Other Details
+          </Typography>
+        </Grid>
+      )}
+      <Grid xs={12} md={8}>
+        <Card>
+          <Box columnGap={2}
+               rowGap={3}
+               display='grid'
+               gridTemplateColumns={{
+                 xs: 'repeat(1, 1fr)',
+                 md: 'repeat(2, 1fr)',
+               }}>
+            {!mdUp && <CardHeader title='Properties' />}
+            <Stack spacing={3} sx={{ p: 3 }}>
+              <Typography variant='subtitle2'>How did you come to know about us?</Typography>
+              <Stack spacing={2}>
+                <RHFRadioGroup
+                  row
+                  spacing={4}
+                  sx={{ width: '175px' }}
+                  name='referenceBy'
+                  options={INQUIRY_REFERENCE_BY}
+                />
+              </Stack>
+            </Stack>
+            <Stack spacing={2} sx={{ p: 3 }} justifyContent={'end'}>
+              {watch('referenceBy') === 'Other' && (
+                <Stack spacing={1}>
+                  <Typography variant='subtitle2'>Write other reference name</Typography>
+                  <RHFTextField name='otherReferenceBy' label='Reference By' />
+                </Stack>
+              )}
+            </Stack>
+          </Box>
+        </Card>
+      </Grid>
+    </>
+  );
+
+  const BankDetails = (
+    <>
+      <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Bank Accounts' />}
           <Stack spacing={3} sx={{ p: 3 }}>
@@ -722,37 +766,37 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <Box
                 columnGap={2}
                 rowGap={3}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   md: 'repeat(6, 1fr)',
                 }}
               >
-                <RHFTextField name="accountHolderName" label="Account Holder Name" />
+                <RHFTextField name='accountHolderName' label='Account Holder Name' />
                 <RHFTextField
-                  name="accountNumber"
-                  label="Account Number"
-                  type="number"
+                  name='accountNumber'
+                  label='Account Number'
+                  type='number'
                   inputProps={{ min: 0 }}
                 />
                 <RHFAutocomplete
-                  name="accountType"
-                  label="Account Type"
-                  placeholder="Choose account type"
+                  name='accountType'
+                  label='Account Type'
+                  placeholder='Choose account type'
                   options={ACCOUNT_TYPE_OPTIONS}
                   isOptionEqualToValue={(option, value) => option === value}
                 />
                 <RHFTextField
-                  name="IFSC"
-                  label="IFSC Code"
+                  name='IFSC'
+                  label='IFSC Code'
                   inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
                   onBlur={(e) => checkIFSC(e.target.value)}
                 />
-                <RHFTextField name="bankName" label="Bank Name" />
-                <RHFTextField name="branchName" label="Branch Name" />
+                <RHFTextField name='bankName' label='Bank Name' />
+                <RHFTextField name='branchName' label='Branch Name' />
               </Box>
             </Box>
           </Stack>
