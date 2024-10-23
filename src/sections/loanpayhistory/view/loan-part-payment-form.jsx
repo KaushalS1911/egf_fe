@@ -157,7 +157,11 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
           </Grid>
 
           <Grid item xs={12} sm={6} md={4}>
-            <RHFTextField name='amountPaid' label='Pay Amount' req='red' fullWidth />
+            <RHFTextField name='amountPaid' label='Pay Amount' req='red' fullWidth onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={4}>
@@ -212,7 +216,11 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
-                <RHFTextField name='cashAmount' label='Cash Amount' req='red' fullWidth />
+                <RHFTextField name='cashAmount' label='Cash Amount' req='red' fullWidth onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
               </Grid>
             </Grid>
           )}
@@ -240,7 +248,11 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <RHFTextField name='bankAmount' label='Bank Amount' req='red' fullWidth />
+                <RHFTextField name='bankAmount' label='Bank Amount' req='red' fullWidth onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
               </Grid>
             </Grid>
           )}

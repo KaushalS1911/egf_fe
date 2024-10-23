@@ -142,16 +142,32 @@ function LoanCloseForm({ currentLoan, mutate }) {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Grid container rowSpacing={3} columnSpacing={2}>
           <Grid item xs={4}>
-            <RHFTextField name='totalLoanAmount' label='Total Loan Amount' req={'red'} />
+            <RHFTextField name='totalLoanAmount' label='Total Loan Amount' req={'red'} onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }} />
           </Grid>
           <Grid item xs={4}>
-            <RHFTextField name='paidLoanAmount' label='Paid Loan Amount' req={'red'} />
+            <RHFTextField name='paidLoanAmount' label='Paid Loan Amount' req={'red'} onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }} />
           </Grid>
           <Grid item xs={4}>
-            <RHFTextField name='pendingLoanAmount' label='Pending Loan Amount' req={'red'} />
+            <RHFTextField name='pendingLoanAmount' label='Pending Loan Amount' req={'red'} onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }} />
           </Grid>
           <Grid item xs={4}>
-            <RHFTextField name='closingCharge' label='Closing Charge' req={'red'} />
+            <RHFTextField name='closingCharge' label='Closing Charge' req={'red'} onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }} />
           </Grid>
           <Grid item xs={4}>
             <RHFTextField name='closeRemarks' label='Close Remarks' />
@@ -191,7 +207,11 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} />
+              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} onKeyPress={(e) => {
+                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                  e.preventDefault();
+                }
+              }} />
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
@@ -204,7 +224,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}
-              sx={{mt : 3}}
+              sx={{ mt: 3 }}
             >
               <Box>
                 <RHFAutocomplete
@@ -226,13 +246,17 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 />
               </Box>
               <Box>
-                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
               </Box>
             </Box>
           )}
         </Box>
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+          <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
