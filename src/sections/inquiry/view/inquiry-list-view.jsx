@@ -292,6 +292,7 @@ export default function InquiryListView() {
               )}
               <Box display='flex' alignItems='center' mx={2}>
                 <input
+                  disabled={!selectedBranch && !selectedBranch}
                   type='file'
                   accept='.xlsx, .xls'
                   onChange={handleFileChange}
