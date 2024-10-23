@@ -310,8 +310,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
   };
   const handleDeleteImage = () => {
-    setImageSrc(null); // Clear the image source
-    setValue('property_image', null, { shouldValidate: true }); // Reset form value
+    setImageSrc(null);
+    setValue('property_image', null, { shouldValidate: true });
     setOpen(false);
     setCroppedImage(null);
   };

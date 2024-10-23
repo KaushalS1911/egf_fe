@@ -58,7 +58,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
       .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-
   } : {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
@@ -94,7 +93,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     days: '',
     amountPaid: '',
     interestAmount: currentLoan?.scheme.interestRate || '',
-    consultingCharge: currentLoan?.consultingCharge || '',
+    consultingCharge: currentLoan?.consultingCharge || 0,
     penalty: '',
     uchakAmount: currentLoan?.uchakInterestAmount || 0,
     cr_dr: '',
@@ -102,9 +101,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     payAfterAdjusted1: '',
     oldCrDr: loanInterest[0]?.cr_dr || 0,
     paymentMode: '',
-    account: null,
-    cashAmount: null,
-    bankAmount: null,
+    account: '',
+    cashAmount: '',
+    bankAmount: '',
   };
   const methods = useForm({
     resolver: yupResolver(NewInterestPayDetailsSchema),
@@ -217,7 +216,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     }
 
   });
-
   return (
     <Box sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -232,16 +230,16 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           }}
         >
           <RHFDatePicker
-            name="from"
+            name='from'
             control={control}
-            label="From Date"
-            req={"red"}
+            label='From Date'
+            req={'red'}
           />
           <RHFDatePicker
-            name="to"
+            name='to'
             control={control}
-            label="To Date"
-            req={"red"}
+            label='To Date'
+            req={'red'}
           />
 
           <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />
@@ -300,16 +298,15 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField name='cashAmount' label='Cash Amount'
-                            req={'red'}
-                            onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*\.?\d*$/.test(value)) {
-                  e.target.value = value;
-                } else {
-                  e.preventDefault();
-                }
-              }} />
+              <RHFTextField
+                name='cashAmount'
+                label='Cash Amount'
+                req={'red'}
+                onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
