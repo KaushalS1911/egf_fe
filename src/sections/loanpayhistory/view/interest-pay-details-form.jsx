@@ -252,7 +252,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'}
                         InputProps={{ readOnly: true }} />
           <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name='amountPaid' label='Total' req={'red'} />
+          <RHFTextField name='amountPaid' label='Total' req={'red'} onKeyPress={(e) => {
+            if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+              e.preventDefault();
+            }
+          }} />
         </Box>
 
         <Box>
@@ -341,7 +345,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                 />
               </Box>
               <Box>
-                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
               </Box>
             </Box>
           )}
