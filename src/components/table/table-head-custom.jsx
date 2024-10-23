@@ -25,20 +25,20 @@ const visuallyHidden = {
 // ----------------------------------------------------------------------
 
 export default function TableHeadCustom({
-  order,
-  orderBy,
-  rowCount = 0,
-  headLabel,
-  numSelected = 0,
-  onSort,
-  onSelectAllRows,
-  sx,
-}) {
+                                          order,
+                                          orderBy,
+                                          rowCount = 0,
+                                          headLabel,
+                                          numSelected = 0,
+                                          onSort,
+                                          onSelectAllRows,
+                                          sx,
+                                        }) {
   return (
-    <TableHead sx={sx} >
-      <TableRow >
+    <TableHead sx={sx}>
+      <TableRow>
         {onSelectAllRows && (
-          <TableCell padding="checkbox">
+          <TableCell padding='checkbox'>
             <Checkbox
               indeterminate={!!numSelected && numSelected < rowCount}
               checked={!!rowCount && numSelected === rowCount}
@@ -52,7 +52,11 @@ export default function TableHeadCustom({
             key={headCell.id}
             align={headCell.align || 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ width: headCell.width, minWidth: headCell.minWidth ,color:'#000'}}
+            sx={{
+              width: headCell.width,
+              minWidth: headCell.minWidth,
+              color: (theme) => theme.palette.mode === 'light' ? '#000' : '',
+            }}
           >
             {onSort ? (
               <TableSortLabel
