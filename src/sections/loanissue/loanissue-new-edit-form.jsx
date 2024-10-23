@@ -83,10 +83,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     scheme: Yup.object().required('Scheme is required'),
     issueDate: Yup.date().required('Issue Date is required'),
     jewellerName: Yup.string().required('Jeweller Name is required'),
-    loanAmount: Yup.number().required('Loan Amount is required'),
+    loanAmount: Yup.string().required('Loan Amount is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    cashAmount: Yup.number().required('Cash Amount is required'),
-    approvalCharge: Yup.number().required('Approval Charge To Amount is required'),
+    cashAmount: Yup.string().required('Cash Amount is required'),
+    approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
