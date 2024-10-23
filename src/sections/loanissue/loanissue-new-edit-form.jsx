@@ -42,11 +42,24 @@ import { v4 as uuidv4 } from 'uuid';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/canvasUtils';
+import { TableHeadCustom, useTable } from '../../components/table';
 
 // ----------------------------------------------------------------------
-
+const TABLE_HEAD = [
+  { id: 'type', label: 'Type' },
+  { id: 'carat', label: 'Carat' },
+  { id: 'Pcs', label: 'Pcs' },
+  { id: 'totalWt', label: 'Total wt' },
+  { id: 'lossWt', label: 'Loss Wt' },
+  { id: 'grossWt', label: 'Gross Wt' },
+  { id: 'netWt', label: 'Net Wt' },
+  { id: 'grossAmt', label: 'Gross Amt' },
+  { id: 'netAmt', label: 'Net Amt' },
+  { id: 'actions', label: 'Actions' },
+];
 export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const router = useRouter();
+  const table = useTable();
   const [customerId, setCustomerID] = useState();
   const [customerData, setCustomerData] = useState();
   const [schemeId, setSchemeID] = useState();
@@ -514,6 +527,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         </>
         }
         <Grid item xs={12} md={4}>
+          {/*<Typography variant='h6' sx={{ mb: 3 }}>*/}
+          {/*</Typography>*/}
         </Grid>
         <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
           <Box
@@ -789,20 +804,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               </Typography>
               <TableContainer>
                 <Table>
-                  <TableHead>
-                    <TableRow sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                      <TableCell className='black-text'><strong>Type</strong></TableCell>
-                      <TableCell className='black-text'><strong>Carat</strong></TableCell>
-                      <TableCell className='black-text'><strong>Pcs</strong></TableCell>
-                      <TableCell className='black-text'><strong>Total Wt</strong></TableCell>
-                      <TableCell className='black-text'><strong>Loss Wt</strong></TableCell>
-                      <TableCell className='black-text'><strong>Gross Wt</strong></TableCell>
-                      <TableCell className='black-text'><strong>Net Wt</strong></TableCell>
-                      <TableCell className='black-text'><strong>Gross Amt</strong></TableCell>
-                      <TableCell className='black-text'><strong>Net Amt</strong></TableCell>
-                      <TableCell className='black-text'><strong>Actions</strong></TableCell>
-                    </TableRow>
-                  </TableHead>
+
+                  <TableHeadCustom
+                    order={table.order}
+                    orderBy={table.orderBy}
+                    headLabel={TABLE_HEAD}
+                    onSort={table.onSort}
+                  />
                   <TableBody>
                     {fields.map((row, index) => (
                       <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
@@ -1010,7 +1018,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         </TableCell>
                       </TableRow>
                     ))}
-                    <TableRow sx={{ backgroundColor: '#e0f7fa' }}>
+                    <TableRow sx={{ backgroundColor: (theme) => theme.palette.mode === 'light' ? "#e0f7fa" : "#2f3944" }}>
                       <TableCell colSpan={2}><strong>Total:</strong></TableCell>
                       <TableCell>{calculateTotal('pcs')}</TableCell>
                       <TableCell>{calculateTotal('totalWeight')}</TableCell>
