@@ -16,9 +16,9 @@ import {
   Select,
   InputLabel,
   FormControl,
-  Grid, Card,
+  Grid, Card, Dialog, Slider,
 } from '@mui/material';
-import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload } from '../../../components/hook-form';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -33,6 +33,8 @@ import { useParams } from 'react-router';
 import { useGetAllPartRelease } from '../../../api/part-release';
 import { useGetBranch } from '../../../api/branch';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '../../../utils/canvasUtils';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -60,6 +62,13 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const [properties, setProperties] = useState([]);
   const { branch } = useGetBranch();
   const { partRelease, refetchPartRelease } = useGetAllPartRelease(currentLoan._id);
+  const [open, setOpen] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
 
   useEffect(() => {
     if (currentLoan.propertyDetails) {
@@ -137,6 +146,12 @@ function PartReleaseForm({ currentLoan, mutate }) {
     formState: { isSubmitting },
   } = methods;
 
+  const handleDeleteImage = () => {
+    setImageSrc(null);
+    setFile(null);
+    setOpen(false);
+    setCroppedImage(null);
+  };
   const onSubmit = handleSubmit(async (data) => {
     if (selectedRows.length === 0) {
       enqueueSnackbar('At least one property must be selected', { variant: 'error' });
@@ -210,7 +225,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       refetchPartRelease();
       setSelectedRows([]);
       setProperties(response.data.data.loan.propertyDetails);
-      setFile(null);
+      handleDeleteImage();
       reset();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
@@ -219,16 +234,32 @@ function PartReleaseForm({ currentLoan, mutate }) {
     }
   });
 
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+  const showCroppedImage = async () => {
+    try {
+      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
+      const croppedUrl = URL.createObjectURL(croppedFile);
+      setCroppedImage(croppedUrl);
+      setFile(croppedFile)
+      setOpen(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
   const handleDropSingleFile = useCallback((acceptedFiles) => {
-    const newFile = acceptedFiles[0];
-    if (newFile) {
-      setFile(
-        Object.assign(newFile, {
-          preview: URL.createObjectURL(newFile),
-        }),
-      );
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setOpen(true);
+      };
+      reader.readAsDataURL(file);
     }
   }, []);
+
 
   const handleCheckboxClick = (index) => {
     setSelectedRows((prevSelected) =>
@@ -372,16 +403,57 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   </Grid>
                 </Grid>
 
-                {/* Upload Section */}
                 <Grid item xs={12} md={3}>
-                  <Upload
-                    file={file}
-                    onDrop={handleDropSingleFile}
-                    onDelete={() => setFile(null)}
-                    sx={{
-                      '.css-16lfxc8': { height: { xs: '150px', md: '200px' } }, // Adjust height responsively
-                    }}
-                  />
+
+                  {croppedImage ? (
+                    <Upload
+                      file={croppedImage}
+                      onDrop={handleDropSingleFile}
+                      onDelete={handleDeleteImage}
+                      sx={{
+                        '.css-16lfxc8': { height: { xs: '150px', md: '200px' } },
+                      }}
+                    />
+                  ) : (
+                    <Upload
+                      file={file}
+                      onDrop={handleDropSingleFile}
+                      onDelete={handleDeleteImage}
+                      sx={{
+                        '.css-16lfxc8': { height: { xs: '150px', md: '200px' } },
+                      }}
+                    />
+                  )}
+
+                  <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+                    <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
+                      <Cropper
+                        image={imageSrc}
+                        crop={crop}
+                        zoom={zoom}
+                        rotation={rotation}
+                        aspect={4 / 3}
+                        onCropChange={setCrop}
+                        onCropComplete={onCropComplete}
+                        onZoomChange={setZoom}
+                        onRotationChange={setRotation}
+                      />
+                    </Box>
+                    <Box sx={{ padding: 2 }}>
+                      <Typography gutterBottom>Zoom</Typography>
+                      <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
+                      <Typography gutterBottom>Rotation</Typography>
+                      <Slider value={rotation} min={0} max={360} step={1} onChange={(e, rotation) => setRotation(rotation)} />
+                      <Box display="flex" justifyContent="space-between" mt={2}>
+                        <Button onClick={() => setOpen(false)} variant="outlined">
+                          Cancel
+                        </Button>
+                        <Button onClick={showCroppedImage} variant="contained" color="primary">
+                          Save Cropped Image
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Dialog>
                 </Grid>
               </Grid>
 
