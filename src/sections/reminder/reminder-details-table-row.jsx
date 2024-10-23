@@ -13,16 +13,22 @@ import ReminderRecallingForm from './reminder-recalling-form';
 import { useState } from 'react';
 import { fDate } from '../../utils/format-time';
 
-export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,loanInterest}) {
-  const { loan, createdAt,nextRecallingDate,remark} = row;
+export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, loanInterest }) {
+  const { loan, createdAt, nextRecallingDate, remark } = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
   const popover = usePopover();
   const recallingPopover = usePopover();
   return (
     <>
-      <TableRow hover selected={selected}  sx={{
-        backgroundColor: fDate(new Date(loanInterest[0].createdAt)) < fDate(new Date()) ? '#F6F7F8' : 'inherit' }}>
+      <TableRow hover selected={selected}
+                sx={{
+                  backgroundColor:
+                    loanInterest?.[0] && fDate(new Date(loanInterest[0].createdAt)) <= fDate(new Date())
+                      ? '#F6F7F8'
+                      : 'inherit',
+                }}
+      >
         <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
@@ -31,7 +37,7 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextRecallingDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loan.customer.firstName + " " + loan.customer.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loan.customer.firstName + ' ' + loan.customer.lastName}</TableCell>
 
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -91,7 +97,7 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
       />
     </>
   );
-}
+};
 
 ReminderDetailsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
