@@ -265,7 +265,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     <Card>
                       <CardHeader title='Property Images' />
                       <CardContent>
-                        <Upload file={file} onDrop={handleDropSingleFile} onDelete={handleDeleteFile}/>
+                        <Upload file={file} onDrop={handleDropSingleFile} />
                       </CardContent>
                     </Card>
                   </Box>
