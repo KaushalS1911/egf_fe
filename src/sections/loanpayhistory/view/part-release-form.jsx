@@ -375,7 +375,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={4}>
-                      <RHFTextField name="amountPaid" label="Pay amount" req="red" />
+                      <RHFTextField name="amountPaid" label="Pay amount" req="red" onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                          e.preventDefault();
+                        }
+                      }} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={4}>
@@ -495,7 +499,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField name='cashAmount' label='Cash Amount' req={"red"}/>
+              <RHFTextField name='cashAmount' label='Cash Amount' req={"red"} onKeyPress={(e) => {
+                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                  e.preventDefault();
+                }
+              }}/>
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
@@ -530,7 +538,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 />
               </Box>
               <Box>
-                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }}/>
               </Box>
             </Box>
           )}

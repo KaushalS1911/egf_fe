@@ -33,12 +33,21 @@ import axios from 'axios';
 import { paths } from '../../routes/paths';
 import Button from '@mui/material/Button';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import { TableHeadCustom, useTable } from '../../components/table';
 
 // ----------------------------------------------------------------------
+const TABLE_HEAD = [
+  { id: 'propertyName', label: 'Property Name' },
+  { id: 'totalWeight', label: 'Total Weight' },
+  { id: 'loseWeight', label: 'Lose Weight' },
+  { id: 'grossWeight', label: 'Gross Weight' },
+  { id: 'netWeight', label: 'Net Weight' },
+  { id: 'loanApplicableAmount', label: 'Loan Applicable amount',width:200 },
+];
 
 export default function DisburseNewEditForm({ currentDisburse }) {
-  const [cashPendingAmt,setCashPendingAmt] = useState(0)
-  const [bankPendingAmt,setBankPendingAmt] = useState(0)
+  const [cashPendingAmt, setCashPendingAmt] = useState(0);
+  const [bankPendingAmt, setBankPendingAmt] = useState(0);
 
   const paymentSchema = currentDisburse.paymentMode === 'Bank' ? {
     bankNetAmount: Yup.number().required('Bank Net Amount is required'),
@@ -63,6 +72,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     }),
   };
   const router = useRouter();
+  const table = useTable();
   const { enqueueSnackbar } = useSnackbar();
   const { branch } = useGetBranch();
   const NewDisburse = Yup.object().shape({
@@ -73,7 +83,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     scheme: Yup.string().required('Scheme Name is required'),
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
-    ...paymentSchema
+    ...paymentSchema,
   });
 
   const defaultValues = useMemo(
@@ -131,11 +141,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   });
 
   useEffect(() => {
-    setCashPendingAmt(watch('cashNetAmount') - watch('payingCashAmount'))
-  },[watch('cashNetAmount') , watch('payingCashAmount')])
+    setCashPendingAmt(watch('cashNetAmount') - watch('payingCashAmount'));
+  }, [watch('cashNetAmount'), watch('payingCashAmount')]);
   useEffect(() => {
-    setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'))
-  },[watch('bankNetAmount') , watch('payingBankAmount')])
+    setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
+  }, [watch('bankNetAmount'), watch('payingBankAmount')]);
   console.log();
   const handleRemove = (index) => {
     remove(index);
@@ -160,7 +170,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         pendingBankAmount: bankPendingAmt,
         pendingCashAmount: cashPendingAmt,
         payingBankAmount: data.payingBankAmount,
-        payingCashAmount:data.payingCashAmount,
+        payingCashAmount: data.payingCashAmount,
 
       };
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
@@ -196,9 +206,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-          <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
-            Loan Disburse
-          </Typography>
+            <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
+              Loan Disburse
+            </Typography>
             <Box
               rowGap={3}
               columnGap={2}
@@ -230,19 +240,15 @@ export default function DisburseNewEditForm({ currentDisburse }) {
               </Typography>
               <TableContainer>
                 <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell className="black-text">Property Name</TableCell>
-                      <TableCell className="black-text">Total Weight</TableCell>
-                      <TableCell className="black-text">Lose Weight</TableCell>
-                      <TableCell className="black-text">Gross Weight</TableCell>
-                      <TableCell className="black-text">Net Weight</TableCell>
-                      <TableCell width={200} className="black-text">Loan Applicable amount</TableCell>
-                    </TableRow>
-                  </TableHead>
+                  <TableHeadCustom
+                    order={table.order}
+                    orderBy={table.orderBy}
+                    headLabel={TABLE_HEAD}
+                    onSort={table.onSort}
+                  />
                   <TableBody>
                     {fields.map((row, index) => (
-                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' }}} >
+                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.propertyName`}
@@ -304,9 +310,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         <Grid xs={12} md={12} py={5}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
-          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
-            Transaction Type
-          </Typography>
+              <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+                Transaction Type
+              </Typography>
               {(currentDisburse.paymentMode === 'Bank' || currentDisburse.paymentMode === 'Both') && (
                 <>
                   <Typography variant='subtitle2' sx={{ mb: 0.5, fontWeight: '600' }}>
@@ -369,10 +375,10 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       }}
                     />
                     <RHFDatePicker
-                      name="bankDate"
+                      name='bankDate'
                       control={control}
-                      label="Bank Date"
-                      req={"red"}
+                      label='Bank Date'
+                      req={'red'}
                     />
                   </Box>
                 </>
@@ -433,9 +439,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                                   }}
                     />
                     <RHFDatePicker
-                      name="cashDate"
+                      name='cashDate'
                       control={control}
-                      label="Date"
+                      label='Date'
                     />
                   </Box>
                 </>
@@ -443,12 +449,12 @@ export default function DisburseNewEditForm({ currentDisburse }) {
             </Stack>
           </Card>
           {
-            currentDisburse.status !== "Disbursed" &&
-          <Stack alignItems={"end"} mt={3}>
-            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              Submit
-            </LoadingButton>
-          </Stack>
+            currentDisburse.status !== 'Disbursed' &&
+            <Stack alignItems={'end'} mt={3}>
+              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                Submit
+              </LoadingButton>
+            </Stack>
           }
         </Grid>
       </Grid>

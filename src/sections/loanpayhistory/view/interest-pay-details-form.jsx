@@ -6,7 +6,7 @@ import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Table from '@mui/material/Table';
-import { TableHeadCustom } from '../../../components/table';
+import { TableHeadCustom, useTable } from '../../../components/table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -48,6 +48,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const [paymentMode, setPaymentMode] = useState('');
   const { branch } = useGetBranch();
   const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
+  const table = useTable();
+
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -136,7 +138,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
-      if (Number(watch('days')) >= penaltyItem.afterDueDateFromDate && Number(watch('days')) <= penaltyItem.afterDueDateToDate) {
+      if (Number(watch('days')) >= penaltyItem.afterDueDateFromDate && Number(watch('days')) <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true) {
         penaltyPer = calculatePenalty(currentLoan.loanAmount, penaltyItem.penaltyInterest);
       }
     });
@@ -252,7 +254,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'}
                         InputProps={{ readOnly: true }} />
           <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name='amountPaid' label='Total' req={'red'} />
+          <RHFTextField name='amountPaid' label='Total' req={'red'} onKeyPress={(e) => {
+            if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+              e.preventDefault();
+            }
+          }} />
         </Box>
 
         <Box>
@@ -341,7 +347,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                 />
               </Box>
               <Box>
-                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
               </Box>
             </Box>
           )}
@@ -372,23 +382,28 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           },
         }}>
           <Table sx={{ borderRadius: '16px', mt: 8, minWidth: '1600px' }}>
-            <TableHeadCustom headLabel={TABLE_HEAD} />
+            <TableHeadCustom
+              order={table.order}
+              orderBy={table.orderBy}
+              headLabel={TABLE_HEAD}
+              onSort={table.onSort}
+            />
             <TableBody>
               {loanInterest.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.from)}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.to)}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.scheme.interestRate}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.penalty}</TableCell>
+                  <TableCell>{fDate(row.from)}</TableCell>
+                  <TableCell>{fDate(row.to)}</TableCell>
+                  <TableCell>{row.loan.loanAmount}</TableCell>
+                  <TableCell>{row.loan.scheme.interestRate}</TableCell>
+                  <TableCell>{row.interestAmount}</TableCell>
+                  <TableCell>{row.penalty}</TableCell>
                   {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>*/}
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.consultingCharge}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.days}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.cr_dr}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.adjustedPay}</TableCell>
+                  <TableCell>{fDate(row.createdAt)}</TableCell>
+                  <TableCell>{row.loan.consultingCharge}</TableCell>
+                  <TableCell>{row.days}</TableCell>
+                  <TableCell>{row.cr_dr}</TableCell>
+                  <TableCell>{row.amountPaid}</TableCell>
+                  <TableCell>{row.adjustedPay}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -137,7 +137,11 @@ function UchakInterestPayForm({currentLoan, mutate }) {
             />
           </Grid>
           <Grid item xs={4}>
-            <RHFTextField name='uchakInterestAmount' label='Uchak Interest Amount' req={'red'} />
+            <RHFTextField name='uchakInterestAmount' label='Uchak Interest Amount' req={'red'} onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }}/>
           </Grid>
           <Grid item xs={4}>
             <RHFTextField name='remark' label='Remark' />
@@ -175,7 +179,11 @@ function UchakInterestPayForm({currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} />
+              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} onKeyPress={(e) => {
+                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                  e.preventDefault();
+                }
+              }} />
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
@@ -210,7 +218,11 @@ function UchakInterestPayForm({currentLoan, mutate }) {
                 />
               </Box>
               <Box>
-                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} />
+                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
               </Box>
             </Box>
           )}

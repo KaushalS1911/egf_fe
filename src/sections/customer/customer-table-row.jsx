@@ -22,7 +22,7 @@ import { useRouter } from '../../routes/hooks';
 // ----------------------------------------------------------------------
 
 export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { firstName, lastName, contact, customerCode, email, avatar_url, status } = row;
+  const { firstName, lastName, middleName, contact, customerCode, email, avatar_url, status } = row;
 
   const confirm = useBoolean();
 
@@ -43,7 +43,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           <Avatar alt={firstName} src={avatar_url} sx={{ mr: 2 }} />
 
           <ListItemText
-            primary={firstName + ' ' + lastName}
+            primary={firstName + ' ' + middleName + ' ' + lastName}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
