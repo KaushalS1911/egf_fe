@@ -7,6 +7,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import { countries } from 'src/assets/data';
+import { Paper } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -117,14 +118,42 @@ export default function RHFAutocomplete({ name, label, type, helperText, placeho
             id={`autocomplete-${name}`}
             onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
             options={options}
+            PaperComponent={(props) => (
+              <Paper
+                {...props}
+                sx={{
+                  '& .MuiAutocomplete-listbox': {
+                    maxHeight: 200, // adjust max height for scrolling
+                    overflow: 'auto',
+                    '::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      opacity:0.1,
+                      borderRadius: '4px',
+                    },
+                    '::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                }}
+              />
+            )}
             renderInput={(params) => (
               <TextField
                 {...params}
                 label={label}
                 sx={{
                   ':not(:focus-within) label ~ div:first-of-type': customStyle,
-                  " label" : {mt:-0.8,fontSize:"14px"},
-                  " input" : {height:7},
+                  "label": {
+                    mt: -0.8,
+                    fontSize: "14px",
+                  },
+                  "& .MuiInputLabel-shrink": {
+                    mt: 0,
+                  },
+                  "input": { height: 7 },
                 }}
                 placeholder={placeholder}
                 error={!!error}

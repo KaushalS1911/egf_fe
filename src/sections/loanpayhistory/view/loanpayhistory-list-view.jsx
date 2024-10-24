@@ -200,7 +200,7 @@ export default function LoanpayhistoryListView() {
             mb: { xs: 3, md: 5 },
           }}
           action={
-            <Button variant='contained' startIcon={<Iconify icon='mingcute:add-line' />} onClick={() => setOpen(true)}>
+            <Button variant='contained' onClick={() => setOpen(true)}>
               Bulk Interest Pay
             </Button>
           }

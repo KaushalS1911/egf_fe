@@ -713,7 +713,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               <RHFDatePicker
                 name="nextInstallmentDate"
                 control={control}
-                label="Pay Date"
+                label="Next Installment Date"
                 req={"red"}
                 readOnly={true}
               />
@@ -724,8 +724,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         </Grid>
         <Grid item xs={12} md={4}>
           <Card>
-            <CardHeader title='Property Image' />
             <CardContent>
+            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+              Property Image
+            </Typography>
               {croppedImage ? (
                 <RHFUpload
                   name='property_image'
@@ -782,7 +784,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             sx={{ margin: '0px 0px 20px 0px' }}
           >
             <CardContent>
-              <Typography variant='h6' gutterBottom>
+              <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
                 Property Details
               </Typography>
               <TableContainer>

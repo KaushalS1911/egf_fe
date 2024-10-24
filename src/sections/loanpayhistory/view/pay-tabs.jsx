@@ -18,7 +18,7 @@ function PayTabs({ mutate, currentLoan }) {
     <>
       <Grid container spacing={3} sx={{ mt: 3 }}>
         <Grid item xs={12}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+          <Typography variant='subtitle1' sx={{  fontWeight: 600 }}>
             Loan Pay Details
           </Typography>
         </Grid>
