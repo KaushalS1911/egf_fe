@@ -735,7 +735,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   file={croppedImage}
                   onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
-                  sx={{ objectFit: 'contain' }}
+                  sx={{ height: "330px",' .css-1lrddw3':{height: "100%"}}}
                 />
               ) : (
                 <RHFUpload
@@ -743,7 +743,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   maxSize={3145728}
                   onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
-                  sx={{ objectFit: 'contain' }}
+                  sx={{ height: "330px",' .css-1lrddw3':{height: "100%"}}}
                 />
               )}
               <Dialog open={open} onClose={() => setOpen(false)} maxWidth='sm' fullWidth>
