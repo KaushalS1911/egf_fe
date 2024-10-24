@@ -22,7 +22,7 @@ export default function LoanissueCreateView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Loanissue List',
+            name: 'Loan issue',
             href: paths.dashboard.loanissue.root,
           },
           { name: 'New Loanissue' },

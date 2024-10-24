@@ -262,7 +262,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
         </Box>
 
         <Box>
-          <Typography variant='h6' sx={{ mt: 8, mb: 2 }}>
+          <Typography variant='subtitle1' sx={{ mt:2,fontWeight: 600 }}>
             Payment Details
           </Typography>
           <Box
@@ -274,7 +274,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
               sm: 'repeat(3, 1fr)',
               md: 'repeat(4, 1fr)',
             }}
-            sx={{ mt: 3 }}>
+            sx={{ mt: 2 }}>
             <RHFAutocomplete
               name='paymentMode'
               label='Payment Mode'
