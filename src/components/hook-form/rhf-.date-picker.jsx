@@ -19,8 +19,14 @@ const RHFDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }
             format="dd/MM/yyyy"
             sx={{
               ':not(:focus-within) label ~ div:first-of-type': customStyle,
-              'label': { mt: -0.8, fontSize: '14px' },
-              'input': { height: 7 },
+              "label": {
+                mt: -0.8,
+                fontSize: "14px",
+              },
+              "& .MuiInputLabel-shrink": {
+                mt: 0,
+              },
+              "input": { height: 7 },
             }}
             label={label || 'Date'}
             value={field.value}
