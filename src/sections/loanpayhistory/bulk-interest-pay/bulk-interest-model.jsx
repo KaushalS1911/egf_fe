@@ -51,6 +51,7 @@ function BulkInterestModel({ open, setOpen }) {
   const {
     reset,
     handleSubmit,
+    watch,
     formState: { isSubmitting },
   } = methods;
 
@@ -67,7 +68,6 @@ function BulkInterestModel({ open, setOpen }) {
       console.error(error);
     }
   });
-
   return (
     <Dialog
       fullWidth
@@ -106,7 +106,7 @@ function BulkInterestModel({ open, setOpen }) {
             {Loanissue && <RHFAutocomplete
               name='loans'
               label='Loans'
-              options={Loanissue}
+              options={Loanissue.filter((item) => item.customer._id === watch('customer')?._id)}
               multiple
               getOptionLabel={(option) => option.loanNo}
               isOptionEqualToValue={(option, value) => option.loanNo === value.loanNo}
