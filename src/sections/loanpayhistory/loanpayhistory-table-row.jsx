@@ -19,7 +19,7 @@ import Label from '../../components/label';
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow ,index}) {
-  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount , _id , status} = row;
+  const {loanNo , customer ,  scheme ,loanAmount, cashAmount , bankAmount , _id , status , srNo} = row;
   const confirm = useBoolean();
   const router = useRouter();
   const popover = usePopover();
@@ -28,7 +28,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
     <>
       <TableRow hover selected={selected} >
           <TableCell>
-            {index + 1}
+            {srNo}
           </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{ <Link to={paths.dashboard.loanPayHistory.edit(_id)} style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}>{loanNo}</Link>} </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
