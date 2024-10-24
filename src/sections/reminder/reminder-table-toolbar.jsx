@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
-
+import { useCallback, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -10,6 +9,12 @@ import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import { IconButton, MenuItem } from '@mui/material';
+import { RHFAutocomplete } from '../../components/hook-form';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Checkbox from '@mui/material/Checkbox';
 
 // ----------------------------------------------------------------------
 
@@ -17,22 +22,49 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [day, setDay] = useState("Next Week");
+  const days = ["Next Day","Next Week","Next Month"]
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
     [onFilters],
   );
+  const dayManage = (day) => {
+    const currentDate = new Date();
+    const nextDay = new Date(new Date().setDate(new Date().getDate() + 1 ));
+    const nextWeek = new Date(new Date().setDate(new Date().getDate() + 7));
+    const nextMonth = new Date(new Date().setDate(new Date().getDate() + 31));
 
+
+    if (day === 'Next Day') {
+      onFilters('startDay', currentDate );
+      onFilters('endDay', nextDay);
+
+    }
+    if (day === 'Next Week') {
+      onFilters('startDay', currentDate);
+      onFilters('endDay', nextWeek);
+    }
+    if (day === 'Next Month') {
+      onFilters('startDay', currentDate);
+      onFilters('endDay', nextMonth);
+    }
+   };
+  useEffect(() => {
+    if (day !== '') {
+      dayManage(day);
+    }
+
+  },[day])
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
         onFilters('startDate', null);
         return;
       }
-
       const date = moment(newValue);
-
       if (date.isValid()) {
         onFilters('startDate', date.toDate());
       } else {
@@ -42,21 +74,29 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
     },
     [onFilters],
   );
+
   const handleFilterEndDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
         onFilters('endDate', null);
         return;
       }
-
       const date = moment(newValue);
-
       if (date.isValid()) {
         onFilters('endDate', date.toDate());
       } else {
         console.warn('Invalid date selected');
         onFilters('endDate', null);
       }
+    },
+    [onFilters],
+  );
+
+  const handleFilterDays = useCallback(
+    (event) => {
+
+
+      setDay(event.target.value);
     },
     [onFilters],
   );
@@ -95,6 +135,37 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
               ),
             }}
           />
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 200 },
+            }}
+          >
+            <InputLabel>Filter by Day</InputLabel>
+
+            <Select
+              value={day}
+              onChange={handleFilterDays}
+              input={<OutlinedInput label="Filter by Day"/>}
+              MenuProps={{
+                PaperProps: {
+                  sx: { maxHeight: 240 },
+                },
+              }}
+              // renderValue={(selected) => selected.join(', ')}
+            >
+              {days.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {/*<Checkbox*/}
+                  {/*  disableRipple*/}
+                  {/*  size="small"*/}
+                  {/*  checked={branch.includes(option)}*/}
+                  {/*/>*/}
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <DatePicker
             label='Start date'
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -177,4 +248,5 @@ ReminderTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  dateError: PropTypes.bool,
 };

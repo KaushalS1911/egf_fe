@@ -53,6 +53,9 @@ const defaultFilters = {
   name: '',
   startDate: null,
   endDate: null,
+  nextInstallmentDay: [],
+  startDay: null,
+  endDay: null,
 }
 
 // ----------------------------------------------------------------------
@@ -159,7 +162,7 @@ export default function ReminderListView() {
                   onSort={table.onSort}
                 />
                 <TableBody>
-                  {(filters.startDate && filters.endDate || filters.name) ? (
+                  {(filters.startDate && filters.endDate || filters.name || filters.startDay && filters.endDay) ? (
                     dataFiltered.length > 0 ? (
                       <>
                         {dataFiltered
@@ -208,7 +211,7 @@ export default function ReminderListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters ,dateError}) {
-  const { startDate, endDate,name} = filters;
+  const { startDate, endDate,name,nextInstallmentDay,startDay,endDay} = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -222,6 +225,15 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
       (rem) =>
         rem.customer.firstName.toLowerCase().includes(name.toLowerCase()),
     );
+  }
+  if (nextInstallmentDay.length) {
+    inputData = inputData.filter((rem) => nextInstallmentDay.includes(rem.nextInstallmentDate));
+  }
+  if (!dateError) {
+    if (startDay && endDay) {
+      inputData = inputData.filter((rem) => isBetween(rem.nextInstallmentDate, startDay, endDay));
+      console.log(inputData,"hyu");
+    }
   }
     if (!dateError && startDate && endDate) {
       inputData = inputData.filter((order) =>
