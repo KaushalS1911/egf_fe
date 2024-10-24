@@ -357,7 +357,6 @@ export default function LoanpayhistoryListView() {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
   const { username, status } = filters;
-
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
