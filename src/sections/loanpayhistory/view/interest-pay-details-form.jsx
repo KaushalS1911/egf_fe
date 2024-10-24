@@ -154,7 +154,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
-    if (startDate > new Date()) {
+    if (startDate > new Date() || new Date(currentLoan.nextInstallmentDate) > startDate) {
       setValue('penalty', 0);
     }
   }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
