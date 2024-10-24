@@ -165,7 +165,11 @@ export default function BranchCreateView() {
                   <RHFTextField name='email' label='Email' fullWidth sx={{ mb: 2 }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='contact' label='Phone Number' fullWidth sx={{ mb: 2 }} />
+                  <RHFTextField name='contact' label='Phone Number' fullWidth sx={{ mb: 2 }}
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                onInput={(e) => {
+                                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                                }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <RHFAutocomplete
@@ -226,7 +230,7 @@ export default function BranchCreateView() {
                     inputProps={{
                       inputMode: 'numeric',
                       pattern: '[0-9]*',
-                      maxLength: 6
+                      maxLength: 6,
                     }}
                     onInput={(e) => {
                       e.target.value = e.target.value.replace(/[^0-9]/g, '');

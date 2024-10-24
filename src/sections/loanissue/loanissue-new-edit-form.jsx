@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -527,8 +527,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         </>
         }
         <Grid item xs={12} md={4}>
-          {/*<Typography variant='h6' sx={{ mb: 3 }}>*/}
-          {/*</Typography>*/}
         </Grid>
         <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
           <Box
@@ -612,7 +610,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
         </Grid>
-        <Grid xs={12} md={12}>
+        <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
               Loan Scheme Details
@@ -623,7 +621,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(6, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
             >
               <RHFTextField
@@ -725,13 +723,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
-            Property Details
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
           <Card>
-            <CardHeader title='Property Images' />
+            <CardHeader title='Property Image' />
             <CardContent>
               {croppedImage ? (
                 <RHFUpload
@@ -1008,7 +1001,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         </TableCell>
                       </TableRow>
                     ))}
-                    <TableRow sx={{ backgroundColor: (theme) => theme.palette.mode === 'light' ? "#e0f7fa" : "#2f3944" }}>
+                    <TableRow
+                      sx={{ backgroundColor: (theme) => theme.palette.mode === 'light' ? '#e0f7fa' : '#2f3944' }}>
                       <TableCell colSpan={2}><strong>Total:</strong></TableCell>
                       <TableCell>{calculateTotal('pcs')}</TableCell>
                       <TableCell>{calculateTotal('totalWeight')}</TableCell>

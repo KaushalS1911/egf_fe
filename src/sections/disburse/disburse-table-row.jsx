@@ -35,7 +35,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
             {loanNo}
           </Link>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>

@@ -95,7 +95,7 @@ function GoldLoanCalculator() {
         <TableBody>
           {rows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
-              <TableCell >{type === 'gold' ? row.name : rowIndex + 1}</TableCell>
+              <TableCell>{type === 'gold' ? row.name : rowIndex + 1}</TableCell>
               <TableCell>{type === 'gold' ? row.caratPercentage : row.interestRate}</TableCell>
               <TableCell>
                 {type === 'gold' ? (
@@ -180,7 +180,7 @@ function GoldLoanCalculator() {
                   size='small'
                   value={totalNetGram || ''}
                   onChange={(e) => type === 'finance' && handleChange(tableIndex, rowIndex, e.target.value)}
-                  readOnly={type === 'gold'}
+                  disabled={true}
                   InputProps={{ sx: { color: 'red' } }}
                 />
               </TableCell>
