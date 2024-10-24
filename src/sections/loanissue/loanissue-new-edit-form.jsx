@@ -134,7 +134,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       loanNo: currentLoanIssue?.loanNo || '',
       issueDate: currentLoanIssue ? new Date(currentLoanIssue?.issueDate) : new Date(),
       consultingCharge: currentLoanIssue?.consultingCharge || '',
-      approvalCharge: currentLoanIssue?.approvalCharge || '',
+      approvalCharge: currentLoanIssue?.approvalCharge || 0,
       nextInstallmentDate: currentLoanIssue ? new Date(currentLoanIssue?.nextInstallmentDate) : null,
       jewellerName: currentLoanIssue?.jewellerName || '',
       loanAmount: currentLoanIssue?.loanAmount || '',
@@ -527,8 +527,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         </>
         }
         <Grid item xs={12} md={4}>
-          {/*<Typography variant='h6' sx={{ mb: 3 }}>*/}
-          {/*</Typography>*/}
         </Grid>
         <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
           <Box
@@ -612,7 +610,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
         </Grid>
-        <Grid xs={12} md={12}>
+        <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
               Loan Scheme Details
@@ -623,7 +621,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(6, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
             >
               <RHFTextField
@@ -677,6 +675,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 name='approvalCharge'
                 label='Approval Charge'
                 disabled={!isFieldsEnabled}
+                req={'red'}
                 inputProps={{
                   inputMode: 'numeric',
                   pattern: '[0-9]*',
@@ -710,38 +709,22 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 type='number'
                 inputProps={{ min: 0 }}
               />}
-              {currentLoanIssue && <Controller
-                name='nextInstallmentDate'
+              {currentLoanIssue &&
+              <RHFDatePicker
+                name="nextInstallmentDate"
                 control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    readOnly={true}
-                    label='Next INT.Date'
-                    value={field.value}
-                    onChange={(newValue) => field.onChange(newValue)}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                        disabled: true,
-                      },
-                    }}
-                  />
-                )}
-              />}
+                label="Pay Date"
+                req={"red"}
+                readOnly={true}
+              />
+              }
               <RHFTextField name='jewellerName' label='Jeweller Name' req={'red'} disabled={!isFieldsEnabled} />
             </Box>
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
-            Property Details
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
           <Card>
-            <CardHeader title='Property Images' />
+            <CardHeader title='Property Image' />
             <CardContent>
               {croppedImage ? (
                 <RHFUpload
@@ -1018,7 +1001,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         </TableCell>
                       </TableRow>
                     ))}
-                    <TableRow sx={{ backgroundColor: (theme) => theme.palette.mode === 'light' ? "#e0f7fa" : "#2f3944" }}>
+                    <TableRow
+                      sx={{ backgroundColor: (theme) => theme.palette.mode === 'light' ? '#e0f7fa' : '#2f3944' }}>
                       <TableCell colSpan={2}><strong>Total:</strong></TableCell>
                       <TableCell>{calculateTotal('pcs')}</TableCell>
                       <TableCell>{calculateTotal('totalWeight')}</TableCell>

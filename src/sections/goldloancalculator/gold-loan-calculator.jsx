@@ -77,17 +77,19 @@ function GoldLoanCalculator() {
     setTotalNetGram(0);
     setTotalFinance(0);
   };
-
+  const sx = {
+    color:(theme)=>theme.palette.mode === 'light' ? '#000' :""
+  }
   const renderTable = (rows, tableIndex, handleChange, dataTable, type) => (
     <TableContainer component={Paper} key={tableIndex}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell className={'black-text'}>{type === 'gold' ? 'Carat' : 'No.'}</TableCell>
-            <TableCell className={'black-text'}>{type === 'gold' ? 'Value' : 'Int Rate'}</TableCell>
-            <TableCell className={'black-text'}>{type === 'gold' ? 'Gold Gram' : 'Per Gram'}</TableCell>
-            <TableCell className={'black-text'}>Net Gram</TableCell>
-            {type === 'finance' && <TableCell className={'black-text'}>Total Finance</TableCell>}
+            <TableCell sx={sx}>{type === 'gold' ? 'Carat' : 'No.'}</TableCell>
+            <TableCell sx={sx}>{type === 'gold' ? 'Value' : 'Int Rate'}</TableCell>
+            <TableCell sx={sx}>{type === 'gold' ? 'Gold Gram' : 'Per Gram'}</TableCell>
+            <TableCell sx={sx}>Net Gram</TableCell>
+            {type === 'finance' && <TableCell className={"black-text"}>Total Finance</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -147,11 +149,11 @@ function GoldLoanCalculator() {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{type === 'gold' ? 'Carat' : 'No.'}</TableCell>
-            <TableCell>{type === 'gold' ? 'Value' : 'Int Rate'}</TableCell>
-            <TableCell>{type === 'gold' ? 'Gold Gram' : 'Per Gram'}</TableCell>
-            <TableCell>Net Gram</TableCell>
-            {type === 'finance' && <TableCell>Total Finance</TableCell>}
+            <TableCell sx={sx}>{type === 'gold' ? 'Carat' : 'No.'}</TableCell>
+            <TableCell sx={sx}>{type === 'gold' ? 'Value' : 'Int Rate'}</TableCell>
+            <TableCell sx={sx}>{type === 'gold' ? 'Gold Gram' : 'Per Gram'}</TableCell>
+            <TableCell sx={sx}>Net Gram</TableCell>
+            {type === 'finance' && <TableCell sx={sx}>Total Finance</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
