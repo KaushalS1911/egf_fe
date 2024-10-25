@@ -82,6 +82,7 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
+            sx={{"input": { height: 7 },}}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -108,6 +109,14 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
             }}
             sx={{
               maxWidth: { md: 200 },
+              "label": {
+                mt: -0.8,
+                fontSize: "14px",
+              },
+              "& .MuiInputLabel-shrink": {
+                mt: 0,
+              },
+              "input": { height: 7 },
             }}
           />
           <DatePicker
@@ -130,6 +139,14 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
+              "label": {
+                mt: -0.8,
+                fontSize: "14px",
+              },
+              "& .MuiInputLabel-shrink": {
+                mt: 0,
+              },
+              "input": { height: 7 },
             }}
           />
           <IconButton onClick={popover.onOpen}>

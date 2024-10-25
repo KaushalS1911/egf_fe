@@ -64,7 +64,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     middleName: Yup.string().required('Middle Name is required'),
     lastName: Yup.string().required('Last Name is required'),
     contact: Yup.string().required('Contact number is required').max(10),
-    email: Yup.string().email('Invalid email format').required('Email is required'),
     dob: Yup.date().required('Date of Birth is required'),
     panCard: Yup.string().required('PAN Card number is required').max(10).min(10),
     aadharCard: Yup.string()
@@ -100,7 +99,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     remark: currentCustomer?.remark || '',
     customerCode: currentCustomer?.customerCode || '',
     drivingLicense: currentCustomer?.drivingLicense || '',
-    landline: currentCustomer?.landline || '',
     referenceBy: currentCustomer ? condition : '',
     otherReferenceBy: currentCustomer ? currentCustomer?.referenceBy : '',
     joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
@@ -150,7 +148,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         dob: data.dob,
         joiningDate: data.joiningDate,
         drivingLicense: data.drivingLicense,
-        landline: data.landline,
         panCard: data.panCard,
         aadharCard: data.aadharCard,
         otpContact: data.otpContact,
@@ -347,6 +344,19 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 />
               )}
               <RHFTextField
+                name='customerCode'
+                label='Customer Code'
+                InputProps={{
+                  disabled: true,
+                }}
+              />
+              <RHFDatePicker
+                name='joiningDate'
+                control={control}
+                label='Joining Date'
+                req={'red'}
+              />
+              <RHFTextField
                 name='firstName'
                 label='First Name'
                 inputProps={{ style: { textTransform: 'uppercase' } }}
@@ -368,7 +378,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               />
               <RHFTextField
                 name='lastName'
-                label='Surname'
+                label='Last Name'
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
@@ -398,71 +408,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 }}
                 req={'red'}
               />
-              <RHFTextField name='email' label='Email' req={'red'} />
-              <RHFDatePicker
-                name='dob'
-                control={control}
-                label='Date of Birth'
-                req={'red'}
-              />
-              <RHFTextField
-                name='drivingLicense'
-                label='Driving License'
-                onInput={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                }}
-                inputProps={{ maxLength: 16 }}
-              />
-              <RHFTextField
-                name='customerCode'
-                label='Customer Code'
-                InputProps={{
-                  disabled: true,
-                }}
-              />
-              <RHFTextField name='landline' label='Phone(landline)' inputProps={{
-                maxLength: 10,
-                inputMode: 'numeric',
-                pattern: '[0-9]*',
-              }}
-                            rules={{
-                              required: 'OTP is required',
-                              pattern: {
-                                value: /^[0-9]{10}$/,
-                                message: 'Please enter a valid 10-digit OTP',
-                              },
-                            }}
-                            onKeyPress={(e) => {
-                              if (!/[0-9]/.test(e.key)) {
-                                e.preventDefault();
-                              }
-                            }}
-              />
-              <RHFTextField
-                name='panCard'
-                label='PAN No.'
-                req={'red'}
-                inputProps={{ minLength: 10, maxLength: 10 }}
-                onChange={(e) => {
-                  const value = e.target.value.toUpperCase();
-                  methods.setValue('panCard', value, { shouldValidate: true });
-                }}
-              />
-              <RHFDatePicker
-                name='joiningDate'
-                control={control}
-                label='Joining Date'
-                req={'red'}
-              />
-              <RHFTextField
-                name='aadharCard'
-                label='Aadhar Card'
-                req={'red'}
-                inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
-                onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                }}
-              />
               <RHFTextField
                 name='otpContact'
                 label='OTP Mobile'
@@ -485,6 +430,33 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 }}
                 req={'red'}
               />
+              <RHFTextField
+                name='drivingLicense'
+                label='Driving License'
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
+                inputProps={{ maxLength: 16 }}
+              />
+              <RHFTextField
+                name='panCard'
+                label='PAN No.'
+                req={'red'}
+                inputProps={{ minLength: 10, maxLength: 10 }}
+                onChange={(e) => {
+                  const value = e.target.value.toUpperCase();
+                  methods.setValue('panCard', value, { shouldValidate: true });
+                }}
+              />
+              <RHFTextField
+                name='aadharCard'
+                label='Aadhar Card'
+                req={'red'}
+                inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                }}
+              />
               {configs?.businessTypes && (
                 <RHFAutocomplete
                   name='businessType'
@@ -494,6 +466,13 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   isOptionEqualToValue={(option, value) => option === value}
                 />
               )}
+              <RHFTextField name='email' label='Email' />
+              <RHFDatePicker
+                name='dob'
+                control={control}
+                label='Date of Birth'
+                req={'red'}
+              />
               <RHFAutocomplete
                 name='loanType'
                 label='Loan Type'
@@ -522,7 +501,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const addressDetails = (
     <>
-
       <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Properties' />}
@@ -544,10 +522,9 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='PerZipcode'
                 label={
-                  <span>
-      Zipcode<span style={{ color: 'red' }}>*</span>
-    </span>
+                  <span>Zipcode</span>
                 }
+                req={'red'}
                 inputProps={{
                   inputMode: 'numeric',
                   pattern: '[0-9]*',
@@ -711,20 +688,20 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const referenceDetails = (
     <>
       {mdUp && (
-        <Grid md={4}>
+        <Grid md={12}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
             Other Details
           </Typography>
         </Grid>
       )}
-      <Grid xs={12} md={8}>
+      <Grid xs={12} md={12}>
         <Card>
           <Box columnGap={2}
                rowGap={3}
                display='grid'
                gridTemplateColumns={{
                  xs: 'repeat(1, 1fr)',
-                 md: 'repeat(2, 1fr)',
+                 md: 'repeat(1, 1fr)',
                }}>
             {!mdUp && <CardHeader title='Properties' />}
             <Stack spacing={3} sx={{ p: 3 }}>
@@ -733,13 +710,15 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 <RHFRadioGroup
                   row
                   spacing={4}
-                  sx={{ width: '175px' }}
+                  sx={{display:"flex" }}
                   name='referenceBy'
                   options={INQUIRY_REFERENCE_BY}
                 />
               </Stack>
             </Stack>
-            <Stack spacing={2} sx={{ p: 3 }} justifyContent={'end'}>
+            <Stack spacing={2} sx={{
+              p: watch('referenceBy') === 'Other' ? 3 : 0
+            }} justifyContent={'end'}>
               {watch('referenceBy') === 'Other' && (
                 <Stack spacing={1}>
                   <Typography variant='subtitle2'>Write other reference name</Typography>

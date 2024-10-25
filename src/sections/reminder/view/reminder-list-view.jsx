@@ -223,7 +223,7 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>
-        rem.customer.firstName.toLowerCase().includes(name.toLowerCase()),
+        rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) || rem.customer.lastName.toLowerCase().includes(name.toLowerCase())
     );
   }
   if (nextInstallmentDay.length) {
@@ -232,7 +232,6 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   if (!dateError) {
     if (startDay && endDay) {
       inputData = inputData.filter((rem) => isBetween(rem.nextInstallmentDate, startDay, endDay));
-      console.log(inputData,"hyu");
     }
   }
     if (!dateError && startDate && endDate) {

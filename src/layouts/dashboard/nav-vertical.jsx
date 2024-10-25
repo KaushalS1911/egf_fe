@@ -78,7 +78,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
     if (openNav) {
       onCloseNav();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const renderContent = (
@@ -98,6 +97,26 @@ export default function NavVertical({ openNav, onCloseNav }) {
         <FormProvider {...methods}>
           <Box sx={{ mt: 2, mx: 4}}>
             <RHFAutocomplete
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: '#fff',
+                  '& fieldset': {
+                    borderColor: '#fff',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#fff',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#fff',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: '#fff !important',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#fff !important' ,
+                },
+              }}
               name="branchId"
               label="Branch"
               placeholder="Choose a Branch"
@@ -109,26 +128,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
                 })),
               ]}
               isOptionEqualToValue={(option, value) => option?.value === value?.value}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  color: 'white', // Default text color
-                  '& fieldset': {
-                    borderColor: 'gray', // Default outline color
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Outline color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Outline color when focused
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'white', // Label color
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: 'white', // Label color when focused
-                },
-              }}
             />
 
           </Box>

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { TextField, Button, Grid, Box, Card, Typography, Container } from '@mui/material';
+import {  Grid, Box, Card, Typography, Container } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
@@ -152,87 +152,87 @@ export default function MyProfile() {
   };
 
   return (
-    <Container maxWidth={"lg"}>
-    <Grid container spacing={5}>
-      <Grid item xs={12} md={8}>
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitPersonalDetails)}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Personal Details
-          </Typography>
-          <Typography variant='body2' sx={{ color: 'text.secondary', mb: 3 }}>
-            Personal info, profile pic, Name...
-          </Typography>
-          <Card sx={{ pt: 5, px: 3 }}>
-            <Box sx={{ mb: 5, px: 3, display: 'flex', textAlign: 'center', justifyContent: 'start' }}>
-              <RHFUploadAvatar name='avatar_url' onDrop={handleDrop} />
-            </Box>
-            <Stack spacing={3} sx={{ p: 3 }}>
-              <Box
-                columnGap={2}
-                rowGap={3}
-                display='grid'
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(3, 1fr)',
-                }}
-              >
-                <RHFTextField label='First Name' name='firstName' onClick={handleDisable} />
-                <RHFTextField label='Middle Name' name='middleName' onClick={handleDisable} />
-                <RHFTextField label='Last Name' name='lastName' onClick={handleDisable} />
-                <RHFTextField label='Email' name='email' onClick={handleDisable} />
-                <RHFTextField label='Contact' name='contact' onClick={handleDisable} />
+    <Container maxWidth={'lg'}>
+      <Grid container spacing={5}>
+        <Grid item xs={12} md={8}>
+          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitPersonalDetails)}>
+            <Typography variant='h6' sx={{ mb: 0.5 }}>
+              Personal Details
+            </Typography>
+            <Typography variant='body2' sx={{ color: 'text.secondary', mb: 3 }}>
+              Personal info, profile pic, Name...
+            </Typography>
+            <Card sx={{ pt: 5, px: 3 }}>
+              <Box sx={{ mb: 5, px: 3, display: 'flex', textAlign: 'center', justifyContent: 'start' }}>
+                <RHFUploadAvatar name='avatar_url' onDrop={handleDrop} />
               </Box>
-              <Stack direction='row' justifyContent='flex-end'>
-                <LoadingButton
-                  type='submit'
-                  variant='contained'
-                  disabled={disable}
-                  loading={isSubmitting}
+              <Stack spacing={3} sx={{ p: 3 }}>
+                <Box
+                  columnGap={2}
+                  rowGap={3}
+                  display='grid'
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(3, 1fr)',
+                  }}
                 >
-                  Submit
-                </LoadingButton>
+                  <RHFTextField label='First Name' name='firstName' onClick={handleDisable} />
+                  <RHFTextField label='Middle Name' name='middleName' onClick={handleDisable} />
+                  <RHFTextField label='Last Name' name='lastName' onClick={handleDisable} />
+                  <RHFTextField label='Email' name='email' onClick={handleDisable} />
+                  <RHFTextField label='Contact' name='contact' onClick={handleDisable} />
+                </Box>
+                <Stack direction='row' justifyContent='flex-end'>
+                  <LoadingButton
+                    type='submit'
+                    variant='contained'
+                    disabled={disable}
+                    loading={isSubmitting}
+                  >
+                    Submit
+                  </LoadingButton>
+                </Stack>
               </Stack>
-            </Stack>
-          </Card>
-        </FormProvider>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <FormProvider methods={passwordMethods} onSubmit={handlePasswordSubmit(onSubmitPassword)}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
-            Update Password
-          </Typography>
-          <Typography variant='body2' sx={{ color: 'text.secondary', mb: 3 }}>
-            Password info...
-          </Typography>
-          <Card>
-            <Stack spacing={3} sx={{ p: 3 }}>
-              <Box
-                columnGap={2}
-                rowGap={3}
-                display='grid'
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(1, 1fr)',
-                }}
-              >
-                <RHFTextField label='Current Password' name='currentPassword' />
-                <RHFTextField label='New Password' name='newPassword' />
-                <RHFTextField label='Confirm Password' name='confirmPassword' />
-              </Box>
-              <Stack direction='row' justifyContent='flex-end'>
-                <LoadingButton
-                  type='submit'
-                  variant='contained'
-                  loading={isPasswordSubmitting}
+            </Card>
+          </FormProvider>
+        </Grid>
+        {user?.role === 'Admin' && <Grid item xs={12} md={4}>
+          <FormProvider methods={passwordMethods} onSubmit={handlePasswordSubmit(onSubmitPassword)}>
+            <Typography variant='h6' sx={{ mb: 0.5 }}>
+              Update Password
+            </Typography>
+            <Typography variant='body2' sx={{ color: 'text.secondary', mb: 3 }}>
+              Password info...
+            </Typography>
+            <Card>
+              <Stack spacing={3} sx={{ p: 3 }}>
+                <Box
+                  columnGap={2}
+                  rowGap={3}
+                  display='grid'
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(1, 1fr)',
+                  }}
                 >
-                  Update Password
-                </LoadingButton>
+                  <RHFTextField label='Current Password' name='currentPassword' />
+                  <RHFTextField label='New Password' name='newPassword' />
+                  <RHFTextField label='Confirm Password' name='confirmPassword' />
+                </Box>
+                <Stack direction='row' justifyContent='flex-end'>
+                  <LoadingButton
+                    type='submit'
+                    variant='contained'
+                    loading={isPasswordSubmitting}
+                  >
+                    Update Password
+                  </LoadingButton>
+                </Stack>
               </Stack>
-            </Stack>
-          </Card>
-        </FormProvider>
+            </Card>
+          </FormProvider>
+        </Grid>}
       </Grid>
-    </Grid>
     </Container>
   );
 }

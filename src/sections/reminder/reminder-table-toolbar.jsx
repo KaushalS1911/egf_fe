@@ -123,6 +123,7 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
+            sx={{"input": { height: 7 },}}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -146,21 +147,30 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
             <Select
               value={day}
               onChange={handleFilterDays}
-              input={<OutlinedInput label="Filter by Day"/>}
+              input={<OutlinedInput label="Filter by Day"  sx={{ height: '40px' }}/>}
               MenuProps={{
                 PaperProps: {
-                  sx: { maxHeight: 240 },
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
                 },
               }}
-              // renderValue={(selected) => selected.join(', ')}
             >
               {days.map((option) => (
                 <MenuItem key={option} value={option}>
-                  {/*<Checkbox*/}
-                  {/*  disableRipple*/}
-                  {/*  size="small"*/}
-                  {/*  checked={branch.includes(option)}*/}
-                  {/*/>*/}
                   {option}
                 </MenuItem>
               ))}
@@ -180,6 +190,14 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
             }}
             sx={{
               maxWidth: { md: 200 },
+              "label": {
+                mt: -0.8,
+                fontSize: "14px",
+              },
+              "& .MuiInputLabel-shrink": {
+                mt: 0,
+              },
+              "input": { height: 7 },
             }}
           />
           <DatePicker
@@ -202,6 +220,14 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
+              "label": {
+                mt: -0.8,
+                fontSize: "14px",
+              },
+              "& .MuiInputLabel-shrink": {
+                mt: 0,
+              },
+              "input": { height: 7 },
             }}
           />
           <IconButton onClick={popover.onOpen}>

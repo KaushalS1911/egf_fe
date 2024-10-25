@@ -1,9 +1,8 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -15,10 +14,9 @@ import { useRouter } from 'src/routes/hooks';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
-import { Button } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import { useGetEmployee } from '../../api/employee';
 
@@ -26,7 +24,9 @@ import { useGetEmployee } from '../../api/employee';
 
 const STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
-  { value: 'In Active', label: 'In Active' },
+  { value: 'Completed', label: 'Completed' },
+  { value: 'Responded', label: 'Responded' },
+  { value: 'Not Responded', label: 'Not Responded' },
 ];
 
 export default function InquiryNewEditForm({ currentInquiry }) {
@@ -51,6 +51,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     firstName: Yup.string().required('First name is required'),
     lastName: Yup.string().required('Last name is required'),
     contact: Yup.string().required('Contact is required'),
+    address: Yup.string().required('Address is required'),
     email: Yup.string().email('Email must be valid').required('Email is required'),
     date: Yup.date()
       .required('Date is required')
@@ -85,6 +86,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       date: currentInquiry ? new Date(currentInquiry?.date) : new Date(),
       inquiryFor: (currentInquiry && checkInquiryFor(currentInquiry?.inquiryFor) ? 'Other' : currentInquiry?.inquiryFor) || '',
       remark: currentInquiry?.remark || '',
+      address: currentInquiry?.address || '',
     }),
     [currentInquiry],
   );
@@ -112,6 +114,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       inquiryFor: data.inquiryFor === 'Other' ? data.other : data.inquiryFor,
       remark: data.remark,
       response: data.response,
+      address: data.address,
       assignTo: data.assignTo.value,
     };
 
@@ -166,8 +169,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
-
-          Inquiry Details
+            Inquiry Details
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>
@@ -250,10 +252,10 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                 }} />
               <RHFTextField name='email' label='Email' req={'red'} />
               <RHFDatePicker
-                name="date"
+                name='date'
                 control={control}
-                label="Date"
-                req={"red"}
+                label='Date'
+                req={'red'}
               />
               {configs.loanTypes && <RHFAutocomplete
                 name='inquiryFor'
@@ -274,12 +276,18 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                 label='Status'
                 placeholder='Choose a Status'
                 options={STATUS_OPTIONS.map((item) => item.value)}
-                isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                onChange={(e, value) => {
+                  methods.setValue('response', value);
+                  if (value === 'Responded') {
+                    setDialogOpen(true);
+                  }
+                }}
               />
               {
                 (watch('inquiryFor') === 'Other') &&
                 <RHFTextField name='other' label='Other' req={'red'} />
               }
+              <RHFTextField name='address' label='Address' req={'red'} />
               <RHFTextField name='remark' label='Remark' />
             </Box>
           </Card>
@@ -290,7 +298,6 @@ export default function InquiryNewEditForm({ currentInquiry }) {
               {!currentInquiry ? 'Submit' : 'Save'}
             </LoadingButton>
           </Box>
-
         </Grid>
       </Grid>
     </FormProvider>

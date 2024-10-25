@@ -126,138 +126,80 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
           <FormProvider methods={methods} onSubmit={onSubmit}>
             <Card sx={{ p: 3 }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={4}>
-                  <Box>
+                <Grid item xs={12} md={9}>
+                  <Box
+                    columnGap={2}
+                    rowGap={3}
+                    display='grid'
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)', // For small screens (mobile), 1 column
+                      md: 'repeat(4, 1fr)', // For medium and larger screens, 6 columns
+                    }}
+                  >
                     <RHFTextField name='loanNo' label='Loan No.' InputProps={{ readOnly: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
                     <RHFTextField name='customerName' label='Customer Name' InputProps={{ readOnly: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
                     <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
                     <RHFTextField
                       name='contact'
                       label='Mobile No.'
                       InputProps={{ readOnly: true }}
                       inputProps={{ maxLength: 16 }}
                     />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
                     <RHFDatePicker
                       name='issueDate'
                       control={control}
                       label='Issue Date'
                     />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
                     <RHFTextField
                       name='schemeName'
                       label='Scheme Name'
                       InputProps={{ readOnly: true }}
                       inputProps={{ minLength: 10, maxLength: 10 }}
-                      onChange={(e) => {
-                        const value = e.target.value.toUpperCase();
-                        methods.setValue('panCard', value, { shouldValidate: true });
-                      }}
                     />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
                     <RHFDatePicker
-                      name='issueDate'
+                      name='nextInterestPayDate'
                       control={control}
-                      label='Issue Date'
+                      label='Next Interest Pay Date'
                     />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
-                    <RHFTextField name='closedBy' label='Closed by' InputProps={{ readOnly: true }}
-                                  InputLabelProps={{ shrink: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
+                    <RHFTextField name='closedBy' label='Closed By' InputProps={{ readOnly: true }} />
                     <RHFTextField
                       name='oldLoanNo'
                       label='Old Loan No'
                       InputProps={{ readOnly: true }}
-                      InputLabelProps={{ shrink: true }}
                       inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                       onInput={(e) => {
                         e.target.value = e.target.value.replace(/[^0-9]/g, '');
                       }}
                     />
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Box>
                     <RHFTextField
                       name='interest'
                       label='Interest %'
                       InputProps={{ readOnly: true }}
-                      InputLabelProps={{ shrink: true }}
-                      inputProps={{
-                        maxLength: 10,
-                        inputMode: 'numeric',
-                        pattern: '[0-9]*',
-                      }}
-                      rules={{
-                        required: 'Interest % is required',
-                        pattern: {
-                          value: /^[0-9]+$/,
-                          message: 'Please enter a valid interest percentage',
-                        },
-                      }}
+                      inputProps={{ maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' }}
                       onKeyPress={(e) => {
                         if (!/[0-9]/.test(e.key)) {
                           e.preventDefault();
                         }
                       }}
                     />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
-                    <RHFTextField name='consultCharge' label='Consult Charge %' InputProps={{ readOnly: true }}
-                                  InputLabelProps={{ shrink: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
-                    <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }}
-                                  InputLabelProps={{ shrink: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
-                    <RHFTextField name='interestLoanAmount' label='Interest Loan Amt' InputProps={{ readOnly: true }}
-                                  InputLabelProps={{ shrink: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
-                    <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }}
-                                  InputLabelProps={{ shrink: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
-                    <RHFTextField name='IntPeriodTime' label='INT. Period Time' InputProps={{ readOnly: true }}
-                                  InputLabelProps={{ shrink: true }} />
-                  </Box>
-                  <Box sx={{ mt: 3 }}>
+                    <RHFTextField name='consultCharge' label='Consult Charge %' InputProps={{ readOnly: true }} />
+                    <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }} />
+                    <RHFTextField name='interestLoanAmount' label='Interest Loan Amount' InputProps={{ readOnly: true }} />
+                    <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }} />
+                    <RHFTextField name='IntPeriodTime' label='Interest Period Time' InputProps={{ readOnly: true }} />
                     <RHFDatePicker
-                      name='nextInterestPayDate'
+                      name='lastInterestPayDate'
                       control={control}
-                      label='Next Interest Pay Date'
+                      label='Last Interest Pay Date'
+                    />
+                    <RHFDatePicker
+                      name='renewDate'
+                      control={control}
+                      label='Renew Date'
                     />
                   </Box>
-                  <Box sx={{mt: 3}}>
-                        <RHFDatePicker
-                          name="lastInterestPayDate"
-                          control={control}
-                          label="Last Interest Pay Date"
-                          InputLabelShrink={true}
-                      />
-                  </Box>
-                  <Box sx={{mt: 3}}>
-                        <RHFDatePicker
-                          name="renewDate"
-                          control={control}
-                          label="Renew Date"
-                          InputLabelShrink={true}
-                        />
-                  </Box>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                   <Box>
                         <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
                   </Box>

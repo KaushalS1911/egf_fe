@@ -260,25 +260,25 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             }
           }} />
         </Box>
-
         <Box>
-          <Typography variant='subtitle1' sx={{ mt:2,fontWeight: 600 }}>
+          <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>
             Payment Details
           </Typography>
           <Box
             rowGap={3}
             columnGap={2}
-            display='grid'
+            display="grid"
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(3, 1fr)',
               md: 'repeat(4, 1fr)',
             }}
-            sx={{ mt: 2 }}>
+            sx={{ mt: 2 }}
+          >
             <RHFAutocomplete
-              name='paymentMode'
-              label='Payment Mode'
-              req={'red'}
+              name="paymentMode"
+              label="Payment Mode"
+              req="red"
               onChange={(event, newValue) => {
                 setPaymentMode(newValue);
                 setValue('paymentMode', newValue);
@@ -291,47 +291,26 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                 </li>
               )}
             />
-          </Box>
-        </Box>
-        <Box sx={{ mt: 3 }}>
-          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}>
+
+            {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
               <RHFTextField
-                name='cashAmount'
-                label='Cash Amount'
-                req={'red'}
+                name="cashAmount"
+                label="Cash Amount"
+                req="red"
                 onKeyPress={(e) => {
                   if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                     e.preventDefault();
                   }
-                }} />
-            </Box>
-          )}
-          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}
-              sx={{ mt: 3 }}
-            >
-              <Box>
+                }}
+              />
+            ) : null}
+
+            {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+              <>
                 <RHFAutocomplete
-                  name='account'
-                  label='Account'
-                  req={'red'}
+                  name="account"
+                  label="Account"
+                  req="red"
                   fullWidth
                   options={branch.flatMap((item) => item.company.bankAccounts)}
                   getOptionLabel={(option) => option.bankName || ''}
@@ -345,17 +324,22 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                     setValue('account', value);
                   }}
                 />
-              </Box>
-              <Box>
-                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} onKeyPress={(e) => {
-                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                }} />
-              </Box>
-            </Box>
-          )}
+
+                <RHFTextField
+                  name="bankAmount"
+                  label="Bank Amount"
+                  req="red"
+                  onKeyPress={(e) => {
+                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </>
+            )}
+          </Box>
         </Box>
+
         <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
@@ -381,7 +365,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             borderRadius: '4px',
           },
         }}>
-          <Table sx={{ borderRadius: '16px', mt: 8, minWidth: '1600px' }}>
+          <Table sx={{ borderRadius: '16px', mt: 3, minWidth: '1600px'}}>
             <TableHeadCustom
               order={table.order}
               orderBy={table.orderBy}
