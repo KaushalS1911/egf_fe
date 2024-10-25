@@ -242,14 +242,42 @@ export default function InquiryListView() {
                     margin: '0px 10px',
                   }}
                 >
-                  <InputLabel>Branch</InputLabel>
+                  <InputLabel
+                    sx={{
+                      mt: -1, '&.MuiInputLabel-shrink': {
+                        mt: 0,
+                      },
+                    }}
+                  >Branch</InputLabel> {/* Margin applied here */}
                   <Select
                     value={selectedBranch}
                     onChange={handleBranchChange}
-                    input={<OutlinedInput label='Branch' />}
+                    input={
+                      <OutlinedInput
+                        label='Branch'
+                        sx={{
+                          height: '36px',
+                        }}
+                      />
+                    }
                     MenuProps={{
                       PaperProps: {
-                        sx: { maxHeight: 240 },
+                        sx: {
+                          maxHeight: 200,
+                          '&::-webkit-scrollbar': {
+                            width: '5px',
+                          },
+                          '&::-webkit-scrollbar-track': {
+                            backgroundColor: '#f1f1f1',
+                          },
+                          '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: '#888',
+                            borderRadius: '4px',
+                          },
+                          '&::-webkit-scrollbar-thumb:hover': {
+                            backgroundColor: '#555',
+                          },
+                        },
                       },
                     }}
                   >
@@ -270,15 +298,39 @@ export default function InquiryListView() {
                   }}
                   disabled={!selectedBranch}
                 >
-                  <InputLabel>Emplyoee</InputLabel>
+                  <InputLabel   sx={{
+                    mt: -1, '&.MuiInputLabel-shrink': {
+                      mt: 0,
+                    },
+                  }}>Emplyoee</InputLabel>
                   <Select
                     value={selectedEmployee}
                     onChange={handleEmployeeChange}
 
-                    input={<OutlinedInput label='Emplyoee' />}
+                    input={<OutlinedInput
+                      label='Emplyoee'
+                      sx={{
+                        height: '36px',
+                      }}
+                    />}
                     MenuProps={{
                       PaperProps: {
-                        sx: { maxHeight: 240 },
+                        sx: {
+                          maxHeight: 200,
+                          '&::-webkit-scrollbar': {
+                            width: '5px',
+                          },
+                          '&::-webkit-scrollbar-track': {
+                            backgroundColor: '#f1f1f1',
+                          },
+                          '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: '#888',
+                            borderRadius: '4px',
+                          },
+                          '&::-webkit-scrollbar-thumb:hover': {
+                            backgroundColor: '#555',
+                          },
+                        },
                       },
                     }}
                   >
@@ -425,7 +477,10 @@ export default function InquiryListView() {
 
 // Additional utility functions for filtering
 
-function applyFilter({ inputData, comparator, filters }) {
+function applyFilter({
+                       inputData, comparator, filters,
+                     },
+) {
   const { status, name, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);

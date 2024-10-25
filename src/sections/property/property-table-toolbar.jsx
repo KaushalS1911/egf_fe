@@ -48,6 +48,8 @@ export default function   PropertyTableToolbar({
       >
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
+            sx={{"input": { height: 7 },}}
+
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
