@@ -196,8 +196,9 @@ export default function CompanyProfile() {
           </Grid>
 
           <Grid item sx={{ my: 'auto' }} xs={12} md={8}>
-            <Typography variant='h6' sx={{ mb: 0.5 }}>
-              Company Details
+            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+
+            Company Details
             </Typography>
             <Card>
               <Stack spacing={3} sx={{ p: 3 }}>
@@ -234,7 +235,9 @@ export default function CompanyProfile() {
       <FormProvider methods={bankDetailsMethods}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <CardHeader title='Bank Details' />
+            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 ,px:3}}>
+              Bank Details
+            </Typography>
             <Typography variant='body2' sx={{ color: 'text.secondary', px: 3 }}>
               Bank info...
             </Typography>
@@ -296,8 +299,8 @@ export default function CompanyProfile() {
               <Card sx={{ margin: '10px 0px' }} key={account._id}>
                 <Stack sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant='body2' sx={{ fontWeight: '600', fontSize: '17px' }}>
-                      {account.bankName} ({account.accountType})
+                    <Typography variant='subtitle1' sx={{fontWeight: 600 }}>
+                    {account.bankName} ({account.accountType})
                     </Typography>
                     <Box>
                       <IconButton onClick={() => handleEditBankDetail(account)}>

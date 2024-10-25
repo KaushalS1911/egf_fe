@@ -55,21 +55,23 @@ export default function BusinessTypeCreteView({ setTab }) {
     <Box sx={{ width: '100%', marginBottom: '10px', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <CardHeader title="Add Business Type" />
+          <Typography variant='h5' sx={{ fontWeight: 600 }}>
+            Add Business Type
+          </Typography>
         </Grid>
 
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
             <TextField
               fullWidth
-              variant="outlined"
-              label="Business Type"
+              variant='outlined'
+              label='Business Type'
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               sx={{ fontSize: '16px' }}
             />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
-              <Button variant="contained" onClick={handleClick}>
+              <Button variant='contained' onClick={handleClick}>
                 Add
               </Button>
             </Box>
@@ -82,7 +84,7 @@ export default function BusinessTypeCreteView({ setTab }) {
               <Box
                 columnGap={2}
                 rowGap={2}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(2, 1fr)',
@@ -110,7 +112,7 @@ export default function BusinessTypeCreteView({ setTab }) {
                         sx={{ color: 'error.main', cursor: 'pointer' }}
                         onClick={() => handleDelete(type)}
                       >
-                        <Iconify icon="solar:trash-bin-trash-bold" />
+                        <Iconify icon='solar:trash-bin-trash-bold' />
                       </Box>
                     </Grid>
                   </Grid>

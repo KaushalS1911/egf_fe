@@ -325,7 +325,9 @@ export default function PermissionView() {
         <Grid container spacing={3}>
           <Grid item xs={12} display='flex' justifyContent='space-between'>
             <Box>
-              <CardHeader title='Permission' sx={{ padding: '0px' }} />
+              <Typography variant='h5' sx={{fontWeight: 600 }}>
+                Permission
+              </Typography>
             </Box>
             <Box sx={{ width: '250px' }}>
               <RHFAutocomplete
@@ -361,7 +363,7 @@ export default function PermissionView() {
                       }}
                     >
                       <Grid item xs={12} display='flex' justifyContent='space-between'>
-                        <Typography sx={{ fontSize: '16px', fontWeight: '900' }}>
+                        <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
                           {module.label}
                         </Typography>
                         <FormControlLabel

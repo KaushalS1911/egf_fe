@@ -57,7 +57,10 @@ export default function LoanTypeView() {
     <Box sx={{ width: '100%', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <CardHeader title='Add Loan Type' />
+          <Typography variant='h5' sx={{ fontWeight: 600 }}>
+            Add Loan Type
+
+          </Typography>
         </Grid>
 
         <Grid item md={4} xs={12}>
