@@ -302,7 +302,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           </Card>
         </Grid>
 
-        <Grid xs={12} md={9 }>
+        <Grid xs={12} md={9}>
           <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}
@@ -327,8 +327,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
               )}
               <RHFTextField
-                name="firstName"
-                label="First Name"
+                name='firstName'
+                label='First Name'
                 req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
@@ -338,8 +338,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               />
 
               <RHFTextField
-                name="middleName"
-                label="Middle Name"
+                name='middleName'
+                label='Middle Name'
                 req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
@@ -349,8 +349,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               />
 
               <RHFTextField
-                name="lastName"
-                label="Last Name"
+                name='lastName'
+                label='Last Name'
                 req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
@@ -411,10 +411,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   }
                 }} />
               <RHFDatePicker
-                name="dob"
+                name='dob'
                 control={control}
-                label="Date of Birth"
-                req={"red"}
+                label='Date of Birth'
+                req={'red'}
               />
               <RHFTextField name='remark' label='Remark' />
             </Box>
@@ -426,9 +426,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         </Grid>
         <Grid item xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-            <Typography variant='subtitle1' sx={{ mb: 2 ,fontWeight:600}}>
-            Official Info
-          </Typography>
+            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+              Official Info
+            </Typography>
 
             <Box
               rowGap={3}
@@ -468,23 +468,23 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               <RHFTextField name='email' label='Email' req={'red'} />
               {!currentEmployee && <RHFTextField name='password' label='Password' req={'red'} />}
               <RHFDatePicker
-                name="joiningDate"
+                name='joiningDate'
                 control={control}
-                label="Join Date"
-                req={"red"}
+                label='Join Date'
+                req={'red'}
               />
               <RHFDatePicker
-                name="leaveDate"
+                name='leaveDate'
                 control={control}
-                label="Leave Date"
-                req={"red"}
+                label='Leave Date'
+                req={'red'}
               />
             </Box>
           </Card>
         </Grid>
         <Grid item xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-            <Typography variant='subtitle1' sx={{ mb: 2 ,fontWeight:600}}>
+            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
               Permanent Address
             </Typography>
             <Box
@@ -497,14 +497,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               }}
             >
               <RHFTextField name='permanentStreet' label='Address' req={'red'} />
-              <RHFTextField name='permanentLandmark' label='Landmark' />
+              <RHFTextField name='permanentLandmark' label='Landmark' req={'red'} />
               <RHFTextField
                 name='permanentZipcode'
                 label={
                   <span>
-      Zipcode<span style={{ color: 'red' }}>*</span>
+      Zipcode
     </span>
                 }
+                req={'red'}
                 inputProps={{
                   inputMode: 'numeric',
                   pattern: '[0-9]*',
@@ -643,8 +644,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     renderInput={(params) => (
                       <TextField {...params} label='Country' variant='outlined'
                                  sx={{
-                                   " label" : {mt:-0.8,fontSize:"14px"},
-                                   " input" : {height:7},
+                                   ' label': { mt: -0.8, fontSize: '14px' },
+                                   ' input': { height: 7 },
                                  }}
                       />
                     )}
@@ -667,9 +668,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label='State' variant='outlined'  sx={{
-                        " label" : {mt:-0.8,fontSize:"14px"},
-                        " input" : {height:7},
+                      <TextField {...params} label='State' variant='outlined' sx={{
+                        ' label': { mt: -0.8, fontSize: '14px' },
+                        ' input': { height: 7 },
                       }} />
                     )}
                   />
@@ -692,9 +693,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     onChange={(event, value) => field.onChange(value)}
                     isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
-                      <TextField {...params} label='City' variant='outlined'  sx={{
-                        " label" : {mt:-0.8,fontSize:"14px"},
-                        " input" : {height:7},
+                      <TextField {...params} label='City' variant='outlined' sx={{
+                        ' label': { mt: -0.8, fontSize: '14px' },
+                        ' input': { height: 7 },
                       }} />
                     )}
                   />

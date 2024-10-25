@@ -288,9 +288,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       enqueueSnackbar(currentLoanIssue ? 'Failed to update loan.' : error.response.data.message, { variant: 'error' });
     }
   });
+
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+
   const showCroppedImage = async () => {
     try {
       const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
@@ -322,13 +324,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setIsFieldsEnabled(false);
     }
   };
+
   const handleDeleteImage = () => {
     setImageSrc(null);
     setValue('property_image', null, { shouldValidate: true });
     setOpen(false);
     setCroppedImage(null);
   };
-
 
   useEffect(() => {
     const customer = watch('customer');
@@ -671,6 +673,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 }}
               />
               <RHFTextField name='interestRate' label='Instrest Rate' InputProps={{ readOnly: true }} />
+              <Controller
+                name='consultingCharge'
+                control={control}
+                render={({ field }) => (
+                  <RHFTextField
+                    {...field}
+                    disabled={true}
+                    label='Consulting Charge'
+                    req={'red'}
+                  />
+                )}
+              />
               <RHFTextField
                 name='approvalCharge'
                 label='Approval Charge'
@@ -683,18 +697,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       .replace(/(\..*?)\..*/g, '$1');
                   },
                 }}
-              />
-              <Controller
-                name='consultingCharge'
-                control={control}
-                render={({ field }) => (
-                  <RHFTextField
-                    {...field}
-                    disabled={true}
-                    label='Consulting Charge'
-                    req={'red'}
-                  />
-                )}
               />
               <RHFTextField name='periodTime' label='INT. Period Time' InputProps={{ readOnly: true }} />
               <RHFTextField name='renewalTime' label='Renewal Time' InputProps={{ readOnly: true }} />
@@ -743,7 +745,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   file={croppedImage}
                   onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
-                  sx={{ objectFit: 'contain' }}
+                  sx={{ objectFit: 'contain'}}
                 />
               ) : (
                 <RHFUpload
