@@ -48,7 +48,7 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
           <TextField
             sx={{"input": { height: 7 },}}
             fullWidth
-            value={filters.userName}
+            value={filters.username}
             onChange={handleFilterName}
             placeholder='Search...'
             InputProps={{
