@@ -30,7 +30,7 @@ export default function LoanissueEditView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Loanissue List',
+            name: 'Loan issue',
             href: paths.dashboard.loanissue.root,
           },
           { name: 'Edit Loanissue' },

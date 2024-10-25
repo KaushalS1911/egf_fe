@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -85,11 +85,20 @@ export default function LoanpayhistoryListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState(Loanissue);
-
+  const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
 
+  useEffect(() => {
+    const updatedData = Loanissue.map((item, index) => ({
+      ...item,
+      srNo: index + 1,
+    }));
+
+    setSrData(updatedData);
+  }, [Loanissue]);
+
   const dataFiltered = applyFilter({
-    inputData: Loanissue,
+    inputData: srData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -119,6 +128,8 @@ export default function LoanpayhistoryListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
+
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
@@ -151,7 +162,7 @@ export default function LoanpayhistoryListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = srData.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -189,7 +200,7 @@ export default function LoanpayhistoryListView() {
             mb: { xs: 3, md: 5 },
           }}
           action={
-            <Button variant='contained' startIcon={<Iconify icon='mingcute:add-line' />} onClick={() => setOpen(true)}>
+            <Button variant='contained' onClick={() => setOpen(true)}>
               Bulk Interest Pay
             </Button>
           }
@@ -346,7 +357,6 @@ export default function LoanpayhistoryListView() {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
   const { username, status } = filters;
-
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);

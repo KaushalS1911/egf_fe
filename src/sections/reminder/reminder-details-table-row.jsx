@@ -14,6 +14,7 @@ import { useState } from 'react';
 import { fDate } from '../../utils/format-time';
 
 export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, loanInterest }) {
+  console.log(loanInterest);
   const { loan, createdAt, nextRecallingDate, remark } = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();

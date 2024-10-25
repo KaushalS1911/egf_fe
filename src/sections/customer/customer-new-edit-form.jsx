@@ -688,20 +688,20 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const referenceDetails = (
     <>
       {mdUp && (
-        <Grid md={4}>
+        <Grid md={12}>
           <Typography variant='h6' sx={{ mb: 0.5 }}>
             Other Details
           </Typography>
         </Grid>
       )}
-      <Grid xs={12} md={8}>
+      <Grid xs={12} md={12}>
         <Card>
           <Box columnGap={2}
                rowGap={3}
                display='grid'
                gridTemplateColumns={{
                  xs: 'repeat(1, 1fr)',
-                 md: 'repeat(2, 1fr)',
+                 md: 'repeat(1, 1fr)',
                }}>
             {!mdUp && <CardHeader title='Properties' />}
             <Stack spacing={3} sx={{ p: 3 }}>
@@ -710,13 +710,15 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 <RHFRadioGroup
                   row
                   spacing={4}
-                  sx={{ width: '175px' }}
+                  sx={{display:"flex" }}
                   name='referenceBy'
                   options={INQUIRY_REFERENCE_BY}
                 />
               </Stack>
             </Stack>
-            <Stack spacing={2} sx={{ p: 3 }} justifyContent={'end'}>
+            <Stack spacing={2} sx={{
+              p: watch('referenceBy') === 'Other' ? 3 : 0
+            }} justifyContent={'end'}>
               {watch('referenceBy') === 'Other' && (
                 <Stack spacing={1}>
                   <Typography variant='subtitle2'>Write other reference name</Typography>
