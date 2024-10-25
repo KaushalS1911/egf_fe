@@ -136,15 +136,17 @@ export default function BranchCreateView() {
   return (
     <FormProvider methods={methods}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant='h4' gutterBottom>
+        <Typography variant='h5' sx={{ fontWeight: 600 }}>
           Manage Branches
         </Typography>
       </Box>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title='Branch Details' />
             <Box sx={{ p: 3 }}>
+            <Typography variant='subtitle1' sx={{mb:2,fontWeight: 600 }}>
+              Branch Details
+            </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <RHFTextField name='name' label='Branch Name' fullWidth sx={{ mb: 2 }} />

@@ -51,7 +51,9 @@ export default function RolesCreatePage({ setTab }) {
     <Box sx={{ width: '100%', marginBottom: '10px', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <CardHeader title="Add Roles" />
+          <Typography variant='h5' sx={{fontWeight: 600 }}>
+            Add Roles
+          </Typography>
         </Grid>
 
         <Grid item md={4} xs={12}>

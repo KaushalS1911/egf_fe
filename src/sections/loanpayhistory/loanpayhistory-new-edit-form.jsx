@@ -25,6 +25,7 @@ import UchakInterestPayForm from './view/uchak-interest-pay-form';
 import LoanPartPaymentForm from './view/loan-part-payment-form';
 import LoanCloseForm from './view/loan-close-form';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
@@ -205,8 +206,10 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   </Box>
                   <Box sx={{mt:3}}>
                     <Card>
-                      <CardHeader title='Property Images' />
                       <CardContent>
+                        <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+                          Property Image
+                        </Typography>
                         <Upload file={file} onDrop={handleDropSingleFile} />
                       </CardContent>
                     </Card>
