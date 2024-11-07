@@ -12,10 +12,9 @@ import axios from 'axios';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetInquiry } from 'src/api/inquiry';
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
+import { USER_STATUS_OPTIONS } from 'src/_mock';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -248,7 +247,7 @@ export default function InquiryListView() {
                         mt: 0,
                       },
                     }}
-                  >Branch</InputLabel> {/* Margin applied here */}
+                  >Branch</InputLabel>
                   <Select
                     value={selectedBranch}
                     onChange={handleBranchChange}
@@ -298,7 +297,7 @@ export default function InquiryListView() {
                   }}
                   disabled={!selectedBranch}
                 >
-                  <InputLabel   sx={{
+                  <InputLabel sx={{
                     mt: -1, '&.MuiInputLabel-shrink': {
                       mt: 0,
                     },
@@ -430,6 +429,7 @@ export default function InquiryListView() {
                       <InquiryTableRow
                         key={row._id}
                         row={row}
+                        mutate={mutate}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
@@ -475,8 +475,6 @@ export default function InquiryListView() {
   );
 }
 
-// Additional utility functions for filtering
-
 function applyFilter({
                        inputData, comparator, filters,
                      },
@@ -499,7 +497,7 @@ function applyFilter({
 
   if (name) {
     inputData = inputData.filter((user) =>
-      user.name.toLowerCase().includes(name.toLowerCase()),
+      user.firstName.toLowerCase().includes(name.toLowerCase()),
     );
   }
 

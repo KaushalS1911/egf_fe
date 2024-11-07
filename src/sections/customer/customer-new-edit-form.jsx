@@ -710,14 +710,14 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 <RHFRadioGroup
                   row
                   spacing={4}
-                  sx={{display:"flex" }}
+                  sx={{ display: 'flex' }}
                   name='referenceBy'
                   options={INQUIRY_REFERENCE_BY}
                 />
               </Stack>
             </Stack>
             <Stack spacing={2} sx={{
-              p: watch('referenceBy') === 'Other' ? 3 : 0
+              p: watch('referenceBy') === 'Other' ? 3 : 0,
             }} justifyContent={'end'}>
               {watch('referenceBy') === 'Other' && (
                 <Stack spacing={1}>
