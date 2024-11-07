@@ -54,9 +54,9 @@ export default function BranchCreateView() {
     address: {
       street: '',
       landmark: '',
-      country: 'India',
-      state: 'Gujarat',
-      city: 'Surat',
+      country: '',
+      state: '',
+      city: '',
       zipcode: '',
     },
     isActive: false,
@@ -68,7 +68,7 @@ export default function BranchCreateView() {
     resolver: yupResolver(validationSchema),
   });
 
-  const { reset, handleSubmit, watch } = methods;
+  const { reset, handleSubmit, watch, setValue } = methods;
 
   const onSubmitBranchDetails = async (data) => {
     setLoading(true);
@@ -133,6 +133,30 @@ export default function BranchCreateView() {
     }
   };
 
+  const checkZipcode = async (zipcode) => {
+    try {
+      const response = await axios.get(`https://api.postalpincode.in/pincode/${zipcode}`);
+      const data = response.data[0];
+
+      if (data.Status === 'Success') {
+        setValue('address.country', data?.PostOffice[0]?.Country, { shouldValidate: true });
+        setValue('address.state', data?.PostOffice[0]?.Circle, { shouldValidate: true });
+        setValue('address.city', data?.PostOffice[0]?.District, { shouldValidate: true });
+      } else {
+        setValue('address.country', '', { shouldValidate: true });
+        setValue('address.state', '', { shouldValidate: true });
+        setValue('address.city', '', { shouldValidate: true });
+        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
+      }
+    } catch (error) {
+      console.error('Error fetching country and state:', error);
+      setValue('address.country', '', { shouldValidate: true });
+      setValue('address.state', '', { shouldValidate: true });
+      setValue('address.city', '', { shouldValidate: true });
+      enqueueSnackbar('Failed to fetch country and state details.', { variant: 'error' });
+    }
+  };
+
   return (
     <FormProvider methods={methods}>
       <Box sx={{ mb: 4 }}>
@@ -144,12 +168,12 @@ export default function BranchCreateView() {
         <Grid item xs={12} md={6}>
           <Card>
             <Box sx={{ p: 3 }}>
-            <Typography variant='subtitle1' sx={{mb:2,fontWeight: 600 }}>
-              Branch Details
-            </Typography>
+              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+                Branch Details
+              </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='name' label='Branch Name' fullWidth  />
+                  <RHFTextField name='name' label='Branch Name' fullWidth />
                 </Grid>
                 {editingBranch && (
                   <Grid item xs={12} sm={6}>
@@ -174,13 +198,45 @@ export default function BranchCreateView() {
                                 }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <RHFTextField
+                    name='address.zipcode'
+                    label='Zipcode'
+                    inputProps={{
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      maxLength: 6,
+                    }}
+                    rules={{
+                      required: 'Zipcode is required',
+                      minLength: {
+                        value: 6,
+                        message: 'Zipcode must be at least 6 digits',
+                      },
+                      maxLength: {
+                        value: 6,
+                        message: 'Zipcode cannot be more than 6 digits',
+                      },
+                    }}
+                    onKeyPress={(event) => {
+                      if (!/[0-9]/.test(event.key)) {
+                        event.preventDefault();
+                      }
+                    }}
+                    onBlur={(event) => {
+                      const zip = event.target.value;
+                      if (zip.length === 6) {
+                        checkZipcode(zip);
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
                   <RHFAutocomplete
                     name='address.country'
                     label='Country'
                     placeholder='Choose a country'
                     options={countrystatecity.map((country) => country.name)}
                     isOptionEqualToValue={(option, value) => option === value}
-                    defaultValue='India'
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -195,7 +251,6 @@ export default function BranchCreateView() {
                         : []
                     }
                     isOptionEqualToValue={(option, value) => option === value}
-                    defaultValue='Gujarat'
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -211,29 +266,13 @@ export default function BranchCreateView() {
                         : []
                     }
                     isOptionEqualToValue={(option, value) => option === value}
-                    defaultValue='Surat'
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <RHFTextField name='address.street' label='Street' fullWidth />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='address.landmark' label='Landmark'/>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFTextField
-                    name='address.zipcode'
-                    label='Zipcode'
-                    fullWidth
-                    inputProps={{
-                      inputMode: 'numeric',
-                      pattern: '[0-9]*',
-                      maxLength: 6,
-                    }}
-                    onInput={(e) => {
-                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                    }}
-                  />
+                  <RHFTextField name='address.landmark' label='Landmark' />
                 </Grid>
                 {editingBranch && (
                   <Grid item xs={12}>

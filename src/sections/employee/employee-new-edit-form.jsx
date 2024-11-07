@@ -79,8 +79,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
   const defaultValues = useMemo(() => ({
     branchId: currentEmployee ? {
-      label: currentEmployee?.branch?.name,
-      value: currentEmployee?.branch?._id,
+      label: currentEmployee?.user?.branch?.name,
+      value: currentEmployee?.user?.branch?._id,
     } : null,
     profile_pic: currentEmployee?.user.avatar_url || '',
     firstName: currentEmployee?.user.firstName || '',
