@@ -16,7 +16,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form';
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
+import { Button } from '@mui/material';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import { useGetEmployee } from '../../api/employee';
 
@@ -65,6 +65,13 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       })
       .nullable()
       .required('Branch selection is required'),
+    assignTo: Yup.object()
+      .shape({
+        label: Yup.string().required('Employee name is required'),
+        value: Yup.string().required('Employee ID is required'),
+      })
+      .nullable()
+      .required('Employee selection is required'),
   });
 
   const defaultValues = useMemo(
