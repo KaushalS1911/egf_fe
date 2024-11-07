@@ -149,7 +149,7 @@ export default function BranchCreateView() {
             </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='name' label='Branch Name' fullWidth sx={{ mb: 2 }} />
+                  <RHFTextField name='name' label='Branch Name' fullWidth  />
                 </Grid>
                 {editingBranch && (
                   <Grid item xs={12} sm={6}>
@@ -164,10 +164,10 @@ export default function BranchCreateView() {
                   </Grid>
                 )}
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='email' label='Email' fullWidth sx={{ mb: 2 }} />
+                  <RHFTextField name='email' label='Email' fullWidth />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='contact' label='Phone Number' fullWidth sx={{ mb: 2 }}
+                  <RHFTextField name='contact' label='Phone Number' fullWidth
                                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                 onInput={(e) => {
                                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -180,7 +180,6 @@ export default function BranchCreateView() {
                     placeholder='Choose a country'
                     options={countrystatecity.map((country) => country.name)}
                     isOptionEqualToValue={(option, value) => option === value}
-                    sx={{ mb: 2 }}
                     defaultValue='India'
                   />
                 </Grid>
@@ -196,7 +195,6 @@ export default function BranchCreateView() {
                         : []
                     }
                     isOptionEqualToValue={(option, value) => option === value}
-                    sx={{ mb: 2 }}
                     defaultValue='Gujarat'
                   />
                 </Grid>
@@ -213,22 +211,20 @@ export default function BranchCreateView() {
                         : []
                     }
                     isOptionEqualToValue={(option, value) => option === value}
-                    sx={{ mb: 2 }}
                     defaultValue='Surat'
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='address.street' label='Street' fullWidth sx={{ mb: 2 }} />
+                  <RHFTextField name='address.street' label='Street' fullWidth />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <RHFTextField name='address.landmark' label='Landmark' fullWidth sx={{ mb: 2 }} />
+                  <RHFTextField name='address.landmark' label='Landmark'/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <RHFTextField
                     name='address.zipcode'
                     label='Zipcode'
                     fullWidth
-                    sx={{ mb: 2 }}
                     inputProps={{
                       inputMode: 'numeric',
                       pattern: '[0-9]*',
