@@ -65,13 +65,6 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       })
       .nullable()
       .required('Branch selection is required'),
-    assignTo: Yup.object()
-      .shape({
-        label: Yup.string().required('Employee name is required'),
-        value: Yup.string().required('Employee ID is required'),
-      })
-      .nullable()
-      .required('Employee selection is required'),
   });
 
   const defaultValues = useMemo(
