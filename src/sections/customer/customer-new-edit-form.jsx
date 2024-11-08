@@ -66,6 +66,13 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     contact: Yup.string().required('Contact number is required').max(10),
     dob: Yup.date().required('Date of Birth is required'),
     panCard: Yup.string().required('PAN Card number is required').max(10).min(10),
+    branchId: Yup.object()
+      .shape({
+        label: Yup.string().required('Branch name is required'),
+        value: Yup.string().required('Branch ID is required'),
+      })
+      .nullable()
+      .required('Branch selection is required'),
     aadharCard: Yup.string()
       .required('Aadhar Card number is required')
       .matches(/^\d{12}$/, 'Aadhar Card must be exactly 12 digits and should not contain alphabetic characters'),

@@ -22,8 +22,8 @@ import { fDate } from '../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { user , joiningDate , branch} = row;
-  const {avatar_url , contact , firstName , lastName , middleName , role , email  } = user;
+  const { user, joiningDate } = row;
+  const { avatar_url, contact, firstName, lastName, middleName, role, email } = user;
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -31,31 +31,31 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-          <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar alt={avatar_url} src={avatar_url} sx={{ mr: 2 }} />
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar alt={avatar_url} src={avatar_url} sx={{ mr: 2 }} />
 
-            <ListItemText
-              primary={`${firstName} ${middleName} ${lastName}`}
-              secondary={email}
-              primaryTypographyProps={{ typography: 'body2' }}
-              secondaryTypographyProps={{
-                component: 'span',
-                color: 'text.disabled',
-              }}
-            />
-          </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{branch?.name}</TableCell>
+          <ListItemText
+            primary={`${firstName} ${middleName} ${lastName}`}
+            secondary={email}
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{
+              component: 'span',
+              color: 'text.disabled',
+            }}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.user?.branch?.name}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
 
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
@@ -64,7 +64,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -74,7 +74,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon="solar:trash-bin-trash-bold" />
+          <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
         </MenuItem>
 
@@ -84,7 +84,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:pen-bold" />
+          <Iconify icon='solar:pen-bold' />
           Edit
         </MenuItem>
       </CustomPopover>
@@ -92,10 +92,10 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }
