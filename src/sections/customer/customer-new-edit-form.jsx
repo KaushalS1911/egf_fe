@@ -84,6 +84,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     PerState: Yup.string().required('State is required'),
     PerCity: Yup.string().required('City is required'),
     PerZipcode: Yup.string().required('Pincode is required'),
+    profile_pic: Yup.mixed().required('A profile picture is required'),
   });
 
   const defaultValues = useMemo(() => ({
@@ -92,7 +93,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       value: currentCustomer?.branch?._id,
     } : null,
     status: currentCustomer?.status || '',
-    profile_pic: currentCustomer?.avatar_url || '',
+    profile_pic: currentCustomer?.avatar_url || null,
     firstName: currentCustomer?.firstName || '',
     middleName: currentCustomer?.middleName || '',
     lastName: currentCustomer?.lastName || '',
