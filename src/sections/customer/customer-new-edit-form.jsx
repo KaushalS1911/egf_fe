@@ -138,9 +138,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   }, [currentCustomer, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
-
-    console.log(data);
-
     try {
       const payload = {
         status: data.status,
@@ -203,7 +200,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         formData.append('profile-pic', data.profile_pic);
       }
 
-      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value) || branch?.[0];
       let parsedBranch = storedBranch;
 
       if (storedBranch !== 'all') {
