@@ -64,7 +64,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     middleName: Yup.string().required('Middle Name is required'),
     lastName: Yup.string().required('Last Name is required'),
     contact: Yup.string().required('Contact number is required').max(10),
-    dob: Yup.date().required('Date of Birth is required'),
+    dob: Yup.date()
+      .required('Date of Birth is required')
+      .nullable()
+      .typeError('Date of Birth is required'),
     panCard: Yup.string().required('PAN Card number is required').max(10).min(10),
     aadharCard: Yup.string()
       .required('Aadhar Card number is required')
@@ -91,7 +94,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     lastName: currentCustomer?.lastName || '',
     contact: currentCustomer?.contact || '',
     email: currentCustomer?.email || '',
-    dob: new Date(currentCustomer?.dob) || null,
+    dob: new Date(currentCustomer?.dob) || '',
     panCard: (currentCustomer?.panCard || '').toUpperCase(),
     aadharCard: currentCustomer?.aadharCard || '',
     otpContact: currentCustomer?.otpContact || '',

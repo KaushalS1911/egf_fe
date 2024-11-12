@@ -23,3 +23,6 @@
   border-left: 2.8px solid red !important;
   border-radius: 8px;
 }
+.yarl__navigation_next, .yarl__navigation_prev{
+  display: none !important;
+}
