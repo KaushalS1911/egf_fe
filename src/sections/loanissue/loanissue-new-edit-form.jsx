@@ -9,7 +9,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload, RHFUploadAvatar } from 'src/components/hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -25,7 +24,6 @@ import {
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetScheme } from '../../api/scheme';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Iconify from '../../components/iconify';
@@ -100,6 +98,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     cashAmount: Yup.string().required('Cash Amount is required'),
     approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
+    property_image: Yup.mixed().required('A property picture is required'),
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
@@ -125,7 +124,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       periodTime: '',
       renewalTime: '',
       loanCloseTime: '',
-      property_image: currentLoanIssue?.propertyImage || '',
+      property_image: currentLoanIssue?.propertyImage || null,
       customer: currentLoanIssue ? {
         id: currentLoanIssue?.customer?._id,
         name: currentLoanIssue?.customer?.firstName + ' ' + currentLoanIssue?.customer?.lastName,
@@ -288,9 +287,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       enqueueSnackbar(currentLoanIssue ? 'Failed to update loan.' : error.response.data.message, { variant: 'error' });
     }
   });
+
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+
   const showCroppedImage = async () => {
     try {
       const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
@@ -647,6 +648,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   id: item?._id,
                   name: item?.name,
                   interestRate: item?.interestRate,
+                  item: item,
                 }))}
                 getOptionLabel={(option) => option?.name}
                 renderOption={(props, option) => (
@@ -711,10 +713,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               />}
               {currentLoanIssue &&
               <RHFDatePicker
-                name="nextInstallmentDate"
+                name='nextInstallmentDate'
                 control={control}
-                label="Next Installment Date"
-                req={"red"}
+                label='Next Installment Date'
+                req={'red'}
                 readOnly={true}
               />
               }
@@ -725,9 +727,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
-            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
-              Property Image
-            </Typography>
+              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+                Property Image
+              </Typography>
               {croppedImage ? (
                 <RHFUpload
                   name='property_image'
@@ -735,7 +737,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   file={croppedImage}
                   onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
-                  sx={{ height: "330px",' .css-1lrddw3':{height: "100%"}}}
+                  sx={{ height: '350px', ' .css-1lrddw3': { height: '100%' } }}
                 />
               ) : (
                 <RHFUpload
@@ -743,7 +745,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   maxSize={3145728}
                   onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
-                  sx={{ height: "330px",' .css-1lrddw3':{height: "100%"}}}
+                  sx={{ height: '350px', ' .css-1lrddw3': { height: '100%' } }}
                 />
               )}
               <Dialog open={open} onClose={() => setOpen(false)} maxWidth='sm' fullWidth>
@@ -851,15 +853,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             label='Pcs'
                             disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].carat`) === '' || currentLoanIssue}
                             onChange={(e) => {
+                              const schemedata = watch('scheme');
                               const pcs = parseFloat(e.target.value) || 0;
                               setValue(`propertyDetails[${index}].pcs`, pcs);
 
                               const grossWeight = parseFloat(watch(`propertyDetails[${index}].grossWeight`)) || 0;
-                              const grossAmount = (grossWeight * pcs * configs.goldRate).toFixed();
+                              const grossAmount = (parseFloat(grossWeight) * parseFloat(schemedata?.item?.ratePerGram)).toFixed();
                               setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
 
                               const netWeight = parseFloat(watch(`propertyDetails[${index}].netWeight`)) || 0;
-                              const netAmount = (netWeight * pcs * configs.goldRate).toFixed(2);
+                              const netAmount = (netWeight * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
                               setValue(`propertyDetails[${index}].netAmount`, netAmount);
                             }}
                           />
@@ -894,15 +897,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                   if (lossWeight > totalWeight) {
                                     setTotalWeightError('Loss weight cannot be greater than total weight.');
                                   } else {
+                                    const schemedata = watch('scheme');
                                     const grossWeight = (totalWeight - lossWeight).toFixed(2);
                                     setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
                                     const caratValue = carat?.find((item) => item.name == parseFloat(watch(`propertyDetails[${index}].carat`))) || 0;
                                     const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
                                     setValue(`propertyDetails[${index}].netWeight`, netWeight);
                                     const pcs = parseFloat(watch(`propertyDetails[${index}].pcs`)) || 0;
-                                    const grossAmount = (grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
+                                    const grossAmount = (parseFloat(grossWeight) * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
                                     setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                    const netAmount = (netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
+                                    const netAmount = (netWeight * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
                                     setValue(`propertyDetails[${index}].netAmount`, netAmount);
                                     setTotalWeightError('');
                                   }
@@ -935,6 +939,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
                               if (/^-?\d*\.?\d*$/.test(inputValue)) {
                                 const lossWeight = parseFloat(inputValue);
+                                const schemedata = watch('scheme');
                                 setValue(`propertyDetails[${index}].lossWeight`, inputValue);
                                 const totalWeight = parseFloat(watch(`propertyDetails[${index}].totalWeight`)) || 0;
 
@@ -947,9 +952,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                   const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
                                   setValue(`propertyDetails[${index}].netWeight`, netWeight);
                                   const pcs = parseFloat(getValues(`propertyDetails[${index}].pcs`)) || 0;
-                                  const grossAmount = (grossWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
+                                  const grossAmount = (parseFloat(grossWeight) * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
                                   setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                  const netAmount = (netWeight * pcs * configs.goldRate * caratValue.caratPercentage / 100).toFixed(2);
+                                  const netAmount = (netWeight * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
                                   setValue(`propertyDetails[${index}].netAmount`, netAmount);
                                   setLossWeightError('');
                                 }

@@ -65,13 +65,6 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       })
       .nullable()
       .required('Branch selection is required'),
-    assignTo: Yup.object()
-      .shape({
-        label: Yup.string().required('Employee name is required'),
-        value: Yup.string().required('Employee ID is required'),
-      })
-      .nullable()
-      .required('Employee selection is required'),
   });
 
   const defaultValues = useMemo(
@@ -125,7 +118,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       assignTo: data.assignTo.value,
     };
 
-    const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+    const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value) || branch?.[0];
     let parsedBranch = storedBranch;
 
     if (storedBranch !== 'all') {

@@ -45,6 +45,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     panCard: Yup.string().required('PAN No. is required'),
     voterCard: Yup.string(),
     aadharCard: Yup.string().required('Aadhar Card is required'),
+    profile_pic: Yup.mixed().required('A property picture is required'),
     contact: Yup.string()
       .required('Mobile number is required')
       .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
@@ -82,7 +83,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       label: currentEmployee?.user?.branch?.name,
       value: currentEmployee?.user?.branch?._id,
     } : null,
-    profile_pic: currentEmployee?.user.avatar_url || '',
+    profile_pic: currentEmployee?.user.avatar_url || null,
     firstName: currentEmployee?.user.firstName || '',
     middleName: currentEmployee?.user.middleName || '',
     lastName: currentEmployee?.user.lastName || '',
@@ -189,7 +190,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       payload = formData;
     }
     try {
-      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value) || branch?.[0];
       let parsedBranch = storedBranch;
 
       if (storedBranch !== 'all') {
