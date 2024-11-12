@@ -190,7 +190,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       payload = formData;
     }
     try {
-      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value);
+      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value) || branch?.[0];
       let parsedBranch = storedBranch;
 
       if (storedBranch !== 'all') {

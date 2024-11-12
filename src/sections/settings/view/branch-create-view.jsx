@@ -30,7 +30,6 @@ const validationSchema = yup.object().shape({
   contact: yup.string().nullable(),
   address: yup.object().shape({
     street: yup.string().required('Street is required'),
-    landmark: yup.string().required('Landmark is required'),
     country: yup.string().required('Country is required'),
     state: yup.string().required('State is required'),
     city: yup.string().required('City is required'),
