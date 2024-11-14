@@ -195,6 +195,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       netWeight: '',
       grossAmount: '',
       netAmount: '',
+      id: uuid,
     });
   };
 
@@ -858,11 +859,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               setValue(`propertyDetails[${index}].pcs`, pcs);
 
                               const grossWeight = parseFloat(watch(`propertyDetails[${index}].grossWeight`)) || 0;
-                              const grossAmount = (parseFloat(grossWeight) * parseFloat(schemedata?.item?.ratePerGram)).toFixed();
+                              const grossAmount = (parseFloat(grossWeight) * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed();
                               setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
 
                               const netWeight = parseFloat(watch(`propertyDetails[${index}].netWeight`)) || 0;
-                              const netAmount = (netWeight * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
+                              const netAmount = (netWeight * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
                               setValue(`propertyDetails[${index}].netAmount`, netAmount);
                             }}
                           />
@@ -904,9 +905,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                     const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
                                     setValue(`propertyDetails[${index}].netWeight`, netWeight);
                                     const pcs = parseFloat(watch(`propertyDetails[${index}].pcs`)) || 0;
-                                    const grossAmount = (parseFloat(grossWeight) * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
+                                    const grossAmount = (parseFloat(grossWeight) * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
                                     setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                    const netAmount = (netWeight * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
+                                    const netAmount = (netWeight * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
                                     setValue(`propertyDetails[${index}].netAmount`, netAmount);
                                     setTotalWeightError('');
                                   }
@@ -952,9 +953,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                   const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
                                   setValue(`propertyDetails[${index}].netWeight`, netWeight);
                                   const pcs = parseFloat(getValues(`propertyDetails[${index}].pcs`)) || 0;
-                                  const grossAmount = (parseFloat(grossWeight) * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
+                                  const grossAmount = (parseFloat(grossWeight) * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
                                   setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                  const netAmount = (netWeight * parseFloat(schemedata?.item?.ratePerGram)).toFixed(2);
+                                  const netAmount = (netWeight * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
                                   setValue(`propertyDetails[${index}].netAmount`, netAmount);
                                   setLossWeightError('');
                                 }
