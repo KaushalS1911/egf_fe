@@ -26,12 +26,17 @@ import LoanPartPaymentForm from './view/loan-part-payment-form';
 import LoanCloseForm from './view/loan-close-form';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Typography from '@mui/material/Typography';
+import Lightbox, { useLightBox } from 'src/components/lightbox';
+import Image from '../../components/image';
 
 // ----------------------------------------------------------------------
 
 function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   const { user } = useAuthContext();
+
   const [file, setFile] = useState(currentLoan.propertyImage);
+  const lightbox = useLightBox(file);
+
   const NewLoanPayHistorySchema = Yup.object().shape({
     loanNo: Yup.string().required('Loan No. is required'),
     customerName: Yup.string().required('Customer Name is required'),
@@ -112,7 +117,8 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
   });
-
+// ama aevu kya che jenathi moti image aave ?
+//     a olu open valu chhe anathi j ave chhe lagbhag na na aenathi to khali valu male che
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     acceptedFiles.stopPropagation();
     if (true) return;
@@ -205,19 +211,34 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                         <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
                   </Box>
                   <Box sx={{mt:3}}>
-                    <Card>
-                      <CardContent>
-                        <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+                      <CardContent sx={{display:"flex",justifyContent:"space-between" ,alignItems:"center"}}>
+                        <Box>
+                        <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
                           Property Image
                         </Typography>
-                        <Upload file={file} onDrop={handleDropSingleFile} />
+                        </Box>
+                        <Box>
+                        <Image
+                          key={file}
+                          src={file}
+                          alt={file}
+                          ratio="1/1"
+                          onClick={() => lightbox.onOpen(file)}
+                          sx={{ cursor: 'zoom-in' ,height:"56px",width:"56px" ,borderRadius:"20%"}}
+                        />
+                        </Box>
+                        {/*<Upload file={file} onDrop={handleDropSingleFile} onClick={() => lightbox.onOpen(file)} />*/}
                       </CardContent>
-                    </Card>
                   </Box>
                 </Grid>
               </Grid>
             </Card>
           </FormProvider>
+          <Lightbox
+            image={file}
+            open={lightbox.open}
+            close={lightbox.onClose}
+          />
         </Box>
     </>
   );
