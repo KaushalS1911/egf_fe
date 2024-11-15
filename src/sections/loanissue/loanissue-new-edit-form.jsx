@@ -80,9 +80,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
   const [totalWeightError, setTotalWeightError] = useState('');
   const [lossWeightError, setLossWeightError] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
   const uuid = uuidv4();
-  const [selectedScheme, setSelectedScheme] = useState(null);
   const storedBranch = sessionStorage.getItem('selectedBranch');
 
   useEffect(() => {
@@ -353,7 +351,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCustomerData(findedCus);
     if (findedCus) {
       setValue('customerCode', findedCus?.customerCode);
-      setValue('customerName', `${findedCus?.firstName} ${findedCus?.lastName}`);
+      setValue('customerName', `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `);
       setValue('customerAddress', `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`);
       setValue('contact', findedCus?.contact);
       setValue('contactOtp', findedCus?.otpContact);
