@@ -16,7 +16,7 @@ import {
   Select,
   InputLabel,
   FormControl,
-  Grid, Card, Dialog, Slider,
+  Grid, Card, Dialog, Slider, IconButton,
 } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload } from '../../../components/hook-form';
 import * as Yup from 'yup';
@@ -35,6 +35,7 @@ import { useGetBranch } from '../../../api/branch';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../../utils/canvasUtils';
+import Iconify from '../../../components/iconify';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -43,8 +44,8 @@ const tableHeaders = [
   { id: 'pcs', label: 'PCS' },
   { id: 'totalWeight', label: 'Total Weight' },
   { id: 'netWeight', label: 'Net Weight' },
-  { id: 'grossAmount', label: 'Gross Amount' },
-  { id: 'netAmount', label: 'Net Amount' },
+  { id: 'grossAmount', label: 'Gross Amount'},
+  { id: 'netAmount', label: 'Net Amount'},
 ];
 const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -53,6 +54,7 @@ const TABLE_HEAD = [
   { id: 'pendingAmount', label: 'Pending Amount' },
   { id: 'payDate', label: 'Pay Date' },
   { id: 'remarks', label: 'Remarks' },
+  { id: 'action', label: 'Action' },
 ];
 
 function PartReleaseForm({ currentLoan, mutate }) {
@@ -175,7 +177,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       paymentDetail = {
         ...paymentDetail,
         ...data.account,
-        bankAmount: data.bankAmount
+        bankAmount: data.bankAmount,
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
@@ -185,8 +187,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
         bankAmount: data.bankAmount,
       };
     }
-
-
     const formData = new FormData();
     selectedRows.forEach((index) => {
       const row = currentLoan.propertyDetails[index];
@@ -237,17 +237,19 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+
   const showCroppedImage = async () => {
     try {
       const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
       const croppedUrl = URL.createObjectURL(croppedFile);
       setCroppedImage(croppedUrl);
-      setFile(croppedFile)
+      setFile(croppedFile);
       setOpen(false);
     } catch (e) {
       console.error(e);
     }
   };
+
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -259,7 +261,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
       reader.readAsDataURL(file);
     }
   }, []);
-
 
   const handleCheckboxClick = (index) => {
     setSelectedRows((prevSelected) =>
@@ -278,14 +279,25 @@ function PartReleaseForm({ currentLoan, mutate }) {
   };
 
   const isRowSelected = (index) => selectedRows.includes(index);
+  const handleDeletePart = async (id) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release/${id}`);
+      mutate();
+      refetchPartRelease();
+      enqueueSnackbar((response?.data.message));
+    } catch (err) {
+      enqueueSnackbar('Failed to pay interest');
+    }
+  };
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box sx={{ p: { xs: 2, md: 3 } }}>
-          <Typography variant="body1" gutterBottom sx={{fontWeight: "700"}}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
-          <Typography variant="body1" gutterBottom sx={{fontWeight: "700"}}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
@@ -303,7 +315,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         />
                       </TableCell>
                       {tableHeaders.map((header) => (
-                        <TableCell key={header.id} className={"black-text"}>{header.label}</TableCell>
+                        <TableCell key={header.id} className={'black-text'}>{header.label}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
@@ -367,15 +379,15 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   <Grid container rowSpacing={3} columnSpacing={2}>
                     <Grid item xs={4}>
                       <RHFDatePicker
-                        name="date"
+                        name='date'
                         control={control}
-                        label="Pay Date"
-                        req={"red"}
+                        label='Pay Date'
+                        req={'red'}
                       />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={4}>
-                      <RHFTextField name="amountPaid" label="Pay amount" req="red" onKeyPress={(e) => {
+                      <RHFTextField name='amountPaid' label='Pay amount' req='red' onKeyPress={(e) => {
                         if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                           e.preventDefault();
                         }
@@ -383,14 +395,14 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={4}>
-                      <RHFTextField name="remark" label="Remark" />
+                      <RHFTextField name='remark' label='Remark' />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={4}>
                       <RHFAutocomplete
-                        name="expectPaymentMode"
-                        label="Expected Payment Mode"
-                        req="red"
+                        name='expectPaymentMode'
+                        label='Expected Payment Mode'
+                        req='red'
                         options={['Cash', 'Bank', 'Both']}
                         onChange={(event, newValue) => {
                           setPaymentMode(newValue);
@@ -429,7 +441,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     />
                   )}
 
-                  <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+                  <Dialog open={open} onClose={() => setOpen(false)} maxWidth='sm' fullWidth>
                     <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
                       <Cropper
                         image={imageSrc}
@@ -447,12 +459,13 @@ function PartReleaseForm({ currentLoan, mutate }) {
                       <Typography gutterBottom>Zoom</Typography>
                       <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
                       <Typography gutterBottom>Rotation</Typography>
-                      <Slider value={rotation} min={0} max={360} step={1} onChange={(e, rotation) => setRotation(rotation)} />
-                      <Box display="flex" justifyContent="space-between" mt={2}>
-                        <Button onClick={() => setOpen(false)} variant="outlined">
+                      <Slider value={rotation} min={0} max={360} step={1}
+                              onChange={(e, rotation) => setRotation(rotation)} />
+                      <Box display='flex' justifyContent='space-between' mt={2}>
+                        <Button onClick={() => setOpen(false)} variant='outlined'>
                           Cancel
                         </Button>
-                        <Button onClick={showCroppedImage} variant="contained" color="primary">
+                        <Button onClick={showCroppedImage} variant='contained' color='primary'>
                           Save Cropped Image
                         </Button>
                       </Box>
@@ -463,14 +476,14 @@ function PartReleaseForm({ currentLoan, mutate }) {
 
               <Grid container spacing={2} sx={{ mt: 4 }}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <Typography variant="h6" sx={{ mb: 3 }}>
+                  <Typography variant='h6' sx={{ mb: 3 }}>
                     Payment Details
                   </Typography>
 
                   <RHFAutocomplete
-                    name="paymentMode"
-                    label="Payment Mode"
-                    req="red"
+                    name='paymentMode'
+                    label='Payment Mode'
+                    req='red'
                     options={['Cash', 'Bank', 'Both']}
                     onChange={(event, newValue) => {
                       setPaymentMode(newValue);
@@ -499,11 +512,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField name='cashAmount' label='Cash Amount' req={"red"} onKeyPress={(e) => {
+              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} onKeyPress={(e) => {
                 if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                   e.preventDefault();
                 }
-              }}/>
+              }} />
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
@@ -542,13 +555,13 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                     e.preventDefault();
                   }
-                }}/>
+                }} />
               </Box>
             </Box>
           )}
         </Box>
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+          <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
@@ -566,6 +579,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.interestLoanAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{
+                <IconButton color='error' onClick={() => handleDeletePart(row._id)}>
+                  <Iconify icon='eva:trash-2-outline' />
+                </IconButton>
+              }</TableCell>
             </TableRow>
           ))}
         </TableBody>
