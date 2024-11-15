@@ -13,7 +13,7 @@ import TableCell from '@mui/material/TableCell';
 import { fDate } from '../../../utils/format-time';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Card, Grid, Stack } from '@mui/material';
+import { Card, Grid, IconButton, Stack } from '@mui/material';
 import { useGetPenalty } from '../../../api/penalty';
 import { useParams } from 'react-router';
 import axios from 'axios';
@@ -25,6 +25,7 @@ import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import Iconify from '../../../components/iconify';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -41,6 +42,7 @@ const TABLE_HEAD = [
   { id: 'crDrAmount', label: 'CR/DR Amount' },
   { id: 'totalPay', label: 'Total Pay' },
   { id: 'adjustedPay', label: 'Adjusted Pay' },
+  { id: 'action', label: 'Action' },
 ];
 
 function InterestPayDetailsForm({ currentLoan, mutate }) {
@@ -218,6 +220,15 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     }
 
   });
+  const handleDeleteInterest = async (id) => {
+    try {
+
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment/${id}`);
+      enqueueSnackbar((response?.data.message));
+    } catch (err) {
+      enqueueSnackbar('Failed to pay interest');
+    }
+  };
   return (
     <Box sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -261,13 +272,13 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           }} />
         </Box>
         <Box>
-          <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>
+          <Typography variant='subtitle1' sx={{ mt: 2, fontWeight: 600 }}>
             Payment Details
           </Typography>
           <Box
             rowGap={3}
             columnGap={2}
-            display="grid"
+            display='grid'
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(3, 1fr)',
@@ -276,9 +287,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             sx={{ mt: 2 }}
           >
             <RHFAutocomplete
-              name="paymentMode"
-              label="Payment Mode"
-              req="red"
+              name='paymentMode'
+              label='Payment Mode'
+              req='red'
               onChange={(event, newValue) => {
                 setPaymentMode(newValue);
                 setValue('paymentMode', newValue);
@@ -294,9 +305,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
             {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
               <RHFTextField
-                name="cashAmount"
-                label="Cash Amount"
-                req="red"
+                name='cashAmount'
+                label='Cash Amount'
+                req='red'
                 onKeyPress={(e) => {
                   if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                     e.preventDefault();
@@ -308,9 +319,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
               <>
                 <RHFAutocomplete
-                  name="account"
-                  label="Account"
-                  req="red"
+                  name='account'
+                  label='Account'
+                  req='red'
                   fullWidth
                   options={branch.flatMap((item) => item.company.bankAccounts)}
                   getOptionLabel={(option) => option.bankName || ''}
@@ -326,9 +337,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                 />
 
                 <RHFTextField
-                  name="bankAmount"
-                  label="Bank Amount"
-                  req="red"
+                  name='bankAmount'
+                  label='Bank Amount'
+                  req='red'
                   onKeyPress={(e) => {
                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                       e.preventDefault();
@@ -365,7 +376,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             borderRadius: '4px',
           },
         }}>
-          <Table sx={{ borderRadius: '16px', mt: 3, minWidth: '1600px'}}>
+          <Table sx={{ borderRadius: '16px', mt: 3, minWidth: '1600px' }}>
             <TableHeadCustom
               order={table.order}
               orderBy={table.orderBy}
@@ -388,6 +399,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                   <TableCell>{row.cr_dr}</TableCell>
                   <TableCell>{row.amountPaid}</TableCell>
                   <TableCell>{row.adjustedPay}</TableCell>
+                  <TableCell>{
+                    <IconButton color='error' onClick={() => handleDeleteInterest(row._id)}>
+                      <Iconify icon='eva:trash-2-outline' />
+                    </IconButton>
+                  }</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -15,6 +15,7 @@ import { useGetAllPartPayment } from '../../../api/part-payment';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import Iconify from '../../../components/iconify';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -22,6 +23,7 @@ const TABLE_HEAD = [
   { id: 'payDate', label: 'Pay Date' },
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
+  { id: 'action', label: 'Action' },
 ];
 
 function LoanPartPaymentForm({ currentLoan, mutate }) {
@@ -135,24 +137,33 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       console.error(error);
     }
   });
+  const handleDeletePartPayment = async (id) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`);
+      refetchPartPayment();
+      enqueueSnackbar((response?.data.message));
+    } catch (err) {
+      enqueueSnackbar('Failed to pay interest');
+    }
+  };
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box sx={{ p: { xs: 2, md: 3 } }}>
-          <Typography variant="body1" gutterBottom sx={{fontWeight: "700"}}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
-          <Typography variant="body1" gutterBottom sx={{fontWeight: "700"}}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
         <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
           <Grid item xs={4}>
             <RHFDatePicker
-              name="date"
+              name='date'
               control={control}
-              label="Pay date"
-              req={"red"}
+              label='Pay date'
+              req={'red'}
             />
           </Grid>
 
@@ -282,6 +293,12 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{
+                <IconButton color='error' onClick={() => handleDeletePartPayment(row._id)}>
+                  <Iconify icon='eva:trash-2-outline' />
+                </IconButton>
+              }
+              </TableCell>
             </TableRow>
           ))}
 
