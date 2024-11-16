@@ -117,8 +117,6 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
   });
-// ama aevu kya che jenathi moti image aave ?
-//     a olu open valu chhe anathi j ave chhe lagbhag na na aenathi to khali valu male che
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     acceptedFiles.stopPropagation();
     if (true) return;
