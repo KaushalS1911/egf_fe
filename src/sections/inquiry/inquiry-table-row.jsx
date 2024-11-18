@@ -30,9 +30,7 @@ import { useSnackbar } from 'notistack';
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, mutate }) {
   const { date, firstName, lastName, contact, email, inquiryFor, remark, _id } = row;
-  console.log(row?.attempts);
   const [attempts, setAttempts] = useState(row?.attempts || []);
-  console.log(attempts);
   const [openResponseDialog, setOpenResponseDialog] = useState(false);
   const [responseDate, setResponseDate] = useState(new Date().toISOString().split('T')[0]);
   const [responseRemark, setResponseRemark] = useState('');
@@ -103,6 +101,9 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+          {row?.recallingDate ? fDate(row?.recallingDate) : '-'}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{email}</TableCell>

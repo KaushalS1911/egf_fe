@@ -47,6 +47,15 @@ export default function InquiryNewEditForm({ currentInquiry }) {
     }
   }
 
+  function checkremark(val) {
+    const isLoanValue = configs?.remarks?.find((item) => item === val);
+    if (isLoanValue) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   const NewUserSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
     lastName: Yup.string().required('Last name is required'),
@@ -82,10 +91,12 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       lastName: currentInquiry?.lastName || '',
       contact: currentInquiry?.contact || '',
       email: currentInquiry?.email || '',
-      other: checkInquiryFor(currentInquiry?.inquiryFor) ? currentInquiry?.inquiryFor : null || '',
       date: currentInquiry ? new Date(currentInquiry?.date) : new Date(),
+      recallingDate: currentInquiry ? new Date(currentInquiry?.recallingDate) : null,
       inquiryFor: (currentInquiry && checkInquiryFor(currentInquiry?.inquiryFor) ? 'Other' : currentInquiry?.inquiryFor) || '',
-      remark: currentInquiry?.remark || '',
+      other: checkInquiryFor(currentInquiry?.inquiryFor) ? currentInquiry?.inquiryFor : null || '',
+      remark: (currentInquiry && checkremark(currentInquiry?.remark) ? 'Other' : currentInquiry?.remark) || '',
+      otherRemark: checkremark(currentInquiry?.remark) ? currentInquiry?.remark : null || '',
       address: currentInquiry?.address || '',
     }),
     [currentInquiry],
@@ -111,8 +122,9 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       contact: data.contact,
       email: data.email,
       date: data.date,
+      recallingDate: data.recallingDate,
       inquiryFor: data.inquiryFor === 'Other' ? data.other : data.inquiryFor,
-      remark: data.remark,
+      remark: data.remark === 'Other' ? data?.otherRemark : data?.remark,
       response: data.response,
       address: data.address,
       assignTo: data.assignTo.value,
@@ -257,6 +269,11 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                 label='Date'
                 req={'red'}
               />
+              <RHFDatePicker
+                name='recallingDate'
+                control={control}
+                label='Recalling Date'
+              />
               {configs.loanTypes && <RHFAutocomplete
                 name='inquiryFor'
                 label={'Inquiry For'}
@@ -270,6 +287,10 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                   </li>
                 )}
               />}
+              {
+                (watch('inquiryFor') === 'Other') &&
+                <RHFTextField name='other' label='Other' req={'red'} />
+              }
               <RHFAutocomplete
                 name='response'
                 req={'red'}
@@ -283,12 +304,28 @@ export default function InquiryNewEditForm({ currentInquiry }) {
                   }
                 }}
               />
-              {
-                (watch('inquiryFor') === 'Other') &&
-                <RHFTextField name='other' label='Other' req={'red'} />
-              }
               <RHFTextField name='address' label='Address' req={'red'} />
-              <RHFTextField name='remark' label='Remark' />
+              <RHFAutocomplete
+                name='remark'
+                req='red'
+                label='Remark'
+                placeholder='Choose a Remark'
+                options={[...configs?.remarks || [], 'Other']}
+                isOptionEqualToValue={(option, value) => option === value}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
+              {watch('remark') === 'Other' && (
+                <RHFTextField
+                  name='otherRemark'
+                  label='Other Remark'
+                  req={'red'}
+                  placeholder='Enter other remark'
+                />
+              )}
             </Box>
           </Card>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
