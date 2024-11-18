@@ -86,7 +86,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   useEffect(() => {
     setMultiSchema(scheme);
   }, [scheme]);
+  const [aspectRatio, setAspectRatio] = useState(null);
 
+// Once the image is loaded, calculate its dimensions and set the aspect ratio
+  useEffect(() => {
+    if (imageSrc) {
+      const img = new Image();
+      img.src = imageSrc;
+      img.onload = () => {
+        setAspectRatio(img.width / img.height);
+      };
+    }
+  }, [imageSrc]);
   const NewLoanissueSchema = Yup.object().shape({
     customer: Yup.object().required('Customer is required'),
     scheme: Yup.object().required('Scheme is required'),
@@ -736,7 +747,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   file={croppedImage}
                   onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
-                  sx={{ height: '350px', ' .css-1lrddw3': { height: '100%' } }}
                 />
               ) : (
                 <RHFUpload
@@ -744,34 +754,40 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   maxSize={3145728}
                   onDelete={handleDeleteImage}
                   onDrop={handleDropSingleFile}
-                  sx={{ height: '350px', ' .css-1lrddw3': { height: '100%' } }}
                 />
               )}
-              <Dialog open={open} onClose={() => setOpen(false)} maxWidth='sm' fullWidth>
+              <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
                 <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
-                  <Cropper
-                    image={imageSrc}
-                    crop={crop}
-                    zoom={zoom}
-                    rotation={rotation}
-                    aspect={4 / 3}
-                    onCropChange={setCrop}
-                    onCropComplete={onCropComplete}
-                    onZoomChange={setZoom}
-                    onRotationChange={setRotation}
-                  />
+                  {aspectRatio && (
+                    <Cropper
+                      image={imageSrc}
+                      crop={crop}
+                      zoom={zoom}
+                      rotation={rotation}
+                      aspect={aspectRatio} // Set the aspect ratio here
+                      onCropChange={setCrop}
+                      onCropComplete={onCropComplete}
+                      onZoomChange={setZoom}
+                      onRotationChange={setRotation}
+                    />
+                  )}
                 </Box>
                 <Box sx={{ padding: 2 }}>
-                  <Typography gutterBottom>Zoom</Typography>
-                  <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
-                  <Typography gutterBottom>Rotation</Typography>
-                  <Slider value={rotation} min={0} max={360} step={1}
-                          onChange={(e, rotation) => setRotation(rotation)} />
-                  <Box display='flex' justifyContent='space-between' mt={2}>
-                    <Button onClick={() => setOpen(false)} variant='outlined'>
+                  <Box display={'flex'} gap={3}>
+                    <Box width={'50%'}>
+                      <Typography gutterBottom>Zoom</Typography>
+                      <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
+                    </Box>
+                    <Box width={'50%'}>
+                      <Typography gutterBottom>Rotation</Typography>
+                      <Slider value={rotation} min={0} max={360} step={1} onChange={(e, rotation) => setRotation(rotation)} />
+                    </Box>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" mt={2}>
+                    <Button onClick={() => setOpen(false)} variant="outlined">
                       Cancel
                     </Button>
-                    <Button onClick={showCroppedImage} variant='contained' color='primary'>
+                    <Button onClick={showCroppedImage} variant="contained" color="primary">
                       Save Cropped Image
                     </Button>
                   </Box>
