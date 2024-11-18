@@ -45,10 +45,10 @@ const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
-  { id: 'InterestLoanAmount', label: 'Interest loan amount' },
-  { id: 'InterestRate', label: 'Interest rate' },
-  { id: 'CashAmount', label: 'Cash amount' },
-  { id: 'BankAmount', label: 'Bank amount' },
+  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'InterestRate', label: 'Int. rate' },
+  { id: 'CashAmount', label: 'Cash amt' },
+  { id: 'BankAmount', label: 'Bank amt' },
   { id: '', width: 88 },
 ];
 
