@@ -545,7 +545,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               fullWidth
               options={customer?.map((item) => ({
                 id: item._id,
-                name: item.firstName + ' ' + item.lastName,
+                name: item.firstName + ' ' + item.middleName+' ' + item.lastName,
               }))}
               getOptionLabel={(option) => option.name}
               renderOption={(props, option) => (
