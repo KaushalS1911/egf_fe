@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 
 // ----------------------------------------------------------------------
 export default function useLightBox(slide) {
-  console.log(slide, "slide");
   const [selected, setSelected] = useState(false);
 
   const handleOpen = useCallback(() => {
