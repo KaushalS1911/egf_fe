@@ -120,7 +120,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const to = watch('to');
 
   function calculatePenalty(loanAmount, interestRate) {
-    console.log(interestRate)
     const monthlyInterest = (loanAmount * interestRate) / 100;
     const penalty = (Number(watch('days')) / 30) * monthlyInterest;
     return penalty.toFixed(2);
