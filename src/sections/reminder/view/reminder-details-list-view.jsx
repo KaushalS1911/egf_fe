@@ -31,7 +31,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { isAfter, isBetween } from '../../../utils/format-time';
 import ReminderDetailsTableRow from '../reminder-details-table-row';
-import ReminderDetailsTableToolbar from '../reminder-table-toolbar';
+import ReminderDetailsTableToolbar from '../reminder-details-table-toolbar';
 import ReminderDetailsTableFiltersResult from '../reminder-details-table-filters-result';
 import { useGetReminder } from '../../../api/reminder';
 import { LoadingScreen } from '../../../components/loading-screen';
@@ -300,7 +300,7 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   }
     if (!dateError && startDate && endDate) {
       inputData = inputData.filter((order) =>
-        isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
+        isBetween(new Date(order.nextRecallingDate), startDate, endDate),
       );
   }
   return inputData;

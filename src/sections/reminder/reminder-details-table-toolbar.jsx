@@ -81,6 +81,7 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
+            sx={{"input": { height: 7 },}}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -94,6 +95,7 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
             }}
           />
           <DatePicker
+
             label='Start date'
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
@@ -107,6 +109,14 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
             }}
             sx={{
               maxWidth: { md: 200 },
+              "label": {
+                mt: -0.8,
+                fontSize: "14px",
+              },
+              "& .MuiInputLabel-shrink": {
+                mt: 0,
+              },
+              "input": { height: 7 },
             }}
           />
           <DatePicker
@@ -129,6 +139,14 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
+              "label": {
+                mt: -0.8,
+                fontSize: "14px",
+              },
+              "& .MuiInputLabel-shrink": {
+                mt: 0,
+              },
+              "input": { height: 7 },
             }}
           />
         </Stack>

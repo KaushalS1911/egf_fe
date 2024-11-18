@@ -40,11 +40,11 @@ const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'customerName', label: 'Customer name' },
   { id: 'otpNo.', label: 'OTP no.' },
-  { id: 'loanAmount', label: 'Loan amount', },
+  { id: 'loanAmount', label: 'Loan amt', },
   { id: 'days', label: 'Days' },
-  { id: 'nextInterestPaydate', label: 'Next interest pay date'},
+  { id: 'nextInterestPaydate', label: 'Next int. pay date'},
   { id: 'issueDate', label: 'Issue date' },
-  { id: 'lastInterestDate', label: 'Last interest date' },
+  { id: 'lastInterestDate', label: 'Last int. date' },
   { id: ''},
 ];
 

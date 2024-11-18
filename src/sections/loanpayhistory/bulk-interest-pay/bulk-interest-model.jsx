@@ -29,7 +29,10 @@ function BulkInterestModel({ open, setOpen }) {
 
   const NewUserSchema = Yup.object().shape({
     customer: Yup.object().required('Customer is required'),
-    loans: Yup.array().required('Loan is required'),
+    loans: Yup.array()
+      .of(Yup.object().shape({}))
+      .min(1, 'At least one loan is required')
+      .required('Loan is required'),
   });
 
   const defaultValues = useMemo(
