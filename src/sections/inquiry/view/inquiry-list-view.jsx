@@ -49,9 +49,9 @@ const TABLE_HEAD = [
   { id: 'Recalling Date', label: 'Recalling Date' },
   { id: 'name', label: 'Name' },
   { id: 'contact', label: 'Contact' },
-  { id: 'email', label: 'Email' },
   { id: 'inquiry for', label: 'Inquiry for' },
   { id: 'remark', label: 'Remark' },
+  { id: 'Status', label: 'Status' },
   { id: '', width: 88 },
 ];
 
@@ -229,6 +229,7 @@ export default function InquiryListView() {
         inquiryFor: 'Gold loan ',
         remark: 'your remark',
         response: 'Active',
+        address: 'your address',
       },
     ];
     const workbook = xlsx.utils.book_new();
@@ -325,7 +326,6 @@ export default function InquiryListView() {
                   <Select
                     value={selectedEmployee}
                     onChange={handleEmployeeChange}
-
                     input={<OutlinedInput
                       label='Emplyoee'
                       sx={{
@@ -363,7 +363,7 @@ export default function InquiryListView() {
               )}
               <Box display='flex' alignItems='center' mx={1}>
                 <input
-                  disabled={!selectedBranch && !selectedBranch}
+                  disabled={!selectedEmployee}
                   type='file'
                   accept='.xlsx, .xls'
                   onChange={handleFileChange}
@@ -371,7 +371,7 @@ export default function InquiryListView() {
                   id='file-upload'
                 />
                 <label htmlFor='file-upload'>
-                  <Button variant='outlined' disabled={!selectedBranch && !selectedBranch} component='span'
+                  <Button variant='outlined' disabled={!selectedEmployee} component='span'
                           startIcon={<Iconify icon='mdi:file-upload' />}>
                     Select Excel File
                   </Button>

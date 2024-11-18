@@ -27,9 +27,10 @@ import {
 import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useSnackbar } from 'notistack';
+import Label from '../../components/label';
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, mutate }) {
-  const { date, firstName, lastName, contact, email, inquiryFor, remark, _id } = row;
+  const { date, firstName, lastName, contact, inquiryFor, remark, _id } = row;
   const [attempts, setAttempts] = useState(row?.attempts || []);
   const [openResponseDialog, setOpenResponseDialog] = useState(false);
   const [responseDate, setResponseDate] = useState(new Date().toISOString().split('T')[0]);
@@ -106,9 +107,22 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{email}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
+        <TableCell>
+          <Label
+            variant='soft'
+            color={
+              (row?.status === 'Completed' && 'success') ||
+              (row?.status === 'Responded' && 'warning') ||
+              (row?.status === 'Active' && 'info') ||
+              (row?.status === 'Not Responded' && 'error') ||
+              'default'
+            }
+          >
+            {row?.status}
+          </Label>
+        </TableCell>
 
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {row?.attempts && <IconButton
@@ -127,7 +141,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
+        <TableCell sx={{ p: 0, border: 'none' }} colSpan={9}>
           <Collapse
             in={collapse.value}
             timeout='auto'
