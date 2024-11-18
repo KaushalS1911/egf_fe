@@ -90,7 +90,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     () => (
       {
         loanNo: currentDisburse?.loanNo || '',
-        customerName: `${currentDisburse?.customer?.firstName || ''} ${currentDisburse?.customer?.lastName || ''}`,
+        customerName: `${currentDisburse?.customer?.firstName || ''} ${currentDisburse?.customer?.middleName || ''} ${currentDisburse?.customer?.lastName || ''}`,
         loanAmount: currentDisburse?.loanAmount || '',
         interest: currentDisburse?.scheme?.interestRate || '',
         scheme: currentDisburse?.scheme?.name || '',

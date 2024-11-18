@@ -75,7 +75,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   });
   const defaultValues = useMemo(() => ({
     loanNo: currentLoan?.loanNo || '',
-    customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.lastName || '',
+    customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.middleName + ' ' + currentLoan?.customer.lastName || '',
     address: `${currentLoan.customer.permanentAddress.street || ''}, ${currentLoan.customer.permanentAddress.landmark || ''}, ${currentLoan.customer.permanentAddress.city || ''}, ${currentLoan.customer.permanentAddress.state || ''}, ${currentLoan.customer.permanentAddress.zipcode || ''}, ${currentLoan.customer.permanentAddress.country || ''}` || '',
     contact: currentLoan?.customer.contact || '',
     issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
