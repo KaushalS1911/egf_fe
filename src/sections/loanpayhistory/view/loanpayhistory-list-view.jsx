@@ -55,10 +55,10 @@ const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'customerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
-  { id: 'interestLoanAmount', label: 'Interest loan amount' },
-  { id: 'interestRate', label: 'Interest rate' },
-  { id: 'cashAmount', label: 'Cash amount' },
-  { id: 'bankAmount', label: 'Bank amount' },
+  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'InterestRate', label: 'Int. rate' },
+  { id: 'CashAmount', label: 'Cash amt' },
+  { id: 'BankAmount', label: 'Bank amt' },
   { id: 'status', label: 'Status' },
 ];
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, {

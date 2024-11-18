@@ -38,8 +38,7 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextRecallingDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loan.customer.firstName + ' ' + loan.customer.lastName}</TableCell>
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loan.customer.firstName + ' ' + loan.customer.middleName + ' ' + loan.customer.lastName}</TableCell>
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
