@@ -120,6 +120,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const to = watch('to');
 
   function calculatePenalty(loanAmount, interestRate) {
+    console.log(interestRate)
     const monthlyInterest = (loanAmount * interestRate) / 100;
     const penalty = (Number(watch('days')) / 30) * monthlyInterest;
     return penalty.toFixed(2);
@@ -137,28 +138,32 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     const differenceInTime = Math.abs(endDate - startDate);
     const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
 
+    const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
+    const differenceInTime2 = Math.abs(new Date(to) - nextInstallmentDate);
+    const differenceInDays2 = Math.floor(differenceInTime2 / (1000 * 3600 * 24));
+
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
-      if (Number(watch('days')) >= penaltyItem.afterDueDateFromDate && Number(watch('days')) <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true) {
+      if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true) {
         penaltyPer = calculatePenalty(currentLoan.loanAmount, penaltyItem.penaltyInterest);
       }
     });
 
     setValue('interestAmount', (currentLoan?.scheme.interestRate * currentLoan.loanAmount / 100 * differenceInDays / 30).toFixed(2));
     setValue('penalty', penaltyPer);
-    if (new Date(from) >= new Date()) {
-      setValue('penalty', 0);
-    }
+    // if (new Date(from) >= new Date()) {
+    //   setValue('penalty', 0);
+    // }
     setValue('totalPay', (
       Number(watch('interestAmount')) +
       Number(watch('penalty'))
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
-    if (startDate > new Date() || new Date(currentLoan.nextInstallmentDate) > startDate) {
-      setValue('penalty', 0);
-    }
+    // if (startDate > new Date() || new Date(currentLoan.nextInstallmentDate) > startDate) {
+    //   setValue('penalty', 0);
+    // }
   }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
 
 
