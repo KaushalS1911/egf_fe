@@ -137,10 +137,6 @@ export default function SchemeNewEditForm({ currentScheme }) {
                 label='Scheme Name'
                 req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
-                onChange={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                  methods.setValue('name', e.target.value);
-                }}
               />
               <RHFTextField
                 name='interestRate'
