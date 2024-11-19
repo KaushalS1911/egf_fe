@@ -40,18 +40,18 @@ import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@
 import Iconify from '../../../components/iconify';
 import { useGetEmployee } from '../../../api/employee';
 import { useGetBranch } from '../../../api/branch';
+import * as xlsx from 'xlsx';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
-
 const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
+  { id: 'Recalling Date', label: 'Recalling Date' },
   { id: 'name', label: 'Name' },
   { id: 'contact', label: 'Contact' },
-  { id: 'email', label: 'Email' },
   { id: 'inquiry for', label: 'Inquiry for' },
   { id: 'remark', label: 'Remark' },
+  { id: 'Status', label: 'Status' },
   { id: '', width: 88 },
 ];
 
@@ -217,6 +217,27 @@ export default function InquiryListView() {
     }
   };
 
+  const handleDownload = () => {
+    const sampleData = [
+      {
+        firstName: 'john',
+        lastName: 'li',
+        contact: '7845127845',
+        email: 'john@gmail.com',
+        date: '22-05-2024',
+        recallingDate: '23-02-2024',
+        inquiryFor: 'Gold loan ',
+        remark: 'your remark',
+        response: 'Active',
+        address: 'your address',
+      },
+    ];
+    const workbook = xlsx.utils.book_new();
+    const worksheet = xlsx.utils.json_to_sheet(sampleData);
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    xlsx.writeFile(workbook, 'downloadSample.xlsx');
+  };
+
   if (inquiryLoading) {
     return <LoadingScreen />;
   }
@@ -305,7 +326,6 @@ export default function InquiryListView() {
                   <Select
                     value={selectedEmployee}
                     onChange={handleEmployeeChange}
-
                     input={<OutlinedInput
                       label='Emplyoee'
                       sx={{
@@ -341,9 +361,9 @@ export default function InquiryListView() {
                   </Select>
                 </FormControl>
               )}
-              <Box display='flex' alignItems='center' mx={2}>
+              <Box display='flex' alignItems='center' mx={1}>
                 <input
-                  disabled={!selectedBranch && !selectedBranch}
+                  disabled={!selectedEmployee}
                   type='file'
                   accept='.xlsx, .xls'
                   onChange={handleFileChange}
@@ -351,12 +371,15 @@ export default function InquiryListView() {
                   id='file-upload'
                 />
                 <label htmlFor='file-upload'>
-                  <Button variant='outlined' disabled={!selectedBranch && !selectedBranch} component='span'
+                  <Button variant='outlined' disabled={!selectedEmployee} component='span'
                           startIcon={<Iconify icon='mdi:file-upload' />}>
                     Select Excel File
                   </Button>
                 </label>
               </Box>
+              <Button variant='contained' sx={{ mx: 1 }} onClick={handleDownload}>
+                Download File
+              </Button>
               <Button
                 component={RouterLink}
                 href={paths.dashboard.inquiry.new}
@@ -477,7 +500,8 @@ export default function InquiryListView() {
 
 function applyFilter({
                        inputData, comparator, filters,
-                     },
+                     }
+  ,
 ) {
   const { status, name, startDate, endDate } = filters;
 

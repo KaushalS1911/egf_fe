@@ -12,7 +12,7 @@ import Rolescreatepage from './roles-crete-view';
 import BusinessTypeCreteView from './business-type-crete-view';
 import BranchCreateView from './branch-create-view';
 import LoanTypeView from './loan-type-view';
-import MyProfile from './my-profile-create-view';
+import RemarkCreateView from './remark-create-view';
 
 const TABS = [
   {
@@ -43,6 +43,11 @@ const TABS = [
   {
     value: 'Loan type',
     label: 'Loan type',
+    icon: <Iconify icon='mdi:cash-sync' width={24} />,
+  },
+  {
+    value: 'Remark type',
+    label: 'Remark type',
     icon: <Iconify icon='mdi:cash-sync' width={24} />,
   },
 ];
@@ -82,6 +87,7 @@ export default function SettingsPage() {
         {currentTab === 'Business type' && <BusinessTypeCreteView />}
         {currentTab === 'Loan type' && <LoanTypeView />}
         {currentTab === 'Branch' && <BranchCreateView />}
+        {currentTab === 'Remark type' && <RemarkCreateView />}
       </Container>
     </>
   );
