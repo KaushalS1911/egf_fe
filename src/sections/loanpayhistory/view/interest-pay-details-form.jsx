@@ -52,9 +52,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
   const table = useTable();
 
-
   const paymentSchema = paymentMode === 'Bank' ? {
-    account: Yup.object().required('Account is required'),
+    account: Yup.object().required('Account is required').typeError('Account is required'),
     bankAmount: Yup.string()
       .required('Bank Amount is required')
       .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
@@ -62,6 +61,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
       .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
+
   } : {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
@@ -119,9 +119,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const from = watch('from');
   const to = watch('to');
 
-  function calculatePenalty(loanAmount, interestRate) {
-    const monthlyInterest = (loanAmount * interestRate) / 100;
-    const penalty = (Number(watch('days')) / 30) * monthlyInterest;
+  function calculatePenalty(loanAmount, interestRate, differenceInDays) {
+    const penalty = ((loanAmount * interestRate) / 100) * (12 * differenceInDays)/ 365;
+    console.log(penalty)
     return penalty.toFixed(2);
   }
 
@@ -145,11 +145,10 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
       if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true) {
-        penaltyPer = calculatePenalty(currentLoan.loanAmount, penaltyItem.penaltyInterest);
+        penaltyPer = calculatePenalty(currentLoan.loanAmount, penaltyItem.penaltyInterest, differenceInDays);
       }
     });
-
-    setValue('interestAmount', (currentLoan?.scheme.interestRate * currentLoan.loanAmount / 100 * differenceInDays / 30).toFixed(2));
+    setValue('interestAmount', (((currentLoan.loanAmount * currentLoan?.scheme.interestRate) / 100) * (12 * differenceInDays)/ 365).toFixed(2));
     setValue('penalty', penaltyPer);
     // if (new Date(from) >= new Date()) {
     //   setValue('penalty', 0);
@@ -165,7 +164,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     // }
   }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
 
-
+  useEffect(() => {
+    if (watch('paymentMode')) {
+      setPaymentMode(watch('paymentMode'));
+    }
+  }, [watch('paymentMode')]);
   const onSubmit = handleSubmit(async (data) => {
 
     let paymentDetail = {
@@ -294,10 +297,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
               name='paymentMode'
               label='Payment Mode'
               req='red'
-              onChange={(event, newValue) => {
-                setPaymentMode(newValue);
-                setValue('paymentMode', newValue);
-              }}
               options={['Cash', 'Bank', 'Both']}
               getOptionLabel={(option) => option}
               renderOption={(props, option) => (
@@ -325,7 +324,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                 <RHFAutocomplete
                   name='account'
                   label='Account'
-                  req='red'
+                  req={'red'}
                   fullWidth
                   options={branch.flatMap((item) => item.company.bankAccounts)}
                   getOptionLabel={(option) => option.bankName || ''}
@@ -335,11 +334,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                     </li>
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(event, value) => {
-                    setValue('account', value);
-                  }}
                 />
-
                 <RHFTextField
                   name='bankAmount'
                   label='Bank Amount'
