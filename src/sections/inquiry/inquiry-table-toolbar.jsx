@@ -184,6 +184,14 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
             <Iconify icon='ic:round-whatsapp' />
             whatsapp share
           </MenuItem>
+          <MenuItem
+            // onClick={() => {
+            //   popover.onClose();
+            // }}
+          >
+            <Iconify icon='uiw:file-excel' />
+             Excel
+          </MenuItem>
         </CustomPopover>
       </Stack>
     </>
