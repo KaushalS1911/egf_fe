@@ -238,6 +238,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
         setValue("property_image",imageSrc);
+        setCapturedImage(imageSrc)
         setOpen(false);
       }
     }
@@ -280,7 +281,24 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       payload.append(`propertyDetails[${index}][id]`, field.id);
     });
 
+    if(capturedImage){
+
+      // Convert base64 to Blob
+      const base64Data = capturedImage.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+      const binaryData = atob(base64Data); // Decode base64 string
+      const arrayBuffer = new Uint8Array(binaryData.length);
+
+      for (let i = 0; i < binaryData.length; i++) {
+        arrayBuffer[i] = binaryData.charCodeAt(i);
+      }
+
+      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
+      payload.append('property-image', blob, 'property-image.jpg');
+      console.log(blob)
+    }
+    else{
     payload.append('property-image', data.property_image);
+    }
     payload.append('loanAmount', parseFloat(data.loanAmount));
     payload.append('interestLoanAmount', parseFloat(data.loanAmount));
     payload.append('paymentMode', data.paymentMode);
@@ -314,6 +332,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
       enqueueSnackbar('Loan processed successfully!', { variant: 'success' });
       router.push(paths.dashboard.loanissue.root);
+      setCapturedImage(null)
       reset();
     } catch (error) {
       console.error(error);
