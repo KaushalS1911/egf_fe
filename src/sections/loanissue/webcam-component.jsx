@@ -58,6 +58,7 @@ const WebcamComponent = () => {
             }}
           >
             Capture Photo
+
           </button>
           <button
             onClick={() => setIsCameraOpen(false)}
