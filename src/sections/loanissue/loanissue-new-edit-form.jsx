@@ -46,7 +46,6 @@ import { enqueueSnackbar } from 'notistack';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import WebcamComponent from './webcam-component';
 
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
@@ -67,11 +66,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [customerId, setCustomerID] = useState();
   const [customerData, setCustomerData] = useState();
   const [schemeId, setSchemeID] = useState();
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const webcamRef = useRef(null);
-  const canvasRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [isCapturing, setIsCapturing] = useState(false);
 
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -236,17 +232,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     height: 360,
     facingMode: "user",
   };
+
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        setCapturedImage(imageSrc);
-        console.log("Captured Image:", imageSrc);
-      } else {
-        console.error("Unable to capture image. Is the camera permission granted?");
+        setValue("property_image",imageSrc);
+        setOpen(false);
       }
     }
   }, []);
+
   const handleRemove = (index) => {
     if (fields.length > 1) {
       remove(index);
@@ -1301,23 +1297,25 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }}
   >
     <DialogTitle>Camera</DialogTitle>
-    <WebcamComponent />
-    {/*<Webcam*/}
-    {/*  audio={false}*/}
-    {/*  ref={webcamRef}*/}
-    {/*  screenshotFormat="image/jpeg"*/}
-    {/*  width={640}*/}
-    {/*  height={360}*/}
-    {/*  videoConstraints={videoConstraints}*/}
-    {/*/>*/}
-    {/*<DialogActions>*/}
-    {/*  <Button variant='outlined' onClick={capture}>*/}
-    {/*    Capture Photo*/}
-    {/*  </Button>*/}
-    {/*  <LoadingButton type='submit' variant='contained' loading={isSubmitting} onClick={() => setOpen(false)}>*/}
-    {/*    Close Camera*/}
-    {/*  </LoadingButton>*/}
-    {/*</DialogActions>*/}
+    <Box sx={{display: "flex",justifyContent: "center",alignItems: "center"}}>
+
+    <Webcam
+      audio={false}
+      ref={webcamRef}
+      screenshotFormat="image/jpeg"
+      width={"90%"}
+      height={"100%"}
+      videoConstraints={videoConstraints}
+    />
+    </Box>
+    <DialogActions>
+      <Button variant='outlined' onClick={capture}>
+        Capture Photo
+      </Button>
+      <Button variant='contained'  onClick={() => setOpen(false)}>
+        Close Camera
+      </Button>
+    </DialogActions>
   </Dialog>
   </>
   );
