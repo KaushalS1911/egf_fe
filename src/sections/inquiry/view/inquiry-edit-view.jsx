@@ -23,7 +23,7 @@ export default function InquiryEditView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading='New Inquiry'
+        heading='Edit'
         links={[
           {
             name: 'Dashboard',

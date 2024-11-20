@@ -11,10 +11,11 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableToolbar({ filters, onFilters }) {
+export default function EmployeeTableToolbar({ filters, onFilters ,employees}) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -93,6 +94,14 @@ export default function EmployeeTableToolbar({ filters, onFilters }) {
           >
             <Iconify icon='ic:round-whatsapp' />
             whatsapp share
+          </MenuItem>
+          <MenuItem
+          >
+            <RHFExportExcel
+              data={employees}
+              fileName='EmployeeData'
+              sheetName='EmployeeDetails'
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

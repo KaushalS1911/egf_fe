@@ -30,7 +30,7 @@ import { useSnackbar } from 'notistack';
 import Label from '../../components/label';
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, mutate }) {
-  const { date, firstName, lastName, contact, inquiryFor, remark, _id } = row;
+  const { date, firstName, lastName, contact, inquiryFor, remark,updatedAt, _id } = row;
   const [attempts, setAttempts] = useState(row?.attempts || []);
   const [openResponseDialog, setOpenResponseDialog] = useState(false);
   const [responseDate, setResponseDate] = useState(new Date().toISOString().split('T')[0]);
@@ -93,11 +93,22 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
       enqueueSnackbar('Error saving responses. Please try again.', { variant: 'error' });
     }
   };
-
+  const isRecentlyUpdated = () => {
+    if (!row?.updatedAt || row?.updatedAt === row?.createdAt) return false; // Only apply if updatedAt is different from createdAt
+    const updatedAtDate = new Date(row.updatedAt);
+    const currentTime = new Date();
+    const timeDiff = currentTime - updatedAtDate;
+    return timeDiff <= 24 * 60 * 60 * 1000;
+  };
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+      <TableRow
+        hover
+        selected={selected}
+        sx={{
+          backgroundColor: isRecentlyUpdated() ? '#F6F7F8' : 'inherit',
+        }}
+      >        <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 

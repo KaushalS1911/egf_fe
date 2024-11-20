@@ -14,6 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ export default function CustomerTableToolbar({
                                                filters,
                                                onFilters,
                                                roleOptions,
+  customers
                                              }) {
   const popover = usePopover();
 
@@ -136,7 +138,15 @@ export default function CustomerTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
-        </MenuItem>
+        </MenuItem>  <MenuItem
+      >
+        <RHFExportExcel
+          data={customers}
+          fileName='CustomerData'
+          sheetName='CustomerDetails'
+        />
+      </MenuItem>
+
       </CustomPopover>
     </>
   );

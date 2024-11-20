@@ -46,6 +46,7 @@ import { useGetCustomer } from '../../../api/customer';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -75,7 +76,7 @@ export default function CustomerListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { customer, mutate,customerLoading } = useGetCustomer();
+  const { customer, mutate, customerLoading } = useGetCustomer();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -159,10 +160,29 @@ export default function CustomerListView() {
     },
     [handleFilters],
   );
-  if(customerLoading){
+
+  const customers = customer.map((item) => ({
+    'Customer code': item.customerCode,
+    Name: item.firstName + ' ' + item.middleName + ' ' + item.lastName,
+    Contact: item.contact,
+    'OTP contact': item.otpContact,
+    Email: item.email,
+    DOB: fDate(item.dob),
+    'Aadhar card': item.aadharCard,
+    'Pan card': item.panCard,
+    'Driving license': item.drivingLicense,
+    'Joining date': fDate(item.joiningDate),
+    'Loan type': item.loanType,
+    'Barnch': item.branch.name,
+    'Permanent address': `${item.permanentAddress.street} ${item.permanentAddress.landmark} ${item.permanentAddress.city} , ${item.permanentAddress.state} ${item.permanentAddress.country} ${item.permanentAddress.zipcode}`,
+    'Reference By': item.referenceBy,
+    Remark: item.remark,
+    Status: item.status,
+  }));
+  if (customerLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
   return (
     <>
@@ -228,6 +248,8 @@ export default function CustomerListView() {
           <CustomerTableToolbar
             filters={filters}
             onFilters={handleFilters}
+            customers={customers}
+
             //
             roleOptions={_roles}
           />

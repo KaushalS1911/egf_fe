@@ -88,7 +88,7 @@ export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
         label: currentInquiry?.assignTo?.user?.firstName + ' ' + currentInquiry?.assignTo?.user?.lastName,
         value: currentInquiry?.assignTo?._id,
       } : null,
-      response: currentInquiry?.response || 'Active',
+      response: currentInquiry?.status || 'Active',
       firstName: currentInquiry?.firstName || '',
       lastName: currentInquiry?.lastName || '',
       contact: currentInquiry?.contact || '',
@@ -127,7 +127,7 @@ export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
       recallingDate: data.recallingDate,
       inquiryFor: data.inquiryFor === 'Other' ? data.other : data.inquiryFor,
       remark: data.remark === 'Other' ? data?.otherRemark : data?.remark,
-      response: data.response,
+      status: data.response,
       address: data.address,
       assignTo: data.assignTo.value,
     };
@@ -160,8 +160,7 @@ export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
           payload,
         );
         enqueueSnackbar(res?.data?.message);
-        router.push(paths.dashboard.inquiry.list);
-        reset();
+        // router.push(paths.dashboard.inquiry.list);
       } else {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${queryString}`,
@@ -196,7 +195,7 @@ export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
             value: nextInquiry.assignTo._id,
           }
           : null,
-        response: nextInquiry.response || 'Active',
+        response: nextInquiry.status || 'Active',
         firstName: nextInquiry.firstName || '',
         lastName: nextInquiry.lastName || '',
         contact: nextInquiry.contact || '',
@@ -217,15 +216,27 @@ export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
   };
 
   return (
+
     <FormProvider methods={methods} onSubmit={onSubmit}>
+
       <Grid container spacing={3}>
+
         <Grid xs={12} md={4}>
           <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
             Inquiry Details
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>
+          {
+            currentInquiry &&
+              <Box sx={{display:'flex',justifyContent:'end',mb:2}}>
+            <LoadingButton variant='contained' onClick={fetchNextInquiry}>
+              Next Inquiry
+            </LoadingButton>
+              </Box>
+          }
           <Card sx={{ p: 3 }}>
+
             <Box
               rowGap={3}
               columnGap={2}
@@ -368,13 +379,8 @@ export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
               )}
             </Box>
           </Card>
-          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: currentInquiry ? 'space-between' : 'end', mt: 3 }}>
-            {
-              currentInquiry &&
-              <LoadingButton variant='contained' onClick={fetchNextInquiry}>
-                Next
-              </LoadingButton>
-            }
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+
             <Box>
               <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                       variant='outlined' onClick={() => reset()}>Reset</Button>

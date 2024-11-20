@@ -7,10 +7,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import { Grid, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableToolbar({ filters, onFilters }) {
+export default function LoanissueTableToolbar({ filters, onFilters,loans }) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -88,6 +89,15 @@ export default function LoanissueTableToolbar({ filters, onFilters }) {
           >
             <Iconify icon='ic:round-whatsapp' />
             whatsapp share
+          </MenuItem>
+          <MenuItem
+          >
+
+            <RHFExportExcel
+              data={loans}
+              fileName='LaonissueData'
+              sheetName='LoanissueDetails'
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

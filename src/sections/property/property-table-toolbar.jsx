@@ -14,12 +14,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
 export default function   PropertyTableToolbar({
   filters,
   onFilters,
+  propertise,
   //
   roleOptions,
 }) {
@@ -100,6 +102,14 @@ export default function   PropertyTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
+        </MenuItem>
+        <MenuItem
+        >
+          <RHFExportExcel
+            data={propertise}
+            fileName='PropertyData'
+            sheetName='PropertyDetails'
+          />
         </MenuItem>
       </CustomPopover>
     </>
