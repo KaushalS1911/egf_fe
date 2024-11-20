@@ -789,7 +789,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   onDrop={handleDropSingleFile}
                 />
               )}
-              <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+              <Dialog open={open} onClose={() => {
+                setOpen(false)
+              }} maxWidth="sm" fullWidth>
                 <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
                   {aspectRatio && (
                     <Cropper
@@ -797,7 +799,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       crop={crop}
                       zoom={zoom}
                       rotation={rotation}
-                      aspect={aspectRatio} // Set the aspect ratio here
+                      aspect={aspectRatio}
                       onCropChange={setCrop}
                       onCropComplete={onCropComplete}
                       onZoomChange={setZoom}
@@ -817,10 +819,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     </Box>
                   </Box>
                   <Box display="flex" justifyContent="space-between" mt={2}>
-                    <Button onClick={() => setOpen(false)} variant="outlined">
+                    <Button onClick={() => {
+                      setOpen(false)
+                      setZoom(1)
+                      setRotation(0)
+                    }} variant="outlined">
                       Cancel
                     </Button>
-                    <Button onClick={showCroppedImage} variant="contained" color="primary">
+                    <Button onClick={()=> {
+                      showCroppedImage();
+                      setZoom(1);
+                      setRotation(0);
+                    }} variant="contained" color="primary">
                       Save Cropped Image
                     </Button>
                   </Box>

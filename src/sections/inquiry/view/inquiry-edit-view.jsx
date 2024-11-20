@@ -40,7 +40,7 @@ export default function InquiryEditView() {
         }}
       />
 
-      {currentInquiry ? <InquiryNewEditForm currentInquiry={currentInquiry} /> :
+      {currentInquiry ? <InquiryNewEditForm currentInquiry={currentInquiry} inquiry={inquiry}/> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>

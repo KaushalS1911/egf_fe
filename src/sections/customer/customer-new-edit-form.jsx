@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
-import React, { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import countrystatecity from '../../_mock/map/csc.json';
 
 import Box from '@mui/material/Box';
@@ -22,7 +22,7 @@ import FormProvider, {
   RHFAutocomplete,
   RHFUploadAvatar, RHFRadioGroup,
 } from 'src/components/hook-form';
-import { Button } from '@mui/material';
+import { Button, Dialog, Slider } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
@@ -30,6 +30,8 @@ import { useGetBranch } from '../../api/branch';
 import { useGetConfigs } from '../../api/config';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '../../utils/canvasUtils';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +53,13 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [open, setOpen] = useState(false);
   const { configs, mutate } = useGetConfigs();
   const mdUp = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
@@ -58,7 +67,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy)
     ? currentCustomer.referenceBy
     : 'Other';
-
   const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     middleName: Yup.string().required('Middle Name is required'),
@@ -133,7 +141,18 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   });
 
   const { reset, watch, control, handleSubmit, setValue, formState: { isSubmitting } } = methods;
+  const [aspectRatio, setAspectRatio] = useState(null);
 
+// Once the image is loaded, calculate its dimensions and set the aspect ratio
+  useEffect(() => {
+    if (imageSrc) {
+      const img = new Image();
+      img.src = imageSrc;
+      img.onload = () => {
+        setAspectRatio(img.width / img.height);
+      };
+    }
+  }, [imageSrc]);
   useEffect(() => {
     if (currentCustomer) {
       reset(defaultValues);
@@ -233,19 +252,48 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       console.error(error);
     }
   });
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
 
-  const handleDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    const newFile = Object.assign(file, { preview: URL.createObjectURL(file) });
-    if (file) {
-      setValue('profile_pic', newFile, { shouldValidate: true });
+  const showCroppedImage = async () => {
+    try {
+      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
+      const croppedUrl = URL.createObjectURL(croppedFile);
+      setCroppedImage(croppedUrl);
+      const newFile = Object.assign(croppedFile, { preview: URL.createObjectURL(croppedFile) });
+      setValue('profile_pic', newFile);
       if (currentCustomer) {
         const formData = new FormData();
-        formData.append('profile-pic', file);
-        axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`, formData)
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err));
+        formData.append('profile-pic', croppedFile);
+
+        await axios
+          .put(
+            `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
+            formData
+          )
+          .then((res) => {
+            console.log('Profile updated successfully:', res.data);
+          })
+          .catch((err) => {
+            console.error('Error uploading cropped image:', err);
+          });
       }
+      setOpen(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const handleDrop = useCallback(async (acceptedFiles) => {
+    const file = acceptedFiles[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setOpen(true);
+      };
+      reader.readAsDataURL(file);
     }
   }, [setValue]);
 
@@ -318,6 +366,56 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               maxSize={3145728}
               onDrop={handleDrop}
             />
+            <Dialog open={open} onClose={() => {
+              setOpen(false);
+              setZoom(1);
+              setRotation(0);
+            }} maxWidth='sm' fullWidth>
+              <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
+                {aspectRatio && (
+                  <Cropper
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    rotation={rotation}
+                    aspect={aspectRatio}
+                    onCropChange={setCrop}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                    onRotationChange={setRotation}
+                  />
+                )}
+              </Box>
+              <Box sx={{ padding: 2 }}>
+                <Box display={'flex'} gap={3}>
+                  <Box width={'50%'}>
+                    <Typography gutterBottom>Zoom</Typography>
+                    <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
+                  </Box>
+                  <Box width={'50%'}>
+                    <Typography gutterBottom>Rotation</Typography>
+                    <Slider value={rotation} min={0} max={360} step={1}
+                            onChange={(e, rotation) => setRotation(rotation)} />
+                  </Box>
+                </Box>
+                <Box display='flex' justifyContent='space-between' mt={2}>
+                  <Button onClick={() => {
+                    setOpen(false);
+                    setZoom(1);
+                    setRotation(0);
+                  }} variant='outlined'>
+                    Cancel
+                  </Button>
+                  <Button onClick={()=> {
+                    showCroppedImage();
+                    setZoom(1);
+                    setRotation(0);
+                  }} variant="contained" color="primary">
+                    Save Cropped Image
+                  </Button>
+                </Box>
+              </Box>
+            </Dialog>
           </Box>
         </Card>
       </Grid>
