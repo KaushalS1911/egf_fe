@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState ,useRef , useCallback} from 'react';
 import PropTypes from 'prop-types';
+import Webcam from "react-webcam";
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -41,6 +42,10 @@ import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/canvasUtils';
 import { TableHeadCustom, useTable } from '../../components/table';
+import { enqueueSnackbar } from 'notistack';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
@@ -61,6 +66,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [customerId, setCustomerID] = useState();
   const [customerData, setCustomerData] = useState();
   const [schemeId, setSchemeID] = useState();
+  const webcamRef = useRef(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -82,11 +90,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [lossWeightError, setLossWeightError] = useState('');
   const uuid = uuidv4();
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const [aspectRatio, setAspectRatio] = useState(null);
 
   useEffect(() => {
     setMultiSchema(scheme);
   }, [scheme]);
-  const [aspectRatio, setAspectRatio] = useState(null);
 
   useEffect(() => {
     if (imageSrc) {
@@ -106,7 +114,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     cashAmount: Yup.string().required('Cash Amount is required'),
     approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
-    property_image: Yup.mixed().required('A property picture is required'),
+    // property_image: Yup.mixed().required('A property picture is required'),
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
@@ -176,7 +184,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     resolver: yupResolver(NewLoanissueSchema),
     defaultValues,
   });
-
   const {
     reset,
     watch,
@@ -220,6 +227,22 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       netAmount: '',
     });
   };
+  const videoConstraints = {
+    width: 640,
+    height: 360,
+    facingMode: "user",
+  };
+
+  const capture = useCallback(() => {
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      if (imageSrc) {
+        setValue("property_image",imageSrc);
+        setCapturedImage(imageSrc)
+        setOpen(false);
+      }
+    }
+  }, []);
 
   const handleRemove = (index) => {
     if (fields.length > 1) {
@@ -228,6 +251,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+
+    if (!data.property_image) {
+      enqueueSnackbar('Please select property image.', { variant: 'error' });
+      return;
+    }
     const propertyDetails = watch('propertyDetails');
     const payload = new FormData();
     payload.append('company', user.company);
@@ -253,10 +281,24 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       payload.append(`propertyDetails[${index}][id]`, field.id);
     });
 
-    if (data.property_image) {
-      payload.append('property-image', data.property_image);
-    }
+    if(capturedImage){
 
+      // Convert base64 to Blob
+      const base64Data = capturedImage.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+      const binaryData = atob(base64Data); // Decode base64 string
+      const arrayBuffer = new Uint8Array(binaryData.length);
+
+      for (let i = 0; i < binaryData.length; i++) {
+        arrayBuffer[i] = binaryData.charCodeAt(i);
+      }
+
+      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
+      payload.append('property-image', blob, 'property-image.jpg');
+      console.log(blob)
+    }
+    else{
+    payload.append('property-image', data.property_image);
+    }
     payload.append('loanAmount', parseFloat(data.loanAmount));
     payload.append('interestLoanAmount', parseFloat(data.loanAmount));
     payload.append('paymentMode', data.paymentMode);
@@ -290,6 +332,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
       enqueueSnackbar('Loan processed successfully!', { variant: 'success' });
       router.push(paths.dashboard.loanissue.root);
+      setCapturedImage(null)
       reset();
     } catch (error) {
       console.error(error);
@@ -523,6 +566,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   return (
+    <>
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         {!isFieldsEnabled &&
@@ -665,21 +709,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     {option?.name}
                   </li>
                 )}
-                onChange={(event, value) => {
-                  methods.setValue('scheme', value);
-                  if (value && value.interestRate) {
-                    const interestRate = parseFloat(value.interestRate);
-                    if (interestRate <= 1.5) {
-                      methods.setValue('consultingCharge', 0);
-                      methods.setValue('interestRate', interestRate);
-                    } else {
-                      methods.setValue('consultingCharge', (interestRate - '1.5').toFixed(2));
-                      methods.setValue('interestRate', '1.5');
-                    }
-                  } else {
-                    methods.setValue('consultingCharge', '');
-                  }
-                }}
+                // onChange={(event, value) => {
+                //   methods.setValue('scheme', value);
+                //   if (value && value.interestRate) {
+                //     const interestRate = parseFloat(value.interestRate);
+                //     if (interestRate <= 1.5) {
+                //       methods.setValue('consultingCharge', 0);
+                //       methods.setValue('interestRate', interestRate);
+                //     } else {
+                //       methods.setValue('consultingCharge', (interestRate - '1.5').toFixed(2));
+                //       methods.setValue('interestRate', '1.5');
+                //     }
+                //   } else {
+                //     methods.setValue('consultingCharge', '');
+                //   }
+                // }}
               />
               <RHFTextField name='interestRate' label='Instrest Rate' InputProps={{ readOnly: true }} />
               <Controller
@@ -736,9 +780,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
-              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+              <Box sx={{display: "flex",justifyContent: "space-between", mb: 2}}>
+              <Typography variant='subtitle1' component={"span"} sx={{ fontWeight: 600  }}>
                 Property Image
               </Typography>
+                <Typography variant='subtitle1' sx={{display: "inline-block", fontWeight: 600  }}>
+                  <Iconify icon="ion:camera-sharp" width={24} sx={{color: "gray", cursor: "pointer"}} onClick={() => setOpen(true)}/>
+                </Typography>
+              </Box>
               {croppedImage ? (
                 <RHFUpload
                   name='property_image'
@@ -952,7 +1001,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             error={!!lossWeightError}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-
                               if (inputValue === '') {
                                 setLossWeightError('Loss weight cannot be empty.');
                                 setValue(`propertyDetails[${index}].lossWeight`, '');
@@ -960,7 +1008,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               } else {
                                 setLossWeightError('');
                               }
-
                               if (/^-?\d*\.?\d*$/.test(inputValue)) {
                                 const lossWeight = parseFloat(inputValue);
                                 const schemedata = watch('scheme');
@@ -1259,6 +1306,37 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         </LoadingButton>
       </Box>
     </FormProvider>
+  <Dialog
+    fullWidth
+    maxWidth={false}
+    open={open}
+    onClose={() => setOpen(false)}
+    PaperProps={{
+      sx: { maxWidth: 720 },
+    }}
+  >
+    <DialogTitle>Camera</DialogTitle>
+    <Box sx={{display: "flex",justifyContent: "center",alignItems: "center"}}>
+
+    <Webcam
+      audio={false}
+      ref={webcamRef}
+      screenshotFormat="image/jpeg"
+      width={"90%"}
+      height={"100%"}
+      videoConstraints={videoConstraints}
+    />
+    </Box>
+    <DialogActions>
+      <Button variant='outlined' onClick={capture}>
+        Capture Photo
+      </Button>
+      <Button variant='contained'  onClick={() => setOpen(false)}>
+        Close Camera
+      </Button>
+    </DialogActions>
+  </Dialog>
+  </>
   );
 };
 
