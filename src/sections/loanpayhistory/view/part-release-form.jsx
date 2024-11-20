@@ -160,7 +160,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       return;
     }
     if (!file) {
-      enqueueSnackbar('Please select at least one file or property.', { variant: 'error' });
+      enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
     }
     let paymentDetail = {
