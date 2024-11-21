@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -137,6 +137,12 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       console.error(error);
     }
   });
+  useEffect(() => {
+    if(watch('paymentMode')){
+      setPaymentMode(watch('paymentMode'));
+      setValue('paymentMode', watch('paymentMode'));
+    }
+  },[watch('paymentMode')])
   const handleDeletePartPayment = async (id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`);
@@ -185,10 +191,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               label='Expected Payment Mode'
               req='red'
               options={['Cash', 'Bank', 'Both']}
-              onChange={(event, newValue) => {
-                setPaymentMode(newValue);
-                setValue('expectPaymentMode', newValue);
-              }}
               getOptionLabel={(option) => option}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
@@ -210,10 +212,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               label='Payment Mode'
               req='red'
               options={['Cash', 'Bank', 'Both']}
-              onChange={(event, newValue) => {
-                setPaymentMode(newValue);
-                setValue('paymentMode', newValue);
-              }}
               getOptionLabel={(option) => option}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
@@ -252,9 +250,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                     </li>
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(event, value) => {
-                    setValue('account', value);
-                  }}
                 />
               </Grid>
 

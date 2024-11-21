@@ -23,7 +23,7 @@ export default function InquiryEditView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading='New Inquiry'
+        heading='Edit'
         links={[
           {
             name: 'Dashboard',
@@ -33,14 +33,14 @@ export default function InquiryEditView() {
             name: 'Inquiry List',
             href: paths.dashboard.inquiry.root,
           },
-          { name: 'New Inquiry' },
+          { name: 'Edit Inquiry' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      {currentInquiry ? <InquiryNewEditForm currentInquiry={currentInquiry} /> :
+      {currentInquiry ? <InquiryNewEditForm currentInquiry={currentInquiry} inquiry={inquiry}/> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>

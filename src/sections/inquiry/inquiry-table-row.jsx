@@ -27,12 +27,11 @@ import {
 import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useSnackbar } from 'notistack';
+import Label from '../../components/label';
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, mutate }) {
-  const { date, firstName, lastName, contact, email, inquiryFor, remark, _id } = row;
-  console.log(row?.attempts);
+  const { date, firstName, lastName, contact, inquiryFor, remark,updatedAt, _id } = row;
   const [attempts, setAttempts] = useState(row?.attempts || []);
-  console.log(attempts);
   const [openResponseDialog, setOpenResponseDialog] = useState(false);
   const [responseDate, setResponseDate] = useState(new Date().toISOString().split('T')[0]);
   const [responseRemark, setResponseRemark] = useState('');
@@ -94,20 +93,47 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
       enqueueSnackbar('Error saving responses. Please try again.', { variant: 'error' });
     }
   };
-
+  const isRecentlyUpdated = () => {
+    if (!row?.updatedAt || row?.updatedAt === row?.createdAt) return false; // Only apply if updatedAt is different from createdAt
+    const updatedAtDate = new Date(row.updatedAt);
+    const currentTime = new Date();
+    const timeDiff = currentTime - updatedAtDate;
+    return timeDiff <= 24 * 60 * 60 * 1000;
+  };
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+      <TableRow
+        hover
+        selected={selected}
+        sx={{
+          backgroundColor: isRecentlyUpdated() ? '#F6F7F8' : 'inherit',
+        }}
+      >        <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+          {row?.recallingDate ? fDate(row?.recallingDate) : '-'}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{email}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
+        <TableCell>
+          <Label
+            variant='soft'
+            color={
+              (row?.status === 'Completed' && 'success') ||
+              (row?.status === 'Responded' && 'warning') ||
+              (row?.status === 'Active' && 'info') ||
+              (row?.status === 'Not Responded' && 'error') ||
+              'default'
+            }
+          >
+            {row?.status}
+          </Label>
+        </TableCell>
 
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {row?.attempts && <IconButton
@@ -126,7 +152,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
+        <TableCell sx={{ p: 0, border: 'none' }} colSpan={9}>
           <Collapse
             in={collapse.value}
             timeout='auto'

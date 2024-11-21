@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -85,7 +85,12 @@ function LoanCloseForm({ currentLoan, mutate }) {
     reset,
     formState: { isSubmitting },
   } = methods;
-
+  useEffect(() => {
+    if(watch('paymentMode')){
+      setPaymentMode(watch('paymentMode'));
+      setValue('paymentMode', watch('paymentMode'));
+    }
+  },[watch('paymentMode')])
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -183,10 +188,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
               label='Payment Mode'
               req={'red'}
               options={['Cash', 'Bank', 'Both']}
-              onChange={(event, newValue) => {
-                setPaymentMode(newValue);
-                setValue('paymentMode', newValue);
-              }}
               getOptionLabel={(option) => option}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
@@ -240,9 +241,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
                     </li>
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(event, value) => {
-                    setValue('account', value);
-                  }}
                 />
               </Box>
               <Box>

@@ -14,12 +14,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
 export default function SchemeTableToolbar({
                                              filters,
                                              onFilters,
+                                             schemes,
                                              //
                                              roleOptions,
                                            }) {
@@ -47,7 +49,7 @@ export default function SchemeTableToolbar({
       >
         <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -95,6 +97,14 @@ export default function SchemeTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
+        </MenuItem>
+        <MenuItem
+        >
+          <RHFExportExcel
+            data={schemes}
+            fileName='SchemeData'
+            sheetName='SchemeDetails'
+          />
         </MenuItem>
       </CustomPopover>
     </>

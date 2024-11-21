@@ -160,7 +160,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       return;
     }
     if (!file) {
-      enqueueSnackbar('Please select at least one file or property.', { variant: 'error' });
+      enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
     }
     let paymentDetail = {
@@ -233,6 +233,13 @@ function PartReleaseForm({ currentLoan, mutate }) {
       enqueueSnackbar('Failed to part release', { variant: 'error' });
     }
   });
+
+  useEffect(() => {
+    if(watch('paymentMode')){
+      setPaymentMode(watch('paymentMode'));
+      setValue('paymentMode', watch('paymentMode'));
+    }
+  },[watch('paymentMode')])
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -404,10 +411,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         label='Expected Payment Mode'
                         req='red'
                         options={['Cash', 'Bank', 'Both']}
-                        onChange={(event, newValue) => {
-                          setPaymentMode(newValue);
-                          setValue('expectPaymentMode', newValue);
-                        }}
                         getOptionLabel={(option) => option}
                         renderOption={(props, option) => (
                           <li {...props} key={option}>
@@ -485,10 +488,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     label='Payment Mode'
                     req='red'
                     options={['Cash', 'Bank', 'Both']}
-                    onChange={(event, newValue) => {
-                      setPaymentMode(newValue);
-                      setValue('paymentMode', newValue);
-                    }}
                     getOptionLabel={(option) => option}
                     renderOption={(props, option) => (
                       <li {...props} key={option}>
@@ -545,9 +544,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     </li>
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(event, value) => {
-                    setValue('account', value);
-                  }}
                 />
               </Box>
               <Box>

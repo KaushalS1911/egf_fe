@@ -34,24 +34,33 @@ import { useAuthContext } from 'src/auth/hooks';
 import InquiryTableRow from '../inquiry-table-row';
 import InquiryTableToolbar from '../inquiry-table-toolbar';
 import InquiryTableFiltersResult from '../inquiry-table-filters-result';
-import { isAfter, isBetween } from '../../../utils/format-time';
+import { fDate, isAfter, isBetween } from '../../../utils/format-time';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import Iconify from '../../../components/iconify';
 import { useGetEmployee } from '../../../api/employee';
 import { useGetBranch } from '../../../api/branch';
+import * as xlsx from 'xlsx';
+import { alpha } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import Label from '../../../components/label';
+import Tabs from '@mui/material/Tabs';
 
 // ----------------------------------------------------------------------
-
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
-
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Active', label: 'Active' }, {
+  value: 'Responded',
+  label: 'Responded',
+}, { value: 'Completed', label: 'Completed' }, {
+  value: 'Not Responded', label: 'Not Responded',
+}];
 const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
+  { id: 'Recalling Date', label: 'Recalling Date' },
   { id: 'name', label: 'Name' },
   { id: 'contact', label: 'Contact' },
-  { id: 'email', label: 'Email' },
   { id: 'inquiry for', label: 'Inquiry for' },
   { id: 'remark', label: 'Remark' },
+  { id: 'Status', label: 'Status' },
   { id: '', width: 88 },
 ];
 
@@ -217,6 +226,40 @@ export default function InquiryListView() {
     }
   };
 
+  const handleDownload = () => {
+    const sampleData = [
+      {
+        firstName: 'john',
+        lastName: 'li',
+        contact: '7845127845',
+        email: 'john@gmail.com',
+        date: '22-05-2024',
+        recallingDate: '23-02-2024',
+        inquiryFor: 'Gold loan ',
+        remark: 'your remark',
+        response: 'Active',
+        address: 'your address',
+      },
+    ];
+    const workbook = xlsx.utils.book_new();
+    const worksheet = xlsx.utils.json_to_sheet(sampleData);
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    xlsx.writeFile(workbook, 'downloadSample.xlsx');
+  };
+
+  const inquiries = inquiry.map((item) => ({
+    Date: fDate(item.date),
+    Name: item.firstName + ' ' + item.lastName,
+    Contact: item.contact,
+    Email: item.email,
+    Branch: item.branch.name,
+    'Inqiry for': item.inquiryFor,
+    'Recalling date': fDate(item.recallingDate),
+    Address: item.address,
+    Remark: item.remark,
+    Status: item.status,
+  }));
+
   if (inquiryLoading) {
     return <LoadingScreen />;
   }
@@ -305,7 +348,6 @@ export default function InquiryListView() {
                   <Select
                     value={selectedEmployee}
                     onChange={handleEmployeeChange}
-
                     input={<OutlinedInput
                       label='Emplyoee'
                       sx={{
@@ -341,9 +383,9 @@ export default function InquiryListView() {
                   </Select>
                 </FormControl>
               )}
-              <Box display='flex' alignItems='center' mx={2}>
+              <Box display='flex' alignItems='center' mx={1}>
                 <input
-                  disabled={!selectedBranch && !selectedBranch}
+                  disabled={!selectedEmployee}
                   type='file'
                   accept='.xlsx, .xls'
                   onChange={handleFileChange}
@@ -351,12 +393,15 @@ export default function InquiryListView() {
                   id='file-upload'
                 />
                 <label htmlFor='file-upload'>
-                  <Button variant='outlined' disabled={!selectedBranch && !selectedBranch} component='span'
+                  <Button variant='outlined' disabled={!selectedEmployee} component='span'
                           startIcon={<Iconify icon='mdi:file-upload' />}>
                     Select Excel File
                   </Button>
                 </label>
               </Box>
+              <Button variant='contained' sx={{ mx: 1 }} onClick={handleDownload}>
+                Download File
+              </Button>
               <Button
                 component={RouterLink}
                 href={paths.dashboard.inquiry.new}
@@ -372,8 +417,46 @@ export default function InquiryListView() {
           }}
         />
         <Card>
+          <Tabs
+            value={filters.status}
+            onChange={handleFilterStatus}
+            sx={{
+              px: 2.5,
+              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+            }}
+          >
+            {STATUS_OPTIONS.map((tab) => (
+              <Tab
+                key={tab.value}
+                iconPosition='end'
+                value={tab.value}
+                label={tab.label}
+                icon={
+                  <>
+                    <Label
+                      style={{ margin: '5px' }}
+                      variant={
+                        ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                      }
+                      color={
+                        (tab.value === 'Active' && 'info') ||
+                        (tab.value === 'Responded' && 'warning') ||
+                        (tab.value === 'Completed' && 'success') ||
+                        (tab.value === 'Not Responded' && 'error') ||
+                        'default'
+                      }
+                    >
+                      {['Active', 'Responded','Completed','Not Responded'].includes(tab.value)
+                        ? inquiry.filter((inq) => String(inq.status) === tab.value).length
+                        : inquiry.length}
+                    </Label>
+                  </>
+                }
+              />
+            ))}
+          </Tabs>
           <InquiryTableToolbar
-            filters={filters} onFilters={handleFilters} dateError={dateError}
+            filters={filters} onFilters={handleFilters} dateError={dateError} inquiries={inquiries}
           />
           {canReset && (
             <InquiryTableFiltersResult
@@ -477,7 +560,8 @@ export default function InquiryListView() {
 
 function applyFilter({
                        inputData, comparator, filters,
-                     },
+                     }
+  ,
 ) {
   const { status, name, startDate, endDate } = filters;
 
