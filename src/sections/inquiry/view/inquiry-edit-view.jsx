@@ -33,7 +33,7 @@ export default function InquiryEditView() {
             name: 'Inquiry List',
             href: paths.dashboard.inquiry.root,
           },
-          { name: 'New Inquiry' },
+          { name: 'Edit Inquiry' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
