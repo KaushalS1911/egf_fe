@@ -165,6 +165,12 @@ export default function CaratListView() {
     },
     [handleFilters],
   );
+  const carats = carat.map((item) => ({
+    Carat: item.name,
+    'Carat (%)':item.caratPercentage,
+    Remark:item.remark,
+    Status:item.isActive === true ? 'Active' : 'inActive',
+  }));
   if (caratLoading) {
     return (
       <LoadingScreen />
@@ -234,7 +240,7 @@ export default function CaratListView() {
             ))}
           </Tabs>
           <CaratTableToolbar
-            filters={filters} onFilters={handleFilters}
+            filters={filters} onFilters={handleFilters} carats={carats}
           />
 
           {canReset && (

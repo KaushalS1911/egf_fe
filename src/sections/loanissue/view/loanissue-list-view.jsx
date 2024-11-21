@@ -40,6 +40,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetLoanissue } from '../../../api/loanissue';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -148,6 +149,29 @@ export default function LoanissueListView() {
     },
     [router],
   );
+  const loans = Loanissue.map((item)=>({
+    'Loan No':item.loanNo,
+    'Customer Name':`${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
+    'Contact':item.customer.contact,
+    'OTP Contact':item.customer.otpContact,
+    Email:item.customer.email,
+    'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
+    'Issue date':item.issueDate,
+    'Scheme':item.scheme.name,
+    'Rate per gram' : item.scheme.ratePerGram,
+    'Interest rate':item.scheme.interestRate,
+    valuation:item.scheme.valuation,
+    'Interest period':item.scheme.interestPeriod,
+    'Renewal time':item.scheme.renewalTime,
+    'min loan time':item.scheme.minLoanTime,
+    'Loan amount':item.loanAmount,
+    'Next nextInstallment date':fDate(item.nextInstallmentDate),
+    'Payment mode':item.paymentMode,
+    'Paying cashAmount':item.payingCashAmount,
+    'Pending cashAmount':item.pendingCashAmount,
+    'Paying bankAmount':item.payingBankAmount,
+    'Pending bankAmount':item.pendingBankAmount,
+  }))
   if (LoanissueLoading) {
     return (
       <LoadingScreen />
@@ -179,7 +203,7 @@ export default function LoanissueListView() {
         />
 
         <Card>
-          <LoanissueTableToolbar filters={filters} onFilters={handleFilters} />
+          <LoanissueTableToolbar filters={filters} onFilters={handleFilters} loans={loans} />
 
           {canReset && (
             <LoanissueTableFiltersResult

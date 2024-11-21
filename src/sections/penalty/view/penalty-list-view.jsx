@@ -83,7 +83,7 @@ export default function PenaltyListView() {
 
   const confirm = useBoolean();
 
-  const {penalty,mutate,penaltyLoading} = useGetPenalty()
+  const { penalty, mutate, penaltyLoading } = useGetPenalty();
 
   const [tableData, setTableData] = useState(penalty);
 
@@ -108,34 +108,34 @@ export default function PenaltyListView() {
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
   const
     handleFilters = useCallback(
-    (name, value) => {
-      console.log("name",value)
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table],
-  );
+      (name, value) => {
+        console.log('name', value);
+        table.onResetPage();
+        setFilters((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      },
+      [table],
+    );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
- const handleDelete =async (id) =>{
-   try {
-   const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } });
       mutate();
       confirm.onFalse();
-      enqueueSnackbar(res.data.message)
-   } catch (error){
-      enqueueSnackbar("Failed to Delete Penalty")
+      enqueueSnackbar(res.data.message);
+    } catch (error) {
+      enqueueSnackbar('Failed to Delete Penalty');
 
-   }
-}
+    }
+  };
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
+      handleDelete([id]);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
@@ -143,8 +143,8 @@ export default function PenaltyListView() {
   );
   const handleDeleteRows = useCallback(() => {
     const deleteRows = penalty.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-     handleDelete(deleteIds)
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds);
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -166,10 +166,19 @@ export default function PenaltyListView() {
     },
     [handleFilters],
   );
-  if(penaltyLoading){
+  const penalties = penalty.map((item) => ({
+    'Penalty code': item.penaltyCode,
+    'After due date from day': item.afterDueDateFromDate,
+    'After due date to day': item.afterDueDateToDate,
+    'Penalty interest (%)': item.penaltyInterest,
+    Remark: item.remark,
+    Status: item.isActive === true ? 'Active' : 'inActive',
+
+  }));
+  if (penaltyLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
   return (
     <>
@@ -225,7 +234,7 @@ export default function PenaltyListView() {
                         'default'
                       }
                     >
-                      {['false','true'].includes(tab.value)
+                      {['false', 'true'].includes(tab.value)
                         ? penalty.filter((emp) => String(emp.isActive) == tab.value).length
                         : penalty.length}
                     </Label>
@@ -235,10 +244,10 @@ export default function PenaltyListView() {
             ))}
           </Tabs>
           <PenaltyTableToolbar
-            filters={filters} onFilters={handleFilters}
+            filters={filters} onFilters={handleFilters} penalties={penalties}
           />
 
-         {canReset && (
+          {canReset && (
             <PenaltyTableFiltersResult
               filters={filters}
               onFilters={handleFilters}

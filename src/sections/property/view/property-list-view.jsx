@@ -83,7 +83,7 @@ export default function PropertyListView() {
 
   const confirm = useBoolean();
 
-  const {property,mutate,propertyLoading} = useGetAllProperty()
+  const { property, mutate, propertyLoading } = useGetAllProperty();
 
   const [tableData, setTableData] = useState(property);
 
@@ -108,34 +108,34 @@ export default function PropertyListView() {
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
   const
     handleFilters = useCallback(
-    (name, value) => {
-      console.log("name",value)
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table],
-  );
+      (name, value) => {
+        console.log('name', value);
+        table.onResetPage();
+        setFilters((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      },
+      [table],
+    );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
- const handleDelete =async (id) =>{
-   try {
-   const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } });
       mutate();
       confirm.onFalse();
-      enqueueSnackbar(res.data.message)
-   } catch (error){
-      enqueueSnackbar("Failed to Delete Property")
+      enqueueSnackbar(res.data.message);
+    } catch (error) {
+      enqueueSnackbar('Failed to Delete Property');
 
-   }
-}
+    }
+  };
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
+      handleDelete([id]);
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
@@ -144,8 +144,8 @@ export default function PropertyListView() {
   );
   const handleDeleteRows = useCallback(() => {
     const deleteRows = property.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-     handleDelete(deleteIds)
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds);
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -167,10 +167,18 @@ export default function PropertyListView() {
     },
     [handleFilters],
   );
-  if(propertyLoading){
+
+  const propertise = property.map((item) => ({
+    property: item.propertyType,
+    'Loan type': item.loanType,
+    Quantity: item.quantity,
+    Remark: item.remark,
+    Status: item.isActive === true ? 'Active' : 'inActive',
+  }));
+  if (propertyLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
   return (
     <>
@@ -226,7 +234,7 @@ export default function PropertyListView() {
                         'default'
                       }
                     >
-                      {['false','true'].includes(tab.value)
+                      {['false', 'true'].includes(tab.value)
                         ? property.filter((emp) => String(emp.isActive) == tab.value).length
                         : property.length}
                     </Label>
@@ -236,10 +244,10 @@ export default function PropertyListView() {
             ))}
           </Tabs>
           <PropertyTableToolbar
-            filters={filters} onFilters={handleFilters}
+            filters={filters} onFilters={handleFilters} propertise={propertise}
           />
 
-         {canReset && (
+          {canReset && (
             <PropertyTableFiltersResult
               filters={filters}
               onFilters={handleFilters}

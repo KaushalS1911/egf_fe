@@ -14,17 +14,18 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
 export default function CaratTableToolbar({
                                             filters,
                                             onFilters,
+                                            carats,
                                             //
                                             roleOptions,
                                           }) {
   const popover = usePopover();
-
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -47,7 +48,7 @@ export default function CaratTableToolbar({
       >
         <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
 
             fullWidth
             value={filters.name}
@@ -96,6 +97,14 @@ export default function CaratTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
+        </MenuItem>
+        <MenuItem
+        >
+          <RHFExportExcel
+            data={carats}
+            fileName='InquiryData'
+            sheetName='InquiryDetails'
+          />
         </MenuItem>
       </CustomPopover>
     </>
