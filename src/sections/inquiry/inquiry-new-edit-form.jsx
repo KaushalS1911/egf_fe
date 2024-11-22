@@ -19,6 +19,8 @@ import { useGetBranch } from '../../api/branch';
 import { Button } from '@mui/material';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import { useGetEmployee } from '../../api/employee';
+import { indexof } from 'stylis';
+import { mutate } from 'swr';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +31,7 @@ const STATUS_OPTIONS = [
   { value: 'Not Responded', label: 'Not Responded' },
 ];
 
-export default function InquiryNewEditForm({ currentInquiry }) {
+export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -86,7 +88,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
         label: currentInquiry?.assignTo?.user?.firstName + ' ' + currentInquiry?.assignTo?.user?.lastName,
         value: currentInquiry?.assignTo?._id,
       } : null,
-      response: currentInquiry?.response || 'Active',
+      response: currentInquiry?.status || 'Active',
       firstName: currentInquiry?.firstName || '',
       lastName: currentInquiry?.lastName || '',
       contact: currentInquiry?.contact || '',
@@ -125,7 +127,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       recallingDate: data.recallingDate,
       inquiryFor: data.inquiryFor === 'Other' ? data.other : data.inquiryFor,
       remark: data.remark === 'Other' ? data?.otherRemark : data?.remark,
-      response: data.response,
+      status: data.response,
       address: data.address,
       assignTo: data.assignTo.value,
     };
@@ -158,8 +160,7 @@ export default function InquiryNewEditForm({ currentInquiry }) {
           payload,
         );
         enqueueSnackbar(res?.data?.message);
-        router.push(paths.dashboard.inquiry.list);
-        reset();
+        // router.push(paths.dashboard.inquiry.list);
       } else {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${queryString}`,
@@ -175,17 +176,67 @@ export default function InquiryNewEditForm({ currentInquiry }) {
       console.error(error);
     }
   });
+  const fetchNextInquiry = () => {
+    const nextInquiryIndex = inquiry.indexOf(currentInquiry) + 1;
+    const nextInquiry = inquiry[nextInquiryIndex];
+
+    if (nextInquiry) {
+      router.push(paths.dashboard.inquiry.edit(nextInquiry._id));
+      reset({
+        branchId: nextInquiry.branch
+          ? {
+            label: nextInquiry.branch.name,
+            value: nextInquiry.branch._id,
+          }
+          : null,
+        assignTo: nextInquiry.assignTo
+          ? {
+            label: `${nextInquiry.assignTo.user.firstName} ${nextInquiry.assignTo.user.lastName}`,
+            value: nextInquiry.assignTo._id,
+          }
+          : null,
+        response: nextInquiry.status || 'Active',
+        firstName: nextInquiry.firstName || '',
+        lastName: nextInquiry.lastName || '',
+        contact: nextInquiry.contact || '',
+        email: nextInquiry.email || '',
+        date: nextInquiry.date ? new Date(nextInquiry.date) : new Date(),
+        recallingDate: nextInquiry.recallingDate ? new Date(nextInquiry.recallingDate) : null,
+        inquiryFor: checkInquiryFor(nextInquiry.inquiryFor)
+          ? 'Other'
+          : nextInquiry.inquiryFor || '',
+        other: checkInquiryFor(nextInquiry.inquiryFor) ? nextInquiry.inquiryFor : null || '',
+        remark: checkremark(nextInquiry.remark) ? 'Other' : nextInquiry.remark || '',
+        otherRemark: checkremark(nextInquiry.remark) ? nextInquiry.remark : null || '',
+        address: nextInquiry.address || '',
+      });
+    } else {
+      enqueueSnackbar('No more inquiries available', { variant: 'info' });
+    }
+  };
 
   return (
+
     <FormProvider methods={methods} onSubmit={onSubmit}>
+
       <Grid container spacing={3}>
+
         <Grid xs={12} md={4}>
           <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
             Inquiry Details
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>
+          {
+            currentInquiry &&
+              <Box sx={{display:'flex',justifyContent:'end',mb:2}}>
+            <LoadingButton variant='contained' onClick={fetchNextInquiry}>
+              Next Inquiry
+            </LoadingButton>
+              </Box>
+          }
           <Card sx={{ p: 3 }}>
+
             <Box
               rowGap={3}
               columnGap={2}
@@ -329,11 +380,14 @@ export default function InquiryNewEditForm({ currentInquiry }) {
             </Box>
           </Card>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-            <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                    variant='outlined' onClick={() => reset()}>Reset</Button>
-            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              {!currentInquiry ? 'Submit' : 'Save'}
-            </LoadingButton>
+
+            <Box>
+              <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
+                      variant='outlined' onClick={() => reset()}>Reset</Button>
+              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                {!currentInquiry ? 'Submit' : 'Save'}
+              </LoadingButton>
+            </Box>
           </Box>
         </Grid>
       </Grid>

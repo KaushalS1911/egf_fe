@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -14,7 +14,7 @@ import { useParams } from 'react-router';
 import { useGetBranch } from '../../../api/branch';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 
-function UchakInterestPayForm({currentLoan, mutate }) {
+function UchakInterestPayForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
 
@@ -75,6 +75,11 @@ function UchakInterestPayForm({currentLoan, mutate }) {
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    if(watch('paymentMode')){
+      setPaymentMode(watch('paymentMode'));
+    }
+  },[watch('paymentMode')])
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -130,10 +135,10 @@ function UchakInterestPayForm({currentLoan, mutate }) {
         <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
           <Grid item xs={4}>
             <RHFDatePicker
-              name="uchakPayDate"
+              name='uchakPayDate'
               control={control}
-              label="Uchak Pay date"
-              req={"red"}
+              label='Uchak Pay date'
+              req={'red'}
             />
           </Grid>
           <Grid item xs={4}>
@@ -141,7 +146,7 @@ function UchakInterestPayForm({currentLoan, mutate }) {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
               }
-            }}/>
+            }} />
           </Grid>
           <Grid item xs={4}>
             <RHFTextField name='remark' label='Remark' />
@@ -155,10 +160,6 @@ function UchakInterestPayForm({currentLoan, mutate }) {
               label='Payment Mode'
               req={'red'}
               options={['Cash', 'Bank', 'Both']}
-              onChange={(event, newValue) => {
-                setPaymentMode(newValue);
-                setValue('paymentMode', newValue);
-              }}
               getOptionLabel={(option) => option}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
@@ -179,11 +180,15 @@ function UchakInterestPayForm({currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField name='cashAmount' label='Cash Amount' req={'red'} onKeyPress={(e) => {
-                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                  e.preventDefault();
-                }
-              }} />
+              <RHFTextField
+                name='cashAmount'
+                label='Cash Amount'
+                req={'red'}
+                onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                }} />
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
@@ -196,7 +201,7 @@ function UchakInterestPayForm({currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}
-              sx={{mt: 3}}
+              sx={{ mt: 3 }}
             >
               <Box>
                 <RHFAutocomplete
@@ -212,9 +217,6 @@ function UchakInterestPayForm({currentLoan, mutate }) {
                     </li>
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(event, value) => {
-                    setValue('account', value);
-                  }}
                 />
               </Box>
               <Box>
@@ -227,8 +229,8 @@ function UchakInterestPayForm({currentLoan, mutate }) {
             </Box>
           )}
         </Box>
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-          <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+          <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit

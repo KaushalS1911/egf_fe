@@ -39,6 +39,7 @@ import { useGetEmployee } from 'src/api/employee';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -47,8 +48,8 @@ const TABLE_HEAD = [
   { id: 'username', label: 'Name' },
   { id: 'branchname', label: 'Branch' },
   { id: 'ContactNo', label: 'Contact' },
-  { id: 'joinDate', label: 'Joining date'},
-  { id: 'role', label: 'Role'},
+  { id: 'joinDate', label: 'Joining date' },
+  { id: 'role', label: 'Role' },
   { id: '', width: 88 },
 ];
 
@@ -148,6 +149,25 @@ export default function EmployeeListView() {
     [router],
   );
 
+  const employees = employee.map((item) => ({
+    Name: `${item.user.firstName} ${item.user.middleName} ${item.user.lastName}`,
+    Email: item.user.email,
+    Contact: item.user.contact,
+    DOB: fDate(item.dob),
+    'Aadhar card': item.aadharCard,
+    'Pan card': item.panCard,
+    'Driving license': item.drivingLicense,
+    'Voter id':item.voterCard,
+    role: item.user.role,
+    'Joining Date:': fDate(item.joiningDate),
+    'Reporting to':`${item.reportingTo.firstName} ${item.reportingTo.middleName} ${item.reportingTo.lastName}`,
+    Branch: item.user.branch.name,
+    'Permanent address': `${item.permanentAddress.street} ${item.permanentAddress.landmark} ${item.permanentAddress.city} , ${item.permanentAddress.state} ${item.permanentAddress.country} ${item.permanentAddress.zipcode}`,
+    Remark:item.remark,
+    Status:item.status
+
+
+  }));
   if (employeeLoading) {
     return (
       <LoadingScreen />
@@ -157,7 +177,7 @@ export default function EmployeeListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Employees"
+          heading='Employees'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Employee', href: paths.dashboard.employee.root },
@@ -179,7 +199,7 @@ export default function EmployeeListView() {
         />
 
         <Card>
-          <EmployeeTableToolbar filters={filters} onFilters={handleFilters} />
+          <EmployeeTableToolbar filters={filters} onFilters={handleFilters} employees={employees} />
 
           {canReset && (
             <EmployeeTableFiltersResult

@@ -9,12 +9,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IconButton } from '@mui/material';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
 export default function PenaltyTableToolbar({
                                               filters,
-                                              onFilters,
+                                              onFilters, penalties,
+
                                             }) {
   const popover = usePopover();
 
@@ -40,7 +42,7 @@ export default function PenaltyTableToolbar({
       >
         <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
 
             fullWidth
             value={filters.name}
@@ -64,7 +66,7 @@ export default function PenaltyTableToolbar({
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
-        sx={{ width: 140 }}
+        sx={{ width: 155 }}
       >
         <MenuItem
           onClick={() => {
@@ -91,6 +93,14 @@ export default function PenaltyTableToolbar({
         >
           <Iconify icon='solar:export-bold' />
           Export
+        </MenuItem>
+        <MenuItem
+        >
+          <RHFExportExcel
+            data={penalties}
+            fileName='PenaltyData'
+            sheetName='PenaltyDetails'
+          />
         </MenuItem>
       </CustomPopover>
     </>

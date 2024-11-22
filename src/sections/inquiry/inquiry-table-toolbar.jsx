@@ -14,10 +14,11 @@ import CustomPopover, { usePopover } from '../../components/custom-popover';
 import { getResponsibilityValue } from '../../permission/permission';
 import { useGetConfigs } from '../../api/config';
 import { useAuthContext } from '../../auth/hooks';
+import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryTableToolbar({ filters, onFilters, roleOptions, dateError }) {
+export default function InquiryTableToolbar({ filters, onFilters, roleOptions, dateError, inquiries }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -182,7 +183,16 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
             >
               <Iconify icon='ant-design:file-pdf-filled' />
               PDF
-            </MenuItem></>}
+            </MenuItem>
+            <MenuItem
+            >
+              <RHFExportExcel
+                data={inquiries}
+                fileName='InquiryData'
+                sheetName='InquiryDetails'
+              />
+            </MenuItem>
+          </>}
           <MenuItem
             onClick={() => {
               popover.onClose();

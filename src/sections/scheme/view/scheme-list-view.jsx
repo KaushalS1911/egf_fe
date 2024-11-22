@@ -170,6 +170,22 @@ export default function SchemeListView() {
     },
     [handleFilters],
   );
+
+  const schemes = scheme.map((item)=>({
+    Name:item.name,
+    'Rate per gram' : item.ratePerGram,
+    'Interest rate':item.interestRate,
+    valuation:item.valuation,
+    'Interest period':item.interestPeriod,
+    'Renewal time':item.renewalTime,
+    'min loan time':item.minLoanTime,
+    Type:item.schemeType,
+    remark:item.remark,
+    Status:item.isActive === true ? 'Active' : 'inActive',
+
+
+
+  }))
   if(schemeLoading){
     return (
       <LoadingScreen/>
@@ -247,7 +263,7 @@ export default function SchemeListView() {
             ))}
           </Tabs>
           <SchemeTableToolbar
-            filters={filters} onFilters={handleFilters}
+            filters={filters} onFilters={handleFilters} schemes={schemes}
           />
 
          {canReset && (
