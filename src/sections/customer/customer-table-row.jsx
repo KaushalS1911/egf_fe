@@ -18,19 +18,20 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 import { useRouter } from '../../routes/hooks';
+import { useGetConfigs } from '../../api/config';
+import { useAuthContext } from '../../auth/hooks';
+import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
 export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const { firstName, lastName, middleName, contact, customerCode, email, avatar_url, status } = row;
-
   const confirm = useBoolean();
-
   const router = useRouter();
-
   const quickEdit = useBoolean();
-
   const popover = usePopover();
+  const { configs } = useGetConfigs();
+  const { user } = useAuthContext();
 
   return (
     <>
@@ -38,10 +39,8 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={firstName} src={avatar_url} sx={{ mr: 2 }} />
-
           <ListItemText
             primary={firstName + ' ' + middleName + ' ' + lastName}
             secondary={email}
@@ -52,11 +51,8 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
             }}
           />
         </TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerCode}</TableCell>
-
         <TableCell>
           <Label
             variant='soft'
@@ -70,23 +66,20 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
             {status}
           </Label>
         </TableCell>
-
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
-
       {/*<CustomerQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />*/}
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {getResponsibilityValue('delete_customer', configs, user) && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -95,8 +88,8 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
-        <MenuItem
+        </MenuItem>}
+        {getResponsibilityValue('update_customer', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
@@ -104,9 +97,8 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

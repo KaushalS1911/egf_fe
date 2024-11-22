@@ -8,13 +8,10 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -31,8 +28,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
-
 import PenaltyTableToolbar from '../penalty-table-toolbar';
 import PenaltyTableFiltersResult from '../penalty-table-filters-result';
 import PenaltyTableRow from '../penalty-table-row';
@@ -45,6 +40,8 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetPenalty } from '../../../api/penalty';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
@@ -63,32 +60,24 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ];
 
-
 const defaultFilters = {
   name: '',
   isActive: 'all',
 };
+
 // ----------------------------------------------------------------------
 
 export default function PenaltyListView() {
   const { enqueueSnackbar } = useSnackbar();
-
   const { user } = useAuthContext();
-
+  const { configs } = useGetConfigs();
   const table = useTable();
-
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
   const { penalty, mutate, penaltyLoading } = useGetPenalty();
-
   const [tableData, setTableData] = useState(penalty);
-
   const [filters, setFilters] = useState(defaultFilters);
-
 
   const dataFiltered = applyFilter({
     inputData: penalty,
@@ -102,10 +91,9 @@ export default function PenaltyListView() {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
   const
     handleFilters = useCallback(
       (name, value) => {
@@ -122,6 +110,7 @@ export default function PenaltyListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } });
@@ -130,9 +119,9 @@ export default function PenaltyListView() {
       enqueueSnackbar(res.data.message);
     } catch (error) {
       enqueueSnackbar('Failed to Delete Penalty');
-
     }
   };
+
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
@@ -141,12 +130,12 @@ export default function PenaltyListView() {
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
+
   const handleDeleteRows = useCallback(() => {
     const deleteRows = penalty.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
-
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
@@ -166,6 +155,7 @@ export default function PenaltyListView() {
     },
     [handleFilters],
   );
+
   const penalties = penalty.map((item) => ({
     'Penalty code': item.penaltyCode,
     'After due date from day': item.afterDueDateFromDate,
@@ -173,13 +163,14 @@ export default function PenaltyListView() {
     'Penalty interest (%)': item.penaltyInterest,
     Remark: item.remark,
     Status: item.isActive === true ? 'Active' : 'inActive',
-
   }));
+
   if (penaltyLoading) {
     return (
       <LoadingScreen />
     );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -192,14 +183,14 @@ export default function PenaltyListView() {
           ]}
           action={
             <Box>
-              <Button
+              {getResponsibilityValue('create_penalty', configs, user) && <Button
                 component={RouterLink}
                 href={paths.dashboard.penalty.new}
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
                 Add Penalty
-              </Button>
+              </Button>}
             </Box>
           }
           sx={{
@@ -361,7 +352,11 @@ export default function PenaltyListView() {
 };
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
+function applyFilter({
+  inputData, comparator, filters,
+},
+)
+{
   const { isActive, name } = filters;
 
   // Sort input data based on the provided comparator (e.g., sorting by a column)

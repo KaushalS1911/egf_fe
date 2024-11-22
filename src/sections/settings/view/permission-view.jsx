@@ -62,10 +62,11 @@ const modules = [
     label: 'Scheme',
     value: 'scheme',
     permissions: [
-      { action: 'create Employee', key: 'create_employee' },
-      { action: 'update Employee', key: 'update_employee' },
-      { action: 'delete Employee', key: 'delete_employee' },
-      { action: 'print Employee', key: 'print_employee_detail' },
+      { action: 'create Scheme', key: 'create_scheme' },
+      { action: 'update Scheme', key: 'update_scheme' },
+      { action: 'delete Scheme', key: 'delete_scheme' },
+      { action: 'print Scheme', key: 'print_scheme_detail' },
+      { action: 'Gold Price Change', key: 'print_gold_price_change' },
     ],
   },
   {
@@ -85,7 +86,7 @@ const modules = [
       { action: 'create Property', key: 'create_property' },
       { action: 'update Property', key: 'update_property' },
       { action: 'delete Property', key: 'delete_property' },
-      { action: 'print Property', key: 'delete_property' },
+      { action: 'print Property', key: 'print_property' },
     ],
   },
   {
@@ -96,16 +97,6 @@ const modules = [
       { action: 'update Penalty', key: 'update_penalty' },
       { action: 'delete Penalty', key: 'delete_penalty' },
       { action: 'print Penalty', key: 'print_penalty_detail' },
-    ],
-  },
-  {
-    label: 'Transaction',
-    value: 'Transaction',
-    permissions: [
-      { action: 'create Transaction', key: 'create_transaction' },
-      { action: 'update Transaction', key: 'update_transaction' },
-      { action: 'delete Transaction', key: 'delete_transaction' },
-      { action: 'print Transaction', key: 'print_transaction_detail' },
     ],
   },
   {

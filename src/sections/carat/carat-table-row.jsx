@@ -16,88 +16,85 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 
 // ----------------------------------------------------------------------
 
 export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const {name,caratPercentage,remark,isActive} = row;
-
+  const { name, caratPercentage, remark, isActive } = row;
   const confirm = useBoolean();
-
   const quickEdit = useBoolean();
-
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{caratPercentage}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ remark || "-"}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
         <TableCell>
           <Label
-            variant="soft"
+            variant='soft'
             color={
-              (isActive == true && 'success' ) ||
+              (isActive == true && 'success') ||
               (isActive == false && 'error') ||
               'default'
             }
           >
-            {isActive?"Active":"In Active"}
+            {isActive ? 'Active' : 'In Active'}
           </Label>
         </TableCell>
-
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-
-
+        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
 
 
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {getResponsibilityValue('delete_carat', configs, user) && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon="solar:trash-bin-trash-bold" />
+          <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
+        </MenuItem>}
 
-        <MenuItem
+        {getResponsibilityValue('update_carat', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:pen-bold" />
+          <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }

@@ -31,7 +31,7 @@ const STATUS_OPTIONS = [
   { value: 'Not Responded', label: 'Not Responded' },
 ];
 
-export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
+export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -229,11 +229,11 @@ export default function InquiryNewEditForm({ currentInquiry , inquiry}) {
         <Grid xs={12} md={8}>
           {
             currentInquiry &&
-              <Box sx={{display:'flex',justifyContent:'end',mb:2}}>
-            <LoadingButton variant='contained' onClick={fetchNextInquiry}>
-              Next Inquiry
-            </LoadingButton>
-              </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'end', mb: 2 }}>
+              <LoadingButton variant='contained' onClick={fetchNextInquiry}>
+                Next Inquiry
+              </LoadingButton>
+            </Box>
           }
           <Card sx={{ p: 3 }}>
 

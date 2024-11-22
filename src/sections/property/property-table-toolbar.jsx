@@ -15,23 +15,28 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
-export default function   PropertyTableToolbar({
-  filters,
-  onFilters,
-  propertise,
-  //
-  roleOptions,
-}) {
+export default function PropertyTableToolbar({
+                                               filters,
+                                               onFilters,
+                                               propertise,
+                                               //
+                                               roleOptions,
+                                             }) {
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters]
+    [onFilters],
   );
 
   return (
@@ -48,25 +53,25 @@ export default function   PropertyTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
 
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search..."
+            placeholder='Search...'
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">
-                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                <InputAdornment position='start'>
+                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
           />
 
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </Stack>
       </Stack>
@@ -77,7 +82,7 @@ export default function   PropertyTableToolbar({
         arrow='right-top'
         sx={{ width: 'auto' }}
       >
-        <MenuItem
+        {getResponsibilityValue('print_property', configs, user) && (<>   <MenuItem
           onClick={() => {
             popover.onClose();
           }}
@@ -86,15 +91,22 @@ export default function   PropertyTableToolbar({
           Print
         </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='ant-design:file-pdf-filled' />
-          PDF
-        </MenuItem>
-
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ant-design:file-pdf-filled' />
+            PDF
+          </MenuItem>
+          <MenuItem
+          >
+            <RHFExportExcel
+              data={propertise}
+              fileName='PropertyData'
+              sheetName='PropertyDetails'
+            />
+          </MenuItem> </>)}
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -102,14 +114,6 @@ export default function   PropertyTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
-        </MenuItem>
-        <MenuItem
-        >
-          <RHFExportExcel
-            data={propertise}
-            fileName='PropertyData'
-            sheetName='PropertyDetails'
-          />
         </MenuItem>
       </CustomPopover>
     </>

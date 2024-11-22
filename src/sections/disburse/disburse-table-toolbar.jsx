@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback} from 'react';
+import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -7,10 +7,15 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import { IconButton, MenuItem } from '@mui/material';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
 export default function DisburseTableToolbar({ filters, onFilters }) {
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -42,7 +47,7 @@ export default function DisburseTableToolbar({ filters, onFilters }) {
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.userName}
             onChange={handleFilterName}
@@ -65,7 +70,7 @@ export default function DisburseTableToolbar({ filters, onFilters }) {
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          <MenuItem
+          {getResponsibilityValue('print_disburse_detail', configs, user) && (<>    <MenuItem
             onClick={() => {
               popover.onClose();
             }}
@@ -73,14 +78,14 @@ export default function DisburseTableToolbar({ filters, onFilters }) {
             <Iconify icon='solar:printer-minimalistic-bold' />
             Print
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ant-design:file-pdf-filled' />
-            PDF
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='ant-design:file-pdf-filled' />
+              PDF
+            </MenuItem></>)}
           <MenuItem
             onClick={() => {
               popover.onClose();

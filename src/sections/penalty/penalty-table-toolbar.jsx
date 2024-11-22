@@ -10,15 +10,19 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IconButton } from '@mui/material';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
 export default function PenaltyTableToolbar({
                                               filters,
                                               onFilters, penalties,
-
                                             }) {
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   const handleFilterName = useCallback(
     (event) => {
@@ -68,7 +72,7 @@ export default function PenaltyTableToolbar({
         arrow='right-top'
         sx={{ width: 155 }}
       >
-        <MenuItem
+        {getResponsibilityValue('print_penalty_detail', configs, user) && (<>  <MenuItem
           onClick={() => {
             popover.onClose();
           }}
@@ -77,15 +81,22 @@ export default function PenaltyTableToolbar({
           Print
         </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:import-bold' />
-          Import
-        </MenuItem>
-
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:import-bold' />
+            Import
+          </MenuItem>
+          <MenuItem
+          >
+            <RHFExportExcel
+              data={penalties}
+              fileName='PenaltyData'
+              sheetName='PenaltyDetails'
+            />
+          </MenuItem></>)}
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -93,14 +104,6 @@ export default function PenaltyTableToolbar({
         >
           <Iconify icon='solar:export-bold' />
           Export
-        </MenuItem>
-        <MenuItem
-        >
-          <RHFExportExcel
-            data={penalties}
-            fileName='PenaltyData'
-            sheetName='PenaltyDetails'
-          />
         </MenuItem>
       </CustomPopover>
     </>

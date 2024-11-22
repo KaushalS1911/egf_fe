@@ -17,13 +17,16 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { fDate } from '../../utils/format-time';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useGetConfigs } from '../../api/config';
 
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, loginuser, onDeleteRow }) {
   const { user, joiningDate } = row;
   const { avatar_url, contact, firstName, lastName, middleName, role, email } = user;
+  const { configs } = useGetConfigs();
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -67,7 +70,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {getResponsibilityValue('delete_employee', configs, loginuser) && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -76,9 +79,9 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
+        </MenuItem>}
 
-        <MenuItem
+        {getResponsibilityValue('update_employee', configs, loginuser) && <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
@@ -86,7 +89,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
 
       <ConfirmDialog

@@ -8,11 +8,9 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -29,7 +27,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetLoanissue } from '../../../api/loanissue';
@@ -37,9 +34,9 @@ import DisburseTableRow from '../disburse-table-row';
 import DisburseTableToolbar from '../disburse-table-toolbar';
 import DisburseTableFiltersResult from '../disburse-table-filters-result';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
-
 
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan no.' },
@@ -55,13 +52,13 @@ const TABLE_HEAD = [
 const defaultFilters = {
   username: '',
 };
+
 // ----------------------------------------------------------------------
 
 export default function DisburseListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
-  const { user } = useAuthContext();
-  const { Loanissue, mutate,LoanissueLoading } = useGetLoanissue();
+  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -138,17 +135,20 @@ export default function DisburseListView() {
     },
     [router],
   );
+
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
     [router],
   );
-  if(LoanissueLoading){
+
+  if (LoanissueLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -163,10 +163,8 @@ export default function DisburseListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <DisburseTableToolbar filters={filters} onFilters={handleFilters} />
-
           {canReset && (
             <DisburseTableFiltersResult
               filters={filters}

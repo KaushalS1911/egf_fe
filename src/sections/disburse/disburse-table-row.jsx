@@ -12,14 +12,19 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { paths } from '../../routes/paths';
 import { Link } from 'react-router-dom';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 
 // ----------------------------------------------------------------------
 
 export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount ,_id} = row;
+  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount, _id } = row;
   const confirm = useBoolean();
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   return (
     <>
@@ -35,7 +40,8 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
             {loanNo}
           </Link>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
@@ -54,7 +60,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {getResponsibilityValue('delete_disburse', configs, user) && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -63,9 +69,9 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
+        </MenuItem>}
 
-        <MenuItem
+        {getResponsibilityValue('update_disburse', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
@@ -73,7 +79,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
 
       <ConfirmDialog

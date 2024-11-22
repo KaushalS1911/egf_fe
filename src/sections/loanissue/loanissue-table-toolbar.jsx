@@ -8,11 +8,16 @@ import Iconify from 'src/components/iconify';
 import { Grid, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableToolbar({ filters, onFilters,loans }) {
+export default function LoanissueTableToolbar({ filters, onFilters, loans }) {
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   const handleFilterName = useCallback(
     (event) => {
@@ -43,7 +48,7 @@ export default function LoanissueTableToolbar({ filters, onFilters,loans }) {
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.username}
             onChange={handleFilterName}
@@ -66,7 +71,7 @@ export default function LoanissueTableToolbar({ filters, onFilters,loans }) {
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          <MenuItem
+          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
             onClick={() => {
               popover.onClose();
             }}
@@ -74,14 +79,21 @@ export default function LoanissueTableToolbar({ filters, onFilters,loans }) {
             <Iconify icon='solar:printer-minimalistic-bold' />
             Print
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ant-design:file-pdf-filled' />
-            PDF
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='ant-design:file-pdf-filled' />
+              PDF
+            </MenuItem>
+            <MenuItem>
+              <RHFExportExcel
+                data={loans}
+                fileName='LaonissueData'
+                sheetName='LoanissueDetails'
+              />
+            </MenuItem></>)}
           <MenuItem
             onClick={() => {
               popover.onClose();
@@ -89,15 +101,6 @@ export default function LoanissueTableToolbar({ filters, onFilters,loans }) {
           >
             <Iconify icon='ic:round-whatsapp' />
             whatsapp share
-          </MenuItem>
-          <MenuItem
-          >
-
-            <RHFExportExcel
-              data={loans}
-              fileName='LaonissueData'
-              sheetName='LoanissueDetails'
-            />
           </MenuItem>
         </CustomPopover>
       </Stack>

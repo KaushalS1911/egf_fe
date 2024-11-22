@@ -8,13 +8,10 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -31,12 +28,10 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
-
 import SchemeTableToolbar from '../scheme-table-toolbar';
 import SchemeTableFiltersResult from '../scheme-table-filters-result';
 import SchemeTableRow from '../scheme-table-row';
-import { Box} from '@mui/material';
+import { Box } from '@mui/material';
 import Label from '../../../components/label';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -46,6 +41,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
@@ -77,21 +73,14 @@ const defaultFilters = {
 export default function SchemeListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const {scheme,mutate,schemeLoading} = useGetScheme()
+  const { scheme, mutate, schemeLoading } = useGetScheme();
   const { configs } = useGetConfigs();
   const table = useTable();
-
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
-
   const [tableData, setTableData] = useState(scheme);
-
   const [filters, setFilters] = useState(defaultFilters);
-
 
   const dataFiltered = applyFilter({
     inputData: scheme,
@@ -105,26 +94,26 @@ export default function SchemeListView() {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
   const
     handleFilters = useCallback(
-    (name, value) => {
-      console.log("name",value)
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table],
-  );
+      (name, value) => {
+        console.log('name', value);
+        table.onResetPage();
+        setFilters((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      },
+      [table],
+    );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
@@ -134,21 +123,23 @@ export default function SchemeListView() {
       confirm.onFalse();
       mutate();
     } catch (err) {
-      enqueueSnackbar("Failed to delete Scheme");
+      enqueueSnackbar('Failed to delete Scheme');
     }
   };
+
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
+      handleDelete([id]);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
+
   const handleDeleteRows = useCallback(() => {
     const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-     handleDelete(deleteIds)
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds);
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -171,26 +162,25 @@ export default function SchemeListView() {
     [handleFilters],
   );
 
-  const schemes = scheme.map((item)=>({
-    Name:item.name,
-    'Rate per gram' : item.ratePerGram,
-    'Interest rate':item.interestRate,
-    valuation:item.valuation,
-    'Interest period':item.interestPeriod,
-    'Renewal time':item.renewalTime,
-    'min loan time':item.minLoanTime,
-    Type:item.schemeType,
-    remark:item.remark,
-    Status:item.isActive === true ? 'Active' : 'inActive',
+  const schemes = scheme.map((item) => ({
+    Name: item.name,
+    'Rate per gram': item.ratePerGram,
+    'Interest rate': item.interestRate,
+    valuation: item.valuation,
+    'Interest period': item.interestPeriod,
+    'Renewal time': item.renewalTime,
+    'min loan time': item.minLoanTime,
+    Type: item.schemeType,
+    remark: item.remark,
+    Status: item.isActive === true ? 'Active' : 'inActive',
+  }));
 
-
-
-  }))
-  if(schemeLoading){
+  if (schemeLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -203,22 +193,22 @@ export default function SchemeListView() {
           ]}
           action={
             <Box>
-              <Button
+              {getResponsibilityValue('print_gold_price_change', configs, user) && <Button
                 component={RouterLink}
                 href={paths.dashboard.scheme.goldpricelist}
                 variant='contained'
                 sx={{ mx: 2 }}
               >
                 Gold Price change
-              </Button>
-              <Button
+              </Button>}
+              {getResponsibilityValue('create_visit', configs, user) && <Button
                 component={RouterLink}
                 href={paths.dashboard.scheme.new}
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
                 Add Scheme
-              </Button>
+              </Button>}
             </Box>
           }
           sx={{
@@ -253,7 +243,7 @@ export default function SchemeListView() {
                         'default'
                       }
                     >
-                      {['false','true'].includes(tab.value)
+                      {['false', 'true'].includes(tab.value)
                         ? scheme.filter((emp) => String(emp.isActive) == tab.value).length
                         : scheme.length}
                     </Label>
@@ -266,7 +256,7 @@ export default function SchemeListView() {
             filters={filters} onFilters={handleFilters} schemes={schemes}
           />
 
-         {canReset && (
+          {canReset && (
             <SchemeTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
@@ -381,7 +371,10 @@ export default function SchemeListView() {
 };
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
+function applyFilter({
+                       inputData, comparator, filters,
+                     },
+) {
   const { isActive, name } = filters;
 
   // Sort input data based on the provided comparator (e.g., sorting by a column)
