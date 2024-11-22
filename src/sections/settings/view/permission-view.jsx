@@ -5,14 +5,13 @@ import {
   Grid,
   Box,
   Card,
-  CardHeader,
   Switch,
   FormControlLabel,
   Checkbox,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
+  DialogActions, CardHeader,
 } from '@mui/material';
 import { useGetConfigs } from 'src/api/config';
 import { Stack } from '@mui/system';
@@ -29,53 +28,29 @@ const modules = [
     permissions: [],
   },
   {
-    label: 'Account',
-    value: 'account',
-    permissions: [],
-  },
-  {
-    label: 'Visit',
-    value: 'visit',
-    permissions: [
-      { action: 'create Visit', key: 'create_visit' },
-      { action: 'update Visit', key: 'update_visit' },
-      { action: 'delete Visit', key: 'delete_visit' },
-      { action: 'print Visit', key: 'print_visit_detail' },
-    ],
-  },
-  {
     label: 'Inquiry',
-    value: 'inquiry',
+    value: 'Inquiry',
     permissions: [
       { action: 'create Inquiry', key: 'create_inquiry' },
       { action: 'update Inquiry', key: 'update_inquiry' },
       { action: 'delete Inquiry', key: 'delete_inquiry' },
       { action: 'print Inquiry', key: 'print_inquiry_detail' },
+      { action: 'bulk Inquiry', key: 'bulk_inquiry_detail' },
     ],
   },
   {
-    label: 'Demo',
-    value: 'Demo',
+    label: 'Customer',
+    value: 'Customer',
     permissions: [
-      { action: 'create Demo', key: 'create_demo' },
-      { action: 'update Demo', key: 'update_demo' },
-      { action: 'delete Demo', key: 'delete_demo' },
-    ],
-  },
-  {
-    label: 'Student',
-    value: 'student',
-    permissions: [
-      { action: 'create Student', key: 'create_student' },
-      { action: 'create Bulk Student', key: 'create_bulk_student' },
-      { action: 'update Student', key: 'update_student' },
-      { action: 'delete Student', key: 'delete_student' },
-      { action: 'print Student', key: 'print_student_detail' },
+      { action: 'create Customer', key: 'create_customer' },
+      { action: 'update Customer', key: 'update_customer' },
+      { action: 'delete Customer', key: 'delete_customer' },
+      { action: 'print Customer', key: 'print_customer' },
     ],
   },
   {
     label: 'Employee',
-    value: 'employee',
+    value: 'Employee',
     permissions: [
       { action: 'create Employee', key: 'create_employee' },
       { action: 'update Employee', key: 'update_employee' },
@@ -84,90 +59,99 @@ const modules = [
     ],
   },
   {
-    label: 'Batches',
-    value: 'batches',
+    label: 'Scheme',
+    value: 'scheme',
     permissions: [
-      { action: 'create Batches', key: 'create_batch' },
-      { action: 'update Batches', key: 'update_batch' },
-      { action: 'delete Batches', key: 'delete_batch' },
-      { action: 'print Batches', key: 'print_batch_detail' },
+      { action: 'create Employee', key: 'create_employee' },
+      { action: 'update Employee', key: 'update_employee' },
+      { action: 'delete Employee', key: 'delete_employee' },
+      { action: 'print Employee', key: 'print_employee_detail' },
     ],
   },
   {
-    label: 'Attendance',
-    value: 'attendance',
+    label: 'Carat',
+    value: 'carat',
     permissions: [
-      { action: 'create Attendance', key: 'create_attendance' },
-      { action: 'update Attendance', key: 'update_attendance' },
-      { action: 'delete Attendance', key: 'delete_attendance' },
+      { action: 'create Carat', key: 'create_carat' },
+      { action: 'update Carat', key: 'update_carat' },
+      { action: 'delete Carat', key: 'delete_carat' },
+      { action: 'print Carat', key: 'print_carat_detail' },
     ],
   },
   {
-    label: 'Exam',
-    value: 'exam',
+    label: 'Property',
+    value: 'property',
     permissions: [
-      { action: 'create Exam', key: 'create_exam' },
-      { action: 'update Exam', key: 'update_exam' },
-      { action: 'delete Exam', key: 'delete_exam' },
-      { action: 'print Exam', key: 'print_exam_detail' },
+      { action: 'create Property', key: 'create_property' },
+      { action: 'update Property', key: 'update_property' },
+      { action: 'delete Property', key: 'delete_property' },
+      { action: 'print Property', key: 'delete_property' },
     ],
   },
   {
-    label: 'Seminar',
-    value: 'seminar',
+    label: 'Penalty',
+    value: 'penalty',
     permissions: [
-      { action: 'create Seminar', key: 'create_seminar' },
-      { action: 'update Seminar', key: 'update_seminar' },
-      { action: 'delete Seminar', key: 'delete_seminar' },
-      { action: 'print Seminar', key: 'print_seminar_detail' },
+      { action: 'create Penalty', key: 'create_penalty' },
+      { action: 'update Penalty', key: 'update_penalty' },
+      { action: 'delete Penalty', key: 'delete_penalty' },
+      { action: 'print Penalty', key: 'print_penalty_detail' },
     ],
   },
   {
-    label: 'Fees',
-    value: 'fees',
+    label: 'Transaction',
+    value: 'Transaction',
     permissions: [
-      { action: 'print Fees', key: 'print_fees_detail' },
-      { action: 'update Fees', key: 'update_fees' },
+      { action: 'create Transaction', key: 'create_transaction' },
+      { action: 'update Transaction', key: 'update_transaction' },
+      { action: 'delete Transaction', key: 'delete_transaction' },
+      { action: 'print Transaction', key: 'print_transaction_detail' },
     ],
   },
   {
-    label: 'Expenses',
-    value: 'expenses',
+    label: 'Loan Issue',
+    value: 'Loan issue',
     permissions: [
-      { action: 'create Expenses', key: 'create_expense' },
-      { action: 'update Expenses', key: 'update_expense' },
-      { action: 'delete Expenses', key: 'delete_expense' },
-      { action: 'print Expenses', key: 'print_expense_detail' },
+      { action: 'create Loan Issue', key: 'create_loanIssue' },
+      { action: 'update Loan Issue', key: 'update_loanIssue' },
+      { action: 'delete Loan Issue', key: 'delete_loanIssue' },
+      { action: 'print Loan Issue', key: 'print_loanIssue_detail' },
     ],
   },
   {
-    label: 'Calendar',
-    value: 'calendar',
+    label: 'Disburse',
+    value: 'disburse',
     permissions: [
-      { action: 'create Calendar', key: 'create_event' },
-      { action: 'update Calendar', key: 'update_event' },
-      { action: 'delete Calendar', key: 'delete_event' },
-      { action: 'print Calendar', key: 'print_event_detail' },
+      { action: 'create Disburse', key: 'create_disburse' },
+      { action: 'update Disburse', key: 'update_disburse' },
+      { action: 'delete Disburse', key: 'delete_disburse' },
+      { action: 'print Disburse', key: 'print_disburse_detail' },
     ],
   },
   {
-    label: 'Task',
-    value: 'task',
+    label: 'Loan Pay History',
+    value: 'Loan Pay History',
     permissions: [
-      { action: 'create Task', key: 'create_task' },
-      { action: 'update Task', key: 'update_task' },
-      { action: 'delete Task', key: 'delete_task' },
-      { action: 'print Task', key: 'print_task_detail' },
+      { action: 'create Loan Pay History', key: 'create_loanPayHistory' },
+      { action: 'update Loan Pay History', key: 'update_loanPayHistory' },
+      { action: 'delete Loan Pay History', key: 'delete_loanPayHistory' },
+      { action: 'print Loan Pay History', key: 'print_loanPayHistory_detail' },
     ],
   },
   {
-    label: 'Complaints',
-    value: 'complaints',
+    label: 'Reminder',
+    value: 'reminder',
     permissions: [
-      { action: 'update Complaints', key: 'update_complaint' },
-      { action: 'delete Complaints', key: 'delete_complaint' },
-      { action: 'print Complaints', key: 'print_complaint_detail' },
+      { action: 'create Reminder', key: 'create_reminder' },
+      { action: 'update Reminder', key: 'update_reminder' },
+      { action: 'delete Reminder', key: 'delete_reminder' },
+      { action: 'print Reminder', key: 'print_reminder_detail' },
     ],
+  },
+  {
+    label: 'Gold Loan Calculator',
+    value: 'Gold Loan Calculator',
+    permissions: [],
   },
   {
     label: 'Setting',
@@ -202,9 +186,14 @@ export default function PermissionView() {
 
       modules.forEach((module) => {
         const hasPermissions = rolePermissions.sections?.includes(module.value) || false;
-        moduleStates[module.value] = hasPermissions;
 
-        if (hasPermissions) {
+        if (module.value === 'dashboard') {
+          moduleStates[module.value] = true;
+        } else {
+          moduleStates[module.value] = hasPermissions;
+        }
+
+        if (hasPermissions || module.value === 'dashboard') {
           module.permissions.forEach((permission) => {
             permissionsStates[`${module.value}.${permission.key}`] = rolePermissions.responsibilities?.[permission.key] || false;
           });
@@ -215,6 +204,7 @@ export default function PermissionView() {
       setPermissionsState(permissionsStates);
     }
   }, [selectedRole, configs]);
+
 
   const handleRoleChange = (event, value) => {
     setSelectedRole(value);
@@ -245,10 +235,15 @@ export default function PermissionView() {
   };
 
   const handleSwitchChange = (moduleValue, checked) => {
+    if (moduleValue === 'dashboard') {
+      checked = true;
+    }
+
     setModuleSwitchState((prevState) => ({
       ...prevState,
       [moduleValue]: checked,
     }));
+
     if (!checked) {
       const updatedPermissions = { ...permissionsState };
       modules
@@ -325,16 +320,14 @@ export default function PermissionView() {
         <Grid container spacing={3}>
           <Grid item xs={12} display='flex' justifyContent='space-between'>
             <Box>
-              <Typography variant='h5' sx={{fontWeight: 600 }}>
-                Permission
-              </Typography>
+              <CardHeader title='Permission' sx={{ padding: '0px' }} />
             </Box>
             <Box sx={{ width: '250px' }}>
               <RHFAutocomplete
                 name='course'
                 label='Roles'
                 placeholder='Choose a Role'
-                options={configs?.roles || []}
+                options={configs?.roles?.filter((role) => role !== 'Admin') || []}
                 isOptionEqualToValue={(option, value) => option === value}
                 onChange={handleRoleChange}
               />
@@ -363,7 +356,7 @@ export default function PermissionView() {
                       }}
                     >
                       <Grid item xs={12} display='flex' justifyContent='space-between'>
-                        <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+                        <Typography sx={{ fontSize: '16px', fontWeight: '900' }}>
                           {module.label}
                         </Typography>
                         <FormControlLabel
@@ -376,7 +369,6 @@ export default function PermissionView() {
                           label=''
                         />
                       </Grid>
-
                       {module.permissions.map((permission, idx) => (
                         <Grid item xs={12} key={idx}>
                           <FormControlLabel

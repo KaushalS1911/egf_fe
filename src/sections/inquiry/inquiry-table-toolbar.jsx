@@ -11,11 +11,16 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useGetConfigs } from '../../api/config';
+import { useAuthContext } from '../../auth/hooks';
 
 // ----------------------------------------------------------------------
 
 export default function InquiryTableToolbar({ filters, onFilters, roleOptions, dateError }) {
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
 
@@ -82,7 +87,7 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -109,14 +114,14 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
             }}
             sx={{
               maxWidth: { md: 200 },
-              "label": {
+              'label': {
                 mt: -0.8,
-                fontSize: "14px",
+                fontSize: '14px',
               },
-              "& .MuiInputLabel-shrink": {
+              '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              "input": { height: 7 },
+              'input': { height: 7 },
             }}
           />
           <DatePicker
@@ -139,14 +144,14 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
-              "label": {
+              'label': {
                 mt: -0.8,
-                fontSize: "14px",
+                fontSize: '14px',
               },
-              "& .MuiInputLabel-shrink": {
+              '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              "input": { height: 7 },
+              'input': { height: 7 },
             }}
           />
           <IconButton onClick={popover.onOpen}>
@@ -160,22 +165,24 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ant-design:file-pdf-filled' />
-            PDF
-          </MenuItem>
+          {getResponsibilityValue('print_inquiry_detail', configs, user)
+          && <>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='solar:printer-minimalistic-bold' />
+              Print
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='ant-design:file-pdf-filled' />
+              PDF
+            </MenuItem></>}
           <MenuItem
             onClick={() => {
               popover.onClose();

@@ -1,6 +1,5 @@
 import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
-
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
@@ -12,15 +11,11 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import { _roles } from 'src/_mock';
-
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -38,7 +33,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
 import CustomerTableFiltersResult from '../customer-table-filters-result';
 import CustomerTableToolbar from '../customer-table-toolbar';
 import CustomerTableRow from '../customer-table-row';
@@ -46,6 +40,8 @@ import { useGetCustomer } from '../../../api/customer';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -75,7 +71,8 @@ export default function CustomerListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { customer, mutate,customerLoading } = useGetCustomer();
+  const { configs } = useGetConfigs();
+  const { customer, mutate, customerLoading } = useGetCustomer();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -94,9 +91,7 @@ export default function CustomerListView() {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
@@ -159,11 +154,13 @@ export default function CustomerListView() {
     },
     [handleFilters],
   );
-  if(customerLoading){
+
+  if (customerLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -175,14 +172,16 @@ export default function CustomerListView() {
             { name: 'List' },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.customer.new}
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-            >
-              Add Customer
-            </Button>
+            getResponsibilityValue('create_visit', configs, user) && (
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.customer.new}
+                variant='contained'
+                startIcon={<Iconify icon='mingcute:add-line' />}
+              >
+                Add Customer
+              </Button>
+            )
           }
           sx={{
             mb: { xs: 3, md: 5 },

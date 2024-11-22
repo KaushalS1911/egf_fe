@@ -14,7 +14,6 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetInquiry } from 'src/api/inquiry';
-import { USER_STATUS_OPTIONS } from 'src/_mock';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -41,6 +40,8 @@ import Iconify from '../../../components/iconify';
 import { useGetEmployee } from '../../../api/employee';
 import { useGetBranch } from '../../../api/branch';
 import * as xlsx from 'xlsx';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -68,6 +69,7 @@ export default function InquiryListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { inquiry, mutate, inquiryLoading } = useGetInquiry();
   const { employee } = useGetEmployee();
+  const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -254,7 +256,8 @@ export default function InquiryListView() {
           ]}
           action={
             <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
+              {user?.role === 'Admin' && branch && storedBranch === 'all' && getResponsibilityValue('bulk_inquiry_detail', configs, user)
+              && (
                 <FormControl
                   sx={{
                     flexShrink: 0,
@@ -361,33 +364,38 @@ export default function InquiryListView() {
                   </Select>
                 </FormControl>
               )}
-              <Box display='flex' alignItems='center' mx={1}>
-                <input
-                  disabled={!selectedEmployee}
-                  type='file'
-                  accept='.xlsx, .xls'
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                  id='file-upload'
-                />
-                <label htmlFor='file-upload'>
-                  <Button variant='outlined' disabled={!selectedEmployee} component='span'
-                          startIcon={<Iconify icon='mdi:file-upload' />}>
-                    Select Excel File
-                  </Button>
-                </label>
-              </Box>
-              <Button variant='contained' sx={{ mx: 1 }} onClick={handleDownload}>
-                Download File
-              </Button>
-              <Button
+              {getResponsibilityValue('bulk_inquiry_detail', configs, user)
+              && <>
+                <Box display='flex' alignItems='center' mx={1}>
+                  <input
+                    disabled={!selectedEmployee}
+                    type='file'
+                    accept='.xlsx, .xls'
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                    id='file-upload'
+                  />
+                  <label htmlFor='file-upload'>
+                    <Button variant='outlined' disabled={!selectedEmployee} component='span'
+                            startIcon={<Iconify icon='mdi:file-upload' />}>
+                      Select Excel File
+                    </Button>
+                  </label>
+                </Box>
+                <Button variant='contained' sx={{ mx: 1 }} onClick={handleDownload}>
+                  Download Sample File
+                </Button>
+              </>
+              }
+              {getResponsibilityValue('create_inquiry', configs, user)
+              && <Button
                 component={RouterLink}
                 href={paths.dashboard.inquiry.new}
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
                 Add Inquiry
-              </Button>
+              </Button>}
             </Box>
           }
           sx={{
