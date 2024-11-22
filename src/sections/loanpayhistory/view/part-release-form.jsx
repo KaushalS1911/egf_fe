@@ -71,12 +71,23 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
+  const [aspectRatio, setAspectRatio] = useState(null);
 
   useEffect(() => {
     if (currentLoan.propertyDetails) {
       setProperties(currentLoan.propertyDetails);
     }
   }, [currentLoan]);
+
+  useEffect(() => {
+    if (imageSrc) {
+      const img = new Image();
+      img.src = imageSrc;
+      img.onload = () => {
+        setAspectRatio(img.width / img.height);
+      };
+    }
+  }, [imageSrc]);
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -446,17 +457,19 @@ function PartReleaseForm({ currentLoan, mutate }) {
 
                   <Dialog open={open} onClose={() => setOpen(false)} maxWidth='sm' fullWidth>
                     <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
-                      <Cropper
-                        image={imageSrc}
-                        crop={crop}
-                        zoom={zoom}
-                        rotation={rotation}
-                        aspect={4 / 3}
-                        onCropChange={setCrop}
-                        onCropComplete={onCropComplete}
-                        onZoomChange={setZoom}
-                        onRotationChange={setRotation}
-                      />
+                      {aspectRatio && (
+                        <Cropper
+                          image={imageSrc}
+                          crop={crop}
+                          zoom={zoom}
+                          rotation={rotation}
+                          aspect={aspectRatio}
+                          onCropChange={setCrop}
+                          onCropComplete={onCropComplete}
+                          onZoomChange={setZoom}
+                          onRotationChange={setRotation}
+                        />
+                      )}
                     </Box>
                     <Box sx={{ padding: 2 }}>
                       <Typography gutterBottom>Zoom</Typography>
