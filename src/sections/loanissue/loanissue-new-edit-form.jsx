@@ -795,6 +795,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   maxSize={3145728}
                   file={croppedImage}
                   onDelete={handleDeleteImage}
+                  sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
                   onDrop={handleDropSingleFile}
                 />
               ) : (
@@ -802,6 +803,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   name='property_image'
                   maxSize={3145728}
                   onDelete={handleDeleteImage}
+                  sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
                   onDrop={handleDropSingleFile}
                 />
               )}
