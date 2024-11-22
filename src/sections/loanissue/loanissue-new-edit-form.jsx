@@ -76,6 +76,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
@@ -239,7 +240,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       if (imageSrc) {
         setValue("property_image",imageSrc);
         setCapturedImage(imageSrc)
-        setOpen(false);
+        setOpen2(false);
       }
     }
   }, []);
@@ -785,7 +786,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 Property Image
               </Typography>
                 <Typography variant='subtitle1' sx={{display: "inline-block", fontWeight: 600  }}>
-                  <Iconify icon="ion:camera-sharp" width={24} sx={{color: "gray", cursor: "pointer"}} onClick={() => setOpen(true)}/>
+                  <Iconify icon="ion:camera-sharp" width={24} sx={{color: "gray", cursor: "pointer"}} onClick={() => setOpen2(true)}/>
                 </Typography>
               </Box>
               {croppedImage ? (
@@ -1309,8 +1310,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   <Dialog
     fullWidth
     maxWidth={false}
-    open={open}
-    onClose={() => setOpen(false)}
+    open={open2}
+    onClose={() => setOpen2(false)}
     PaperProps={{
       sx: { maxWidth: 720 },
     }}
@@ -1331,7 +1332,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       <Button variant='outlined' onClick={capture}>
         Capture Photo
       </Button>
-      <Button variant='contained'  onClick={() => setOpen(false)}>
+      <Button variant='contained'  onClick={() => setOpen2(false)}>
         Close Camera
       </Button>
     </DialogActions>
