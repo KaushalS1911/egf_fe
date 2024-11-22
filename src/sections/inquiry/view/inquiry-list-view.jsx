@@ -14,7 +14,6 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetInquiry } from 'src/api/inquiry';
-import { USER_STATUS_OPTIONS } from 'src/_mock';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -41,6 +40,8 @@ import Iconify from '../../../components/iconify';
 import { useGetEmployee } from '../../../api/employee';
 import { useGetBranch } from '../../../api/branch';
 import * as xlsx from 'xlsx';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetConfigs } from '../../../api/config';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
@@ -53,6 +54,7 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Active', label
 }, { value: 'Completed', label: 'Completed' }, {
   value: 'Not Responded', label: 'Not Responded',
 }];
+
 const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
   { id: 'Recalling Date', label: 'Recalling Date' },
@@ -77,6 +79,7 @@ export default function InquiryListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { inquiry, mutate, inquiryLoading } = useGetInquiry();
   const { employee } = useGetEmployee();
+  const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -276,7 +279,8 @@ export default function InquiryListView() {
           ]}
           action={
             <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
+              {user?.role === 'Admin' && branch && storedBranch === 'all' && getResponsibilityValue('bulk_inquiry_detail', configs, user)
+              && (
                 <FormControl
                   sx={{
                     flexShrink: 0,
@@ -383,33 +387,38 @@ export default function InquiryListView() {
                   </Select>
                 </FormControl>
               )}
-              <Box display='flex' alignItems='center' mx={1}>
-                <input
-                  disabled={!selectedEmployee}
-                  type='file'
-                  accept='.xlsx, .xls'
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                  id='file-upload'
-                />
-                <label htmlFor='file-upload'>
-                  <Button variant='outlined' disabled={!selectedEmployee} component='span'
-                          startIcon={<Iconify icon='mdi:file-upload' />}>
-                    Select Excel File
-                  </Button>
-                </label>
-              </Box>
-              <Button variant='contained' sx={{ mx: 1 }} onClick={handleDownload}>
-                Download File
-              </Button>
-              <Button
+              {getResponsibilityValue('bulk_inquiry_detail', configs, user)
+              && <>
+                <Box display='flex' alignItems='center' mx={1}>
+                  <input
+                    disabled={!selectedEmployee}
+                    type='file'
+                    accept='.xlsx, .xls'
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                    id='file-upload'
+                  />
+                  <label htmlFor='file-upload'>
+                    <Button variant='outlined' disabled={!selectedEmployee} component='span'
+                            startIcon={<Iconify icon='mdi:file-upload' />}>
+                      Select Excel File
+                    </Button>
+                  </label>
+                </Box>
+                <Button variant='contained' sx={{ mx: 1 }} onClick={handleDownload}>
+                  Download Sample File
+                </Button>
+              </>
+              }
+              {getResponsibilityValue('create_inquiry', configs, user)
+              && <Button
                 component={RouterLink}
                 href={paths.dashboard.inquiry.new}
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
                 Add Inquiry
-              </Button>
+              </Button>}
             </Box>
           }
           sx={{
@@ -446,7 +455,7 @@ export default function InquiryListView() {
                         'default'
                       }
                     >
-                      {['Active', 'Responded','Completed','Not Responded'].includes(tab.value)
+                      {['Active', 'Responded', 'Completed', 'Not Responded'].includes(tab.value)
                         ? inquiry.filter((inq) => String(inq.status) === tab.value).length
                         : inquiry.length}
                     </Label>
@@ -560,9 +569,7 @@ export default function InquiryListView() {
 
 function applyFilter({
                        inputData, comparator, filters,
-                     }
-  ,
-) {
+                     }) {
   const { status, name, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);

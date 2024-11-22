@@ -11,12 +11,17 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useGetConfigs } from '../../api/config';
+import { useAuthContext } from '../../auth/hooks';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryTableToolbar({ filters, onFilters, roleOptions, dateError,inquiries }) {
+export default function InquiryTableToolbar({ filters, onFilters, roleOptions, dateError, inquiries }) {
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
 
@@ -161,22 +166,33 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ant-design:file-pdf-filled' />
-            PDF
-          </MenuItem>
+          {getResponsibilityValue('print_inquiry_detail', configs, user)
+          && <>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='solar:printer-minimalistic-bold' />
+              Print
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='ant-design:file-pdf-filled' />
+              PDF
+            </MenuItem>
+            <MenuItem
+            >
+              <RHFExportExcel
+                data={inquiries}
+                fileName='InquiryData'
+                sheetName='InquiryDetails'
+              />
+            </MenuItem>
+          </>}
           <MenuItem
             onClick={() => {
               popover.onClose();
@@ -184,14 +200,6 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
           >
             <Iconify icon='ic:round-whatsapp' />
             whatsapp share
-          </MenuItem>
-          <MenuItem
-          >
-            <RHFExportExcel
-              data={inquiries}
-              fileName='InquiryData'
-              sheetName='InquiryDetails'
-            />
           </MenuItem>
         </CustomPopover>
       </Stack>

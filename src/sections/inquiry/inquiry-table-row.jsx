@@ -28,9 +28,12 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useSnackbar } from 'notistack';
 import Label from '../../components/label';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, mutate }) {
   const { date, firstName, lastName, contact, inquiryFor, remark,updatedAt, _id } = row;
+  const { configs } = useGetConfigs();
   const [attempts, setAttempts] = useState(row?.attempts || []);
   const [openResponseDialog, setOpenResponseDialog] = useState(false);
   const [responseDate, setResponseDate] = useState(new Date().toISOString().split('T')[0]);
@@ -193,7 +196,8 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {getResponsibilityValue('delete_inquiry', configs, user)
+        && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -202,8 +206,9 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
-        <MenuItem
+        </MenuItem>}
+        {getResponsibilityValue('update_inquiry', configs, user)
+        && <MenuItem
           onClick={() => {
             onEditRow(_id);
             popover.onClose();
@@ -211,7 +216,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
 
       <Dialog open={openResponseDialog} onClose={handleCloseResponseDialog} maxWidth='sm' fullWidth>
