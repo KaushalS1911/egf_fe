@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Jwt: Login</title>
+        <title> EGF: Login</title>
       </Helmet>
 
       <JwtLoginView />
