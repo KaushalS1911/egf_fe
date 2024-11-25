@@ -123,9 +123,8 @@ const modules = [
     label: 'Loan Pay History',
     value: 'Loan Pay History',
     permissions: [
-      { action: 'create Loan Pay History', key: 'create_loanPayHistory' },
+      { action: 'Bulk Interest Pay', key: 'bulk_interest_pay' },
       { action: 'update Loan Pay History', key: 'update_loanPayHistory' },
-      { action: 'delete Loan Pay History', key: 'delete_loanPayHistory' },
       { action: 'print Loan Pay History', key: 'print_loanPayHistory_detail' },
     ],
   },
@@ -287,7 +286,7 @@ export default function PermissionView() {
       permissions: updatedPermissions,
     };
 
-    const URL = `${import.meta.env.VITE_AUTH_API}/api/company/${user?.company}/configs/${configs?._id}`;
+    const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
 
     axios
       .put(URL, updatedConfig)

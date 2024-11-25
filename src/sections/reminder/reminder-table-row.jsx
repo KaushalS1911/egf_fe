@@ -12,32 +12,40 @@ import ReminderRecallingForm from './reminder-recalling-form';
 import { useState } from 'react';
 import { fDate } from '../../utils/format-time';
 import { useRouter } from '../../routes/hooks';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
-export default function ReminderTableRow({ row, selected, onDeleteRow ,handleClick,index}) {
-  const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate} = row;
+export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index }) {
+  const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate } = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
   const popover = usePopover();
   const recallingPopover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
+
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   };
-    const router = useRouter();
+  const router = useRouter();
+
   return (
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {calculateDateDifference(new Date(), nextInstallmentDate)}
         </TableCell> <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap',textAlign:"center" }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
 
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -53,7 +61,7 @@ export default function ReminderTableRow({ row, selected, onDeleteRow ,handleCli
         sx={{ width: 140 }}
       >
 
-        <MenuItem
+        {getResponsibilityValue('create_reminder', configs, user) && <MenuItem
           onClick={() => {
             popover.onClose();
             recallingPopover.onOpen(ReminderRecallingForm);
@@ -62,12 +70,12 @@ export default function ReminderTableRow({ row, selected, onDeleteRow ,handleCli
         >
           <Iconify icon='eva:clock-outline' />
           Recalling
-        </MenuItem>
+        </MenuItem>}
         <MenuItem
           onClick={handleClick}
         >
           <Iconify icon='carbon:view-filled' />
-           Details
+          Details
         </MenuItem>
       </CustomPopover>
 

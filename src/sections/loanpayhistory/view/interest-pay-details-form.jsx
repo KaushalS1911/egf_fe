@@ -91,6 +91,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     ...paymentSchema,
   });
+
   const defaultValues = {
     from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to),
     to: (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
@@ -109,19 +110,18 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     cashAmount: '',
     bankAmount: '',
   };
+
   const methods = useForm({
     resolver: yupResolver(NewInterestPayDetailsSchema),
     defaultValues,
   });
 
   const { reset, watch, control, setValue, handleSubmit, formState: { isSubmitting } } = methods;
-
   const from = watch('from');
   const to = watch('to');
 
-  function calculatePenalty(loanAmount, interestRate, differenceInDays) {
-    const penalty = ((loanAmount * interestRate) / 100) * (12 * differenceInDays)/ 365;
-    console.log(penalty)
+  function calculatePenalty(interestLoanAmount, interestRate, differenceInDays) {
+    const penalty = ((interestLoanAmount * interestRate) / 100) * (12 * differenceInDays) / 365;
     return penalty.toFixed(2);
   }
 
@@ -136,19 +136,17 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     const endDate = new Date(to);
     const differenceInTime = Math.abs(endDate - startDate);
     const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
-
     const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
     const differenceInTime2 = Math.abs(new Date(to) - nextInstallmentDate);
     const differenceInDays2 = Math.floor(differenceInTime2 / (1000 * 3600 * 24));
-
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
-      if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true) {
-        penaltyPer = calculatePenalty(currentLoan.loanAmount, penaltyItem.penaltyInterest, differenceInDays);
+      if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true && nextInstallmentDate < endDate) {
+        penaltyPer = calculatePenalty(currentLoan.interestLoanAmount, penaltyItem.penaltyInterest, differenceInDays);
       }
     });
-    setValue('interestAmount', (((currentLoan.loanAmount * currentLoan?.scheme.interestRate) / 100) * (12 * differenceInDays)/ 365).toFixed(2));
+    setValue('interestAmount', (((currentLoan.interestLoanAmount * currentLoan?.scheme.interestRate) / 100) * (12 * differenceInDays) / 365).toFixed(2));
     setValue('penalty', penaltyPer);
     // if (new Date(from) >= new Date()) {
     //   setValue('penalty', 0);
@@ -170,11 +168,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     }
   }, [watch('paymentMode')]);
   const onSubmit = handleSubmit(async (data) => {
-
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
-
     if (data.paymentMode === 'Cash') {
       paymentDetail = {
         ...paymentDetail,
@@ -209,7 +205,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     };
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment`;
-
       const config = {
         method: 'post',
         url,
@@ -227,16 +222,18 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     }
 
   });
+
   const handleDeleteInterest = async (id) => {
     try {
-
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment/${id}`);
       refetchLoanInterest();
+      mutate();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
     }
   };
+
   return (
     <Box sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>

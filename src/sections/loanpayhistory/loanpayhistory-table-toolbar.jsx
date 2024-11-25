@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback , useState} from 'react';
+import { useCallback, useState } from 'react';
 
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -11,11 +11,16 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
-export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
+export default function LoanpayhistoryTableToolbar({ filters, onFilters }) {
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   const handleFilterName = useCallback(
     (event) => {
@@ -46,7 +51,7 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.username}
             onChange={handleFilterName}
@@ -69,7 +74,7 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          <MenuItem
+          {getResponsibilityValue('print_loanPayHistory_detail', configs, user) && (<>   <MenuItem
             onClick={() => {
               popover.onClose();
             }}
@@ -77,14 +82,14 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters}) {
             <Iconify icon='solar:printer-minimalistic-bold' />
             Print
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ant-design:file-pdf-filled' />
-            PDF
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='ant-design:file-pdf-filled' />
+              PDF
+            </MenuItem></>)}
           <MenuItem
             onClick={() => {
               popover.onClose();

@@ -8,13 +8,10 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -31,7 +28,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
 import LoanpayhistoryTableRow from '../loanpayhistory-table-row';
 import LoanpayhistoryTableToolbar from '../loanpayhistory-table-toolbar';
 import LoanpayhistoryTableFiltersResult from '../loanpayhistory-table-filters-result';
@@ -46,9 +42,10 @@ import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
 import ReminderRecallingForm from '../../reminder/reminder-recalling-form';
 import BulkInterestModel from '../bulk-interest-pay/bulk-interest-model';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
-
 
 const TABLE_HEAD = [
   { id: '', label: '#' },
@@ -61,10 +58,12 @@ const TABLE_HEAD = [
   { id: 'BankAmount', label: 'Bank amt' },
   { id: 'status', label: 'Status' },
 ];
+
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, {
   value: 'Closed',
   label: 'Closed',
 }];
+
 const defaultFilters = {
   username: '',
   status: 'all',
@@ -76,14 +75,12 @@ export default function LoanpayhistoryListView() {
   const [open, setOpen] = useState(false);
   const table = useTable();
   const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const loanPayHistory = true;
   const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(loanPayHistory);
-
   const settings = useSettingsContext();
   const router = useRouter();
-
   const confirm = useBoolean();
-
   const [tableData, setTableData] = useState(Loanissue);
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
@@ -93,7 +90,6 @@ export default function LoanpayhistoryListView() {
       ...item,
       srNo: index + 1,
     }));
-
     setSrData(updatedData);
   }, [Loanissue]);
 
@@ -109,9 +105,7 @@ export default function LoanpayhistoryListView() {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
@@ -128,7 +122,6 @@ export default function LoanpayhistoryListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
 
   const handleDelete = async (id) => {
     try {
@@ -156,7 +149,6 @@ export default function LoanpayhistoryListView() {
         handleDelete([id]);
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
-
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
@@ -200,9 +192,10 @@ export default function LoanpayhistoryListView() {
             mb: { xs: 3, md: 5 },
           }}
           action={
-            <Button variant='contained' onClick={() => setOpen(true)}>
-              Bulk Interest Pay
-            </Button>
+            getResponsibilityValue('bulk_interest_pay', configs, user) && (
+              <Button variant='contained' onClick={() => setOpen(true)}>
+                Bulk Interest Pay
+              </Button>)
           }
         />
 

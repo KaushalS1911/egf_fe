@@ -5,11 +5,9 @@ import Table from '@mui/material/Table';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -22,8 +20,6 @@ import {
   TableHeadCustom,
   TablePaginationCustom,
 } from 'src/components/table';
-
-
 import ReminderTableToolbar from '../reminder-table-toolbar';
 import ReminderTableFiltersResult from '../reminder-table-filters-result';
 import ReminderTableRow from '../reminder-table-row';
@@ -33,21 +29,18 @@ import { useGetLoanissue } from '../../../api/loanissue';
 
 // ----------------------------------------------------------------------
 
-
-
 const TABLE_HEAD = [
   { id: '#', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'customerName', label: 'Customer name' },
   { id: 'otpNo.', label: 'OTP no.' },
-  { id: 'loanAmount', label: 'Loan amt', },
+  { id: 'loanAmount', label: 'Loan amt' },
   { id: 'days', label: 'Days' },
-  { id: 'nextInterestPaydate', label: 'Next int. pay date'},
+  { id: 'nextInterestPaydate', label: 'Next int. pay date' },
   { id: 'issueDate', label: 'Issue date' },
   { id: 'lastInterestDate', label: 'Last int. date' },
-  { id: ''},
+  { id: '' },
 ];
-
 
 const defaultFilters = {
   name: '',
@@ -56,56 +49,47 @@ const defaultFilters = {
   nextInstallmentDay: [],
   startDay: null,
   endDay: null,
-}
+};
 
 // ----------------------------------------------------------------------
 
 export default function ReminderListView() {
   const loanPayHistory = false;
   const reminder = true;
-
-  const {Loanissue,LoanissueLoading} = useGetLoanissue(loanPayHistory,reminder)
-
+  const { Loanissue, LoanissueLoading } = useGetLoanissue(loanPayHistory, reminder);
   const table = useTable();
-
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
-
   const [filters, setFilters] = useState(defaultFilters);
-
 
   const dataFiltered = applyFilter({
     inputData: Loanissue,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
   const dateError = isAfter(filters.startDate, filters.endDate);
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage,
   );
-
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
   const
     handleFilters = useCallback(
-    (name, value) => {
-      console.log("name",value)
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table],
-  );
+      (name, value) => {
+        console.log('name', value);
+        table.onResetPage();
+        setFilters((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      },
+      [table],
+    );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -117,11 +101,13 @@ export default function ReminderListView() {
     },
     [router],
   );
-  if(LoanissueLoading){
+
+  if (LoanissueLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -129,7 +115,7 @@ export default function ReminderListView() {
           heading='Reminders'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reminder', href: paths.dashboard.reminder.list},
+            { name: 'Reminder', href: paths.dashboard.reminder.list },
             { name: 'List' },
           ]}
 
@@ -141,7 +127,7 @@ export default function ReminderListView() {
           <ReminderTableToolbar
             filters={filters} onFilters={handleFilters}
           />
-         {canReset && (
+          {canReset && (
             <ReminderTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
@@ -170,7 +156,7 @@ export default function ReminderListView() {
                             table.page * table.rowsPerPage,
                             table.page * table.rowsPerPage + table.rowsPerPage,
                           )
-                          .map((row,index) => (
+                          .map((row, index) => (
                             <ReminderTableRow
                               index={index + 1}
                               key={row._id}
@@ -210,8 +196,8 @@ export default function ReminderListView() {
 };
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters ,dateError}) {
-  const { startDate, endDate,name,nextInstallmentDay,startDay,endDay} = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { startDate, endDate, name, nextInstallmentDay, startDay, endDay } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -223,7 +209,7 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>
-        rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) || rem.customer.lastName.toLowerCase().includes(name.toLowerCase())
+        rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) || rem.customer.lastName.toLowerCase().includes(name.toLowerCase()),
     );
   }
   if (nextInstallmentDay.length) {
@@ -234,10 +220,10 @@ function applyFilter({ inputData, comparator, filters ,dateError}) {
       inputData = inputData.filter((rem) => isBetween(rem.nextInstallmentDate, startDay, endDay));
     }
   }
-    if (!dateError && startDate && endDate) {
-      inputData = inputData.filter((order) =>
-        isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
-      );
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((order) =>
+      isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
+    );
   }
   return inputData;
 }

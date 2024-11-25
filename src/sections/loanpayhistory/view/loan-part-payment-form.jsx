@@ -129,8 +129,8 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       };
 
       const response = await axios(config);
-      mutate();
       refetchPartPayment();
+      mutate();
       reset();
       enqueueSnackbar(response?.data.message);
     } catch (error) {
@@ -147,6 +147,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`);
       refetchPartPayment();
+      mutate();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
