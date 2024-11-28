@@ -142,7 +142,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
-      if (watch('days') >= penaltyItem.afterDueDateFromDate && watch('days') <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true && nextInstallmentDate < endDate) {
+      if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true && nextInstallmentDate < endDate) {
         penaltyPer = calculatePenalty(currentLoan.interestLoanAmount, penaltyItem.penaltyInterest, differenceInDays);
       }
     });
