@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -11,45 +10,49 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-
-
-
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {  RHFTextField } from 'src/components/hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
-import { useRouter } from '../../routes/hooks';
-import { mutate } from 'swr';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 
 // ----------------------------------------------------------------------
 
-export default function ReminderRecallingForm({currentReminderDetails,currentReminder, open, setOpen }) {
+export default function ReminderRecallingForm({
+                                                currentReminderDetails,
+                                                currentReminder,
+                                                open,
+                                                setOpen,
+                                                mutate,
+                                              }) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
+
   const NewUserSchema = Yup.object().shape({
     nextRecallingDate: Yup.date()
-        .required('Next Recalling Date is required')
-        .nullable()
-        .typeError('Date is required'),
+      .required('Next Recalling Date is required')
+      .nullable()
+      .typeError('Date is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      nextRecallingDate: new Date(currentReminderDetails?.nextRecallingDate)||'',
-      remark:  currentReminderDetails?.remark||'',
+      nextRecallingDate: new Date(currentReminderDetails?.nextRecallingDate) || '',
+      remark: currentReminderDetails?.remark || '',
     }),
-    [currentReminderDetails]
+    [currentReminderDetails],
   );
-const onClose = ()=>{
-  setOpen(false)
-  reset()
-}
+
+  const onClose = () => {
+    setOpen(false);
+    reset();
+  };
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
+
   const {
     reset,
     handleSubmit,
@@ -58,29 +61,27 @@ const onClose = ()=>{
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-
     try {
-      if (currentReminderDetails){
-        const payload2={
-          nextRecallingDate:data.nextRecallingDate,
-          remark:data.remark
-        }
+      if (currentReminderDetails) {
+        const payload2 = {
+          nextRecallingDate: data.nextRecallingDate,
+          remark: data.remark,
+        };
         const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder/${currentReminderDetails._id}`, payload2);
-        mutate(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`);
+        mutate();
         onClose();
         enqueueSnackbar(res?.data.message);
-      }
-      else {
-        const payload={
-          loan:currentReminder._id,
-          nextRecallingDate:data.nextRecallingDate,
-          remark:data.remark
-        }
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`,payload)
-      onClose();
-      reset();
-      enqueueSnackbar(res?.data.message);
-      console.info('DATA', data);
+      } else {
+        const payload = {
+          loan: currentReminder._id,
+          nextRecallingDate: data.nextRecallingDate,
+          remark: data.remark,
+        };
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`, payload);
+        mutate();
+        onClose();
+        reset();
+        enqueueSnackbar(res?.data.message);
       }
     } catch (error) {
       console.error(error);
@@ -103,7 +104,7 @@ const onClose = ()=>{
           <Box
             rowGap={3}
             columnGap={2}
-            display="grid"
+            display='grid'
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(2, 1fr)',
@@ -111,20 +112,20 @@ const onClose = ()=>{
             mt={2}
           >
             <RHFDatePicker
-            name="nextRecallingDate"
-            control={control}
-            label="Next Recalling Date"
-            req={"red"}
-          />
-            <RHFTextField name="remark" label="Remark" />
+              name='nextRecallingDate'
+              control={control}
+              label='Next Recalling Date'
+              req={'red'}
+            />
+            <RHFTextField name='remark' label='Remark' />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant='outlined' onClick={onClose}>
             Cancel
           </Button>
-          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentReminderDetails ? "Save":"Submit"}
+          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+            {currentReminderDetails ? 'Save' : 'Submit'}
           </LoadingButton>
         </DialogActions>
       </FormProvider>
@@ -132,8 +133,8 @@ const onClose = ()=>{
   );
 }
 
-  ReminderRecallingForm.propTypes = {
-    open: PropTypes.bool,
-    onClose: PropTypes.func,
-    currentUser: PropTypes.object,
-  };
+ReminderRecallingForm.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  currentUser: PropTypes.object,
+};

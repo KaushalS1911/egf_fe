@@ -21,7 +21,7 @@ import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function ReminderTableToolbar({ filters, onFilters, roleOptions, dateError }) {
+export default function ReminderTableToolbar({ filters, onFilters, roleOptions, dateError, exportToExcel }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -245,21 +245,32 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
           sx={{ width: 'auto' }}
         >
           {getResponsibilityValue('print_reminder_detail', configs, user) && (<>    <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-            <MenuItem
               onClick={() => {
                 popover.onClose();
               }}
             >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem></>)}
+              <Iconify icon='solar:printer-minimalistic-bold' />
+              Print
+            </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon='ant-design:file-pdf-filled' />
+                PDF
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                  exportToExcel();
+                }}
+              >
+                <Iconify icon='icon-park-outline:excel' />
+                Export To Excel
+              </MenuItem>
+            </>
+          )}
           <MenuItem
             onClick={() => {
               popover.onClose();

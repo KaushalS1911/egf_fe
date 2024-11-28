@@ -23,9 +23,12 @@ import {
 import ReminderTableToolbar from '../reminder-table-toolbar';
 import ReminderTableFiltersResult from '../reminder-table-filters-result';
 import ReminderTableRow from '../reminder-table-row';
-import { isAfter, isBetween } from '../../../utils/format-time';
+import { fDate, isAfter, isBetween } from '../../../utils/format-time';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
+import { useGetReminder } from '../../../api/reminder';
+import * as XLSX from 'xlsx';
+import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -55,8 +58,9 @@ const defaultFilters = {
 
 export default function ReminderListView() {
   const loanPayHistory = false;
-  const reminder = true;
-  const { Loanissue, LoanissueLoading } = useGetLoanissue(loanPayHistory, reminder);
+  const Reminder = true;
+  const { reminder, mutate } = useGetReminder();
+  const { Loanissue, LoanissueLoading } = useGetLoanissue(loanPayHistory, Reminder);
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
@@ -70,10 +74,12 @@ export default function ReminderListView() {
   });
 
   const dateError = isAfter(filters.startDate, filters.endDate);
+
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage,
   );
+
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
@@ -108,6 +114,75 @@ export default function ReminderListView() {
     );
   }
 
+  const exportToExcel = () => {
+    const groupedData = dataFiltered.reduce((acc, loan) => {
+      const customerId = loan?.customer?._id;
+      if (!acc[customerId]) {
+        acc[customerId] = {
+          customer: loan?.customer,
+          loans: [],
+        };
+      }
+      acc[customerId].loans.push(loan);
+      return acc;
+    }, {});
+
+    const exportData = Object.values(groupedData).flatMap((group, customerIndex) => {
+      const { customer, loans } = group;
+
+      return loans.flatMap((loan, loanIndex) => {
+        const baseRow = {
+          '#': loanIndex === 0 ? customerIndex + 1 : '',
+          'Customer Name':
+            loanIndex === 0
+              ? `${customer?.firstName} ${customer?.middleName || ''} ${customer?.lastName}`
+              : '',
+          'Customer Contact': loanIndex === 0 ? customer?.contact || '' : '',
+          'Loan No.': loan?.loanNo || '',
+          'Loan Amount': loan?.loanAmount || '',
+          'Next Interest Pay Date': fDate(loan?.nextInstallmentDate) || '',
+          'Issue Date': fDate(loan?.issueDate) || '',
+          'Last Interest Date': fDate(loan?.lastInstallmentDate) || '',
+          'Next Recalling Date': '',
+          Remark: '',
+        };
+
+        const relatedReminders = reminder.filter(
+          (r) => r?.loan?.customer?._id === loan?.customer?._id && r?.loan?._id === loan?._id,
+        );
+
+        const reminderRows = relatedReminders.map((reminderData, idx) => {
+          if (idx === 0) {
+            baseRow['Next Recalling Date'] = fDate(reminderData?.nextRecallingDate) || '';
+            baseRow.Remark = reminderData?.remark || '';
+            return null;
+          }
+          return {
+            '#': '',
+            'Customer Name': '',
+            'Customer Contact': '',
+            'Loan No.': '',
+            'Loan Amount': '',
+            'Next Interest Pay Date': '',
+            'Issue Date': '',
+            'Last Interest Date': '',
+            'Next Recalling Date': fDate(reminderData?.nextRecallingDate) || '',
+            Remark: reminderData?.remark || '',
+          };
+        });
+
+        const filteredReminderRows = reminderRows.filter((row) => row !== null);
+        return [baseRow, ...filteredReminderRows];
+      });
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reminders');
+    XLSX.writeFile(workbook, 'Reminders.xlsx');
+  };
+
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -125,7 +200,7 @@ export default function ReminderListView() {
         />
         <Card>
           <ReminderTableToolbar
-            filters={filters} onFilters={handleFilters}
+            filters={filters} onFilters={handleFilters} exportToExcel={exportToExcel}
           />
           {canReset && (
             <ReminderTableFiltersResult
@@ -162,6 +237,7 @@ export default function ReminderListView() {
                               key={row._id}
                               row={row}
                               handleClick={() => handleClick(row._id)}
+                              mutate={mutate}
                             />
                           ))}
                         <TableEmptyRows

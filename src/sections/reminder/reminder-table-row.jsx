@@ -16,7 +16,7 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
-export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index }) {
+export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index, mutate }) {
   const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate } = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
@@ -24,13 +24,12 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
   const recallingPopover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const router = useRouter();
 
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
   };
-  const router = useRouter();
 
   return (
     <>
@@ -87,7 +86,7 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
       >
         <ReminderRecallingForm onClose={recallingPopover.onClose} />
       </CustomPopover>
-      <ReminderRecallingForm currentReminder={row} open={open} setOpen={() => setOpen(false)} />
+      <ReminderRecallingForm currentReminder={row} open={open} setOpen={() => setOpen(false)} mutate={mutate} />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
