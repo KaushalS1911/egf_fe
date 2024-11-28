@@ -90,7 +90,6 @@ export default function ReminderDetailsListView() {
   const
     handleFilters = useCallback(
       (name, value) => {
-        console.log('name', value);
         table.onResetPage();
         setFilters((prevState) => ({
           ...prevState,
@@ -223,6 +222,7 @@ export default function ReminderDetailsListView() {
                       <ReminderDetailsTableRow
                         key={row._id}
                         row={row}
+                        mutate={mutate}
                         loanInterest={loanInterest}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}

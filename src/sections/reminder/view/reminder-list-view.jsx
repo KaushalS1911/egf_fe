@@ -59,9 +59,8 @@ const defaultFilters = {
 export default function ReminderListView() {
   const loanPayHistory = false;
   const Reminder = true;
-  const { reminder } = useGetReminder();
+  const { reminder, mutate } = useGetReminder();
   const { Loanissue, LoanissueLoading } = useGetLoanissue(loanPayHistory, Reminder);
-  console.log(Loanissue, reminder);
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
@@ -238,6 +237,7 @@ export default function ReminderListView() {
                               key={row._id}
                               row={row}
                               handleClick={() => handleClick(row._id)}
+                              mutate={mutate}
                             />
                           ))}
                         <TableEmptyRows

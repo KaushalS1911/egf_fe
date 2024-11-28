@@ -16,7 +16,15 @@ import { getResponsibilityValue } from '../../permission/permission';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 
-export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, loanInterest }) {
+export default function ReminderDetailsTableRow({
+                                                  row,
+                                                  selected,
+                                                  onEditRow,
+                                                  onSelectRow,
+                                                  onDeleteRow,
+                                                  loanInterest,
+                                                  mutate,
+                                                }) {
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const { loan, createdAt, nextRecallingDate, remark } = row;
@@ -85,7 +93,7 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
       >
         <ReminderRecallingForm onClose={recallingPopover.onClose} />
       </CustomPopover>
-      <ReminderRecallingForm currentReminderDetails={row} open={open} setOpen={() => setOpen(false)} />
+      <ReminderRecallingForm currentReminderDetails={row} open={open} setOpen={() => setOpen(false)} mutate={mutate} />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
