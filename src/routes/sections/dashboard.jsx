@@ -9,6 +9,7 @@ import { CustomerCreateView, CustomerListView } from '../../sections/customer/vi
 import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 import GoldLoanCalculator from '../../sections/goldloancalculator/gold-loan-calculator';
+import Notice from '../../sections/reminder/view/notice';
 // ----------------------------------------------------------------------
 
 const ResetPassword = lazy(() => import('src/pages/auth/jwt/reset'));
@@ -190,6 +191,7 @@ export const dashboardRoutes = [
         path: 'reminder',
         children: [
           { path: 'list', element: <ReminderListView/> },
+          { path: 'notice', element: <Notice/> },
         ],
       },
       {

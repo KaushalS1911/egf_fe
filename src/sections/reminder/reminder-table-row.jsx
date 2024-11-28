@@ -16,7 +16,7 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
-export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index, mutate }) {
+export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index , view, mutate}) {
   const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate } = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
@@ -29,6 +29,7 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
   };
 
   return (
@@ -75,6 +76,12 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
         >
           <Iconify icon='carbon:view-filled' />
           Details
+        </MenuItem>
+        <MenuItem
+          onClick={view.onTrue}
+        >
+          <Iconify icon='carbon:view-filled' />
+          View
         </MenuItem>
       </CustomPopover>
 
