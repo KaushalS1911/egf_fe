@@ -31,17 +31,17 @@ import Iconify from '../../../components/iconify';
 const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
   { id: 'to', label: 'To Date' },
-  { id: 'loanAmount', label: 'Loan Amount' },
+  { id: 'loanAmount', label: 'Loan Amt' },
   { id: 'interestRate', label: 'Interest Rate' },
-  { id: 'totalInterest', label: 'Total Interest' },
-  { id: 'penaltyAmount', label: 'Penalty Amount' },
-  // { id: 'payInterest', label: 'Pay Interest' },
+  { id: 'consultantInterest', label: 'Consultant Int' },
+  { id: 'totalInterest', label: 'Total Int' },
+  { id: 'penaltyAmount', label: 'Penalty Amt' },
+  { id: 'crDrAmt', label: 'CR/DR Amt' },
+  { id: 'payAfterAdjust', label: 'Pay After Adjust' },
   { id: 'entryDate', label: 'Entry Date' },
-  { id: 'consultantInterest', label: 'Consultant Interest' },
   { id: 'days', label: 'Days' },
-  { id: 'crDrAmount', label: 'CR/DR Amount' },
-  { id: 'totalPay', label: 'Total Pay' },
-  { id: 'adjustedPay', label: 'Adjusted Pay' },
+  { id: 'uchakAmt', label: 'Uchak Amt' },
+  { id: 'totalPay', label: 'Total Pay Amt' },
   { id: 'action', label: 'Action' },
 ];
 
@@ -142,7 +142,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
-      if (differenceInDays2 >= penaltyItem.afterDueDateFromDate && differenceInDays2 <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true && nextInstallmentDate < endDate) {
+      if (watch('days') >= penaltyItem.afterDueDateFromDate && watch('days') <= penaltyItem.afterDueDateToDate && penaltyItem.isActive === true && nextInstallmentDate < endDate) {
         penaltyPer = calculatePenalty(currentLoan.interestLoanAmount, penaltyItem.penaltyInterest, differenceInDays);
       }
     });
@@ -261,16 +261,16 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           />
 
           <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='interestAmount' label='Interest' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} InputProps={{ readOnly: true }} />
+          <RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='penalty' label='Penalty' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='totalPay' label='Total Pay' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'}
                         InputProps={{ readOnly: true }} />
           <RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name='amountPaid' label='Total' req={'red'} onKeyPress={(e) => {
+          <RHFTextField name='amountPaid' label='Total Pay Amount' req={'red'} onKeyPress={(e) => {
             if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
               e.preventDefault();
             }
@@ -387,15 +387,15 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                   <TableCell>{fDate(row.to)}</TableCell>
                   <TableCell>{row.loan.loanAmount}</TableCell>
                   <TableCell>{row.loan.scheme.interestRate}</TableCell>
+                  <TableCell>{row.loan.consultingCharge}</TableCell>
                   <TableCell>{row.interestAmount}</TableCell>
                   <TableCell>{row.penalty}</TableCell>
-                  {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>*/}
-                  <TableCell>{fDate(row.createdAt)}</TableCell>
-                  <TableCell>{row.loan.consultingCharge}</TableCell>
-                  <TableCell>{row.days}</TableCell>
                   <TableCell>{row.cr_dr}</TableCell>
-                  <TableCell>{row.amountPaid}</TableCell>
                   <TableCell>{row.adjustedPay}</TableCell>
+                  <TableCell>{fDate(row.createdAt)}</TableCell>
+                  <TableCell>{row.days}</TableCell>
+                  <TableCell>{row.uchakInterestAmount || 0}</TableCell>
+                  <TableCell>{row.amountPaid}</TableCell>
                   <TableCell>{
                     <IconButton color='error' onClick={() => handleDeleteInterest(row._id)}>
                       <Iconify icon='eva:trash-2-outline' />
