@@ -449,7 +449,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
             </Stack>
           </Card>
           {
-            currentDisburse.status !== 'Disbursed' &&
+            currentDisburse.status !== 'Disbursed' &&  currentDisburse.status !== 'Closed' &&
             <Stack alignItems={'end'} mt={3}>
               <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                 Submit

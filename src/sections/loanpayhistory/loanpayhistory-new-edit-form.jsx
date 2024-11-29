@@ -82,7 +82,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
     schemeName: currentLoan?.scheme.name || '',
     closedBy: currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) : null,
     oldLoanNo: currentLoan?.oldLoanNo || '',
-    interest: currentLoan?.scheme.interestRate || '',
+    interest: currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate,
     consultCharge: currentLoan?.consultingCharge || '',
     loanAmount: currentLoan?.loanAmount || '',
     interestLoanAmount: currentLoan?.interestLoanAmount || '',

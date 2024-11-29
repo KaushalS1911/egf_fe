@@ -132,13 +132,13 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   }, [loanInterest, currentLoan, setValue]);
 
   useEffect(() => {
-    const startDate = new Date(from);
-    const endDate = new Date(to);
+    const startDate = new Date(from).setHours(0,0,0,0);
+    const endDate = new Date(to).setHours(0,0,0,0);
     const differenceInTime = Math.abs(endDate - startDate);
-    const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+    const differenceInDays = Math.abs(differenceInTime / (1000 * 3600 * 24));
     const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
     const differenceInTime2 = Math.abs(new Date(to) - nextInstallmentDate);
-    const differenceInDays2 = Math.floor(differenceInTime2 / (1000 * 3600 * 24));
+    const differenceInDays2 = Math.abs(differenceInTime2 / (1000 * 3600 * 24));
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
@@ -148,25 +148,19 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     });
     setValue('interestAmount', (((currentLoan.interestLoanAmount * currentLoan?.scheme.interestRate) / 100) * (12 * differenceInDays) / 365).toFixed(2));
     setValue('penalty', penaltyPer);
-    // if (new Date(from) >= new Date()) {
-    //   setValue('penalty', 0);
-    // }
     setValue('totalPay', (
       Number(watch('interestAmount')) +
       Number(watch('penalty'))
     ).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
-    // if (startDate > new Date() || new Date(currentLoan.nextInstallmentDate) > startDate) {
-    //   setValue('penalty', 0);
-    // }
   }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
-
   useEffect(() => {
     if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
     }
   }, [watch('paymentMode')]);
+
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -223,6 +217,37 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
   });
 
+  const handleCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || '';
+    const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
+
+    if (newCashAmount > currentLoanAmount) {
+      setValue('cashAmount', currentLoanAmount);
+      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', { variant: 'warning' });
+    } else {
+      setValue('cashAmount', newCashAmount);
+    }
+    if (watch('paymentMode') === 'Both') {
+      const calculatedBankAmount = currentLoanAmount - newCashAmount;
+      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
+  const handleLoanAmountChange = (event) => {
+    const newLoanAmount = parseFloat(event.target.value) || '';
+    setValue('loanAmount', newLoanAmount);
+    const paymentMode = watch('paymentMode');
+
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', newLoanAmount);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    }
+  };
   const handleDeleteInterest = async (id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment/${id}`);
@@ -297,6 +322,10 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
               req='red'
               options={['Cash', 'Bank', 'Both']}
               getOptionLabel={(option) => option}
+              onChange={(event, value) => {
+                setValue('paymentMode', value);
+                handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+              }}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
                   {option}
@@ -305,15 +334,22 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             />
 
             {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
-              <RHFTextField
+              <Controller
                 name='cashAmount'
-                label='Cash Amount'
-                req='red'
-                onKeyPress={(e) => {
-                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                }}
+                control={control}
+                render={({ field }) => (
+                  <RHFTextField
+                    {...field}
+                    label='Cash Amount'
+                    req={'red'}
+                    type='number'
+                    inputProps={{ min: 0 }}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleCashAmountChange(e);
+                    }}
+                  />
+                )}
               />
             ) : null}
 
@@ -333,15 +369,19 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
-                <RHFTextField
+                <Controller
                   name='bankAmount'
-                  label='Bank Amount'
-                  req='red'
-                  onKeyPress={(e) => {
-                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                      e.preventDefault();
-                    }
-                  }}
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label='Bank Amount'
+                      req={'red'}
+                      disabled={watch('paymentMode') === 'Bank' ? false : true}
+                      type='number'
+                      inputProps={{ min: 0 }}
+                    />
+                  )}
                 />
               </>
             )}
@@ -386,7 +426,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                   <TableCell>{fDate(row.from)}</TableCell>
                   <TableCell>{fDate(row.to)}</TableCell>
                   <TableCell>{row.loan.loanAmount}</TableCell>
-                  <TableCell>{row.loan.scheme.interestRate}</TableCell>
+                  <TableCell>{row.loan.scheme.interestRate > 1.5 ? 1.5 : row.loan.scheme.interestRate}</TableCell>
                   <TableCell>{row.loan.consultingCharge}</TableCell>
                   <TableCell>{row.interestAmount}</TableCell>
                   <TableCell>{row.penalty}</TableCell>

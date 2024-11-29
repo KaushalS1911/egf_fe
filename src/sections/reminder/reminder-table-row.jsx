@@ -15,23 +15,27 @@ import { useRouter } from '../../routes/hooks';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
+import { Box, Dialog, DialogActions } from '@mui/material';
+import { PDFViewer } from '@react-pdf/renderer';
+import Notice from './view/notice';
 
-export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index , view, mutate}) {
+export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index , mutate}) {
   const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate } = row;
   const [open, setOpen] = useState(false);
+  const [noticeData, setNoticeData] = useState(null);
   const confirm = useBoolean();
   const popover = usePopover();
   const recallingPopover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const router = useRouter();
+  const view = useBoolean();
 
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   };
-
+console.log("noticeData ",noticeData)
   return (
     <>
       <TableRow hover selected={selected}>
@@ -78,7 +82,10 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
           Details
         </MenuItem>
         <MenuItem
-          onClick={view.onTrue}
+          onClick={() => {
+            view.onTrue();
+            setNoticeData(row);
+          }}
         >
           <Iconify icon='carbon:view-filled' />
           View
@@ -105,6 +112,25 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
           </Button>
         }
       />
+      <Dialog fullScreen open={view.value}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <Notice noticeData={noticeData}/>
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

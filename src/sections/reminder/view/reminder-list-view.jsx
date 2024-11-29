@@ -66,7 +66,7 @@ export default function ReminderListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
-  const view = useBoolean();
+
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -238,7 +238,6 @@ export default function ReminderListView() {
                             <ReminderTableRow
                               index={index + 1}
                               key={row._id}
-                              view={view}
                               row={row}
                               handleClick={() => handleClick(row._id)}
                               mutate={mutate}
@@ -271,25 +270,7 @@ export default function ReminderListView() {
           />
         </Card>
       </Container>
-      <Dialog fullScreen open={view.value}>
-        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-          <DialogActions
-            sx={{
-              p: 1.5,
-            }}
-          >
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
-              Close
-            </Button>
-          </DialogActions>
 
-          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <Notice />
-            </PDFViewer>
-          </Box>
-        </Box>
-      </Dialog>
     </>
   );
 };
