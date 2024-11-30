@@ -15,15 +15,20 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Checkbox from '@mui/material/Checkbox';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function ReminderTableToolbar({ filters, onFilters, roleOptions, dateError }) {
+export default function ReminderTableToolbar({ filters, onFilters, roleOptions, dateError, exportToExcel }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  const [day, setDay] = useState("Next Week");
-  const days = ["Next Day","Next Week","Next Month"]
+  const [day, setDay] = useState('Next Week');
+  const days = ['Next Day', 'Next Week', 'Next Month'];
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   const handleFilterName = useCallback(
     (event) => {
@@ -31,17 +36,16 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
     },
     [onFilters],
   );
+
   const dayManage = (day) => {
     const currentDate = new Date();
-    const nextDay = new Date(new Date().setDate(new Date().getDate() + 1 ));
+    const nextDay = new Date(new Date().setDate(new Date().getDate() + 1));
     const nextWeek = new Date(new Date().setDate(new Date().getDate() + 7));
     const nextMonth = new Date(new Date().setDate(new Date().getDate() + 31));
 
-
     if (day === 'Next Day') {
-      onFilters('startDay', currentDate );
+      onFilters('startDay', currentDate);
       onFilters('endDay', nextDay);
-
     }
     if (day === 'Next Week') {
       onFilters('startDay', currentDate);
@@ -51,13 +55,15 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
       onFilters('startDay', currentDate);
       onFilters('endDay', nextMonth);
     }
-   };
+  };
+
   useEffect(() => {
     if (day !== '') {
       dayManage(day);
     }
 
-  },[day])
+  }, [day]);
+
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -94,8 +100,6 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
 
   const handleFilterDays = useCallback(
     (event) => {
-
-
       setDay(event.target.value);
     },
     [onFilters],
@@ -123,7 +127,7 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -147,7 +151,7 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
             <Select
               value={day}
               onChange={handleFilterDays}
-              input={<OutlinedInput label="Filter by Day"  sx={{ height: '40px' }}/>}
+              input={<OutlinedInput label='Filter by Day' sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -190,14 +194,14 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
             }}
             sx={{
               maxWidth: { md: 200 },
-              "label": {
+              'label': {
                 mt: -0.8,
-                fontSize: "14px",
+                fontSize: '14px',
               },
-              "& .MuiInputLabel-shrink": {
+              '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              "input": { height: 7 },
+              'input': { height: 7 },
             }}
           />
           <DatePicker
@@ -220,14 +224,14 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
-              "label": {
+              'label': {
                 mt: -0.8,
-                fontSize: "14px",
+                fontSize: '14px',
               },
-              "& .MuiInputLabel-shrink": {
+              '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              "input": { height: 7 },
+              'input': { height: 7 },
             }}
           />
           <IconButton onClick={popover.onOpen}>
@@ -240,22 +244,33 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ant-design:file-pdf-filled' />
-            PDF
-          </MenuItem>
+          {getResponsibilityValue('print_reminder_detail', configs, user) && (<>    <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='solar:printer-minimalistic-bold' />
+              Print
+            </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon='ant-design:file-pdf-filled' />
+                PDF
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                  exportToExcel();
+                }}
+              >
+                <Iconify icon='icon-park-outline:excel' />
+                Export To Excel
+              </MenuItem>
+            </>
+          )}
           <MenuItem
             onClick={() => {
               popover.onClose();

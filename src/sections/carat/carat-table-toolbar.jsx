@@ -15,6 +15,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +28,10 @@ export default function CaratTableToolbar({
                                             //
                                             roleOptions,
                                           }) {
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const popover = usePopover();
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -74,7 +80,7 @@ export default function CaratTableToolbar({
         arrow='right-top'
         sx={{ width: 'auto' }}
       >
-        <MenuItem
+        {getResponsibilityValue('print_carat_detail', configs, user) && (<>   <MenuItem
           onClick={() => {
             popover.onClose();
           }}
@@ -82,14 +88,22 @@ export default function CaratTableToolbar({
           <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='ant-design:file-pdf-filled' />
-          PDF
-        </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ant-design:file-pdf-filled' />
+            PDF
+          </MenuItem>
+          <MenuItem
+          >
+            <RHFExportExcel
+              data={carats}
+              fileName='InquiryData'
+              sheetName='InquiryDetails'
+            />
+          </MenuItem></>)}
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -97,14 +111,6 @@ export default function CaratTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
-        </MenuItem>
-        <MenuItem
-        >
-          <RHFExportExcel
-            data={carats}
-            fileName='InquiryData'
-            sheetName='InquiryDetails'
-          />
         </MenuItem>
       </CustomPopover>
     </>

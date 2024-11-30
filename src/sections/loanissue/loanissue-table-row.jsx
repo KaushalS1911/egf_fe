@@ -13,6 +13,9 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { RouterLink } from '../../routes/components';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
 
 
 // ----------------------------------------------------------------------
@@ -21,6 +24,8 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount } = row;
   const confirm = useBoolean();
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   return (
     <>
@@ -29,35 +34,35 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-        <Button
+        {getResponsibilityValue('create_disburse', configs, user) && <Button
           onClick={handleClick}
           sx={{ my: 2, textWrap: 'nowrap', fontSize: '11px' }}
           variant='outlined'
-          disabled={row?.status === 'Disbursed'}
+          disabled={row?.status !== 'Issued'}
           startIcon={<Iconify sx={{ width: '15px' }} icon='mingcute:add-line' />}
         >
           Loan Disburse
-        </Button>
+        </Button> || '-'}
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -66,9 +71,8 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
-
-        <MenuItem
+        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
@@ -76,9 +80,8 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

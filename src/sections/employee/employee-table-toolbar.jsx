@@ -12,11 +12,16 @@ import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { useGetConfigs } from '../../api/config';
+import { useAuthContext } from '../../auth/hooks';
+import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableToolbar({ filters, onFilters ,employees}) {
+export default function EmployeeTableToolbar({ filters, onFilters, employees }) {
   const popover = usePopover();
+  const { configs } = useGetConfigs();
+  const { user } = useAuthContext();
 
   const handleFilterName = useCallback(
     (event) => {
@@ -47,7 +52,7 @@ export default function EmployeeTableToolbar({ filters, onFilters ,employees}) {
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
 
             fullWidth
             value={filters.userName}
@@ -71,7 +76,7 @@ export default function EmployeeTableToolbar({ filters, onFilters ,employees}) {
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          <MenuItem
+          {getResponsibilityValue('print_employee_detail', configs, user) && (<>   <MenuItem
             onClick={() => {
               popover.onClose();
             }}
@@ -79,14 +84,22 @@ export default function EmployeeTableToolbar({ filters, onFilters ,employees}) {
             <Iconify icon='solar:printer-minimalistic-bold' />
             Print
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ant-design:file-pdf-filled' />
-            PDF
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='ant-design:file-pdf-filled' />
+              PDF
+            </MenuItem>
+            <MenuItem
+            >
+              <RHFExportExcel
+                data={employees}
+                fileName='EmployeeData'
+                sheetName='EmployeeDetails'
+              />
+            </MenuItem></>)}
           <MenuItem
             onClick={() => {
               popover.onClose();
@@ -94,14 +107,6 @@ export default function EmployeeTableToolbar({ filters, onFilters ,employees}) {
           >
             <Iconify icon='ic:round-whatsapp' />
             whatsapp share
-          </MenuItem>
-          <MenuItem
-          >
-            <RHFExportExcel
-              data={employees}
-              fileName='EmployeeData'
-              sheetName='EmployeeDetails'
-            />
           </MenuItem>
         </CustomPopover>
       </Stack>

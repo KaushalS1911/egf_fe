@@ -64,7 +64,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   });
 
   const defaultValues = {
-    date: null,
+    date: new Date(),
     amountPaid: '',
     remark: '',
     paymentMode: '',
@@ -129,8 +129,8 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       };
 
       const response = await axios(config);
-      mutate();
       refetchPartPayment();
+      mutate();
       reset();
       enqueueSnackbar(response?.data.message);
     } catch (error) {
@@ -147,11 +147,44 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`);
       refetchPartPayment();
+      mutate();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
     }
   };
+  const handleCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || '';
+    const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
+
+    if (newCashAmount > currentLoanAmount) {
+      setValue('cashAmount', currentLoanAmount);
+      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', { variant: 'warning' });
+    } else {
+      setValue('cashAmount', newCashAmount);
+    }
+    if (watch('paymentMode') === 'Both') {
+      const calculatedBankAmount = currentLoanAmount - newCashAmount;
+      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
+  const handleLoanAmountChange = (event) => {
+    const newLoanAmount = parseFloat(event.target.value) || '';
+    setValue('loanAmount', newLoanAmount);
+    const paymentMode = watch('paymentMode');
+
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', newLoanAmount);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    }
+  };
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -213,6 +246,10 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               req='red'
               options={['Cash', 'Bank', 'Both']}
               getOptionLabel={(option) => option}
+              onChange={(event, value) => {
+                setValue('paymentMode', value);
+                handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+              }}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
                   {option}
@@ -225,11 +262,23 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
           {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
-                <RHFTextField name='cashAmount' label='Cash Amount' req='red' fullWidth onKeyPress={(e) => {
-                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                }} />
+                <Controller
+                  name='cashAmount'
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label='Cash Amount'
+                      req={'red'}
+                      type='number'
+                      inputProps={{ min: 0 }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleCashAmountChange(e);
+                      }}
+                    />
+                  )}
+                />
               </Grid>
             </Grid>
           )}
@@ -254,11 +303,20 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <RHFTextField name='bankAmount' label='Bank Amount' req='red' fullWidth onKeyPress={(e) => {
-                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                }} />
+                <Controller
+                  name='bankAmount'
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label='Bank Amount'
+                      req={'red'}
+                      disabled={watch('paymentMode') === 'Bank' ? false : true}
+                      type='number'
+                      inputProps={{ min: 0 }}
+                    />
+                  )}
+                />
               </Grid>
             </Grid>
           )}

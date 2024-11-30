@@ -8,14 +8,10 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -32,8 +28,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
-
 import CaratTableToolbar from '../carat-table-toolbar';
 import CaratTableFiltersResult from '../carat-table-filters-result';
 import CaratTableRow from '../carat-table-row';
@@ -46,6 +40,8 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetCarat } from '../../../api/carat';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
@@ -62,7 +58,6 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ];
 
-
 const defaultFilters = {
   name: '',
   isActive: 'all',
@@ -71,23 +66,16 @@ const defaultFilters = {
 
 export default function CaratListView() {
   const { enqueueSnackbar } = useSnackbar();
-
   const { user } = useAuthContext();
-
+  const { configs } = useGetConfigs();
+  ;
   const table = useTable();
-
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
   const { carat, mutate, caratLoading } = useGetCarat();
-
   const [tableData, setTableData] = useState(carat);
-
   const [filters, setFilters] = useState(defaultFilters);
-
 
   const dataFiltered = applyFilter({
     inputData: carat,
@@ -101,10 +89,9 @@ export default function CaratListView() {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
   const
     handleFilters = useCallback(
       (name, value) => {
@@ -167,9 +154,9 @@ export default function CaratListView() {
   );
   const carats = carat.map((item) => ({
     Carat: item.name,
-    'Carat (%)':item.caratPercentage,
-    Remark:item.remark,
-    Status:item.isActive === true ? 'Active' : 'inActive',
+    'Carat (%)': item.caratPercentage,
+    Remark: item.remark,
+    Status: item.isActive === true ? 'Active' : 'inActive',
   }));
   if (caratLoading) {
     return (
@@ -188,14 +175,14 @@ export default function CaratListView() {
           ]}
           action={
             <Box>
-              <Button
+              {getResponsibilityValue('create_carat', configs, user) && <Button
                 component={RouterLink}
                 href={paths.dashboard.carat.new}
                 variant='contained'
                 startIcon={<Iconify icon='mingcute:add-line' />}
               >
                 Add Carat
-              </Button>
+              </Button>}
             </Box>
           }
           sx={{
@@ -357,7 +344,10 @@ export default function CaratListView() {
 };
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
+function applyFilter({
+                       inputData, comparator, filters,
+                     },
+) {
   const { isActive, name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);

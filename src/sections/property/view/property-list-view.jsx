@@ -8,14 +8,10 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -32,9 +28,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
-
-import { isAfter, isBetween } from '../../../utils/format-time';
 import PropertyTableToolbar from '../property-table-toolbar';
 import PropertyTableFiltersResult from '../property-table-filters-result';
 import PropertyTableRow from '../property-table-row';
@@ -47,6 +40,8 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetAllProperty } from '../../../api/property';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
@@ -64,7 +59,6 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ];
 
-
 const defaultFilters = {
   name: '',
   isActive: 'all',
@@ -73,22 +67,15 @@ const defaultFilters = {
 
 export default function PropertyListView() {
   const { enqueueSnackbar } = useSnackbar();
-
   const { user } = useAuthContext();
   const table = useTable();
-
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
   const { property, mutate, propertyLoading } = useGetAllProperty();
-
   const [tableData, setTableData] = useState(property);
-
   const [filters, setFilters] = useState(defaultFilters);
-
+  const { configs } = useGetConfigs();
 
   const dataFiltered = applyFilter({
     inputData: property,
@@ -102,10 +89,9 @@ export default function PropertyListView() {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
   const
     handleFilters = useCallback(
       (name, value) => {
@@ -122,6 +108,7 @@ export default function PropertyListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } });
@@ -130,18 +117,18 @@ export default function PropertyListView() {
       enqueueSnackbar(res.data.message);
     } catch (error) {
       enqueueSnackbar('Failed to Delete Property');
-
     }
   };
+
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
       setTableData(deleteRow);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
+
   const handleDeleteRows = useCallback(() => {
     const deleteRows = property.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
@@ -175,11 +162,13 @@ export default function PropertyListView() {
     Remark: item.remark,
     Status: item.isActive === true ? 'Active' : 'inActive',
   }));
+
   if (propertyLoading) {
     return (
       <LoadingScreen />
     );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -192,7 +181,7 @@ export default function PropertyListView() {
           ]}
           action={
             <Box>
-              <Button
+              {getResponsibilityValue('create_property', configs, user) && <Button
                 component={RouterLink}
                 href={paths.dashboard.property.new}
                 variant='contained'
@@ -200,7 +189,7 @@ export default function PropertyListView() {
               >
                 Add Property
               </Button>
-            </Box>
+              }          </Box>
           }
           sx={{
             mb: { xs: 3, md: 5 },

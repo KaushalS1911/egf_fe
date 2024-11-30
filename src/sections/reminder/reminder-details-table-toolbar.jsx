@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
-
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -12,9 +11,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // ----------------------------------------------------------------------
 
 export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOptions, dateError }) {
-  console.log(filters);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -28,9 +27,7 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
         onFilters('startDate', null);
         return;
       }
-
       const date = moment(newValue);
-
       if (date.isValid()) {
         onFilters('startDate', date.toDate());
       } else {
@@ -40,15 +37,14 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
     },
     [onFilters],
   );
+
   const handleFilterEndDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
         onFilters('endDate', null);
         return;
       }
-
       const date = moment(newValue);
-
       if (date.isValid()) {
         onFilters('endDate', date.toDate());
       } else {
@@ -81,7 +77,7 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -109,14 +105,14 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
             }}
             sx={{
               maxWidth: { md: 200 },
-              "label": {
+              'label': {
                 mt: -0.8,
-                fontSize: "14px",
+                fontSize: '14px',
               },
-              "& .MuiInputLabel-shrink": {
+              '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              "input": { height: 7 },
+              'input': { height: 7 },
             }}
           />
           <DatePicker
@@ -139,14 +135,14 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
-              "label": {
+              'label': {
                 mt: -0.8,
-                fontSize: "14px",
+                fontSize: '14px',
               },
-              "& .MuiInputLabel-shrink": {
+              '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              "input": { height: 7 },
+              'input': { height: 7 },
             }}
           />
         </Stack>

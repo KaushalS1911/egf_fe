@@ -8,11 +8,9 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -29,7 +27,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetLoanissue } from '../../../api/loanissue';
@@ -41,9 +38,9 @@ import { Dialog, DialogActions } from '@mui/material';
 import { Box } from '@mui/system';
 import { PDFViewer } from '@react-pdf/renderer';
 import LetterOfAuthority from '../letter-of-authority';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
-
 
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan no.' },
@@ -59,6 +56,7 @@ const TABLE_HEAD = [
 const defaultFilters = {
   username: '',
 };
+
 // ----------------------------------------------------------------------
 
 export default function DisburseListView() {
@@ -71,8 +69,6 @@ export default function DisburseListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(Loanissue);
   const [filters, setFilters] = useState(defaultFilters);
-  const view = useBoolean();
-
 
   const dataFiltered = applyFilter({
     inputData: Loanissue,
@@ -144,17 +140,20 @@ export default function DisburseListView() {
     },
     [router],
   );
+
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
     [router],
   );
+
   if (LoanissueLoading) {
     return (
       <LoadingScreen />
     );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -230,7 +229,6 @@ export default function DisburseListView() {
                       <DisburseTableRow
                         key={row._id}
                         row={row}
-                        view={view}
                         handleClick={() => handleClick(row._id)}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}

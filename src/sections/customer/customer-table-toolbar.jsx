@@ -15,6 +15,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -22,9 +25,11 @@ export default function CustomerTableToolbar({
                                                filters,
                                                onFilters,
                                                roleOptions,
-  customers
+                                               customers,
                                              }) {
   const popover = usePopover();
+  const { configs } = useGetConfigs();
+  const { user } = useAuthContext();
 
   const handleFilterName = useCallback(
     (event) => {
@@ -88,7 +93,7 @@ export default function CustomerTableToolbar({
 
         <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            sx={{"input": { height: 7 },}}
+            sx={{ 'input': { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -113,24 +118,31 @@ export default function CustomerTableToolbar({
         arrow='right-top'
         sx={{ width: 'auto' }}
       >
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:printer-minimalistic-bold' />
-          Print
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='ant-design:file-pdf-filled' />
-          PDF
-        </MenuItem>
-
+        {getResponsibilityValue('print_customer', configs, user) && (<>   <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:printer-minimalistic-bold' />
+            Print
+          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='ant-design:file-pdf-filled' />
+              PDF
+            </MenuItem>
+            <MenuItem>
+              <RHFExportExcel
+                data={customers}
+                fileName='CustomerData'
+                sheetName='CustomerDetails'
+              />
+            </MenuItem>
+          </>
+        )}
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -138,15 +150,7 @@ export default function CustomerTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
-        </MenuItem>  <MenuItem
-      >
-        <RHFExportExcel
-          data={customers}
-          fileName='CustomerData'
-          sheetName='CustomerDetails'
-        />
-      </MenuItem>
-
+        </MenuItem>
       </CustomPopover>
     </>
   );

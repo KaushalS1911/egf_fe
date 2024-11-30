@@ -8,13 +8,10 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -31,19 +28,18 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
 import LoanissueTableRow from '../loanissue-table-row';
 import LoanissueTableToolbar from '../loanissue-table-toolbar';
 import LoanissueTableFiltersResult from '../loanissue-table-filters-result';
-import { useGetEmployee } from 'src/api/employee';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetLoanissue } from '../../../api/loanissue';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { fDate } from '../../../utils/format-time';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
-
 
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan No.' },
@@ -60,12 +56,14 @@ const TABLE_HEAD = [
 const defaultFilters = {
   username: '',
 };
+
 // ----------------------------------------------------------------------
 
 export default function LoanissueListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
@@ -143,40 +141,44 @@ export default function LoanissueListView() {
     },
     [router],
   );
+
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
     [router],
   );
-  const loans = Loanissue.map((item)=>({
-    'Loan No':item.loanNo,
-    'Customer Name':`${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-    'Contact':item.customer.contact,
-    'OTP Contact':item.customer.otpContact,
-    Email:item.customer.email,
+
+  const loans = Loanissue.map((item) => ({
+    'Loan No': item.loanNo,
+    'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
+    'Contact': item.customer.contact,
+    'OTP Contact': item.customer.otpContact,
+    Email: item.customer.email,
     'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-    'Issue date':item.issueDate,
-    'Scheme':item.scheme.name,
-    'Rate per gram' : item.scheme.ratePerGram,
-    'Interest rate':item.scheme.interestRate,
-    valuation:item.scheme.valuation,
-    'Interest period':item.scheme.interestPeriod,
-    'Renewal time':item.scheme.renewalTime,
-    'min loan time':item.scheme.minLoanTime,
-    'Loan amount':item.loanAmount,
-    'Next nextInstallment date':fDate(item.nextInstallmentDate),
-    'Payment mode':item.paymentMode,
-    'Paying cashAmount':item.payingCashAmount,
-    'Pending cashAmount':item.pendingCashAmount,
-    'Paying bankAmount':item.payingBankAmount,
-    'Pending bankAmount':item.pendingBankAmount,
-  }))
+    'Issue date': item.issueDate,
+    'Scheme': item.scheme.name,
+    'Rate per gram': item.scheme.ratePerGram,
+    'Interest rate': item.scheme.interestRate,
+    valuation: item.scheme.valuation,
+    'Interest period': item.scheme.interestPeriod,
+    'Renewal time': item.scheme.renewalTime,
+    'min loan time': item.scheme.minLoanTime,
+    'Loan amount': item.loanAmount,
+    'Next nextInstallment date': fDate(item.nextInstallmentDate),
+    'Payment mode': item.paymentMode,
+    'Paying cashAmount': item.payingCashAmount,
+    'Pending cashAmount': item.pendingCashAmount,
+    'Paying bankAmount': item.payingBankAmount,
+    'Pending bankAmount': item.pendingBankAmount,
+  }));
+
   if (LoanissueLoading) {
     return (
       <LoadingScreen />
     );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -188,14 +190,14 @@ export default function LoanissueListView() {
             { name: ' List' },
           ]}
           action={
-            <Button
+            getResponsibilityValue('create_loanIssue', configs, user) && (<><Button
               component={RouterLink}
               href={paths.dashboard.loanissue.new}
               variant='contained'
               startIcon={<Iconify icon='mingcute:add-line' />}
             >
               Add Loan issue
-            </Button>
+            </Button></>)
           }
           sx={{
             mb: { xs: 3, md: 5 },

@@ -12,14 +12,27 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ReminderRecallingForm from './reminder-recalling-form';
 import { useState } from 'react';
 import { fDate } from '../../utils/format-time';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
-export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, loanInterest }) {
-  console.log(loanInterest);
+export default function ReminderDetailsTableRow({
+                                                  row,
+                                                  selected,
+                                                  onEditRow,
+                                                  onSelectRow,
+                                                  onDeleteRow,
+                                                  loanInterest,
+                                                  mutate,
+                                                }) {
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const { loan, createdAt, nextRecallingDate, remark } = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
   const popover = usePopover();
   const recallingPopover = usePopover();
+
   return (
     <>
       <TableRow hover selected={selected}
@@ -33,27 +46,25 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
         <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loan.loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextRecallingDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loan.customer.firstName + ' ' + loan.customer.middleName + ' ' + loan.customer.lastName}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}>{loan.customer.firstName + ' ' + loan.customer.middleName + ' ' + loan.customer.lastName}</TableCell>
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
-        <MenuItem
+        {getResponsibilityValue('update_reminder', configs, user) && <MenuItem
           onClick={() => {
             popover.onClose();
             recallingPopover.onOpen(ReminderRecallingForm);
@@ -62,8 +73,8 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
-        <MenuItem
+        </MenuItem>}
+        {getResponsibilityValue('delete_reminder', configs, user) && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -72,9 +83,8 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
+        </MenuItem>}
       </CustomPopover>
-
       <CustomPopover
         open={recallingPopover.open}
         onClose={recallingPopover.onClose}
@@ -83,7 +93,7 @@ export default function ReminderDetailsTableRow({ row, selected, onEditRow, onSe
       >
         <ReminderRecallingForm onClose={recallingPopover.onClose} />
       </CustomPopover>
-      <ReminderRecallingForm currentReminderDetails={row} open={open} setOpen={() => setOpen(false)} />
+      <ReminderRecallingForm currentReminderDetails={row} open={open} setOpen={() => setOpen(false)} mutate={mutate} />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

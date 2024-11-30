@@ -17,6 +17,10 @@ import { Box } from '@mui/system';
 import { Dialog, DialogActions } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import LetterOfAuthority from './letter-of-authority';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission';
+
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +35,8 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
     setSelectedRow(row);
     view.onTrue();
   };
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   return (
     <>
@@ -67,7 +73,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {getResponsibilityValue('delete_disburse', configs, user) && <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -76,9 +82,9 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>
+        </MenuItem>}
 
-        <MenuItem
+        {getResponsibilityValue('update_disburse', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
@@ -86,7 +92,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         >
           <Iconify icon='solar:pen-bold' />
           Edit
-        </MenuItem>
+        </MenuItem>}
 
         <MenuItem
           onClick={() => {

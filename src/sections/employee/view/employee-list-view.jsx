@@ -40,6 +40,8 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { fDate } from '../../../utils/format-time';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
@@ -60,19 +62,15 @@ const defaultFilters = {
 
 export default function EmployeeListView() {
   const { enqueueSnackbar } = useSnackbar();
-
   const table = useTable();
   const { user } = useAuthContext();
   const { employee, mutate, employeeLoading } = useGetEmployee();
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
   const [tableData, setTableData] = useState(employee);
-
   const [filters, setFilters] = useState(defaultFilters);
+  const { configs } = useGetConfigs();
 
   const dataFiltered = applyFilter({
     inputData: employee,
@@ -157,14 +155,14 @@ export default function EmployeeListView() {
     'Aadhar card': item.aadharCard,
     'Pan card': item.panCard,
     'Driving license': item.drivingLicense,
-    'Voter id':item.voterCard,
+    'Voter id': item.voterCard,
     role: item.user.role,
     'Joining Date:': fDate(item.joiningDate),
-    'Reporting to':`${item.reportingTo.firstName} ${item.reportingTo.middleName} ${item.reportingTo.lastName}`,
+    'Reporting to': `${item.reportingTo.firstName} ${item.reportingTo.middleName} ${item.reportingTo.lastName}`,
     Branch: item.user.branch.name,
     'Permanent address': `${item.permanentAddress.street} ${item.permanentAddress.landmark} ${item.permanentAddress.city} , ${item.permanentAddress.state} ${item.permanentAddress.country} ${item.permanentAddress.zipcode}`,
-    Remark:item.remark,
-    Status:item.status
+    Remark: item.remark,
+    Status: item.status,
 
 
   }));
@@ -184,14 +182,14 @@ export default function EmployeeListView() {
             { name: 'List' },
           ]}
           action={
-            <Button
+            getResponsibilityValue('create_employee', configs, user) && (<Button
               component={RouterLink}
               href={paths.dashboard.employee.new}
               variant='contained'
               startIcon={<Iconify icon='mingcute:add-line' />}
             >
               Add Employee
-            </Button>
+            </Button>)
           }
           sx={{
             mb: { xs: 3, md: 5 },
@@ -262,6 +260,7 @@ export default function EmployeeListView() {
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row.user._id)}
                         onEditRow={() => handleEditRow(row.user._id)}
+                        loginuser={user}
                       />
                     ))}
 

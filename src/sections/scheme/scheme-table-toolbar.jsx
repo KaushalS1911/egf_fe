@@ -15,6 +15,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { getResponsibilityValue } from '../../permission/permission';
+import { useAuthContext } from '../../auth/hooks';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -22,10 +25,11 @@ export default function SchemeTableToolbar({
                                              filters,
                                              onFilters,
                                              schemes,
-                                             //
                                              roleOptions,
                                            }) {
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   const handleFilterName = useCallback(
     (event) => {
@@ -74,22 +78,31 @@ export default function SchemeTableToolbar({
         arrow='right-top'
         sx={{ width: 'auto' }}
       >
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:printer-minimalistic-bold' />
-          Print
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='ant-design:file-pdf-filled' />
-          PDF
-        </MenuItem>
+        {getResponsibilityValue('print_scheme_detail', configs, user) && (<>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:printer-minimalistic-bold' />
+            Print
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='ant-design:file-pdf-filled' />
+            PDF
+          </MenuItem>
+          <MenuItem
+          >
+            <RHFExportExcel
+              data={schemes}
+              fileName='SchemeData'
+              sheetName='SchemeDetails'
+            />
+          </MenuItem></>)}
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -97,14 +110,6 @@ export default function SchemeTableToolbar({
         >
           <Iconify icon='ic:round-whatsapp' />
           whatsapp share
-        </MenuItem>
-        <MenuItem
-        >
-          <RHFExportExcel
-            data={schemes}
-            fileName='SchemeData'
-            sheetName='SchemeDetails'
-          />
         </MenuItem>
       </CustomPopover>
     </>

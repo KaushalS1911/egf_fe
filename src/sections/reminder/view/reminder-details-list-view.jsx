@@ -44,73 +44,65 @@ const TABLE_HEAD = [
   { id: 'entryDate', label: 'Entry date' },
   { id: 'nextFollowUpDate.', label: 'Next follow up date' },
   { id: 'remarks', label: 'Remarks' },
-  { id: 'user', label: 'User'},
-  { id: ''},
+  { id: 'user', label: 'User' },
+  { id: '' },
 ];
 
 const defaultFilters = {
   name: '',
   startDate: null,
   endDate: null,
-}
+};
 
 // ----------------------------------------------------------------------
 
 export default function ReminderDetailsListView() {
-  const {reminder,mutate,reminderLoading} = useGetReminder()
+  const { reminder, mutate, reminderLoading } = useGetReminder();
   const { user } = useAuthContext();
-  const {id} = useParams()
+  const { id } = useParams();
   const reminderDetails = reminder.filter((item) => item.loan._id === id);
-  const { loanInterest} = useGetAllInterest(id);
-
+  const { loanInterest } = useGetAllInterest(id);
   const { enqueueSnackbar } = useSnackbar();
-
   const table = useTable();
-
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
-
   const [tableData, setTableData] = useState(reminderDetails);
-
   const [filters, setFilters] = useState(defaultFilters);
-
 
   const dataFiltered = applyFilter({
     inputData: reminderDetails,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
   const dateError = isAfter(filters.startDate, filters.endDate);
+
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
   const
     handleFilters = useCallback(
-    (name, value) => {
-      console.log("name",value)
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table],
-  );
+      (name, value) => {
+        table.onResetPage();
+        setFilters((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      },
+      [table],
+    );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`, {
@@ -120,22 +112,23 @@ export default function ReminderDetailsListView() {
       confirm.onFalse();
       enqueueSnackbar(res.data.message);
     } catch (err) {
-      enqueueSnackbar("Failed to delete Scheme");
+      enqueueSnackbar('Failed to delete Scheme');
     }
   };
+
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
+      handleDelete([id]);
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
+
   const handleDeleteRows = useCallback(() => {
     const deleteRows = reminder.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-     handleDelete(deleteIds)
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds);
     setTableData(deleteRows);
-
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
@@ -148,10 +141,11 @@ export default function ReminderDetailsListView() {
     },
     [handleFilters],
   );
-  if(reminderLoading){
+
+  if (reminderLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
 
   return (
@@ -161,7 +155,7 @@ export default function ReminderDetailsListView() {
           heading='Reminder-Details'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reminder Details', href: paths.dashboard.reminder.list},
+            { name: 'Reminder Details', href: paths.dashboard.reminder.list },
             { name: 'List' },
           ]}
 
@@ -173,7 +167,7 @@ export default function ReminderDetailsListView() {
           <ReminderDetailsTableToolbar
             filters={filters} onFilters={handleFilters}
           />
-         {canReset && (
+          {canReset && (
             <ReminderDetailsTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
@@ -219,27 +213,28 @@ export default function ReminderDetailsListView() {
                   }
                 />
                 <TableBody>
-                    <>      {dataFiltered
-                      .slice(
-                        table.page * table.rowsPerPage,
-                        table.page * table.rowsPerPage + table.rowsPerPage,
-                      )
-                      .map((row) => (
-                        <ReminderDetailsTableRow
-                          key={row._id}
-                          row={row}
-                          loanInterest={loanInterest}
-                          selected={table.selected.includes(row._id)}
-                          onSelectRow={() => table.onSelectRow(row._id)}
-                          onDeleteRow={() => handleDeleteRow(row._id)}
-                          onEditRow={() => handleEditRow(row._id)}
-                        />
-                      ))}
-                      <TableEmptyRows
-                        height={denseHeight}
-                        emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                  <>      {dataFiltered
+                    .slice(
+                      table.page * table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage,
+                    )
+                    .map((row) => (
+                      <ReminderDetailsTableRow
+                        key={row._id}
+                        row={row}
+                        mutate={mutate}
+                        loanInterest={loanInterest}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
-                    </>
+                    ))}
+                    <TableEmptyRows
+                      height={denseHeight}
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                    />
+                  </>
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
@@ -283,25 +278,29 @@ export default function ReminderDetailsListView() {
 };
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters ,dateError}) {
-  const { startDate, endDate,name} = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { startDate, endDate, name } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
+
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+
   inputData = stabilizedThis.map((el) => el[0]);
+
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>
         rem.loan.customer.firstName.toLowerCase().includes(name.toLowerCase()),
     );
   }
-    if (!dateError && startDate && endDate) {
-      inputData = inputData.filter((order) =>
-        isBetween(new Date(order.nextRecallingDate), startDate, endDate),
-      );
+
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((order) =>
+      isBetween(new Date(order.nextRecallingDate), startDate, endDate),
+    );
   }
   return inputData;
 }
