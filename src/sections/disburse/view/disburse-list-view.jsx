@@ -34,9 +34,14 @@ import DisburseTableRow from '../disburse-table-row';
 import DisburseTableToolbar from '../disburse-table-toolbar';
 import DisburseTableFiltersResult from '../disburse-table-filters-result';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { Dialog, DialogActions } from '@mui/material';
+import { Box } from '@mui/system';
+import { PDFViewer } from '@react-pdf/renderer';
+import LetterOfAuthority from '../letter-of-authority';
 import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
+
 
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan no.' },
@@ -58,6 +63,7 @@ const defaultFilters = {
 export default function DisburseListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
+  const { user } = useAuthContext();
   const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false,false,true);
   const settings = useSettingsContext();
   const router = useRouter();
@@ -142,7 +148,6 @@ export default function DisburseListView() {
     },
     [router],
   );
-
   if (LoanissueLoading) {
     return (
       <LoadingScreen />
@@ -275,6 +280,7 @@ export default function DisburseListView() {
             Delete
           </Button>
         }
+
       />
     </>
   );

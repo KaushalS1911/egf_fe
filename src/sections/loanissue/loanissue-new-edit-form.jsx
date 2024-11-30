@@ -42,6 +42,8 @@ import { getCroppedImg } from '../../utils/canvasUtils';
 import { TableHeadCustom, useTable } from '../../components/table';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 // ----------------------------------------------------------------------
 
@@ -66,12 +68,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [schemeId, setSchemeID] = useState();
   const webcamRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [imageSrc, setImageSrc] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [croppedImage, setCroppedImage] = useState(null);
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const { user } = useAuthContext();
@@ -86,6 +85,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [errors, setErrors] = useState({});
   const uuid = uuidv4();
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ unit: '%', width: 50 });
+  const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
 
   useEffect(() => {
@@ -111,6 +115,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     cashAmount: Yup.string().required('Cash Amount is required'),
     approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
+    // property_image: Yup.mixed().required('A property picture is required'),
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
@@ -249,6 +254,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
@@ -338,29 +344,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
-  const showCroppedImage = async () => {
-    try {
-      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-      const croppedUrl = URL.createObjectURL(croppedFile);
-      setCroppedImage(croppedUrl);
-      setValue('property_image', croppedFile);
-      setOpen(false);
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
-  const handleDropSingleFile = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-        setOpen(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -370,12 +354,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
   };
 
-  const handleDeleteImage = () => {
-    setImageSrc(null);
-    setValue('property_image', null, { shouldValidate: true });
-    setOpen(false);
-    setCroppedImage(null);
-  };
 
   useEffect(() => {
     const customer = watch('customer');
@@ -557,7 +535,79 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
     }
   };
+  const handleDropSingleFile = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setFile(file);
+        resetCrop();
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
 
+  const resetCrop = () => {
+    setCrop({ unit: '%', width: 50, aspect: 1 });
+    setCompletedCrop(null);
+  };
+
+    const showCroppedImage = async () => {
+      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+        if (file) {
+          setCroppedImage(URL.createObjectURL(file));
+        }
+        setImageSrc(null);
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      const image = document.getElementById('cropped-image');
+
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+
+      canvas.width = completedCrop.width;
+      canvas.height = completedCrop.height;
+
+      const ctx = canvas.getContext('2d');
+
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        completedCrop.width * scaleX,
+        completedCrop.height * scaleY,
+        0,
+        0,
+        completedCrop.width,
+        completedCrop.height,
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error('Failed to create blob');
+          return;
+        }
+
+        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+        setCroppedImage(URL.createObjectURL(croppedFile));
+        setFile(croppedFile);
+        setValue('property_image', croppedFile);
+        setImageSrc(null);
+      }, 'image/jpeg');
+  };
+
+  const handleDeleteImage = () => {
+    setCroppedImage(null);
+    setFile(null);
+    setImageSrc(null);
+  };
+
+  const handleCancel = () => {
+    setImageSrc(null);
+  };
   const validateField = (fieldName, index, value) => {
     const updatedErrors = { ...errors };
     const schemedata = watch('scheme');
@@ -871,13 +921,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant='subtitle1' component={'span'} sx={{ fontWeight: 600 }}>
+                <Box sx={{display: "flex",justifyContent: "space-between", mb: 2}}>
+                  <Typography variant='subtitle1' component={"span"} sx={{ fontWeight: 600  }}>
                     Property Image
                   </Typography>
-                  <Typography variant='subtitle1' sx={{ display: 'inline-block', fontWeight: 600 }}>
-                    <Iconify icon='ion:camera-sharp' width={24} sx={{ color: 'gray', cursor: 'pointer' }}
-                             onClick={() => setOpen2(true)} />
+                  <Typography variant='subtitle1' sx={{display: "inline-block", fontWeight: 600  }}>
+                    <Iconify icon="ion:camera-sharp" width={24} sx={{color: "gray", cursor: "pointer"}} onClick={() => setOpen2(true)}/>
                   </Typography>
                 </Box>
                 {croppedImage ? (
@@ -886,7 +935,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     maxSize={3145728}
                     file={croppedImage}
                     onDelete={handleDeleteImage}
-                    sx={{ height: '300px', ' .css-1lrddw3': { height: '300px' }, ' .css-16lfxc8': { pb: 0 } }}
+                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
                     onDrop={handleDropSingleFile}
                   />
                 ) : (
@@ -894,57 +943,34 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     name='property_image'
                     maxSize={3145728}
                     onDelete={handleDeleteImage}
-                    sx={{ height: '300px', ' .css-1lrddw3': { height: '300px' }, ' .css-16lfxc8': { pb: 0 } }}
+                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
                     onDrop={handleDropSingleFile}
                   />
                 )}
-                <Dialog open={open} onClose={() => {
-                  setOpen(false);
-                }} maxWidth='sm' fullWidth>
-                  <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
-                    {aspectRatio && (
-                      <Cropper
-                        image={imageSrc}
-                        crop={crop}
-                        zoom={zoom}
-                        rotation={rotation}
-                        aspect={aspectRatio}
-                        onCropChange={setCrop}
-                        onCropComplete={onCropComplete}
-                        onZoomChange={setZoom}
-                        onRotationChange={setRotation}
+                <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
+                  {imageSrc && (
+                    <ReactCrop
+                      crop={crop}
+                      onChange={(newCrop) => setCrop(newCrop)}
+                      onComplete={(newCrop) => setCompletedCrop(newCrop)}
+                      aspect={1} // Aspect ratio for cropping
+                    >
+                      <img
+                        id='cropped-image'
+                        src={imageSrc}
+                        alt='Crop preview'
+                        onLoad={resetCrop} // Reset crop when the image loads
                       />
-                    )}
-                  </Box>
-                  <Box sx={{ padding: 2 }}>
-                    <Box display={'flex'} gap={3}>
-                      <Box width={'50%'}>
-                        <Typography gutterBottom>Zoom</Typography>
-                        <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
-                      </Box>
-                      <Box width={'50%'}>
-                        <Typography gutterBottom>Rotation</Typography>
-                        <Slider value={rotation} min={0} max={360} step={1}
-                                onChange={(e, rotation) => setRotation(rotation)} />
-                      </Box>
-                    </Box>
-                    <Box display='flex' justifyContent='space-between' mt={2}>
-                      <Button onClick={() => {
-                        setOpen(false);
-                        setZoom(1);
-                        setRotation(0);
-                      }} variant='outlined'>
-                        Cancel
-                      </Button>
-                      <Button onClick={() => {
-                        showCroppedImage();
-                        setZoom(1);
-                        setRotation(0);
-                      }} variant='contained' color='primary'>
-                        Save Cropped Image
-                      </Button>
-                    </Box>
-                  </Box>
+                    </ReactCrop>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+                    <Button variant='outlined' onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                    <Button variant='contained' color='primary' onClick={showCroppedImage}>
+                      Save Image
+                    </Button>
+                  </div>
                 </Dialog>
               </CardContent>
             </Card>
@@ -1319,25 +1345,25 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         <DialogTitle>Camera</DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat='image/jpeg'
-            width={'90%'}
-            height={'100%'}
-            videoConstraints={videoConstraints}
-          />
-        </Box>
-        <DialogActions>
-          <Button variant='outlined' onClick={capture}>
-            Capture Photo
-          </Button>
-          <Button variant='contained' onClick={() => setOpen2(false)}>
-            Close Camera
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Webcam
+      audio={false}
+      ref={webcamRef}
+      screenshotFormat="image/jpeg"
+      width={"90%"}
+      height={"100%"}
+      videoConstraints={videoConstraints}
+    />
+    </Box>
+    <DialogActions>
+      <Button variant='outlined' onClick={capture}>
+        Capture Photo
+      </Button>
+      <Button variant='contained'  onClick={() => setOpen2(false)}>
+        Close Camera
+      </Button>
+    </DialogActions>
+  </Dialog>
+  </>
   );
 };
 

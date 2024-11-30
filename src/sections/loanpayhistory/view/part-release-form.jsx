@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
   Typography,
@@ -36,6 +36,8 @@ import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../../utils/canvasUtils';
 import Iconify from '../../../components/iconify';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -44,8 +46,8 @@ const tableHeaders = [
   { id: 'pcs', label: 'PCS' },
   { id: 'totalWeight', label: 'Total Weight' },
   { id: 'netWeight', label: 'Net Weight' },
-  { id: 'grossAmount', label: 'Gross Amount'},
-  { id: 'netAmount', label: 'Net Amount'},
+  { id: 'grossAmount', label: 'Gross Amount' },
+  { id: 'netAmount', label: 'Net Amount' },
 ];
 const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -59,20 +61,16 @@ const TABLE_HEAD = [
 
 function PartReleaseForm({ currentLoan, mutate }) {
   const [selectedRows, setSelectedRows] = useState([]);
-  const [file, setFile] = useState(null);
   const [paymentMode, setPaymentMode] = useState('');
   const [properties, setProperties] = useState([]);
   const { branch } = useGetBranch();
   const { partRelease, refetchPartRelease } = useGetAllPartRelease(currentLoan._id);
-  const [open, setOpen] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [imageSrc, setImageSrc] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ unit: '%', width: 50 });
+  const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
-
   useEffect(() => {
     if (currentLoan.propertyDetails) {
       setProperties(currentLoan.propertyDetails);
@@ -159,12 +157,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
     formState: { isSubmitting },
   } = methods;
 
-  const handleDeleteImage = () => {
-    setImageSrc(null);
-    setFile(null);
-    setOpen(false);
-    setCroppedImage(null);
-  };
   const onSubmit = handleSubmit(async (data) => {
     if (selectedRows.length === 0) {
       enqueueSnackbar('At least one property must be selected', { variant: 'error' });
@@ -246,7 +238,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   });
 
   useEffect(() => {
-    if(watch('paymentMode')){
+    if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
       setValue('paymentMode', watch('paymentMode'));
     }
@@ -257,18 +249,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
-  };
-
-  const showCroppedImage = async () => {
-    try {
-      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-      const croppedUrl = URL.createObjectURL(croppedFile);
-      setCroppedImage(croppedUrl);
-      setFile(croppedFile);
-      setOpen(false);
-    } catch (e) {
-      console.error(e);
-    }
   };
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
@@ -302,18 +282,79 @@ function PartReleaseForm({ currentLoan, mutate }) {
     }
   };
 
+
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         setImageSrc(reader.result);
-        setOpen(true);
+        setFile(file);
+        resetCrop();
       };
       reader.readAsDataURL(file);
     }
   }, []);
 
+  const resetCrop = () => {
+    setCrop({ unit: '%', width: 50, aspect: 1 });
+    setCompletedCrop(null);
+  };
+
+  const showCroppedImage = async () => {
+    if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+      if (file) {
+        setCroppedImage(URL.createObjectURL(file));
+      }
+      setImageSrc(null);
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const image = document.getElementById('cropped-image');
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    canvas.width = completedCrop.width;
+    canvas.height = completedCrop.height;
+
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width,
+      completedCrop.height,
+    );
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('Failed to create blob');
+        return;
+      }
+
+      const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+      setCroppedImage(URL.createObjectURL(croppedFile));
+      setFile(croppedFile);
+      setImageSrc(null);
+    }, 'image/jpeg');
+  };
+
+  const handleDeleteImage = () => {
+    setCroppedImage(null);
+    setFile(null);
+    setImageSrc(null);
+  };
+
+  const handleCancel = () => {
+    setImageSrc(null);
+  };
   const handleCheckboxClick = (index) => {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(index)
@@ -468,8 +509,18 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 </Grid>
 
                 <Grid item xs={12} md={3}>
-
                   {croppedImage ? (
+                    <div>
+                      <Upload
+                        file={croppedImage || (file && URL.createObjectURL(file))} // Show uploaded/cropped image
+                        onDrop={handleDropSingleFile}
+                        onDelete={handleDeleteImage}
+                        sx={{
+                          '.css-16lfxc8': { height: { xs: '150px', md: '200px' } },
+                        }}
+                      />
+                    </div>
+                  ) : (
                     <Upload
                       file={croppedImage}
                       onDrop={handleDropSingleFile}
@@ -478,48 +529,32 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         '.css-16lfxc8': { height: { xs: '150px', md: '200px' } },
                       }}
                     />
-                  ) : (
-                    <Upload
-                      file={file}
-                      onDrop={handleDropSingleFile}
-                      onDelete={handleDeleteImage}
-                      sx={{
-                        '.css-16lfxc8': { height: { xs: '150px', md: '200px' } },
-                      }}
-                    />
                   )}
 
-                  <Dialog open={open} onClose={() => setOpen(false)} maxWidth='sm' fullWidth>
-                    <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
-                      {aspectRatio && (
-                        <Cropper
-                          image={imageSrc}
-                          crop={crop}
-                          zoom={zoom}
-                          rotation={rotation}
-                          aspect={aspectRatio}
-                          onCropChange={setCrop}
-                          onCropComplete={onCropComplete}
-                          onZoomChange={setZoom}
-                          onRotationChange={setRotation}
+                  <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
+                    {imageSrc && (
+                      <ReactCrop
+                        crop={crop}
+                        onChange={(newCrop) => setCrop(newCrop)}
+                        onComplete={(newCrop) => setCompletedCrop(newCrop)}
+                        aspect={1} // Aspect ratio for cropping
+                      >
+                        <img
+                          id='cropped-image'
+                          src={imageSrc}
+                          alt='Crop preview'
+                          onLoad={resetCrop} // Reset crop when the image loads
                         />
-                      )}
-                    </Box>
-                    <Box sx={{ padding: 2 }}>
-                      <Typography gutterBottom>Zoom</Typography>
-                      <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
-                      <Typography gutterBottom>Rotation</Typography>
-                      <Slider value={rotation} min={0} max={360} step={1}
-                              onChange={(e, rotation) => setRotation(rotation)} />
-                      <Box display='flex' justifyContent='space-between' mt={2}>
-                        <Button onClick={() => setOpen(false)} variant='outlined'>
-                          Cancel
-                        </Button>
-                        <Button onClick={showCroppedImage} variant='contained' color='primary'>
-                          Save Cropped Image
-                        </Button>
-                      </Box>
-                    </Box>
+                      </ReactCrop>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+                      <Button variant='outlined' onClick={handleCancel}>
+                        Cancel
+                      </Button>
+                      <Button variant='contained' color='primary' onClick={showCroppedImage}>
+                        Save Image
+                      </Button>
+                    </div>
                   </Dialog>
                 </Grid>
               </Grid>
