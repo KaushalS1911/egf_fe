@@ -26,9 +26,11 @@ import ReminderTableRow from '../reminder-table-row';
 import { fDate, isAfter, isBetween } from '../../../utils/format-time';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
+import Notice from './notice';
+import { PDFViewer } from '@react-pdf/renderer';
+import { Box, Button, Dialog, DialogActions } from '@mui/material';
 import { useGetReminder } from '../../../api/reminder';
 import * as XLSX from 'xlsx';
-import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -64,6 +66,7 @@ export default function ReminderListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
+
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -267,6 +270,7 @@ export default function ReminderListView() {
           />
         </Card>
       </Container>
+
     </>
   );
 };

@@ -58,7 +58,7 @@ const defaultFilters = {
 export default function DisburseListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
-  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue();
+  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false,false,true);
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();

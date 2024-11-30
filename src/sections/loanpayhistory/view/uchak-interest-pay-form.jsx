@@ -52,7 +52,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   });
 
   const defaultValues = {
-    uchakPayDate: null,
+    uchakPayDate: new Date(),
     uchakInterestAmount: null,
     remark: '',
     paymentMode: '',
@@ -129,6 +129,38 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       enqueueSnackbar('Failed to uchak interest pay', { variant: 'error' });
     }
   });
+  const handleCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || '';
+    const currentLoanAmount = parseFloat(watch('uchakInterestAmount')) || '';
+
+    if (newCashAmount > currentLoanAmount) {
+      setValue('cashAmount', currentLoanAmount);
+      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', { variant: 'warning' });
+    } else {
+      setValue('cashAmount', newCashAmount);
+    }
+    if (watch('paymentMode') === 'Both') {
+      const calculatedBankAmount = currentLoanAmount - newCashAmount;
+      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
+  const handleLoanAmountChange = (event) => {
+    const newLoanAmount = parseFloat(event.target.value) || '';
+    setValue('loanAmount', newLoanAmount);
+    const paymentMode = watch('paymentMode');
+
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', newLoanAmount);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    }
+  };
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -158,9 +190,13 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
             <RHFAutocomplete
               name='paymentMode'
               label='Payment Mode'
-              req={'red'}
+              req='red'
               options={['Cash', 'Bank', 'Both']}
               getOptionLabel={(option) => option}
+              onChange={(event, value) => {
+                setValue('paymentMode', value);
+                handleLoanAmountChange({ target: { value: watch('uchakInterestAmount') } });
+              }}
               renderOption={(props, option) => (
                 <li {...props} key={option}>
                   {option}
@@ -180,15 +216,23 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(4, 1fr)',
               }}>
-              <RHFTextField
+              <Controller
                 name='cashAmount'
-                label='Cash Amount'
-                req={'red'}
-                onKeyPress={(e) => {
-                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                }} />
+                control={control}
+                render={({ field }) => (
+                  <RHFTextField
+                    {...field}
+                    label='Cash Amount'
+                    req={'red'}
+                    type='number'
+                    inputProps={{ min: 0 }}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleCashAmountChange(e);
+                    }}
+                  />
+                )}
+              />
             </Box>
           )}
           {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
@@ -220,11 +264,20 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 />
               </Box>
               <Box>
-                <RHFTextField name='bankAmount' label='Bank Amount' req={'red'} onKeyPress={(e) => {
-                  if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                }} />
+                <Controller
+                  name='bankAmount'
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label='Bank Amount'
+                      req={'red'}
+                      disabled={watch('paymentMode') === 'Bank' ? false : true}
+                      type='number'
+                      inputProps={{ min: 0 }}
+                    />
+                  )}
+                />
               </Box>
             </Box>
           )}
