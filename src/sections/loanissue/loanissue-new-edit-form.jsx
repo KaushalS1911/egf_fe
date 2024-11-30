@@ -834,6 +834,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   label='Issue Date'
                   req={'red'}
                 />
+
                 <RHFAutocomplete
                   name='scheme'
                   label='Scheme'
