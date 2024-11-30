@@ -64,7 +64,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   });
 
   const defaultValues = {
-    date: null,
+    date: new Date(),
     amountPaid: '',
     remark: '',
     paymentMode: '',

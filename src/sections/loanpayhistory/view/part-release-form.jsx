@@ -250,7 +250,10 @@ function PartReleaseForm({ currentLoan, mutate }) {
       setPaymentMode(watch('paymentMode'));
       setValue('paymentMode', watch('paymentMode'));
     }
-  },[watch('paymentMode')])
+    if(selectedTotals.netAmount){
+      setValue('amountPaid',selectedTotals.netAmount)
+    }
+  },[watch('paymentMode'),selectedTotals.netAmount])
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);

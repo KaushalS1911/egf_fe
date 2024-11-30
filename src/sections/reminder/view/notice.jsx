@@ -233,11 +233,12 @@ export default function Notice({noticeData}) {
             </Text>
           </View>
           <View style={styles.my4}>
-            <Text style={styles.branchDetails}>Branch: {noticeData.customer.branch.landmark}</Text>
-            <Text style={styles.branchDetails}>Branch code: EGF1</Text>
-            <Text style={styles.branchDetails}>Website: www.easygoldfincorp.com</Text>
-            <Text style={styles.branchDetails}>Email: egfincorp2511@gmail.com</Text>
-            <Text style={styles.branchDetails}>Mobile: 79900 28003</Text>
+            <Text style={styles.branchDetails}>Branch: {noticeData.customer.branch.address.street + " " + noticeData.customer.branch.address.landmark}</Text>
+            <Text style={styles.branchDetails}>Branch code: {noticeData.customer.branch.branchCode}</Text>
+            <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>
+            <Text style={styles.branchDetails}>Email:
+              {noticeData.customer.branch.email}</Text>
+            <Text style={styles.branchDetails}>Mobile: {noticeData.customer.branch.contact}</Text>
           </View>
         </View>
         <View style={styles.pagePadding}>
