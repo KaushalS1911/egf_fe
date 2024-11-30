@@ -52,7 +52,6 @@ export default function ReminderTableRow({ row, selected, onDeleteRow ,handleCli
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
         <MenuItem
           onClick={() => {
             popover.onClose();

@@ -37,6 +37,10 @@ import DisburseTableRow from '../disburse-table-row';
 import DisburseTableToolbar from '../disburse-table-toolbar';
 import DisburseTableFiltersResult from '../disburse-table-filters-result';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { Dialog, DialogActions } from '@mui/material';
+import { Box } from '@mui/system';
+import { PDFViewer } from '@react-pdf/renderer';
+import LetterOfAuthority from '../letter-of-authority';
 
 // ----------------------------------------------------------------------
 
@@ -61,12 +65,14 @@ export default function DisburseListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { Loanissue, mutate,LoanissueLoading } = useGetLoanissue();
+  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(Loanissue);
   const [filters, setFilters] = useState(defaultFilters);
+  const view = useBoolean();
+
 
   const dataFiltered = applyFilter({
     inputData: Loanissue,
@@ -144,10 +150,10 @@ export default function DisburseListView() {
     },
     [router],
   );
-  if(LoanissueLoading){
+  if (LoanissueLoading) {
     return (
-      <LoadingScreen/>
-    )
+      <LoadingScreen />
+    );
   }
   return (
     <>
@@ -224,6 +230,7 @@ export default function DisburseListView() {
                       <DisburseTableRow
                         key={row._id}
                         row={row}
+                        view={view}
                         handleClick={() => handleClick(row._id)}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
@@ -277,6 +284,7 @@ export default function DisburseListView() {
             Delete
           </Button>
         }
+
       />
     </>
   );

@@ -32,6 +32,9 @@ import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/canvasUtils';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+
 
 // ----------------------------------------------------------------------
 
@@ -53,17 +56,19 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
-  const [imageSrc, setImageSrc] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [croppedImage, setCroppedImage] = useState(null);
   const [open, setOpen] = useState(false);
   const { configs, mutate } = useGetConfigs();
   const mdUp = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ unit: '%', width: 50 });
+  const [completedCrop, setCompletedCrop] = useState(null);
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy)
     ? currentCustomer.referenceBy
     : 'Other';
@@ -255,33 +260,111 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+  const handleDropSingleFile = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setFile(file);
+        resetCrop();
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
 
+  const resetCrop = () => {
+    setCrop({ unit: '%', width: 50, aspect: 1 });
+    setCompletedCrop(null);
+  };
+  const handleDeleteImage = () => {
+    setCroppedImage(null);
+    setFile(null);
+    setImageSrc(null);
+  };
+
+  const handleCancel = () => {
+    setImageSrc(null);
+  };
   const showCroppedImage = async () => {
     try {
-      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-      const croppedUrl = URL.createObjectURL(croppedFile);
-      setCroppedImage(croppedUrl);
-      const newFile = Object.assign(croppedFile, { preview: URL.createObjectURL(croppedFile) });
-      setValue('profile_pic', newFile);
-      if (currentCustomer) {
-        const formData = new FormData();
-        formData.append('profile-pic', croppedFile);
-
-        await axios
-          .put(
-            `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
-            formData
-          )
-          .then((res) => {
-            console.log('Profile updated successfully:', res.data);
-          })
-          .catch((err) => {
-            console.error('Error uploading cropped image:', err);
-          });
+      // Check if cropping is completed
+      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+        if (file) {
+          // If no crop, set the file as the preview
+          setCroppedImage(URL.createObjectURL(file));
+        }
+        setImageSrc(null);
+        return;
       }
-      setOpen(false);
+
+      // Create a canvas to draw the cropped image
+      const canvas = document.createElement('canvas');
+      const image = document.getElementById('cropped-image');
+
+      // Get scale factors for image size adjustments
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+
+      // Set canvas size based on cropped area
+      canvas.width = completedCrop.width;
+      canvas.height = completedCrop.height;
+
+      // Get 2D context to draw on canvas
+      const ctx = canvas.getContext('2d');
+
+      // Draw the cropped image onto the canvas
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        completedCrop.width * scaleX,
+        completedCrop.height * scaleY,
+        0,
+        0,
+        completedCrop.width,
+        completedCrop.height
+      );
+
+      // Convert canvas to Blob (image file)
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          console.error('Failed to create blob');
+          return;
+        }
+
+        // Create a new file from the Blob
+        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+
+        // Set the cropped image as preview
+        setCroppedImage(URL.createObjectURL(croppedFile));
+        setFile(croppedFile);
+        setValue('profile_pic', croppedFile);
+
+        // If a customer exists, upload the cropped image
+        if (currentCustomer) {
+          const formData = new FormData();
+          formData.append('profile-pic', croppedFile);
+
+          await axios
+            .put(
+              `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
+              formData
+            )
+            .then((res) => {
+              console.log('Profile updated successfully:', res.data);
+            })
+            .catch((err) => {
+              console.error('Error uploading cropped image:', err);
+            });
+        }
+
+        // Close the cropping modal
+        setOpen(false);
+        setImageSrc(null);
+      }, 'image/jpeg');
     } catch (e) {
-      console.error(e);
+      console.error('Error cropping and uploading image:', e);
     }
   };
   const handleDrop = useCallback(async (acceptedFiles) => {
@@ -362,59 +445,36 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         <Card sx={{ pt: 5, px: 3, mt: 5 }}>
           <Box sx={{ mb: 5 }}>
             <RHFUploadAvatar
-              name='profile_pic'
-              maxSize={3145728}
-              onDrop={handleDrop}
+              name="profile_pic"
+              file={croppedImage ||  currentCustomer?.avatar_url}
+              maxSize={3145728} // 3 MB
+              accept="image/*" // Accept all image types
+              onDrop={handleDropSingleFile}
             />
-            <Dialog open={open} onClose={() => {
-              setOpen(false);
-              setZoom(1);
-              setRotation(0);
-            }} maxWidth='sm' fullWidth>
-              <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
-                {aspectRatio && (
-                  <Cropper
-                    image={imageSrc}
-                    crop={crop}
-                    zoom={zoom}
-                    rotation={rotation}
-                    aspect={aspectRatio}
-                    onCropChange={setCrop}
-                    onCropComplete={onCropComplete}
-                    onZoomChange={setZoom}
-                    onRotationChange={setRotation}
+            <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
+              {imageSrc && (
+                <ReactCrop
+                  crop={crop}
+                  onChange={(newCrop) => setCrop(newCrop)}
+                  onComplete={(newCrop) => setCompletedCrop(newCrop)}
+                  aspect={1} // Aspect ratio for cropping
+                >
+                  <img
+                    id='cropped-image'
+                    src={imageSrc}
+                    alt='Crop preview'
+                    onLoad={resetCrop} // Reset crop when the image loads
                   />
-                )}
-              </Box>
-              <Box sx={{ padding: 2 }}>
-                <Box display={'flex'} gap={3}>
-                  <Box width={'50%'}>
-                    <Typography gutterBottom>Zoom</Typography>
-                    <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
-                  </Box>
-                  <Box width={'50%'}>
-                    <Typography gutterBottom>Rotation</Typography>
-                    <Slider value={rotation} min={0} max={360} step={1}
-                            onChange={(e, rotation) => setRotation(rotation)} />
-                  </Box>
-                </Box>
-                <Box display='flex' justifyContent='space-between' mt={2}>
-                  <Button onClick={() => {
-                    setOpen(false);
-                    setZoom(1);
-                    setRotation(0);
-                  }} variant='outlined'>
-                    Cancel
-                  </Button>
-                  <Button onClick={()=> {
-                    showCroppedImage();
-                    setZoom(1);
-                    setRotation(0);
-                  }} variant="contained" color="primary">
-                    Save Cropped Image
-                  </Button>
-                </Box>
-              </Box>
+                </ReactCrop>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+                <Button variant='outlined' onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button variant='contained' color='primary' onClick={showCroppedImage}>
+                  Save Image
+                </Button>
+              </div>
             </Dialog>
           </Box>
         </Card>
