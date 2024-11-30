@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 
+import { useState } from 'react'; // Import useState
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
@@ -16,6 +17,10 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
+import { Box } from '@mui/system';
+import { Dialog, DialogActions } from '@mui/material';
+import { PDFViewer } from '@react-pdf/renderer';
+import LetterOfAuthority from './letter-of-authority';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +28,13 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount, _id } = row;
   const confirm = useBoolean();
   const popover = usePopover();
+  const view = useBoolean(); // Boolean for handling dialog visibility
+  const [selectedRow, setSelectedRow] = useState(null); // State to hold the selected row's data
+
+  const handleView = (row) => {
+    setSelectedRow(row);
+    view.onTrue();
+  };
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
 
@@ -80,6 +92,16 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
           <Iconify icon='solar:pen-bold' />
           Edit
         </MenuItem>}
+
+        <MenuItem
+          onClick={() => {
+            handleView(row); // Pass the row data to the handleView function
+            popover.onClose();
+          }}
+        >
+          <Iconify icon='mdi:eye' />
+          View
+        </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
@@ -93,6 +115,26 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
           </Button>
         }
       />
+
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              {selectedRow && <LetterOfAuthority loan={selectedRow} />}
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

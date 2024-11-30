@@ -19,7 +19,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
 } from '@mui/material';
 import axios from 'axios';
@@ -32,7 +31,6 @@ import { useGetCustomer } from '../../api/customer';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
 import { useGetAllProperty } from '../../api/property';
 import { useGetCarat } from '../../api/carat';
-import { useGetConfigs } from '../../api/config';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
@@ -42,12 +40,13 @@ import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/canvasUtils';
 import { TableHeadCustom, useTable } from '../../components/table';
-import { enqueueSnackbar } from 'notistack';
 import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 // ----------------------------------------------------------------------
+
 const TABLE_HEAD = [
   { id: 'type', label: 'Type' },
   { id: 'carat', label: 'Carat' },
@@ -60,6 +59,7 @@ const TABLE_HEAD = [
   { id: 'netAmt', label: 'Net Amt' },
   { id: 'actions', label: 'Actions' },
 ];
+
 export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const router = useRouter();
   const table = useTable();
@@ -68,16 +68,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [schemeId, setSchemeID] = useState();
   const webcamRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [imageSrc, setImageSrc] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [croppedImage, setCroppedImage] = useState(null);
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
   const { customer } = useGetCustomer();
   const { scheme } = useGetScheme();
@@ -86,10 +82,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const { enqueueSnackbar } = useSnackbar();
   const [multiSchema, setMultiSchema] = useState([]);
   const [isFieldsEnabled, setIsFieldsEnabled] = useState(false);
-  const [totalWeightError, setTotalWeightError] = useState('');
-  const [lossWeightError, setLossWeightError] = useState('');
+  const [errors, setErrors] = useState({});
   const uuid = uuidv4();
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ unit: '%', width: 50 });
+  const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
 
   useEffect(() => {
@@ -254,10 +254,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
     }
+
     const propertyDetails = watch('propertyDetails');
     const payload = new FormData();
     payload.append('company', user.company);
@@ -284,9 +286,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     });
 
     if (capturedImage) {
-      // Convert base64 to Blob
-      const base64Data = capturedImage.split(',')[1]; // Remove data:image/jpeg;base64, prefix
-      const binaryData = atob(base64Data); // Decode base64 string
+      const base64Data = capturedImage.split(',')[1];
+      const binaryData = atob(base64Data);
       const arrayBuffer = new Uint8Array(binaryData.length);
 
       for (let i = 0; i < binaryData.length; i++) {
@@ -343,29 +344,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
-  const showCroppedImage = async () => {
-    try {
-      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-      const croppedUrl = URL.createObjectURL(croppedFile);
-      setCroppedImage(croppedUrl);
-      setValue('property_image', croppedFile);
-      setOpen(false);
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
-  const handleDropSingleFile = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-        setOpen(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -375,12 +354,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
   };
 
-  const handleDeleteImage = () => {
-    setImageSrc(null);
-    setValue('property_image', null, { shouldValidate: true });
-    setOpen(false);
-    setCroppedImage(null);
-  };
 
   useEffect(() => {
     const customer = watch('customer');
@@ -436,18 +409,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   useEffect(() => {
       if (scheme && scheme.length > 0 && schemeId) {
-        const findedSch = currentLoanIssue ? scheme?.find((item) => item?._id === schemeId._id) : scheme?.find((item) => item?._id === schemeId.id);
-        if (findedSch) {
-          setValue('periodTime', findedSch.interestPeriod);
-          setValue('renewalTime', findedSch.renewalTime);
-          setValue('loanCloseTime', findedSch.minLoanTime);
+        if (schemeId) {
+          setValue('periodTime', schemeId?.interestPeriod);
+          setValue('renewalTime', schemeId?.renewalTime);
+          setValue('loanCloseTime', schemeId?.minLoanTime);
         } else {
           setValue('periodTime', '');
           setValue('renewalTime', '');
           setValue('loanCloseTime', '');
         }
-        if (findedSch && findedSch.interestRate) {
-          const interestRate = parseFloat(findedSch.interestRate);
+        if (schemeId && schemeId?.interestRate) {
+          const interestRate = parseFloat(schemeId?.interestRate);
           if (interestRate <= 1.5) {
             methods.setValue('consultingCharge', 0);
             methods.setValue('interestRate', interestRate);
@@ -460,7 +432,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         }
       }
     },
-    [schemeId, scheme, setValue, reset, getValues],
+    [schemeId, scheme, setValue, reset, getValues, watch('scheme')],
   );
 
   const calculateTotal = (field) => {
@@ -562,6 +534,178 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     } else {
       enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
     }
+  };
+  const handleDropSingleFile = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setFile(file);
+        resetCrop();
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  const resetCrop = () => {
+    setCrop({ unit: '%', width: 50, aspect: 1 });
+    setCompletedCrop(null);
+  };
+
+    const showCroppedImage = async () => {
+      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+        if (file) {
+          setCroppedImage(URL.createObjectURL(file));
+        }
+        setImageSrc(null);
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      const image = document.getElementById('cropped-image');
+
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+
+      canvas.width = completedCrop.width;
+      canvas.height = completedCrop.height;
+
+      const ctx = canvas.getContext('2d');
+
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        completedCrop.width * scaleX,
+        completedCrop.height * scaleY,
+        0,
+        0,
+        completedCrop.width,
+        completedCrop.height,
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error('Failed to create blob');
+          return;
+        }
+
+        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+        setCroppedImage(URL.createObjectURL(croppedFile));
+        setFile(croppedFile);
+        setValue('property_image', croppedFile);
+        setImageSrc(null);
+      }, 'image/jpeg');
+  };
+
+  const handleDeleteImage = () => {
+    setCroppedImage(null);
+    setFile(null);
+    setImageSrc(null);
+  };
+
+  const handleCancel = () => {
+    setImageSrc(null);
+  };
+  const validateField = (fieldName, index, value) => {
+    const updatedErrors = { ...errors };
+    const schemedata = watch('scheme');
+
+    if (!schemedata) {
+      enqueueSnackbar('Please select a scheme before adding properties.', { variant: 'warning' });
+      return;
+    }
+
+    const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
+    const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
+    const caratValue =
+      carat?.find((item) => item?.name === parseFloat(getValues(`propertyDetails[${index}].carat`))) || {};
+    const typeValue =
+      property?.find((item) => item?.propertyType === value) || {};
+
+    const grossWeight = totalWeight - lossWeight;
+    const netWeight = grossWeight * (caratValue?.caratPercentage / 100 || 1);
+
+    switch (fieldName) {
+      case 'totalWeight':
+        if (!value) {
+          updatedErrors[`propertyDetails[${index}].totalWeight`] = 'Total weight cannot be empty.';
+        } else if (!/^-?\d*\.?\d*$/.test(value)) {
+          updatedErrors[`propertyDetails[${index}].totalWeight`] = 'Please enter a valid number.';
+        } else if (lossWeight > parseFloat(value)) {
+          updatedErrors[`propertyDetails[${index}].totalWeight`] = 'Loss weight cannot exceed total weight.';
+        } else {
+          delete updatedErrors[`propertyDetails[${index}].totalWeight`];
+          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
+          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
+          setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
+          setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+        }
+        break;
+
+      case 'lossWeight':
+        if (!value) {
+          updatedErrors[`propertyDetails[${index}].lossWeight`] = 'Loss weight cannot be empty.';
+        } else if (!/^-?\d*\.?\d*$/.test(value)) {
+          updatedErrors[`propertyDetails[${index}].lossWeight`] = 'Please enter a valid number.';
+        } else if (parseFloat(value) > totalWeight) {
+          updatedErrors[`propertyDetails[${index}].lossWeight`] = 'Loss weight cannot exceed total weight.';
+        } else {
+          delete updatedErrors[`propertyDetails[${index}].lossWeight`];
+          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
+          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
+          setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
+          setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+        }
+        break;
+
+      case 'type':
+        if (!value) {
+          updatedErrors[`propertyDetails[${index}].type`] = 'Type is required.';
+        } else {
+          delete updatedErrors[`propertyDetails[${index}].type`];
+          if (typeValue) {
+            const { quantity, isQtyEdit } = typeValue;
+            setValue(`propertyDetails[${index}].pcs`, quantity || 0);
+            setValue(`propertyDetails[${index}].isPcsEditable`, isQtyEdit);
+            if (!isQtyEdit && (!quantity || quantity <= 0)) {
+              updatedErrors[`propertyDetails[${index}].pcs`] = 'Invalid quantity for selected type.';
+            }
+          } else {
+            updatedErrors[`propertyDetails[${index}].type`] = 'Invalid type selected.';
+          }
+        }
+        break;
+
+      case 'carat':
+        if (!value) {
+          updatedErrors[`propertyDetails[${index}].carat`] = 'Carat is required.';
+        } else {
+          delete updatedErrors[`propertyDetails[${index}].carat`];
+          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
+          setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
+          setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+        }
+        break;
+
+      case 'pcs':
+        if (!value || parseInt(value) <= 0) {
+          updatedErrors[`propertyDetails[${index}].pcs`] = 'Pcs must be a positive number.';
+        } else {
+          delete updatedErrors[`propertyDetails[${index}].pcs`];
+          const grossAmount = (grossWeight * schemedata?.ratePerGram).toFixed(2);
+          setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
+          const netAmount = (netWeight * schemedata?.ratePerGram).toFixed(2);
+          setValue(`propertyDetails[${index}].netAmount`, netAmount);
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(updatedErrors);
   };
 
   return (
@@ -690,39 +834,38 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   label='Issue Date'
                   req={'red'}
                 />
+
                 <RHFAutocomplete
                   name='scheme'
                   label='Scheme'
-                  req={'red'}
+                  req='red'
                   disabled={!isFieldsEnabled}
                   fullWidth
-                  options={scheme?.map((item) => ({
-                    id: item?._id,
-                    name: item?.name,
-                    interestRate: item?.interestRate,
-                    item: item,
-                  }))}
+                  options={scheme?.map((item) => item)}
                   getOptionLabel={(option) => option?.name}
                   renderOption={(props, option) => (
                     <li {...props} key={option?.id}>
                       {option?.name}
                     </li>
                   )}
-                  // onChange={(event, value) => {
-                  //   methods.setValue('scheme', value);
-                  //   if (value && value.interestRate) {
-                  //     const interestRate = parseFloat(value.interestRate);
-                  //     if (interestRate <= 1.5) {
-                  //       methods.setValue('consultingCharge', 0);
-                  //       methods.setValue('interestRate', interestRate);
-                  //     } else {
-                  //       methods.setValue('consultingCharge', (interestRate - '1.5').toFixed(2));
-                  //       methods.setValue('interestRate', '1.5');
-                  //     }
-                  //   } else {
-                  //     methods.setValue('consultingCharge', '');
-                  //   }
-                  // }}
+                  onChange={(e, selectedScheme) => {
+                    setValue('scheme', selectedScheme);
+                    const schemedata = selectedScheme;
+                    if (schemedata?.ratePerGram) {
+                      fields.forEach((_, index) => {
+                        const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
+                        const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
+                        const caratValue =
+                          carat?.find((item) => item?.name == parseFloat(getValues(`propertyDetails[${index}].carat`))) || {};
+                        const grossWeight = totalWeight - lossWeight;
+                        const netWeight = grossWeight * (caratValue?.caratPercentage / 100 || 1);
+                        setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
+                        setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
+                        setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
+                        setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+                      });
+                    }
+                  }}
                 />
                 <RHFTextField name='interestRate' label='Instrest Rate' InputProps={{ readOnly: true }} />
                 <Controller
@@ -779,13 +922,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant='subtitle1' component={'span'} sx={{ fontWeight: 600 }}>
+                <Box sx={{display: "flex",justifyContent: "space-between", mb: 2}}>
+                  <Typography variant='subtitle1' component={"span"} sx={{ fontWeight: 600  }}>
                     Property Image
                   </Typography>
-                  <Typography variant='subtitle1' sx={{ display: 'inline-block', fontWeight: 600 }}>
-                    <Iconify icon='ion:camera-sharp' width={24} sx={{ color: 'gray', cursor: 'pointer' }}
-                             onClick={() => setOpen2(true)} />
+                  <Typography variant='subtitle1' sx={{display: "inline-block", fontWeight: 600  }}>
+                    <Iconify icon="ion:camera-sharp" width={24} sx={{color: "gray", cursor: "pointer"}} onClick={() => setOpen2(true)}/>
                   </Typography>
                 </Box>
                 {croppedImage ? (
@@ -794,7 +936,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     maxSize={3145728}
                     file={croppedImage}
                     onDelete={handleDeleteImage}
-                    sx={{ height: '300px', ' .css-1lrddw3': { height: '300px' }, ' .css-16lfxc8': { pb: 0 } }}
+                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
                     onDrop={handleDropSingleFile}
                   />
                 ) : (
@@ -802,57 +944,34 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     name='property_image'
                     maxSize={3145728}
                     onDelete={handleDeleteImage}
-                    sx={{ height: '300px', ' .css-1lrddw3': { height: '300px' }, ' .css-16lfxc8': { pb: 0 } }}
+                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
                     onDrop={handleDropSingleFile}
                   />
                 )}
-                <Dialog open={open} onClose={() => {
-                  setOpen(false);
-                }} maxWidth='sm' fullWidth>
-                  <Box sx={{ position: 'relative', width: '100%', height: 400 }}>
-                    {aspectRatio && (
-                      <Cropper
-                        image={imageSrc}
-                        crop={crop}
-                        zoom={zoom}
-                        rotation={rotation}
-                        aspect={aspectRatio}
-                        onCropChange={setCrop}
-                        onCropComplete={onCropComplete}
-                        onZoomChange={setZoom}
-                        onRotationChange={setRotation}
+                <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
+                  {imageSrc && (
+                    <ReactCrop
+                      crop={crop}
+                      onChange={(newCrop) => setCrop(newCrop)}
+                      onComplete={(newCrop) => setCompletedCrop(newCrop)}
+                      aspect={1} // Aspect ratio for cropping
+                    >
+                      <img
+                        id='cropped-image'
+                        src={imageSrc}
+                        alt='Crop preview'
+                        onLoad={resetCrop} // Reset crop when the image loads
                       />
-                    )}
-                  </Box>
-                  <Box sx={{ padding: 2 }}>
-                    <Box display={'flex'} gap={3}>
-                      <Box width={'50%'}>
-                        <Typography gutterBottom>Zoom</Typography>
-                        <Slider value={zoom} min={1} max={3} step={0.1} onChange={(e, zoom) => setZoom(zoom)} />
-                      </Box>
-                      <Box width={'50%'}>
-                        <Typography gutterBottom>Rotation</Typography>
-                        <Slider value={rotation} min={0} max={360} step={1}
-                                onChange={(e, rotation) => setRotation(rotation)} />
-                      </Box>
-                    </Box>
-                    <Box display='flex' justifyContent='space-between' mt={2}>
-                      <Button onClick={() => {
-                        setOpen(false);
-                        setZoom(1);
-                        setRotation(0);
-                      }} variant='outlined'>
-                        Cancel
-                      </Button>
-                      <Button onClick={() => {
-                        showCroppedImage();
-                        setZoom(1);
-                        setRotation(0);
-                      }} variant='contained' color='primary'>
-                        Save Cropped Image
-                      </Button>
-                    </Box>
-                  </Box>
+                    </ReactCrop>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+                    <Button variant='outlined' onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                    <Button variant='contained' color='primary' onClick={showCroppedImage}>
+                      Save Image
+                    </Button>
+                  </div>
                 </Dialog>
               </CardContent>
             </Card>
@@ -876,168 +995,76 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     <TableBody>
                       {fields.map((row, index) => (
                         <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                          <TableCell>
+                          <TableCell sx={{ width: '200px', padding: '8px 8px' }}>
                             <RHFAutocomplete
                               name={`propertyDetails[${index}].type`}
                               label='Type'
-                              autoHighlight
                               disabled={!isFieldsEnabled}
-                              options={property?.map((e) => e?.propertyType)}
-                              getOptionLabel={(option) => option}
-                              renderOption={(props, option) => (
-                                <li {...props} key={option}>{option}</li>
-                              )}
-                              onChange={(event, value) => {
-                                if (value === null) {
-                                  handleReset(index);
-                                }
-                                setValue(`propertyDetails[${index}].type`, value);
-                                if (!watch(`propertyDetails[${index}].pcs`)) {
-                                  setValue(`propertyDetails[${index}].pcs`, 1);
-                                }
+                              options={property.map((item) => ({ label: item.propertyType, value: item.propertyType }))}
+                              onChange={(e, value) => {
+                                setValue(`propertyDetails[${index}].type`, value?.value || '');
+                                validateField('type', index, value?.value);
                               }}
+                              helperText={errors[`propertyDetails[${index}].type`] || ''}
+                              error={!!errors[`propertyDetails[${index}].type`]}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '40px', padding: '8px 8px' }}>
                             <RHFAutocomplete
                               name={`propertyDetails[${index}].carat`}
                               label='Carat'
-                              autoHighlight
-                              disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].type`) === ''}
+                              disabled={!isFieldsEnabled}
                               options={carat?.map((e) => e?.name)}
-                              getOptionLabel={(option) => option}
-                              renderOption={(props, option) => (
-                                <li {...props} key={option}>{option}</li>
-                              )}
-                              onChange={(event, value) => {
-                                if (value === null) {
-                                  handleReset(index);
-                                }
-
-                                const gw = parseFloat(watch(`propertyDetails[${index}].grossWeight`)) || 0;
-                                const caratValue = parseFloat(value) || 0;
-                                setValue(`propertyDetails[${index}].carat`, caratValue);
-                                const netWeight = gw * caratValue;
-                                setValue(`propertyDetails[${index}].netWeight`, netWeight);
+                              onChange={(e, value) => {
+                                setValue(`propertyDetails[${index}].carat`, value);
+                                validateField('carat', index, value);
                               }}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '80px', padding: '8px 8px' }}>
                             <RHFTextField
                               name={`propertyDetails[${index}].pcs`}
-                              label='Pcs'
-                              disabled={!isFieldsEnabled || watch(`propertyDetails[${index}].carat`) === '' || currentLoanIssue}
+                              label='PCS'
+                              type='number'
+                              disabled={!watch(`propertyDetails[${index}].isPcsEditable`) && !isFieldsEnabled}
+                              helperText={errors[`propertyDetails[${index}].pcs`] || ''}
+                              error={!!errors[`propertyDetails[${index}].pcs`]}
                               onChange={(e) => {
-                                const schemedata = watch('scheme');
-                                const pcs = parseFloat(e.target.value) || 0;
-                                setValue(`propertyDetails[${index}].pcs`, pcs);
-
-                                const grossWeight = parseFloat(watch(`propertyDetails[${index}].grossWeight`)) || 0;
-                                const grossAmount = (parseFloat(grossWeight) * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed();
-                                setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-
-                                const netWeight = parseFloat(watch(`propertyDetails[${index}].netWeight`)) || 0;
-                                const netAmount = (netWeight * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
-                                setValue(`propertyDetails[${index}].netAmount`, netAmount);
+                                setValue(`propertyDetails[${index}].pcs`, e.target.value);
+                                validateField('pcs', index, e.target.value);
                               }}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '100px', padding: '8px 8px' }}>
                             <RHFTextField
                               name={`propertyDetails[${index}].totalWeight`}
-                              label='TW'
+                              label='Total Weight'
                               type='number'
-                              step='0.01'
                               disabled={!isFieldsEnabled}
-                              helperText={totalWeightError}
-                              error={!!totalWeightError}
+                              helperText={errors[`propertyDetails[${index}].totalWeight`] || ''}
+                              error={!!errors[`propertyDetails[${index}].totalWeight`]}
                               onChange={(e) => {
-                                const inputValue = e.target.value;
-
-                                if (inputValue === '') {
-                                  setTotalWeightError('Total weight cannot be empty.');
-                                  setValue(`propertyDetails[${index}].totalWeight`, '');
-                                  return;
-                                } else {
-                                  setTotalWeightError('');
-                                }
-
-                                if (/^-?\d*\.?\d*$/.test(inputValue)) {
-                                  const totalWeight = parseFloat(inputValue);
-                                  setValue(`propertyDetails[${index}].totalWeight`, inputValue);
-
-                                  if (!isNaN(totalWeight) && totalWeight >= 0) {
-                                    const lossWeight = parseFloat(watch(`propertyDetails[${index}].lossWeight`)) || 0;
-
-                                    if (lossWeight > totalWeight) {
-                                      setTotalWeightError('Loss weight cannot be greater than total weight.');
-                                    } else {
-                                      const schemedata = watch('scheme');
-                                      const grossWeight = (totalWeight - lossWeight).toFixed(2);
-                                      setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
-                                      const caratValue = carat?.find((item) => item.name == parseFloat(watch(`propertyDetails[${index}].carat`))) || 0;
-                                      const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
-                                      setValue(`propertyDetails[${index}].netWeight`, netWeight);
-                                      const pcs = parseFloat(watch(`propertyDetails[${index}].pcs`)) || 0;
-                                      const grossAmount = (parseFloat(grossWeight) * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
-                                      setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                      const netAmount = (netWeight * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
-                                      setValue(`propertyDetails[${index}].netAmount`, netAmount);
-                                      setTotalWeightError('');
-                                    }
-                                  }
-                                } else {
-                                  setTotalWeightError('Please enter a valid number for total weight.');
-                                }
+                                setValue(`propertyDetails[${index}].totalWeight`, e.target.value);
+                                validateField('totalWeight', index, e.target.value);
                               }}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '100px', padding: '8px 8px' }}>
                             <RHFTextField
                               name={`propertyDetails[${index}].lossWeight`}
-                              label='LW'
-                              type='number'
-                              step='0.01'
+                              label='Loss Weight'
                               disabled={!isFieldsEnabled}
-                              helperText={lossWeightError}
-                              error={!!lossWeightError}
+                              type='number'
+                              helperText={errors[`propertyDetails[${index}].lossWeight`] || ''}
+                              error={!!errors[`propertyDetails[${index}].lossWeight`]}
                               onChange={(e) => {
-                                const inputValue = e.target.value;
-                                if (inputValue === '') {
-                                  setLossWeightError('Loss weight cannot be empty.');
-                                  setValue(`propertyDetails[${index}].lossWeight`, '');
-                                  return;
-                                } else {
-                                  setLossWeightError('');
-                                }
-                                if (/^-?\d*\.?\d*$/.test(inputValue)) {
-                                  const lossWeight = parseFloat(inputValue);
-                                  const schemedata = watch('scheme');
-                                  setValue(`propertyDetails[${index}].lossWeight`, inputValue);
-                                  const totalWeight = parseFloat(watch(`propertyDetails[${index}].totalWeight`)) || 0;
-
-                                  if (lossWeight > totalWeight) {
-                                    setLossWeightError('Loss weight cannot be greater than total weight.');
-                                  } else {
-                                    const grossWeight = (totalWeight - lossWeight).toFixed(2);
-                                    setValue(`propertyDetails[${index}].grossWeight`, grossWeight);
-                                    const caratValue = carat?.find((item) => item.name == parseFloat(watch(`propertyDetails[${index}].carat`))) || 0;
-                                    const netWeight = (grossWeight * (caratValue.caratPercentage / 100)).toFixed(2);
-                                    setValue(`propertyDetails[${index}].netWeight`, netWeight);
-                                    const pcs = parseFloat(getValues(`propertyDetails[${index}].pcs`)) || 0;
-                                    const grossAmount = (parseFloat(grossWeight) * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
-                                    setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-                                    const netAmount = (netWeight * parseFloat(currentLoanIssue ? schemedata?.ratePerGram : schemedata?.item?.ratePerGram)).toFixed(2);
-                                    setValue(`propertyDetails[${index}].netAmount`, netAmount);
-                                    setLossWeightError('');
-                                  }
-                                } else {
-                                  setLossWeightError('Please enter a valid number for loss weight.');
-                                }
+                                const value = e.target.value;
+                                setValue(`propertyDetails[${index}].lossWeight`, value);
+                                validateField('lossWeight', index, value);
                               }}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '120px', padding: '8px 8px' }}>
                             <RHFTextField
                               name={`propertyDetails[${index}].grossWeight`}
                               label='GW'
@@ -1045,7 +1072,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               value={getValues(`propertyDetails[${index}].grossWeight`) || ''}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '120px', padding: '8px 8px' }}>
                             <RHFTextField
                               name={`propertyDetails[${index}].netWeight`}
                               label='NW'
@@ -1053,21 +1080,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               value={getValues(`propertyDetails[${index}].netWeight`) || ''}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '120px', padding: '16px 8px' }}>
                             <RHFTextField
                               name={`propertyDetails[${index}].grossAmount`}
                               label='GA'
                               disabled={true}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '120px', padding: '8px 8px' }}>
                             <RHFTextField
                               name={`propertyDetails[${index}].netAmount`}
                               label='NA'
                               disabled={true}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ width: '100px', padding: '8px 8px' }}>
                             <IconButton onClick={() => handleReset(index)} disabled={!isFieldsEnabled}>
                               <Iconify icon='ic:baseline-refresh' />
                             </IconButton>
@@ -1083,15 +1110,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       ))}
                       <TableRow
                         sx={{ backgroundColor: (theme) => theme.palette.mode === 'light' ? '#e0f7fa' : '#2f3944' }}>
-                        <TableCell colSpan={2}><strong>Total:</strong></TableCell>
-                        <TableCell>{calculateTotal('pcs')}</TableCell>
-                        <TableCell>{calculateTotal('totalWeight')}</TableCell>
-                        <TableCell>{calculateTotal('lossWeight')}</TableCell>
-                        <TableCell>{calculateTotal('grossWeight')}</TableCell>
-                        <TableCell>{calculateTotal('netWeight')}</TableCell>
-                        <TableCell>{calculateTotal('grossAmount')}</TableCell>
-                        <TableCell>{calculateTotal('netAmount')}</TableCell>
-                        <TableCell></TableCell>
+                        <TableCell colSpan={2} sx={{ padding: '8px' }}><strong>Total:</strong></TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('pcs')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('totalWeight')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('lossWeight')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('grossWeight')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('netWeight')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('grossAmount')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('netAmount')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}></TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -1111,7 +1138,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               </CardActions>
             </Card>
           </Grid>
-
           <Grid item xs={12} md={12}>
             <Card sx={{ p: 3 }}>
               <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
@@ -1320,25 +1346,25 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         <DialogTitle>Camera</DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat='image/jpeg'
-            width={'90%'}
-            height={'100%'}
-            videoConstraints={videoConstraints}
-          />
-        </Box>
-        <DialogActions>
-          <Button variant='outlined' onClick={capture}>
-            Capture Photo
-          </Button>
-          <Button variant='contained' onClick={() => setOpen2(false)}>
-            Close Camera
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Webcam
+      audio={false}
+      ref={webcamRef}
+      screenshotFormat="image/jpeg"
+      width={"90%"}
+      height={"100%"}
+      videoConstraints={videoConstraints}
+    />
+    </Box>
+    <DialogActions>
+      <Button variant='outlined' onClick={capture}>
+        Capture Photo
+      </Button>
+      <Button variant='contained'  onClick={() => setOpen2(false)}>
+        Close Camera
+      </Button>
+    </DialogActions>
+  </Dialog>
+  </>
   );
 };
 

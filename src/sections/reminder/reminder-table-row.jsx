@@ -19,7 +19,7 @@ import { Box, Dialog, DialogActions } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import Notice from './view/notice';
 
-export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index , mutate}) {
+export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index, mutate }) {
   const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate } = row;
   const [open, setOpen] = useState(false);
   const [noticeData, setNoticeData] = useState(null);
@@ -33,6 +33,7 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
   };
 
   return (
@@ -63,7 +64,8 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
         sx={{ width: 140 }}
       >
 
-        {getResponsibilityValue('create_reminder', configs, user) && <MenuItem
+        {getResponsibilityValue('create_reminder', configs, user) &&
+        <MenuItem
           onClick={() => {
             popover.onClose();
             recallingPopover.onOpen(ReminderRecallingForm);
@@ -117,14 +119,14 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
               p: 1.5,
             }}
           >
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
 
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <Notice noticeData={noticeData}/>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <Notice noticeData={noticeData} />
             </PDFViewer>
           </Box>
         </Box>
