@@ -4,26 +4,10 @@ import FormProvider, { RHFTextField } from '../../components/hook-form';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import { Controller, useForm } from 'react-hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import { Upload } from '../../components/upload';
 import { useAuthContext } from '../../auth/hooks';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import Table from '@mui/material/Table';
-import { TableHeadCustom } from '../../components/table';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import Button from '@mui/material/Button';
-import Iconify from '../../components/iconify';
-import { fDate } from '../../utils/format-time';
-import InterestPayDetailsForm from './view/interest-pay-details-form';
-import PartReleaseForm from './view/part-release-form';
-import UchakInterestPayForm from './view/uchak-interest-pay-form';
-import LoanPartPaymentForm from './view/loan-part-payment-form';
-import LoanCloseForm from './view/loan-close-form';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Typography from '@mui/material/Typography';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
@@ -52,9 +36,6 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       .required('Scheme Name is required')
       .max(10, 'Scheme Name must be exactly 10 characters'),
     closedBy: Yup.string().required('Closed By is required'),
-    oldLoanNo: Yup.string()
-      .matches(/^[0-9]*$/, 'Old Loan No must be numeric')
-      .max(12, 'Old Loan No must be 12 digits or less'),
     interest: Yup.number()
       .required('Interest is required')
       .typeError('Interest must be a number')
@@ -81,7 +62,6 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
     issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
     schemeName: currentLoan?.scheme.name || '',
     closedBy: currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) : null,
-    oldLoanNo: currentLoan?.oldLoanNo || '',
     interest: currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate,
     consultCharge: currentLoan?.consultingCharge || '',
     loanAmount: currentLoan?.loanAmount || '',
@@ -185,29 +165,9 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     control={control}
                     label='Renew Date'
                   />
-                  <RHFTextField
-                    name='oldLoanNo'
-                    label='Old Loan No'
-                    InputProps={{ readOnly: true }}
-                    inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
-                    onInput={(e) => {
-                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                    }}
-                  />
-                  <RHFTextField name='interestLoanAmount' label='Interest Loan Amount'
-                                InputProps={{ readOnly: true }} />
-
+                  <RHFTextField name='interestLoanAmount' label='Interest Loan Amount' InputProps={{ readOnly: true }} />
                   <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }} />
-                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }}
-                                InputProps={{ readOnly: true }} />
-
-
-
-
-
-
-
-
+                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
                   <RHFTextField
                   name='contact'
                   label='Mobile No.'

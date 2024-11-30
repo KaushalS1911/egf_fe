@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
-import logo from 'src/assets/logo/pdf-logo.png'
+import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
 
@@ -117,12 +117,13 @@ const useStyles = () =>
           marginTop: 10,
           fontWeight: 'bold',
           marginLeft: -145,
-          width: '40%'
+          width: '40%',
         },
         branchDetails: {
           color: '#FFFFFF',
           marginTop: 3,
           fontWeight: 'bold',
+          textTransform: 'lowercase',
           fontSize: 10,
           textAlign: 'right',
         },
@@ -138,7 +139,7 @@ const useStyles = () =>
           textDecoration: 'underline',
           fontSize: 23,
           fontFamily: 'NotoSansGujarati',
-          textAlign: 'center'
+          textAlign: 'center',
         },
         topDetails: {
           fontSize: 11,
@@ -153,7 +154,7 @@ const useStyles = () =>
           fontFamily: 'NotoSansGujarati',
           letterSpacing: 0.5,
         },
-        mainText:{
+        mainText: {
           fontSize: 14,
           fontFamily: 'Roboto',
           // width: "100%",
@@ -163,7 +164,7 @@ const useStyles = () =>
         },
         wriitenBy: {
           fontSize: 14,
-          width: "100%",
+          width: '100%',
           textAlign: 'right',
           marginTop: 10,
           fontFamily: 'NotoSansGujarati',
@@ -177,8 +178,8 @@ const useStyles = () =>
           letterSpacing: 0.5,
         },
         date: {
-          width: "100%",
-          textAlign: "right",
+          width: '100%',
+          textAlign: 'right',
           fontSize: 12,
         },
         tableCell_1: {
@@ -206,62 +207,72 @@ const useStyles = () =>
           width: '15%',
         },
       }),
-    []
+    [],
   );
 
 // ----------------------------------------------------------------------
 
-export default function Notice({noticeData}) {
+export default function Notice({ noticeData }) {
 
 
   const styles = useStyles();
 
   return (
     <>
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.watermarkContainer}>
-          <Image src={logo} style={styles.watermarkImage} />
-        </View>
-        <View style={styles.headerContainer}>
-          <Image source={logo} style={styles.logo} />
-          <View style={styles.logoContainer}>
-            <Text style={styles.headerText}>EASY GOLD</Text>
-            <Text style={styles.headerText2}>F I N C O R P</Text>
-            <Text style={styles.subText}>
-              Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat
-            </Text>
+      <Document>
+        <Page size='A4' style={styles.page}>
+          <View style={styles.watermarkContainer}>
+            <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <View style={styles.my4}>
-            <Text style={styles.branchDetails}>Branch: {noticeData.customer.branch.address.street + " " + noticeData.customer.branch.address.landmark}</Text>
-            <Text style={styles.branchDetails}>Branch code: {noticeData.customer.branch.branchCode}</Text>
-            <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>
-            <Text style={styles.branchDetails}>Email:
-              {noticeData.customer.branch.email}</Text>
-            <Text style={styles.branchDetails}>Mobile: {noticeData.customer.branch.contact}</Text>
+          <View style={styles.headerContainer}>
+            <Image source={logo} style={styles.logo} />
+            <View style={styles.logoContainer}>
+              <Text style={styles.headerText}>EASY GOLD</Text>
+              <Text style={styles.headerText2}>F I N C O R P</Text>
+              <Text style={styles.subText}>
+                Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat
+              </Text>
+            </View>
+            <View style={styles.my4}>
+              <Text
+                style={styles.branchDetails}>Branch: {noticeData.customer.branch.address.street + ' ' + noticeData.customer.branch.address.landmark}</Text>
+              <Text style={styles.branchDetails}>Branch code: {noticeData.customer.branch.branchCode}</Text>
+              <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>
+              <Text style={styles.branchDetails}>Email:
+                {noticeData.customer.branch.email}</Text>
+              <Text style={styles.branchDetails}>Mobile: {noticeData.customer.branch.contact}</Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.pagePadding}>
-        <View>
-            <Text style={styles.noticeTitle}>નોટીસ</Text>
-            <Text style={styles.date}>27 Nov 2024</Text>
-        </View>
-        <View>
-            <Text style={styles.topDetails}>{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
-            <Text style={styles.topDetails}>{`${noticeData.customer.permanentAddress.street} ${noticeData.customer.permanentAddress.landmark} ,${noticeData.customer.permanentAddress.city}-${noticeData.customer.permanentAddress.zipcode} ,${noticeData.customer.permanentAddress.state}`}</Text>
-            <Text style={styles.topDetails}>{noticeData.customer.contact}</Text>
-        </View>
-        <View>
-          <Text style={styles.noticeTitle}>વિષય : ગોલ્ડ જપ્ત કરવા બાબત</Text>
-        </View>
-        <View style={styles.bottomDetails}>
-          <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
-          <Text style={styles.bottomDetails}>આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ 05 Jul 2024 ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા 205000.00/- નું વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે તારીખ 07 Dec 2024 સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા તમારા ગોલ્ડની હરાજી કરશે અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.</Text>
-          <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>
-        </View>
-        </View>
-      </Page>
-    </Document>
+          <View style={styles.pagePadding}>
+            <View>
+              <Text style={styles.noticeTitle}>નોટીસ</Text>
+              <Text style={styles.date}>27 Nov 2024</Text>
+            </View>
+            <View>
+              <Text
+                style={styles.topDetails}>{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
+              <Text
+                style={styles.topDetails}>{`${noticeData.customer.permanentAddress.street} ${noticeData.customer.permanentAddress.landmark} ,${noticeData.customer.permanentAddress.city}-${noticeData.customer.permanentAddress.zipcode} ,${noticeData.customer.permanentAddress.state}`}</Text>
+              <Text style={styles.topDetails}>{noticeData.customer.contact}</Text>
+            </View>
+            <View>
+              <Text style={styles.noticeTitle}>વિષય : ગોલ્ડ જપ્ત કરવા બાબત</Text>
+            </View>
+            <View style={styles.bottomDetails}>
+              <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
+              <Text style={styles.bottomDetails}>આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ {fDate(noticeData.issueDate)} ના
+                રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા {noticeData.loanAmount}/- નું વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી.
+                આથી નોટીસ આપવામાં આવે છે કે તારીખ {fDate(noticeData.nextInstallmentDate)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ
+                આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા તમારા ગોલ્ડની હરાજી કરશે અને
+                બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી
+                કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની
+                કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ
+                ખાસ નોંધ લેવી.</Text>
+              <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>
+            </View>
+          </View>
+        </Page>
+      </Document>
     </>
   );
 }

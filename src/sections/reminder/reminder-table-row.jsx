@@ -33,9 +33,8 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
   };
-console.log("noticeData ",noticeData)
+
   return (
     <>
       <TableRow hover selected={selected}>
@@ -45,9 +44,8 @@ console.log("noticeData ",noticeData)
           sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {calculateDateDifference(new Date(), nextInstallmentDate)}
-        </TableCell> <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{calculateDateDifference(new Date(), nextInstallmentDate)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
 
