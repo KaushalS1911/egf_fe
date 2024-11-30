@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Grid,
   TextField,
@@ -19,11 +19,12 @@ import { useGetScheme } from '../../api/scheme';
 function GoldLoanCalculator() {
   const { carat } = useGetCarat();
   const { scheme } = useGetScheme();
-
   const [goldGramsTables, setGoldGramsTables] = useState([[{ netGram: 0, goldGram: '' }]]);
-  const [totalNetGram, setTotalNetGram] = useState(0);
   const [financeTables, setFinanceTables] = useState([[{ netGram: '' }]]);
-  const [totalFinance, setTotalFinance] = useState(0);
+  const [totalsNetGram, setTotalsNetGram] = useState([0]);
+  const [totalsFinance, setTotalsFinance] = useState([0]);
+
+  const handleNumericInput = (value) => value.replace(/[^0-9.]/g, '');
 
   const handleGoldGramChange = (tableIndex, rowIndex, value) => {
     const updatedTables = [...goldGramsTables];
@@ -35,11 +36,28 @@ function GoldLoanCalculator() {
       goldGram: value,
       netGram: netGram.toFixed(2),
     };
-
     setGoldGramsTables(updatedTables);
 
-    const total = updatedTables.flat().reduce((sum, table) => sum + Number(table.netGram), 0).toFixed(2);
-    setTotalNetGram(total);
+    const totalNetGram = updatedTables[tableIndex]
+      .reduce((sum, row) => sum + Number(row.netGram || 0), 0)
+      .toFixed(2);
+
+    const updatedTotals = [...totalsNetGram];
+    updatedTotals[tableIndex] = totalNetGram;
+    setTotalsNetGram(updatedTotals);
+
+    updateFinanceTablesNetGram(tableIndex, totalNetGram);
+  };
+
+  const updateFinanceTablesNetGram = (tableIndex, totalNetGram) => {
+    const updatedFinanceTables = [...financeTables];
+
+    updatedFinanceTables[tableIndex] = scheme.map((row, rowIndex) => ({
+      ...updatedFinanceTables[tableIndex][rowIndex],
+      netGram: totalNetGram,
+    }));
+
+    setFinanceTables(updatedFinanceTables);
   };
 
   const handleNetGramChange2 = (tableIndex, rowIndex, value) => {
@@ -48,103 +66,46 @@ function GoldLoanCalculator() {
       ...updatedTables[tableIndex][rowIndex],
       netGram: value,
     };
-
     setFinanceTables(updatedTables);
-    calculateTotalFinance(updatedTables);
+    calculateTotalFinance(updatedTables, tableIndex);
   };
 
-  const calculateTotalFinance = (tables) => {
-    let total = 0;
-    tables.forEach((table, tableIndex) => {
-      table.forEach((row, rowIndex) => {
-        const ratePerGram = scheme[rowIndex]?.ratePerGram || 0;
-        if (row.netGram && ratePerGram) {
-          total += Number(row.netGram) * Number(ratePerGram);
-        }
-      });
-    });
-    setTotalFinance(total.toFixed(2));
+  const calculateTotalFinance = (tables, tableIndex) => {
+    const total = tables[tableIndex].reduce((sum, row, rowIndex) => {
+      const ratePerGram = scheme[rowIndex]?.ratePerGram || 0;
+      return sum + (Number(row.netGram) * ratePerGram);
+    }, 0);
+
+    const updatedTotals = [...totalsFinance];
+    updatedTotals[tableIndex] = total.toFixed(2);
+    setTotalsFinance(updatedTotals);
   };
 
   const addTable = () => {
-    setGoldGramsTables((prevTables) => [...prevTables, [{ netGram: 0, goldGram: '' }]]);
-    setFinanceTables((prevTables) => [...prevTables, [{ netGram: '' }]]);
+    if (goldGramsTables.length < 3) {
+      setGoldGramsTables((prevTables) => [...prevTables, [{ netGram: 0, goldGram: '' }]]);
+      setFinanceTables((prevTables) => [
+        ...prevTables,
+        [{ netGram: totalsNetGram[totalsNetGram.length] || 0 }],
+      ]);
+      setTotalsNetGram((prev) => [...prev, 0]);
+      setTotalsFinance((prev) => [...prev, 0]);
+    }
   };
 
   const resetTables = () => {
     setGoldGramsTables([[{ netGram: 0, goldGram: '' }]]);
     setFinanceTables([[{ netGram: '' }]]);
-    setTotalNetGram(0);
-    setTotalFinance(0);
+    setTotalsNetGram([0]);
+    setTotalsFinance([0]);
   };
-  const sx = {
-    color:(theme)=>theme.palette.mode === 'light' ? '#000' :""
-  }
-  const renderTable = (rows, tableIndex, handleChange, dataTable, type) => (
-    <TableContainer component={Paper} key={tableIndex}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={sx}>{type === 'gold' ? 'Carat' : 'No.'}</TableCell>
-            <TableCell sx={sx}>{type === 'gold' ? 'Value' : 'Int Rate'}</TableCell>
-            <TableCell sx={sx}>{type === 'gold' ? 'Gold Gram' : 'Per Gram'}</TableCell>
-            <TableCell sx={sx}>Net Gram</TableCell>
-            {type === 'finance' && <TableCell className={"black-text"}>Total Finance</TableCell>}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, rowIndex) => (
-            <TableRow key={rowIndex}>
-              <TableCell>{type === 'gold' ? row.name : rowIndex + 1}</TableCell>
-              <TableCell>{type === 'gold' ? row.caratPercentage : row.interestRate}</TableCell>
-              <TableCell>
-                {type === 'gold' ? (
-                  <TextField
-                    variant='outlined'
-                    size='small'
-                    value={dataTable[tableIndex][rowIndex]?.goldGram || ''}
-                    onChange={(e) => handleChange(tableIndex, rowIndex, e.target.value)}
-                    InputProps={{ sx: { color: 'red' } }}
-                  />
-                ) : (
-                  row.ratePerGram
-                )}
-              </TableCell>
-              <TableCell>
-                <TextField
-                  variant='outlined'
-                  size='small'
-                  value={dataTable[tableIndex][rowIndex]?.netGram || ''}
-                  onChange={(e) => type === 'finance' && handleChange(tableIndex, rowIndex, e.target.value)}
-                  readOnly={type === 'gold'}
-                  InputProps={{ sx: { color: 'red' } }}
-                />
-              </TableCell>
-              {type === 'finance' && (
-                <>
-                  <TableCell>
-                    <TextField
-                      variant='outlined'
-                      size='small'
-                      value={
-                        dataTable[tableIndex]?.[rowIndex]?.netGram && row?.ratePerGram
-                          ? (Number(dataTable[tableIndex][rowIndex].netGram) * Number(row.ratePerGram)).toFixed(2)
-                          : ''
-                      }
-                      readOnly
-                      InputProps={{ sx: { color: 'red' } }}
-                    />
-                  </TableCell>
-                </>
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
 
-  const renderTable2 = (rows, tableIndex, handleChange, dataTable, type) => (
+  const sx = {
+    color: (theme) => (theme.palette.mode === 'light' ? '#000' : ''),
+    padding: '8px',
+  };
+
+  const renderTable = (rows, tableIndex, handleChange, dataTable, totals, type) => (
     <TableContainer component={Paper} key={tableIndex}>
       <Table>
         <TableHead>
@@ -159,52 +120,54 @@ function GoldLoanCalculator() {
         <TableBody>
           {rows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
-              <TableCell>{type === 'gold' ? row.name : rowIndex + 1}</TableCell>
-              <TableCell>{type === 'gold' ? row.caratPercentage : row.interestRate}</TableCell>
-              <TableCell>
+              <TableCell sx={{ padding: '8px' }}>{type === 'gold' ? row.name : rowIndex + 1}</TableCell>
+              <TableCell sx={{ padding: '8px' }}>{type === 'gold' ? row.caratPercentage : row.interestRate}</TableCell>
+              <TableCell sx={{ padding: '8px' }}>
                 {type === 'gold' ? (
                   <TextField
+                    sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
                     variant='outlined'
                     size='small'
                     value={dataTable[tableIndex][rowIndex]?.goldGram || ''}
-                    onChange={(e) => handleChange(tableIndex, rowIndex, e.target.value)}
-                    InputProps={{ sx: { color: 'red' } }}
+                    onChange={(e) =>
+                      handleChange(tableIndex, rowIndex, handleNumericInput(e.target.value))
+                    }
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                   />
                 ) : (
                   row.ratePerGram
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell sx={{ padding: '8px' }}>
                 <TextField
+                  sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
                   variant='outlined'
                   size='small'
-                  value={totalNetGram || ''}
-                  onChange={(e) => type === 'finance' && handleChange(tableIndex, rowIndex, e.target.value)}
-                  disabled={true}
-                  InputProps={{ sx: { color: 'red' } }}
+                  value={dataTable[tableIndex][rowIndex]?.netGram || ''}
+                  onChange={(e) =>
+                    type === 'finance' &&
+                    handleChange(tableIndex, rowIndex, handleNumericInput(e.target.value))
+                  }
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                  readOnly={type === 'gold'}
                 />
               </TableCell>
               {type === 'finance' && (
-                <>
-                  <TableCell>
-                    <TextField
-                      variant='outlined'
-                      size='small'
-                      value={
-                        dataTable[tableIndex]?.[rowIndex]?.netGram && row?.ratePerGram
-                          ? (Number(dataTable[tableIndex][rowIndex].netGram) * Number(row.ratePerGram)).toFixed(2)
-                          : (totalNetGram * Number(row.ratePerGram)).toFixed(2)
-                      }
-                      readOnly
-                      InputProps={{ sx: { color: 'red' } }}
-                    />
-                  </TableCell>
-                </>
+                <TableCell sx={{ padding: '8px' }}>
+                  {dataTable[tableIndex]?.[rowIndex]?.netGram && row?.ratePerGram
+                    ? (Number(dataTable[tableIndex][rowIndex].netGram) * Number(row.ratePerGram)).toFixed(2)
+                    : ''}
+                </TableCell>
               )}
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      {type === 'gold' && (
+        <Box mt={2} textAlign='left'>
+          <Typography variant='subtitle1'>Total Net Gram: {totals[tableIndex]}</Typography>
+        </Box>
+      )}
     </TableContainer>
   );
 
@@ -212,11 +175,15 @@ function GoldLoanCalculator() {
     <Box p={3}>
       <Box display='flex' justifyContent='space-between' my={2} textAlign='center'>
         <Typography variant='h6' gutterBottom>
-          Type 1
+          Gold Loan Calculator
         </Typography>
         <Box>
-          <Button variant='contained' onClick={addTable}>
-            Add
+          <Button
+            variant='contained'
+            onClick={addTable}
+            disabled={goldGramsTables.length >= 3}
+          >
+            Add Table
           </Button>
           <Button variant='outlined' onClick={resetTables} style={{ marginLeft: '10px' }}>
             Reset
@@ -227,30 +194,18 @@ function GoldLoanCalculator() {
       <Grid container spacing={3}>
         {goldGramsTables.map((_, tableIndex) => (
           <Grid item xs={12} md={4} key={tableIndex}>
-            {renderTable(carat, tableIndex, handleGoldGramChange, goldGramsTables, 'gold')}
+            {renderTable(carat, tableIndex, handleGoldGramChange, goldGramsTables, totalsNetGram, 'gold')}
           </Grid>
         ))}
       </Grid>
 
-      <Box mt={4}>
-        <Typography variant='h6' gutterBottom>
-          Total Net Gram: {totalNetGram}
-        </Typography>
-      </Box>
-
-      <Grid container spacing={3}>
+      <Grid container spacing={1} mt={4}>
         {financeTables.map((_, tableIndex) => (
           <Grid item xs={12} md={4} key={tableIndex}>
-            {renderTable2(scheme, tableIndex, handleNetGramChange2, financeTables, 'finance')}
+            {renderTable(scheme, tableIndex, handleNetGramChange2, financeTables, totalsFinance, 'finance')}
           </Grid>
         ))}
       </Grid>
-
-      <Box mt={4}>
-        <Typography variant='h6' gutterBottom>
-          Total Finance: {totalFinance}
-        </Typography>
-      </Box>
     </Box>
   );
 }
