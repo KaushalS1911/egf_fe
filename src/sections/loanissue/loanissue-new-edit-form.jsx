@@ -229,7 +229,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     height: 360,
     facingMode: 'user',
   };
-
+  const blobToFile = (blob, fileName) => {
+    return new File([blob], fileName, { type: blob.type });
+  };
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -248,12 +250,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-
+    console.log("data.property_imagedata.property_image : ",data.property_image);
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
     }
-
+    console.log(data);
+    console.log(croppedImage);
     const propertyDetails = watch('propertyDetails');
     const payload = new FormData();
     payload.append('company', user.company);
@@ -291,7 +294,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
       payload.append('property-image', blob, 'property-image.jpg');
     } else {
-      payload.append('property-image', data.property_image);
+      payload.append('property-image',data.property_image);
+      console.log("blob")
     }
     payload.append('loanAmount', parseFloat(data.loanAmount));
     payload.append('interestLoanAmount', parseFloat(data.loanAmount));
@@ -958,6 +962,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   <RHFUploadAvatar
                     radius={true}
                   name='property_image'
+                    file={currentLoanIssue?.propertyImage || null}
                   maxSize={3145728}
                   onDelete={handleDeleteImage}
                   sx={{'.css-m6sgpe .css-gyv40i':{borderRadius:"unset !important",}}}
