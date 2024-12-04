@@ -711,21 +711,33 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {!isFieldsEnabled &&
           <>
-            <Grid item xs={12} md={4}>
-              <Typography variant='h6' sx={{ mb: 3 }}>
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
-            </Grid>
+            {/*<Grid item xs={12} md={4}>*/}
+            {/*  <Typography variant='h6' sx={{ mb: 3 }}>*/}
+            {/*  </Typography>*/}
+            {/*</Grid>*/}
+            {/*<Grid item xs={12} md={8}>*/}
+            {/*  <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>*/}
+            {/*</Grid>*/}
           </>
           }
           <Grid item xs={12} md={4}>
+            {/*<Card sx={{ pt: 6, pb: 2 }}>*/}
+            <Box >
+              <RHFUploadAvatar
+                disabled={true}
+                name='customer_url'
+                maxSize={3145728}
+              />
+            </Box>
+            {/*</Card>*/}
           </Grid>
           <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
+            {!isFieldsEnabled &&  <Box sx={{mb:2}}>
+              <Alert  severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
+            </Box> }
             <Box
               rowGap={3}
               columnGap={2}
@@ -767,18 +779,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
-            <Card sx={{ pt: 6, pb: 2 }}>
-              <Box sx={{ mb: 5 }}>
-                <RHFUploadAvatar
-                  disabled={true}
-                  name='customer_url'
-                  maxSize={3145728}
-                />
-              </Box>
-            </Card>
-          </Grid>
-          <Grid xs={12} md={9}>
+
+          <Grid xs={12}>
             <Card sx={{ p: 3 }}>
               <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
                 Customer Details
@@ -790,6 +792,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
+                  md: 'repeat(5, 1fr)',
                 }}
               >
                 <RHFTextField name='customerCode' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}
@@ -819,6 +822,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
+                  md: 'repeat(4, 1fr)',
                 }}
               >
                 <RHFTextField
@@ -942,21 +946,28 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   </Typography>
                 </Box>
                 {croppedImage ? (
-                  <RHFUpload
+                  <RHFUploadAvatar
+                    radius={true}
                     name='property_image'
                     maxSize={3145728}
                     file={croppedImage}
                     onDelete={handleDeleteImage}
-                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
+                    sx={{
+                      '.css-81o5ax .css-gyv40i .css-3n58sb .css-3n58sb': {
+                        borderRadius: 'unset !important',
+                      },
+                    }}
+
                     onDrop={handleDropSingleFile}
                   />
                 ) : (
-                  <RHFUpload
-                    name='property_image'
-                    maxSize={3145728}
-                    onDelete={handleDeleteImage}
-                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
-                    onDrop={handleDropSingleFile}
+                  <RHFUploadAvatar
+                    radius={true}
+                  name='property_image'
+                  maxSize={3145728}
+                  onDelete={handleDeleteImage}
+                  sx={{'.css-m6sgpe .css-gyv40i':{borderRadius:"unset !important",}}}
+                  onDrop={handleDropSingleFile}
                   />
                 )}
                 <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
@@ -1161,6 +1172,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
+                  md: 'repeat(4, 1fr)',
                 }}
               >
                 <Controller

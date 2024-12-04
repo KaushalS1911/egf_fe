@@ -232,7 +232,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
 
         <Grid item xs={12} md={12}>
           <Card
-            sx={{ margin: '0px 0px 20px 0px' }}
           >
             <CardContent>
               <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
@@ -307,7 +306,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
           </Card>
         </Grid>
 
-        <Grid xs={12} md={12} py={5}>
+        <Grid xs={12} md={12}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
               <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
