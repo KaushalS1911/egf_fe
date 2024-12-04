@@ -246,7 +246,7 @@ export default function Notice({ noticeData }) {
           <View style={styles.pagePadding}>
             <View>
               <Text style={styles.noticeTitle}>નોટીસ</Text>
-              <Text style={styles.date}>27 Nov 2024</Text>
+              <Text style={styles.date}>{fDate(new Date())}</Text>
             </View>
             <View>
               <Text

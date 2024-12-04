@@ -261,6 +261,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   };
 
   return (
+    <>
     <Box sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box
@@ -449,6 +450,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
         </Box>
       </Box>
     </Box>
+
+    </>
   );
 }
 

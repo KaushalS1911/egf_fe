@@ -14,6 +14,11 @@ import Label from '../../components/label';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
+import { Box, Dialog, DialogActions, Typography } from '@mui/material';
+import { PDFViewer } from '@react-pdf/renderer';
+import Notice from '../reminder/view/notice';
+import Noc from './noc/noc';
+import { useState } from 'react';
 
 
 // ----------------------------------------------------------------------
@@ -21,10 +26,11 @@ import { getResponsibilityValue } from '../../permission/permission';
 export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, index }) {
   const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo } = row;
   const confirm = useBoolean();
-  const router = useRouter();
+  const [nocData, setNocData] = useState();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const view = useBoolean();
 
   return (
     <>
@@ -60,6 +66,20 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
           >
             {status}
           </Label></TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>{
+          <Typography onClick={() => {
+            if (row.status === 'Closed') {
+              view.onTrue();
+              setNocData(row);
+            }
+          }} sx={{
+            cursor: row.status !== 'Closed' ? 'not-allowed' : 'pointer',
+            color: row.status !== 'Closed' ? 'grey.500' : 'inherit',
+            pointerEvents: row.status !== 'Closed' ? 'none' : 'auto',
+          }}>
+            <Iconify icon='basil:document-solid' />
+          </Typography>
+        }</TableCell>
       </TableRow>
 
 
@@ -102,6 +122,26 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
           </Button>
         }
       />
+
+      <Dialog fullScreen open={view.value}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <Noc nocData={nocData} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }
