@@ -12,7 +12,7 @@ import RejectionFiles from './errors-rejection-files';
 
 // ----------------------------------------------------------------------
 
-export default function UploadAvatar({ error, file, disabled, helperText, sx, ...other }) {
+export default function UploadAvatar({ error, file, disabled, helperText, sx,radius ,...other }) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     multiple: false,
     disabled,
@@ -33,9 +33,9 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx, ..
       alt="avatar"
       src={imgUrl}
       sx={{
-        width: 1,
-        height: 1,
-        borderRadius: '50%',
+        width:radius ? '100%' : 1,
+        height:radius ? '100%' : 1,
+        borderRadius:radius ? "unset" : '50%',
       }}
     />
   );
@@ -52,7 +52,7 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx, ..
         width: 1,
         height: 1,
         zIndex: 9,
-        borderRadius: '50%',
+        borderRadius: radius ? "unset" : '50%',
         position: 'absolute',
         color: 'text.disabled',
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
@@ -86,8 +86,8 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx, ..
       sx={{
         width: 1,
         height: 1,
-        overflow: 'hidden',
-        borderRadius: '50%',
+        overflow: radius ? 'unset' : 'hidden',
+        borderRadius:radius ? 'unset' :  '50%',
         position: 'relative',
       }}
     >
@@ -107,7 +107,7 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx, ..
           height: 144,
           cursor: 'pointer',
           overflow: 'hidden',
-          borderRadius: '50%',
+          borderRadius: radius ? 'unset' : "50%",
           border: (theme) => `1px dashed ${alpha(theme.palette.grey[500], 0.2)}`,
           ...(isDragActive && {
             opacity: 0.72,

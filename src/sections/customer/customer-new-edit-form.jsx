@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import countrystatecity from '../../_mock/map/csc.json';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -11,18 +10,16 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
-
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFTextField,
   RHFAutocomplete,
   RHFUploadAvatar, RHFRadioGroup,
 } from 'src/components/hook-form';
-import { Button, Dialog, Slider } from '@mui/material';
+import { Button, Dialog } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
@@ -30,8 +27,6 @@ import { useGetBranch } from '../../api/branch';
 import { useGetConfigs } from '../../api/config';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
-import Cropper from 'react-easy-crop';
-import { getCroppedImg } from '../../utils/canvasUtils';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
@@ -55,8 +50,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
-  const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [open, setOpen] = useState(false);
   const { configs, mutate } = useGetConfigs();
@@ -71,6 +64,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy)
     ? currentCustomer.referenceBy
     : 'Other';
+
   const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     middleName: Yup.string().required('Middle Name is required'),
@@ -147,7 +141,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const { reset, watch, control, handleSubmit, setValue, formState: { isSubmitting } } = methods;
   const [aspectRatio, setAspectRatio] = useState(null);
 
-// Once the image is loaded, calculate its dimensions and set the aspect ratio
   useEffect(() => {
     if (imageSrc) {
       const img = new Image();
@@ -157,6 +150,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       };
     }
   }, [imageSrc]);
+
   useEffect(() => {
     if (currentCustomer) {
       reset(defaultValues);
@@ -256,9 +250,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       console.error(error);
     }
   });
+
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -285,34 +281,28 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const handleCancel = () => {
     setImageSrc(null);
   };
+
   const showCroppedImage = async () => {
     try {
-      // Check if cropping is completed
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
         if (file) {
-          // If no crop, set the file as the preview
           setCroppedImage(URL.createObjectURL(file));
         }
         setImageSrc(null);
         return;
       }
 
-      // Create a canvas to draw the cropped image
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
 
-      // Get scale factors for image size adjustments
       const scaleX = image.naturalWidth / image.width;
       const scaleY = image.naturalHeight / image.height;
 
-      // Set canvas size based on cropped area
       canvas.width = completedCrop.width;
       canvas.height = completedCrop.height;
 
-      // Get 2D context to draw on canvas
       const ctx = canvas.getContext('2d');
 
-      // Draw the cropped image onto the canvas
       ctx.drawImage(
         image,
         completedCrop.x * scaleX,
@@ -322,25 +312,21 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         0,
         0,
         completedCrop.width,
-        completedCrop.height
+        completedCrop.height,
       );
 
-      // Convert canvas to Blob (image file)
       canvas.toBlob(async (blob) => {
         if (!blob) {
           console.error('Failed to create blob');
           return;
         }
 
-        // Create a new file from the Blob
         const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
 
-        // Set the cropped image as preview
         setCroppedImage(URL.createObjectURL(croppedFile));
         setFile(croppedFile);
         setValue('profile_pic', croppedFile);
 
-        // If a customer exists, upload the cropped image
         if (currentCustomer) {
           const formData = new FormData();
           formData.append('profile-pic', croppedFile);
@@ -348,7 +334,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
           await axios
             .put(
               `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
-              formData
+              formData,
             )
             .then((res) => {
               console.log('Profile updated successfully:', res.data);
@@ -358,7 +344,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             });
         }
 
-        // Close the cropping modal
         setOpen(false);
         setImageSrc(null);
       }, 'image/jpeg');
@@ -366,6 +351,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       console.error('Error cropping and uploading image:', e);
     }
   };
+
   const handleDrop = useCallback(async (acceptedFiles) => {
     const file = acceptedFiles[0];
 
@@ -444,10 +430,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         <Card sx={{ pt: 5, px: 3, mt: 5 }}>
           <Box sx={{ mb: 5 }}>
             <RHFUploadAvatar
-              name="profile_pic"
-              file={croppedImage ||  currentCustomer?.avatar_url}
+              name='profile_pic'
+              file={croppedImage || currentCustomer?.avatar_url}
               maxSize={3145728} // 3 MB
-              accept="image/*" // Accept all image types
+              accept='image/*' // Accept all image types
               onDrop={handleDropSingleFile}
             />
             <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>

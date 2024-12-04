@@ -14,7 +14,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
   CardActions, Dialog,
-  IconButton, Slider,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -37,8 +37,6 @@ import { useGetBranch } from '../../api/branch';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
-import Cropper from 'react-easy-crop';
-import { getCroppedImg } from '../../utils/canvasUtils';
 import { TableHeadCustom, useTable } from '../../components/table';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -68,10 +66,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [schemeId, setSchemeID] = useState();
   const webcamRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -264,7 +258,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     const payload = new FormData();
     payload.append('company', user.company);
     payload.append('customer', data.customer.id);
-    payload.append('scheme', currentLoanIssue ? data.scheme._id : data.scheme.id);
+    payload.append('scheme', data?.scheme?._id);
     payload.append('loanNo', data.loanNo);
     payload.append('issueDate', data.issueDate);
     payload.append('nextInstallmentDate', data.nextInstallmentDate);
@@ -344,8 +338,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
-
-
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
       setIsFieldsEnabled(true);
@@ -353,7 +345,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setIsFieldsEnabled(false);
     }
   };
-
 
   useEffect(() => {
     const customer = watch('customer');
@@ -535,6 +526,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
     }
   };
+
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -553,50 +545,50 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCompletedCrop(null);
   };
 
-    const showCroppedImage = async () => {
-      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        if (file) {
-          setCroppedImage(URL.createObjectURL(file));
-        }
-        setImageSrc(null);
+  const showCroppedImage = async () => {
+    if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+      if (file) {
+        setCroppedImage(URL.createObjectURL(file));
+      }
+      setImageSrc(null);
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const image = document.getElementById('cropped-image');
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    canvas.width = completedCrop.width;
+    canvas.height = completedCrop.height;
+
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width,
+      completedCrop.height,
+    );
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('Failed to create blob');
         return;
       }
 
-      const canvas = document.createElement('canvas');
-      const image = document.getElementById('cropped-image');
-
-      const scaleX = image.naturalWidth / image.width;
-      const scaleY = image.naturalHeight / image.height;
-
-      canvas.width = completedCrop.width;
-      canvas.height = completedCrop.height;
-
-      const ctx = canvas.getContext('2d');
-
-      ctx.drawImage(
-        image,
-        completedCrop.x * scaleX,
-        completedCrop.y * scaleY,
-        completedCrop.width * scaleX,
-        completedCrop.height * scaleY,
-        0,
-        0,
-        completedCrop.width,
-        completedCrop.height,
-      );
-
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          console.error('Failed to create blob');
-          return;
-        }
-
-        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
-        setCroppedImage(URL.createObjectURL(croppedFile));
-        setFile(croppedFile);
-        setValue('property_image', croppedFile);
-        setImageSrc(null);
-      }, 'image/jpeg');
+      const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+      setCroppedImage(URL.createObjectURL(croppedFile));
+      setFile(croppedFile);
+      setValue('property_image', croppedFile);
+      setImageSrc(null);
+    }, 'image/jpeg');
   };
 
   const handleDeleteImage = () => {
@@ -608,6 +600,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const handleCancel = () => {
     setImageSrc(null);
   };
+
   const validateField = (fieldName, index, value) => {
     const updatedErrors = { ...errors };
     const schemedata = watch('scheme');
@@ -711,21 +704,33 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {!isFieldsEnabled &&
           <>
-            <Grid item xs={12} md={4}>
-              <Typography variant='h6' sx={{ mb: 3 }}>
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
-            </Grid>
+            {/*<Grid item xs={12} md={4}>*/}
+            {/*  <Typography variant='h6' sx={{ mb: 3 }}>*/}
+            {/*  </Typography>*/}
+            {/*</Grid>*/}
+            {/*<Grid item xs={12} md={8}>*/}
+            {/*  <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>*/}
+            {/*</Grid>*/}
           </>
           }
           <Grid item xs={12} md={4}>
+            {/*<Card sx={{ pt: 6, pb: 2 }}>*/}
+            <Box >
+              <RHFUploadAvatar
+                disabled={true}
+                name='customer_url'
+                maxSize={3145728}
+              />
+            </Box>
+            {/*</Card>*/}
           </Grid>
           <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
+            {!isFieldsEnabled &&  <Box sx={{mb:2}}>
+              <Alert  severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
+            </Box> }
             <Box
               rowGap={3}
               columnGap={2}
@@ -767,18 +772,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
           </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
-            <Card sx={{ pt: 6, pb: 2 }}>
-              <Box sx={{ mb: 5 }}>
-                <RHFUploadAvatar
-                  disabled={true}
-                  name='customer_url'
-                  maxSize={3145728}
-                />
-              </Box>
-            </Card>
-          </Grid>
-          <Grid xs={12} md={9}>
+
+          <Grid xs={12}>
             <Card sx={{ p: 3 }}>
               <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
                 Customer Details
@@ -790,6 +785,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
+                  md: 'repeat(5, 1fr)',
                 }}
               >
                 <RHFTextField name='customerCode' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}
@@ -819,6 +815,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
+                  md: 'repeat(4, 1fr)',
                 }}
               >
                 <RHFTextField
@@ -933,30 +930,38 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent>
-                <Box sx={{display: "flex",justifyContent: "space-between", mb: 2}}>
-                  <Typography variant='subtitle1' component={"span"} sx={{ fontWeight: 600  }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant='subtitle1' component={'span'} sx={{ fontWeight: 600 }}>
                     Property Image
                   </Typography>
-                  <Typography variant='subtitle1' sx={{display: "inline-block", fontWeight: 600  }}>
-                    <Iconify icon="ion:camera-sharp" width={24} sx={{color: "gray", cursor: "pointer"}} onClick={() => setOpen2(true)}/>
+                  <Typography variant='subtitle1' sx={{ display: 'inline-block', fontWeight: 600 }}>
+                    <Iconify icon='ion:camera-sharp' width={24} sx={{ color: 'gray', cursor: 'pointer' }}
+                             onClick={() => setOpen2(true)} />
                   </Typography>
                 </Box>
                 {croppedImage ? (
-                  <RHFUpload
+                  <RHFUploadAvatar
+                    radius={true}
                     name='property_image'
                     maxSize={3145728}
                     file={croppedImage}
                     onDelete={handleDeleteImage}
-                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
+                    sx={{
+                      '.css-81o5ax .css-gyv40i .css-3n58sb .css-3n58sb': {
+                        borderRadius: 'unset !important',
+                      },
+                    }}
+
                     onDrop={handleDropSingleFile}
                   />
                 ) : (
-                  <RHFUpload
-                    name='property_image'
-                    maxSize={3145728}
-                    onDelete={handleDeleteImage}
-                    sx={{height: "300px",' .css-1lrddw3':{height: "300px"},' .css-16lfxc8':{pb:0}}}
-                    onDrop={handleDropSingleFile}
+                  <RHFUploadAvatar
+                    radius={true}
+                  name='property_image'
+                  maxSize={3145728}
+                  onDelete={handleDeleteImage}
+                  sx={{'.css-m6sgpe .css-gyv40i':{borderRadius:"unset !important",}}}
+                  onDrop={handleDropSingleFile}
                   />
                 )}
                 <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
@@ -1161,6 +1166,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
+                  md: 'repeat(4, 1fr)',
                 }}
               >
                 <Controller
@@ -1356,26 +1362,25 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       >
         <DialogTitle>Camera</DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-
-    <Webcam
-      audio={false}
-      ref={webcamRef}
-      screenshotFormat="image/jpeg"
-      width={"90%"}
-      height={"100%"}
-      videoConstraints={videoConstraints}
-    />
-    </Box>
-    <DialogActions>
-      <Button variant='outlined' onClick={capture}>
-        Capture Photo
-      </Button>
-      <Button variant='contained'  onClick={() => setOpen2(false)}>
-        Close Camera
-      </Button>
-    </DialogActions>
-  </Dialog>
-  </>
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat='image/jpeg'
+            width={'90%'}
+            height={'100%'}
+            videoConstraints={videoConstraints}
+          />
+        </Box>
+        <DialogActions>
+          <Button variant='outlined' onClick={capture}>
+            Capture Photo
+          </Button>
+          <Button variant='contained' onClick={() => setOpen2(false)}>
+            Close Camera
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
