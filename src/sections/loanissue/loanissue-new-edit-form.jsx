@@ -834,15 +834,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   label='Issue Date'
                   req={'red'}
                 />
-
                 <RHFAutocomplete
-                  name='scheme'
-                  label='Scheme'
-                  req='red'
+                  name="scheme"
+                  label="Scheme"
+                  req="red"
                   disabled={!isFieldsEnabled}
                   fullWidth
-                  options={scheme?.map((item) => item)}
-                  getOptionLabel={(option) => option?.name}
+                  options={scheme?.filter((item) => item.isActive)}
+                  getOptionLabel={(option) => option?.name || ''}
                   renderOption={(props, option) => (
                     <li {...props} key={option?.id}>
                       {option?.name}
@@ -851,22 +850,34 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   onChange={(e, selectedScheme) => {
                     setValue('scheme', selectedScheme);
                     const schemedata = selectedScheme;
+
                     if (schemedata?.ratePerGram) {
                       fields.forEach((_, index) => {
+                        // Fetch necessary values only once
                         const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
                         const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
-                        const caratValue =
-                          carat?.find((item) => item?.name == parseFloat(getValues(`propertyDetails[${index}].carat`))) || {};
+                        const caratValue = carat?.find(
+                          (item) => item?.name === parseFloat(getValues(`propertyDetails[${index}].carat`))
+                        ) || {};
+
+                        const caratPercentage = caratValue?.caratPercentage || 100;
+
+                        // Perform calculations
                         const grossWeight = totalWeight - lossWeight;
-                        const netWeight = grossWeight * (caratValue?.caratPercentage / 100 || 1);
-                        setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
-                        setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-                        setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
-                        setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+                        const netWeight = grossWeight * (caratPercentage / 100);
+                        const grossAmount = grossWeight * schemedata?.ratePerGram;
+                        const netAmount = netWeight * schemedata?.ratePerGram;
+
+                        // Set form values with valid numbers and toFixed for precision
+                        if (!isNaN(grossWeight)) setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
+                        if (!isNaN(netWeight)) setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
+                        if (!isNaN(grossAmount)) setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));
+                        if (!isNaN(netAmount)) setValue(`propertyDetails[${index}].netAmount`, netAmount.toFixed(2));
                       });
                     }
                   }}
                 />
+
                 <RHFTextField name='interestRate' label='Instrest Rate' InputProps={{ readOnly: true }} />
                 <Controller
                   name='consultingCharge'
