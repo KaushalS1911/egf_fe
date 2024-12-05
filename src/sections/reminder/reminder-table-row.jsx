@@ -35,7 +35,6 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   };
-  console.log('noticeData ', noticeData);
   return (
     <>
       <TableRow hover selected={selected}>

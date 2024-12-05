@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png'
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
+import LoanInvoice from '../../../components/invoise/invoice-header';
+import InvoiceHeader from '../../../components/invoise/invoice-header';
 
 // ----------------------------------------------------------------------
 
@@ -41,8 +43,6 @@ const useStyles = () =>
         subtitle2: { fontSize: 9, fontWeight: 700 },
         alignRight: { textAlign: 'right' },
         page: {
-          fontSize: 9,
-          lineHeight: 1.6,
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
           textTransform: 'capitalize',
@@ -80,13 +80,7 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
-        headerContainer: {
-          backgroundColor: '#FF7F27', // Orange color
-          padding: 20,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        },
+
         logoContainer: {
           flexDirection: 'column',
           alignItems: 'center',
@@ -97,19 +91,7 @@ const useStyles = () =>
           height: 80,
           marginBottom: 8,
         },
-        headerText2: {
-          color: '#FFFFFF',
-          fontSize: 20,
-          letterSpacing: 1,
-          marginTop: -10,
-          fontWeight: 500,
-        },
-        headerText: {
-          color: '#FFFFFF',
-          fontSize: 36,
-          letterSpacing: 1,
-          fontWeight: 'bold',
-        },
+
         subText: {
           color: '#FFFFFF',
           fontSize: 10,
@@ -212,56 +194,54 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 export default function Notice({noticeData}) {
-
-
   const styles = useStyles();
-
   return (
     <>
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.watermarkContainer}>
-          <Image src={logo} style={styles.watermarkImage} />
-        </View>
-        <View style={styles.headerContainer}>
-          <Image source={logo} style={styles.logo} />
-          <View style={styles.logoContainer}>
-            <Text style={styles.headerText}>EASY GOLD</Text>
-            <Text style={styles.headerText2}>F I N C O R P</Text>
-            <Text style={styles.subText}>
-              Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat
-            </Text>
+      <Document>
+        <Page size="A4" style={styles.page}>
+          <View style={styles.watermarkContainer}>
+            <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <View style={styles.my4}>
-            <Text style={styles.branchDetails}>Branch: {noticeData.customer.branch.address.street + " " + noticeData.customer.branch.address.landmark}</Text>
-            <Text style={styles.branchDetails}>Branch code: {noticeData.customer.branch.branchCode}</Text>
-            <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>
-            <Text style={styles.branchDetails}>Email:
-              {noticeData.customer.branch.email}</Text>
-            <Text style={styles.branchDetails}>Mobile: {noticeData.customer.branch.contact}</Text>
+          <InvoiceHeader selectedRow={noticeData}/>
+          {/*<View style={styles.headerContainer}>*/}
+          {/*  <Image source={logo} style={styles.logo} />*/}
+          {/*  <View style={styles.logoContainer}>*/}
+          {/*    <Text style={styles.headerText}>EASY GOLD</Text>*/}
+          {/*    <Text style={styles.headerText2}>F I N C O R P</Text>*/}
+          {/*    <Text style={styles.subText}>*/}
+          {/*      Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat*/}
+          {/*    </Text>*/}
+          {/*  </View>*/}
+          {/*  <View style={styles.my4}>*/}
+          {/*    <Text style={styles.branchDetails}>Branch: {noticeData.customer.branch.address.street + " " + noticeData.customer.branch.address.landmark}</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Branch code: {noticeData.customer.branch.branchCode}</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Email:*/}
+          {/*      {noticeData.customer.branch.email}</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Mobile: {noticeData.customer.branch.contact}</Text>*/}
+          {/*  </View>*/}
+          {/*</View>*/}
+          <View style={styles.pagePadding}>
+            <View>
+              <Text style={styles.noticeTitle}>નોટીસ</Text>
+              <Text style={styles.date}>27 Nov 2024</Text>
+            </View>
+            <View>
+              <Text style={styles.topDetails}>{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
+              <Text style={styles.topDetails}>{`${noticeData.customer.permanentAddress.street} ${noticeData.customer.permanentAddress.landmark} ,${noticeData.customer.permanentAddress.city}-${noticeData.customer.permanentAddress.zipcode} ,${noticeData.customer.permanentAddress.state}`}</Text>
+              <Text style={styles.topDetails}>{noticeData.customer.contact}</Text>
+            </View>
+            <View>
+              <Text style={styles.noticeTitle}>વિષય : ગોલ્ડ જપ્ત કરવા બાબત</Text>
+            </View>
+            <View style={styles.bottomDetails}>
+              <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
+              <Text style={styles.bottomDetails}>આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ 05 Jul 2024 ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા 205000.00/- નું વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે તારીખ 07 Dec 2024 સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા તમારા ગોલ્ડની હરાજી કરશે અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.</Text>
+              <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.pagePadding}>
-        <View>
-            <Text style={styles.noticeTitle}>નોટીસ</Text>
-            <Text style={styles.date}>27 Nov 2024</Text>
-        </View>
-        <View>
-            <Text style={styles.topDetails}>{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
-            <Text style={styles.topDetails}>{`${noticeData.customer.permanentAddress.street} ${noticeData.customer.permanentAddress.landmark} ,${noticeData.customer.permanentAddress.city}-${noticeData.customer.permanentAddress.zipcode} ,${noticeData.customer.permanentAddress.state}`}</Text>
-            <Text style={styles.topDetails}>{noticeData.customer.contact}</Text>
-        </View>
-        <View>
-          <Text style={styles.noticeTitle}>વિષય : ગોલ્ડ જપ્ત કરવા બાબત</Text>
-        </View>
-        <View style={styles.bottomDetails}>
-          <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
-          <Text style={styles.bottomDetails}>આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ 05 Jul 2024 ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા 205000.00/- નું વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે તારીખ 07 Dec 2024 સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા તમારા ગોલ્ડની હરાજી કરશે અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.</Text>
-          <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>
-        </View>
-        </View>
-      </Page>
-    </Document>
+        </Page>
+      </Document>
     </>
   );
 }
