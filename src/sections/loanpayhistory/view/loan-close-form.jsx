@@ -45,10 +45,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
       .min(1, 'Total Loan Amount must be greater than 0')
       .required('Total Loan Amount is required')
       .typeError('Total Loan Amount must be a number'),
-    paidLoanAmount: Yup.number()
-      .min(1, 'Paid Loan Amount must be greater than 0')
-      .required('Paid Loan Amount is required')
-      .typeError('Paid Loan Amount must be a number'),
     pendingLoanAmount: Yup.number()
       .min(0, 'Pending Loan Amount must be 0 or greater')
       .required('Pending Loan Amount is required')
@@ -91,6 +87,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       setValue('paymentMode', watch('paymentMode'));
     }
   },[watch('paymentMode')])
+
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -118,7 +115,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
     const payload = {
       totalLoanAmount: data.totalLoanAmount,
-      paidLoanAmount: data.amountPaid,
       closingCharge: data.closingCharge,
       remark: data.remark,
       paymentDetail: paymentDetail,
@@ -185,11 +181,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
             }} />
           </Grid>
           <Grid item xs={4}>
-            <RHFTextField name='paidLoanAmount' label='Paid Loan Amount' req={'red'} onKeyPress={(e) => {
-              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                e.preventDefault();
-              }
-            }} />
+            <RHFTextField name='paidLoanAmount' label='Paid Loan Amount' InputProps={{ readOnly: true }}/>
           </Grid>
           <Grid item xs={4}>
             <RHFTextField name='pendingLoanAmount' label='Pending Loan Amount' req={'red'} onKeyPress={(e) => {

@@ -26,6 +26,7 @@ import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import Iconify from '../../../components/iconify';
+import moment from 'moment';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -132,13 +133,12 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   }, [loanInterest, currentLoan, setValue]);
 
   useEffect(() => {
-    const startDate = new Date(from).setHours(0,0,0,0);
     const endDate = new Date(to).setHours(0,0,0,0);
-    const differenceInTime = Math.abs(endDate - startDate);
-    const differenceInDays = Math.abs(differenceInTime / (1000 * 3600 * 24));
-    const nextInstallmentDate = new Date(currentLoan.nextInstallmentDate);
-    const differenceInTime2 = Math.abs(new Date(to) - nextInstallmentDate);
-    const differenceInDays2 = Math.abs(differenceInTime2 / (1000 * 3600 * 24));
+    const differenceInDays = moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 1;
+
+    const nextInstallmentDate = moment(currentLoan.nextInstallmentDate);
+    const differenceInDays2 = moment(to).startOf('day').diff(nextInstallmentDate.startOf('day'), 'days', true);
+
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
@@ -155,6 +155,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
   }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
+
   useEffect(() => {
     if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
@@ -260,6 +261,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   };
 
   return (
+    <>
     <Box sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box
@@ -448,6 +450,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
         </Box>
       </Box>
     </Box>
+
+    </>
   );
 }
 

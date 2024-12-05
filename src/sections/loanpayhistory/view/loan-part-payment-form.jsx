@@ -20,6 +20,7 @@ import Iconify from '../../../components/iconify';
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
   { id: 'payAmount', label: 'Pay Amount' },
+  { id: 'intLoanAmount', label: 'INT Loan Amt' },
   { id: 'payDate', label: 'Pay Date' },
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
@@ -185,6 +186,14 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     }
   };
 
+  function intAmtCalculation(loanAmt,IntAmt,index){
+    const totalPartPay = partPayment.reduce((acc, curr, i) => {
+      return i <= index ? acc + curr.amountPaid : acc;
+    }, 0);
+    return loanAmt - totalPartPay;
+  }
+
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -343,6 +352,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             <TableRow key={index}>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{intAmtCalculation(row.loan.loanAmount,row.loan.interestLoanAmount , index)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>

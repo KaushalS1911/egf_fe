@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
-import logo from 'src/assets/logo/pdf-logo.png'
+import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
 import LoanInvoice from '../../../components/invoise/invoice-header';
@@ -99,12 +99,13 @@ const useStyles = () =>
           marginTop: 10,
           fontWeight: 'bold',
           marginLeft: -145,
-          width: '40%'
+          width: '40%',
         },
         branchDetails: {
           color: '#FFFFFF',
           marginTop: 3,
           fontWeight: 'bold',
+          textTransform: 'lowercase',
           fontSize: 10,
           textAlign: 'right',
         },
@@ -120,7 +121,7 @@ const useStyles = () =>
           textDecoration: 'underline',
           fontSize: 23,
           fontFamily: 'NotoSansGujarati',
-          textAlign: 'center'
+          textAlign: 'center',
         },
         topDetails: {
           fontSize: 11,
@@ -135,7 +136,7 @@ const useStyles = () =>
           fontFamily: 'NotoSansGujarati',
           letterSpacing: 0.5,
         },
-        mainText:{
+        mainText: {
           fontSize: 14,
           fontFamily: 'Roboto',
           // width: "100%",
@@ -145,7 +146,7 @@ const useStyles = () =>
         },
         wriitenBy: {
           fontSize: 14,
-          width: "100%",
+          width: '100%',
           textAlign: 'right',
           marginTop: 10,
           fontFamily: 'NotoSansGujarati',
@@ -159,8 +160,8 @@ const useStyles = () =>
           letterSpacing: 0.5,
         },
         date: {
-          width: "100%",
-          textAlign: "right",
+          width: '100%',
+          textAlign: 'right',
           fontSize: 12,
         },
         tableCell_1: {
@@ -188,7 +189,7 @@ const useStyles = () =>
           width: '15%',
         },
       }),
-    []
+    [],
   );
 
 // ----------------------------------------------------------------------
