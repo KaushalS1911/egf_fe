@@ -165,15 +165,16 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     control={control}
                     label='Renew Date'
                   />
+                  <RHFTextField
+                    name='contact'
+                    label='Mobile No.'
+                    InputProps={{ readOnly: true }}
+                    inputProps={{ maxLength: 16 }}
+                  />
                   <RHFTextField name='interestLoanAmount' label='Interest Loan Amount' InputProps={{ readOnly: true }} />
                   <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }} />
                   <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
-                  <RHFTextField
-                  name='contact'
-                  label='Mobile No.'
-                  InputProps={{ readOnly: true }}
-                  inputProps={{ maxLength: 16 }}
-                />
+
                 {/*<RHFTextField name='closedBy' label='Closed By' InputProps={{ readOnly: true }} />*/}
 
                 <Box pb={0}>

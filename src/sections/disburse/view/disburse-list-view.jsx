@@ -51,6 +51,7 @@ const TABLE_HEAD = [
   { id: 'InterestRate', label: 'Int. rate' },
   { id: 'CashAmount', label: 'Cash amt' },
   { id: 'BankAmount', label: 'Bank amt' },
+  { id: 'disburse', label: 'Disburse' },
   { id: '', width: 88 },
 ];
 

@@ -41,15 +41,6 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-        {getResponsibilityValue('create_disburse', configs, user) && <Button
-          onClick={handleClick}
-          sx={{ my: 2, textWrap: 'nowrap', fontSize: '11px' }}
-          variant='outlined'
-          disabled={row?.status !== 'Issued'}
-          startIcon={<Iconify sx={{ width: '15px' }} icon='mingcute:add-line' />}
-        >
-          Loan Disburse
-        </Button> || '-'}
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />

@@ -16,7 +16,7 @@ import {
   Select,
   InputLabel,
   FormControl,
-  Grid, Card, Dialog, Slider, IconButton,
+  Grid, Card, Dialog, Slider, IconButton, DialogActions,
 } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload } from '../../../components/hook-form';
 import * as Yup from 'yup';
@@ -38,6 +38,10 @@ import { getCroppedImg } from '../../../utils/canvasUtils';
 import Iconify from '../../../components/iconify';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import { useBoolean } from '../../../hooks/use-boolean';
+import { PDFViewer } from '@react-pdf/renderer';
+import InterestPdf from '../PDF/interest-pdf';
+import PartReleasePdf from '../PDF/part-release-pdf';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -57,6 +61,7 @@ const TABLE_HEAD = [
   { id: 'payDate', label: 'Pay Date' },
   { id: 'remarks', label: 'Remarks' },
   { id: 'action', label: 'Action' },
+  { id: 'pdf', label: 'PDF' },
 ];
 
 function PartReleaseForm({ currentLoan, mutate }) {
@@ -68,6 +73,8 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const [croppedImage, setCroppedImage] = useState(null);
   const [file, setFile] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
+  const [data, setData] = useState(null);
+  const view = useBoolean();
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
@@ -88,7 +95,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   }, [imageSrc]);
 
   const paymentSchema = paymentMode === 'Bank' ? {
-    account: Yup.object().required('Account is required'),
+    account: Yup.object().required('Account is required').typeError('Account is required'),
     bankAmount: Yup.string()
       .required('Bank Amount is required')
       .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
@@ -107,6 +114,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
     account: Yup.object().required('Account is required'),
   };
+
 
   const selectedTotals = useMemo(() => {
     return selectedRows.reduce(
@@ -608,8 +616,10 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     type='number'
                     inputProps={{ min: 0 }}
                     onChange={(e) => {
-                      field.onChange(e);
-                      handleCashAmountChange(e);
+                      if (value === "" || /^\d+$/.test(value)) {
+                        field.onChange(e);
+                        handleCashAmountChange(e);
+                      }
                     }}
                   />
                 )}
@@ -687,10 +697,41 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>{
+                <Typography onClick={() => {
+                  view.onTrue();
+                  setData(row);
+                }} sx={{
+                  cursor: 'pointer',
+                  color: 'inherit',
+                  pointerEvents: 'auto',
+                }}>
+                  <Iconify icon='basil:document-solid' />
+                </Typography>
+              }</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <Dialog fullScreen open={view.value}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <PartReleasePdf selectedRow={data} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
 
   );

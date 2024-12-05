@@ -21,12 +21,14 @@ import { Box } from '@mui/system';
 import { Dialog, DialogActions } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import LetterOfAuthority from './letter-of-authority';
+import { useRouter } from '../../routes/hooks';
 
 // ----------------------------------------------------------------------
 
 export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount, _id } = row;
   const confirm = useBoolean();
+  const router = useRouter()
   const popover = usePopover();
   const view = useBoolean(); // Boolean for handling dialog visibility
   const [selectedRow, setSelectedRow] = useState(null); // State to hold the selected row's data
@@ -59,6 +61,15 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
+        {getResponsibilityValue('create_disburse', configs, user) && <Button
+          onClick={() => router.push(paths.dashboard.disburse.new(row._id))}
+          sx={{ my: 2, textWrap: 'nowrap', fontSize: '11px' }}
+          variant='outlined'
+          disabled={row?.status !== 'Issued'}
+          startIcon={<Iconify sx={{ width: '15px' }} icon='mingcute:add-line' />}
+        >
+          Loan Disburse
+        </Button> || '-'}
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
