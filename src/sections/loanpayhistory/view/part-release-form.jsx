@@ -616,10 +616,8 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     type='number'
                     inputProps={{ min: 0 }}
                     onChange={(e) => {
-                      if (value === "" || /^\d+$/.test(value)) {
                         field.onChange(e);
                         handleCashAmountChange(e);
-                      }
                     }}
                   />
                 )}
