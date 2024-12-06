@@ -332,7 +332,7 @@ export default function LoanIssueDetails({ selectedRow }) {
                   <Text style={styles.subText}>{selectedRow.loanNo}</Text>
                 </Text>
                 <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Loan Type: {' '}</Text>
+                  <Text style={styles.subHeading}>Loan Type : {' '}</Text>
                   <Text style={styles.subText}>{selectedRow.customer.loanType}</Text>
                 </Text>
                 <Text style={styles.spacing}>
