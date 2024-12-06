@@ -172,40 +172,50 @@ function LoanCloseForm({ currentLoan, mutate }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Grid container rowSpacing={3} columnSpacing={2}>
-          <Grid item xs={4}>
+        <Grid  rowSpacing={3} columnSpacing={2}>
+          <Box
+            rowGap={3}
+            columnGap={2}
+            display='grid'
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)',
+              sm: 'repeat(5, 1fr)',
+            }}
+          >
             <RHFTextField name='totalLoanAmount' label='Total Loan Amount' req={'red'} onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
               }
             }} />
-          </Grid>
-          <Grid item xs={4}>
             <RHFTextField name='paidLoanAmount' label='Paid Loan Amount' InputProps={{ readOnly: true }}/>
-          </Grid>
-          <Grid item xs={4}>
             <RHFTextField name='pendingLoanAmount' label='Pending Loan Amount' req={'red'} onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
               }
             }} />
-          </Grid>
-          <Grid item xs={4}>
             <RHFTextField name='closingCharge' label='Closing Charge' req={'red'} onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
               }
             }} />
-          </Grid>
-          <Grid item xs={4}>
             <RHFTextField name='closeRemarks' label='Close Remarks' />
-          </Grid>
+          </Box>
         </Grid>
-        <Grid container>
+        <Grid>
           <Grid item xs={4}>
-            <Typography variant='h6' sx={{ mt: 5, mb: 2 }}>
+            <Typography variant='h6'my={1.5}>
+
               Payment Details
             </Typography>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(4, 1fr)',
+              }}
+            >
             <RHFAutocomplete
               name='paymentMode'
               label='Payment Mode'
@@ -222,85 +232,62 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 </li>
               )}
             />
-          </Grid>
-        </Grid>
-        <Box sx={{ mt: 8 }}>
-          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}>
-              <Controller
-                name='cashAmount'
-                control={control}
-                render={({ field }) => (
-                  <RHFTextField
-                    {...field}
-                    label='Cash Amount'
-                    req={'red'}
-                    type='number'
-                    inputProps={{ min: 0 }}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      handleCashAmountChange(e);
-                    }}
-                  />
-                )}
-              />
-            </Box>
-          )}
-          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}
-              sx={{ mt: 3 }}
-            >
-              <Box>
-                <RHFAutocomplete
-                  name='account'
-                  label='Account'
-                  req={'red'}
-                  fullWidth
-                  options={branch.flatMap((item) => item.company.bankAccounts)}
-                  getOptionLabel={(option) => option.bankName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id || option.bankName}>
-                      {option.bankName}
-                    </li>
-                  )}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                />
-              </Box>
-              <Box>
+              {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+
                 <Controller
-                  name='bankAmount'
+                  name='cashAmount'
                   control={control}
                   render={({ field }) => (
                     <RHFTextField
                       {...field}
-                      label='Bank Amount'
+                      label='Cash Amount'
                       req={'red'}
-                      disabled={watch('paymentMode') === 'Bank' ? false : true}
                       type='number'
                       inputProps={{ min: 0 }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleCashAmountChange(e);
+                      }}
                     />
                   )}
                 />
-              </Box>
-            </Box>
+              )}
+              {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+
+                <>
+                  <RHFAutocomplete
+                    name='account'
+                    label='Account'
+                    req={'red'}
+                    fullWidth
+                    options={branch.flatMap((item) => item.company.bankAccounts)}
+                    getOptionLabel={(option) => option.bankName || ''}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id || option.bankName}>
+                        {option.bankName}
+                      </li>
+                    )}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                  />
+                  <Controller
+                    name='bankAmount'
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label='Bank Amount'
+                        req={'red'}
+                        disabled={watch('paymentMode') === 'Bank' ? false : true}
+                        type='number'
+                        inputProps={{ min: 0 }}
+                      />
+                    )}
+                  />
+                </>
           )}
-        </Box>
+            </Box>
+          </Grid>
+        </Grid>
         <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>

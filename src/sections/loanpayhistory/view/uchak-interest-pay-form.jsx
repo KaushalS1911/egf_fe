@@ -161,7 +161,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
+        <Grid container rowSpacing={3} columnSpacing={2}>
           <Grid item xs={4}>
             <RHFDatePicker
               name='uchakPayDate'
@@ -180,10 +180,20 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
           <Grid item xs={4}>
             <RHFTextField name='remark' label='Remark' />
           </Grid>
-          <Grid item xs={4}>
-            <Typography variant='h6' sx={{ mt: 5, mb: 2 }}>
-              Payment Details
-            </Typography>
+
+        </Grid>
+        <Grid item>
+          <Typography variant='subtitle1' my={1.5}>
+            Payment Details
+          </Typography>
+          <Box
+            rowGap={3}
+            columnGap={2}
+            display='grid'
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)',
+              md: 'repeat(4, 1fr)',
+            }}>
             <RHFAutocomplete
               name='paymentMode'
               label='Payment Mode'
@@ -200,51 +210,29 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 </li>
               )}
             />
-          </Grid>
-        </Grid>
-        <Box sx={{ p: 3 }}>
-          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}>
-              <Controller
-                name='cashAmount'
-                control={control}
-                render={({ field }) => (
-                  <RHFTextField
-                    {...field}
-                    label='Cash Amount'
-                    req={'red'}
-                    type='number'
-                    inputProps={{ min: 0 }}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      handleCashAmountChange(e);
-                    }}
-                  />
-                )}
-              />
-            </Box>
-          )}
-          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}
-              sx={{ mt: 3 }}
-            >
-              <Box>
+            {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+              <>
+                <Controller
+                  name='cashAmount'
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label='Cash Amount'
+                      req={'red'}
+                      type='number'
+                      inputProps={{ min: 0 }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleCashAmountChange(e);
+                      }}
+                    />
+                  )}
+                />
+              </>
+            )}
+            {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+              <>
                 <RHFAutocomplete
                   name='account'
                   label='Account'
@@ -259,8 +247,6 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
-              </Box>
-              <Box>
                 <Controller
                   name='bankAmount'
                   control={control}
@@ -275,10 +261,11 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                     />
                   )}
                 />
-              </Box>
-            </Box>
-          )}
-        </Box>
+              </>
+            )}
+          </Box>
+        </Grid>
+
         <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>

@@ -386,7 +386,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release/${id}`);
       mutate();
       refetchPartRelease();
-      confirm.onFalse()
+      confirm.onFalse();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
@@ -396,7 +396,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Box sx={{ p: { xs: 2, md: 3 } }}>
+        <Box sx={{display:'flex',gap:4,pl:0.5}}>
           <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
@@ -404,7 +404,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
-        <Box sx={{ p: 3 }}>
+        <Box>
           <Box>
             <Box sx={{ width: '100%' }}>
               <TableContainer component={Paper}>
@@ -472,11 +472,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 </Table>
               </TableContainer>
             </Box>
-            <Box sx={{ mt: 8 }}>
+            <Box sx={{ mt: 3 }}>
               <Grid container columnSpacing={2}>
                 <Grid item xs={9}>
                   <Grid container rowSpacing={3} columnSpacing={2}>
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                       <RHFDatePicker
                         name='date'
                         control={control}
@@ -484,17 +484,17 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         req={'red'}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField name='amountPaid' label='Pay amount' req='red' onKeyPress={(e) => {
                         if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                           e.preventDefault();
                         }
                       }} />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField name='remark' label='Remark' />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <RHFAutocomplete
                         name='expectPaymentMode'
                         label='Expected Payment Mode'
@@ -508,6 +508,95 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         )}
                       />
                     </Grid>
+
+                  </Grid>
+                  <Grid>
+                    <Typography variant='subtitle1' my={1.5}>
+                      Payment Details
+                    </Typography>
+
+                    <Box
+                      rowGap={2}
+                      columnGap={2}
+                      display='grid'
+                      gridTemplateColumns={{
+                        xs: 'repeat(1, 1fr)',
+                        sm: 'repeat(2, 1fr)',
+                        md: 'repeat(4, 1fr)',
+                      }}>
+
+                      <RHFAutocomplete
+                        name='paymentMode'
+                        label='Payment Mode'
+                        req='red'
+                        options={['Cash', 'Bank', 'Both']}
+                        getOptionLabel={(option) => option}
+                        onChange={(event, value) => {
+                          setValue('paymentMode', value);
+                          handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+                        }}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option}>
+                            {option}
+                          </li>
+                        )}
+                      />
+                      {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+
+                        <Controller
+                          name='cashAmount'
+                          control={control}
+                          render={({ field }) => (
+                            <RHFTextField
+                              {...field}
+                              label='Cash Amount'
+                              req={'red'}
+                              type='number'
+                              inputProps={{ min: 0 }}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleCashAmountChange(e);
+                              }}
+                            />
+                          )}
+                        />
+                      )}
+                      {
+                        (watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+                          <>
+                            <RHFAutocomplete
+                              name="account"
+                              label="Account"
+                              req="red"
+                              fullWidth
+                              options={branch.flatMap((item) => item.company.bankAccounts)}
+                              getOptionLabel={(option) => option.bankName || ''}
+                              renderOption={(props, option) => (
+                                <li {...props} key={option.id || option.bankName}>
+                                  {option.bankName}
+                                </li>
+                              )}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                            />
+
+                            <Controller
+                              name="bankAmount"
+                              control={control}
+                              render={({ field }) => (
+                                <RHFTextField
+                                  {...field}
+                                  label="Bank Amount"
+                                  req="red"
+                                  disabled={watch('paymentMode') !== 'Bank'}
+                                  type="number"
+                                  inputProps={{ min: 0 }}
+                                />
+                              )}
+                            />
+                          </>
+                        )
+                      }
+                    </Box>
                   </Grid>
                 </Grid>
                 <Grid item xs={12} md={3}>
@@ -559,111 +648,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   </Dialog>
                 </Grid>
               </Grid>
-              <Grid container spacing={2} sx={{ mt: 4 }}>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Typography variant='h6' sx={{ mb: 3 }}>
-                    Payment Details
-                  </Typography>
-
-                  <RHFAutocomplete
-                    name='paymentMode'
-                    label='Payment Mode'
-                    req='red'
-                    options={['Cash', 'Bank', 'Both']}
-                    getOptionLabel={(option) => option}
-                    onChange={(event, value) => {
-                      setValue('paymentMode', value);
-                      handleLoanAmountChange({ target: { value: watch('amountPaid') } });
-                    }}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option}>
-                        {option}
-                      </li>
-                    )}
-                  />
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Box>
-        <Box sx={{ p: 3 }}>
-          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}>
-              <Controller
-                name='cashAmount'
-                control={control}
-                render={({ field }) => (
-                  <RHFTextField
-                    {...field}
-                    label='Cash Amount'
-                    req={'red'}
-                    type='number'
-                    inputProps={{ min: 0 }}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      handleCashAmountChange(e);
-                    }}
-                  />
-                )}
-              />
-            </Box>
-          )}
-          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-              }}
-              sx={{ mt: 3 }}
-            >
-              <Box>
-                <RHFAutocomplete
-                  name='account'
-                  label='Account'
-                  req={'red'}
-                  fullWidth
-                  options={branch.flatMap((item) => item.company.bankAccounts)}
-                  getOptionLabel={(option) => option.bankName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id || option.bankName}>
-                      {option.bankName}
-                    </li>
-                  )}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                />
-              </Box>
-              <Box>
-                <Controller
-                  name='bankAmount'
-                  control={control}
-                  render={({ field }) => (
-                    <RHFTextField
-                      {...field}
-                      label='Bank Amount'
-                      req={'red'}
-                      disabled={watch('paymentMode') === 'Bank' ? false : true}
-                      type='number'
-                      inputProps={{ min: 0 }}
-                    />
-                  )}
-                />
-              </Box>
-            </Box>
-          )}
-        </Box>
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',mt:2}}>
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
@@ -671,7 +660,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
           </LoadingButton>
         </Box>
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 8 }}>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {partRelease && partRelease.map((row, index) => (
@@ -742,3 +731,10 @@ function PartReleaseForm({ currentLoan, mutate }) {
 }
 
 export default PartReleaseForm;
+
+
+
+
+
+
+
