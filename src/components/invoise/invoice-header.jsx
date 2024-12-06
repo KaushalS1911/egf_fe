@@ -4,6 +4,7 @@ import contact from 'src/assets/icon/icons8-phone-50.png';
 import mail from 'src/assets/icon/icons8-letter-50.png';
 import website from 'src/assets/icon/icons8-website-50.png';
 import branch from 'src/assets/icon/icons8-company-30.png';
+import branchCode from 'src/assets/icon/icons8-branch-50.png';
 import {
   Page,
   View,
@@ -12,6 +13,7 @@ import {
   Document,
   StyleSheet,
   Font,
+  Link,
 } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/logo.png'; // Correct path to your logo
 
@@ -31,7 +33,7 @@ const useStyles = () =>
         },
         header: {
           width: '100%',
-          height: '150px',
+          height: '126px',
           fontFamily: 'Roboto',
           position: 'relative',
         },
@@ -51,7 +53,6 @@ const useStyles = () =>
           backgroundColor: '#232C4B',
           borderTopLeftRadius: '50%',
           borderBottomLeftRadius: '50%',
-          textTransform: 'lowercase',
         },
         logo: {
           height: '38px',
@@ -62,6 +63,7 @@ const useStyles = () =>
         },
         headerText: {
           color: '#fff',
+          fontSize: '28px',
           marginLeft: '10px',
           fontWeight: 'bold',
         },
@@ -72,7 +74,7 @@ const useStyles = () =>
           margin: '5px 10px',
         },
         headerDetailsParent: {
-          margin: '55px 20px',
+          margin: '60px 30px',
           color: '#fff',
         },
         headerDetails: {
@@ -86,22 +88,20 @@ const useStyles = () =>
         rowContainer: {
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 2, // Controls space between the image and text
+          gap: 2,
+          marginBottom: 8,
         },
         flexContainer: {
-          marginLeft: '20px',
           flexDirection: 'row',
-          flexWrap: 'wrap',
-          width: '80%',
-          columnGap: '20px',
-          rowGap: '10px',
+          justifyContent: 'space-between',
+          width:'100%'
         },
         separator: {
           marginHorizontal: 2,
           color: '#fff',
           fontSize: '10px',
           fontWeight: '400',
-        }
+        },
       }),
     [],
   );
@@ -114,45 +114,61 @@ export default function InvoiceHeader({ selectedRow }) {
       <View style={styles.headerbox1}>
         <Image style={styles.logo} src={logo} />
         <Text style={styles.headerText}>EASY GOLD FINCORP</Text>
-        <Text style={styles.headerSubText}>GSTIN : 24DMMUPK1478K12E</Text>
         <Text style={styles.headerSubText}>
-          Address: Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat
+          {`${selectedRow.customer.branch.address.street}, ${selectedRow.customer.branch.address.landmark}, ${selectedRow.customer.branch.address.city}, ${selectedRow.customer.branch.address.zipcode}`}
         </Text>
       </View>
 
       <View style={styles.headerbox2}>
         <View style={styles.headerDetailsParent}>
           <View style={styles.flexContainer}>
-            {/* Phone */}
-            <View style={styles.rowContainer}>
-              <Image style={styles.icon} src={contact} />
-              <Text style={styles.separator}>|</Text> {/* Separator */}
-              <Text style={styles.headerDetails}>8160059100</Text>
+            {/* Column 1 */}
+            <View style={{ width: 'auto' }}>
+              <View style={styles.rowContainer}>
+                <Image style={styles.icon} src={branch} />
+                <Text style={styles.separator}>|</Text>
+                <Text style={styles.headerDetails}>{selectedRow.customer.branch.name}</Text>
+              </View>
+              <View style={{ ...styles.rowContainer,marginTop:15 }}>
+                <Image style={styles.icon} src={branchCode} />
+                <Text style={styles.separator}>|</Text>
+                <Text style={styles.headerDetails}>{selectedRow.customer.branch.branchCode}</Text>
+              </View>
             </View>
 
-            <View style={styles.rowContainer}>
-              <Image style={styles.icon} src={mail} />
-              <Text style={styles.separator}>|</Text> {/* Separator */}
-              <Text style={styles.headerDetails}>{selectedRow.customer.branch.email}</Text>
+            {/* Column 2 */}
+            <View style={{ width: 'auto' }}>
+              <View style={styles.rowContainer}>
+                <Image style={styles.icon} src={mail} />
+                <Text style={styles.separator}>|</Text>
+                <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>
+                  {selectedRow.customer.branch.email}
+                </Text>
+              </View>
+              <View style={{ ...styles.rowContainer,marginTop:15 }}>
+                <Image style={styles.icon} src={website} />
+                <Text style={styles.separator}>|</Text>
+                <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>
+                  <Link src="https://www.easygoldfincorp.com/" style={{ textDecoration: 'none', color: '#fff' }}>
+                    www.easygoldfincorp.com
+                  </Link>
+                </Text>
+              </View>
             </View>
 
-            <View style={styles.rowContainer}>
-              <Image style={styles.icon} src={website} />
-              <Text style={styles.separator}>|</Text>
-              <Text style={styles.headerDetails} href={'easygoldfncorp.com'}>easygoldfncorp.com</Text>
+            {/* Column 3 */}
+            <View style={{ width: 'auto' }}>
+              <View style={styles.rowContainer}>
+                <Image style={styles.icon} src={contact} />
+                <Text style={styles.separator}>|</Text>
+                <Text style={styles.headerDetails}>{selectedRow.customer.branch.contact}</Text>
+              </View>
+              <View style={{ ...styles.rowContainer,marginTop:15 }}>
+                <Image style={styles.icon} src={contact} />
+                <Text style={styles.separator}>|</Text>
+                <Text style={styles.headerDetails}>8160059100</Text>
+              </View>
             </View>
-            <View style={styles.rowContainer}>
-              <Image style={styles.icon} src={contact} />
-              <Text style={styles.separator}>|</Text> {/* Separator */}
-              <Text style={styles.headerDetails}>{selectedRow.customer.branch.branchCode}</Text>
-            </View>
-            <View style={styles.rowContainer}>
-              <Image style={styles.icon} src={branch} />
-              <Text style={styles.separator}>|</Text> {/* Separator */}
-              <Text
-                style={styles.headerDetails}>{selectedRow.customer.branch.address.street + ' ' + selectedRow.customer.branch.address.landmark}</Text>
-            </View>
-
           </View>
         </View>
       </View>
