@@ -250,7 +250,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log("data.property_imagedata.property_image : ",data.property_image);
+    console.log('data.property_imagedata.property_image : ', data.property_image);
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
@@ -294,8 +294,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
       payload.append('property-image', blob, 'property-image.jpg');
     } else {
-      payload.append('property-image',data.property_image);
-      console.log("blob")
+      payload.append('property-image', data.property_image);
+      console.log('blob');
     }
     payload.append('loanAmount', parseFloat(data.loanAmount));
     payload.append('interestLoanAmount', parseFloat(data.loanAmount));
@@ -722,7 +722,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           }
           <Grid item xs={12} md={4}>
             {/*<Card sx={{ pt: 6, pb: 2 }}>*/}
-            <Box >
+            <Box>
               <RHFUploadAvatar
                 disabled={true}
                 name='customer_url'
@@ -732,9 +732,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             {/*</Card>*/}
           </Grid>
           <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
-            {!isFieldsEnabled &&  <Box sx={{mb:2}}>
-              <Alert  severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
-            </Box> }
+            {!isFieldsEnabled && <Box sx={{ mb: 2 }}>
+              <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
+            </Box>}
             <Box
               rowGap={3}
               columnGap={2}
@@ -836,9 +836,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   req={'red'}
                 />
                 <RHFAutocomplete
-                  name="scheme"
-                  label="Scheme"
-                  req="red"
+                  name='scheme'
+                  label='Scheme'
+                  req='red'
                   disabled={!isFieldsEnabled}
                   fullWidth
                   options={scheme?.filter((item) => item.isActive)}
@@ -858,7 +858,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
                         const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
                         const caratValue = carat?.find(
-                          (item) => item?.name === parseFloat(getValues(`propertyDetails[${index}].carat`))
+                          (item) => item?.name === parseFloat(getValues(`propertyDetails[${index}].carat`)),
                         ) || {};
 
                         const caratPercentage = caratValue?.caratPercentage || 100;
@@ -961,12 +961,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 ) : (
                   <RHFUploadAvatar
                     radius={true}
-                  name='property_image'
+                    name='property_image'
                     file={currentLoanIssue?.propertyImage || null}
-                  maxSize={3145728}
-                  onDelete={handleDeleteImage}
-                  sx={{'.css-m6sgpe .css-gyv40i':{borderRadius:"unset !important",}}}
-                  onDrop={handleDropSingleFile}
+                    maxSize={3145728}
+                    onDelete={handleDeleteImage}
+                    sx={{ '.css-m6sgpe .css-gyv40i': { borderRadius: 'unset !important' } }}
+                    onDrop={handleDropSingleFile}
                   />
                 )}
                 <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>

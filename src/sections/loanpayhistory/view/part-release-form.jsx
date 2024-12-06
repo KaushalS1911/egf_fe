@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Typography,
@@ -10,38 +10,30 @@ import {
   TableRow,
   Paper,
   Checkbox,
-  TextField,
   Button,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Grid, Card, Dialog, Slider, IconButton, DialogActions,
+  Grid, Dialog, IconButton, DialogActions,
 } from '@mui/material';
-import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload } from '../../../components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Upload } from '../../../components/upload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
 import { fDate } from '../../../utils/format-time';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
-import { useParams } from 'react-router';
 import { useGetAllPartRelease } from '../../../api/part-release';
 import { useGetBranch } from '../../../api/branch';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
-import Cropper from 'react-easy-crop';
-import { getCroppedImg } from '../../../utils/canvasUtils';
 import Iconify from '../../../components/iconify';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { PDFViewer } from '@react-pdf/renderer';
-import InterestPdf from '../PDF/interest-pdf';
 import PartReleasePdf from '../PDF/part-release-pdf';
+import { ConfirmDialog } from '../../../components/custom-dialog';
+import { usePopover } from '../../../components/custom-popover';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -53,6 +45,7 @@ const tableHeaders = [
   { id: 'grossAmount', label: 'Gross Amount' },
   { id: 'netAmount', label: 'Net Amount' },
 ];
+
 const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -78,6 +71,10 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
+  const confirm = useBoolean();
+  const popover = usePopover();
+  const [deleteId, setDeleteId] = useState('');
+
   useEffect(() => {
     if (currentLoan.propertyDetails) {
       setProperties(currentLoan.propertyDetails);
@@ -130,6 +127,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 },
     );
   }, [selectedRows, currentLoan.propertyDetails]);
+
   const NewPartReleaseSchema = Yup.object().shape({
     expectPaymentMode: Yup.string().required('Expected Payment Mode is required'),
     date: Yup.date().nullable().required('Pay date is required'),
@@ -140,6 +138,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     ...paymentSchema,
   });
+
   const defaultValues = {
     date: new Date(),
     amountPaid: '',
@@ -253,11 +252,12 @@ function PartReleaseForm({ currentLoan, mutate }) {
     if (!watch('amountPaid')) {
       setValue('amountPaid', selectedTotals.netAmount);
     }
-  },[watch('paymentMode'),selectedTotals.netAmount])
+  }, [watch('paymentMode'), selectedTotals.netAmount]);
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
@@ -273,6 +273,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -289,7 +290,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
       setValue('bankAmount', 0);
     }
   };
-
 
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -363,6 +363,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const handleCancel = () => {
     setImageSrc(null);
   };
+
   const handleCheckboxClick = (index) => {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(index)
@@ -385,6 +386,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release/${id}`);
       mutate();
       refetchPartRelease();
+      confirm.onFalse()
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
@@ -447,7 +449,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         </TableCell>
                       </TableRow>
                     )}
-
                     <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
                       <TableCell padding='checkbox' />
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>TOTAL AMOUNT</TableCell>
@@ -468,12 +469,9 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.netAmount).toFixed(2)}</TableCell>
                     </TableRow>
                   </TableBody>
-
                 </Table>
               </TableContainer>
             </Box>
-
-
             <Box sx={{ mt: 8 }}>
               <Grid container columnSpacing={2}>
                 <Grid item xs={9}>
@@ -486,7 +484,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         req={'red'}
                       />
                     </Grid>
-
                     <Grid item xs={12} sm={6} md={4}>
                       <RHFTextField name='amountPaid' label='Pay amount' req='red' onKeyPress={(e) => {
                         if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -494,11 +491,9 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         }
                       }} />
                     </Grid>
-
                     <Grid item xs={12} sm={6} md={4}>
                       <RHFTextField name='remark' label='Remark' />
                     </Grid>
-
                     <Grid item xs={12} sm={6} md={4}>
                       <RHFAutocomplete
                         name='expectPaymentMode'
@@ -515,7 +510,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     </Grid>
                   </Grid>
                 </Grid>
-
                 <Grid item xs={12} md={3}>
                   {croppedImage ? (
                     <div>
@@ -538,7 +532,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                       }}
                     />
                   )}
-
                   <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
                     {imageSrc && (
                       <ReactCrop
@@ -566,7 +559,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   </Dialog>
                 </Grid>
               </Grid>
-
               <Grid container spacing={2} sx={{ mt: 4 }}>
                 <Grid item xs={12} sm={6} md={3}>
                   <Typography variant='h6' sx={{ mb: 3 }}>
@@ -616,8 +608,8 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     type='number'
                     inputProps={{ min: 0 }}
                     onChange={(e) => {
-                        field.onChange(e);
-                        handleCashAmountChange(e);
+                      field.onChange(e);
+                      handleCashAmountChange(e);
                     }}
                   />
                 )}
@@ -691,7 +683,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{
-                <IconButton color='error' onClick={() => handleDeletePart(row._id)}>
+                <IconButton color='error' onClick={() => {
+                  confirm.onTrue();
+                  popover.onClose();
+                  setDeleteId(row?._id);
+                }}>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }</TableCell>
@@ -711,6 +707,17 @@ function PartReleaseForm({ currentLoan, mutate }) {
           ))}
         </TableBody>
       </Table>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title='Delete'
+        content='Are you sure want to delete?'
+        action={
+          <Button variant='contained' color='error' onClick={() => handleDeletePart(deleteId)}>
+            Delete
+          </Button>
+        }
+      />
       <Dialog fullScreen open={view.value}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions
@@ -722,7 +729,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
               Close
             </Button>
           </DialogActions>
-
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               <PartReleasePdf selectedRow={data} />
