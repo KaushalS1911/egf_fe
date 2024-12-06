@@ -3,6 +3,7 @@ import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/
 import logo from '../../../assets/logo/pdf-logo.png';
 import { fDate } from '../../../utils/format-time';
 import { margin } from '@mui/system';
+import InvoiceHeader from '../../../components/invoise/invoice-header';
 
 Font.register({
   family: 'Roboto',
@@ -60,8 +61,6 @@ const useStyles = () =>
         subtitle2: { fontSize: 9, fontWeight: 700 },
         alignRight: { textAlign: 'right' },
         page: {
-          fontSize: 9,
-          lineHeight: 1.6,
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
         },
@@ -124,15 +123,15 @@ const useStyles = () =>
           letterSpacing: 1,
           fontWeight: 'bold',
         },
-        subText: {
-          color: '#FFFFFF',
-          fontSize: 10,
-          marginBottom: 2,
-          marginTop: 10,
-          fontWeight: 'bold',
-          marginLeft: -145,
-          width: '40%',
-        },
+        // subText: {
+        //   color: '#FFFFFF',
+        //   fontSize: 10,
+        //   marginBottom: 2,
+        //   marginTop: 10,
+        //   fontWeight: 'bold',
+        //   marginLeft: -145,
+        //   width: '40%',
+        // },
         branchDetails: {
           color: '#FFFFFF',
           marginTop: 3,
@@ -212,25 +211,26 @@ function Noc({ nocData }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <View style={styles.headerContainer}>
-            <Image source={logo} style={styles.logo} />
-            <View style={styles.logoContainer}>
-              <Text style={styles.headerText}>EASY GOLD</Text>
-              <Text style={styles.headerText2}>F I N C O R P</Text>
-              <Text style={styles.subText}>
-                Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat
-              </Text>
-            </View>
-            <View style={styles.my4}>
-              <Text
-                style={styles.branchDetails}>Branch: {nocData.customer.branch.address.street + ' ' + nocData.customer.branch.address.landmark}</Text>
-              <Text style={styles.branchDetails}>Branch code: {nocData.customer.branch.branchCode}</Text>
-              <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>
-              <Text style={styles.branchDetails}>Email:{nocData.customer.branch.email}</Text>
-              <Text style={styles.branchDetails}>Mobile: {nocData.customer.branch.contact}</Text>
-            </View>
-          </View>
-          <View style={styles.pagePadding}>
+          {/*<View style={styles.headerContainer}>*/}
+          {/*  <Image source={logo} style={styles.logo} />*/}
+          {/*  <View style={styles.logoContainer}>*/}
+          {/*    <Text style={styles.headerText}>EASY GOLD</Text>*/}
+          {/*    <Text style={styles.headerText2}>F I N C O R P</Text>*/}
+          {/*    <Text style={styles.subText}>*/}
+          {/*      Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat*/}
+          {/*    </Text>*/}
+          {/*  </View>*/}
+          {/*  <View style={styles.my4}>*/}
+          {/*    <Text*/}
+          {/*      style={styles.branchDetails}>Branch: {nocData.customer.branch.address.street + ' ' + nocData.customer.branch.address.landmark}</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Branch code: {nocData.customer.branch.branchCode}</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Email:{nocData.customer.branch.email}</Text>*/}
+          {/*    <Text style={styles.branchDetails}>Mobile: {nocData.customer.branch.contact}</Text>*/}
+          {/*  </View>*/}
+          {/*</View>*/}
+          <InvoiceHeader selectedRow={nocData}/>
+          <View style={{... styles.pagePadding,lineHeight: 1.6,fontSize:9 }}>
             <View>
               <Text style={[styles.date, styles.fw]}>{fDate(new Date())}</Text>
             </View>

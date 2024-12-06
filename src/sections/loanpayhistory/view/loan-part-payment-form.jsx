@@ -16,6 +16,9 @@ import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import Iconify from '../../../components/iconify';
+import { ConfirmDialog } from '../../../components/custom-dialog';
+import { usePopover } from '../../../components/custom-popover';
+import { useBoolean } from '../../../hooks/use-boolean';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -30,6 +33,9 @@ const TABLE_HEAD = [
 function LoanPartPaymentForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const { partPayment, refetchPartPayment } = useGetAllPartPayment(currentLoan._id);
+  const confirm = useBoolean();
+  const popover = usePopover();
+  const [deleteId, setDeleteId] = useState('');
   const [paymentMode, setPaymentMode] = useState('');
 
   const paymentSchema = paymentMode === 'Bank' ? {
@@ -138,22 +144,26 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       console.error(error);
     }
   });
+
   useEffect(() => {
-    if(watch('paymentMode')){
+    if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
       setValue('paymentMode', watch('paymentMode'));
     }
-  },[watch('paymentMode')])
+  }, [watch('paymentMode')]);
+
   const handleDeletePartPayment = async (id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`);
       refetchPartPayment();
       mutate();
+      confirm.onFalse();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
     }
   };
+
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
@@ -169,6 +179,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -186,13 +197,12 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     }
   };
 
-  function intAmtCalculation(loanAmt,IntAmt,index){
+  function intAmtCalculation(loanAmt, IntAmt, index) {
     const totalPartPay = partPayment.reduce((acc, curr, i) => {
       return i <= index ? acc + curr.amountPaid : acc;
     }, 0);
     return loanAmt - totalPartPay;
   }
-
 
   return (
     <>
@@ -352,12 +362,18 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             <TableRow key={index}>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{intAmtCalculation(row.loan.loanAmount,row.loan.interestLoanAmount , index)}</TableCell>
+              <TableCell
+                sx={{ whiteSpace: 'nowrap' }}>{intAmtCalculation(row.loan.loanAmount, row.loan.interestLoanAmount, index)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{
-                <IconButton color='error' onClick={() => handleDeletePartPayment(row._id)}>
+                <IconButton color='error' onClick={() => {
+                  confirm.onTrue();
+                  popover.onClose();
+                  setDeleteId(row?._id);
+                }
+                }>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }
@@ -367,6 +383,17 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
 
         </TableBody>
       </Table>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title='Delete'
+        content='Are you sure want to delete?'
+        action={
+          <Button variant='contained' color='error' onClick={() => handleDeletePartPayment(deleteId)}>
+            Delete
+          </Button>
+        }
+      />
     </>
   );
 }

@@ -2,15 +2,11 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { TableHeadCustom } from '../../../components/table';
-import { fDate } from '../../../utils/format-time';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
-import { useParams } from 'react-router';
 import { useGetBranch } from '../../../api/branch';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 
@@ -47,8 +43,6 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       .typeError('Uchak Interest Pay Amount must be a number'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     ...paymentSchema,
-
-
   });
 
   const defaultValues = {
@@ -76,10 +70,11 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   } = methods;
 
   useEffect(() => {
-    if(watch('paymentMode')){
+    if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
     }
-  },[watch('paymentMode')])
+  }, [watch('paymentMode')]);
+
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -129,6 +124,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       enqueueSnackbar('Failed to uchak interest pay', { variant: 'error' });
     }
   });
+
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('uchakInterestAmount')) || '';
@@ -144,6 +140,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);

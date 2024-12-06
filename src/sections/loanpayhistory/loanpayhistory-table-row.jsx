@@ -17,7 +17,7 @@ import { getResponsibilityValue } from '../../permission/permission';
 import { Box, Dialog, DialogActions, Typography } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import Notice from '../reminder/view/notice';
-import Noc from './noc/noc';
+import Noc from './PDF/noc';
 import { useState } from 'react';
 
 
