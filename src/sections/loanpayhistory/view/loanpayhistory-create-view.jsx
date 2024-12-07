@@ -20,6 +20,10 @@ export default function LoanpayhistoryCreateView() {
   const { Loanissue, mutate } = useGetLoanissue(loanPayHistory);
   const currentLoan = Loanissue.find((item) => item._id === id);
 
+  const prevLoan = Loanissue.find((item) => item.customer._id === currentLoan.customer._id && item._id !== id);
+  if (prevLoan) {
+    currentLoan.oldLoanNo = prevLoan.loanNo;
+  }
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -36,7 +40,7 @@ export default function LoanpayhistoryCreateView() {
           { name: 'Loan Pay History' },
         ]}
         sx={{
-          mb: { xs: 3, md: 5 },
+          mb: 2,
         }}
       />
 

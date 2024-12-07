@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
+import Qr from 'src/assets/icon/qr.png';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
 
 // ----------------------------------------------------------------------
@@ -20,6 +20,10 @@ Font.register({
 Font.register({
   family: 'NotoSansGujarati',
   src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
+});
+Font.register({
+  family: 'Poppins',
+  src: '/fonts/Overpass-VariableFont_wght.ttf',
 });
 // Font.register();
 
@@ -45,41 +49,31 @@ const useStyles = () =>
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
           textTransform: 'capitalize',
+          position: 'relative',
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
+          height:'80%'
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
           fontSize: 12,
         },
-        footer: {
-          left: 0,
-          right: 0,
-          bottom: 0,
-          padding: 24,
-          margin: 'auto',
-          borderTopWidth: 1,
-          borderStyle: 'solid',
-          position: 'absolute',
-          borderColor: '#DFE3E8',
-        },
+        // footer: {
+        //   left: 0,
+        //   right: 0,
+        //   bottom: 0,
+        //   padding: 24,
+        //   margin: 'auto',
+        //   borderTopWidth: 1,
+        //   borderStyle: 'solid',
+        //   position: 'absolute',
+        //   borderColor: '#DFE3E8',
+        // },
         gridContainer: {
           flexDirection: 'row',
           justifyContent: 'space-between',
         },
-        table: {
-          display: 'flex',
-          width: 'auto',
-        },
-        tableRow: {
-          padding: '8px 0',
-          flexDirection: 'row',
-          borderBottomWidth: 1,
-          borderStyle: 'solid',
-          borderColor: '#DFE3E8',
-        },
-
         logoContainer: {
           flexDirection: 'column',
           alignItems: 'center',
@@ -126,7 +120,7 @@ const useStyles = () =>
         },
         mainText: {
           fontSize: 14,
-          fontFamily: 'Roboto',
+          fontFamily: 'Poppins',
           // width: "100%",
           // textAlign: 'right',
           // marginTop: 10,
@@ -152,9 +146,7 @@ const useStyles = () =>
           textAlign: 'right',
           fontSize: 12,
         },
-        tableCell_1: {
-          width: '5%',
-        },
+
         watermarkContainer: {
           position: 'absolute',
           top: 0,
@@ -169,19 +161,119 @@ const useStyles = () =>
           width: 400,
           opacity: 0.1,
         },
-        tableCell_2: {
-          width: '50%',
-          paddingRight: 16,
-        },
-        tableCell_3: {
-          width: '15%',
-        },
+
         subHeading: {
           fontWeight: 600,
           fontSize: 10,
         },
         subText: {
           fontSize: 10,
+        },
+        spacing: {
+          marginTop: 7,
+        },
+        flexContainer: {
+          flexDirection: 'row',
+          marginTop: 5,
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+
+        },
+
+        img: {
+          height: '48px',
+          width: '48px',
+          borderRadius: 5,
+        },
+        table: {
+          width: 'auto',
+          borderRadius: 10,
+          flex: 2,
+        },
+        tableFooter: {
+          // color: '#fff',
+          // backgroundColor: '#232C4B',
+          borderTop: '1px solid #232C4B',
+          fontWeight: 'bold',
+          borderBottomLeftRadius: 10,
+          borderBottomRightRadius: 10,
+          paddingVertical: 8,
+
+        },
+        tableHeader: {
+          color: '#fff',
+          backgroundColor: '#232C4B',
+          fontWeight: 'bold',
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
+          textWrap: 'nowrap',
+          paddingVertical: 6,
+        },
+
+        tableRow: {
+          flexDirection: 'row',
+          borderStyle: 'solid',
+          paddingVertical: 5,
+          textWrap: 'nowrap',
+        },
+        tableRowBorder: {
+          borderBottom: '1px solid #d9d9d9',
+        },
+        tableCell: {
+          flex: 1,
+          fontSize: 10,
+          paddingHorizontal: 4,
+          textAlign: 'center',
+        },
+        heading: {
+          fontSize: '13px',
+          fontWeight: '500',
+          marginBottom: 5,
+        },
+
+        propertyCellHeading: {
+          fontSize: 12,
+          fontWeight: '500',
+          textAlign: 'center',
+          marginBottom: 5,
+          marginLeft: 18,
+        },
+        propertyImage: {
+          height: '120px',
+          width: '120px',
+          borderRadius: 8,
+        },
+        tableFlex: {
+          flexDirection: 'row',
+          marginTop: 25,
+          width: '100%',
+        },
+        termsAndConditionsHeaders: {
+          color: '#232C4B',
+          borderBottom: '1px solid #232C4B',
+          fontWeight: 'bold',
+          textWrap: 'nowrap',
+          fontSize: '12px',
+          textAlign: 'center',
+          paddingVertical: 5,
+        },
+        d_flex: {
+          display: 'flex',
+          width: '100%',
+          flexDirection: 'row',
+          // marginTop: 90,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          // position:'fixed',
+          // bottom:-50
+        },
+        signText: {
+          fontSize: 11,
+          borderTop: '1px solid black',
+          paddingTop: 10,
+          textAlign: 'center',
+          width: '100px',
+          fontWeight: 600,
         },
       }),
     [],
@@ -190,10 +282,40 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 export default function LoanIssueDetails({ selectedRow }) {
-
-
   const styles = useStyles();
-
+  console.log(selectedRow);
+  const Conditions = [
+    {
+      Condition: 'Interest shall accrue on a day to day basis.',
+    }, {
+      Condition: 'Interest shall charge for minimum 10 days',
+    },
+    {
+      Condition: 'Penalty rate after six days will be 0.07% of interest rate till next due date, It will be 0.20% till 3 months, 0.40% till 6\n' +
+        'months, 0.50 after 6 months.',
+    },
+    {
+      Condition: 'I Shall repay loan with interest as mention in the sanction letter as per terms and conditions',
+    }, {
+      Condition: 'I am a receiver of sanction letter and understood all terms and condition in it',
+    },
+    {
+      Condition: 'Easy Gold FinCorp has right to sell any pledged articles by auction after 8 months if I do not pay the outstanding\n' +
+        'amount till 8 months. Even after serving notice Easy Gold FinCorp has right to sell any pledged articles by auction\n' +
+        'even before 8 months if it is found that outstanding amount is greater than market values of pledged articles.',
+    },
+    {
+      Condition: 'Branch working time will be 10:00 am to 5:00 pm.',
+    }, {
+      Condition: 'The office will be closed on bank holidays and holiday declared by Easy Gold FinCorp',
+    }, {
+      Condition: 'The spurious gold is prohibited.',
+    },
+    {
+      Condition: 'I hereby read and understand all terms and condition with an open mind. I enter into this agreement to voluntarily with\n' +
+        'full knowledge of it.',
+    },
+  ];
   return (
     <>
       <Document>
@@ -203,28 +325,144 @@ export default function LoanIssueDetails({ selectedRow }) {
           </View>
           <InvoiceHeader selectedRow={selectedRow} />
           <View style={styles.pagePadding}>
-            <View style={{display: 'flex'}}>
+            <View style={styles.flexContainer}>
+              <View style={{ width: '35%' }}>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Loan No : {' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.loanNo}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Loan Type : {' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.customer.loanType}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Name : {' '}</Text>
+                  <Text
+                    style={styles.subText}>{`${selectedRow.customer.firstName} ${selectedRow.customer.middleName} ${selectedRow.customer.lastName}`}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Address :{' '}</Text>
+                  <Text
+                    style={{
+                      ...styles.subText,
+                      textWrap: 'wrap',
+                    }}>{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Pan No :{' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.customer.panCard}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Aadhar Card No :{' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.customer.aadharCard}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Mobile No :{' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.customer.contact}</Text>
+                </Text>
+              </View>
+              <View>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Loan Amount : {' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.loanAmount}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Interest Rate : {' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.scheme.interestRate}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Loan Int Pay Schedule
+                    : {' '}</Text>
+                  <Text style={styles.subText}>{selectedRow.scheme.renewalTime}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Issue Date : {' '}</Text>
+                  <Text style={styles.subText}>{fDate(selectedRow.issueDate)}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Next Int Date : {' '}</Text>
+                  <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Renew Date : {' '}</Text>
+                  <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
+                </Text>
+              </View>
+              <View>
+                {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
+                <View>
+                  <Image style={styles.propertyImage} src={selectedRow.propertyImage} />
+                </View>
+              </View>
+            </View>
+            <View style={{ ...styles.flexContainer, gap: 20, position: 'absolute', top: -68, right: 30 }}>
+              <View>
+                <Image style={styles.img} src={Qr} />
+              </View>
+              <View>
+                <Image style={styles.img} src={selectedRow.customer.avatar_url} />
+              </View>
+            </View>
 
+            <View style={styles.tableFlex}>
+              <View style={styles.table}>
+                <View><Text style={styles.heading}>Property Details</Text></View>
+                <View style={[styles.tableRow, styles.tableHeader]}>
+                  <Text style={styles.tableCell}>Property Name</Text>
+                  <Text style={styles.tableCell}>Qty</Text>
+                  <Text style={styles.tableCell}>Total Wt</Text>
+                  <Text style={styles.tableCell}>Net Wt</Text>
+                  <Text style={styles.tableCell}>Net Amt</Text>
+                  <Text style={styles.tableCell}>Part Close Date</Text>
+                  <Text style={styles.tableCell}>Sign</Text>
+                </View>
+
+                {selectedRow.propertyDetails.map((row, index) => (
+                  <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
+                    <Text style={styles.tableCell}>{row.type}</Text>
+                    <Text style={styles.tableCell}>{row.pcs}</Text>
+                    <Text style={styles.tableCell}>{row.totalWeight}</Text>
+                    <Text style={styles.tableCell}>{row.netWeight}</Text>
+                    <Text style={styles.tableCell}>{row.netAmount}</Text>
+                    <Text style={styles.tableCell}></Text>
+                    <Text style={styles.tableCell}></Text>
+                  </View>
+                ))}
+
+                <View style={[styles.tableRow, styles.tableFooter]}>
+                  <Text style={styles.tableCell}>Total</Text>
+                  <Text
+                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0)}</Text>
+                  <Text
+                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)}</Text>
+                  <Text
+                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)}</Text>
+                  <Text
+                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)}</Text>
+                  <Text style={styles.tableCell}></Text>
+                  <Text style={styles.tableCell}></Text>
+                </View>
+              </View>
             </View>
-            <View style={{ marginTop: 10 }}>
-              <Text style={{ marginTop: 10}}>
-                <Text style={styles.subHeading}>Loan No : {' '}</Text>
-                <Text style={styles.subText}>EGF/24_05_000023</Text>
-              </Text>
-              <Text style={{ marginTop: 10}}>
-                <Text style={styles.subHeading}>Customer Name : {' '}</Text>
-                <Text style={styles.subText}>Jack Poll Patel</Text>
-              </Text>
-              <Text  style={{ marginTop: 10}}>
-              <Text style={styles.subHeading}>Address : {' '}</Text>
-              <Text style={styles.subText}>Tirupati Yogichowk surat Gujarat</Text>
-            </Text>
-              <Text style={{ marginTop: 10}}>
-              <Text style={styles.subHeading}>Interest Loan Amount : {' '}</Text>
-              <Text style={styles.subText}>6000</Text>
-            </Text>
-            </View>
+
           </View>
+          <View style={styles.d_flex}>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+          </View>
+        </Page>
+        <Page size='A4' style={[styles.page, styles.pagePadding]}>
+          <view style={{ marginTop: 20 }}>
+            <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
+            <View style={{ marginTop: 10 }}>
+              {Conditions.map((item, index) => (
+                <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+                  <Text style={{ ...styles.subText, marginRight: 4 }}>•</Text> {/* Bullet point */}
+                  <Text style={{ ...styles.subText }}>{item.Condition}</Text> {/* Condition text */}
+                </View>
+              ))}
+            </View>
+          </view>
         </Page>
       </Document>
     </>

@@ -63,7 +63,15 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
+        <MenuItem
+          onClick={() => {
+            view.onTrue();
+            setNoticeData(row);
+          }}
+        >
+          <Iconify icon='gridicons:notice-outline' />
+          Notice
+        </MenuItem>
         {getResponsibilityValue('create_reminder', configs, user) &&
         <MenuItem
           onClick={() => {
@@ -81,15 +89,7 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
           <Iconify icon='carbon:view-filled' />
           Details
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            view.onTrue();
-            setNoticeData(row);
-          }}
-        >
-          <Iconify icon='carbon:view-filled' />
-          View
-        </MenuItem>
+
       </CustomPopover>
 
       <CustomPopover

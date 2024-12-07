@@ -16,6 +16,9 @@ import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import Iconify from '../../../components/iconify';
+import { ConfirmDialog } from '../../../components/custom-dialog';
+import { usePopover } from '../../../components/custom-popover';
+import { useBoolean } from '../../../hooks/use-boolean';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -30,6 +33,9 @@ const TABLE_HEAD = [
 function LoanPartPaymentForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const { partPayment, refetchPartPayment } = useGetAllPartPayment(currentLoan._id);
+  const confirm = useBoolean();
+  const popover = usePopover();
+  const [deleteId, setDeleteId] = useState('');
   const [paymentMode, setPaymentMode] = useState('');
 
   const paymentSchema = paymentMode === 'Bank' ? {
@@ -138,22 +144,26 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       console.error(error);
     }
   });
+
   useEffect(() => {
-    if(watch('paymentMode')){
+    if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
       setValue('paymentMode', watch('paymentMode'));
     }
-  },[watch('paymentMode')])
+  }, [watch('paymentMode')]);
+
   const handleDeletePartPayment = async (id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`);
       refetchPartPayment();
       mutate();
+      confirm.onFalse();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
     }
   };
+
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
@@ -169,6 +179,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -186,18 +197,17 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     }
   };
 
-  function intAmtCalculation(loanAmt,IntAmt,index){
+  function intAmtCalculation(loanAmt, IntAmt, index) {
     const totalPartPay = partPayment.reduce((acc, curr, i) => {
       return i <= index ? acc + curr.amountPaid : acc;
     }, 0);
     return loanAmt - totalPartPay;
   }
 
-
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Box sx={{ p: { xs: 2, md: 3 } }}>
+        <Box sx={{display:'flex' ,gap:4,mb:1.5}}>
           <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
@@ -205,8 +215,8 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
-        <Grid container rowSpacing={3} sx={{ p: 3 }} columnSpacing={2}>
-          <Grid item xs={4}>
+        <Grid container rowSpacing={3} columnSpacing={2}>
+          <Grid item xs={3}>
             <RHFDatePicker
               name='date'
               control={control}
@@ -215,7 +225,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={6} md={3}>
             <RHFTextField name='amountPaid' label='Pay Amount' req='red' fullWidth onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
@@ -223,11 +233,11 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             }} />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={6} md={3}>
             <RHFTextField name='remark' label='Remark' fullWidth />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={6} md={3}>
             <RHFAutocomplete
               name='expectPaymentMode'
               label='Expected Payment Mode'
@@ -244,33 +254,37 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
 
 
         </Grid>
-        <Grid container spacing={2} sx={{ p: { xs: 2, md: 3 } }}>
+        <Grid spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant='h6' sx={{ mt: 5, mb: 2 }}>
+            <Typography variant='h6' my={1.5}>
               Payment Details
             </Typography>
-            <RHFAutocomplete
-              name='paymentMode'
-              label='Payment Mode'
-              req='red'
-              options={['Cash', 'Bank', 'Both']}
-              getOptionLabel={(option) => option}
-              onChange={(event, value) => {
-                setValue('paymentMode', value);
-                handleLoanAmountChange({ target: { value: watch('amountPaid') } });
-              }}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-            />
-          </Grid>
-        </Grid>
-        <Box sx={{ p: 3 }}>
-          {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                md: 'repeat(4, 1fr)',
+              }}>
+
+              <RHFAutocomplete
+                name='paymentMode'
+                label='Payment Mode'
+                req='red'
+                options={['Cash', 'Bank', 'Both']}
+                getOptionLabel={(option) => option}
+                onChange={(event, value) => {
+                  setValue('paymentMode', value);
+                  handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
+              {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
                 <Controller
                   name='cashAmount'
                   control={control}
@@ -288,50 +302,46 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                     />
                   )}
                 />
-              </Grid>
-            </Grid>
-          )}
+              )}
+              {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+                <>
+                  <RHFAutocomplete
+                    name='account'
+                    label='Account'
+                    req='red'
+                    fullWidth
+                    options={branch.flatMap((item) => item.company.bankAccounts)}
+                    getOptionLabel={(option) => option.bankName || ''}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id || option.bankName}>
+                        {option.bankName}
+                      </li>
+                    )}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                  />
 
-          {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-            <Grid container spacing={2} sx={{ mt: 3 }}>
-              <Grid item xs={12} sm={6} md={4}>
-                <RHFAutocomplete
-                  name='account'
-                  label='Account'
-                  req='red'
-                  fullWidth
-                  options={branch.flatMap((item) => item.company.bankAccounts)}
-                  getOptionLabel={(option) => option.bankName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id || option.bankName}>
-                      {option.bankName}
-                    </li>
-                  )}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                />
-              </Grid>
+                  <Controller
+                    name='bankAmount'
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label='Bank Amount'
+                        req={'red'}
+                        disabled={watch('paymentMode') === 'Bank' ? false : true}
+                        type='number'
+                        inputProps={{ min: 0 }}
+                      />
+                    )}
+                  />
+                </>
+              )}
+            </Box>
+          </Grid>
+        </Grid>
 
-              <Grid item xs={12} sm={6} md={4}>
-                <Controller
-                  name='bankAmount'
-                  control={control}
-                  render={({ field }) => (
-                    <RHFTextField
-                      {...field}
-                      label='Bank Amount'
-                      req={'red'}
-                      disabled={watch('paymentMode') === 'Bank' ? false : true}
-                      type='number'
-                      inputProps={{ min: 0 }}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          )}
-        </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             color='inherit'
             sx={{ margin: '0px 10px', height: '36px' }}
@@ -345,19 +355,25 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
           </LoadingButton>
         </Box>
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 8 }}>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {partPayment.map((row, index) => (
             <TableRow key={index}>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{intAmtCalculation(row.loan.loanAmount,row.loan.interestLoanAmount , index)}</TableCell>
+              <TableCell
+                sx={{ whiteSpace: 'nowrap' }}>{intAmtCalculation(row.loan.loanAmount, row.loan.interestLoanAmount, index)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{
-                <IconButton color='error' onClick={() => handleDeletePartPayment(row._id)}>
+                <IconButton color='error' onClick={() => {
+                  confirm.onTrue();
+                  popover.onClose();
+                  setDeleteId(row?._id);
+                }
+                }>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }
@@ -367,6 +383,17 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
 
         </TableBody>
       </Table>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title='Delete'
+        content='Are you sure want to delete?'
+        action={
+          <Button variant='contained' color='error' onClick={() => handleDeletePartPayment(deleteId)}>
+            Delete
+          </Button>
+        }
+      />
     </>
   );
 }

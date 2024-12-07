@@ -16,13 +16,13 @@ function PayTabs({ mutate, currentLoan }) {
   };
   return (
     <>
-      <Grid container spacing={3} sx={{ mt: 3 }}>
-        <Grid item xs={12}>
-          <Typography variant='subtitle1' sx={{  fontWeight: 600 }}>
+      <Grid container spacing={3} sx={{ mt: 1.5 }}>
+        <Grid item xs={12} p={0}>
+          <Typography variant='subtitle1' sx={{ fontWeight: 600, px: 2}}>
             Loan Pay Details
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} P={0}>
           <Card sx={{ p: 3 }}>
             <Tabs value={activeTab} onChange={handleChange} variant='scrollable' scrollButtons='auto' sx={{ mb: 3 }}>
               <Tab label='Interest Pay Details' />

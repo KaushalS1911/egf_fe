@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Typography,
@@ -42,6 +42,8 @@ import { useBoolean } from '../../../hooks/use-boolean';
 import { PDFViewer } from '@react-pdf/renderer';
 import InterestPdf from '../PDF/interest-pdf';
 import PartReleasePdf from '../PDF/part-release-pdf';
+import { ConfirmDialog } from '../../../components/custom-dialog';
+import { usePopover } from '../../../components/custom-popover';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -53,6 +55,7 @@ const tableHeaders = [
   { id: 'grossAmount', label: 'Gross Amount' },
   { id: 'netAmount', label: 'Net Amount' },
 ];
+
 const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -78,6 +81,10 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
+  const confirm = useBoolean();
+  const popover = usePopover();
+  const [deleteId, setDeleteId] = useState('');
+
   useEffect(() => {
     if (currentLoan.propertyDetails) {
       setProperties(currentLoan.propertyDetails);
@@ -130,6 +137,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 },
     );
   }, [selectedRows, currentLoan.propertyDetails]);
+
   const NewPartReleaseSchema = Yup.object().shape({
     expectPaymentMode: Yup.string().required('Expected Payment Mode is required'),
     date: Yup.date().nullable().required('Pay date is required'),
@@ -140,6 +148,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     ...paymentSchema,
   });
+
   const defaultValues = {
     date: new Date(),
     amountPaid: '',
@@ -258,6 +267,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
@@ -273,6 +283,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -289,7 +300,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
       setValue('bankAmount', 0);
     }
   };
-
 
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -385,6 +395,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release/${id}`);
       mutate();
       refetchPartRelease();
+      confirm.onFalse();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
       enqueueSnackbar('Failed to pay interest');
@@ -394,7 +405,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Box sx={{ p: { xs: 2, md: 3 } }}>
+        <Box sx={{display:'flex',gap:4,pl:0.5}}>
           <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
@@ -402,7 +413,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
-        <Box sx={{ p: 3 }}>
+        <Box>
           <Box>
             <Box sx={{ width: '100%' }}>
               <TableContainer component={Paper}>
@@ -447,7 +458,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         </TableCell>
                       </TableRow>
                     )}
-
                     <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
                       <TableCell padding='checkbox' />
                       <TableCell sx={{ fontWeight: '600', color: '#637381' }}>TOTAL AMOUNT</TableCell>
@@ -472,13 +482,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                 </Table>
               </TableContainer>
             </Box>
-
-
-            <Box sx={{ mt: 8 }}>
+            <Box sx={{ mt: 3 }}>
               <Grid container columnSpacing={2}>
                 <Grid item xs={9}>
                   <Grid container rowSpacing={3} columnSpacing={2}>
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                       <RHFDatePicker
                         name='date'
                         control={control}
@@ -486,20 +494,17 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         req={'red'}
                       />
                     </Grid>
-
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField name='amountPaid' label='Pay amount' req='red' onKeyPress={(e) => {
                         if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                           e.preventDefault();
                         }
                       }} />
                     </Grid>
-
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField name='remark' label='Remark' />
                     </Grid>
-
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <RHFAutocomplete
                         name='expectPaymentMode'
                         label='Expected Payment Mode'
@@ -513,9 +518,97 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         )}
                       />
                     </Grid>
+
+                  </Grid>
+                  <Grid>
+                    <Typography variant='subtitle1' my={1.5}>
+                      Payment Details
+                    </Typography>
+
+                    <Box
+                      rowGap={2}
+                      columnGap={2}
+                      display='grid'
+                      gridTemplateColumns={{
+                        xs: 'repeat(1, 1fr)',
+                        sm: 'repeat(2, 1fr)',
+                        md: 'repeat(4, 1fr)',
+                      }}>
+
+                      <RHFAutocomplete
+                        name='paymentMode'
+                        label='Payment Mode'
+                        req='red'
+                        options={['Cash', 'Bank', 'Both']}
+                        getOptionLabel={(option) => option}
+                        onChange={(event, value) => {
+                          setValue('paymentMode', value);
+                          handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+                        }}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option}>
+                            {option}
+                          </li>
+                        )}
+                      />
+                      {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+
+                        <Controller
+                          name='cashAmount'
+                          control={control}
+                          render={({ field }) => (
+                            <RHFTextField
+                              {...field}
+                              label='Cash Amount'
+                              req={'red'}
+                              type='number'
+                              inputProps={{ min: 0 }}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                handleCashAmountChange(e);
+                              }}
+                            />
+                          )}
+                        />
+                      )}
+                      {
+                        (watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+                          <>
+                            <RHFAutocomplete
+                              name="account"
+                              label="Account"
+                              req="red"
+                              fullWidth
+                              options={branch.flatMap((item) => item.company.bankAccounts)}
+                              getOptionLabel={(option) => option.bankName || ''}
+                              renderOption={(props, option) => (
+                                <li {...props} key={option.id || option.bankName}>
+                                  {option.bankName}
+                                </li>
+                              )}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                            />
+
+                            <Controller
+                              name="bankAmount"
+                              control={control}
+                              render={({ field }) => (
+                                <RHFTextField
+                                  {...field}
+                                  label="Bank Amount"
+                                  req="red"
+                                  disabled={watch('paymentMode') !== 'Bank'}
+                                  type="number"
+                                  inputProps={{ min: 0 }}
+                                />
+                              )}
+                            />
+                          </>
+                        )
+                      }
+                    </Box>
                   </Grid>
                 </Grid>
-
                 <Grid item xs={12} md={3}>
                   {croppedImage ? (
                     <div>
@@ -538,7 +631,6 @@ function PartReleaseForm({ currentLoan, mutate }) {
                       }}
                     />
                   )}
-
                   <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
                     {imageSrc && (
                       <ReactCrop
@@ -566,36 +658,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   </Dialog>
                 </Grid>
               </Grid>
-
-              <Grid container spacing={2} sx={{ mt: 4 }}>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Typography variant='h6' sx={{ mb: 3 }}>
-                    Payment Details
-                  </Typography>
-
-                  <RHFAutocomplete
-                    name='paymentMode'
-                    label='Payment Mode'
-                    req='red'
-                    options={['Cash', 'Bank', 'Both']}
-                    getOptionLabel={(option) => option}
-                    onChange={(event, value) => {
-                      setValue('paymentMode', value);
-                      handleLoanAmountChange({ target: { value: watch('amountPaid') } });
-                    }}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option}>
-                        {option}
-                      </li>
-                    )}
-                  />
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Box>
 
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',mt:2}}>
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
@@ -603,7 +670,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
           </LoadingButton>
         </Box>
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 8 }}>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {partRelease && partRelease.map((row, index) => (
@@ -615,7 +682,11 @@ function PartReleaseForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{
-                <IconButton color='error' onClick={() => handleDeletePart(row._id)}>
+                <IconButton color='error' onClick={() => {
+                  confirm.onTrue();
+                  popover.onClose();
+                  setDeleteId(row?._id);
+                }}>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }</TableCell>
@@ -635,6 +706,17 @@ function PartReleaseForm({ currentLoan, mutate }) {
           ))}
         </TableBody>
       </Table>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title='Delete'
+        content='Are you sure want to delete?'
+        action={
+          <Button variant='contained' color='error' onClick={() => handleDeletePart(deleteId)}>
+            Delete
+          </Button>
+        }
+      />
       <Dialog fullScreen open={view.value}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions
@@ -655,7 +737,15 @@ function PartReleaseForm({ currentLoan, mutate }) {
         </Box>
       </Dialog>
     </>
+
   );
 }
 
 export default PartReleaseForm;
+
+
+
+
+
+
+

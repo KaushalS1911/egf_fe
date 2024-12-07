@@ -4,10 +4,26 @@ import FormProvider, { RHFTextField } from '../../components/hook-form';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import { Controller, useForm } from 'react-hook-form';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+import { Upload } from '../../components/upload';
 import { useAuthContext } from '../../auth/hooks';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import Table from '@mui/material/Table';
+import { TableHeadCustom } from '../../components/table';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Button from '@mui/material/Button';
+import Iconify from '../../components/iconify';
+import { fDate } from '../../utils/format-time';
+import InterestPayDetailsForm from './view/interest-pay-details-form';
+import PartReleaseForm from './view/part-release-form';
+import UchakInterestPayForm from './view/uchak-interest-pay-form';
+import LoanPartPaymentForm from './view/loan-part-payment-form';
+import LoanCloseForm from './view/loan-close-form';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Typography from '@mui/material/Typography';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
@@ -36,6 +52,9 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       .required('Scheme Name is required')
       .max(10, 'Scheme Name must be exactly 10 characters'),
     closedBy: Yup.string().required('Closed By is required'),
+    // oldLoanNo: Yup.string()
+    //   .matches(/^[0-9]*$/, 'Old Loan No must be numeric')
+    //   .max(12, 'Old Loan No must be 12 digits or less'),
     interest: Yup.number()
       .required('Interest is required')
       .typeError('Interest must be a number')
@@ -55,24 +74,29 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       .typeError('Invalid Last Interest Pay Date'),
   });
   const defaultValues = useMemo(() => ({
-    loanNo: currentLoan?.loanNo || '',
-    customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.middleName + ' ' + currentLoan?.customer.lastName || '',
-    address: `${currentLoan.customer.permanentAddress.street || ''}, ${currentLoan.customer.permanentAddress.landmark || ''}, ${currentLoan.customer.permanentAddress.city || ''}, ${currentLoan.customer.permanentAddress.state || ''}, ${currentLoan.customer.permanentAddress.zipcode || ''}, ${currentLoan.customer.permanentAddress.country || ''}` || '',
-    contact: currentLoan?.customer.contact || '',
-    issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
-    schemeName: currentLoan?.scheme.name || '',
-    closedBy: currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) : null,
-    interest: currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate,
-    consultCharge: currentLoan?.consultingCharge || '',
-    loanAmount: currentLoan?.loanAmount || '',
-    interestLoanAmount: currentLoan?.interestLoanAmount || '',
-    loanPeriod: currentLoan?.scheme.renewalTime || '',
-    IntPeriodTime: currentLoan?.scheme.interestPeriod || '',
-    createdBy: (user?.firstName + ' ' + user?.lastName) || null,
-    renewDate: currentLoan?.issueDate ? new Date(new Date(currentLoan.issueDate).setMonth(new Date(currentLoan.issueDate).getMonth() + 6)) : null,
-    nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
-    lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : null,
-  }), [currentLoan]);
+      loanNo: currentLoan?.loanNo || '',
+      customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.middleName + ' ' + currentLoan?.customer.lastName || '',
+      address: `${currentLoan.customer.permanentAddress.street || ''} ${currentLoan.customer.permanentAddress.landmark || ''}, ${currentLoan.customer.permanentAddress.city || ''}, ${currentLoan.customer.permanentAddress.state || ''}, ${currentLoan.customer.permanentAddress.zipcode || ''}, ${currentLoan.customer.permanentAddress.country || ''}` || '',
+      contact: currentLoan?.customer.contact || '',
+      issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),
+      schemeName: currentLoan?.scheme.name || '',
+      closedBy:
+        currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) : null,
+      // oldLoanNo: currentLoan?.oldLoanNo || '',
+      interest: currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate,
+      consultCharge: currentLoan?.consultingCharge || '',
+      loanAmount: currentLoan?.loanAmount || '',
+      interestLoanAmount: currentLoan?.interestLoanAmount || '',
+      loanPeriod: currentLoan?.scheme.renewalTime || '',
+      IntPeriodTime: currentLoan?.scheme.interestPeriod || '',
+      createdBy: (user?.firstName + ' ' + user?.lastName) || null,
+      renewDate: currentLoan?.issueDate ? new Date(new Date(currentLoan.issueDate).setMonth(new Date(currentLoan.issueDate).getMonth() + 6)) : null,
+      nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
+      lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : null,
+    }),
+    [currentLoan],
+    )
+  ;
   const methods = useForm({
     resolver: yupResolver(NewLoanPayHistorySchema),
     defaultValues,
@@ -111,7 +135,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       <Box>
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Card sx={{ p: 3 }}>
-            <Grid container spacing={3} >
+            <Grid container spacing={3}>
               <Grid item xs={12} md={12}>
                 <Box
                   rowGap={2}
@@ -122,7 +146,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     sm: 'repeat(3, 1fr)',
                     md: 'repeat(4, 1fr)',
                   }}>
-                  <RHFTextField name='loanNo' label='Loan No.' InputProps={{ readOnly: true }}/>
+                  <RHFTextField name='loanNo' label='Loan No.' InputProps={{ readOnly: true }} />
                   <RHFTextField
                     name='schemeName'
                     label='Scheme Name'
@@ -151,13 +175,14 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                       }
                     }}
                   />
-                  <RHFTextField name='consultCharge' label='Consult Charge %' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}/>
+                  <RHFTextField name='consultCharge' label='Consult Charge %' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
                   <RHFDatePicker
                     name='lastInterestPayDate'
                     control={control}
                     label='Last Interest Pay Date'
                   />
-                <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
                   <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }} />
                   <RHFTextField name='IntPeriodTime' label='Interest Period Time' InputProps={{ readOnly: true }} />
                   <RHFDatePicker
@@ -165,46 +190,62 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     control={control}
                     label='Renew Date'
                   />
+                  {/*{/<RHFTextField/}*/}
+                  {/*/!*  name='oldLoanNo'*!/*/}
+                  {/*/!*  label='Old Loan No'*!/*/}
+                  {/*/!*  InputProps={{ readOnly: true }}*!/*/}
+                  {/*/!*  inputProps={{ maxLength: 12, pattern: '[0-9]' }}/}*/}
+                  {/*/!*  onInput={(e) => {*!/*/}
+                  {/*/!*    e.target.value = e.target.value.replace(/[^0-9]/g, '');*!/*/}
+                  {/*/!*  }}*!/*/}
+                  {/*{//>/}*/}
+                  <RHFTextField name='interestLoanAmount' label='Interest Loan Amount'
+                                InputProps={{ readOnly: true }} />
+
+                  <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }}
+                                InputProps={{ readOnly: true }} />
+
+
                   <RHFTextField
                     name='contact'
                     label='Mobile No.'
                     InputProps={{ readOnly: true }}
                     inputProps={{ maxLength: 16 }}
                   />
-                  <RHFTextField name='interestLoanAmount' label='Interest Loan Amount' InputProps={{ readOnly: true }} />
-                  <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }} />
-                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }} InputProps={{ readOnly: true }} />
+                  {/*{/<RHFTextField name='closedBy' label='Closed By' InputProps={{ readOnly: true }} />/}*/}
 
-                {/*<RHFTextField name='closedBy' label='Closed By' InputProps={{ readOnly: true }} />*/}
 
-                <Box pb={0}>
-                  <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',padding:0 ,pb:0 }}>
-                    <Box>
-                      <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
-                        Property Image
-                      </Typography>
+                  <Box pb={0}>
+                    <Box sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: 0,
+                      pb: 0,
+                    }}>
+                      <Box>
+                        <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
+                          Property Image
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Image
+                          key={file}
+                          src={file}
+                          alt={file}
+                          ratio='1/1'
+                          onClick={() => lightbox.onOpen(file)}
+                          sx={{ cursor: 'zoom-in', height: '56px', width: '56px', borderRadius: '20%' }}
+                        />
+                      </Box>
                     </Box>
-                    <Box>
-                      <Image
-                        key={file}
-                        src={file}
-                        alt={file}
-                        ratio='1/1'
-                        onClick={() => lightbox.onOpen(file)}
-                        sx={{ cursor: 'zoom-in', height: '56px', width: '56px', borderRadius: '20%' }}
-                      />
-                    </Box>
-                  </CardContent>
-                </Box>
-
-
-
+                  </Box>
                 </Box>
               </Grid>
 
 
-
-              {/*<Grid item xs={12} md={3}>*/}
+              {/*{/<Grid item xs={12} md={3}>/}*/}
               {/*  <Box>*/}
               {/*  </Box>*/}
               {/* */}

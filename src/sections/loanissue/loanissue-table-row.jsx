@@ -16,6 +16,14 @@ import { RouterLink } from '../../routes/components';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
+import { Box } from '@mui/system';
+import { Dialog, DialogActions } from '@mui/material';
+import { PDFViewer } from '@react-pdf/renderer';
+import LetterOfAuthority from '../disburse/letter-of-authority';
+import LoanInvoice from '../../components/invoise/invoice-header';
+import { useState } from 'react';
+import LoanIssueDetails from './view/loan-issue-details';
+import { useViews } from '@mui/x-date-pickers/internals/hooks/useViews';
 
 
 // ----------------------------------------------------------------------
@@ -26,6 +34,12 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const [selectedRow, setSelectedRow] = useState(null); // State to hold the selected row's data
+  const view = useBoolean();
+  const handleView = (row) => {
+    setSelectedRow(row);
+    view.onTrue();
+  };
 
   return (
     <>
@@ -53,6 +67,25 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         arrow='right-top'
         sx={{ width: 140 }}
       >
+        <MenuItem
+          onClick={() => {
+            handleView(row); // Pass the row data to the handleView function
+            popover.onClose();
+          }}>
+          <Iconify icon='solar:printer-minimalistic-bold' />
+
+          Print Details
+        </MenuItem>
+
+        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
+          onClick={() => {
+            onEditRow();
+            popover.onClose();
+          }}
+        >
+          <Iconify icon='solar:pen-bold' />
+          Edit
+        </MenuItem>}
         {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             confirm.onTrue();
@@ -62,15 +95,6 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         >
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
-        </MenuItem>}
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
         </MenuItem>}
       </CustomPopover>
       <ConfirmDialog
@@ -84,6 +108,25 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
           </Button>
         }
       />
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              {<LoanIssueDetails selectedRow={selectedRow} />}
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }
