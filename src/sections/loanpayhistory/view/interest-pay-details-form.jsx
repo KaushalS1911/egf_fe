@@ -101,7 +101,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   });
 
   const defaultValues = {
-    from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to),
+    from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(currentLoan.issueDate) : new Date(loanInterest[0]?.to).setDate(new Date(loanInterest[0]?.to).getDate() + 1),
     to: (new Date(currentLoan?.nextInstallmentDate) > new Date()) ? new Date(currentLoan.nextInstallmentDate) : new Date(),
     days: '',
     amountPaid: '',
@@ -141,7 +141,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
   useEffect(() => {
     const endDate = new Date(to).setHours(0, 0, 0, 0);
-    const differenceInDays = moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 1;
+    const differenceInDays = moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 2;
 
     const nextInstallmentDate = moment(currentLoan.nextInstallmentDate);
     const differenceInDays2 = moment(to).startOf('day').diff(nextInstallmentDate.startOf('day'), 'days', true);
