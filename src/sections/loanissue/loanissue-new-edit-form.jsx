@@ -550,50 +550,61 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const showCroppedImage = async () => {
-    if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-      if (file) {
-        setCroppedImage(URL.createObjectURL(file));
+    try {
+      // If no cropping is done, upload the original image
+      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+        if (file) {
+          const originalImageURL = URL.createObjectURL(file); // Preview for the original image
+          setCroppedImage(originalImageURL);
+          setValue('property_image', file); // Set the original file in your state or form
+          setImageSrc(null); // Close the dialog
+          return;
+        }
       }
-      setImageSrc(null);
-      return;
+
+      // If cropping is performed, handle the cropped image
+      const canvas = document.createElement('canvas');
+      const image = document.getElementById('cropped-image');
+
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+
+      canvas.width = completedCrop.width;
+      canvas.height = completedCrop.height;
+
+      const ctx = canvas.getContext('2d');
+
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        completedCrop.width * scaleX,
+        completedCrop.height * scaleY,
+        0,
+        0,
+        completedCrop.width,
+        completedCrop.height,
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error('Failed to create blob');
+          return;
+        }
+
+        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+
+        const croppedImageURL = URL.createObjectURL(croppedFile); // Preview for cropped image
+        setCroppedImage(croppedImageURL);
+        setFile(croppedFile); // Update file state with cropped file
+        setValue('property_image', croppedFile); // Set the cropped file in your form
+        setImageSrc(null); // Close the dialog
+      }, 'image/jpeg');
+    } catch (error) {
+      console.error('Error handling image upload:', error);
     }
-
-    const canvas = document.createElement('canvas');
-    const image = document.getElementById('cropped-image');
-
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-
-    canvas.width = completedCrop.width;
-    canvas.height = completedCrop.height;
-
-    const ctx = canvas.getContext('2d');
-
-    ctx.drawImage(
-      image,
-      completedCrop.x * scaleX,
-      completedCrop.y * scaleY,
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
-      0,
-      0,
-      completedCrop.width,
-      completedCrop.height,
-    );
-
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        console.error('Failed to create blob');
-        return;
-      }
-
-      const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
-      setCroppedImage(URL.createObjectURL(croppedFile));
-      setFile(croppedFile);
-      setValue('property_image', croppedFile);
-      setImageSrc(null);
-    }, 'image/jpeg');
   };
+
 
   const handleDeleteImage = () => {
     setCroppedImage(null);
