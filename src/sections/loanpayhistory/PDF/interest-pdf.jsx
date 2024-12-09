@@ -84,7 +84,7 @@ export default function InterestPdf({ data }) {
       <Page  size="A4" style={styles.page}>
         <InvoiceHeader selectedRow={data.loan} />
         <View style={styles.pagePadding}>
-          <Text style={styles.headerText2}>Interest Pay Slip</Text>
+          <Text style={{ ...styles.headerText2,marginTop: 25 }}>Interest Pay Slip</Text>
           <View style={{ width: '100%', display: 'flex', alignItems: 'center',flexDirection: 'row' }}>
             <View>
               <Text style={styles.spacing}>

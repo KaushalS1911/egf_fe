@@ -13,7 +13,7 @@ import TableCell from '@mui/material/TableCell';
 import { fDate } from '../../../utils/format-time';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Card, Grid, IconButton, Stack } from '@mui/material';
+import { Card, Dialog, DialogActions, Grid, IconButton, Stack } from '@mui/material';
 import { useGetPenalty } from '../../../api/penalty';
 import { useParams } from 'react-router';
 import axios from 'axios';
@@ -31,6 +31,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import Noc from '../PDF/noc';
 import InterestPdf from '../PDF/interest-pdf';
 import { useBoolean } from '../../../hooks/use-boolean';
+import PartReleasePdf from '../PDF/part-release-pdf';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -82,8 +83,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   };
 
   const NewInterestPayDetailsSchema = Yup.object().shape({
-    from: Yup.date().required('From Date is required'),
-    to: Yup.date().required('To Date is required'),
+    from: Yup.string().required('From Date is required'),
+    to: Yup.string().required('To Date is required'),
     days: Yup.string().required('Days is required'),
     amountPaid: Yup.string()
       .required('Total is required')
@@ -141,11 +142,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
   useEffect(() => {
     const endDate = new Date(to).setHours(0, 0, 0, 0);
-    const differenceInDays = moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 2;
+    const differenceInDays = moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 1;
 
     const nextInstallmentDate = moment(currentLoan.nextInstallmentDate);
     const differenceInDays2 = moment(to).startOf('day').diff(nextInstallmentDate.startOf('day'), 'days', true);
-
+    console.log("differenceInDaysdifferenceInDays : ",differenceInDays);
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
@@ -205,8 +206,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
       cr_dr: data.cr_dr,
       paymentDetail,
     };
+
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment`;
+      const url = `http://loaclhost:8080/api/company/loans/${currentLoan._id}/interest-payment`;
       const config = {
         method: 'post',
         url,
@@ -449,12 +451,43 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                       <Iconify icon='eva:trash-2-outline' />
                     </IconButton>
                   }</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>{
+                    <Typography onClick={() => {
+                      view.onTrue();
+                      setData(row);
+                    }} sx={{
+                      cursor: 'pointer',
+                      color: 'inherit',
+                      pointerEvents: 'auto',
+                    }}>
+                      <Iconify icon='basil:document-solid' />
+                    </Typography>
+                  }</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </Box>
       </Box>
+      <Dialog fullScreen open={view.value}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <InterestPdf data={data} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </Box>
   );
 }
