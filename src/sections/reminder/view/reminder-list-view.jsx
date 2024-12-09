@@ -90,7 +90,6 @@ export default function ReminderListView() {
   const
     handleFilters = useCallback(
       (name, value) => {
-        console.log('name', value);
         table.onResetPage();
         setFilters((prevState) => ({
           ...prevState,

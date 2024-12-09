@@ -225,7 +225,7 @@ export default function Notice({noticeData}) {
           <View style={styles.pagePadding}>
             <View>
               <Text style={styles.noticeTitle}>નોટીસ</Text>
-              <Text style={styles.date}>27 Nov 2024</Text>
+              <Text style={styles.date}>{fDate(new Date())}</Text>
             </View>
             <View>
               <Text style={styles.topDetails}>{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
@@ -237,7 +237,7 @@ export default function Notice({noticeData}) {
             </View>
             <View style={styles.bottomDetails}>
               <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
-              <Text style={styles.bottomDetails}>આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ 05 Jul 2024 ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા 205000.00/- નું વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે તારીખ 07 Dec 2024 સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા તમારા ગોલ્ડની હરાજી કરશે અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.</Text>
+              <Text style={styles.bottomDetails}>આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ {fDate(noticeData.issueDate)} ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા {noticeData.loanAmount}.00/- નું વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે તારીખ {fDate(noticeData.nextInstallmentDate)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા તમારા ગોલ્ડની હરાજી કરશે અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.</Text>
               <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>
             </View>
           </View>
