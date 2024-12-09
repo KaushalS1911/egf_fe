@@ -272,11 +272,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
-  const handleDeleteImage = () => {
-    setCroppedImage(null);
-    setFile(null);
-    setImageSrc(null);
-  };
 
   const handleCancel = () => {
     setImageSrc(null);
@@ -284,14 +279,36 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const showCroppedImage = async () => {
     try {
+      // If no cropping has been done, upload the original image
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
         if (file) {
           setCroppedImage(URL.createObjectURL(file));
+          setValue('profile_pic', file);
+
+          if (currentCustomer) {
+            const formData = new FormData();
+            formData.append('profile-pic', file);
+
+            await axios
+              .put(
+                `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
+                formData,
+              )
+              .then((res) => {
+                console.log('Profile updated successfully:', res.data);
+              })
+              .catch((err) => {
+                console.error('Error uploading original image:', err);
+              });
+          }
+
+          setOpen(false);
+          setImageSrc(null);
         }
-        setImageSrc(null);
         return;
       }
 
+      // Handle cropping logic if completedCrop exists
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
 
