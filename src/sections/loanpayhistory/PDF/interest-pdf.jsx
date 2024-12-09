@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Document, StyleSheet } from '@react-pdf/renderer';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
@@ -72,6 +72,22 @@ const useStyles = () =>
           paddingHorizontal: 4,
           textAlign: 'center',
         },
+        d_flex: {
+          display: 'flex',
+          width: '100%',
+          flexDirection: 'row',
+          marginTop: 90,
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        },
+        signText: {
+          fontSize: 11,
+          borderTop: '1px solid black',
+          paddingTop: 10,
+          textAlign: 'center',
+          width: '100px',
+          fontWeight: 600
+        },
       }),
     [],
   );
@@ -136,24 +152,9 @@ export default function InterestPdf({ data }) {
                 <Text style={styles.tableCell}>{data.amountPaid}</Text>
               </View>
           </View>
-          <Text style={{ ...styles.headerText2,marginTop: 30,marginBottom: 25 }}>Authority Sign:</Text>
-
-          {/*<View style={styles.table}>*/}
-          {/*  <View style={[styles.tableRow, styles.tableHeader]}>*/}
-          {/*    <Text style={styles.tableCell}>Header 1</Text>*/}
-          {/*    <Text style={styles.tableCell}>Header 2</Text>*/}
-          {/*    <Text style={styles.tableCell}>Header 3</Text>*/}
-          {/*    <Text style={styles.tableCell}>Header 4</Text>*/}
-          {/*  </View>*/}
-          {/*  {dynamicTableData.map((row, index) => (*/}
-          {/*    <View style={styles.tableRow} key={index}>*/}
-          {/*      <Text style={styles.tableCell}>{row.column1}</Text>*/}
-          {/*      <Text style={styles.tableCell}>{row.column2}</Text>*/}
-          {/*      <Text style={styles.tableCell}>{row.column3}</Text>*/}
-          {/*      <Text style={styles.tableCell}>{row.column4}</Text>*/}
-          {/*    </View>*/}
-          {/*  ))}*/}
-          {/*</View>*/}
+          <View style={styles.d_flex}>
+            <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
+          </View>
         </View>
       </Page>
     </Document>

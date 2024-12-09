@@ -146,7 +146,6 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
 
     const nextInstallmentDate = moment(currentLoan.nextInstallmentDate);
     const differenceInDays2 = moment(to).startOf('day').diff(nextInstallmentDate.startOf('day'), 'days', true);
-    console.log("differenceInDaysdifferenceInDays : ",differenceInDays);
     setValue('days', differenceInDays.toString());
     let penaltyPer = 0;
     penalty.forEach(penaltyItem => {
@@ -208,7 +207,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     };
 
     try {
-      const url = `http://loaclhost:8080/api/company/loans/${currentLoan._id}/interest-payment`;
+      const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment`;
       const config = {
         method: 'post',
         url,
