@@ -446,19 +446,30 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                   <TableCell>{row.uchakInterestAmount || 0}</TableCell>
                   <TableCell>{row.amountPaid}</TableCell>
                   <TableCell>{
-                    <IconButton color='error' onClick={() => handleDeleteInterest(row._id)}>
+                    <IconButton color='error' onClick={() => {
+                      if(index === 0){
+                      handleDeleteInterest(row._id);
+                      }
+                    }}  sx={{
+                      cursor: index === 0 ? 'pointer' : 'default',
+                      opacity: index === 0 ? 1 : 0.5,
+                      pointerEvents: index === 0 ? 'auto' : 'none',
+                    }}>
                       <Iconify icon='eva:trash-2-outline' />
                     </IconButton>
                   }</TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>{
-                    <Typography onClick={() => {
-                      view.onTrue();
-                      setData(row);
-                    }} sx={{
-                      cursor: 'pointer',
-                      color: 'inherit',
-                      pointerEvents: 'auto',
-                    }}>
+                    <Typography
+                      onClick={() => {
+                          view.onTrue();
+                          setData(row);
+                      }}
+                      sx={{
+                        cursor: 'pointer',
+                        color: 'inherit',
+                        pointerEvents: 'auto',
+                      }}
+                    >
                       <Iconify icon='basil:document-solid' />
                     </Typography>
                   }</TableCell>

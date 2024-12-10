@@ -208,11 +208,11 @@ export default function PartReleasePdf({ selectedRow }) {
               <View style={{width: '33%'}}>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Loan No : {' '}</Text>
-                  <Text style={styles.subText}>EGF/24_05_000023</Text>
+                  <Text style={styles.subText}>{selectedRow.loan.loanNo}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Issue Date : {' '}</Text>
-                  <Text style={styles.subText}>27 Aug 2024</Text>
+                  <Text style={styles.subText}>{fDate(selectedRow.loan.issueDate)}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Close Date : {' '}</Text>
@@ -220,33 +220,33 @@ export default function PartReleasePdf({ selectedRow }) {
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Loan Amount : {' '}</Text>
-                  <Text style={styles.subText}>1175000.00</Text>
+                  <Text style={styles.subText}>{selectedRow.loan.loanAmount}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Pay Amount : {' '}</Text>
-                  <Text style={styles.subText}>324000.00</Text>
+                  <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Int. Loan Amount : {' '}</Text>
-                  <Text style={styles.subText}>851000.00</Text>
+                  <Text style={styles.subText}>{selectedRow.loan.interestLoanAmount}</Text>
                 </Text>
               </View>
               <View  style={{width: '33%'}}>
                 <Text style={{ marginTop: 10}}>
                   <Text style={styles.subHeading}>Customer Name : {' '}</Text>
-                  <Text style={styles.subText}>Jack Poll Patel</Text>
+                  <Text style={styles.subText}>{`${selectedRow.loan.customer.firstName} ${selectedRow.loan.customer.middleName} ${selectedRow.loan.customer.lastName}`}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Pan No : {' '}</Text>
-                  <Text style={styles.subText}>HKYPS5917P</Text>
+                  <Text style={styles.subText}>{selectedRow.panCard}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Mobile No : {' '}</Text>
-                  <Text style={styles.subText}>7600030666</Text>
+                  <Text style={styles.subText}>{selectedRow.loan.customer.contact}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Remark : {' '}</Text>
-                  <Text style={styles.subText}>8 EAR RINGS, 2 LOCKET, 2 CHAIN, 1 CHAIN PANDLE</Text>
+                  <Text style={styles.subText}>{selectedRow.remark}</Text>
                 </Text>
               </View>
               <View  style={{width: '33%'}}>
@@ -255,7 +255,7 @@ export default function PartReleasePdf({ selectedRow }) {
             </View>
             <Text style={{ marginTop: 10 }}>
               <Text style={styles.subHeading}>Accepted & Received Amount : {' '}</Text>
-              <Text style={styles.subText}>324000.00 ( Three Lakhs Twenty Four Thousand Rupees Only)</Text>
+              <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
             </Text>
           </View>
             <View style={styles.d_flex}>

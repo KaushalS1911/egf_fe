@@ -262,7 +262,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
     if (!watch('amountPaid')) {
       setValue('amountPaid', selectedTotals.netAmount);
     }
-  },[watch('paymentMode'),selectedTotals.netAmount])
+  }, [watch('paymentMode'), selectedTotals.netAmount]);
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -405,7 +405,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Box sx={{display:'flex',gap:4,pl:0.5}}>
+        <Box sx={{ display: 'flex', gap: 4, pl: 0.5 }}>
           <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
@@ -575,9 +575,9 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         (watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
                           <>
                             <RHFAutocomplete
-                              name="account"
-                              label="Account"
-                              req="red"
+                              name='account'
+                              label='Account'
+                              req='red'
                               fullWidth
                               options={branch.flatMap((item) => item.company.bankAccounts)}
                               getOptionLabel={(option) => option.bankName || ''}
@@ -590,15 +590,15 @@ function PartReleaseForm({ currentLoan, mutate }) {
                             />
 
                             <Controller
-                              name="bankAmount"
+                              name='bankAmount'
                               control={control}
                               render={({ field }) => (
                                 <RHFTextField
                                   {...field}
-                                  label="Bank Amount"
-                                  req="red"
+                                  label='Bank Amount'
+                                  req='red'
                                   disabled={watch('paymentMode') !== 'Bank'}
-                                  type="number"
+                                  type='number'
                                   inputProps={{ min: 0 }}
                                 />
                               )}
@@ -662,7 +662,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
           </Box>
         </Box>
 
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',mt:2}}>
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
@@ -683,9 +683,15 @@ function PartReleaseForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{
                 <IconButton color='error' onClick={() => {
-                  confirm.onTrue();
-                  popover.onClose();
-                  setDeleteId(row?._id);
+                  if (index === 0) {
+                    confirm.onTrue();
+                    popover.onClose();
+                    setDeleteId(row?._id);
+                  }
+                }} sx={{
+                  cursor: index === 0 ? 'pointer' : 'default',
+                  opacity: index === 0 ? 1 : 0.5,
+                  pointerEvents: index === 0 ? 'auto' : 'none',
                 }}>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
