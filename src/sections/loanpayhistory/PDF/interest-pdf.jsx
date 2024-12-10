@@ -21,7 +21,8 @@ const useStyles = () =>
           backgroundColor: '#FFFFFF',
         },
         pagePadding: {
-          padding: '0px 24px 24px 24px',
+          padding: '0px 24px 0px 24px',
+          height:'68%'
         },
         headerText2: {
           fontSize: 14,
@@ -29,7 +30,7 @@ const useStyles = () =>
           marginBottom: 16,
         },
         subHeading: {
-          // fontWeight: 'bold',
+          fontWeight: 600,
           fontSize: 10,
         },
         subText: {
@@ -152,10 +153,10 @@ export default function InterestPdf({ data }) {
                 <Text style={styles.tableCell}>{data.amountPaid}</Text>
               </View>
           </View>
+        </View>
           <View style={styles.d_flex}>
             <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
           </View>
-        </View>
       </Page>
     </Document>
   );

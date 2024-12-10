@@ -15,7 +15,7 @@ import {
   Font,
   Link,
 } from '@react-pdf/renderer';
-import logo from 'src/assets/logo/logo.png'; // Correct path to your logo
+import logo from 'src/assets/logo/Logo Png.png'; // Correct path to your logo
 
 Font.register({
   family: 'Roboto',
@@ -54,12 +54,16 @@ const useStyles = () =>
           borderTopLeftRadius: '50%',
           borderBottomLeftRadius: '50%',
         },
+        logoParent:{
+          height:58,
+          width: 58,
+          margin: '10px 10px 5px 35px ',
+        },
         logo: {
-          height: '38px',
-          width: '38px',
-          margin: 10,
-          backgroundColor: '#fff',
+          height: '100%',
+          width: '100%',
           borderRadius: '5px',
+          objectFit:'contain'
         },
         headerText: {
           color: '#fff',
@@ -71,7 +75,7 @@ const useStyles = () =>
           color: '#fff',
           fontSize: '10px',
           fontWeight: 'bold',
-          margin: '5px 10px',
+          margin: '1px 10px',
         },
         headerDetailsParent: {
           margin: '60px 30px',
@@ -112,7 +116,9 @@ export default function InvoiceHeader({ selectedRow }) {
   return (
     <View style={styles.header}>
       <View style={styles.headerbox1}>
+        <View style={styles.logoParent}>
         <Image style={styles.logo} src={logo} />
+        </View>
         <Text style={styles.headerText}>EASY GOLD FINCORP</Text>
         <Text style={styles.headerSubText}>
           {`${selectedRow.customer.branch.address.street}, ${selectedRow.customer.branch.address.landmark}, ${selectedRow.customer.branch.address.city}, ${selectedRow.customer.branch.address.zipcode}`}

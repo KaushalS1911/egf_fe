@@ -65,7 +65,9 @@ const useStyles = () =>
           backgroundColor: '#FFFFFF',
         },
         pagePadding: {
-          padding: '0px 24px 24px 24px',
+          padding: '0px 24px 0px 24px',
+          height: '68%'
+
         },
         footer: {
           left: 0,
@@ -280,11 +282,11 @@ function Noc({ nocData }) {
               <Text style={styles.bottomDetails}>Thank you for choosing Easy Gold FinCorp for your financial needs. We
                 appreciate your continued trust and patronage.</Text>
             </View>
+          </View>
             <View style={styles.d_flex}>
               <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
               <Text style={{ ...styles.signText , marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>
-          </View>
         </Page>
       </Document>
     </>

@@ -53,12 +53,9 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height:'80%'
+          height: '78%',
         },
-        gujaratiText: {
-          fontFamily: 'NotoSansGujarati',
-          fontSize: 12,
-        },
+
         // footer: {
         //   left: 0,
         //   right: 0,
@@ -79,6 +76,13 @@ const useStyles = () =>
           alignItems: 'center',
           textAlign: 'center',
         },
+        flexContainer: {
+          flexDirection: 'row',
+          marginTop: 5,
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+        },
+
         logo: {
           width: 80,
           height: 80,
@@ -168,16 +172,10 @@ const useStyles = () =>
         },
         subText: {
           fontSize: 10,
+          fontWeight:'medium'
         },
         spacing: {
           marginTop: 7,
-        },
-        flexContainer: {
-          flexDirection: 'row',
-          marginTop: 5,
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-
         },
 
         img: {
@@ -368,7 +366,12 @@ export default function LoanIssueDetails({ selectedRow }) {
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Interest Rate : {' '}</Text>
-                  <Text style={styles.subText}>{selectedRow.scheme.interestRate}</Text>
+                  <Text
+                    style={styles.subText}>{selectedRow?.scheme.interestRate > 1.5 ? 1.5 : selectedRow?.scheme.interestRate}%</Text>
+                </Text>
+                <Text style={styles.spacing}>
+                  <Text style={styles.subHeading}>Consult Charge : {' '}</Text>
+                  <Text style={styles.subText}>{selectedRow?.consultingCharge}%</Text>
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Loan Int Pay Schedule

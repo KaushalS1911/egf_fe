@@ -48,7 +48,8 @@ const useStyles = () =>
           textTransform: 'capitalize',
         },
         pagePadding: {
-          padding: '0px 24px 24px 24px',
+          padding: '0px 24px 0px 24px',
+          height:'68%'
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
@@ -160,7 +161,7 @@ const useStyles = () =>
           width: '15%',
         },
         subHeading: {
-          // fontWeight: 600,
+          fontWeight: 600,
           fontSize: 10,
         },
         subText: {
@@ -256,11 +257,11 @@ export default function PartReleasePdf({ selectedRow }) {
               <Text style={styles.subHeading}>Accepted & Received Amount : {' '}</Text>
               <Text style={styles.subText}>324000.00 ( Three Lakhs Twenty Four Thousand Rupees Only)</Text>
             </Text>
+          </View>
             <View style={styles.d_flex}>
               <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
               <Text style={{ ...styles.signText , marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>
-          </View>
         </Page>
       </Document>
     </>
