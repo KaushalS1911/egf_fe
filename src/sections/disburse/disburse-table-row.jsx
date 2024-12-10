@@ -1,52 +1,44 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useBoolean } from 'src/hooks/use-boolean';
+
+import { useState } from 'react'; // Import useState
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import { Box, Dialog, DialogActions } from '@mui/material';
-import { PDFViewer } from '@react-pdf/renderer';
+import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { paths } from '../../routes/paths';
+import { Link } from 'react-router-dom';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
+
+import { Box } from '@mui/system';
+import { Dialog, DialogActions } from '@mui/material';
+import { PDFViewer } from '@react-pdf/renderer';
 import LetterOfAuthority from './letter-of-authority';
-import SansactionLetter from './sansaction-letter';
 import { useRouter } from '../../routes/hooks';
+
+// ----------------------------------------------------------------------
 
 export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount, _id } = row;
   const confirm = useBoolean();
-  const view = useBoolean();
+  const router = useRouter()
   const popover = usePopover();
-  const router = useRouter();
+  const view = useBoolean(); // Boolean for handling dialog visibility
+  const [selectedRow, setSelectedRow] = useState(null); // State to hold the selected row's data
 
-  const [dialogContent, setDialogContent] = useState(null);
-
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
-
-  const handleDialogOpen = (content) => {
-    setDialogContent(content);
+  const handleView = (row) => {
+    setSelectedRow(row);
     view.onTrue();
   };
-
-  const renderDialogContent = () => {
-    if (dialogContent === 'LetterOfAuthority') {
-      return <LetterOfAuthority loan={row} />;
-    }
-    if (dialogContent === 'SansactionLetter') {
-      return <SansactionLetter sansaction={row} />;
-    }
-    return null;
-  };
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
 
   return (
     <>
@@ -85,59 +77,51 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         </TableCell>
       </TableRow>
 
-
-
-      <CustomPopover open={popover.open} onClose={popover.onClose} arrow="right-top" sx={{ width: 140 }}>
-        {getResponsibilityValue('delete_disburse', configs, user) && (
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
-        )}
-        {getResponsibilityValue('update_disburse', configs, user) && (
-          <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem>
-        )}
-        <MenuItem
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow='right-top'
+        sx={{ width: 140 }}
+      >
+        {getResponsibilityValue('delete_disburse', configs, user) && <MenuItem
           onClick={() => {
-            handleDialogOpen('LetterOfAuthority');
+            confirm.onTrue();
+            popover.onClose();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon='solar:trash-bin-trash-bold' />
+          Delete
+        </MenuItem>}
+
+        {getResponsibilityValue('update_disburse', configs, user) && <MenuItem
+          onClick={() => {
+            onEditRow();
             popover.onClose();
           }}
         >
-          <Iconify icon="mdi:eye" />
+          <Iconify icon='solar:pen-bold' />
+          Edit
+        </MenuItem>}
+
+        <MenuItem
+          onClick={() => {
+            handleView(row); // Pass the row data to the handleView function
+            popover.onClose();
+          }}
+        >
+          <Iconify icon='mdi:eye' />
           View
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('SansactionLetter');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="mdi:eye" />
-          View2
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -145,14 +129,19 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
 
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-          <DialogActions sx={{ p: 1.5 }}>
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
+
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              {renderDialogContent()}
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              {selectedRow && <LetterOfAuthority loan={selectedRow} />}
             </PDFViewer>
           </Box>
         </Box>
