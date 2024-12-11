@@ -216,12 +216,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
         url,
         data: payload,
       };
-    console.log(payload)
-      // const response = await axios(config);
-      // reset();
-      // mutate();
-      // refetchLoanInterest();
-      // enqueueSnackbar(response?.data.message);
+      const response = await axios(config);
+      reset();
+      mutate();
+      refetchLoanInterest();
+      enqueueSnackbar(response?.data.message);
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to pay interest', { variant: 'error' });
