@@ -194,12 +194,12 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     }
 
     const payload = {
-      to: data.to,
+      to: new Date(data.to),
       adjustedPay: data.payAfterAdjusted1,
       days: data.days,
       uchakInterestAmount: data.uchakAmount,
       interestAmount: data.interestAmount,
-      from: data.from,
+      from: new Date(data.from),
       amountPaid: data.amountPaid,
       penalty: data.penalty,
       cr_dr: data.cr_dr,
