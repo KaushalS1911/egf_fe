@@ -191,6 +191,9 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
         ...data.account,
         bankAmount: data.bankAmount,
       };
+
+
+
     }
 
     const payload = {
@@ -199,7 +202,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
       days: data.days,
       uchakInterestAmount: data.uchakAmount,
       interestAmount: data.interestAmount,
-      from: new Date(data.from),
+      from: new Date(Number(data.from)),
       amountPaid: data.amountPaid,
       penalty: data.penalty,
       cr_dr: data.cr_dr,
@@ -213,12 +216,12 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
         url,
         data: payload,
       };
-
-      const response = await axios(config);
-      reset();
-      mutate();
-      refetchLoanInterest();
-      enqueueSnackbar(response?.data.message);
+    console.log(payload)
+      // const response = await axios(config);
+      // reset();
+      // mutate();
+      // refetchLoanInterest();
+      // enqueueSnackbar(response?.data.message);
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to pay interest', { variant: 'error' });
