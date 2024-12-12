@@ -715,6 +715,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     setErrors(updatedErrors);
   };
+  const sx = {
+    label: {
+      mt: -1.4, // Adjust margin-top for labels
+      fontSize: '14px', // Set the font size for the label
+    },
+    '& .MuiInputLabel-shrink': {
+      mt: 0,
+    },
+    input: {
+      height: 0,
+    },
+  };
 
   return (
     <>
@@ -742,60 +754,62 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
             {/*</Card>*/}
           </Grid>
-          <Grid xs={12} md={8}><Card sx={{ p: 3 }}>
-            {!isFieldsEnabled && <Box sx={{ mb: 2 }}>
-              <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
-            </Box>}
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <RHFAutocomplete
-                name='customer'
-                label='Select Customer'
-                req={'red'}
-                fullWidth
-                options={customer?.map((item) => ({
-                  id: item._id,
-                  name: item.firstName + ' ' + item.middleName + ' ' + item.lastName,
-                }))}
-                getOptionLabel={(option) => option.name}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.id}>
-                    {option.name}
-                  </li>
-                )}
-              />
-              <Box display='flex' justifyContent='end'>
-                <Link
-                  to={paths.dashboard.customer.new}
-                  onClick={handleAdd}
-                  style={{
-                    fontWeight: 'bold',
-                    textDecoration: 'none',
-                    color: 'inherit',
+            <Grid xs={12} md={8}>
+          <Box>
+              <Card sx={{ p: 2 }}>
+                {!isFieldsEnabled && <Box sx={{ mb: 1.5 }}>
+                  <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
+                </Box>}
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display='grid'
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
                   }}
                 >
-                  + Add Customer
-                </Link>
-              </Box>
-            </Box>
-          </Card>
-          </Grid>
-
+                  <RHFAutocomplete
+                    name='customer'
+                    label='Select Customer'
+                    req={'red'}
+                    fullWidth
+                    options={customer?.map((item) => ({
+                      id: item._id,
+                      name: item.firstName + ' ' + item.middleName + ' ' + item.lastName,
+                    }))}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    )}
+                  />
+                  <Box display='flex' justifyContent='end'>
+                    <Link
+                      to={paths.dashboard.customer.new}
+                      onClick={handleAdd}
+                      style={{
+                        fontWeight: 'bold',
+                        textDecoration: 'none',
+                        color: 'inherit',
+                      }}
+                    >
+                      + Add Customer
+                    </Link>
+                  </Box>
+                </Box>
+              </Card>
+          </Box>
+            </Grid>
           <Grid xs={12}>
-            <Card sx={{ p: 3 }}>
-              <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
+            <Card sx={{ p: 2 }}>
+              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
                 Customer Details
               </Typography>
               <Box
-                rowGap={3}
-                columnGap={2}
+                rowGap={1.5}
+                columnGap={1.5}
                 display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
@@ -818,19 +832,19 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               </Box>
             </Card>
           </Grid>
-          <Grid xs={12} md={8}>
-            <Card sx={{ p: 3 }}>
-              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+          <Grid xs={12} md={10}>
+            <Card sx={{ p: 2 }}>
+              <Typography variant='subtitle1' sx={{ mb: 1, fontWeight: 600 }}>
                 Loan Scheme Details
               </Typography>
               <Box
-                rowGap={3}
-                columnGap={2}
+                rowGap={1.5}
+                columnGap={1.5}
                 display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
-                  md: 'repeat(4, 1fr)',
+                  md: 'repeat(5, 1fr)',
                 }}
               >
                 <RHFTextField
@@ -942,10 +956,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               </Box>
             </Card>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={2}>
             <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+              <CardContent sx={{ height: '156px', p: 1.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Typography variant='subtitle1' component={'span'} sx={{ fontWeight: 600 }}>
                     Property Image
                   </Typography>
@@ -954,32 +968,38 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                              onClick={() => setOpen2(true)} />
                   </Typography>
                 </Box>
-                {croppedImage ? (
-                  <RHFUploadAvatar
-                    radius={true}
-                    name='property_image'
-                    maxSize={3145728}
-                    file={croppedImage}
-                    onDelete={handleDeleteImage}
-                    sx={{
-                      '.css-81o5ax .css-gyv40i .css-3n58sb .css-3n58sb': {
-                        borderRadius: 'unset !important',
-                      },
-                    }}
+                <Box mt={0.2}>
+                  {croppedImage ? (
+                    <RHFUploadAvatar
+                      radius={true}
+                      name='property_image'
+                      maxSize={3145728}
+                      file={croppedImage}
+                      onDelete={handleDeleteImage}
+                      sx={{
+                        '.css-81o5ax .css-gyv40i .css-3n58sb .css-3n58sb': {
+                          borderRadius: 'unset !important',
+                        },
+                      }}
 
-                    onDrop={handleDropSingleFile}
-                  />
-                ) : (
-                  <RHFUploadAvatar
-                    radius={true}
-                    name='property_image'
-                    file={currentLoanIssue?.propertyImage || null}
-                    maxSize={3145728}
-                    onDelete={handleDeleteImage}
-                    sx={{ '.css-m6sgpe .css-gyv40i': { borderRadius: 'unset !important' } }}
-                    onDrop={handleDropSingleFile}
-                  />
-                )}
+                      onDrop={handleDropSingleFile}
+                    />
+                  ) : (
+                    <RHFUploadAvatar
+                      radius={true}
+                      name='property_image'
+                      file={currentLoanIssue?.propertyImage || null}
+                      maxSize={3145728}
+                      onDelete={handleDeleteImage}
+                      sx={{
+                        '.css-m6sgpe .css-gyv40i': {
+                          borderRadius: 'unset !important',
+                        },
+                      }}
+                      onDrop={handleDropSingleFile}
+                    />
+                  )}
+                </Box>
                 <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
                   {imageSrc && (
                     <ReactCrop
@@ -996,24 +1016,23 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       />
                     </ReactCrop>
                   )}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+
+                  <Box style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
                     <Button variant='outlined' onClick={handleCancel}>
                       Cancel
                     </Button>
                     <Button variant='contained' color='primary' onClick={showCroppedImage}>
                       Save Image
                     </Button>
-                  </div>
+                  </Box>
                 </Dialog>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} md={12}>
-            <Card
-              sx={{ margin: '0px 0px 20px 0px' }}
-            >
-              <CardContent>
-                <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
+            <Card>
+              <CardContent sx={{ p: 2 }}>
+                <Typography variant='subtitle1' sx={{ mb: 1, fontWeight: '600' }}>
                   Property Details
                 </Typography>
                 <TableContainer>
@@ -1026,9 +1045,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     />
                     <TableBody>
                       {fields.map((row, index) => (
-                        <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                          <TableCell sx={{ width: '200px', padding: '8px 8px' }}>
+                        <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' }, height: '10px' }}>
+                          <TableCell sx={{ width: '200px', padding: '0px 8px' }}>
                             <RHFAutocomplete
+                              sx={sx}
                               name={`propertyDetails[${index}].type`}
                               label='Type'
                               disabled={!isFieldsEnabled}
@@ -1041,8 +1061,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               error={!!errors[`propertyDetails[${index}].type`]}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '40px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '40px', padding: '0px 8px' }}>
                             <RHFAutocomplete
+                              sx={{
+                                'label': {
+                                  mt: -1.4,
+                                  fontSize: '14px',
+                                },
+                                '& .MuiInputLabel-shrink': {
+                                  mt: 0,
+                                },
+                                'input': { height: 0 },
+                              }}
                               name={`propertyDetails[${index}].carat`}
                               label='Carat'
                               disabled={!isFieldsEnabled}
@@ -1053,8 +1083,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               }}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '80px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '80px', padding: '0px 8px' }}>
                             <RHFTextField
+                              sx={sx}
                               name={`propertyDetails[${index}].pcs`}
                               label='PCS'
                               type='number'
@@ -1067,8 +1098,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               }}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '100px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '100px', padding: '0px 8px' }}>
                             <RHFTextField
+                              sx={sx}
                               name={`propertyDetails[${index}].totalWeight`}
                               label='Total Weight'
                               type='number'
@@ -1081,8 +1113,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               }}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '100px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '100px', padding: '0px 8px' }}>
                             <RHFTextField
+                              sx={sx}
                               name={`propertyDetails[${index}].lossWeight`}
                               label='Loss Weight'
                               disabled={!isFieldsEnabled}
@@ -1096,37 +1129,41 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               }}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '120px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '120px', padding: '0px 8px' }}>
                             <RHFTextField
+                              sx={sx}
                               name={`propertyDetails[${index}].grossWeight`}
                               label='GW'
                               disabled={true}
                               value={getValues(`propertyDetails[${index}].grossWeight`) || ''}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '120px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '120px', padding: '0px 8px' }}>
                             <RHFTextField
+                              sx={sx}
                               name={`propertyDetails[${index}].netWeight`}
                               label='NW'
                               disabled={true}
                               value={getValues(`propertyDetails[${index}].netWeight`) || ''}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '120px', padding: '16px 8px' }}>
+                          <TableCell sx={{ width: '120px', padding: '06px 8px' }}>
                             <RHFTextField
+                              sx={sx}
                               name={`propertyDetails[${index}].grossAmount`}
                               label='GA'
                               disabled={true}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '120px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '120px', padding: '0px 8px' }}>
                             <RHFTextField
+                              sx={sx}
                               name={`propertyDetails[${index}].netAmount`}
                               label='NA'
                               disabled={true}
                             />
                           </TableCell>
-                          <TableCell sx={{ width: '100px', padding: '8px 8px' }}>
+                          <TableCell sx={{ width: '100px', padding: '0px 8px' }}>
                             <IconButton onClick={() => handleReset(index)} disabled={!isFieldsEnabled}>
                               <Iconify icon='ic:baseline-refresh' />
                             </IconButton>
@@ -1156,7 +1193,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   </Table>
                 </TableContainer>
               </CardContent>
-              <CardActions sx={{ margin: '10px 16px 10px 16px', justifyContent: 'flex-end' }}>
+              <CardActions sx={{ margin: '0px 16px 10px 16px', justifyContent: 'flex-end', p: 0 }}>
                 <Button
                   size='small'
                   disabled={!isFieldsEnabled}
@@ -1171,13 +1208,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Card>
           </Grid>
           <Grid item xs={12} md={12}>
-            <Card sx={{ p: 3 }}>
-              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
+            <Card sx={{ p: 2 }}>
+              <Typography variant='subtitle1' sx={{ mb: 1, fontWeight: '600' }}>
                 Payment Details
               </Typography>
               <Box
-                rowGap={3}
-                columnGap={2}
+                rowGap={1.5}
+                columnGap={1.5}
                 display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
@@ -1298,22 +1335,25 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Grid>
           {['Bank', 'Both'].includes(watch('paymentMode')) && <>
             <Grid item xs={12} md={12}>
-              <Card sx={{ p: 3 }}>
-                <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
-                  Account Details
-                </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'end', pb: 3 }}>
-                  <Link
-                    disabled={!isFieldsEnabled}
-                    onClick={() => saveCustomerBankDetails()}
-                    style={{
-                      fontWeight: 'bold',
-                      textDecoration: 'none',
-                      color: 'inherit',
-                    }}
-                  >
-                    Add beneficiary
-                  </Link>
+              <Card sx={{ p: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+                    Account Details
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', pb: 1.5 }}>
+                    <Button
+                      variant={'outlined'}
+                      disabled={!isFieldsEnabled}
+                      onClick={() => saveCustomerBankDetails()}
+                      style={{
+                        fontWeight: 'bold',
+                        textDecoration: 'none',
+                        color: 'inherit',
+                      }}
+                    >
+                      Add beneficiary
+                    </Button>
+                  </Box>
                 </Box>
                 <Box
                   rowGap={3}

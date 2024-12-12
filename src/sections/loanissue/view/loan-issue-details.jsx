@@ -183,6 +183,11 @@ const useStyles = () =>
           width: '48px',
           borderRadius: 5,
         },
+        customerImg:{
+          height: '90px',
+          width: '90px',
+          borderRadius: 5,
+        },
         table: {
           width: 'auto',
           borderRadius: 10,
@@ -243,7 +248,7 @@ const useStyles = () =>
         },
         tableFlex: {
           flexDirection: 'row',
-          marginTop: 25,
+          marginTop: 0,
           width: '100%',
         },
         termsAndConditionsHeaders: {
@@ -267,7 +272,8 @@ const useStyles = () =>
         },
         signText: {
           fontSize: 11,
-          borderTop: '1px solid black',
+          borderTop: '1px solid 232C4B',
+          color:'#232C4B',
           paddingTop: 10,
           textAlign: 'center',
           width: '100px',
@@ -391,20 +397,21 @@ export default function LoanIssueDetails({ selectedRow }) {
                   <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
                 </Text>
               </View>
-              <View>
+              <View style={{marginTop:-70}}>
                 {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                 <View>
+                  <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
+                </View>
+                <View style={{marginTop:5}}>
                   <Image style={styles.propertyImage} src={selectedRow.propertyImage} />
                 </View>
               </View>
             </View>
-            <View style={{ ...styles.flexContainer, gap: 20, position: 'absolute', top: -68, right: 30 }}>
+            <View style={{ position: 'absolute', top: -68, right: 155 }}>
               <View>
                 <Image style={styles.img} src={Qr} />
               </View>
-              <View>
-                <Image style={styles.img} src={selectedRow.customer.avatar_url} />
-              </View>
+
             </View>
 
             <View style={styles.tableFlex}>

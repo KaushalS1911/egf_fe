@@ -134,36 +134,35 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
 
       <Box>
         <FormProvider methods={methods} onSubmit={onSubmit}>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{ p: 2 }}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={12}>
                 <Box
-                  rowGap={2}
-                  columnGap={2}
+                  rowGap={1.5}
+                  columnGap={1.5}
                   display='grid'
                   gridTemplateColumns={{
                     xs: 'repeat(1, 1fr)',
                     sm: 'repeat(3, 1fr)',
-                    md: 'repeat(4, 1fr)',
+                    md: 'repeat(6, 1fr)',
                   }}>
                   <RHFTextField name='loanNo' label='Loan No.' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='customerName' label='Customer Name' InputProps={{ readOnly: true }} />
                   <RHFTextField
                     name='schemeName'
                     label='Scheme Name'
                     InputProps={{ readOnly: true }}
                     inputProps={{ minLength: 10, maxLength: 10 }}
                   />
-                  <RHFDatePicker
-                    name='issueDate'
-                    control={control}
-                    label='Issue Date'
-                  />
-                  <RHFDatePicker
-                    name='nextInterestPayDate'
-                    control={control}
-                    label='Next Interest Pay Date'
-                  />
-                  <RHFTextField name='customerName' label='Customer Name' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='IntPeriodTime' label='Interest Period Time'
+                                InputProps={{ readOnly: true }} /><RHFDatePicker
+                  name='nextInterestPayDate'
+                  control={control}
+                  label='Next Interest Pay Date'
+                />
+                  <RHFTextField name='aaprovalCharge' label='Aaproval Charge' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
                   <RHFTextField
                     name='interest'
                     label='Interest %'
@@ -175,16 +174,30 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                       }
                     }}
                   />
-                  <RHFTextField name='consultCharge' label='Consult Charge %' InputProps={{ readOnly: true }}
-                                InputLabelProps={{ shrink: true }} />
+                  <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }} />
                   <RHFDatePicker
                     name='lastInterestPayDate'
                     control={control}
                     label='Last Interest Pay Date'
                   />
-                  <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
-                  <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }} />
-                  <RHFTextField name='IntPeriodTime' label='Interest Period Time' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }}
+                                InputProps={{ readOnly: true }} />
+                  <RHFTextField name='interestLoanAmount' label='Interest Loan Amount'
+                                InputProps={{ readOnly: true }} />
+                  <RHFTextField
+                    name='contact'
+                    label='Mobile No.'
+                    InputProps={{ readOnly: true }}
+                    inputProps={{ maxLength: 16 }}
+                  />
+                  <RHFTextField name='consultCharge' label='Consult Charge %' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
+                  <RHFDatePicker
+                    name='issueDate'
+                    control={control}
+                    label='Issue Date'
+                  />
+
                   <RHFDatePicker
                     name='renewDate'
                     control={control}
@@ -199,20 +212,12 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   {/*/!*    e.target.value = e.target.value.replace(/[^0-9]/g, '');*!/*/}
                   {/*/!*  }}*!/*/}
                   {/*{//>/}*/}
-                  <RHFTextField name='interestLoanAmount' label='Interest Loan Amount'
-                                InputProps={{ readOnly: true }} />
-
-                  <RHFTextField name='loanPeriod' label='Loan Period (Month)' InputProps={{ readOnly: true }} />
-                  <RHFTextField name='createdBy' label='Created By' InputLabelProps={{ shrink: true }}
-                                InputProps={{ readOnly: true }} />
 
 
-                  <RHFTextField
-                    name='contact'
-                    label='Mobile No.'
-                    InputProps={{ readOnly: true }}
-                    inputProps={{ maxLength: 16 }}
-                  />
+
+
+
+
                   {/*{/<RHFTextField name='closedBy' label='Closed By' InputProps={{ readOnly: true }} />/}*/}
 
 
@@ -236,7 +241,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                           alt={file}
                           ratio='1/1'
                           onClick={() => lightbox.onOpen(file)}
-                          sx={{ cursor: 'zoom-in', height: '56px', width: '56px', borderRadius: '20%' }}
+                          sx={{ cursor: 'zoom-in', height: '36px', width: '36px', borderRadius: '20%' }}
                         />
                       </Box>
                     </Box>

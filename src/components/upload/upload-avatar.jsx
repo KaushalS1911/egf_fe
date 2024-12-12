@@ -34,7 +34,7 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx,rad
       src={imgUrl}
       sx={{
         width:radius ? '100%' : 1,
-        height:radius ? '100%' : 1,
+        height:radius ? '100%'  : 1,
         borderRadius:radius ? "unset" : '50%',
       }}
     />
@@ -103,8 +103,8 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx,rad
         sx={{
           p: 1,
           m: 'auto',
-          width: 144,
-          height: 144,
+          height:radius ? 100  : 144,
+          width:radius ? 100 : 144,
           cursor: 'pointer',
           overflow: 'hidden',
           borderRadius: radius ? 'unset' : "50%",
