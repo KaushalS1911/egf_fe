@@ -202,7 +202,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
       days: data.days,
       uchakInterestAmount: data.uchakAmount,
       interestAmount: data.interestAmount,
-      from: new Date(Number(data.from)),
+      from:(currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(watch('from')) :  new Date(Number(data.from)),
       amountPaid: data.amountPaid,
       penalty: data.penalty,
       cr_dr: data.cr_dr,
