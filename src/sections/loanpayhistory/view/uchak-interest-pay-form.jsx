@@ -174,7 +174,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   };
   const handleDeleteUchak = async (id) => {
     try {
-      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest/${id}`);
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest-payment/${id}`);
       mutate();
       setDeleteId(null)
       refetchUchak();
