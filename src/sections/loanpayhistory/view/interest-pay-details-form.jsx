@@ -155,10 +155,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
     });
     setValue('interestAmount', (((currentLoan.interestLoanAmount * currentLoan?.scheme.interestRate) / 100) * (12 * differenceInDays) / 365).toFixed(2));
     setValue('penalty', penaltyPer);
-    setValue('totalPay', (
-      Number(watch('interestAmount')) +
-      Number(watch('penalty'))
-    ).toFixed(2));
+    setValue('totalPay', ((Number(watch('interestAmount')) + Number(watch('penalty') - Number(watch('uchakAmount'))))).toFixed(2));
     setValue('payAfterAdjusted1', (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2));
     setValue('cr_dr', (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2));
   }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
