@@ -179,7 +179,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       setDeleteId(null)
       refetchUchak();
       confirm.onFalse();
-      enqueueSnackbar((response?.data.message));
+      enqueueSnackbar((response?.data.message),{variant: 'success'});
     } catch (err) {
       enqueueSnackbar('Failed to pay uchak interest',{variant: 'error'});
     }

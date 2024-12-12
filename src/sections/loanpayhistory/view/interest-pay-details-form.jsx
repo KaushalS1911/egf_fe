@@ -266,7 +266,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
       confirm.onFalse();
       refetchLoanInterest();
       mutate();
-      enqueueSnackbar((response?.data.message));
+      enqueueSnackbar((response?.data.message),{variant: 'success'});
     } catch (err) {
       enqueueSnackbar('Failed to pay interest',{variant: 'error'});
     }

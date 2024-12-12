@@ -116,7 +116,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.recallingDate ? fDate(row?.recallingDate) : '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
@@ -138,7 +138,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           </Label>
         </TableCell>
 
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <TableCell align='right' sx={{ whiteSpace: 'nowrap' }}>
           {row?.attempts && <IconButton
             color={collapse.value ? 'inherit' : 'default'}
             onClick={collapse.onToggle}
