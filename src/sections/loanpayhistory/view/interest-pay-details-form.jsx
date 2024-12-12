@@ -273,11 +273,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   };
 
   return (
-    <Box >
+    <Box sx={{ py: 0 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box
-          rowGap={3}
-          columnGap={2}
+          rowGap={1.5}
+          columnGap={1.5}
           display='grid'
           gridTemplateColumns={{
             xs: 'repeat(1, 1fr)',
@@ -314,100 +314,102 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             }
           }} />
         </Box>
-        <Box>
-          <Typography variant='subtitle1' sx={{ mt: 1, fontWeight: 600 }}>
-            Payment Details
-          </Typography>
-          <Box
-            rowGap={3}
-            columnGap={2}
-            display='grid'
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)',
-              sm: 'repeat(3, 1fr)',
-              md: 'repeat(4, 1fr)',
-            }}
-            sx={{ mt: 1 }}
-          >
-            <RHFAutocomplete
-              name='paymentMode'
-              label='Payment Mode'
-              req='red'
-              options={['Cash', 'Bank', 'Both']}
-              getOptionLabel={(option) => option}
-              onChange={(event, value) => {
-                setValue('paymentMode', value);
-                handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+        <Typography variant='subtitle1' sx={{ mt: 1, fontWeight: 600 }}>
+          Payment Details
+        </Typography>
+        <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <Box sx={{width:'90%'}}>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(6, 1fr)',
               }}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-            />
-
-            {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
-              <Controller
-                name='cashAmount'
-                control={control}
-                render={({ field }) => (
-                  <RHFTextField
-                    {...field}
-                    label='Cash Amount'
-                    req={'red'}
-                    type='number'
-                    inputProps={{ min: 0 }}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      handleCashAmountChange(e);
-                    }}
-                  />
+              sx={{ mt: 1 }}
+            >
+              <RHFAutocomplete
+                name='paymentMode'
+                label='Payment Mode'
+                req='red'
+                options={['Cash', 'Bank', 'Both']}
+                getOptionLabel={(option) => option}
+                onChange={(event, value) => {
+                  setValue('paymentMode', value);
+                  handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
                 )}
               />
-            ) : null}
 
-            {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-              <>
-                <RHFAutocomplete
-                  name='account'
-                  label='Account'
-                  req={'red'}
-                  fullWidth
-                  options={branch.flatMap((item) => item.company.bankAccounts)}
-                  getOptionLabel={(option) => option.bankName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id || option.bankName}>
-                      {option.bankName}
-                    </li>
-                  )}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                />
+              {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
                 <Controller
-                  name='bankAmount'
+                  name='cashAmount'
                   control={control}
                   render={({ field }) => (
                     <RHFTextField
                       {...field}
-                      label='Bank Amount'
+                      label='Cash Amount'
                       req={'red'}
-                      disabled={watch('paymentMode') === 'Bank' ? false : true}
                       type='number'
                       inputProps={{ min: 0 }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleCashAmountChange(e);
+                      }}
                     />
                   )}
                 />
-              </>
-            )}
+              ) : null}
+
+              {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+                <>
+                  <RHFAutocomplete
+                    name='account'
+                    label='Account'
+                    req={'red'}
+                    fullWidth
+                    options={branch.flatMap((item) => item.company.bankAccounts)}
+                    getOptionLabel={(option) => option.bankName || ''}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id || option.bankName}>
+                        {option.bankName}
+                      </li>
+                    )}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                  />
+                  <Controller
+                    name='bankAmount'
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label='Bank Amount'
+                        req={'red'}
+                        disabled={watch('paymentMode') === 'Bank' ? false : true}
+                        type='number'
+                        inputProps={{ min: 0 }}
+                      />
+                    )}
+                  />
+                </>
+              )}
+            </Box>
+          </Box>
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',gap:1 }}>
+            <Button color='inherit' sx={{ height: '36px' }}
+                    variant='outlined' onClick={() => reset()}>Reset</Button>
+            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+              Submit
+            </LoadingButton>
           </Box>
         </Box>
 
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-          <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                  variant='outlined' onClick={() => reset()}>Reset</Button>
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-            Submit
-          </LoadingButton>
-        </Box>
       </FormProvider>
       <Box>
         <Box sx={{
@@ -426,7 +428,7 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             borderRadius: '4px',
           },
         }}>
-          <Table sx={{ borderRadius: '16px', mt: 3, minWidth: '1600px' }}>
+          <Table sx={{ borderRadius: '16px', mt: 2.5, minWidth: '1600px' }}>
             <TableHeadCustom
               order={table.order}
               orderBy={table.orderBy}
@@ -436,26 +438,30 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
             <TableBody>
               {loanInterest.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell>{fDate(row.from)}</TableCell>
-                  <TableCell>{fDate(row.to)}</TableCell>
-                  <TableCell>{row.loan.loanAmount}</TableCell>
-                  <TableCell>{row.loan.scheme.interestRate > 1.5 ? 1.5 : row.loan.scheme.interestRate}</TableCell>
-                  <TableCell>{row.loan.consultingCharge}</TableCell>
-                  <TableCell>{row.interestAmount}</TableCell>
-                  <TableCell>{row.penalty}</TableCell>
-                  <TableCell>{row.cr_dr}</TableCell>
-                  <TableCell>{row.adjustedPay}</TableCell>
-                  <TableCell>{fDate(row.createdAt)}</TableCell>
-                  <TableCell>{row.days}</TableCell>
-                  <TableCell>{row.uchakInterestAmount || 0}</TableCell>
-                  <TableCell>{row.amountPaid}</TableCell>
-                  <TableCell>{
+                  <TableCell sx={{ py: 0, px: 1, }}>{fDate(row.from)}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{fDate(row.to)}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.loan.loanAmount}</TableCell>
+                  <TableCell sx={{
+                    py: 0,
+                    px: 1,
+
+                  }}>{row.loan.scheme.interestRate > 1.5 ? 1.5 : row.loan.scheme.interestRate}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.loan.consultingCharge}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.interestAmount}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.penalty}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.cr_dr}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.adjustedPay}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{fDate(row.createdAt)}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.days}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.uchakInterestAmount || 0}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{row.amountPaid}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1, }}>{
                     <IconButton color='error' onClick={() => {
                       if(index === 0){
                         confirm.onTrue();
                         setDeleteId(row?._id);
                       }
-                    }}  sx={{
+                    }} sx={{
                       cursor: index === 0 ? 'pointer' : 'default',
                       opacity: index === 0 ? 1 : 0.5,
                       pointerEvents: index === 0 ? 'auto' : 'none',
@@ -463,11 +469,11 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                       <Iconify icon='eva:trash-2-outline' />
                     </IconButton>
                   }</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>{
+                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>{
                     <Typography
                       onClick={() => {
-                          view.onTrue();
-                          setData(row);
+                        view.onTrue();
+                        setData(row);
                       }}
                       sx={{
                         cursor: 'pointer',

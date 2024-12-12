@@ -208,17 +208,19 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
           </Grid>
 
         </Grid>
-        <Grid item>
-          <Typography variant='subtitle1' my={1.5}>
+        <Grid item pb={2}>
+          <Typography variant='subtitle1' my={1}>
             Payment Details
           </Typography>
+          <Box sx={{display: 'flex', justifyContent: 'space-between',}}>
           <Box
+            width={'100%'}
             rowGap={3}
             columnGap={2}
             display='grid'
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
-              md: 'repeat(4, 1fr)',
+              md: 'repeat(5, 1fr)',
             }}>
             <RHFAutocomplete
               name='paymentMode'
@@ -290,15 +292,17 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
               </>
             )}
           </Box>
+            <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',gap:1}}>
+              <Button color='inherit'
+                      variant='outlined' onClick={() => reset()}>Reset</Button>
+              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                Submit
+              </LoadingButton>
+            </Box>
+          </Box>
         </Grid>
 
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-          <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                  variant='outlined' onClick={() => reset()}>Reset</Button>
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-            Submit
-          </LoadingButton>
-        </Box>
+
       </FormProvider>
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />

@@ -23,8 +23,8 @@ function PayTabs({ mutate, currentLoan }) {
           </Typography>
         </Grid>
         <Grid item xs={12} P={0}>
-          <Card sx={{ p: 3 }}>
-            <Tabs value={activeTab} onChange={handleChange} variant='scrollable' scrollButtons='auto' sx={{ mb: 3 }}>
+          <Card sx={{py:0, px: 2 }}>
+            <Tabs value={activeTab} onChange={handleChange} variant='scrollable' scrollButtons='auto' sx={{ mb: 1.5,'.css-1obiyde-MuiTabs-indicator':{bottom:8} }}>
               <Tab label='Interest Pay Details' />
               <Tab label='Part Release' />
               <Tab label='Uchak Interest Pay Details' />

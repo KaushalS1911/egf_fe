@@ -427,7 +427,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                         />
                       </TableCell>
                       {tableHeaders.map((header) => (
-                        <TableCell key={header.id} className={'black-text'}>{header.label}</TableCell>
+                        <TableCell key={header.id} className={'black-text'} sx={{py: 1, px: 1}}>{header.label}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
@@ -435,47 +435,49 @@ function PartReleaseForm({ currentLoan, mutate }) {
                     {properties && properties.length > 0 ? (
                       properties.map((row, index) => (
                         <TableRow key={row._id} selected={isRowSelected(index)}>
-                          <TableCell padding='checkbox'>
+                          <TableCell padding='checkbox' sx={{py: 0, px: 1, height: 1}}>
                             <Checkbox
                               checked={isRowSelected(index)}
                               onChange={() => handleCheckboxClick(index)}
                             />
                           </TableCell>
-                          <TableCell>{currentLoan.loanNo}</TableCell>
-                          <TableCell>{row.type}</TableCell>
-                          <TableCell>{row.carat}</TableCell>
-                          <TableCell>{row.pcs}</TableCell>
-                          <TableCell>{parseFloat(row.totalWeight || 0).toFixed(2)}</TableCell>
-                          <TableCell>{parseFloat(row.netWeight || 0).toFixed(2)}</TableCell>
-                          <TableCell>{parseFloat(row.grossAmount || 0).toFixed(2)}</TableCell>
-                          <TableCell>{parseFloat(row.netAmount || 0).toFixed(2)}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{currentLoan.loanNo}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{row.type}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{row.carat}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{row.pcs}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.totalWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.netWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.grossAmount || 0).toFixed(2)}</TableCell>
+                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.netAmount || 0).toFixed(2)}</TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={9} align='center'>
+                        <TableCell colSpan={9} align='center' sx={{py: 0, px: 1, height: 1}}>
                           No Property Available
                         </TableCell>
                       </TableRow>
                     )}
                     <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
                       <TableCell padding='checkbox' />
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>TOTAL AMOUNT</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381',py: 1, px: 1,}}>TOTAL AMOUNT</TableCell>
                       <TableCell />
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.carat}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' }}>{selectedTotals.pcs}</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381',py: 1, px: 1,  }}>{selectedTotals.carat}</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381' ,py: 1, px: 1, }}>{selectedTotals.pcs}</TableCell>
                       <TableCell sx={{
                         fontWeight: '600',
                         color: '#637381',
+                        py: 1, px: 1,
                       }}>{(selectedTotals.totalWeight).toFixed(2)}</TableCell>
                       <TableCell
-                        sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.netWeight).toFixed(2)}</TableCell>
+                        sx={{ fontWeight: '600', color: '#637381' ,py: 1, px: 1, }}>{(selectedTotals.netWeight).toFixed(2)}</TableCell>
                       <TableCell sx={{
                         fontWeight: '600',
-                        color: '#637381',
+                        color: '#637381',py: 1, px: 1,
+
                       }}>{(selectedTotals.grossAmount).toFixed(2)}</TableCell>
                       <TableCell
-                        sx={{ fontWeight: '600', color: '#637381' }}>{(selectedTotals.netAmount).toFixed(2)}</TableCell>
+                        sx={{ fontWeight: '600', color: '#637381' ,py: 1, px: 1, }}>{(selectedTotals.netAmount).toFixed(2)}</TableCell>
                     </TableRow>
                   </TableBody>
 
@@ -521,7 +523,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
 
                   </Grid>
                   <Grid>
-                    <Typography variant='subtitle1' my={1.5}>
+                    <Typography variant='subtitle1' my={1}>
                       Payment Details
                     </Typography>
 
@@ -670,18 +672,18 @@ function PartReleaseForm({ currentLoan, mutate }) {
           </LoadingButton>
         </Box>
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {partRelease && partRelease.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanNo}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.interestLoanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{
+              <TableCell sx={{ whiteSpace: 'nowrap' ,py: 0, px: 1, height: 1}}>{row.loan.loanNo}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.loan.loanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.loan.interestLoanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{fDate(row.createdAt)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{
                 <IconButton color='error' onClick={() => {
                   if (index === 0) {
                     confirm.onTrue();
@@ -696,7 +698,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>{
+              <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' ,py: 0, px: 1, height: 1}}>{
                 <Typography onClick={() => {
                   view.onTrue();
                   setData(row);

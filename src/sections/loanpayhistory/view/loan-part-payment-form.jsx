@@ -256,16 +256,18 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
         </Grid>
         <Grid spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant='h6' my={1.5}>
+            <Typography variant='subtitle1' my={1}>
               Payment Details
             </Typography>
+            <Box sx={{display: 'flex', justifyContent: 'space-between',alignItems:'center'}}>
             <Box
+              width={"100%"}
               rowGap={3}
               columnGap={2}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                md: 'repeat(4, 1fr)',
+                md: 'repeat(5, 1fr)',
               }}>
 
               <RHFAutocomplete
@@ -337,37 +339,39 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 </>
               )}
             </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  color='inherit'
+                  sx={{ margin: '0px 10px', height: '36px' }}
+                  variant='outlined'
+                  onClick={() => reset()}
+                >
+                  Reset
+                </Button>
+                <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                  Submit
+                </LoadingButton>
+              </Box>
+            </Box>
           </Grid>
         </Grid>
 
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            color='inherit'
-            sx={{ margin: '0px 10px', height: '36px' }}
-            variant='outlined'
-            onClick={() => reset()}
-          >
-            Reset
-          </Button>
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-            Submit
-          </LoadingButton>
-        </Box>
+
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {partPayment.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' ,py: 0, px: 1,}}>{row.loan.loanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' ,py: 0, px: 1,}}>{row.amountPaid}</TableCell>
               <TableCell
-                sx={{ whiteSpace: 'nowrap' }}>{intAmtCalculation(row.loan.loanAmount, row.loan.interestLoanAmount, index)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{
+                sx={{ whiteSpace: 'nowrap',py: 0, px: 1, }}>{intAmtCalculation(row.loan.loanAmount, row.loan.interestLoanAmount, index)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, }}>{fDate(row.date)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, }}>{fDate(row.createdAt)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, }}>{
                 <IconButton color='error' onClick={() => {
                   confirm.onTrue();
                   popover.onClose();
