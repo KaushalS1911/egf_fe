@@ -32,6 +32,7 @@ import Noc from '../PDF/noc';
 import InterestPdf from '../PDF/interest-pdf';
 import { useBoolean } from '../../../hooks/use-boolean';
 import PartReleasePdf from '../PDF/part-release-pdf';
+import { ConfirmDialog } from '../../../components/custom-dialog';
 // import { useGetBranch } from '../../../api/branch';
 
 const TABLE_HEAD = [
@@ -58,6 +59,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const [data, setData] = useState(null);
   const view = useBoolean();
   const { branch } = useGetBranch();
+  const confirm = useBoolean();
+  const [deleteId, setDeleteId] = useState('');
   const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
   const table = useTable();
 
@@ -259,11 +262,13 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
   const handleDeleteInterest = async (id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment/${id}`);
+      setDeleteId(null)
+      confirm.onFalse();
       refetchLoanInterest();
       mutate();
       enqueueSnackbar((response?.data.message));
     } catch (err) {
-      enqueueSnackbar('Failed to pay interest');
+      enqueueSnackbar('Failed to pay interest',{variant: 'error'});
     }
   };
 
@@ -447,7 +452,8 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
                   <TableCell>{
                     <IconButton color='error' onClick={() => {
                       if(index === 0){
-                      handleDeleteInterest(row._id);
+                        confirm.onTrue();
+                        setDeleteId(row?._id);
                       }
                     }}  sx={{
                       cursor: index === 0 ? 'pointer' : 'default',
@@ -478,6 +484,17 @@ function InterestPayDetailsForm({ currentLoan, mutate }) {
           </Table>
         </Box>
       </Box>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title='Delete'
+        content='Are you sure want to delete?'
+        action={
+          <Button variant='contained' color='error' onClick={() => handleDeleteInterest(deleteId)}>
+            Delete
+          </Button>
+        }
+      />
       <Dialog fullScreen open={view.value}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions

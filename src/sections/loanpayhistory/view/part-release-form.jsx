@@ -81,8 +81,8 @@ function PartReleaseForm({ currentLoan, mutate }) {
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
-  const confirm = useBoolean();
   const popover = usePopover();
+  const confirm = useBoolean();
   const [deleteId, setDeleteId] = useState('');
 
   useEffect(() => {
