@@ -2,17 +2,31 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, IconButton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useGetBranch } from '../../../api/branch';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
-
+import { useGetAllUchakPay } from '../../../api/uchak';
+import { TableHeadCustom } from '../../../components/table';
+import { fDate } from '../../../utils/format-time';
+import Iconify from '../../../components/iconify';
+import { ConfirmDialog } from '../../../components/custom-dialog';
+import { useBoolean } from '../../../hooks/use-boolean';
+const TABLE_HEAD = [
+  { id: 'uchakPayDate', label: 'Uchak Pay Date' },
+  { id: 'uchakIntAmt', label: 'Uchak Int Amt' },
+  { id: 'remark', label: 'Remarks' },
+  { id: 'action', label: 'Action' },
+];
 function UchakInterestPayForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
+  const { uchak , refetchUchak}  = useGetAllUchakPay(currentLoan._id);
   const [paymentMode, setPaymentMode] = useState('');
+  const confirm = useBoolean();
+  const [deleteId, setDeleteId] = useState('');
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -117,6 +131,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
 
       const response = await axios(config);
       reset();
+      refetchUchak();
       mutate();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
@@ -157,7 +172,18 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       setValue('bankAmount', 0);
     }
   };
-
+  const handleDeleteUchak = async (id) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest/${id}`);
+      mutate();
+      setDeleteId(null)
+      refetchUchak();
+      confirm.onFalse();
+      enqueueSnackbar((response?.data.message));
+    } catch (err) {
+      enqueueSnackbar('Failed to pay uchak interest',{variant: 'error'});
+    }
+  };
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -278,6 +304,43 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
 
 
       </FormProvider>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
+        <TableHeadCustom headLabel={TABLE_HEAD} />
+        <TableBody>
+          {uchak && uchak.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{
+                <IconButton color='error' onClick={() => {
+                  if (index === 0) {
+                    confirm.onTrue();
+                    setDeleteId(row?._id);
+                  }
+                }} sx={{
+                  cursor: index === 0 ? 'pointer' : 'default',
+                  opacity: index === 0 ? 1 : 0.5,
+                  pointerEvents: index === 0 ? 'auto' : 'none',
+                }}>
+                  <Iconify icon='eva:trash-2-outline' />
+                </IconButton>
+              }</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title='Delete'
+        content='Are you sure want to delete?'
+        action={
+          <Button variant='contained' color='error' onClick={() => handleDeleteUchak(deleteId)}>
+            Delete
+          </Button>
+        }
+      />
     </>
   );
 }
