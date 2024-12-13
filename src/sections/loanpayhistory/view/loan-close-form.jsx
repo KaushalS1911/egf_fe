@@ -54,13 +54,16 @@ function LoanCloseForm({ currentLoan, mutate }) {
       .required('Closing Charge is required')
       .typeError('Closing Charge must be a number'),
     paymentMode: Yup.string().required('Payment Mode is required'),
+    netAmount: Yup.string().required('Net Amount is required'),
     ...paymentSchema,
   });
+  console.log((currentLoan?.interestLoanAmount));
   const defaultValues = {
     totalLoanAmount: currentLoan?.loanAmount || '',
-    paidLoanAmount: (currentLoan?.loanAmount - currentLoan?.interestLoanAmount) || '',
+    netAmount: '',
+    paidLoanAmount: (currentLoan?.loanAmount - currentLoan?.interestLoanAmount) || '0',
     pendingLoanAmount: currentLoan?.interestLoanAmount || '',
-    closingCharge: '',
+    closingCharge: '0',
     closeRemarks: '',
     paymentMode: '',
     cashAmount: '',
@@ -81,12 +84,16 @@ function LoanCloseForm({ currentLoan, mutate }) {
     reset,
     formState: { isSubmitting },
   } = methods;
+
   useEffect(() => {
     if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
       setValue('paymentMode', watch('paymentMode'));
     }
   }, [watch('paymentMode')]);
+  useEffect(() => {
+      setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
+  }, [watch('closingCharge'),watch('pendingLoanAmount')]);
 
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
@@ -115,6 +122,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
     const payload = {
       totalLoanAmount: data.totalLoanAmount,
+      netAmount: data.netAmount,
       closingCharge: data.closingCharge,
       remark: data.remark,
       paymentDetail: paymentDetail,
@@ -140,7 +148,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
   });
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
-    const currentLoanAmount = parseFloat(watch('paidLoanAmount')) || '';
+    const currentLoanAmount = parseFloat(watch('netAmount')) || '';
 
     if (newCashAmount > currentLoanAmount) {
       setValue('cashAmount', currentLoanAmount);
@@ -198,6 +206,11 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 e.preventDefault();
               }
             }} />
+            <RHFTextField name='netAmount' label='Net Amount'onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }}  InputProps={{ readOnly: true }} />
             <RHFTextField name='closeRemarks' label='Close Remarks' />
           </Box>
         </Grid>
@@ -225,7 +238,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
                     setValue('paymentMode', value);
-                    handleLoanAmountChange({ target: { value: watch('paidLoanAmount') } });
+                    handleLoanAmountChange({ target: { value: watch('netAmount') } });
                   }}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -297,7 +310,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
             </Box>
           </Grid>
         </Grid>
-
       </FormProvider>
     </>
   );
