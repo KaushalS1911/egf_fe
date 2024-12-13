@@ -4,10 +4,13 @@ import { Controller, useFormContext } from 'react-hook-form';
 import FormHelperText from '@mui/material/FormHelperText';
 
 import { Upload, UploadBox, UploadAvatar } from '../upload';
+import { Box } from '@mui/system';
+import Iconify from '../iconify';
+import React from 'react';
 
 // ----------------------------------------------------------------------
 
-export function RHFUploadAvatar({ name, ...other }) {
+export function RHFUploadAvatar({ name,setOpen2, camera, ...other }) {
   const { control } = useFormContext();
 
   return (
@@ -16,8 +19,10 @@ export function RHFUploadAvatar({ name, ...other }) {
       control={control}
       render={({ field, fieldState: { error } }) => (
         <div>
+          {camera && <Box sx={{ textAlign: 'right' }}>
+            <Iconify icon='ion:camera-sharp' width={24} sx={{ color: 'gray', cursor: 'pointer' }}
+                     onClick={() => setOpen2(true)} /></Box>}
           <UploadAvatar error={!!error} file={field.value} {...other} />
-
           {!!error && (
             <FormHelperText error sx={{ px: 2, textAlign: 'center' }}>
               {error.message}
