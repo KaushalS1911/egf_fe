@@ -15,6 +15,7 @@ import { fDate } from '../../../utils/format-time';
 import Iconify from '../../../components/iconify';
 import { ConfirmDialog } from '../../../components/custom-dialog';
 import { useBoolean } from '../../../hooks/use-boolean';
+import { useGetAllInterest } from '../../../api/interest-pay';
 const TABLE_HEAD = [
   { id: 'uchakPayDate', label: 'Uchak Pay Date' },
   { id: 'uchakIntAmt', label: 'Uchak Int Amt' },
@@ -24,6 +25,7 @@ const TABLE_HEAD = [
 function UchakInterestPayForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const { uchak , refetchUchak}  = useGetAllUchakPay(currentLoan._id);
+  const { loanInterest } = useGetAllInterest(currentLoan._id);
   const [paymentMode, setPaymentMode] = useState('');
   const confirm = useBoolean();
   const [deleteId, setDeleteId] = useState('');
@@ -314,14 +316,14 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>{
                 <IconButton color='error' onClick={() => {
-                  if (index === 0) {
+                  if ((new Date(loanInterest[0]?.to) > new Date(row.date)) || loanInterest.length === 0) {
                     confirm.onTrue();
                     setDeleteId(row?._id);
                   }
                 }} sx={{
-                  cursor: index === 0 ? 'pointer' : 'default',
-                  opacity: index === 0 ? 1 : 0.5,
-                  pointerEvents: index === 0 ? 'auto' : 'none',
+                  cursor: (new Date(loanInterest[0]?.to) < new Date(row.date)) || loanInterest.length === 0 ? 'pointer' : 'default',
+                  opacity: (new Date(loanInterest[0]?.to) < new Date(row.date)) || loanInterest.length === 0 ? 1 : 0.5,
+                  pointerEvents: (new Date(loanInterest[0]?.to) < new Date(row.date)) || loanInterest.length === 0 ? 'auto' : 'none',
                 }}>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
