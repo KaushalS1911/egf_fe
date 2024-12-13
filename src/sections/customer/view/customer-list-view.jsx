@@ -167,7 +167,6 @@ export default function CustomerListView() {
     'Pan card': item.panCard,
     'Driving license': item.drivingLicense,
     'Joining date': fDate(item.joiningDate),
-    'Loan type': item.loanType,
     'Barnch': item.branch.name,
     'Permanent address': `${item.permanentAddress.street} ${item.permanentAddress.landmark} ${item.permanentAddress.city} , ${item.permanentAddress.state} ${item.permanentAddress.country} ${item.permanentAddress.zipcode}`,
     'Reference By': item.referenceBy,

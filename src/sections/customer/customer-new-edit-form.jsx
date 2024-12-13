@@ -79,7 +79,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       .required('Aadhar Card number is required')
       .matches(/^\d{12}$/, 'Aadhar Card must be exactly 12 digits and should not contain alphabetic characters'),
     otpContact: Yup.string().required('OTP Contact number is required').max(10).min(10),
-    loanType: Yup.string().required('Loan Type is required'),
     PerStreet: Yup.string().required('Address Line 1 is required'),
     PerLandmark: Yup.string().required('Landmark 1 is required'),
     PerCountry: Yup.string().required('Country is required'),
@@ -105,7 +104,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     panCard: (currentCustomer?.panCard || '').toUpperCase(),
     aadharCard: currentCustomer?.aadharCard || '',
     otpContact: currentCustomer?.otpContact || '',
-    loanType: currentCustomer?.loanType || '',
     remark: currentCustomer?.remark || '',
     customerCode: currentCustomer?.customerCode || '',
     drivingLicense: currentCustomer?.drivingLicense || '',
@@ -173,7 +171,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         aadharCard: data.aadharCard,
         otpContact: data.otpContact,
         businessType: data.businessType,
-        loanType: data.loanType,
         remark: data.remark,
         referenceBy: watch('referenceBy') !== 'Other' ? data?.referenceBy : data?.otherReferenceBy,
         permanentAddress: {
@@ -636,14 +633,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 control={control}
                 label='Date of Birth'
                 req={'red'}
-              />
-              <RHFAutocomplete
-                name='loanType'
-                label='Loan Type'
-                req={'red'}
-                placeholder='Choose Loan Type'
-                options={configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan) : []}
-                isOptionEqualToValue={(option, value) => option?.value === value?.value}
               />
               <RHFTextField name='remark' label='Remark' />
               {currentCustomer && (

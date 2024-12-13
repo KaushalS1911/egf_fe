@@ -10,31 +10,39 @@ import { Stack } from '@mui/system';
 export default function LoanTypeView() {
   const { user } = useAuthContext();
   const { configs, mutate } = useGetConfigs();
-  const [inputVal, setInputVal] = useState('');
+  const [inputVal, setInputVal] = useState({
+    loanType: '',
+    approvalCharge: '',
+
+  });
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = () => {
-    if (!inputVal) {
+    console.log(inputVal.loanType == "" && inputVal.approvalCharge == "");
+    if ( inputVal.loanType == "" || inputVal.approvalCharge == "") {
       enqueueSnackbar('Loan Type cannot be empty', { variant: 'warning' });
-      return;
+    }else {
+
+      const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
+      const updatedLoanTypes = configs.loanTypes ? [...configs.loanTypes, inputVal] : [inputVal];
+      const payload = { ...configs, loanTypes: updatedLoanTypes };
+
+      axios.put(URL, payload)
+        .then((res) => {
+          if (res.status === 200) {
+            setInputVal({
+              loanType: '',
+              approvalCharge: '',
+            });
+            enqueueSnackbar('Loan Type added successfully', { variant: 'success' });
+            mutate();
+          }
+        })
+        .catch((err) => {
+          enqueueSnackbar('Failed to add Loan Type', { variant: 'error' });
+          console.log(err);
+        });
     }
-
-    const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
-    const updatedLoanTypes = configs.loanTypes ? [...configs.loanTypes, inputVal] : [inputVal];
-    const payload = { ...configs, loanTypes: updatedLoanTypes };
-
-    axios.put(URL, payload)
-      .then((res) => {
-        if (res.status === 200) {
-          setInputVal('');
-          enqueueSnackbar('Loan Type added successfully', { variant: 'success' });
-          mutate();
-        }
-      })
-      .catch((err) => {
-        enqueueSnackbar('Failed to add Loan Type', { variant: 'error' });
-        console.log(err);
-      });
   };
 
   const handleDelete = (loan) => {
@@ -67,12 +75,29 @@ export default function LoanTypeView() {
           <Box sx={{ width: '100%', maxWidth: '600px', padding: '10px' }}>
             <TextField
               fullWidth
-              variant='outlined'
-              label='Loan Type'
-              value={inputVal}
-              onChange={(e) => setInputVal(e.target.value)}
+              variant="outlined"
+              label="Loan Type"
+              value={inputVal.loanType}
+              onChange={(e) =>
+                setInputVal({ ...inputVal, loanType: e.target.value.toUpperCase() })
+              }
               sx={{ fontSize: '16px' }}
             />
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Approval Charge"
+              value={inputVal.approvalCharge}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*\.?\d*$/.test(value)) { // Regex to allow numbers and one decimal point
+                  setInputVal({ ...inputVal, approvalCharge: value });
+                }
+              }}
+              sx={{ fontSize: '16px', mt: 2 }}
+            />
+
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
               <Button variant='contained' onClick={handleClick}>
                 Add
@@ -108,8 +133,14 @@ export default function LoanTypeView() {
                     }}
                   >
                     <Grid item>
-                      <Typography sx={{ fontSize: '14px' }}>{loan}</Typography>
+                      <Typography sx={{ fontSize: '14px' }}>
+                        <strong>Loan Type : </strong> {loan.loanType}
+                      </Typography>
+                      <Typography sx={{ fontSize: '14px' }}>
+                        <strong>Approval Charge : </strong> {loan.approvalCharge}
+                      </Typography>
                     </Grid>
+
                     <Grid item>
                       <Box
                         sx={{ color: 'error.main', cursor: 'pointer' }}
