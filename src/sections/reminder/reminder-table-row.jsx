@@ -28,7 +28,6 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
   const recallingPopover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const view = useBoolean();
 
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
@@ -63,15 +62,6 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
-          onClick={() => {
-            view.onTrue();
-            setNoticeData(row);
-          }}
-        >
-          <Iconify icon='gridicons:notice-outline' />
-          Notice
-        </MenuItem>
         {getResponsibilityValue('create_reminder', configs, user) &&
         <MenuItem
           onClick={() => {
@@ -112,25 +102,7 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
           </Button>
         }
       />
-      <Dialog fullScreen open={view.value}>
-        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-          <DialogActions
-            sx={{
-              p: 1.5,
-            }}
-          >
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
-              Close
-            </Button>
-          </DialogActions>
 
-          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              <Notice noticeData={noticeData} />
-            </PDFViewer>
-          </Box>
-        </Box>
-      </Dialog>
     </>
   );
 }

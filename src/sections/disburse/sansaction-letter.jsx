@@ -340,7 +340,7 @@ export default function SansactionLetter({ sansaction }) {
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Loan Type : {' '}</Text>
-                  <Text style={styles.subText}>{sansaction.customer.loanType}</Text>
+                  <Text style={styles.subText}>{sansaction.loanType}</Text>
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Name : {' '}</Text>

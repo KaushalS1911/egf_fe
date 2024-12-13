@@ -292,15 +292,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={3}>
-          <Card sx={{ pt: 10, pb: 5, px: 3 }}>
-            <Box sx={{ mb: 5 }}>
+          {/*<Card >*/}
+            <Box sx={{ pt:4,pb: 5, px: 3 }}>
               <RHFUploadAvatar
                 name='profile_pic'
                 maxSize={3145728}
                 onDrop={handleDrop}
               />
             </Box>
-          </Card>
+          {/*</Card>*/}
         </Grid>
 
         <Grid xs={12} md={9}>

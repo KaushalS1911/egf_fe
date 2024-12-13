@@ -97,6 +97,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         valuation: currentDisburse?.valuation || '',
         address: currentDisburse?.customer?.permanentAddress?.street || '',
         branch: currentDisburse?.customer?.branch?.name || '',
+        approvalCharge: currentDisburse?.approvalCharge || 0,
         bankNetAmount: currentDisburse?.bankAmount || 0,
         payingBankAmount: currentDisburse?.payingBankAmount || 0,
         bankPendingAmount: currentDisburse?.bankPendingAmount || 0,
@@ -171,7 +172,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         pendingCashAmount: cashPendingAmt,
         payingBankAmount: data.payingBankAmount,
         payingCashAmount: data.payingCashAmount,
-
+        approvalCharge:data.approvalCharge
       };
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
       router.push(paths.dashboard.disburse.list);
@@ -185,7 +186,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   });
   const handleCashAmountChange = (event) => {
     const cashPayingAmount = parseFloat(event.target.value) || '';
-    const cashNetAmount = parseFloat(getValues('cashNetAmount')) || '';
+    const cashNetAmount = parseFloat(watch('cashNetAmount')-watch('approvalCharge'));
+    console.log(cashNetAmount);
 
     if (cashPayingAmount > cashNetAmount) {
       setValue('payingCashAmount', cashNetAmount);
@@ -194,7 +196,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   };
   const handleBankAmountChange = (event) => {
     const bankPayingAmount = parseFloat(event.target.value) || '';
-    const bankNetAmount = parseFloat(getValues('bankNetAmount')) || '';
+    const bankNetAmount = parseFloat(watch('bankNetAmount')-watch('approvalCharge')) || '';
 
     if (bankPayingAmount > bankNetAmount) {
       setValue('payingBankAmount', bankNetAmount);
@@ -225,6 +227,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
               <RHFTextField name='scheme' label='Scheme Name' req={'red'} />
               <RHFTextField name='address' label='Address' req={'red'} />
               <RHFTextField name='branch' label='Branch' req={'red'} />
+              <RHFTextField name='approvalCharge' label='Approval Charge' req={'red'} />
 
             </Box>
           </Card>
@@ -326,7 +329,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       sm: 'repeat(4, 1fr)',
                     }}
                   >
-                    <RHFTextField name='bankNetAmount' label='Net Amount' req={'red'} onKeyPress={(e) => {
+                    <RHFTextField name='bankNetAmount' label='Net Amount' req={'red'}
+                                  value={watch('bankNetAmount') - watch('approvalCharge') || 0}
+                                  onKeyPress={(e) => {
                       if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                         e.preventDefault();
                       }
@@ -354,7 +359,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       )}
                     />
                     <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}
-                                  value={watch('bankNetAmount') - watch('payingBankAmount') || 0}
+                                  value={(watch('bankNetAmount')-watch('approvalCharge')) - watch('payingBankAmount') || 0}
                                   InputLabelProps={{ shrink: true }} />
                     <RHFAutocomplete
                       name='companyBankDetail.account'
@@ -399,6 +404,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                   >
 
                     <RHFTextField name='cashNetAmount' label='Net Amount' req={'red'}
+                                  value={watch('cashNetAmount') - watch('approvalCharge') || 0}
+
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                                       e.preventDefault();
@@ -429,7 +436,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                     />
 
                     <RHFTextField name='cashPendingAmount' label='Pending Amount' req={'red'}
-                                  value={parseFloat(watch('cashNetAmount') - watch('payingCashAmount') || 0)}
+                                  value={parseFloat((watch('cashNetAmount')-watch('approvalCharge')) - watch('payingCashAmount') || 0)}
                                   InputLabelProps={{ shrink: true }}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {

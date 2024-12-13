@@ -92,6 +92,8 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       createdBy: (user?.firstName + ' ' + user?.lastName) || null,
       renewDate: currentLoan?.issueDate ? new Date(new Date(currentLoan.issueDate).setMonth(new Date(currentLoan.issueDate).getMonth() + 6)) : null,
       nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
+      approvalCharge: currentLoan?.approvalCharge || 0,
+
       lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : null,
     }),
     [currentLoan],
@@ -160,7 +162,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   control={control}
                   label='Next Interest Pay Date'
                 />
-                  <RHFTextField name='aaprovalCharge' label='Aaproval Charge' InputProps={{ readOnly: true }} />
+                  <RHFTextField name='approvalCharge' label='Approval Charge' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}  />
                   <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }} />
                   <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
                   <RHFTextField

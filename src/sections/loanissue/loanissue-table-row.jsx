@@ -34,12 +34,6 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const [selectedRow, setSelectedRow] = useState(null); // State to hold the selected row's data
-  const view = useBoolean();
-  const handleView = (row) => {
-    setSelectedRow(row);
-    view.onTrue();
-  };
 
   return (
     <>
@@ -67,15 +61,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
-          onClick={() => {
-            handleView(row); // Pass the row data to the handleView function
-            popover.onClose();
-          }}>
-          <Iconify icon='solar:printer-minimalistic-bold' />
 
-          Print Details
-        </MenuItem>
 
         {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
           onClick={() => {
@@ -108,25 +94,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
           </Button>
         }
       />
-      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
-        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-          <DialogActions
-            sx={{
-              p: 1.5,
-            }}
-          >
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
-              Close
-            </Button>
-          </DialogActions>
 
-          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              {<LoanIssueDetails selectedRow={selectedRow} />}
-            </PDFViewer>
-          </Box>
-        </Box>
-      </Dialog>
     </>
   );
 }

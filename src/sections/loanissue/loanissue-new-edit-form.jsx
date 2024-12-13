@@ -42,6 +42,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +73,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const { customer } = useGetCustomer();
   const { scheme } = useGetScheme();
   const { property } = useGetAllProperty();
+  const { configs, mutate } = useGetConfigs();
   const { carat } = useGetCarat();
   const { enqueueSnackbar } = useSnackbar();
   const [multiSchema, setMultiSchema] = useState([]);
@@ -85,6 +87,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
+
+
 
   useEffect(() => {
     setMultiSchema(scheme);
@@ -110,6 +114,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     cashAmount: Yup.string().required('Cash Amount is required'),
     approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
     // property_image: Yup.mixed().required('A property picture is required'),
+    loanType: Yup.string().required('Loan Type is required'),
+
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
@@ -147,6 +153,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       approvalCharge: currentLoanIssue?.approvalCharge || 0,
       nextInstallmentDate: currentLoanIssue ? new Date(currentLoanIssue?.nextInstallmentDate) : null,
       jewellerName: currentLoanIssue?.jewellerName || '',
+      loanType: currentLoanIssue?.loanType || 'GOLD LOAN',
       loanAmount: currentLoanIssue?.loanAmount || '',
       paymentMode: currentLoanIssue?.paymentMode || '',
       cashAmount: currentLoanIssue?.cashAmount || '',
@@ -194,6 +201,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     control,
     name: 'propertyDetails',
   });
+  useEffect(() => {
+    const loanType = watch("loanType"); // Watch the loanType field
+    if (loanType && configs?.loanTypes?.length > 0) {
+      const selectedLoan = configs.loanTypes.find((loan) => loan.loanType === loanType);
+      setValue("approvalCharge", selectedLoan?.approvalCharge || ""); // Update approvalCharge
+    }
+  }, [watch("loanType"), configs.loanTypes]);
 
   const handleAdd = () => {
     append({
@@ -268,7 +282,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('consultingCharge', data.consultingCharge);
     payload.append('approvalCharge', data.approvalCharge);
     payload.append('jewellerName', data.jewellerName);
-
+    payload.append('loanType', data.loanType);
     propertyDetails.forEach((field, index) => {
       payload.append(`propertyDetails[${index}][type]`, field.type);
       payload.append(`propertyDetails[${index}][carat]`, field.carat);
@@ -754,8 +768,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             </Box>
             {/*</Card>*/}
           </Grid>
-            <Grid xs={12} md={8}>
-          <Box>
+          <Grid xs={12} md={8}>
+            <Box>
               <Card sx={{ p: 2 }}>
                 {!isFieldsEnabled && <Box sx={{ mb: 1.5 }}>
                   <Alert severity='warning'>Please select a customer to proceed with the loan issuance.</Alert>
@@ -800,8 +814,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   </Box>
                 </Box>
               </Card>
-          </Box>
-            </Grid>
+            </Box>
+          </Grid>
           <Grid xs={12}>
             <Card sx={{ p: 2 }}>
               <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
@@ -844,7 +858,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
-                  md: 'repeat(5, 1fr)',
+                  md: 'repeat(6, 1fr)',
                 }}
               >
                 <RHFTextField
@@ -953,6 +967,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 />
                 }
                 <RHFTextField name='jewellerName' label='Jeweller Name' req={'red'} disabled={!isFieldsEnabled} />
+                <RHFAutocomplete
+                  name="loanType"
+                  label="Loan Type"
+                  req="red"
+                  fullWidth
+                  options={configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan.loanType) : []}
+                  getOptionLabel={(option) => option || ""}
+                  onChange={(event, value) => setValue("loanType", value || "")} // Update loanType as a string
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+
               </Box>
             </Card>
           </Grid>

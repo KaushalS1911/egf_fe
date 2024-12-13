@@ -278,6 +278,7 @@ const useStyles = () =>
           textAlign: 'center',
           width: '100px',
           fontWeight: 600,
+
         },
       }),
     [],
@@ -330,14 +331,14 @@ export default function LoanIssueDetails({ selectedRow }) {
           <InvoiceHeader selectedRow={selectedRow} />
           <View style={styles.pagePadding}>
             <View style={styles.flexContainer}>
-              <View style={{ width: '35%' }}>
+              <View style={{ width: '40%' }}>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Loan No : {' '}</Text>
                   <Text style={styles.subText}>{selectedRow.loanNo}</Text>
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Loan Type : {' '}</Text>
-                  <Text style={styles.subText}>{selectedRow.customer.loanType}</Text>
+                  <Text style={styles.subText}>{selectedRow.loanType}</Text>
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Name : {' '}</Text>
@@ -350,6 +351,7 @@ export default function LoanIssueDetails({ selectedRow }) {
                     style={{
                       ...styles.subText,
                       textWrap: 'wrap',
+                      fontSize:9
                     }}>{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
                 </Text>
                 <Text style={styles.spacing}>

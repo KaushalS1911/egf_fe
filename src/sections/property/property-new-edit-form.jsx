@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -112,19 +112,20 @@ export default function PropertyNewEditForm({ currentProperty }) {
                 }}
               />
 
-              {configs.loanTypes && <RHFAutocomplete
+              {configs.loanTypes &&
+              <RHFAutocomplete
                 name='loanType'
                 label='Loan Type'
-                options={configs.loanTypes.map((item) => item)}
-                getOptionLabel={(option) => option}
                 req={'red'}
-                isOptionEqualToValue={(option, value) => option === value}
+                fullWidth
+                options={configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan.loanType) : []}
+                getOptionLabel={(option) => option}
                 renderOption={(props, option) => (
                   <li {...props} key={option}>
                     {option}
                   </li>
                 )}
-              />}
+              />  }
               <RHFTextField name='quantity' label='Quantity' req={'red'} disabled={!values.isQtyEdit}  onKeyPress={(e) => {
                 if (!/[0-9]/.test(e.key)) {
                   e.preventDefault();

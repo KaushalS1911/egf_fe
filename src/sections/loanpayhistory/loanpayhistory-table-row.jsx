@@ -19,6 +19,10 @@ import { PDFViewer } from '@react-pdf/renderer';
 import Notice from '../reminder/view/notice';
 import Noc from './PDF/noc';
 import { useState } from 'react';
+import IconButton from '@mui/material/IconButton';
+import LetterOfAuthority from '../disburse/letter-of-authority';
+import SansactionLetter from '../disburse/sansaction-letter';
+import LoanIssueDetails from '../loanissue/view/loan-issue-details';
 
 
 // ----------------------------------------------------------------------
@@ -31,7 +35,31 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const view = useBoolean();
+  const [dialogContent, setDialogContent] = useState(null);
 
+  const handleDialogOpen = (content) => {
+    setDialogContent(content);
+    view.onTrue();
+  };
+
+  const renderDialogContent = () => {
+    if (dialogContent === 'loanDetails') {
+      return <LoanIssueDetails selectedRow={row} />;
+    } if (dialogContent === 'sanction') {
+      return <SansactionLetter sansaction={row} />;
+    }
+    if (dialogContent === 'authority') {
+      return <LetterOfAuthority loan={row} />;
+    }
+    if (dialogContent === 'notice') {
+      return <Notice noticeData={row} />;
+    }
+    if (dialogContent === 'noc') {
+      return <Noc nocData={row} />;
+    }
+
+    return null;
+  };
   return (
     <>
       <TableRow hover selected={selected}>
@@ -66,20 +94,11 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
           >
             {status}
           </Label></TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>{
-          <Typography onClick={() => {
-            if (row.status === 'Closed') {
-              view.onTrue();
-              setNocData(row);
-            }
-          }} sx={{
-            cursor: row.status !== 'Closed' ? 'not-allowed' : 'pointer',
-            color: row.status !== 'Closed' ? 'grey.500' : 'inherit',
-            pointerEvents: row.status !== 'Closed' ? 'none' : 'auto',
-          }}>
-            <Iconify icon='basil:document-solid' />
-          </Typography>
-        }</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon='eva:more-vertical-fill' />
+          </IconButton>
+        </TableCell>
       </TableRow>
 
 
@@ -89,26 +108,54 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
         arrow='right-top'
         sx={{ width: 140 }}
       >
-        <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>
 
         <MenuItem
           onClick={() => {
-            onEditRow();
+            handleDialogOpen('loanDetails');
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:pen-bold' />
-          Edit
+          <Iconify icon='clarity:details-line' />
+          Loan Details
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleDialogOpen('sanction');
+            popover.onClose();
+          }}
+        >
+          <Iconify icon='mdi:file-document-outline' />
+          Sanction </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleDialogOpen('authority');
+            popover.onClose();
+          }}
+        >
+          <Iconify icon='material-symbols:verified-user-outline' />
+          Authority </MenuItem>
+        {
+          row.status === 'Closed' ?
+            <MenuItem
+              onClick={() => {
+                handleDialogOpen('noc');
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='mdi:certificate-outline' />
+              NOC
+            </MenuItem>
+        :
+            <MenuItem
+              onClick={() => {
+                handleDialogOpen('notice');
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='gridicons:notice' />
+              Notice
+            </MenuItem>
+        }
       </CustomPopover>
 
       <ConfirmDialog
@@ -123,21 +170,16 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
         }
       />
 
-      <Dialog fullScreen open={view.value}>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-          <DialogActions
-            sx={{
-              p: 1.5,
-            }}
-          >
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
-
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              <Noc nocData={nocData} />
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              {renderDialogContent()}
             </PDFViewer>
           </Box>
         </Box>
