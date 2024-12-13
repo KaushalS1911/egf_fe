@@ -57,7 +57,7 @@ const TABLE_HEAD = [
   { id: 'CashAmount', label: 'Cash amt' },
   { id: 'BankAmount', label: 'Bank amt' },
   { id: 'status', label: 'Status' },
-  { id: 'noc', label: 'NOC' },
+  { id: 'reports', label: 'Reports' },
 ];
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, {

@@ -27,26 +27,11 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
   const view = useBoolean();
   const popover = usePopover();
   const router = useRouter();
-
-  const [dialogContent, setDialogContent] = useState(null);
-
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
 
-  const handleDialogOpen = (content) => {
-    setDialogContent(content);
-    view.onTrue();
-  };
 
-  const renderDialogContent = () => {
-    if (dialogContent === 'LetterOfAuthority') {
-      return <LetterOfAuthority loan={row} />;
-    }
-    if (dialogContent === 'SansactionLetter') {
-      return <SansactionLetter sansaction={row} />;
-    }
-    return null;
-  };
+
 
   return (
     <>
@@ -111,24 +96,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
             Edit
           </MenuItem>
         )}
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('LetterOfAuthority');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="mdi:eye" />
-          View
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('SansactionLetter');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="mdi:eye" />
-          Sansaction
-        </MenuItem>
+
       </CustomPopover>
 
       <ConfirmDialog
@@ -143,20 +111,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         }
       />
 
-      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
-        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-          <DialogActions sx={{ p: 1.5 }}>
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
-              Close
-            </Button>
-          </DialogActions>
-          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              {renderDialogContent()}
-            </PDFViewer>
-          </Box>
-        </Box>
-      </Dialog>
+
     </>
   );
 }
