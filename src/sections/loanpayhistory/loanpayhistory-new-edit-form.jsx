@@ -162,7 +162,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   control={control}
                   label='Next Interest Pay Date'
                 />
-                  <RHFTextField name='approvalCharge' label='Aaproval Charge' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}  />
+                  <RHFTextField name='approvalCharge' label='Approval Charge' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}  />
                   <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }} />
                   <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
                   <RHFTextField
