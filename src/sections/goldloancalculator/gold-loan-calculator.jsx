@@ -19,6 +19,8 @@ import { useGetScheme } from '../../api/scheme';
 function GoldLoanCalculator() {
   const { carat } = useGetCarat();
   const { scheme } = useGetScheme();
+  const activeCarat = carat?.filter((item) => item.isActive) || [];
+  const activeScheme = scheme?.filter((item) => item.isActive) || [];
   const [goldGramsTables, setGoldGramsTables] = useState([[{ netGram: 0, goldGram: '' }]]);
   const [financeTables, setFinanceTables] = useState([[{ netGram: '' }]]);
   const [totalsNetGram, setTotalsNetGram] = useState([0]);
@@ -28,7 +30,7 @@ function GoldLoanCalculator() {
 
   const handleGoldGramChange = (tableIndex, rowIndex, value) => {
     const updatedTables = [...goldGramsTables];
-    const caratPercentage = carat[rowIndex]?.caratPercentage || 0;
+    const caratPercentage = activeCarat[rowIndex]?.caratPercentage || 0;
     const netGram = ((Number(value) || 0) * caratPercentage) / 100;
 
     updatedTables[tableIndex][rowIndex] = {
@@ -52,7 +54,7 @@ function GoldLoanCalculator() {
   const updateFinanceTablesNetGram = (tableIndex, totalNetGram) => {
     const updatedFinanceTables = [...financeTables];
 
-    updatedFinanceTables[tableIndex] = scheme.map((row, rowIndex) => ({
+    updatedFinanceTables[tableIndex] = activeScheme.map((row, rowIndex) => ({
       ...updatedFinanceTables[tableIndex][rowIndex],
       netGram: totalNetGram,
     }));
@@ -72,7 +74,7 @@ function GoldLoanCalculator() {
 
   const calculateTotalFinance = (tables, tableIndex) => {
     const total = tables[tableIndex].reduce((sum, row, rowIndex) => {
-      const ratePerGram = scheme[rowIndex]?.ratePerGram || 0;
+      const ratePerGram = activeScheme[rowIndex]?.ratePerGram || 0;
       return sum + (Number(row.netGram) * ratePerGram);
     }, 0);
 
@@ -194,7 +196,7 @@ function GoldLoanCalculator() {
       <Grid container spacing={3}>
         {goldGramsTables.map((_, tableIndex) => (
           <Grid item xs={12} md={4} key={tableIndex}>
-            {renderTable(carat, tableIndex, handleGoldGramChange, goldGramsTables, totalsNetGram, 'gold')}
+            {renderTable(activeCarat, tableIndex, handleGoldGramChange, goldGramsTables, totalsNetGram, 'gold')}
           </Grid>
         ))}
       </Grid>
@@ -202,7 +204,7 @@ function GoldLoanCalculator() {
       <Grid container spacing={1} mt={4}>
         {financeTables.map((_, tableIndex) => (
           <Grid item xs={12} md={4} key={tableIndex}>
-            {renderTable(scheme, tableIndex, handleNetGramChange2, financeTables, totalsFinance, 'finance')}
+            {renderTable(activeScheme, tableIndex, handleNetGramChange2, financeTables, totalsFinance, 'finance')}
           </Grid>
         ))}
       </Grid>
