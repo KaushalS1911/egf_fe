@@ -56,7 +56,7 @@ export default function TableHeadCustom({
               width: headCell.width,
               minWidth: headCell.minWidth,
               color: (theme) => theme.palette.mode === 'light' ? '#000' : '',
-              padding: '8px',
+              padding: '8px 16px',
             }}
           >
             {onSort ? (
