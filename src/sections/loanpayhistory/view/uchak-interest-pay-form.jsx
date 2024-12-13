@@ -174,12 +174,12 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   };
   const handleDeleteUchak = async (id) => {
     try {
-      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest/${id}`);
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest-payment/${id}`);
       mutate();
       setDeleteId(null)
       refetchUchak();
       confirm.onFalse();
-      enqueueSnackbar((response?.data.message));
+      enqueueSnackbar((response?.data.message),{variant: 'success'});
     } catch (err) {
       enqueueSnackbar('Failed to pay uchak interest',{variant: 'error'});
     }
