@@ -296,6 +296,7 @@ export default function LoanpayhistoryListView() {
                         key={row._id}
                         index={index}
                         row={row}
+                        loanStatus={filters.status}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}

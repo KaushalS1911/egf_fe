@@ -27,7 +27,7 @@ import LoanIssueDetails from '../loanissue/view/loan-issue-details';
 
 // ----------------------------------------------------------------------
 
-export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, index }) {
+export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, index , loanStatus }) {
   const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo } = row;
   const confirm = useBoolean();
   const [nocData, setNocData] = useState();
@@ -36,6 +36,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   const { configs } = useGetConfigs();
   const view = useBoolean();
   const [dialogContent, setDialogContent] = useState(null);
+
   let color;
   switch (status){
     case 'Closed' : {
@@ -50,7 +51,6 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
       color = ''
     }
   }
-  console.log(color)
 
   const handleDialogOpen = (content) => {
     setDialogContent(content);
@@ -77,7 +77,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   };
   return (
     <>
-      <TableRow hover selected={selected} sx={{backgroundColor: color}}>
+      <TableRow hover selected={selected} sx={{backgroundColor: loanStatus === 'All' ? color : null}}>
         <TableCell>
           {srNo}
         </TableCell>
