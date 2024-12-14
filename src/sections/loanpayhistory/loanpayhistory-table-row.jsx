@@ -36,6 +36,21 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   const { configs } = useGetConfigs();
   const view = useBoolean();
   const [dialogContent, setDialogContent] = useState(null);
+  let color;
+  switch (status){
+    case 'Closed' : {
+      color = '#FFF1D6'
+      break;
+    }
+    case 'Overdue' : {
+      color = '#FFE4DE'
+      break;
+    }
+    default : {
+      color = ''
+    }
+  }
+  console.log(color)
 
   const handleDialogOpen = (content) => {
     setDialogContent(content);
@@ -62,7 +77,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   };
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow hover selected={selected} sx={{backgroundColor: color}}>
         <TableCell>
           {srNo}
         </TableCell>
@@ -87,8 +102,10 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
           <Label
             variant='soft'
             color={
-              (status === 'Disbursed' && 'success') ||
-              (status === 'Closed' && 'error') ||
+              (status === 'Disbursed' && 'info') ||
+              (status === 'Closed' && 'warning') ||
+              (status === 'Overdue' && 'error') ||
+              (status === 'Regular' && 'success') ||
               'default'
             }
           >

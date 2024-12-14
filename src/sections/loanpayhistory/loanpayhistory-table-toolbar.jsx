@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Grid, IconButton, MenuItem } from '@mui/material';
+import { FormControl, Grid, IconButton, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
@@ -25,6 +25,12 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters }) {
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
+    },
+    [onFilters],
+  );
+  const handleFilterStatus = useCallback(
+    (event) => {
+      onFilters('status', event.target.value);
     },
     [onFilters],
   );
@@ -64,6 +70,23 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters }) {
               ),
             }}
           />
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, md: 200 },
+            }}
+          >
+            <InputLabel>Loan</InputLabel>
+            <Select
+              value={filters.status}
+              onChange={handleFilterStatus}>
+              {['All', 'Disbursed', 'Closed'].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <IconButton onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>

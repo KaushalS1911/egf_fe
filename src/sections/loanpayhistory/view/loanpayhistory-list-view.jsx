@@ -60,14 +60,15 @@ const TABLE_HEAD = [
   { id: 'reports', label: 'Reports' },
 ];
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, {
-  value: 'Closed',
-  label: 'Closed',
+const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, { value: 'Regular', label: 'Regular' }, {
+  value: 'Overdue',
+  label: 'Overdue',
 }];
 
 const defaultFilters = {
   username: '',
-  status: 'all',
+  status: 'All',
+  tempStatus: 'All'
 };
 // ----------------------------------------------------------------------
 
@@ -139,7 +140,7 @@ export default function LoanpayhistoryListView() {
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
-      handleFilters('status', newValue);
+      handleFilters('tempStatus', newValue);
     },
     [handleFilters],
   );
@@ -202,7 +203,7 @@ export default function LoanpayhistoryListView() {
 
         <Card>
           <Tabs
-            value={filters.status}
+            value={filters.tempStatus}
             onChange={handleFilterStatus}
             sx={{
               px: 2.5,
@@ -220,16 +221,16 @@ export default function LoanpayhistoryListView() {
                     <Label
                       style={{ margin: '5px' }}
                       variant={
-                        ((tab.value === 'all' || tab.value == filters.status) && 'filled') || 'soft'
+                        ((tab.value === 'All' || tab.value == filters.tempStatus) && 'filled') || 'soft'
                       }
                       color={
-                        (tab.value === 'Disbursed' && 'success') ||
-                        (tab.value === 'Closed' && 'error') ||
+                        (tab.value === 'Regular' && 'success') ||
+                        (tab.value === 'Overdue' && 'error') ||
                         'default'
                       }
                     >
-                      {['Disbursed', 'Closed'].includes(tab.value)
-                        ? Loanissue.filter((item) => item.status === tab.value).length
+                      {['Regular', 'Overdue'].includes(tab.value)
+                        ? Loanissue.filter((item) => item.tempStatus === tab.value).length
                         : Loanissue.length}
                     </Label>
                   </>
@@ -350,7 +351,7 @@ export default function LoanpayhistoryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { username, status } = filters;
+  const { username, status , tempStatus } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -365,7 +366,10 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()),
     );
   }
-  if (status && status !== 'all') {
+  if (tempStatus && tempStatus !== 'All') {
+    inputData = inputData.filter((item) => item.tempStatus === tempStatus);
+  }
+  if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
   return inputData;
