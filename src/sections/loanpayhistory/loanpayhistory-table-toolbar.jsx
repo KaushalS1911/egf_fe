@@ -28,12 +28,6 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters }) {
     },
     [onFilters],
   );
-  const handleFilterStatus = useCallback(
-    (event) => {
-      onFilters('status', event.target.value);
-    },
-    [onFilters],
-  );
 
   return (
     <>
@@ -70,23 +64,6 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters }) {
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, md: 200 },
-            }}
-          >
-            <InputLabel>Loan</InputLabel>
-            <Select
-              value={filters.status}
-              onChange={handleFilterStatus}>
-              {['All', 'Disbursed', 'Closed'].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
           <IconButton onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
