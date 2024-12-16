@@ -11,10 +11,10 @@ export function useGetLoanissue(loanPayHistory, reminder,issued) {
 
   const filteredData = useMemo(() => {
     if (loanPayHistory) {
-      return data?.data?.filter((item) => item.status === 'Disbursed' || item.status === 'Closed') || [];
+      return data?.data?.filter((item) => item.status !== 'Issued') || [];
     }
     if (reminder) {
-      return data?.data?.filter((item) => item.status === 'Disbursed') || [];
+      return data?.data?.filter((item) => (item.status !== 'Closed' && item.status !== 'Issued')) || [];
     }
     if (issued) {
       return data?.data?.filter((item) => item.status === 'Issued') || [];

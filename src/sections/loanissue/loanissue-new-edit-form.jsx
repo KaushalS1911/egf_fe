@@ -9,7 +9,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload, RHFUploadAvatar } from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -88,8 +88,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
 
-
-
   useEffect(() => {
     setMultiSchema(scheme);
   }, [scheme]);
@@ -113,9 +111,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     cashAmount: Yup.string().required('Cash Amount is required'),
     approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
-    // property_image: Yup.mixed().required('A property picture is required'),
     loanType: Yup.string().required('Loan Type is required'),
-
     propertyDetails: Yup.array().of(
       Yup.object().shape({
         type: Yup.string().required('Type is required'),
@@ -201,13 +197,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     control,
     name: 'propertyDetails',
   });
+
   useEffect(() => {
-    const loanType = watch("loanType"); // Watch the loanType field
+    const loanType = watch('loanType');
     if (loanType && configs?.loanTypes?.length > 0) {
       const selectedLoan = configs.loanTypes.find((loan) => loan.loanType === loanType);
-      setValue("approvalCharge", selectedLoan?.approvalCharge || ""); // Update approvalCharge
+      setValue('approvalCharge', selectedLoan?.approvalCharge || '');
     }
-  }, [watch("loanType"), configs.loanTypes]);
+  }, [watch('loanType'), configs.loanTypes]);
 
   const handleAdd = () => {
     append({
@@ -243,9 +240,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     height: 360,
     facingMode: 'user',
   };
+
   const blobToFile = (blob, fileName) => {
     return new File([blob], fileName, { type: blob.type });
   };
+
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -264,6 +263,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log('data.property_imagedata.property_image : ', data.property_image);
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
@@ -563,18 +563,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   const showCroppedImage = async () => {
     try {
-      // If no cropping is done, upload the original image
+
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
         if (file) {
-          const originalImageURL = URL.createObjectURL(file); // Preview for the original image
+          const originalImageURL = URL.createObjectURL(file);
           setCroppedImage(originalImageURL);
-          setValue('property_image', file); // Set the original file in your state or form
-          setImageSrc(null); // Close the dialog
+          setValue('property_image', file);
+          setImageSrc(null);
           return;
         }
       }
 
-      // If cropping is performed, handle the cropped image
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
 
@@ -605,18 +604,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         }
 
         const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
-
-        const croppedImageURL = URL.createObjectURL(croppedFile); // Preview for cropped image
+        const croppedImageURL = URL.createObjectURL(croppedFile);
         setCroppedImage(croppedImageURL);
-        setFile(croppedFile); // Update file state with cropped file
-        setValue('property_image', croppedFile); // Set the cropped file in your form
-        setImageSrc(null); // Close the dialog
+        setFile(croppedFile);
+        setValue('property_image', croppedFile);
+        setImageSrc(null);
       }, 'image/jpeg');
     } catch (error) {
       console.error('Error handling image upload:', error);
     }
   };
-
 
   const handleDeleteImage = () => {
     setCroppedImage(null);
@@ -727,10 +724,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     setErrors(updatedErrors);
   };
+
   const sx = {
     label: {
-      mt: -1.4, // Adjust margin-top for labels
-      fontSize: '14px', // Set the font size for the label
+      mt: -1.4,
+      fontSize: '14px',
     },
     '& .MuiInputLabel-shrink': {
       mt: 0,
@@ -786,7 +784,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     label='Select Customer'
                     req={'red'}
                     fullWidth
-                    options={customer?.map((item) => ({
+                    options={customer?.filter((e) => e.status === 'Active')?.map((item) => ({
                       id: item._id,
                       name: item.firstName + ' ' + item.middleName + ' ' + item.lastName,
                     }))}
@@ -891,7 +889,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
                     if (schemedata?.ratePerGram) {
                       fields.forEach((_, index) => {
-                        // Fetch necessary values only once
                         const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
                         const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
                         const caratValue = carat?.find(
@@ -900,13 +897,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
                         const caratPercentage = caratValue?.caratPercentage || 100;
 
-                        // Perform calculations
                         const grossWeight = totalWeight - lossWeight;
                         const netWeight = grossWeight * (caratPercentage / 100);
                         const grossAmount = grossWeight * schemedata?.ratePerGram;
                         const netAmount = netWeight * schemedata?.ratePerGram;
 
-                        // Set form values with valid numbers and toFixed for precision
                         if (!isNaN(grossWeight)) setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
                         if (!isNaN(netWeight)) setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
                         if (!isNaN(grossAmount)) setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));
@@ -915,7 +910,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     }
                   }}
                 />
-
                 <RHFTextField name='interestRate' label='Instrest Rate' InputProps={{ readOnly: true }} />
                 <Controller
                   name='consultingCharge'
@@ -966,20 +960,19 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 }
                 <RHFTextField name='jewellerName' label='Jeweller Name' req={'red'} disabled={!isFieldsEnabled} />
                 <RHFAutocomplete
-                  name="loanType"
-                  label="Loan Type"
-                  req="red"
+                  name='loanType'
+                  label='Loan Type'
+                  req='red'
                   fullWidth
                   options={configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan.loanType) : []}
-                  getOptionLabel={(option) => option || ""}
-                  onChange={(event, value) => setValue("loanType", value || "")} // Update loanType as a string
+                  getOptionLabel={(option) => option || ''}
+                  onChange={(event, value) => setValue('loanType', value || '')}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
                       {option}
                     </li>
                   )}
                 />
-
               </Box>
             </Card>
           </Grid>
@@ -1033,17 +1026,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       crop={crop}
                       onChange={(newCrop) => setCrop(newCrop)}
                       onComplete={(newCrop) => setCompletedCrop(newCrop)}
-                      aspect={1} // Aspect ratio for cropping
+                      aspect={1}
                     >
                       <img
                         id='cropped-image'
                         src={imageSrc}
                         alt='Crop preview'
-                        onLoad={resetCrop} // Reset crop when the image loads
+                        onLoad={resetCrop}
                       />
                     </ReactCrop>
                   )}
-
                   <Box style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
                     <Button variant='outlined' onClick={handleCancel}>
                       Cancel
@@ -1079,7 +1071,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               name={`propertyDetails[${index}].type`}
                               label='Type'
                               disabled={!isFieldsEnabled}
-                              options={property.map((item) => ({ label: item.propertyType, value: item.propertyType }))}
+                              options={property?.filter((e) => e.isActive === true)?.map((item) => ({
+                                label: item.propertyType,
+                                value: item.propertyType,
+                              }))}
                               onChange={(e, value) => {
                                 setValue(`propertyDetails[${index}].type`, value?.value || '');
                                 validateField('type', index, value?.value);
@@ -1103,7 +1098,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               name={`propertyDetails[${index}].carat`}
                               label='Carat'
                               disabled={!isFieldsEnabled}
-                              options={carat?.map((e) => e?.name)}
+                              options={carat?.filter((e) => e.isActive === true)?.map((e) => e?.name)}
                               onChange={(e, value) => {
                                 setValue(`propertyDetails[${index}].carat`, value);
                                 validateField('carat', index, value);

@@ -60,14 +60,17 @@ const TABLE_HEAD = [
   { id: 'reports', label: 'Reports' },
 ];
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, {
+const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, { value: 'Regular', label: 'Regular' }, {
+  value: 'Overdue',
+  label: 'Overdue',
+}, {
   value: 'Closed',
   label: 'Closed',
 }];
 
 const defaultFilters = {
   username: '',
-  status: 'all',
+  status: 'All',
 };
 // ----------------------------------------------------------------------
 
@@ -220,15 +223,17 @@ export default function LoanpayhistoryListView() {
                     <Label
                       style={{ margin: '5px' }}
                       variant={
-                        ((tab.value === 'all' || tab.value == filters.status) && 'filled') || 'soft'
+                        ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
                       }
                       color={
-                        (tab.value === 'Disbursed' && 'success') ||
-                        (tab.value === 'Closed' && 'error') ||
+                        (tab.value === 'Regular' && 'success') ||
+                        (tab.value === 'Overdue' && 'error') ||
+                        (tab.value === 'Disbursed' && 'info') ||
+                        (tab.value === 'Closed' && 'warning') ||
                         'default'
                       }
                     >
-                      {['Disbursed', 'Closed'].includes(tab.value)
+                      {['Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
                         ? Loanissue.filter((item) => item.status === tab.value).length
                         : Loanissue.length}
                     </Label>
@@ -291,6 +296,7 @@ export default function LoanpayhistoryListView() {
                         key={row._id}
                         index={index}
                         row={row}
+                        loanStatus={filters.status}
                         selected={table.selected.includes(row._id)}
                         onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
@@ -350,7 +356,7 @@ export default function LoanpayhistoryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { username, status } = filters;
+  const { username, status  } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -365,7 +371,7 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()),
     );
   }
-  if (status && status !== 'all') {
+  if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
   return inputData;

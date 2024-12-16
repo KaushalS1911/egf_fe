@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
-import React, { useMemo, useEffect, useCallback, useState } from 'react';
+import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import countrystatecity from '../../_mock/map/csc.json';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -29,6 +29,9 @@ import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import DialogTitle from '@mui/material/DialogTitle';
+import Webcam from 'react-webcam';
+import DialogActions from '@mui/material/DialogActions';
 
 // ----------------------------------------------------------------------
 
@@ -53,11 +56,14 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [open, setOpen] = useState(false);
   const { configs, mutate } = useGetConfigs();
+  const webcamRef = useRef(null);
   const mdUp = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
+  const [open2, setOpen2] = useState(false);
   const storedBranch = sessionStorage.getItem('selectedBranch');
   const [croppedImage, setCroppedImage] = useState(null);
   const [file, setFile] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
@@ -251,7 +257,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
-
+  const videoConstraints = {
+    width: 640,
+    height: 360,
+    facingMode: 'user',
+  };
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -437,7 +447,16 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
     }
   };
-
+  const capture = useCallback(() => {
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      if (imageSrc) {
+        setValue('profile_pic', imageSrc);
+        setCapturedImage(imageSrc);
+        setOpen2(false);
+      }
+    }
+  }, []);
   const PersonalDetails = (
     <>
       <Grid item md={3} xs={12}>
@@ -445,9 +464,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
           <Box sx={{ pt: 2 }}>
             <RHFUploadAvatar
               name='profile_pic'
+              camera={true}
+              setOpen2={setOpen2}
               file={croppedImage || currentCustomer?.avatar_url}
-              maxSize={3145728} // 3 MB
-              accept='image/*' // Accept all image types
+              maxSize={3145728}
+              accept='image/*'
               onDrop={handleDropSingleFile}
             />
             <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
@@ -456,7 +477,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   crop={crop}
                   onChange={(newCrop) => setCrop(newCrop)}
                   onComplete={(newCrop) => setCompletedCrop(newCrop)}
-                  aspect={1} // Aspect ratio for cropping
+                  aspect={1}
                 >
                   <img
                     id='cropped-image'
@@ -954,6 +975,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   );
 
   return (
+    <>
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         {PersonalDetails}
@@ -963,6 +985,36 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         {renderActions}
       </Grid>
     </FormProvider>
+      <Dialog
+        fullWidth
+        maxWidth={false}
+        open={open2}
+        onClose={() => setOpen2(false)}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <DialogTitle>Camera</DialogTitle>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat='image/jpeg'
+            width={'90%'}
+            height={'100%'}
+            videoConstraints={videoConstraints}
+          />
+        </Box>
+        <DialogActions>
+          <Button variant='outlined' onClick={capture}>
+            Capture Photo
+          </Button>
+          <Button variant='contained' onClick={() => setOpen2(false)}>
+            Close Camera
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
