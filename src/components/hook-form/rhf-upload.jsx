@@ -6,23 +6,34 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { Upload, UploadBox, UploadAvatar } from '../upload';
 import { Box } from '@mui/system';
 import Iconify from '../iconify';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 // ----------------------------------------------------------------------
 
-export function RHFUploadAvatar({ name,setOpen2, camera, ...other }) {
+export function RHFUploadAvatar({ name,setOpen2,setImageSrc,setOpen,camera,setFile, ...other }) {
   const { control } = useFormContext();
-
+  const inputRef = useRef()
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
         <div>
-          {camera && <Box sx={{ textAlign: 'right' }}>
-            <Iconify icon='ion:camera-sharp' width={24} sx={{ color: 'gray', cursor: 'pointer' }}
-                     onClick={() => setOpen2(true)} /></Box>}
-          <UploadAvatar error={!!error} file={field.value} {...other} />
+          {camera && <Box sx={{ textAlign: 'right',position:"relative" }}>
+            <Iconify icon='ion:camera-sharp' onClick={() => {
+              // setOpen(true)
+              inputRef.current.click();
+            }} width={24} sx={{ color: 'gray', cursor: 'pointer' }} />
+            <input ref={inputRef} onChange={(e)=> {
+              if(e.target.files.length){
+                setFile(e.target.files[0])
+                const blobUrl = URL.createObjectURL(e.target.files[0]); // Convert the file object to a Blob URL
+                setImageSrc(blobUrl);
+                setOpen(true)
+              }
+            }} style={{display:"none"}} type={'file'} />
+          </Box>}
+          <UploadAvatar  error={!!error} file={field.value} camera={camera} setOpen2={setOpen2} {...other} />
           {!!error && (
             <FormHelperText error sx={{ px: 2, textAlign: 'center' }}>
               {error.message}

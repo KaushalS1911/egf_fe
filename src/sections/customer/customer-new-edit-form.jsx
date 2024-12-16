@@ -1,7 +1,10 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
-import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
+import React, {
+  useMemo, useEffect, useCallback, useState,
+  useRef,
+} from 'react';
 import countrystatecity from '../../_mock/map/csc.json';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -26,20 +29,17 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useGetConfigs } from '../../api/config';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import DialogTitle from '@mui/material/DialogTitle';
 import Webcam from 'react-webcam';
 import DialogActions from '@mui/material/DialogActions';
-
-// ----------------------------------------------------------------------
-
+import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+//---------------------------------------------------------------------
 const STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
   { value: 'In Active', label: 'In Active' },
   { value: 'Blocked', label: 'Blocked' }];
-
 const INQUIRY_REFERENCE_BY = [
   { value: 'Google', label: 'Google' },
   { value: 'Just Dial', label: 'Just Dial' },
@@ -48,12 +48,12 @@ const INQUIRY_REFERENCE_BY = [
   { value: 'Brochure', label: 'Brochure' },
   { value: 'Other', label: 'Other' },
 ];
-
 export default function CustomerNewEditForm({ currentCustomer }) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] =
+    useState(null);
   const [open, setOpen] = useState(false);
   const { configs, mutate } = useGetConfigs();
   const webcamRef = useRef(null);
@@ -67,25 +67,22 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
-  const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy)
-    ? currentCustomer.referenceBy
-    : 'Other';
-
+  const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy) ? currentCustomer.referenceBy : 'Other';
   const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     middleName: Yup.string().required('Middle Name is required'),
     lastName: Yup.string().required('Last Name is required'),
-    contact: Yup.string().required('Contact number is required').max(10),
+    contact: Yup.string().required('Contact number isrequired').max(10),
     dob: Yup.date()
       .required('Date of Birth is required')
       .nullable()
       .typeError('Date of Birth is required'),
-    panCard: Yup.string().required('PAN Card number is required').max(10).min(10),
+    panCard: Yup.string().required('PAN Card number isrequired').max(10).min(10),
     aadharCard: Yup.string()
       .required('Aadhar Card number is required')
-      .matches(/^\d{12}$/, 'Aadhar Card must be exactly 12 digits and should not contain alphabetic characters'),
-    otpContact: Yup.string().required('OTP Contact number is required').max(10).min(10),
-    PerStreet: Yup.string().required('Address Line 1 is required'),
+      .matches(/^\d{12}$/, 'Aadhar Card must be exactly 12 digitsand should not contain alphabetic characters'),
+    otpContact: Yup.string().required('OTP Contact number isrequired').max(10).min(10),
+    PerStreet: Yup.string().required('Address Line 1 isrequired'),
     PerLandmark: Yup.string().required('Landmark 1 is required'),
     PerCountry: Yup.string().required('Country is required'),
     PerState: Yup.string().required('State is required'),
@@ -93,7 +90,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     PerZipcode: Yup.string().required('Pincode is required'),
     profile_pic: Yup.mixed().required('A profile picture is required'),
   });
-
   const defaultValues = useMemo(() => ({
     branchId: currentCustomer ? {
       label: currentCustomer?.branch?.name,
@@ -114,17 +110,21 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     customerCode: currentCustomer?.customerCode || '',
     drivingLicense: currentCustomer?.drivingLicense || '',
     referenceBy: currentCustomer ? condition : '',
-    otherReferenceBy: currentCustomer ? currentCustomer?.referenceBy : '',
-    joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
+    otherReferenceBy: currentCustomer ?
+      currentCustomer?.referenceBy : '',
+    joiningDate: currentCustomer ? new
+    Date(currentCustomer?.joiningDate) : new Date(),
     businessType: currentCustomer?.businessType || '',
     PerStreet: currentCustomer?.permanentAddress?.street || '',
-    PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
+    PerLandmark: currentCustomer?.permanentAddress?.landmark ||
+      '',
     PerCountry: currentCustomer?.permanentAddress?.country || '',
     PerState: currentCustomer?.permanentAddress?.state || '',
     PerCity: currentCustomer?.permanentAddress?.city || '',
     PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
     tempStreet: currentCustomer?.temporaryAddress?.street || '',
-    tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
+    tempLandmark: currentCustomer?.temporaryAddress?.landmark ||
+      '',
     tempCountry: currentCustomer?.temporaryAddress?.country || '',
     tempState: currentCustomer?.temporaryAddress?.state || '',
     tempCity: currentCustomer?.temporaryAddress?.city || '',
@@ -132,19 +132,21 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     bankName: currentCustomer?.bankDetails?.bankName || '',
     IFSC: currentCustomer?.bankDetails?.IFSC || '',
     accountType: currentCustomer?.bankDetails?.accountType || '',
-    accountNumber: currentCustomer?.bankDetails?.accountNumber || '',
-    accountHolderName: currentCustomer?.bankDetails?.accountHolderName || '',
+    accountNumber: currentCustomer?.bankDetails?.accountNumber ||
+      '',
+    accountHolderName:
+      currentCustomer?.bankDetails?.accountHolderName || '',
     branchName: currentCustomer?.bankDetails?.branchName || '',
   }), [currentCustomer, branch]);
-
   const methods = useForm({
     resolver: yupResolver(NewCustomerSchema),
     defaultValues,
   });
-
-  const { reset, watch, control, handleSubmit, setValue, formState: { isSubmitting } } = methods;
+  const {
+    reset, watch, control, handleSubmit, setValue,
+    formState: { isSubmitting },
+  } = methods;
   const [aspectRatio, setAspectRatio] = useState(null);
-
   useEffect(() => {
     if (imageSrc) {
       const img = new Image();
@@ -154,106 +156,117 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       };
     }
   }, [imageSrc]);
-
   useEffect(() => {
     if (currentCustomer) {
       reset(defaultValues);
     }
   }, [currentCustomer, defaultValues, reset]);
-
   const onSubmit = handleSubmit(async (data) => {
-    try {
-      const payload = {
-        status: data.status,
-        firstName: data.firstName,
-        middleName: data.middleName,
-        lastName: data.lastName,
-        contact: data.contact,
-        email: data.email,
-        dob: data.dob,
-        joiningDate: data.joiningDate,
-        drivingLicense: data.drivingLicense,
-        panCard: data.panCard,
-        aadharCard: data.aadharCard,
-        otpContact: data.otpContact,
-        businessType: data.businessType,
-        remark: data.remark,
-        referenceBy: watch('referenceBy') !== 'Other' ? data?.referenceBy : data?.otherReferenceBy,
-        permanentAddress: {
-          street: data.PerStreet,
-          landmark: data.PerLandmark,
-          country: data.PerCountry,
-          state: data.PerState,
-          city: data.PerCity,
-          zipcode: data.PerZipcode,
-        },
-        temporaryAddress: {
-          street: data.tempStreet,
-          landmark: data.tempLandmark,
-          country: data.tempCountry,
-          state: data.tempState,
-          city: data.tempCity,
-          zipcode: data.tempZipcode,
-        },
-        bankDetails: {
-          branchName: data.branchName,
-          accountHolderName: data.accountHolderName,
-          accountNumber: data.accountNumber,
-          accountType: data.accountType,
-          IFSC: data.IFSC,
-          bankName: data.bankName,
-        },
-      };
-
-      const formData = new FormData();
-      Object.keys(payload).forEach((key) => {
-        if (typeof payload[key] === 'object') {
-          if (key == 'dob' || key == 'joiningDate') {
+      try {
+        const payload = {
+          status: data.status,
+          firstName: data.firstName,
+          middleName: data.middleName,
+          lastName: data.lastName,
+          contact: data.contact,
+          email: data.email,
+          dob: data.dob,
+          joiningDate: data.joiningDate,
+          drivingLicense: data.drivingLicense,
+          panCard: data.panCard,
+          aadharCard: data.aadharCard,
+          otpContact: data.otpContact,
+          businessType: data.businessType,
+          remark: data.remark,
+          referenceBy: watch('referenceBy') !== 'Other' ?
+            data?.referenceBy : data?.otherReferenceBy,
+          permanentAddress: {
+            street: data.PerStreet,
+            landmark: data.PerLandmark,
+            country: data.PerCountry,
+            state: data.PerState,
+            city: data.PerCity,
+            zipcode: data.PerZipcode,
+          },
+          temporaryAddress: {
+            street: data.tempStreet,
+            landmark: data.tempLandmark,
+            country: data.tempCountry,
+            state: data.tempState,
+            city: data.tempCity,
+            zipcode: data.tempZipcode,
+          },
+          bankDetails: {
+            branchName: data.branchName,
+            accountHolderName: data.accountHolderName,
+            accountNumber: data.accountNumber,
+            accountType: data.accountType,
+            IFSC: data.IFSC,
+            bankName: data.bankName,
+          },
+        };
+        const formData = new FormData();
+        Object.keys(payload).forEach((key) => {
+          if (typeof payload[key] === 'object') {
+            if (key == 'dob' || key == 'joiningDate') {
+              formData.append(key, payload[key]);
+            }
+            Object.keys(payload[key]).forEach((subKey) => {
+              formData.append(`${key}[${subKey}]`, payload[key]
+                [subKey]);
+            });
+          } else {
             formData.append(key, payload[key]);
           }
-          Object.keys(payload[key]).forEach((subKey) => {
-            formData.append(`${key}[${subKey}]`, payload[key][subKey]);
-          });
+        });
+        if (capturedImage) {
+          const base64Data = capturedImage.split(',')[1];
+          const binaryData = atob(base64Data);
+          const arrayBuffer = new Uint8Array(binaryData.length);
+          for (let i = 0; i < binaryData.length; i++) {
+            arrayBuffer[i] = binaryData.charCodeAt(i);
+          }
+          const blob = new Blob([arrayBuffer], {
+            type: 'image/jpeg',
+          }); // Create a Blob
+          formData.append('profile-pic', blob, 'customer-image.jpg');
         } else {
-          formData.append(key, payload[key]);
+          formData.append('profile-pic', data.profile_pic);
         }
-      });
-
-      if (data.profile_pic) {
-        formData.append('profile-pic', data.profile_pic);
-      }
-
-      const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value) || branch?.[0];
-      let parsedBranch = storedBranch;
-
-      if (storedBranch !== 'all') {
-        try {
-          parsedBranch = JSON.parse(storedBranch);
-        } catch (error) {
-          console.error('Error parsing storedBranch:', error);
+        const mainbranchid = branch?.find((e) => e?._id ===
+          data?.branchId?.value) || branch?.[0];
+        let parsedBranch = storedBranch;
+        if (storedBranch !== 'all') {
+          try {
+            parsedBranch = JSON.parse(storedBranch);
+          } catch (error) {
+            console.error('Error parsing storedBranch:', error);
+          }
         }
+        const branchQuery = parsedBranch && parsedBranch === 'all'
+          ? `branch=${mainbranchid?._id}`
+          : `branch=${parsedBranch}`;
+        const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?${branchQuery}`;
+        await (currentCustomer
+          ? axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?${branchQuery}`,
+            payload)
+          : axios.post(url, formData, {
+            headers: {
+              'Content-Type':
+                'multipart/form-data',
+            },
+          }));
+        enqueueSnackbar(currentCustomer ? 'Update success!' :
+          'Create success!');
+        reset();
+        mutate();
+        router.push(paths.dashboard.customer.root);
+      } catch (error) {
+        enqueueSnackbar(currentCustomer ? 'Failed To updatecustomer' : error.response.data.message, { variant: ';error;' });
+        console.error(error);
       }
-
-      const branchQuery = parsedBranch && parsedBranch === 'all'
-        ? `branch=${mainbranchid?._id}`
-        : `branch=${parsedBranch}`;
-
-      const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?${branchQuery}`;
-
-      await (currentCustomer
-        ? axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?${branchQuery}`, payload)
-        : axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } }));
-
-      enqueueSnackbar(currentCustomer ? 'Update success!' : 'Create success!');
-      reset();
-      mutate();
-      router.push(paths.dashboard.customer.root);
-    } catch (error) {
-      enqueueSnackbar(currentCustomer ? 'Failed To update customer' : error.response.data.message, { variant: 'error' });
-      console.error(error);
-    }
-  });
-
+    },
+  );
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
@@ -274,59 +287,51 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       reader.readAsDataURL(file);
     }
   }, []);
-
   const resetCrop = () => {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
-
   const handleCancel = () => {
     setImageSrc(null);
   };
-
   const showCroppedImage = async () => {
     try {
       // If no cropping has been done, upload the original image
-      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+      if (!completedCrop || !completedCrop.width || !
+        completedCrop.height) {
         if (file) {
           setCroppedImage(URL.createObjectURL(file));
           setValue('profile_pic', file);
-
           if (currentCustomer) {
             const formData = new FormData();
             formData.append('profile-pic', file);
-
             await axios
               .put(
                 `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
                 formData,
               )
               .then((res) => {
-                console.log('Profile updated successfully:', res.data);
+                console.log('Profile updated successfully:',
+                  res.data);
               })
               .catch((err) => {
-                console.error('Error uploading original image:', err);
+                console.error('Error uploading original image:',
+                  err);
               });
           }
-
           setOpen(false);
           setImageSrc(null);
         }
         return;
       }
-
       // Handle cropping logic if completedCrop exists
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
-
       const scaleX = image.naturalWidth / image.width;
       const scaleY = image.naturalHeight / image.height;
-
       canvas.width = completedCrop.width;
       canvas.height = completedCrop.height;
-
       const ctx = canvas.getContext('2d');
-
       ctx.drawImage(
         image,
         completedCrop.x * scaleX,
@@ -338,36 +343,33 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         completedCrop.width,
         completedCrop.height,
       );
-
       canvas.toBlob(async (blob) => {
         if (!blob) {
           console.error('Failed to create blob');
           return;
         }
-
-        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
-
+        const croppedFile = new File([blob], 'cropped-image.jpg',
+          { type: 'image/jpeg' });
         setCroppedImage(URL.createObjectURL(croppedFile));
         setFile(croppedFile);
         setValue('profile_pic', croppedFile);
-
         if (currentCustomer) {
           const formData = new FormData();
           formData.append('profile-pic', croppedFile);
-
           await axios
             .put(
               `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
               formData,
             )
             .then((res) => {
-              console.log('Profile updated successfully:', res.data);
+              console.log('Profile updated successfully:',
+                res.data);
             })
             .catch((err) => {
-              console.error('Error uploading cropped image:', err);
+              console.error('Error uploading cropped image:',
+                err);
             });
         }
-
         setOpen(false);
         setImageSrc(null);
       }, 'image/jpeg');
@@ -375,10 +377,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       console.error('Error cropping and uploading image:', e);
     }
   };
-
   const handleDrop = useCallback(async (acceptedFiles) => {
     const file = acceptedFiles[0];
-
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -388,12 +388,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       reader.readAsDataURL(file);
     }
   }, [setValue]);
-
   const checkZipcode = async (zipcode, type = 'permanent') => {
     try {
       const response = await axios.get(`https://api.postalpincode.in/pincode/${zipcode}`);
       const data = response.data[0];
-
       if (data.Status === 'Success') {
         if (type === 'permanent') {
           setValue('PerCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
@@ -414,11 +412,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
           setValue('tempState', '', { shouldValidate: true });
           setValue('tempCity', '', { shouldValidate: true });
         }
-        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
+        enqueueSnackbar('Invalid Zipcode. Please enter a validIndian Zipcode.', { variant: ';error;' });
       }
     } catch (error) {
       console.error('Error fetching country and state:', error);
-
       if (type === 'permanent') {
         setValue('PerCountry', '', { shouldValidate: true });
         setValue('PerState', '', { shouldValidate: true });
@@ -426,33 +423,49 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         setValue('tempCountry', '', { shouldValidate: true });
         setValue('tempState', '', { shouldValidate: true });
       }
-
-      enqueueSnackbar('Failed to fetch country and state details.', { variant: 'error' });
+      enqueueSnackbar('Failed to fetch country and state details.', { variant: ';error;' });
     }
   };
-
   const checkIFSC = async (ifscCode) => {
     if (ifscCode.length === 11) {
       try {
-        const response = await axios.get(`https://ifsc.razorpay.com/${ifscCode}`);
+        const response = await axios.get(`https://
+ifsc.razorpay.com/${ifscCode}`);
         if (response.data) {
-          setValue('branchName', response?.data?.BRANCH || '', { shouldValidate: true });
-          enqueueSnackbar('IFSC code is valid and branch details fetched.', { variant: 'success' });
+          setValue('branchName', response?.data?.BRANCH || '',
+            { shouldValidate: true });
+          enqueueSnackbar('IFSC code is valid and branch details fetched.', { variant: ';success' });
         }
       } catch (error) {
         setValue('branchName', '', { shouldValidate: true });
-        enqueueSnackbar('Invalid IFSC code. Please check and enter a valid IFSC code.', { variant: 'error' });
+        enqueueSnackbar('Invalid IFSC code. Please check and enter a valid IFSC code.', { variant: ';error;' });
       }
     } else {
-      enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
+      enqueueSnackbar('IFSC code must be exactly 11 characters.',
+        { variant: 'warning' });
     }
   };
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        setValue('profile_pic', imageSrc);
         setCapturedImage(imageSrc);
+        if (currentCustomer) {
+          const base64Data = imageSrc.split(',')[1];
+          const binaryData = atob(base64Data);
+          const arrayBuffer = new Uint8Array(binaryData.length);
+          for (let i = 0; i < binaryData.length; i++) {
+            arrayBuffer[i] = binaryData.charCodeAt(i);
+          }
+          const blob = new Blob([arrayBuffer], {
+            type: 'image/jpeg',
+          }); // Create a Blob
+          const formData = new FormData();
+          formData.append('profile-pic', blob, 'profile-pic.jpg');
+          axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`, formData).then((res) => console.log(res)).catch((err) =>
+            console.log(err));
+        }
+        setValue('profile_pic', imageSrc);
         setOpen2(false);
       }
     }
@@ -461,42 +474,53 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     <>
       <Grid item md={3} xs={12}>
         {/*<Card sx={{ pt: 5, px: 3, mt: 5 }}>*/}
-          <Box sx={{ pt: 2 }}>
-            <RHFUploadAvatar
-              name='profile_pic'
-              camera={true}
-              setOpen2={setOpen2}
-              file={croppedImage || currentCustomer?.avatar_url}
-              maxSize={3145728}
-              accept='image/*'
-              onDrop={handleDropSingleFile}
-            />
-            <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
-              {imageSrc && (
-                <ReactCrop
-                  crop={crop}
-                  onChange={(newCrop) => setCrop(newCrop)}
-                  onComplete={(newCrop) => setCompletedCrop(newCrop)}
-                  aspect={1}
-                >
-                  <img
-                    id='cropped-image'
-                    src={imageSrc}
-                    alt='Crop preview'
-                    onLoad={resetCrop} // Reset crop when the image loads
-                  />
-                </ReactCrop>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
-                <Button variant='outlined' onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button variant='contained' color='primary' onClick={showCroppedImage}>
-                  Save Image
-                </Button>
-              </div>
-            </Dialog>
-          </Box>
+        <Box sx={{ pt: 2 }}>
+          <RHFUploadAvatar
+            name='profile_pic'
+            camera={true}
+            setOpen2={setOpen2}
+            setOpen={setOpen}
+            setImageSrc={setImageSrc}
+            setFile={setFile}
+            file={capturedImage || croppedImage ||
+            currentCustomer?.avatar_url}
+            maxSize={3145728}
+            accept='image/*'
+            onDrop={handleDropSingleFile}
+          />
+          <Dialog open={Boolean(imageSrc)}
+                  onClose={handleCancel}>
+            {imageSrc && (
+              <ReactCrop
+                crop={crop}
+                onChange={(newCrop) => setCrop(newCrop)}
+                onComplete={(newCrop) =>
+                  setCompletedCrop(newCrop)}
+                aspect={1}
+              >
+                <img
+                  id='cropped-image'
+                  src={imageSrc}
+                  alt='Crop preview'
+                  onLoad={resetCrop} // Reset crop when the
+                  image loads
+                />
+              </ReactCrop>
+            )}
+            <div style={{
+              display: 'flex', justifyContent:
+                'space-between', padding: '1rem',
+            }}>
+              <Button variant='outlined' onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button variant='contained' color='primary'
+                      onClick={showCroppedImage}>
+                Save Image
+              </Button>
+            </div>
+          </Dialog>
+        </Box>
         {/*</Card>*/}
       </Grid>
       <Grid item xs={12} md={9}>
@@ -512,7 +536,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 md: 'repeat(5, 1fr)',
               }}
             >
-              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
+              {user?.role === 'Admin' && branch && storedBranch
+              === 'all' && (
                 <RHFAutocomplete
                   name='branchId'
                   req={'red'}
@@ -522,7 +547,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                     label: branchItem?.name,
                     value: branchItem?._id,
                   })) || []}
-                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                  isOptionEqualToValue={(option, value) =>
+                    option?.value === value?.value}
                 />
               )}
               <RHFTextField
@@ -541,30 +567,48 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               <RHFTextField
                 name='firstName'
                 label='First Name'
-                inputProps={{ style: { textTransform: 'uppercase' } }}
+                inputProps={{
+                  style: {
+                    textTransform:
+                      'uppercase',
+                  },
+                }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
-                  methods.setValue('firstName', value, { shouldValidate: true });
+                  methods.setValue('firstName', value,
+                    { shouldValidate: true });
                 }}
                 req={'red'}
               />
               <RHFTextField
                 name='middleName'
                 label='Middle Name'
-                inputProps={{ style: { textTransform: 'uppercase' } }}
+                inputProps={{
+                  style: {
+                    textTransform:
+                      'uppercase',
+                  },
+                }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
-                  methods.setValue('middleName', value, { shouldValidate: true });
+                  methods.setValue('middleName', value,
+                    { shouldValidate: true });
                 }}
                 req={'red'}
               />
               <RHFTextField
                 name='lastName'
                 label='Last Name'
-                inputProps={{ style: { textTransform: 'uppercase' } }}
+                inputProps={{
+                  style: {
+                    textTransform:
+                      'uppercase',
+                  },
+                }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
-                  methods.setValue('lastName', value, { shouldValidate: true });
+                  methods.setValue('lastName', value,
+                    { shouldValidate: true });
                 }}
                 req={'red'}
               />
@@ -627,7 +671,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 inputProps={{ minLength: 10, maxLength: 10 }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
-                  methods.setValue('panCard', value, { shouldValidate: true });
+                  methods.setValue('panCard', value,
+                    { shouldValidate: true });
                 }}
               />
               <RHFTextField
@@ -644,8 +689,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   name='businessType'
                   label='Business Type'
                   placeholder='Choose Business Type'
-                  options={configs?.businessTypes?.length > 0 ? configs.businessTypes.map((type) => type) : []}
-                  isOptionEqualToValue={(option, value) => option === value}
+                  options={configs?.businessTypes?.length > 0 ?
+                    configs.businessTypes.map((type) => type) : []}
+                  isOptionEqualToValue={(option, value) => option
+                    === value}
                 />
               )}
               <RHFTextField name='email' label='Email' />
@@ -662,8 +709,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   req={'red'}
                   label='Status'
                   placeholder='Choose a Status'
-                  options={STATUS_OPTIONS.map((item) => item.value)}
-                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                  options={STATUS_OPTIONS.map((item) =>
+                    item.value)}
+                  isOptionEqualToValue={(option, value) =>
+                    option?.value === value?.value}
                 />
               )}
             </Box>
@@ -672,14 +721,15 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       </Grid>
     </>
   );
-
   const addressDetails = (
     <>
       <Grid xs={12} md={12} pb={0.5}>
         <Card>
           {!mdUp && <CardHeader title='Properties' />}
-          <Stack spacing={1} sx={{ p: 2 ,pb:0,pt:1.5}}>
-            <Typography variant='subtitle1' sx={{fontWeight: '600' }}>
+          <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
+            <Typography variant='subtitle1' sx={{
+              fontWeight: '600',
+            }}>
               Permanent Address
             </Typography>
             <Box
@@ -691,8 +741,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 md: 'repeat(6, 1fr)',
               }}
             >
-              <RHFTextField name='PerStreet' label='Street' req={'red'} />
-              <RHFTextField name='PerLandmark' label='landmark' req={'red'} />
+              <RHFTextField name='PerStreet' label='Street'
+                            req={'red'} />
+              <RHFTextField name='PerLandmark' label='landmark'
+                            req={'red'} />
               <RHFTextField
                 name='PerZipcode'
                 label={
@@ -732,8 +784,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 req={'red'}
                 label='Country'
                 placeholder='Choose a country'
-                options={countrystatecity.map((country) => country.name)}
-                isOptionEqualToValue={(option, value) => option === value}
+                options={countrystatecity.map((country) =>
+                  country.name)}
+                isOptionEqualToValue={(option, value) => option
+                  === value}
                 defaultValue='India'
               />
               <RHFAutocomplete
@@ -744,12 +798,14 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 options={
                   watch('PerCountry')
                     ? countrystatecity
-                    .find((country) => country.name === watch('PerCountry'))
+                    .find((country) => country.name ===
+                      watch('PerCountry'))
                     ?.states.map((state) => state.name) || []
                     : []
                 }
                 defaultValue='Gujarat'
-                isOptionEqualToValue={(option, value) => option === value}
+                isOptionEqualToValue={(option, value) => option
+                  === value}
               />
               <RHFAutocomplete
                 name='PerCity'
@@ -759,18 +815,24 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 options={
                   watch('PerState')
                     ? countrystatecity
-                    .find((country) => country.name === watch('PerCountry'))
-                    ?.states.find((state) => state.name === watch('PerState'))
+                    .find((country) => country.name ===
+                      watch('PerCountry'))
+                    ?.states.find((state) => state.name ===
+                      watch('PerState'))
                     ?.cities.map((city) => city.name) || []
                     : []
                 }
                 defaultValue='Surat'
-                isOptionEqualToValue={(option, value) => option === value}
+                isOptionEqualToValue={(option, value) => option
+                  === value}
               />
             </Box>
           </Stack>
-          <Stack spacing={1} sx={{ p: 2 ,pt:1}}>
-            <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
+          <Stack spacing={1} sx={{ p: 2, pt: 1 }}>
+            <Typography variant='subtitle1' sx={{
+              fontWeight:
+                '600',
+            }}>
               Temporary Address
             </Typography>
             <Box
@@ -819,8 +881,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 name='tempCountry'
                 label='Country'
                 placeholder='Choose a country'
-                options={countrystatecity.map((country) => country.name)}
-                isOptionEqualToValue={(option, value) => option === value}
+                options={countrystatecity.map((country) =>
+                  country.name)}
+                isOptionEqualToValue={(option, value) => option
+                  === value}
                 defaultValue='India'
               />
               <RHFAutocomplete
@@ -830,12 +894,14 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 options={
                   watch('TemCountry')
                     ? countrystatecity
-                    .find((country) => country.name === watch('TemCountry'))
+                    .find((country) => country.name ===
+                      watch('TemCountry'))
                     ?.states.map((state) => state.name) || []
                     : []
                 }
                 defaultValue='Gujarat'
-                isOptionEqualToValue={(option, value) => option === value}
+                isOptionEqualToValue={(option, value) => option
+                  === value}
               />
               <RHFAutocomplete
                 name='tempCity'
@@ -844,13 +910,16 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 options={
                   watch('TemState')
                     ? countrystatecity
-                    .find((country) => country.name === watch('TemCountry'))
-                    ?.states.find((state) => state.name === watch('TemState'))
+                    .find((country) => country.name ===
+                      watch('TemCountry'))
+                    ?.states.find((state) => state.name ===
+                      watch('TemState'))
                     ?.cities.map((city) => city.name) || []
                     : []
                 }
                 defaultValue='Surat'
-                isOptionEqualToValue={(option, value) => option === value}
+                isOptionEqualToValue={(option, value) => option
+                  === value}
               />
             </Box>
           </Stack>
@@ -858,7 +927,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       </Grid>
     </>
   );
-
   const referenceDetails = (
     <>
       {mdUp && (
@@ -880,8 +948,9 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                  md: 'repeat(1, 1fr)',
                }}>
             {!mdUp && <CardHeader title='Properties' />}
-            <Stack spacing={0.5} sx={{ p: 2 ,pb:0}}>
-              <Typography variant='subtitle2'>How did you come to know about us?</Typography>
+            <Stack spacing={0.5} sx={{ p: 2, pb: 0 }}>
+              <Typography variant='subtitle2'>How did you come to
+                know about us?</Typography>
               <Stack spacing={2}>
                 <RHFRadioGroup
                   row
@@ -898,8 +967,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             }} justifyContent={'end'}>
               {watch('referenceBy') === 'Other' && (
                 <Stack spacing={1}>
-                  <Typography variant='subtitle2'>Write other reference name</Typography>
-                  <RHFTextField name='otherReferenceBy' label='Reference By' />
+                  <Typography variant='subtitle2'>Write other
+                    reference name</Typography>
+                  <RHFTextField name='otherReferenceBy'
+                                label='Reference By' />
                 </Stack>
               )}
             </Stack>
@@ -908,15 +979,17 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       </Grid>
     </>
   );
-
   const BankDetails = (
     <>
       <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Bank Accounts' />}
-          <Stack spacing={3} sx={{ p: 2 ,pt:0.5}}>
+          <Stack spacing={3} sx={{ p: 2, pt: 0.5 }}>
             <Box>
-              <Typography variant='subtitle1' sx={{ my: 1, fontWeight: '600' }}>
+              <Typography variant='subtitle1' sx={{
+                my: 1,
+                fontWeight: '600',
+              }}>
                 Bank Account Details
               </Typography>
               <Box
@@ -928,7 +1001,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   md: 'repeat(6, 1fr)',
                 }}
               >
-                <RHFTextField name='accountHolderName' label='Account Holder Name' />
+                <RHFTextField name='accountHolderName'
+                              label='Account Holder Name' />
                 <RHFTextField
                   name='accountNumber'
                   label='Account Number'
@@ -940,12 +1014,15 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                   label='Account Type'
                   placeholder='Choose account type'
                   options={ACCOUNT_TYPE_OPTIONS}
-                  isOptionEqualToValue={(option, value) => option === value}
+                  isOptionEqualToValue={(option, value) => option
+                    === value}
                 />
                 <RHFTextField
                   name='IFSC'
                   label='IFSC Code'
-                  inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
+                  inputProps={{
+                    maxLength: 11, pattern: '[A-Za-z0-9]*',
+                  }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
@@ -960,31 +1037,37 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       </Grid>
     </>
   );
-
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' }}>
-        <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                variant='outlined' onClick={() => reset()}>Reset</Button>
-        <LoadingButton type='submit' variant='contained' size='large' loading={isSubmitting} sx={{ height: '36px' }}>
+      <Grid xs={12} md={8} sx={{
+        display: 'flex', justifyContent:
+          'end',
+      }}>
+        <Button color='inherit' sx={{
+          margin: '0px 10px', height:
+            '36px',
+        }}
+                variant='outlined' onClick={() => reset()}>Reset</
+          Button>
+        <LoadingButton type='submit' variant='contained'
+                       size='large' loading={isSubmitting} sx={{ height: '36px' }}>
           {!currentCustomer ? 'Submit' : 'Save'}
         </LoadingButton>
       </Grid>
     </>
   );
-
   return (
     <>
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        {PersonalDetails}
-        {addressDetails}
-        {referenceDetails}
-        {BankDetails}
-        {renderActions}
-      </Grid>
-    </FormProvider>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={3}>
+          {PersonalDetails}
+          {addressDetails}
+          {referenceDetails}
+          {BankDetails}
+          {renderActions}
+        </Grid>
+      </FormProvider>
       <Dialog
         fullWidth
         maxWidth={false}
@@ -995,7 +1078,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         }}
       >
         <DialogTitle>Camera</DialogTitle>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{
+          display: 'flex', justifyContent: 'center',
+          alignItems: 'center',
+        }}>
           <Webcam
             audio={false}
             ref={webcamRef}
@@ -1009,7 +1095,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
           <Button variant='outlined' onClick={capture}>
             Capture Photo
           </Button>
-          <Button variant='contained' onClick={() => setOpen2(false)}>
+          <Button variant='contained' onClick={() =>
+            setOpen2(false)}>
             Close Camera
           </Button>
         </DialogActions>
@@ -1017,7 +1104,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     </>
   );
 };
-
 CustomerNewEditForm.propTypes = {
   currentCustomer: PropTypes.object,
 };

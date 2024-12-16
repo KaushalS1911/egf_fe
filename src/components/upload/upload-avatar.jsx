@@ -12,7 +12,7 @@ import RejectionFiles from './errors-rejection-files';
 
 // ----------------------------------------------------------------------
 
-export default function UploadAvatar({ error, file, disabled, helperText, sx,radius ,...other }) {
+export default function UploadAvatar({ error,setOpen2, file, disabled, helperText, sx,radius ,camera,...other }) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     multiple: false,
     disabled,
@@ -98,8 +98,11 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx,rad
 
   return (
     <>
-      <Box
+      {camera ? <Box
         {...getRootProps()}
+        onClick={() => {
+          camera && setOpen2(true);
+        }}
         sx={{
           p: 1,
           m: 'auto',
@@ -130,17 +133,56 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx,rad
           ...sx,
         }}
       >
-        <input {...getInputProps()} />
+
+          <input {...getInputProps()} />
 
         {renderContent}
-      </Box>
+      </Box> : <Box
+        {...getRootProps()}
+        sx={{
+          p: 1,
+          m: 'auto',
+          height: radius ? 100 : 144,
+          width: radius ? 100 : 144,
+          cursor: 'pointer',
+          overflow: 'hidden',
+          borderRadius: radius ? 'unset' : '50%',
+          border: (theme) => `1px dashed ${alpha(theme.palette.grey[500], 0.2)}`,
+          ...(isDragActive && {
+            opacity: 0.72,
+          }),
+          ...(disabled && {
+            opacity: 0.48,
+            pointerEvents: 'none',
+          }),
+          ...(hasError && {
+            borderColor: 'error.main',
+          }),
+          ...(hasFile && {
+            ...(hasError && {
+              bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+            }),
+            '&:hover .upload-placeholder': {
+              opacity: 1,
+            },
+          }),
+          ...sx,
+        }}
+      >
+
+
+          <input {...getInputProps()} />
+
+
+        {renderContent}
+      </Box>}
 
       {helperText && helperText}
 
       <RejectionFiles fileRejections={fileRejections} />
     </>
   );
-}
+};
 
 UploadAvatar.propTypes = {
   disabled: PropTypes.object,
