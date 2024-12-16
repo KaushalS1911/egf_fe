@@ -263,11 +263,13 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+
   const videoConstraints = {
     width: 640,
     height: 360,
     facingMode: 'user',
   };
+
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -292,7 +294,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const showCroppedImage = async () => {
     try {
-      // If no cropping has been done, upload the original image
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
         if (file) {
           setCroppedImage(URL.createObjectURL(file));
@@ -321,7 +322,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         return;
       }
 
-      // Handle cropping logic if completedCrop exists
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
 
@@ -373,7 +373,6 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               console.error('Error uploading cropped image:', err);
             });
         }
-
         setOpen(false);
         setImageSrc(null);
       }, 'image/jpeg');
@@ -453,6 +452,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
     }
   };
+
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -463,46 +463,47 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       }
     }
   }, []);
+
   const PersonalDetails = (
     <>
       <Grid item md={3} xs={12}>
         {/*<Card sx={{ pt: 5, px: 3, mt: 5 }}>*/}
-          <Box sx={{ pt: 2 }}>
-            <RHFUploadAvatar
-              name='profile_pic'
-              camera={true}
-              setOpen2={setOpen2}
-              file={croppedImage || currentCustomer?.avatar_url}
-              maxSize={3145728}
-              accept='image/*'
-              onDrop={handleDropSingleFile}
-            />
-            <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
-              {imageSrc && (
-                <ReactCrop
-                  crop={crop}
-                  onChange={(newCrop) => setCrop(newCrop)}
-                  onComplete={(newCrop) => setCompletedCrop(newCrop)}
-                  aspect={1}
-                >
-                  <img
-                    id='cropped-image'
-                    src={imageSrc}
-                    alt='Crop preview'
-                    onLoad={resetCrop} // Reset crop when the image loads
-                  />
-                </ReactCrop>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
-                <Button variant='outlined' onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button variant='contained' color='primary' onClick={showCroppedImage}>
-                  Save Image
-                </Button>
-              </div>
-            </Dialog>
-          </Box>
+        <Box sx={{ pt: 2 }}>
+          <RHFUploadAvatar
+            name='profile_pic'
+            camera={true}
+            setOpen2={setOpen2}
+            file={croppedImage || currentCustomer?.avatar_url}
+            maxSize={3145728}
+            accept='image/*'
+            onDrop={handleDropSingleFile}
+          />
+          <Dialog open={Boolean(imageSrc)} onClose={handleCancel}>
+            {imageSrc && (
+              <ReactCrop
+                crop={crop}
+                onChange={(newCrop) => setCrop(newCrop)}
+                onComplete={(newCrop) => setCompletedCrop(newCrop)}
+                aspect={1}
+              >
+                <img
+                  id='cropped-image'
+                  src={imageSrc}
+                  alt='Crop preview'
+                  onLoad={resetCrop}
+                />
+              </ReactCrop>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+              <Button variant='outlined' onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button variant='contained' color='primary' onClick={showCroppedImage}>
+                Save Image
+              </Button>
+            </div>
+          </Dialog>
+        </Box>
         {/*</Card>*/}
       </Grid>
       <Grid item xs={12} md={9}>
@@ -684,8 +685,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       <Grid xs={12} md={12} pb={0.5}>
         <Card>
           {!mdUp && <CardHeader title='Properties' />}
-          <Stack spacing={1} sx={{ p: 2 ,pb:0,pt:1.5}}>
-            <Typography variant='subtitle1' sx={{fontWeight: '600' }}>
+          <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
+            <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
               Permanent Address
             </Typography>
             <Box
@@ -775,7 +776,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               />
             </Box>
           </Stack>
-          <Stack spacing={1} sx={{ p: 2 ,pt:1}}>
+          <Stack spacing={1} sx={{ p: 2, pt: 1 }}>
             <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
               Temporary Address
             </Typography>
@@ -788,9 +789,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 md: 'repeat(6, 1fr)',
               }}
             >
-              <RHFTextField name='tempStreet' label='Street' />
-              <RHFTextField name='tempLandmark' label='landmark' />
+              <RHFTextField name='tempStreet' label='Street' req={'red'} />
+              <RHFTextField name='tempLandmark' label='landmark' req={'red'} />
               <RHFTextField
+                req={'red'}
                 name='tempZipcode'
                 label='Zipcode'
                 inputProps={{
@@ -822,6 +824,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 }}
               />
               <RHFAutocomplete
+                req={'red'}
                 name='tempCountry'
                 label='Country'
                 placeholder='Choose a country'
@@ -830,6 +833,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 defaultValue='India'
               />
               <RHFAutocomplete
+                req={'red'}
                 name='tempState'
                 label='State'
                 placeholder='Choose a State'
@@ -844,6 +848,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                 isOptionEqualToValue={(option, value) => option === value}
               />
               <RHFAutocomplete
+                req={'red'}
                 name='tempCity'
                 label='City'
                 placeholder='Choose a City'
@@ -886,7 +891,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
                  md: 'repeat(1, 1fr)',
                }}>
             {!mdUp && <CardHeader title='Properties' />}
-            <Stack spacing={0.5} sx={{ p: 2 ,pb:0}}>
+            <Stack spacing={0.5} sx={{ p: 2, pb: 0 }}>
               <Typography variant='subtitle2'>How did you come to know about us?</Typography>
               <Stack spacing={2}>
                 <RHFRadioGroup
@@ -920,7 +925,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Bank Accounts' />}
-          <Stack spacing={3} sx={{ p: 2 ,pt:0.5}}>
+          <Stack spacing={3} sx={{ p: 2, pt: 0.5 }}>
             <Box>
               <Typography variant='subtitle1' sx={{ my: 1, fontWeight: '600' }}>
                 Bank Account Details
@@ -982,15 +987,15 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   return (
     <>
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        {PersonalDetails}
-        {addressDetails}
-        {referenceDetails}
-        {BankDetails}
-        {renderActions}
-      </Grid>
-    </FormProvider>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={3}>
+          {PersonalDetails}
+          {addressDetails}
+          {referenceDetails}
+          {BankDetails}
+          {renderActions}
+        </Grid>
+      </FormProvider>
       <Dialog
         fullWidth
         maxWidth={false}
