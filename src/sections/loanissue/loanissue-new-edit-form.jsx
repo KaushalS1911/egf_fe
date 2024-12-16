@@ -250,9 +250,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
         setValue('property_image', imageSrc);
-        setCapturedImage(imageSrc); // Update captured image state
-        setCroppedImage(imageSrc); // Update cropped image
-        directly;
+        setCapturedImage(imageSrc);
+        setCroppedImage(imageSrc);
         setOpen2(false);
       }
     }
@@ -1650,8 +1649,7 @@ trash-bold' />
           <Button variant='outlined' onClick={capture}>
             Capture Photo
           </Button>
-          <Button variant='contained' onClick={() =>
-            setOpen2(false)}>
+          <Button variant='contained' onClick={() => setOpen2(false)}>
             Close Camera
           </Button>
         </DialogActions>

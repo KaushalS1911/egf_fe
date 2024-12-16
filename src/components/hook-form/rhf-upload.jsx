@@ -20,7 +20,7 @@ export function RHFUploadAvatar({ name,setOpen2,setImageSrc,setOpen,camera,setFi
       render={({ field, fieldState: { error } }) => (
         <div>
           {camera && <Box sx={{ textAlign: 'right',position:"relative" }}>
-            <Iconify icon='ion:camera-sharp' onClick={() => {
+            <Iconify icon="fa:cloud-upload"  onClick={() => {
               // setOpen(true)
               inputRef.current.click();
             }} width={24} sx={{ color: 'gray', cursor: 'pointer' }} />
