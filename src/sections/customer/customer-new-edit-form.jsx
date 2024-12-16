@@ -29,7 +29,6 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
 import { useGetConfigs } from '../../api/config';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -317,6 +316,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
         return;
       }
 
+      // Handle cropping logic if completedCrop exists
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
 
@@ -701,8 +701,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       <Grid xs={12} md={12} pb={0.5}>
         <Card>
           {!mdUp && <CardHeader title='Properties' />}
-          <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
-            <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
+          <Stack spacing={1} sx={{ p: 2 ,pb:0,pt:1.5}}>
+            <Typography variant='subtitle1' sx={{fontWeight: '600' }}>
               Permanent Address
             </Typography>
             <Box
