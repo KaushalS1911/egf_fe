@@ -21,6 +21,8 @@ import { useRouter } from '../../routes/hooks';
 import { useGetConfigs } from '../../api/config';
 import { useAuthContext } from '../../auth/hooks';
 import { getResponsibilityValue } from '../../permission/permission';
+import Lightbox, { useLightBox } from '../../components/lightbox';
+import React from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +34,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
   const popover = usePopover();
   const { configs } = useGetConfigs();
   const { user } = useAuthContext();
+  const lightbox = useLightBox(avatar_url);
 
   return (
     <>
@@ -40,7 +43,12 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={firstName} src={avatar_url} sx={{ mr: 2 }} />
+          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)} sx={{ mr: 2,cursor:'pointer' }} />
+          <Lightbox
+            image={avatar_url}
+            open={lightbox.open}
+            close={lightbox.onClose}
+          />
           <ListItemText
             primary={firstName + ' ' + middleName + ' ' + lastName}
             secondary={email}

@@ -60,13 +60,14 @@ const TABLE_HEAD = [
   { id: 'reports', label: 'Reports' },
 ];
 
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, { value: 'Disbursed', label: 'Disbursed' }, { value: 'Regular', label: 'Regular' }, {
+const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, { value: 'Regular', label: 'Regular' }, {
   value: 'Overdue',
   label: 'Overdue',
-}, {
-  value: 'Closed',
-  label: 'Closed',
-}];
+},
+  { value: 'Disbursed', label: 'Disbursed' }, {
+    value: 'Closed',
+    label: 'Closed',
+  }];
 
 const defaultFilters = {
   username: '',
@@ -356,7 +357,7 @@ export default function LoanpayhistoryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { username, status  } = filters;
+  const { username, status } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
