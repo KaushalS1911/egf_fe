@@ -7,6 +7,7 @@ import { Upload, UploadBox, UploadAvatar } from '../upload';
 import { Box } from '@mui/system';
 import Iconify from '../iconify';
 import React, { useEffect, useRef } from 'react';
+import { Tooltip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -20,10 +21,13 @@ export function RHFUploadAvatar({ name,setOpen2,setImageSrc,setOpen,camera,setFi
       render={({ field, fieldState: { error } }) => (
         <div>
           {camera && <Box sx={{ textAlign: 'right',position:"relative" }}>
-            <Iconify icon="fa:cloud-upload"  onClick={() => {
-              // setOpen(true)
-              inputRef.current.click();
-            }} width={24} sx={{ color: 'gray', cursor: 'pointer' }} />
+            <Tooltip title="Upload File" arrow={true}>
+              <Iconify icon="fa:cloud-upload"  onClick={() => {
+                // setOpen(true)
+                inputRef.current.click();
+              }} width={24} sx={{ color: 'gray', cursor: 'pointer' }} />
+            </Tooltip>
+
             <input ref={inputRef} onChange={(e)=> {
               if(e.target.files.length){
                 setFile(e.target.files[0])
