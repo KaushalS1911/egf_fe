@@ -555,7 +555,7 @@ export default function SansactionLetter({ sansaction, configs }) {
                     <Text style={{
                       ...styles.gujaratiText,
                       fontSize: 11,
-                      color: [1, 3, 7].includes(index) ? '#ff7f27' : 'black',
+                      color: [1, 3, 7].includes(index) ? 'black' : 'black',
                     }}>{item.rule}</Text> {/* Condition text */}
                   </View>
                 ))}
