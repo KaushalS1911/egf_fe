@@ -221,11 +221,21 @@ export default function CustomerNewEditForm({ currentCustomer }) {
           formData.append(key, payload[key]);
         }
       });
+      if (capturedImage) {
+        const base64Data = capturedImage.split(',')[1];
+        const binaryData = atob(base64Data);
+        const arrayBuffer = new Uint8Array(binaryData.length);
 
-      if (data.profile_pic) {
+        for (let i = 0; i < binaryData.length; i++) {
+          arrayBuffer[i] = binaryData.charCodeAt(i);
+        }
+
+        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
+
+        formData.append('profile-pic', blob, 'customer-image.jpg');
+      } else {
         formData.append('profile-pic', data.profile_pic);
       }
-
       const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value) || branch?.[0];
       let parsedBranch = storedBranch;
 
