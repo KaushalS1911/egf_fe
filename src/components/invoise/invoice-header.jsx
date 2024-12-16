@@ -15,7 +15,8 @@ import {
   Font,
   Link,
 } from '@react-pdf/renderer';
-import logo from 'src/assets/logo/Logo Png.png'; // Correct path to your logo
+import logo from 'src/assets/logo/Logo Png.png';
+import { useGetConfigs } from '../../api/config'; // Correct path to your logo
 
 Font.register({
   family: 'Roboto',
@@ -36,6 +37,7 @@ const useStyles = () =>
           height: '126px',
           fontFamily: 'Roboto',
           position: 'relative',
+          overflow:'hidden'
         },
         headerbox1: {
           width: '65%',
@@ -110,16 +112,15 @@ const useStyles = () =>
     [],
   );
 
-export default function InvoiceHeader({ selectedRow }) {
+export default function InvoiceHeader({ selectedRow , configs }) {
   const styles = useStyles();
-
   return (
     <View style={styles.header}>
       <View style={styles.headerbox1}>
         <View style={styles.logoParent}>
-        <Image style={styles.logo} src={logo} />
+        <Image style={styles.logo} src={configs.company.logo_url} />
         </View>
-        <Text style={styles.headerText}>EASY GOLD FINCORP</Text>
+        <Text style={styles.headerText}>{configs.company.name}</Text>
         <Text style={styles.headerSubText}>
           {`${selectedRow.customer.branch.address.street}, ${selectedRow.customer.branch.address.landmark}, ${selectedRow.customer.branch.address.city}, ${selectedRow.customer.branch.address.zipcode}`}
         </Text>
@@ -172,7 +173,7 @@ export default function InvoiceHeader({ selectedRow }) {
               <View style={{ ...styles.rowContainer,marginTop:15 }}>
                 <Image style={styles.icon} src={contact} />
                 <Text style={styles.separator}>|</Text>
-                <Text style={styles.headerDetails}>8160059100</Text>
+                <Text style={styles.headerDetails}>{configs.company.contact}</Text>
               </View>
             </View>
           </View>

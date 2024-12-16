@@ -36,6 +36,18 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
 
   const [file, setFile] = useState(currentLoan.propertyImage);
   const lightbox = useLightBox(file);
+  const renewDate = () => {
+    if (!currentLoan?.issueDate) return null;
+
+    const { issueDate, scheme: { renewalTime } } = currentLoan;
+
+    const monthsToAdd =
+      renewalTime === 'Monthly' ? 1 :
+        renewalTime === 'yearly' ? 12 :
+          parseInt(renewalTime.split(' ')[0], 10) || 0;
+
+    return new Date(new Date(issueDate).setMonth(new Date(issueDate).getMonth() + monthsToAdd));
+  };
 
   const NewLoanPayHistorySchema = Yup.object().shape({
     loanNo: Yup.string().required('Loan No. is required'),
@@ -90,7 +102,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       loanPeriod: currentLoan?.scheme.renewalTime || '',
       IntPeriodTime: currentLoan?.scheme.interestPeriod || '',
       createdBy: (user?.firstName + ' ' + user?.lastName) || null,
-      renewDate: currentLoan?.issueDate ? new Date(new Date(currentLoan.issueDate).setMonth(new Date(currentLoan.issueDate).getMonth() + 6)) : null,
+      renewDate: currentLoan?.issueDate ? renewDate() : null,
       nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
       approvalCharge: currentLoan?.approvalCharge || 0,
 
@@ -162,7 +174,8 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   control={control}
                   label='Next Interest Pay Date'
                 />
-                  <RHFTextField name='approvalCharge' label='Approval Charge' InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}  />
+                  <RHFTextField name='approvalCharge' label='Approval Charge' InputProps={{ readOnly: true }}
+                                InputLabelProps={{ shrink: true }} />
                   <RHFTextField name='loanAmount' label='Loan Amount' InputProps={{ readOnly: true }} />
                   <RHFTextField name='address' label='Address' InputProps={{ readOnly: true }} />
                   <RHFTextField
@@ -214,10 +227,6 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   {/*/!*    e.target.value = e.target.value.replace(/[^0-9]/g, '');*!/*/}
                   {/*/!*  }}*!/*/}
                   {/*{//>/}*/}
-
-
-
-
 
 
                   {/*{/<RHFTextField name='closedBy' label='Closed By' InputProps={{ readOnly: true }} />/}*/}

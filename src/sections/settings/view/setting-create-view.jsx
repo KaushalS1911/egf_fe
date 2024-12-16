@@ -13,6 +13,7 @@ import BusinessTypeCreteView from './business-type-crete-view';
 import BranchCreateView from './branch-create-view';
 import LoanTypeView from './loan-type-view';
 import RemarkCreateView from './remark-create-view';
+import PolicyConfigCreateView from './policy-config-create-view';
 
 const TABS = [
   {
@@ -49,6 +50,11 @@ const TABS = [
     value: 'Remark type',
     label: 'Remark type',
     icon: <Iconify icon='mdi:cash-sync' width={24} />,
+  },
+  {
+    value: 'Export Policy Config',
+    label: 'Export Policy Config',
+    icon: <Iconify icon='icon-park-outline:agreement' width={20} />,
   },
 ];
 
@@ -88,6 +94,7 @@ export default function SettingsPage() {
         {currentTab === 'Loan type' && <LoanTypeView />}
         {currentTab === 'Branch' && <BranchCreateView />}
         {currentTab === 'Remark type' && <RemarkCreateView />}
+        {currentTab === 'Export Policy Config' && <PolicyConfigCreateView />}
       </Container>
     </>
   );

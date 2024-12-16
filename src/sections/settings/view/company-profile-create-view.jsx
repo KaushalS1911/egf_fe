@@ -14,6 +14,8 @@ import { useResponsive } from '../../../hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 import { useGetCompanyDetails } from '../../../api/company_details';
 import { ACCOUNT_TYPE_OPTIONS } from '../../../_mock';
+import { useDispatch } from 'react-redux';
+import { updateConfigs } from '../slices/configSlice';
 
 const personalDetailsSchema = yup.object().shape({
   logo_url: yup.mixed().required('Logo is required'),
@@ -33,6 +35,7 @@ const bankDetailsSchema = yup.object().shape({
 
 export default function CompanyProfile() {
   const { user } = useAuthContext();
+  const dispatch = useDispatch()
   const { companyDetail, mutate } = useGetCompanyDetails();
   const [profilePic, setProfilePic] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
@@ -146,6 +149,11 @@ export default function CompanyProfile() {
       if (file) {
         setProfilePic(file);
         personalDetailsMethods.setValue('logo_url', newFile, { shouldValidate: true });
+        if (companyDetail) {
+          const formData = new FormData();
+          formData.append('company-logo', file);
+          dispatch(updateConfigs({ companyId : user.company, payload: formData }))
+        }
       }
     },
     [personalDetailsMethods],

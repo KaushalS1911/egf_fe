@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import { alpha } from '@mui/material/styles';
-
-import Logo from '../logo';
+import defaultLogo from 'src/assets/logo/Group 45.png'
+// import Logo from '../logo';
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ export default function SplashScreen({ sx, ...other }) {
             repeat: Infinity,
           }}
         >
-          <Logo disabledLink  />
+          <img src={defaultLogo} height={'124px'} width={"124px"}/>
         </m.div>
 
         <Box

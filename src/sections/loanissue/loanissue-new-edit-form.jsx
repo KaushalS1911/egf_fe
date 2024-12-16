@@ -264,13 +264,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('data.property_imagedata.property_image : ', data.property_image);
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', { variant: 'error' });
       return;
     }
-    console.log(data);
-    console.log(croppedImage);
+
     const propertyDetails = watch('propertyDetails');
     const payload = new FormData();
     payload.append('company', user.company);

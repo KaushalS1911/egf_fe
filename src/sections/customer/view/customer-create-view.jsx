@@ -28,7 +28,7 @@ export default function CustomerCreateView() {
           { name: 'New Customer' },
         ]}
         sx={{
-          mb: { xs: 3, md: 5 },
+          mb: { xs: 3, md: 2 },
         }}
       />
 

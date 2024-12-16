@@ -147,7 +147,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   useEffect(() => {
     setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
-  console.log();
+
   const handleRemove = (index) => {
     remove(index);
   };
@@ -187,7 +187,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   const handleCashAmountChange = (event) => {
     const cashPayingAmount = parseFloat(event.target.value) || '';
     const cashNetAmount = parseFloat(watch('cashNetAmount')-watch('approvalCharge'));
-    console.log(cashNetAmount);
+
 
     if (cashPayingAmount > cashNetAmount) {
       setValue('payingCashAmount', cashNetAmount);

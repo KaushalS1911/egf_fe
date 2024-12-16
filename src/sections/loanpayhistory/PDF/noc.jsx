@@ -204,7 +204,7 @@ const useStyles = () =>
     [],
   );
 
-function Noc({ nocData }) {
+function Noc({ nocData ,configs}) {
   const styles = useStyles();
   return (
     <>
@@ -231,7 +231,7 @@ function Noc({ nocData }) {
           {/*    <Text style={styles.branchDetails}>Mobile: {nocData.customer.branch.contact}</Text>*/}
           {/*  </View>*/}
           {/*</View>*/}
-          <InvoiceHeader selectedRow={nocData}/>
+          <InvoiceHeader selectedRow={nocData} configs={configs}/>
           <View style={{... styles.pagePadding,lineHeight: 1.6,fontSize:9 }}>
             <View>
               <Text style={[styles.date, styles.fw]}>{fDate(new Date())}</Text>

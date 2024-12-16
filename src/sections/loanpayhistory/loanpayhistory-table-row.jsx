@@ -44,18 +44,18 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
 
   const renderDialogContent = () => {
     if (dialogContent === 'loanDetails') {
-      return <LoanIssueDetails selectedRow={row} />;
+      return <LoanIssueDetails selectedRow={row} configs={configs}/>;
     } if (dialogContent === 'sanction') {
-      return <SansactionLetter sansaction={row} />;
+      return <SansactionLetter sansaction={row}  configs={configs}/>;
     }
     if (dialogContent === 'authority') {
-      return <LetterOfAuthority loan={row} />;
+      return <LetterOfAuthority loan={row}/>;
     }
     if (dialogContent === 'notice') {
-      return <Notice noticeData={row} />;
+      return <Notice noticeData={row} configs={configs} />;
     }
     if (dialogContent === 'noc') {
-      return <Noc nocData={row} />;
+      return <Noc nocData={row} configs={configs} />;
     }
 
     return null;

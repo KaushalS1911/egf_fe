@@ -441,8 +441,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const PersonalDetails = (
     <>
       <Grid item md={3} xs={12}>
-        <Card sx={{ pt: 5, px: 3, mt: 5 }}>
-          <Box sx={{ mb: 5 }}>
+        {/*<Card sx={{ pt: 5, px: 3, mt: 5 }}>*/}
+          <Box sx={{ pt: 2 }}>
             <RHFUploadAvatar
               name='profile_pic'
               file={croppedImage || currentCustomer?.avatar_url}
@@ -476,19 +476,19 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               </div>
             </Dialog>
           </Box>
-        </Card>
+        {/*</Card>*/}
       </Grid>
       <Grid item xs={12} md={9}>
         <Card>
           {!mdUp && <CardHeader title='Personal Details' />}
-          <Stack spacing={3} sx={{ p: 3 }}>
+          <Stack spacing={3} sx={{ p: 2 }}>
             <Box
-              columnGap={2}
-              rowGap={3}
+              columnGap={1.5}
+              rowGap={1.5}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                md: 'repeat(4, 1fr)',
+                md: 'repeat(5, 1fr)',
               }}
             >
               {user?.role === 'Admin' && branch && storedBranch === 'all' && (
@@ -654,16 +654,16 @@ export default function CustomerNewEditForm({ currentCustomer }) {
 
   const addressDetails = (
     <>
-      <Grid xs={12} md={12}>
+      <Grid xs={12} md={12} pb={0.5}>
         <Card>
           {!mdUp && <CardHeader title='Properties' />}
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+          <Stack spacing={1} sx={{ p: 2 ,pb:0,pt:1.5}}>
+            <Typography variant='subtitle1' sx={{fontWeight: '600' }}>
               Permanent Address
             </Typography>
             <Box
-              columnGap={2}
-              rowGap={3}
+              columnGap={1.5}
+              rowGap={1.5}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
@@ -748,13 +748,13 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               />
             </Box>
           </Stack>
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+          <Stack spacing={1} sx={{ p: 2 ,pt:1}}>
+            <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
               Temporary Address
             </Typography>
             <Box
-              columnGap={2}
-              rowGap={3}
+              columnGap={1.5}
+              rowGap={1.5}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
@@ -841,23 +841,25 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   const referenceDetails = (
     <>
       {mdUp && (
-        <Grid md={12}>
-          <Typography variant='h6' sx={{ mb: 0.5 }}>
+        // <Grid md={12}>
+        <Box pl={2}>
+          <Typography variant='subtitle1'>
             Other Details
           </Typography>
-        </Grid>
+        </Box>
+        // </Grid>
       )}
-      <Grid xs={12} md={12}>
+      <Grid xs={12} md={12} pt={0.5}>
         <Card>
-          <Box columnGap={2}
-               rowGap={3}
+          <Box columnGap={1.5}
+               rowGap={1.25}
                display='grid'
                gridTemplateColumns={{
                  xs: 'repeat(1, 1fr)',
                  md: 'repeat(1, 1fr)',
                }}>
             {!mdUp && <CardHeader title='Properties' />}
-            <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack spacing={0.5} sx={{ p: 2 ,pb:0}}>
               <Typography variant='subtitle2'>How did you come to know about us?</Typography>
               <Stack spacing={2}>
                 <RHFRadioGroup
@@ -870,7 +872,8 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               </Stack>
             </Stack>
             <Stack spacing={2} sx={{
-              p: watch('referenceBy') === 'Other' ? 3 : 0,
+              p: watch('referenceBy') === 'Other' ? 2 : 0,
+              pt: watch('referenceBy') === 'Other' ? 0 : 0,
             }} justifyContent={'end'}>
               {watch('referenceBy') === 'Other' && (
                 <Stack spacing={1}>
@@ -890,9 +893,9 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Bank Accounts' />}
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant='subtitle1' sx={{ my: 2, fontWeight: '600' }}>
+          <Stack spacing={3} sx={{ p: 2 ,pt:0.5}}>
+            <Box>
+              <Typography variant='subtitle1' sx={{ my: 1, fontWeight: '600' }}>
                 Bank Account Details
               </Typography>
               <Box

@@ -211,9 +211,9 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function SansactionLetter({ sansaction }) {
+export default function SansactionLetter({ sansaction, configs }) {
 
-  console.log(sansaction);
+
   const styles = useStyles();
   const qty = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0);
   const totalWight = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0);
@@ -269,18 +269,18 @@ export default function SansactionLetter({ sansaction }) {
       words += ' and ' + decimalWords + ' Paise';
     }
 
-    return words + ' Only';
+    return words + ' Only,';
   }
 
 
   const netAmountInWords = numberToWords(amount);
   const rules = [
     {
-      rule: `હું પોતે બાહેંધરી આપું છું કે તારીખ ${fDate(new Date())} ના રોજ ગીરવી મુકેલા ટોટલ ${qty} નંગ દાગીના નું ટોટલ વજન ${totalWight} અને નેટ વજન ${amount} છે.જે મારી પોતાની માલિકી નું છે .જે ${sansaction.jewellerName} જવેલર્સ માંથી બનાવેલ છે.જેની સંપૂર્ણં જવાબદારી મારી છે .`,
+      rule: `હું પોતે બાહેંધરી આપું છું કે મેં આજ રોજ તારીખ ${fDate(new Date())} ના રોજ ગિરવે મુકેલા ટોટલ ${qty} નંગ દાગીના નું ટોટલ વજન ${totalWight} અને નેટ વજન ${netWight} છે.જે મારી પોતાની માલિકી નું છે .જે મેં ${sansaction.jewellerName} જવેલર્સ માંથી બનાવેલ છે.જેની સંપૂર્ણં જવાબદારી મારી છે .`,
     }, {
-      rule: `આ ગોલ્ડ પર બીજી કોઈ વ્યકતિ હક કે હિસ્સો નથી છતાં પણ ગોલ્ડ લોન લીધા પછી ગોલ્ડ બાબતે કોઈન પણ વ્યક્તિ નો હક કે હિસ્સો જાહેર થાય અથવા કોઈ પણ જાત ની તકરાર આવે તો મને લોન પેટે મળેલ રકમ રૂ .${amount} શબ્દોમાં ${netAmountInWords} હું મારી કોઈ પણ જાત ની કફોડી હાલત માં પણ ભરપાઈ કરવા માટે રાજીખુશી થી બંધાયેલો છું.જો ભરપાઈ ન કરી શકું તો કંપની મારી મિલકત પર દાવો માંડીને કાયદેસરની કાર્યવાહી કરી સજાકે છે.જે મને મંજુર છે .`,
+      rule: `આ ગોલ્ડ પર બીજી કોઈ વ્યકતિ નો હક કે હિસ્સો નથી છતાં મેં પણ ગોલ્ડ લોન લીધા પછી ગોલ્ડ બાબતે કોઈપણ વ્યક્તિ નો હક કે હિસ્સો જાહેર થાય અથવા કોઈ પણ જાત ની તકરાર આવે તો મને લોન પેટે મળેલ રકમ રૂ .${amount} શબ્દોમાં ${netAmountInWords} હું મારી કોઈ પણ જાત ની કફોડી હાલત માં પણ ભરપાઈ કરવા માટે રાજીખુશી થી બંધાયેલો છું.જો ભરપાઈ ન કરી શકું તો કંપની મારી મિલકત પર દાવો માંડીને કાયદેસરની કાર્યવાહી કરી શકે છે.જે મને મંજુર છે .`,
     }, {
-      rule: `ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી ગયેલ છે.જેની હું આપને લેખિત માં બાહેંધરી આપું છું.`,
+      rule: `મેં કંપની ના બધા નિયમો પુરા હોશ માં વાંચી જાગૃત મતે સમજેલ છે. જે મને (કબુલ) મંજુર છે.જેની હું બાહેંધરી આપું છું.`,
     },
   ];
 
@@ -288,15 +288,15 @@ export default function SansactionLetter({ sansaction }) {
     {
       rule: `બેંક બંધના દિવસે દાગીના પરત મળશે નહિ`,
     }, {
-      rule: `બદર મહિને વ્યાજ ભરી જવું`,
+      rule: `દર મહિને વ્યાજ ભરી જવું`,
     }, {
-      rule: `બઆપેલ બિલ સાથે લેતા આવું`,
+      rule: `આપેલ બિલ સાથે લેતા આવું`,
     }, {
       rule: `સરનામું બદલે ત્યારે ફેરફાર કરાવી જવું`,
     }, {
       rule: `દર રવિવારે ઓફિસ બંધ રહેશે`,
     }, {
-      rule: `કરજ ની રકમ ભર્યા પછી જે વ્યકતિ ના બિલ હશે તે વ્યક્તિને જ દાગીના પરત મળશે `,
+      rule: `કરજ ની રકમ ભર્યા પછી જે વ્યકતિના નામનું બિલ હશે તે વ્યક્તિને જ દાગીના પરત મળશે `,
     }, {
       rule: `નક્કી કરેલી મુદત પુરી થયા બાદ નાણાં વસુલ આપનાર પાસે ચક્રવૃદ્ધિ વ્યાજ વસુલ કરવામાં આવશે `,
     }, {
@@ -330,7 +330,7 @@ export default function SansactionLetter({ sansaction }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={sansaction} />
+          <InvoiceHeader selectedRow={sansaction} configs={configs} />
           <View style={styles.pagePadding}>
             <View style={styles.flexContainer}>
               <View style={{ width: '40%' }}>
@@ -393,7 +393,7 @@ export default function SansactionLetter({ sansaction }) {
                 </View>
 
                 <View>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWight: 600, marginTop: 20 }}>
+                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWight: 'bolder', marginTop: 20 }}>
                     ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે
                     મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી
                     ગયેલ છે.જેની હું આપને લેખિત માં બાહેંધરી આપું છું.</Text>
@@ -444,7 +444,7 @@ export default function SansactionLetter({ sansaction }) {
                 </Text>
 
                 <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૧. દેણ દાર નું નામ
+                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૧. દેણદાર નું નામ
                     : {' '}</Text>
                   <Text
                     style={{
@@ -455,7 +455,7 @@ export default function SansactionLetter({ sansaction }) {
                 </Text>
 
                 <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૨. દેણ દાર નું સરનામું
+                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૨. દેણદાર નું સરનામું
                     : {' '}</Text>
                   <Text style={{
                     ...styles.subText,
@@ -471,7 +471,7 @@ export default function SansactionLetter({ sansaction }) {
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૪. ધીયાં ની તારીખ
                     : {' '}</Text>
-                  <Text style={styles.subText}>{fDate(new Date())}</Text>
+                  <Text style={styles.subText}>{fDate(sansaction.issueDate)}</Text>
                 </Text>
 
                 <Text style={styles.spacing}>
@@ -529,9 +529,15 @@ export default function SansactionLetter({ sansaction }) {
                 </View>
               </View>
             </View>
-            <View><Text style={{ ...styles.gujaratiText, fontWight: 900, fontSize: 11, marginTop: 15 }}>હું નીચે સહી
-              કરનાર પ્રતિજ્ઞાપુર્વગ જાણવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની માલિકીના છે.તેની સર્વ જવાબદારી મારી છે આ
-              બિલની બધી જ શરતો મેં વાંચી છે,તે મને કાબુલ છે </Text></View>
+            <View>
+              <Text style={{ ...styles.gujaratiText, fontSize: 11, marginTop: 15, fontWeight: 'bold' }}>
+                હું નીચે સહી
+                કરનાર પ્રતિજ્ઞાપુર્વગ જાણવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની માલિકીના છે.તેની સર્વ જવાબદારી મારી છે
+                આ
+                બિલની બધી જ શરતો મેં વાંચી છે,તે મને કાબુલ છે
+              </Text>
+            </View>
+
             <View>
               <Text style={{
                 ...styles.gujaratiText,
@@ -549,6 +555,7 @@ export default function SansactionLetter({ sansaction }) {
                     <Text style={{
                       ...styles.gujaratiText,
                       fontSize: 11,
+                      color: [1, 3, 7].includes(index) ? '#ff7f27' : 'black',
                     }}>{item.rule}</Text> {/* Condition text */}
                   </View>
                 ))}

@@ -85,7 +85,7 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 export default function LetterOfAuthority({ loan }) {
-  console.log(loan, 'loan');
+
   const styles = useStyles();
 
   return (

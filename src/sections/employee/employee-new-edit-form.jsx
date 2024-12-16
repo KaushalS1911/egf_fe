@@ -291,9 +291,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={3} p={0}>
           {/*<Card >*/}
-            <Box sx={{ pt:4,pb: 5, px: 3 }}>
+            <Box sx={{ pt:2, px: 3 }}>
               <RHFUploadAvatar
                 name='profile_pic'
                 maxSize={3145728}
@@ -302,12 +302,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             </Box>
           {/*</Card>*/}
         </Grid>
-
         <Grid xs={12} md={9}>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{ p: 2 }}>
             <Box
-              rowGap={3}
-              columnGap={2}
+              rowGap={1.5}
+              columnGap={1.5}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
@@ -421,19 +420,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             </Box>
           </Card>
         </Grid>
-
-        <Grid item xs={12} md={4}>
-
-        </Grid>
         <Grid item xs={12} md={12}>
-          <Card sx={{ p: 3 }}>
-            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+          <Card sx={{ p: 2 }}>
+            <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
               Official Info
             </Typography>
 
             <Box
-              rowGap={3}
-              columnGap={2}
+              rowGap={1.5}
+              columnGap={1.5}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
@@ -484,13 +479,13 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           </Card>
         </Grid>
         <Grid item xs={12} md={12}>
-          <Card sx={{ p: 3 }}>
-            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+          <Card sx={{ p: 2 }}>
+            <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
               Permanent Address
             </Typography>
             <Box
-              rowGap={3}
-              columnGap={2}
+              rowGap={1.5}
+              columnGap={1.5}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
@@ -588,12 +583,12 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 )}
               />
             </Box>
-            <Typography variant='subtitle1' sx={{ my: 2, fontWeight: '600' }}>
+            <Typography variant='subtitle1' sx={{ my: 1.5, fontWeight: '600' }}>
               Temporary Address
             </Typography>
             <Box
-              rowGap={3}
-              columnGap={2}
+              rowGap={1.5}
+              columnGap={1.5}
               display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',

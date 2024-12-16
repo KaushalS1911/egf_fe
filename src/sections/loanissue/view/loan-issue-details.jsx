@@ -53,7 +53,10 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '78%',
+        },
+        pagePadding2: {
+          padding: '0px 24px 24px 24px',
+          height: '93%',
         },
 
         // footer: {
@@ -220,7 +223,7 @@ const useStyles = () =>
           textWrap: 'nowrap',
         },
         tableRowBorder: {
-          borderBottom: '1px solid #d9d9d9',
+          borderBottom: '1.5px solid gray',
         },
         tableCell: {
           flex: 1,
@@ -242,13 +245,13 @@ const useStyles = () =>
           marginLeft: 18,
         },
         propertyImage: {
-          height: '120px',
-          width: '120px',
+          height: '96px',
+          width: '96px',
           borderRadius: 8,
         },
         tableFlex: {
           flexDirection: 'row',
-          marginTop: 0,
+          marginTop: 15,
           width: '100%',
         },
         termsAndConditionsHeaders: {
@@ -286,41 +289,22 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function LoanIssueDetails({ selectedRow }) {
+export default function LoanIssueDetails({ selectedRow , configs }) {
   const styles = useStyles();
-  console.log(selectedRow);
-  const Conditions = [
-    {
-      Condition: 'Interest shall accrue on a day to day basis.',
-    }, {
-      Condition: 'Interest shall charge for minimum 10 days',
-    },
-    {
-      Condition: 'Penalty rate after six days will be 0.07% of interest rate till next due date, It will be 0.20% till 3 months, 0.40% till 6\n' +
-        'months, 0.50 after 6 months.',
-    },
-    {
-      Condition: 'I Shall repay loan with interest as mention in the sanction letter as per terms and conditions',
-    }, {
-      Condition: 'I am a receiver of sanction letter and understood all terms and condition in it',
-    },
-    {
-      Condition: 'Easy Gold FinCorp has right to sell any pledged articles by auction after 8 months if I do not pay the outstanding\n' +
-        'amount till 8 months. Even after serving notice Easy Gold FinCorp has right to sell any pledged articles by auction\n' +
-        'even before 8 months if it is found that outstanding amount is greater than market values of pledged articles.',
-    },
-    {
-      Condition: 'Branch working time will be 10:00 am to 5:00 pm.',
-    }, {
-      Condition: 'The office will be closed on bank holidays and holiday declared by Easy Gold FinCorp',
-    }, {
-      Condition: 'The spurious gold is prohibited.',
-    },
-    {
-      Condition: 'I hereby read and understand all terms and condition with an open mind. I enter into this agreement to voluntarily with\n' +
-        'full knowledge of it.',
-    },
-  ];
+  const renewDate = () => {
+    if (!selectedRow?.issueDate) return null;
+
+    const { issueDate, scheme: { renewalTime } } = selectedRow;
+
+    const monthsToAdd =
+      renewalTime === 'Monthly' ? 1 :
+        renewalTime === 'Yearly' ? 12 :
+          parseInt(renewalTime.split(' ')[0], 10) || 0;
+
+    const renewedDate = new Date(new Date(issueDate).setMonth(new Date(issueDate).getMonth() + monthsToAdd));
+    return fDate(renewedDate);
+  };
+
   return (
     <>
       <Document>
@@ -328,7 +312,7 @@ export default function LoanIssueDetails({ selectedRow }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={selectedRow} />
+          <InvoiceHeader selectedRow={selectedRow} configs={configs}/>
           <View style={styles.pagePadding}>
             <View style={styles.flexContainer}>
               <View style={{ width: '40%' }}>
@@ -384,7 +368,7 @@ export default function LoanIssueDetails({ selectedRow }) {
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Loan Int Pay Schedule
                     : {' '}</Text>
-                  <Text style={styles.subText}>{selectedRow.scheme.renewalTime}</Text>
+                  <Text style={styles.subText}>{selectedRow.scheme.interestPeriod}</Text>
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Issue Date : {' '}</Text>
@@ -396,10 +380,10 @@ export default function LoanIssueDetails({ selectedRow }) {
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={styles.subHeading}>Renew Date : {' '}</Text>
-                  <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
+                  <Text style={styles.subText}>{renewDate()}</Text>
                 </Text>
               </View>
-              <View style={{marginTop:-70}}>
+              <View style={{marginTop:-60}}>
                 {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                 <View>
                   <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
@@ -458,23 +442,26 @@ export default function LoanIssueDetails({ selectedRow }) {
             </View>
 
           </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
-          </View>
+
         </Page>
-        <Page size='A4' style={[styles.page, styles.pagePadding]}>
+        <Page size='A4' style={styles.page}>
+          <View style={styles.pagePadding2}>
           <view style={{ marginTop: 20 }}>
             <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
             <View style={{ marginTop: 10 }}>
-              {Conditions.map((item, index) => (
+              {configs.exportPolicyConfig.map((item, index) => (
                 <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
                   <Text style={{ ...styles.subText, marginRight: 4 }}>•</Text> {/* Bullet point */}
-                  <Text style={{ ...styles.subText }}>{item.Condition}</Text> {/* Condition text */}
+                  <Text style={{ ...styles.subText }}>{item}</Text> {/* Condition text */}
                 </View>
               ))}
             </View>
           </view>
+          </View>
+          <View style={styles.d_flex}>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+          </View>
         </Page>
       </Document>
     </>

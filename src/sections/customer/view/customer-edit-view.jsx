@@ -35,7 +35,7 @@ export default function CustomerEditView() {
           { name: currentCustomer?.firstName },
         ]}
         sx={{
-          mb: { xs: 3, md: 5 },
+          mb: { xs: 3, md: 3 },
         }}
       />
 
