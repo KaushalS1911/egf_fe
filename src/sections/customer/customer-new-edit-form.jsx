@@ -85,12 +85,18 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       .required('Aadhar Card number is required')
       .matches(/^\d{12}$/, 'Aadhar Card must be exactly 12 digits and should not contain alphabetic characters'),
     otpContact: Yup.string().required('OTP Contact number is required').max(10).min(10),
-    PerStreet: Yup.string().required('Address Line 1 is required'),
-    PerLandmark: Yup.string().required('Landmark 1 is required'),
+    PerStreet: Yup.string().required('Street is required'),
+    PerLandmark: Yup.string().required('Landmark is required'),
     PerCountry: Yup.string().required('Country is required'),
     PerState: Yup.string().required('State is required'),
     PerCity: Yup.string().required('City is required'),
     PerZipcode: Yup.string().required('Pincode is required'),
+    tempStreet: Yup.string().required('Street is required'),
+    tempLandmark: Yup.string().required('Landmark is required'),
+    tempCountry: Yup.string().required('Country is required'),
+    tempState: Yup.string().required('State is required'),
+    tempCity: Yup.string().required('City is required'),
+    tempZipcode: Yup.string().required('Pincode is required'),
     profile_pic: Yup.mixed().required('A profile picture is required'),
   });
 
