@@ -338,10 +338,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
     try {
       const url = currentLoanIssue
-        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/
-loans/${currentLoanIssue?._id}`
-        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/
-issue-loan`;
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentLoanIssue?._id}`
+        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/issue-loan`;
       const response = currentLoanIssue ? await axios.put(url,
         payload, {
           headers: {
@@ -395,12 +393,7 @@ issue-loan`;
     setCustomerData(findedCus);
     if (findedCus) {
       setValue('customerCode', findedCus?.customerCode);
-      setValue('customerName', `${findedCus?.firstName} $
-{findedCus?.middleName} ${findedCus?.lastName} `);
-      setValue('customerAddress', `$
-{findedCus?.permanentAddress?.street} $
-{findedCus?.permanentAddress?.landmark} $
-{findedCus.permanentAddress?.city}`);
+      setValue('customerName', `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `);setValue('customerAddress', `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`);
       setValue('contact', findedCus?.contact);
       setValue('contactOtp', findedCus?.otpContact);
       setValue('customer_url', findedCus?.avatar_url);
@@ -967,8 +960,7 @@ customer to proceed with the loan issuance.</Alert>*/}
                     }
                   }}
                 />
-                <RHFTextField name='interestRate' label='Instrest
-Rate' InputProps={{ readOnly: true }} />
+                <RHFTextField name='interestRate' label='InstrestRate' InputProps={{ readOnly: true }} />
                 <Controller
                   name='consultingCharge'
                   control={control}
@@ -1014,8 +1006,7 @@ Rate' InputProps={{ readOnly: true }} />
                   readOnly={true}
                 />
                 }
-                <RHFTextField name='jewellerName' label='Jeweller
-Name' req={'red'} disabled={!isFieldsEnabled} />
+                <RHFTextField name='jewellerName' label='JewellerName' req={'red'} disabled={!isFieldsEnabled} />
                 <RHFAutocomplete
                   name='loanType'
                   label='Loan Type'
@@ -1152,8 +1143,7 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFAutocomplete
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].type`}
+                              name={`propertyDetails[${index}].type`}
                               label='Type'
                               disabled={!isFieldsEnabled}
                               options={property?.filter((e) =>
@@ -1162,15 +1152,13 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                                 value: item.propertyType,
                               }))}
                               onChange={(e, value) => {
-                                setValue(`propertyDetails[$
-{index}].type`, value?.value || '');
+                                setValue(`propertyDetails[${index}].type`, value?.value || '');
                                 validateField('type', index,
                                   value?.value);
                               }}
 
                               helperText={errors[`propertyDetails[${index}].type`] || ''}
-                              error={!!errors[`propertyDetails[$
-{index}].type`]}
+                              error={!!errors[`propertyDetails[${index}].type`]}
                             />
                           </TableCell>
                           <TableCell sx={{
@@ -1188,15 +1176,13 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                                 },
                                 'input': { height: 0 },
                               }}
-                              name={`propertyDetails[$
-{index}].carat`}
+                              name={`propertyDetails[${index}].carat`}
                               label='Carat'
                               disabled={!isFieldsEnabled}
                               options={carat?.filter((e) =>
                                 e.isActive === true)?.map((e) => e?.name)}
                               onChange={(e, value) => {
-                                setValue(`propertyDetails[$
-{index}].carat`, value);
+                                setValue(`propertyDetails[${index}].carat`, value);
                                 validateField('carat', index,
                                   value);
                               }}
@@ -1208,19 +1194,15 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFTextField
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].pcs`}
+                              name={`propertyDetails[${index}].pcs`}
                               label='PCS'
                               type='number'
-                              disabled={!watch(`propertyDetails[$
-{index}].isPcsEditable`) && !isFieldsEnabled}
-
+                              disabled={!watch(`propertyDetails[${index}].isPcsEditable`)
+                              && !isFieldsEnabled}
                               helperText={errors[`propertyDetails[${index}].pcs`] || ''}
-                              error={!!errors[`propertyDetails[$
-{index}].pcs`]}
+                              error={!!errors[`propertyDetails[${index}].pcs`]}
                               onChange={(e) => {
-                                setValue(`propertyDetails[$
-{index}].pcs`, e.target.value);
+                                setValue(`propertyDetails[${index}].pcs`, e.target.value);
                                 validateField('pcs', index,
                                   e.target.value);
                               }}
@@ -1232,18 +1214,15 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFTextField
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].totalWeight`}
+                              name={`propertyDetails[${index}].totalWeight`}
                               label='Total Weight'
                               type='number'
                               disabled={!isFieldsEnabled}
 
                               helperText={errors[`propertyDetails[${index}].totalWeight`] || ''}
-                              error={!!errors[`propertyDetails[$
-{index}].totalWeight`]}
+                              error={!!errors[`propertyDetails[${index}].totalWeight`]}
                               onChange={(e) => {
-                                setValue(`propertyDetails[$
-{index}].totalWeight`, e.target.value);
+                                setValue(`propertyDetails[${index}].totalWeight`, e.target.value);
                                 validateField('totalWeight',
                                   index, e.target.value);
                               }}
@@ -1255,19 +1234,16 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFTextField
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].lossWeight`}
+                              name={`propertyDetails[${index}].lossWeight`}
                               label='Loss Weight'
                               disabled={!isFieldsEnabled}
                               type='number'
 
                               helperText={errors[`propertyDetails[${index}].lossWeight`] || ''}
-                              error={!!errors[`propertyDetails[$
-{index}].lossWeight`]}
+                              error={!!errors[`propertyDetails[${index}].lossWeight`]}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                setValue(`propertyDetails[$
-{index}].lossWeight`, value);
+                                setValue(`propertyDetails[${index}].lossWeight`, value);
                                 validateField('lossWeight', index,
                                   value);
                               }}
@@ -1279,12 +1255,10 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFTextField
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].grossWeight`}
+                              name={`propertyDetails[${index}].grossWeight`}
                               label='GW'
                               disabled={true}
-                              value={getValues(`propertyDetails[$
-{index}].grossWeight`) || ''}
+                              value={getValues(`propertyDetails[${index}].grossWeight`) || ''}
                             />
                           </TableCell>
                           <TableCell sx={{
@@ -1293,12 +1267,10 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFTextField
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].netWeight`}
+                              name={`propertyDetails[${index}].netWeight`}
                               label='NW'
                               disabled={true}
-                              value={getValues(`propertyDetails[$
-{index}].netWeight`) || ''}
+                              value={getValues(`propertyDetails[${index}].netWeight`) || ''}
                             />
                           </TableCell>
                           <TableCell sx={{
@@ -1307,8 +1279,7 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFTextField
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].grossAmount`}
+                              name={`propertyDetails[${index}].grossAmount`}
                               label='GA'
                               disabled={true}
                             />
@@ -1319,8 +1290,7 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <RHFTextField
                               sx={sx}
-                              name={`propertyDetails[$
-{index}].netAmount`}
+                              name={`propertyDetails[${index}].netAmount`}
                               label='NA'
                               disabled={true}
                             />
@@ -1331,8 +1301,7 @@ Name' req={'red'} disabled={!isFieldsEnabled} />
                           }}>
                             <IconButton onClick={() =>
                               handleReset(index)} disabled={!isFieldsEnabled}>
-                              <Iconify icon='ic:baseline-
-refresh' />
+                              <Iconify icon='ic:baseline-refresh' />
                             </IconButton>
                             <IconButton
                               color='error'
@@ -1340,8 +1309,7 @@ refresh' />
                               disabled={!isFieldsEnabled ||
                               fields.length === 1}
                             >
-                              <Iconify icon='solar:trash-bin-
-trash-bold' />
+                              <Iconify icon='solar:trash-bin-trash-bold' />
                             </IconButton>
                           </TableCell>
                         </TableRow>
@@ -1369,8 +1337,7 @@ trash-bold' />
                         >{calculateTotal('grossAmount')}</TableCell>
                         <TableCell sx={{ padding: '8px' }}
                         >{calculateTotal('netAmount')}</TableCell>
-                        <TableCell sx={{ padding: '8px' }}></
-                          TableCell>
+                        <TableCell sx={{ padding: '8px' }}></TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>

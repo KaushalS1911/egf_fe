@@ -97,6 +97,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     tempCity: Yup.string().required('City is required'),
     tempZipcode: Yup.string().required('Pincode is required'),
     profile_pic: Yup.mixed().required('A profile picture is required'),
+    referenceBy: Yup.string().required('Other detail is required'),
   });
   const defaultValues = useMemo(() => ({
     branchId: currentCustomer ? {
@@ -497,7 +498,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             accept='image/*'
             onDrop={handleDropSingleFile}
           />
-          <Dialog open={Boolean(imageSrc)}
+          <Dialog open={Boolean(imageSrc || capturedImage)}
                   onClose={handleCancel}>
             {imageSrc && (
               <ReactCrop
