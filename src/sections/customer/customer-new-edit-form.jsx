@@ -50,7 +50,7 @@ const INQUIRY_REFERENCE_BY = [
   { value: 'Other', label: 'Other' },
 ];
 
-export default function CustomerNewEditForm({ currentCustomer }) {
+export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -296,17 +296,28 @@ export default function CustomerNewEditForm({ currentCustomer }) {
   };
   const handleCancel = () => {
     setImageSrc(null);
+    setCapturedImage(null)
+    setOpen(false)
   };
   const showCroppedImage = async () => {
     try {
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        if (file) {
-          setCroppedImage(URL.createObjectURL(file));
-          setValue('profile_pic', file);
+        if (file || capturedImage) {
+          const imageToUpload = file || capturedImage; // Use capturedImage if available
+          setCroppedImage(typeof imageToUpload === 'string' ? imageToUpload : URL.createObjectURL(imageToUpload));
+          setValue('profile_pic', imageToUpload);
 
           if (currentCustomer) {
             const formData = new FormData();
-            formData.append('profile-pic', file);
+            if (typeof imageToUpload === 'string') {
+              // If capturedImage is a base64 string, convert it to a blob
+              const response = await fetch(imageToUpload);
+              const blob = await response.blob();
+              formData.append('profile-pic', blob, 'captured-image.jpg');
+            } else {
+              // Otherwise, upload the file directly
+              formData.append('profile-pic', imageToUpload);
+            }
 
             await axios
               .put(
@@ -330,6 +341,11 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       // Handle cropping logic if completedCrop exists
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
+
+      if (!image) {
+        console.error('Image element not found!');
+        return;
+      }
 
       const scaleX = image.naturalWidth / image.width;
       const scaleY = image.naturalHeight / image.height;
@@ -386,17 +402,10 @@ export default function CustomerNewEditForm({ currentCustomer }) {
       console.error('Error cropping and uploading image:', e);
     }
   };
-  const handleDrop = useCallback(async (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-        setOpen(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, [setValue]);
+
+
+
+
   const checkZipcode = async (zipcode, type = 'permanent') => {
     try {
       const response = await axios.get(`https://api.postalpincode.in/pincode/${zipcode}`);
@@ -458,27 +467,13 @@ export default function CustomerNewEditForm({ currentCustomer }) {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        setCapturedImage(imageSrc);
-        if (currentCustomer) {
-          const base64Data = imageSrc.split(',')[1];
-          const binaryData = atob(base64Data);
-          const arrayBuffer = new Uint8Array(binaryData.length);
-          for (let i = 0; i < binaryData.length; i++) {
-            arrayBuffer[i] = binaryData.charCodeAt(i);
-          }
-          const blob = new Blob([arrayBuffer], {
-            type: 'image/jpeg',
-          }); // Create a Blob
-          const formData = new FormData();
-          formData.append('profile-pic', blob, 'profile-pic.jpg');
-          axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`, formData).then((res) => console.log(res)).catch((err) =>
-            console.log(err));
-        }
+        setCapturedImage(imageSrc); // Set captured image
         setValue('profile_pic', imageSrc);
-        setOpen2(false);
+        setOpen2(false); // Close the ca
+        setOpen(true); // Close the ca
       }
     }
-  }, []);
+  }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentCustomer]);
 
   const PersonalDetails = (
     <>
@@ -492,15 +487,15 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             setOpen={setOpen}
             setImageSrc={setImageSrc}
             setFile={setFile}
-            file={capturedImage || croppedImage ||
+            file={ croppedImage || imageSrc || capturedImage ||
             currentCustomer?.avatar_url}
             maxSize={3145728}
             accept='image/*'
             onDrop={handleDropSingleFile}
           />
-          <Dialog open={Boolean(imageSrc)}
-                  onClose={handleCancel}>
-            {imageSrc && (
+          <Dialog open={Boolean(open)} onClose={handleCancel} >
+            {console.log(capturedImage,"yrgbebiybybv")}
+            {/*{imageSrc.length || capturedImage && (*/}
               <ReactCrop
                 crop={crop}
                 onChange={(newCrop) => setCrop(newCrop)}
@@ -510,13 +505,12 @@ export default function CustomerNewEditForm({ currentCustomer }) {
               >
                 <img
                   id='cropped-image'
-                  src={imageSrc}
+                  src={imageSrc || capturedImage}
                   alt='Crop preview'
-                  onLoad={resetCrop} // Reset crop when the
-                  image loads
+                  onLoad={resetCrop}
                 />
               </ReactCrop>
-            )}
+            {/*)}*/}
             <div style={{
               display: 'flex', justifyContent:
                 'space-between', padding: '1rem',
