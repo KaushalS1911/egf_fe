@@ -498,7 +498,7 @@ export default function CustomerNewEditForm({ currentCustomer }) {
             accept='image/*'
             onDrop={handleDropSingleFile}
           />
-          <Dialog open={Boolean(imageSrc || capturedImage)}
+          <Dialog open={Boolean(imageSrc)}
                   onClose={handleCancel}>
             {imageSrc && (
               <ReactCrop
