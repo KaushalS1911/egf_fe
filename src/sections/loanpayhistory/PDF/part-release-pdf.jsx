@@ -196,13 +196,14 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function PartReleasePdf({ selectedRow }) {
+export default function PartReleasePdf({ selectedRow,configs }) {
   const styles = useStyles();
+  console.log(selectedRow,"ghfffkt");
   return (
     <>
       <Document>
         <Page size='A4' style={styles.page}>
-          <InvoiceHeader selectedRow={selectedRow.loan} />
+          <InvoiceHeader selectedRow={selectedRow.loan} configs={configs}/>
           <View style={styles.pagePadding}>
             <View style={{ width: '100%', display: 'flex',justifyContent: 'space-between',flexDirection: 'row', marginTop: 10 }}>
               <View style={{width: '33%'}}>
@@ -238,7 +239,7 @@ export default function PartReleasePdf({ selectedRow }) {
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Pan No : {' '}</Text>
-                  <Text style={styles.subText}>{selectedRow.panCard}</Text>
+                  <Text style={styles.subText}>{selectedRow.loan.customer.panCard}</Text>
                 </Text>
                 <Text style={{ marginTop: 10 }}>
                   <Text style={styles.subHeading}>Mobile No : {' '}</Text>
@@ -250,7 +251,7 @@ export default function PartReleasePdf({ selectedRow }) {
                 </Text>
               </View>
               <View  style={{width: '33%'}}>
-                <Image src={selectedRow.loan.propertyImage} style={styles.img}/>
+                <Image src={selectedRow.propertyImage} style={styles.img}/>
               </View>
             </View>
             <Text style={{ marginTop: 10 }}>
@@ -258,10 +259,10 @@ export default function PartReleasePdf({ selectedRow }) {
               <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
             </Text>
           </View>
-            <View style={styles.d_flex}>
-              <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
-              <Text style={{ ...styles.signText , marginRight: 35 }}>Easy Gold FinCorp</Text>
-            </View>
+          <View style={styles.d_flex}>
+            <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText , marginRight: 35 }}>Easy Gold FinCorp</Text>
+          </View>
         </Page>
       </Document>
     </>
