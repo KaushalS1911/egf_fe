@@ -112,48 +112,58 @@ const useStyles = () =>
     [],
   );
 
-export default function InvoiceHeader({ selectedRow , configs }) {
+export default function InvoiceHeader({ selectedRow, configs }) {
   const styles = useStyles();
+
+  // Check if selectedRow and its nested properties are defined
+  const branch = selectedRow?.customer?.branch;
+  const company = configs?.company;
+
+  // Ensure branch and company are defined before using their properties
+  const branchAddress = branch ? `${branch.address.street}, ${branch.address.landmark}, ${branch.address.city}, ${branch.address.zipcode}` : '';
+  const branchName = branch?.name || 'Branch Name Not Available';
+  const branchCode = branch?.branchCode || 'Branch Code Not Available';
+  const branchEmail = branch?.email || 'Email Not Available';
+  const branchContact = branch?.contact || 'Contact Not Available';
+
   return (
     <View style={styles.header}>
+      {/* Header Box 1 */}
       <View style={styles.headerbox1}>
         <View style={styles.logoParent}>
-        <Image style={styles.logo} src={configs.company.logo_url} />
+          <Image style={styles.logo} src={company?.logo_url || 'default_logo_url'} />
         </View>
-        <Text style={styles.headerText}>{configs.company.name}</Text>
-        <Text style={styles.headerSubText}>
-          {`${selectedRow.customer.branch.address.street}, ${selectedRow.customer.branch.address.landmark}, ${selectedRow.customer.branch.address.city}, ${selectedRow.customer.branch.address.zipcode}`}
-        </Text>
+        <Text style={styles.headerText}>{company?.name || 'Company Name'}</Text>
+        <Text style={styles.headerSubText}>{branchAddress}</Text>
       </View>
 
+      {/* Header Box 2 */}
       <View style={styles.headerbox2}>
         <View style={styles.headerDetailsParent}>
           <View style={styles.flexContainer}>
             {/* Column 1 */}
             <View style={{ width: 'auto' }}>
               <View style={styles.rowContainer}>
-                <Image style={styles.icon} src={branch} />
+                <Image style={styles.icon} src={branch || 'default_branch_icon'} />
                 <Text style={styles.separator}>|</Text>
-                <Text style={styles.headerDetails}>{selectedRow.customer.branch.name}</Text>
+                <Text style={styles.headerDetails}>{branchName}</Text>
               </View>
-              <View style={{ ...styles.rowContainer,marginTop:15 }}>
-                <Image style={styles.icon} src={branchCode} />
+              <View style={{ ...styles.rowContainer, marginTop: 15 }}>
+                <Image style={styles.icon} src={branchCode || 'default_branch_code_icon'} />
                 <Text style={styles.separator}>|</Text>
-                <Text style={styles.headerDetails}>{selectedRow.customer.branch.branchCode}</Text>
+                <Text style={styles.headerDetails}>{branchCode}</Text>
               </View>
             </View>
 
             {/* Column 2 */}
             <View style={{ width: 'auto' }}>
               <View style={styles.rowContainer}>
-                <Image style={styles.icon} src={mail} />
+                <Image style={styles.icon} src={mail || 'default_mail_icon'} />
                 <Text style={styles.separator}>|</Text>
-                <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>
-                  {selectedRow.customer.branch.email}
-                </Text>
+                <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>{branchEmail}</Text>
               </View>
-              <View style={{ ...styles.rowContainer,marginTop:15 }}>
-                <Image style={styles.icon} src={website} />
+              <View style={{ ...styles.rowContainer, marginTop: 15 }}>
+                <Image style={styles.icon} src={website || 'default_website_icon'} />
                 <Text style={styles.separator}>|</Text>
                 <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>
                   <Link src="https://www.easygoldfincorp.com/" style={{ textDecoration: 'none', color: '#fff' }}>
@@ -166,14 +176,14 @@ export default function InvoiceHeader({ selectedRow , configs }) {
             {/* Column 3 */}
             <View style={{ width: 'auto' }}>
               <View style={styles.rowContainer}>
-                <Image style={styles.icon} src={contact} />
+                <Image style={styles.icon} src={contact || 'default_contact_icon'} />
                 <Text style={styles.separator}>|</Text>
-                <Text style={styles.headerDetails}>{selectedRow.customer.branch.contact}</Text>
+                <Text style={styles.headerDetails}>{branchContact}</Text>
               </View>
-              <View style={{ ...styles.rowContainer,marginTop:15 }}>
-                <Image style={styles.icon} src={contact} />
+              <View style={{ ...styles.rowContainer, marginTop: 15 }}>
+                <Image style={styles.icon} src={contact || 'default_contact_icon'} />
                 <Text style={styles.separator}>|</Text>
-                <Text style={styles.headerDetails}>{configs.company.contact}</Text>
+                <Text style={styles.headerDetails}>{company?.contact || 'Company Contact'}</Text>
               </View>
             </View>
           </View>
