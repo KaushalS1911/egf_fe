@@ -73,7 +73,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
     },
     [onFilters],
   );
-  const sx = {
+  const customStyle = {
     maxWidth: { md: 200 },
     'label': {
       mt: -0.8,
@@ -85,20 +85,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
     'input': { height: 7 },
   };
   const sx2 = {
-    maxHeight: 240,
-    '&::-webkit-scrollbar': {
-      width: '5px',
-    },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: '#f1f1f1',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#888',
-      borderRadius: '4px',
-    },
-    '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: '#555',
-    },
+
   };
   const handleFilterBranch =  useCallback(
     (event) => {
@@ -164,7 +151,20 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
             input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
             MenuProps={{
               PaperProps: {
-                sx: {...sx2},
+                sx: { maxHeight: 240,
+                  '&::-webkit-scrollbar': {
+                    width: '5px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#f1f1f1',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#888',
+                    borderRadius: '4px',
+                  },
+                  '&::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor: '#555',
+                  },},
               },
             }}
           >
@@ -187,7 +187,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
                 fullWidth: true,
               },
             }}
-            sx={...sx}
+            sx={{...customStyle}}
           />
           <DatePicker
             label='End date'
@@ -203,7 +203,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
-            sx={{ ...sx }}
+            sx={{ ...customStyle}}
           />
 
           <IconButton onClick={popover.onOpen}>
