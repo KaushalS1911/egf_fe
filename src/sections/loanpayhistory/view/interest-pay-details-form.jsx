@@ -53,7 +53,7 @@ const TABLE_HEAD = [
   { id: 'pdf', label: 'PDF' },
 ];
 
-function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
+function InterestPayDetailsForm({ currentLoan, mutate }) {
   const { penalty } = useGetPenalty();
   const [paymentMode, setPaymentMode] = useState('');
   const [data, setData] = useState(null);
@@ -515,7 +515,7 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
 
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              <InterestPdf data={data} configs={configs}/>
+              <InterestPdf data={data} />
             </PDFViewer>
           </Box>
         </Box>

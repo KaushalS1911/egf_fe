@@ -8,14 +8,12 @@ import LoanPartPaymentForm from './loan-part-payment-form';
 import LoanCloseForm from './loan-close-form';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { useGetConfigs } from '../../../api/config';
 
 function PayTabs({ mutate, currentLoan }) {
   const [activeTab, setActiveTab] = useState(0);
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-  const {configs}=useGetConfigs()
   return (
     <>
       <Grid container spacing={3} sx={{ mt: 1.5 }}>
@@ -33,8 +31,8 @@ function PayTabs({ mutate, currentLoan }) {
               <Tab label='Loan Part Payment' />
               <Tab label='Loan Close' />
             </Tabs>
-            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm currentLoan={currentLoan} mutate={mutate} configs={configs}/>}
-            {(activeTab === 1 && currentLoan) && <PartReleaseForm currentLoan={currentLoan} mutate={mutate} configs={configs}/>}
+            {(activeTab === 0 && currentLoan) && <InterestPayDetailsForm currentLoan={currentLoan} mutate={mutate} />}
+            {(activeTab === 1 && currentLoan) && <PartReleaseForm currentLoan={currentLoan} mutate={mutate} />}
             {(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} mutate={mutate} />}
             {(activeTab === 3 && currentLoan) && <LoanPartPaymentForm currentLoan={currentLoan} mutate={mutate} />}
             {(activeTab === 4 && currentLoan) && <LoanCloseForm currentLoan={currentLoan} mutate={mutate} />}

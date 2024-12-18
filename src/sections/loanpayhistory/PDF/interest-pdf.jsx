@@ -93,12 +93,13 @@ const useStyles = () =>
     [],
   );
 
-export default function InterestPdf({ data ,configs}) {
+export default function InterestPdf({ data }) {
   const styles = useStyles();
+  console.log("DATAT : ",data);
   return (
     <Document>
       <Page  size="A4" style={styles.page}>
-        <InvoiceHeader selectedRow={data.loan} configs={configs} />
+        <InvoiceHeader selectedRow={data.loan} />
         <View style={styles.pagePadding}>
           <Text style={{ ...styles.headerText2,marginTop: 25 }}>Interest Pay Slip</Text>
           <View style={{ width: '100%', display: 'flex', alignItems: 'center',flexDirection: 'row' }}>

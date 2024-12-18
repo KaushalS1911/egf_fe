@@ -118,9 +118,9 @@ export default function InvoiceHeader({ selectedRow , configs }) {
     <View style={styles.header}>
       <View style={styles.headerbox1}>
         <View style={styles.logoParent}>
-        <Image style={styles.logo} src={configs?.company?.logo_url} />
+        <Image style={styles.logo} src={configs.company.logo_url} />
         </View>
-        <Text style={styles.headerText}>{configs?.company?.name}</Text>
+        <Text style={styles.headerText}>{configs.company.name}</Text>
         <Text style={styles.headerSubText}>
           {`${selectedRow.customer.branch.address.street}, ${selectedRow.customer.branch.address.landmark}, ${selectedRow.customer.branch.address.city}, ${selectedRow.customer.branch.address.zipcode}`}
         </Text>
@@ -173,7 +173,7 @@ export default function InvoiceHeader({ selectedRow , configs }) {
               <View style={{ ...styles.rowContainer,marginTop:15 }}>
                 <Image style={styles.icon} src={contact} />
                 <Text style={styles.separator}>|</Text>
-                <Text style={styles.headerDetails}>{configs?.company?.contact}</Text>
+                <Text style={styles.headerDetails}>{configs.company.contact}</Text>
               </View>
             </View>
           </View>
