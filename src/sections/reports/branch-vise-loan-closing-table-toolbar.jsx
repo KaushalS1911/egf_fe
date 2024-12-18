@@ -84,22 +84,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
     },
     'input': { height: 7 },
   };
-  const sx2 = {
-    maxHeight: 240,
-    '&::-webkit-scrollbar': {
-      width: '5px',
-    },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: '#f1f1f1',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#888',
-      borderRadius: '4px',
-    },
-    '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: '#555',
-    },
-  };
+
   const handleFilterBranch =  useCallback(
     (event) => {
       setSelectedBranch(event.target.value)
@@ -164,7 +149,20 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
             input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
             MenuProps={{
               PaperProps: {
-                sx: {...sx2},
+                sx: { maxHeight: 240,
+                  '&::-webkit-scrollbar': {
+                    width: '5px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#f1f1f1',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#888',
+                    borderRadius: '4px',
+                  },
+                  '&::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor: '#555',
+                  },},
               },
             }}
           >
