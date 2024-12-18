@@ -240,14 +240,14 @@ const StyledNavItem = styled(ListItemButton, {
       },
       ...(active && {
         color:"#ffff",
-        backgroundColor: alpha("#ffff", 0.08),
+        backgroundColor: alpha("#fff", 0.08),
         '&:hover': {
-          backgroundColor: alpha("#ffff", 0.16),
+          backgroundColor: alpha("#fff", 0.16),
         },
       }),
       ...(opened && {
         color: "#ffff",
-        backgroundColor: "#ffff"
+        backgroundColor: "rgba(255, 255, 255,0.0)"
       }),
     }),
 

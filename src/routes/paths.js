@@ -196,6 +196,11 @@ export const paths = {
       bulk: `${ROOTS.DASHBOARD}/loanpayhistory/bulkInterest/new`,
       edit: (id) => `${ROOTS.DASHBOARD}/loanpayhistory/${id}/new`,
     },
+    reports:{
+      root: `${ROOTS.DASHBOARD}/reports`,
+      loanList: `${ROOTS.DASHBOARD}/reports/loanList`,
+      closedLoanList: `${ROOTS.DASHBOARD}/reports/closedLoanList`,
+    },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
       new: `${ROOTS.DASHBOARD}/product/new`,

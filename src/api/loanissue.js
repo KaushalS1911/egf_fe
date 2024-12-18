@@ -4,7 +4,7 @@ import { fetcher } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
 
 
-export function useGetLoanissue(loanPayHistory, reminder,issued) {
+export function useGetLoanissue(loanPayHistory, reminder,reports,closedLoan) {
   const { user } = useAuthContext();
   const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
@@ -16,11 +16,14 @@ export function useGetLoanissue(loanPayHistory, reminder,issued) {
     if (reminder) {
       return data?.data?.filter((item) => (item.status !== 'Closed' && item.status !== 'Issued')) || [];
     }
-    if (issued) {
-      return data?.data?.filter((item) => item.status === 'Issued') || [];
+    if (reports) {
+      return data?.data?.filter((item) => item.status !== 'Closed' ) || [];
+    }
+    if (closedLoan) {
+      return data?.data?.filter((item) => item.status === 'Closed' ) || [];
     }
     return data?.data || [];
-  }, [data?.data, loanPayHistory,reminder]);
+  }, [data?.data, loanPayHistory,reminder,reports,closedLoan]);
   const memoizedValue = useMemo(
     () => ({
       Loanissue: filteredData,

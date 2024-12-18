@@ -154,16 +154,15 @@ export function useNavData() {
             path: paths.dashboard.goldLoanCalculator,
             icon: ICONS.goldLoanCalculator,
           },
-          // {
-          //   title: t('Reports'),
-          //   path: paths.dashboard.loanissue.root,
-          //   icon: ICONS.user,
-          //   children: [
-          //     { title: t('all branch loan summary'), path: paths.dashboard.loanissue.root },
-          //     { title: t('branch vise loan closing report'), path: paths.dashboard.loanissue.new },
-          //     // { title: t('daily report'), path: paths.dashboard.loanissue.edit(id) },
-          //   ],
-          // },
+          {
+            title: t('Reports'),
+            path: paths.dashboard.reports.root,
+            icon: ICONS.user,
+            children: [
+              { title: t('all branch loan summary'), path: paths.dashboard.reports.loanList},
+              { title: t('branch vise loan closing report'), path: paths.dashboard.reports.closedLoanList },
+            ],
+          },
         ],
 
       },
