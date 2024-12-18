@@ -1008,6 +1008,7 @@ customer to proceed with the loan issuance.</Alert>*/}
                 }
                 <RHFTextField name='jewellerName' label='JewellerName' req={'red'} disabled={!isFieldsEnabled} />
                 <RHFAutocomplete
+                  disabled={!isFieldsEnabled}
                   name='loanType'
                   label='Loan Type'
                   req='red'
