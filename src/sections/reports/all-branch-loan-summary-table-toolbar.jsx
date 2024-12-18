@@ -218,7 +218,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
         >
           {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
             onClick={() => {
-              view.onTrue()
+              // view.onTrue()
               popover.onClose();
             }}
           >
