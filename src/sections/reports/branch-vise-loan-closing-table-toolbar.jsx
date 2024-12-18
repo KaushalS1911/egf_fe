@@ -185,7 +185,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
                 fullWidth: true,
               },
             }}
-            sx={...sx}
+            sx={{ ...sx }}
           />
           <DatePicker
             label='End date'
