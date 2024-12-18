@@ -93,13 +93,12 @@ const useStyles = () =>
     [],
   );
 
-export default function InterestPdf({ data }) {
+export default function InterestPdf({ data ,configs}) {
   const styles = useStyles();
-  console.log("DATAT : ",data);
   return (
     <Document>
       <Page  size="A4" style={styles.page}>
-        <InvoiceHeader selectedRow={data.loan} />
+        <InvoiceHeader selectedRow={data.loan} configs={configs} />
         <View style={styles.pagePadding}>
           <Text style={{ ...styles.headerText2,marginTop: 25 }}>Interest Pay Slip</Text>
           <View style={{ width: '100%', display: 'flex', alignItems: 'center',flexDirection: 'row' }}>
@@ -143,20 +142,20 @@ export default function InterestPdf({ data }) {
               <Text style={styles.tableCell}>Uchak Amt</Text>
               <Text style={styles.tableCell}>Pay Amt</Text>
             </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>{fDate(data.from)}</Text>
-                <Text style={styles.tableCell}>{fDate(data.to)}</Text>
-                <Text style={styles.tableCell}>{data.loan.loanAmount}</Text>
-                <Text style={styles.tableCell}>{data.loan.interestLoanAmount}</Text>
-                <Text style={styles.tableCell}>{data.interestAmount}</Text>
-                <Text style={styles.tableCell}>{data.uchakInterestAmount || 0}</Text>
-                <Text style={styles.tableCell}>{data.amountPaid}</Text>
-              </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCell}>{fDate(data.from)}</Text>
+              <Text style={styles.tableCell}>{fDate(data.to)}</Text>
+              <Text style={styles.tableCell}>{data.loan.loanAmount}</Text>
+              <Text style={styles.tableCell}>{data.loan.interestLoanAmount}</Text>
+              <Text style={styles.tableCell}>{data.interestAmount}</Text>
+              <Text style={styles.tableCell}>{data.uchakInterestAmount || 0}</Text>
+              <Text style={styles.tableCell}>{data.amountPaid}</Text>
+            </View>
           </View>
         </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
-          </View>
+        <View style={styles.d_flex}>
+          <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
+        </View>
       </Page>
     </Document>
   );
