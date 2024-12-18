@@ -73,7 +73,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
     },
     [onFilters],
   );
-  const sx = {
+  const CustomStyle = {
     maxWidth: { md: 200 },
     'label': {
       mt: -0.8,
@@ -185,7 +185,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
                 fullWidth: true,
               },
             }}
-            sx={{ ...sx }}
+            sx={{ ...CustomStyle }}
           />
           <DatePicker
             label='End date'
@@ -201,7 +201,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
-            sx={{ ...sx }}
+            sx={{ ...CustomStyle }}
           />
 
           <IconButton onClick={popover.onOpen}>
