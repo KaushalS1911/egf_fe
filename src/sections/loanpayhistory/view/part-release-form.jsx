@@ -67,7 +67,7 @@ const TABLE_HEAD = [
   { id: 'pdf', label: 'PDF' },
 ];
 
-function PartReleaseForm({ currentLoan, mutate }) {
+function PartReleaseForm({ currentLoan, mutate,configs }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [paymentMode, setPaymentMode] = useState('');
   const [properties, setProperties] = useState([]);
@@ -739,7 +739,7 @@ function PartReleaseForm({ currentLoan, mutate }) {
 
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              <PartReleasePdf selectedRow={data} />
+              <PartReleasePdf selectedRow={data} configs={configs}/>
             </PDFViewer>
           </Box>
         </Box>
