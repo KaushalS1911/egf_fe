@@ -23,12 +23,13 @@ import IconButton from '@mui/material/IconButton';
 import LetterOfAuthority from '../disburse/letter-of-authority';
 import SansactionLetter from '../disburse/sansaction-letter';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details';
+import { fDate } from '../../utils/format-time';
 
 
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, index , loanStatus }) {
-  const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo } = row;
+  const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo,issueDate } = row;
   const confirm = useBoolean();
   const [nocData, setNocData] = useState();
   const popover = usePopover();
@@ -91,6 +92,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
             {loanNo}
           </TableCell>}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell
           sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>

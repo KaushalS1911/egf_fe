@@ -50,6 +50,7 @@ import { useGetConfigs } from '../../../api/config';
 const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
+  { id: 'issueDate', label: 'Issue date' },
   { id: 'customerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
