@@ -500,6 +500,23 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         calculatedBankAmount : '');
     }
   };
+  const handleAmountChange = () => {
+    const newCashAmount = watch('propertyDetails').reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0) || '';
+    const currentLoanAmount = parseFloat(watch('loanAmount')) ||
+      '';
+    if (currentLoanAmount > newCashAmount) {
+      setValue('loanAmount', newCashAmount);
+      enqueueSnackbar('Loan amount cannot be greater than the net amount.', { variant: 'warning' });
+    } else {
+      setValue('loanAmount', currentLoanAmount);
+    }
+    // if (watch('paymentMode') === 'Both') {
+    //   const calculatedBankAmount = currentLoanAmount -
+    //     newCashAmount;
+    //   setValue('bankAmount', calculatedBankAmount >= 0 ?
+    //     calculatedBankAmount : '');
+    // }
+  };
   const saveCustomerBankDetails = async () => {
     const payload = {
       bankDetails: {
@@ -1393,6 +1410,7 @@ customer to proceed with the loan issuance.</Alert>*/}
                       onChange={(e) => {
                         field.onChange(e);
                         handleLoanAmountChange(e);
+                        handleAmountChange()
                       }}
                     />
                   )}

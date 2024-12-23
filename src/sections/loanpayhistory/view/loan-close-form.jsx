@@ -49,10 +49,10 @@ function LoanCloseForm({ currentLoan, mutate }) {
       .min(0, 'Pending Loan Amount must be 0 or greater')
       .required('Pending Loan Amount is required')
       .typeError('Pending Loan Amount must be a number'),
-    closingCharge: Yup.number()
-      .min(0, 'Closing Charge must be 0 or greater')
-      .required('Closing Charge is required')
-      .typeError('Closing Charge must be a number'),
+    // closingCharge: Yup.number()
+    //   .min(0, 'Closing Charge must be 0 or greater')
+    //   .required('Closing Charge is required')
+    //   .typeError('Closing Charge must be a number'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     netAmount: Yup.string().required('Net Amount is required'),
     ...paymentSchema,
@@ -201,7 +201,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 e.preventDefault();
               }
             }} />
-            <RHFTextField name='closingCharge' label='Closing Charge' req={'red'} onKeyPress={(e) => {
+            <RHFTextField name='closingCharge' label='Closing Charge'  onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
               }
