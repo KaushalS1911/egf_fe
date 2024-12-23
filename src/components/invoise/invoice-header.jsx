@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import contact from 'src/assets/icon/icons8-phone-50.png';
 import mail from 'src/assets/icon/icons8-letter-50.png';
 import website from 'src/assets/icon/icons8-website-50.png';
-import branch from 'src/assets/icon/icons8-company-30.png';
-import branchCode from 'src/assets/icon/icons8-branch-50.png';
+import branchHeader from 'src/assets/icon/icons8-company-30.png';
+import branchCodeHeader from 'src/assets/icon/icons8-branch-50.png';
+import address from 'src/assets/icon/icons8-location-50.png';
 import {
   Page,
   View,
@@ -16,7 +17,8 @@ import {
   Link,
 } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/Logo Png.png';
-import { useGetConfigs } from '../../api/config'; // Correct path to your logo
+import { useGetConfigs } from '../../api/config';
+import { useSelector } from 'react-redux';
 
 Font.register({
   family: 'Roboto',
@@ -37,7 +39,7 @@ const useStyles = () =>
           height: '126px',
           fontFamily: 'Roboto',
           position: 'relative',
-          overflow:'hidden'
+          overflow: 'hidden',
         },
         headerbox1: {
           width: '65%',
@@ -56,28 +58,55 @@ const useStyles = () =>
           borderTopLeftRadius: '50%',
           borderBottomLeftRadius: '50%',
         },
-        logoParent:{
-          height:58,
-          width: 58,
-          margin: '10px 10px 5px 35px ',
+        logoParent: {
+          height: 94,
+          width: 94,
+          // margin: '10px 10px 5px 35px ',
         },
         logo: {
           height: '100%',
           width: '100%',
           borderRadius: '5px',
-          objectFit:'contain'
+          objectFit: 'contain',
+          marginTop: 10,
         },
+        // headerText: {
+        //   color: '#fff',
+        //   fontSize: '24px',
+        //   // marginLeft: '10px',
+        //   fontWeight: 'bold',
+        // },
         headerText: {
           color: '#fff',
-          fontSize: '28px',
-          marginLeft: '10px',
           fontWeight: 'bold',
+          flexShrink: 1,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          width: '100%',
+          fontSize: '24px', // Default font size
+        },
+
+        dynamicHeaderText: {
+          color: '#fff',
+          fontWeight: 'bold',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          width: '100%',
+        },
+
+        companyNameContainer: {
+          flex: 1.5,
+          // marginLeft: 10,
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         headerSubText: {
           color: '#fff',
           fontSize: '10px',
           fontWeight: 'bold',
-          margin: '1px 10px',
+          margin: '1px 2px',
         },
         headerDetailsParent: {
           margin: '60px 30px',
@@ -100,7 +129,7 @@ const useStyles = () =>
         flexContainer: {
           flexDirection: 'row',
           justifyContent: 'space-between',
-          width:'100%'
+          width: '100%',
         },
         separator: {
           marginHorizontal: 2,
@@ -112,14 +141,10 @@ const useStyles = () =>
     [],
   );
 
-export default function InvoiceHeader({ selectedRow, configs }) {
+export default function InvoiceHeader({ selectedRow, configs, selectedBranch }) {
   const styles = useStyles();
-
-  // Check if selectedRow and its nested properties are defined
-  const branch = selectedRow?.customer?.branch;
+  const branch = selectedBranch ? selectedBranch : selectedRow?.customer?.branch;
   const company = configs?.company;
-
-  // Ensure branch and company are defined before using their properties
   const branchAddress = branch ? `${branch.address.street}, ${branch.address.landmark}, ${branch.address.city}, ${branch.address.zipcode}` : '';
   const branchName = branch?.name || 'Branch Name Not Available';
   const branchCode = branch?.branchCode || 'Branch Code Not Available';
@@ -130,26 +155,56 @@ export default function InvoiceHeader({ selectedRow, configs }) {
     <View style={styles.header}>
       {/* Header Box 1 */}
       <View style={styles.headerbox1}>
-        <View style={styles.logoParent}>
-          <Image style={styles.logo} src={company?.logo_url || 'default_logo_url'} />
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'start',
+            alignItems: 'flex-end',
+            padding: '0px 0px 5px 5px',
+          }}
+        >
+          <View style={styles.logoParent}>
+            <Image style={styles.logo} src={company?.logo_url || 'default_logo_url'} />
+          </View>
+          <View style={{ ...styles.companyNameContainer, }}>
+            <Text style={{
+              ...styles.dynamicHeaderText,
+              fontSize: company?.name?.length > 20 ? '18px' : '26px',
+              marginTop: company?.name?.length > 15 ? 55 : 0,
+            }}>
+              {company?.name || 'Company Name'}
+            </Text>
+          </View>
         </View>
-        <Text style={styles.headerText}>{company?.name || 'Company Name'}</Text>
-        <Text style={styles.headerSubText}>{branchAddress}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 3,
+            padding: '0px 0px 0px 10px',
+            textWrap: 'wrap',
+          }}
+        >
+          <Image style={styles.icon} src={address} />
+          <Text style={styles.separator}>|</Text>
+          <Text style={styles.headerSubText}>{branchAddress}</Text>
+        </View>
       </View>
+
 
       {/* Header Box 2 */}
       <View style={styles.headerbox2}>
         <View style={styles.headerDetailsParent}>
-          <View style={styles.flexContainer}>
+          <View style={styles.flexContainer}>a
             {/* Column 1 */}
             <View style={{ width: 'auto' }}>
               <View style={styles.rowContainer}>
-                <Image style={styles.icon} src={branch || 'default_branch_icon'} />
+                <Image style={styles.icon} src={branchHeader} />
                 <Text style={styles.separator}>|</Text>
                 <Text style={styles.headerDetails}>{branchName}</Text>
               </View>
               <View style={{ ...styles.rowContainer, marginTop: 15 }}>
-                <Image style={styles.icon} src={branchCode || 'default_branch_code_icon'} />
+                <Image style={styles.icon} src={branchCodeHeader} />
                 <Text style={styles.separator}>|</Text>
                 <Text style={styles.headerDetails}>{branchCode}</Text>
               </View>
@@ -166,7 +221,7 @@ export default function InvoiceHeader({ selectedRow, configs }) {
                 <Image style={styles.icon} src={website || 'default_website_icon'} />
                 <Text style={styles.separator}>|</Text>
                 <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>
-                  <Link src="https://www.easygoldfincorp.com/" style={{ textDecoration: 'none', color: '#fff' }}>
+                  <Link src='https://www.easygoldfincorp.com/' style={{ textDecoration: 'none', color: '#fff' }}>
                     www.easygoldfincorp.com
                   </Link>
                 </Text>

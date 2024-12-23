@@ -159,8 +159,9 @@ export function useNavData() {
             path: paths.dashboard.reports.root,
             icon: ICONS.user,
             children: [
-              { title: t('all branch loan summary'), path: paths.dashboard.reports.loanList},
-              { title: t('branch vise loan closing report'), path: paths.dashboard.reports.closedLoanList },
+              { title: t('all branch loan summary'), path: paths.dashboard.reports['loan-list']},
+              { title: t('branch vise loan closing report'), path: paths.dashboard.reports['closed-loanList'] },
+              { title: t('daily reports'), path: paths.dashboard.reports['daily-reports'] },
             ],
           },
         ],

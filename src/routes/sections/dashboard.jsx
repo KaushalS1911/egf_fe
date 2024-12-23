@@ -83,6 +83,7 @@ const ReminderDetailsListView = lazy(()=>import('../../sections/reminder/view/re
 //REPORTS
 const AllBranchLoanSummaryListView = lazy(()=>import('../../sections/reports/view/all-branch-loan-summary-list-view'))
 const BranchViseLoanClosingListView = lazy(()=>import('../../sections/reports/view/branch-vise-loan-closing-list-view'))
+const DailyReportsListView = lazy(()=>import(`../../sections/reports/view/daily-reports-list-view`))
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -246,8 +247,9 @@ export const dashboardRoutes = [
         path:'reports' ,
         children: [
           {element: <AllBranchLoanSummaryListView/> ,index: true},
-          {path: 'loanList',element: <AllBranchLoanSummaryListView/> },
-          {path: 'closedLoanList',element: <BranchViseLoanClosingListView/> },
+          {path: 'loan-list',element: <AllBranchLoanSummaryListView/> },
+          {path: 'closed-loanList',element: <BranchViseLoanClosingListView/> },
+          {path: 'daily-reports',element: <DailyReportsListView/> },
         ]
       },
 

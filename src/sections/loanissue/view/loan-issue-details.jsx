@@ -168,14 +168,25 @@ const useStyles = () =>
           width: 400,
           opacity: 0.1,
         },
-
+        row: {
+          flexDirection: 'row',
+          // alignItems: 'center',
+          marginVertical: 2, // Adjust spacing between rows
+        },
         subHeading: {
-          fontWeight: 600,
+          fontWeight: '600',
           fontSize: 10,
+          flex: 1, // Ensure alignment
+        },
+        colon: {
+          fontSize: 10,
+          fontWeight: '600',
+          marginHorizontal: 3, // Space around the colon
         },
         subText: {
           fontSize: 10,
-          fontWeight:'medium'
+          fontWeight: '500',
+          flex: 2,
         },
         spacing: {
           marginTop: 7,
@@ -283,6 +294,11 @@ const useStyles = () =>
           fontWeight: 600,
 
         },
+        detailsSpacing:{
+          marginLeft: 20,
+          fontSize: 10,
+
+        }
       }),
     [],
   );
@@ -314,74 +330,89 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
           </View>
           <InvoiceHeader selectedRow={selectedRow} configs={configs}/>
           <View style={styles.pagePadding}>
-            <View style={styles.flexContainer}>
-              <View style={{ width: '40%' }}>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Loan No : {' '}</Text>
+            <View style={{ ...styles.flexContainer,gap:20 }}>
+              <View style={{ width: '48%' }}>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan No</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loanNo}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Loan Type : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan Type</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loanType}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Name : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Name</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text
                     style={styles.subText}>{`${selectedRow.customer.firstName} ${selectedRow.customer.middleName} ${selectedRow.customer.lastName}`}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Address :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Address</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text
                     style={{
                       ...styles.subText,
                       textWrap: 'wrap',
-                      fontSize:9
+                      fontSize: 9,
                     }}>{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Pan No :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Pan No</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.customer.panCard}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Aadhar Card No :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Aadhar Card No</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.customer.aadharCard}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Mobile No :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Mobile No</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.customer.contact}</Text>
-                </Text>
+                </View>
               </View>
-              <View>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Loan Amount : {' '}</Text>
+
+              <View style={{width:'46%'}}>
+                <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading,flex:2 }}>Loan Amount</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loanAmount}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Interest Rate : {' '}</Text>
-                  <Text
-                    style={styles.subText}>{selectedRow?.scheme.interestRate > 1.5 ? 1.5 : selectedRow?.scheme.interestRate}%</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Consult Charge : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading,flex:2 }}>Interest Rate</Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>
+                    {selectedRow?.scheme.interestRate > 1.5 ? 1.5 : selectedRow?.scheme.interestRate}%
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading,flex:2 }}>Consult Charge</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow?.consultingCharge}%</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Loan Int Pay Schedule
-                    : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading,flex:2 }}>Loan Int Pay Schedule</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.scheme.interestPeriod}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Issue Date : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading,flex:2 }}>Issue Date</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{fDate(selectedRow.issueDate)}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Next Int Date : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading,flex:2 }}>Next Int Date</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Renew Date : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading,flex:2 }}>Renew Date</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{renewDate()}</Text>
-                </Text>
+                </View>
               </View>
               <View style={{marginTop:-60}}>
                 {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
@@ -451,8 +482,8 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
             <View style={{ marginTop: 10 }}>
               {configs.exportPolicyConfig.map((item, index) => (
                 <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <Text style={{ ...styles.subText, marginRight: 4 }}>•</Text> {/* Bullet point */}
-                  <Text style={{ ...styles.subText }}>{item}</Text> {/* Condition text */}
+                  <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text> {/* Bullet point */}
+                  <Text style={{  fontSize: 10, fontWeight: '500',}}>{item}</Text> {/* Condition text */}
                 </View>
               ))}
             </View>

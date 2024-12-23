@@ -19,6 +19,8 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { fDate } from '../../utils/format-time';
 import { getResponsibilityValue } from '../../permission/permission';
 import { useGetConfigs } from '../../api/config';
+import Lightbox, { useLightBox } from '../../components/lightbox';
+import React from 'react';
 
 
 // ----------------------------------------------------------------------
@@ -30,6 +32,8 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
   const confirm = useBoolean();
 
   const popover = usePopover();
+  const lightbox = useLightBox(avatar_url);
+
 
   return (
     <>
@@ -38,11 +42,28 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={avatar_url} src={avatar_url} sx={{ mr: 2 }} />
+        {/*<TableCell sx={{ display: 'flex', alignItems: 'center' }}>*/}
+        {/*  <Avatar alt={avatar_url} src={avatar_url} sx={{ mr: 2 }} />*/}
 
+        {/*  <ListItemText*/}
+        {/*    primary={`${firstName} ${middleName} ${lastName}`}*/}
+        {/*    secondary={email}*/}
+        {/*    primaryTypographyProps={{ typography: 'body2' }}*/}
+        {/*    secondaryTypographyProps={{*/}
+        {/*      component: 'span',*/}
+        {/*      color: 'text.disabled',*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*</TableCell>*/}
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)} sx={{ mr: 2,cursor:'pointer' }} />
+          <Lightbox
+            image={avatar_url}
+            open={lightbox.open}
+            close={lightbox.onClose}
+          />
           <ListItemText
-            primary={`${firstName} ${middleName} ${lastName}`}
+            primary={firstName + ' ' + middleName + ' ' + lastName}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{

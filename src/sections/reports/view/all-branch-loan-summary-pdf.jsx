@@ -49,10 +49,10 @@ const useStyles = () =>
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
           textTransform: 'capitalize',
-          position: 'relative',
+          position: "relative"
         },
         pagePadding: {
-          padding: '0px 24px 24px 24px',
+          padding: '15px',
         },
         pagePadding2: {
           padding: '0px 24px 24px 24px',
@@ -156,7 +156,7 @@ const useStyles = () =>
 
         watermarkContainer: {
           position: 'absolute',
-          top: 0,
+          top:100,
           left: 0,
           right: 0,
           bottom: 0,
@@ -171,7 +171,9 @@ const useStyles = () =>
 
         subHeading: {
           fontWeight: 600,
-          fontSize: 10,
+          fontSize: 20,
+          textAlign:'center',
+          color:'#232C4B'
         },
         subText: {
           fontSize: 10,
@@ -191,46 +193,55 @@ const useStyles = () =>
           width: '90px',
           borderRadius: 5,
         },
-        table: {
-          width: 'auto',
-          borderRadius: 10,
-          flex: 2,
-        },
-        tableFooter: {
-          // color: '#fff',
-          // backgroundColor: '#232C4B',
-          borderTop: '1px solid #232C4B',
-          fontWeight: 'bold',
-          borderBottomLeftRadius: 10,
-          borderBottomRightRadius: 10,
-          paddingVertical: 8,
+          table: {
+            width: '100%',
+            borderRadius: 10,
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: '#ddd',
+            backgroundColor: '#fff',
+          },
+          tableHeader: {
+            backgroundColor: '#232C4B',
+            flexDirection: 'row',
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+            paddingVertical: 10,
+          },
+          tableHeaderCell: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: 8,
+            textAlign: 'center',
+            paddingHorizontal: 5,
+            paddingVertical: 5,
+          },
+          tableRow: {
+            flexDirection: 'row',
+            paddingVertical: 8,
+            backgroundColor: '#f9f9f9', // Alternating row background
+          },
+          tableRowAlt: {
+            backgroundColor: '#fff', // Alternate row background
+          },
+          tableRowBorder: {
+            borderBottomWidth: 1,
+            borderBottomColor: '#ddd',
+          },
+          tableCell: {
+            flex: 1,
+            fontSize: 8,
+            paddingHorizontal: 5,
+            paddingVertical: 5,
+            textAlign: 'center',
+          },
+          numericCell: {
+            textAlign: 'right',
+          },
+          textCell: {
+            textAlign: 'left',
+          },
 
-        },
-        tableHeader: {
-          color: '#fff',
-          backgroundColor: '#232C4B',
-          fontWeight: 'bold',
-          borderTopLeftRadius: 10,
-          borderTopRightRadius: 10,
-          textWrap: 'nowrap',
-          paddingVertical: 6,
-        },
-
-        tableRow: {
-          flexDirection: 'row',
-          borderStyle: 'solid',
-          paddingVertical: 5,
-          textWrap: 'nowrap',
-        },
-        tableRowBorder: {
-          borderBottom: '1.5px solid gray',
-        },
-        tableCell: {
-          flex: 1,
-          fontSize: 10,
-          paddingHorizontal: 4,
-          textAlign: 'center',
-        },
         heading: {
           fontSize: '13px',
           fontWeight: '500',
@@ -289,18 +300,82 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function AllBranchLoanSummaryPdf({ branch , configs }) {
+export default function AllBranchLoanSummaryPdf({ selectedBranch , configs ,loans}) {
   const styles = useStyles();
-
   return (
     <>
       <Document>
-        <Page size='A4' style={styles.page}>
-          <View style={styles.watermarkContainer}>
-            <Image src={logo} style={styles.watermarkImage} />
-          </View>
-          <InvoiceHeader branch={branch} configs={configs}/>
+        <Page size='A4' style={styles.page} orientation={'landscape'}>
+          {/*<View style={styles.watermarkContainer}>*/}
+          {/*  <Image src={logo} style={styles.watermarkImage} />*/}
+          {/*</View>*/}
+          <InvoiceHeader selectedBranch={selectedBranch} configs={configs}/>
+          <View style={styles.pagePadding}>
+            <View>
+              <Text style={styles.subHeading}>All Branch Loan Summary</Text>
+            </View>
+            <View style={styles.table}>
+              {/* Table Header */}
+              <View style={[styles.tableRow, styles.tableHeader]}>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 0.3 }]}>#</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2.5 }]}>Loan No</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 3.5 }]}>Cus Name</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1 }]}>Mo No</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 0.5 }]}>Int%</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 0.6 }]}>Other Int%</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Issue Date</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.2 }]}>Loan Amt</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Last Amt Pay Date</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Loan Amount Pay</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Loan Int. Amt</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Last Int. Pay Date</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Total Pay Int.</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 0.7 }]}>Day</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Pending Int.</Text>
+                <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Next Int. Pay Date</Text>
+              </View>
 
+              {/* Table Rows */}
+              {loans.map((row, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.tableRow,
+                    index % 2 === 0 ? styles.tableRowAlt : null,
+                    styles.tableRowBorder,
+                  ]}
+                >
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 0.3 }]}>{index + 1}</Text>
+                  <Text style={[styles.tableCell, { flex: 2.5 }]} numberOfLines={1} ellipsizeMode="tail">
+                    {row.loanNo}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.textCell, { flex: 3.5 }]} numberOfLines={1} ellipsizeMode="tail">
+                    {`${row.customer.firstName} ${row.customer.middleName} ${row.customer.lastName}`}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 1.5 }]}>{row.customer.contact}</Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 0.5 }]}>{row.scheme.interestRate}</Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 0.5 }]}>{row.consultingCharge}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(row.issueDate)}</Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 1.5 }]}>₹{row.loanAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 2 }]}>{fDate(row.lastInstallmentDate) || '-'}</Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 2 }]}>
+                    ₹{row.loanAmount - row.interestLoanAmount}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 2 }]}>
+                    ₹{row.interestLoanAmount}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 2 }]}>{fDate(row.lastInstallmentDate) || '-'}</Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 1.5 }]}>₹{'Total Pay Int.'}</Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 1 }]}>113</Text>
+                  <Text style={[styles.tableCell, styles.numericCell, { flex: 1.5 }]}>₹947.34</Text>
+                  <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(row.nextInstallmentDate)}</Text>
+                </View>
+              ))}
+            </View>
+
+
+
+          </View>
         </Page>
       </Document>
     </>

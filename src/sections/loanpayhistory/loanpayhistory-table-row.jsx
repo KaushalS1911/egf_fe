@@ -77,7 +77,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   };
   return (
     <>
-      <TableRow hover selected={selected} sx={{backgroundColor: loanStatus === 'All' ? color : null}}>
+      <TableRow hover selected={selected} sx={{backgroundColor: loanStatus === status ? color : color}}>
         <TableCell>
           {srNo}
         </TableCell>

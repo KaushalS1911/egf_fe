@@ -40,9 +40,9 @@ import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
-import BranchViseLoanClosingTableToolbar from '../branch-vise-loan-closing-table-toolbar';
-import BranchViseLoanClosingFiltersResult from '../branch-vise-loan-closing-filters-result';
-import BranchViseLoanClosingTableRow from '../branch-vise-loan-closing-table-row';
+import BranchViseLoanClosingTableToolbar from '../close-loan/branch-vise-loan-closing-table-toolbar';
+import BranchViseLoanClosingFiltersResult from '../close-loan/branch-vise-loan-closing-filters-result';
+import BranchViseLoanClosingTableRow from '../close-loan/branch-vise-loan-closing-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -206,10 +206,11 @@ export default function BranchViseLoanClosingListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Branch Vise Loan Closing Report'
+          heading='Branch Wise Loan Closing Report'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Branch Vise Loan Closing Report', href: paths.dashboard.reports.root },
+            { name: 'Reports', href: paths.dashboard.reports.root },
+            { name: 'Branch Wise Loan Closing Report', href: paths.dashboard.reports['closed-loanList'] },
             { name: ' List' },
           ]}
           sx={{

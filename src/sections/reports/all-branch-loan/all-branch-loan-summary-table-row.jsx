@@ -11,11 +11,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useAuthContext } from '../../auth/hooks';
-import { useGetConfigs } from '../../api/config';
-import { getResponsibilityValue } from '../../permission/permission';
-import Label from '../../components/label';
-import { fDate } from '../../utils/format-time';
+import { useAuthContext } from '../../../auth/hooks';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
+import Label from '../../../components/label';
+import { fDate } from '../../../utils/format-time';
 
 
 // ----------------------------------------------------------------------

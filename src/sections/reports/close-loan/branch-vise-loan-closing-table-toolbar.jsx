@@ -6,26 +6,26 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
-import CustomPopover, { usePopover } from '../../components/custom-popover';
-import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
-import { useAuthContext } from '../../auth/hooks';
-import { useGetConfigs } from '../../api/config';
-import { getResponsibilityValue } from '../../permission/permission';
+import CustomPopover, { usePopover } from '../../../components/custom-popover';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { useAuthContext } from '../../../auth/hooks';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
-import { useGetBranch } from '../../api/branch';
+import { useGetBranch } from '../../../api/branch';
 import InputLabel from '@mui/material/InputLabel';
-import { useBoolean } from '../../hooks/use-boolean';
+import { useBoolean } from '../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from './view/all-branch-loan-summary-pdf';
+import AllBranchLoanSummaryPdf from '../view/all-branch-loan-summary-pdf';
 
 // ----------------------------------------------------------------------
 
-export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, loans, dateError }) {
+export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, loans, dateError }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -73,7 +73,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
     },
     [onFilters],
   );
-  const customStyle = {
+  const CustomStyle = {
     maxWidth: { md: 200 },
     'label': {
       mt: -0.8,
@@ -84,9 +84,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
     },
     'input': { height: 7 },
   };
-  const sx2 = {
 
-  };
   const handleFilterBranch =  useCallback(
     (event) => {
       setSelectedBranch(event.target.value)
@@ -187,7 +185,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
                 fullWidth: true,
               },
             }}
-            sx={{...customStyle}}
+            sx={{ ...CustomStyle }}
           />
           <DatePicker
             label='End date'
@@ -203,7 +201,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
-            sx={{ ...customStyle}}
+            sx={{ ...CustomStyle }}
           />
 
           <IconButton onClick={popover.onOpen}>
@@ -268,7 +266,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, l
   );
 }
 
-AllBranchLoanSummaryTableToolbar.propTypes = {
+BranchViseLoanClosingTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

@@ -34,10 +34,9 @@ import { useGetLoanissue } from '../../../api/loanissue';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { fDate, isBetween } from '../../../utils/format-time';
 import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-import AllBranchLoanSummaryTableRow from '../all-branch-loan-summary-table-row';
-import AllBranchLoanSummaryTableToolbar from '../all-branch-loan-summary-table-toolbar';
-import AllBranchLoanSummaryTableFiltersResult from '../all-branch-loan-summary-table-filters-result';
+import AllBranchLoanSummaryTableRow from '../all-branch-loan/all-branch-loan-summary-table-row';
+import AllBranchLoanSummaryTableToolbar from '../all-branch-loan/all-branch-loan-summary-table-toolbar';
+import AllBranchLoanSummaryTableFiltersResult from '../all-branch-loan/all-branch-loan-summary-table-filters-result';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -211,7 +210,8 @@ export default function AllBranchLoanSummaryListView() {
           heading='All Branch Loan Summary'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'All Branch Loan Summary', href: paths.dashboard.reports.root },
+            { name: 'Reports', href: paths.dashboard.reports.root },
+            { name: 'All Branch Loan Summary', href: paths.dashboard.reports['loan-list'] },
             { name: ' List' },
           ]}
           sx={{
@@ -255,7 +255,7 @@ export default function AllBranchLoanSummaryListView() {
             ))}
           </Tabs>
 
-          <AllBranchLoanSummaryTableToolbar filters={filters} onFilters={handleFilters} loans={loans} />
+          <AllBranchLoanSummaryTableToolbar filters={filters} onFilters={handleFilters} loans={loans} dataFilter={dataFiltered} configs={configs}/>
 
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -393,7 +393,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
-    console.log(inputData, 'llllllllllllllllllll');
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) =>
