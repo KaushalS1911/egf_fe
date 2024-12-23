@@ -82,7 +82,7 @@ export default function DailyReportsListView() {
   const params = new URLSearchParams();
   if(filters.branch._id) params.append('branch',filters.branch._id)
   if(filters.startDate) params.append('date',filters.startDate.toLocaleDateString())
-  if(filters.username) params.append('username',filters.username)
+  // if(filters.username) params.append('username',filters.username)
   const date = (filters.startDate).toLocaleDateString();
   const{report,reportLoading} = useGetDailyReport(params)
   const [tableData, setTableData] = useState(report);
