@@ -2,7 +2,18 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid, IconButton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  Grid,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -19,6 +30,10 @@ import Iconify from '../../../components/iconify';
 import { ConfirmDialog } from '../../../components/custom-dialog';
 import { usePopover } from '../../../components/custom-popover';
 import { useBoolean } from '../../../hooks/use-boolean';
+import { PDFViewer } from '@react-pdf/renderer';
+import UchakInterstPayDetailPdf from '../PDF/uchak-interst-pay-detail-pdf';
+import { useGetConfigs } from '../../../api/config';
+import LoanPartPaymentDetailsPdf from '../PDF/loan-part-payment-details-pdf';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -28,6 +43,7 @@ const TABLE_HEAD = [
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
   { id: 'action', label: 'Action' },
+  { id: 'PDF', label: 'PDF' },
 ];
 
 function LoanPartPaymentForm({ currentLoan, mutate }) {
@@ -37,6 +53,10 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   const popover = usePopover();
   const [deleteId, setDeleteId] = useState('');
   const [paymentMode, setPaymentMode] = useState('');
+  const view = useBoolean();
+  const [data, setData] = useState(null);
+  const {configs} = useGetConfigs()
+
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -381,7 +401,22 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }
-              </TableCell>
+              </TableCell> <TableCell sx={{ whiteSpace: 'nowrap',cursor: 'pointer', py: 0, px: 1 }}>{
+              <Typography
+                onClick={() => {
+                  view.onTrue();
+                  setData(row);
+                }}
+                sx={{
+                  cursor: 'pointer',
+                  color: 'inherit',
+                  pointerEvents: 'auto',
+                }}
+              >
+                <Iconify icon='basil:document-solid' />
+              </Typography>
+            }</TableCell>
+
             </TableRow>
           ))}
 
@@ -398,6 +433,25 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
           </Button>
         }
       />
+      <Dialog fullScreen open={view.value}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <LoanPartPaymentDetailsPdf data={data} configs={configs}/>
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

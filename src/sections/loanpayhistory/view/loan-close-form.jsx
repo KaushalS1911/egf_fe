@@ -2,7 +2,18 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  Grid,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -13,11 +24,33 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
+import Iconify from '../../../components/iconify';
+import { ConfirmDialog } from '../../../components/custom-dialog';
+import { PDFViewer } from '@react-pdf/renderer';
+import LoanPartPaymentDetailsPdf from '../PDF/loan-part-payment-details-pdf';
+import { useBoolean } from '../../../hooks/use-boolean';
+import { useGetConfigs } from '../../../api/config';
+import { useGetCloseLoan } from '../../../api/loan-close';
+import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
+
+const TABLE_HEAD = [
+  { id: 'totalLoanAmt', label: 'Total loan amt' },
+  { id: 'paidLoanAmt', label: 'Paid loan amt' },
+  { id: 'pendingLoanAmt', label: 'pending loan Amt' },
+  { id: 'closinCharge', label: 'Closing charge' },
+  { id: 'netAmt', label: 'Net amt' },
+  { id: 'PDF', label: 'PDF' },
+];
 
 function LoanCloseForm({ currentLoan, mutate }) {
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
+  const { loanClose, refetchLoanClose } = useGetCloseLoan(currentLoan._id);
+  console.log(loanClose, '00000000000000000000');
+  const view = useBoolean();
+  const [data, setData] = useState(null);
+  const { configs } = useGetConfigs();
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
@@ -92,8 +125,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
     }
   }, [watch('paymentMode')]);
   useEffect(() => {
-      setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
-  }, [watch('closingCharge'),watch('pendingLoanAmount')]);
+    setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
+  }, [watch('closingCharge'), watch('pendingLoanAmount')]);
 
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
@@ -139,6 +172,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
       const response = await axios(config);
       reset();
+      refetchLoanClose();
       mutate();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
@@ -201,16 +235,16 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 e.preventDefault();
               }
             }} />
-            <RHFTextField name='closingCharge' label='Closing Charge'  onKeyPress={(e) => {
+            <RHFTextField name='closingCharge' label='Closing Charge' onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
               }
             }} />
-            <RHFTextField name='netAmount' label='Net Amount'onKeyPress={(e) => {
+            <RHFTextField name='netAmount' label='Net Amount' onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
               }
-            }}  InputProps={{ readOnly: true }} />
+            }} InputProps={{ readOnly: true }} />
             <RHFTextField name='closeRemarks' label='Close Remarks' />
           </Box>
         </Grid>
@@ -219,9 +253,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
             <Typography variant='subtitle1' my={1}>
               Payment Details
             </Typography>
-            <Box sx={{display: 'flex', justifyContent: 'space-between',alignItems:'center'}}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box
-                  width={"100%"}
+                width={'100%'}
                 rowGap={3}
                 columnGap={2}
                 display='grid'
@@ -300,7 +334,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   </>
                 )}
               </Box>
-              <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',gap:1}}>
+              <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
                 <Button color='inherit'
                         variant='outlined' onClick={() => reset()}>Reset</Button>
                 <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
@@ -311,6 +345,55 @@ function LoanCloseForm({ currentLoan, mutate }) {
           </Grid>
         </Grid>
       </FormProvider>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
+        <TableHeadCustom headLabel={TABLE_HEAD} />
+        <TableBody>
+          {loanClose.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.totalLoanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.totalLoanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.closingCharge}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0.5, px: 2 }}>{
+                <Typography
+                  onClick={() => {
+                    view.onTrue();
+                    setData(row);
+                  }}
+                  sx={{
+                    cursor: 'pointer',
+                    color: 'inherit',
+                    pointerEvents: 'auto',
+                  }}
+                >
+                  <Iconify icon='basil:document-solid' />
+                </Typography>
+              }</TableCell>
+
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Dialog fullScreen open={view.value}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              p: 1.5,
+            }}
+          >
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <LoanCloseDetailsPdf data={data} configs={configs} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

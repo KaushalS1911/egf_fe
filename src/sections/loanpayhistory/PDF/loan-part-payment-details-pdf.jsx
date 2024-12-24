@@ -70,6 +70,7 @@ const useStyles = () =>
         spacing: {
           marginTop: 7,
         },
+
         table: {
           width: 'auto',
           marginTop: 10,
@@ -123,7 +124,7 @@ const useStyles = () =>
     [],
   );
 
-export default function InterestPdf({ data, configs }) {
+export default function LoanPartPaymentDetailsPdf({ data, configs }) {
   const styles = useStyles();
   return (
     <Document>
@@ -133,7 +134,7 @@ export default function InterestPdf({ data, configs }) {
         </View>
         <InvoiceHeader selectedRow={data.loan} configs={configs} />
         <View style={styles.pagePadding}>
-          <Text style={{ ...styles.headerText2, marginTop: 25 }}>Interest Pay Slip</Text>
+          <Text style={{ ...styles.headerText2, marginTop: 25 }}>Loan part Payment Slip</Text>
           <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
             <View style={{ width: '50%' }}>
               <View style={styles.row}>
@@ -172,24 +173,28 @@ export default function InterestPdf({ data, configs }) {
             </View>
           </View>
           <View>
-            <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>Interest Details</Text>
+            <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>Loan part Payment Details</Text>
             <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={styles.tableCell}>From Date</Text>
-              <Text style={styles.tableCell}>To Date</Text>
-              <Text style={styles.tableCell}>Loan Amt</Text>
-              <Text style={styles.tableCell}>Int. Loan Amt</Text>
-              <Text style={styles.tableCell}>Total Interest</Text>
-              <Text style={styles.tableCell}>Uchak Amt</Text>
-              <Text style={styles.tableCell}>Pay Amt</Text>
+              <Text style={styles.tableCell}>Loan amt</Text>
+              <Text style={styles.tableCell}>Pay amt</Text>
+              <Text style={styles.tableCell}>Int. loan amt</Text>
+              <Text style={styles.tableCell}>Pay date</Text>
+              <Text style={styles.tableCell}> Entry Date</Text>
+              <Text style={styles.tableCell}>Payment mode</Text>
+              <Text style={styles.tableCell}>Cash amt</Text>
+              <Text style={styles.tableCell}>Bank amt</Text>
+              <Text style={styles.tableCell}>Remarks</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>{fDate(data.from)}</Text>
-              <Text style={styles.tableCell}>{fDate(data.to)}</Text>
-              <Text style={styles.tableCell}>{data.loan.loanAmount}</Text>
-              <Text style={styles.tableCell}>{data.loan.interestLoanAmount}</Text>
-              <Text style={styles.tableCell}>{data.interestAmount}</Text>
-              <Text style={styles.tableCell}>{data.uchakInterestAmount || 0}</Text>
-              <Text style={styles.tableCell}>{data.amountPaid}</Text>
+              <Text style={styles.tableCell}>{data?.loan?.loanAmount}</Text>
+              <Text style={styles.tableCell}>{data?.amountPaid}</Text>
+              <Text style={styles.tableCell}>{data?.loan?.interestLoanAmount}</Text>
+              <Text style={styles.tableCell}>{fDate(data?.date)}</Text>
+              <Text style={styles.tableCell}>{fDate(data?.createdAt)}</Text>
+              <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>
+              <Text style={styles.tableCell}>{data?.paymentDetail?.cashAmount || 0}</Text>
+              <Text style={styles.tableCell}>{data?.paymentDetail?.bankAmount || 0}</Text>
+              <Text style={styles.tableCell}>{data.remark || '-'}</Text>
             </View>
           </View>
         </View>
@@ -198,10 +203,11 @@ export default function InterestPdf({ data, configs }) {
         </View>
       </Page>
     </Document>
-  );
+  )
+    ;
 }
 
-InterestPdf.propTypes = {
+LoanPartPaymentDetailsPdf.propTypes = {
   data: PropTypes.object,
   dynamicTableData: PropTypes.arrayOf(
     PropTypes.shape({

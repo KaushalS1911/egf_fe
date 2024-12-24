@@ -2,7 +2,18 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, IconButton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import {
+  Box,
+  Button, Dialog,
+  DialogActions,
+  Grid,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import axios from 'axios';
@@ -16,11 +27,16 @@ import Iconify from '../../../components/iconify';
 import { ConfirmDialog } from '../../../components/custom-dialog';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { useGetAllInterest } from '../../../api/interest-pay';
+import { PDFViewer } from '@react-pdf/renderer';
+import InterestPdf from '../PDF/interest-pdf';
+import { useGetConfigs } from '../../../api/config';
+import UchakInterstPayDetailPdf from '../PDF/uchak-interst-pay-detail-pdf';
 const TABLE_HEAD = [
   { id: 'uchakPayDate', label: 'Uchak Pay Date' },
   { id: 'uchakIntAmt', label: 'Uchak Int Amt' },
   { id: 'remark', label: 'Remarks' },
   { id: 'action', label: 'Action' },
+  { id: 'PDF', label: 'PDF' },
 ];
 function UchakInterestPayForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
@@ -29,7 +45,9 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   const [paymentMode, setPaymentMode] = useState('');
   const confirm = useBoolean();
   const [deleteId, setDeleteId] = useState('');
-
+  const view = useBoolean();
+  const [data, setData] = useState(null);
+  const {configs} = useGetConfigs()
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
     bankAmount: Yup.string()
@@ -311,10 +329,10 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
         <TableBody>
           {uchak && uchak.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.remark}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>{
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, }}>{fDate(row.date)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1,}}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1,}}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1,}}>{
                 <IconButton color='error' onClick={() => {
                   if ((new Date(loanInterest[0]?.to) > new Date(row.date)) || loanInterest.length === 0) {
                     confirm.onTrue();
@@ -327,6 +345,21 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 }}>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
+              }</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap',cursor: 'pointer', py: 0, px: 1 }}>{
+                <Typography
+                  onClick={() => {
+                    view.onTrue();
+                    setData(row);
+                  }}
+                  sx={{
+                    cursor: 'pointer',
+                    color: 'inherit',
+                    pointerEvents: 'auto',
+                  }}
+                >
+                  <Iconify icon='basil:document-solid' />
+                </Typography>
               }</TableCell>
             </TableRow>
           ))}
@@ -342,7 +375,26 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
             Delete
           </Button>
         }
-      />
+      /><Dialog fullScreen open={view.value}>
+      <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+        <DialogActions
+          sx={{
+            p: 1.5,
+          }}
+        >
+          <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            Close
+          </Button>
+        </DialogActions>
+
+        <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+          <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+            <UchakInterstPayDetailPdf data={data} configs={configs}/>
+          </PDFViewer>
+        </Box>
+      </Box>
+    </Dialog>
+
     </>
   );
 }

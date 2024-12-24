@@ -143,9 +143,9 @@ const useStyles = () =>
     [],
   );
 
-export default function InvoiceHeader({ selectedRow, configs, selectedBranch }) {
+export default function InvoiceHeader({configs}) {
+  console.log(configs,"uhuh");
   const styles = useStyles();
-  console.log(configs);
   const logo = configs?.company?.logo_url;
   const branch = configs?.headersConfig?.branch;
   const company = configs?.headersConfig?.companyDetail;

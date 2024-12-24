@@ -98,22 +98,28 @@ const useStyles = () =>
           textAlign: 'right',
           fontSize: 12,
         },
+        row: {
+          flexDirection: 'row',
+          marginVertical: 2,
+        },
         subHeading: {
-          fontWeight: 600,
+          fontWeight: '600',
           fontSize: 10,
+          flex: 0.8,
+        },
+        colon: {
+          fontSize: 10,
+          fontWeight: '600',
+          marginHorizontal: 3,
         },
         subText: {
           fontSize: 10,
+          flex: 2,
         },
         spacing: {
           marginTop: 7,
         },
 
-        img: {
-          height: '140px',
-          width: '140px',
-          borderRadius: 7,
-        },
         table: {
           width: 'auto',
           borderRadius: 10,
@@ -171,7 +177,7 @@ const useStyles = () =>
           marginBottom: 5,
           marginLeft: 18,
         },
-        propertyImage: {
+        img: {
           height: '120px',
           width: '120px',
           borderRadius: 8,
@@ -333,39 +339,45 @@ export default function SansactionLetter({ sansaction, configs }) {
           <InvoiceHeader selectedRow={sansaction} configs={configs} />
           <View style={styles.pagePadding}>
             <View style={styles.flexContainer}>
-              <View style={{ width: '40%' }}>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Loan No : {' '}</Text>
+              <View style={{ width: '50%' }}>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan No{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.loanNo}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Loan Type : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan Type{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.loanType}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Name : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Name{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text
                     style={styles.subText}>{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Address :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Address{' '}</Text>
                   <Text style={{
                     ...styles.subText,
                     textWrap: 'wrap',
                   }}>{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Pan No :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Pan No{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.customer.panCard}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Aadhar Card No :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Aadhar Card No{' '}
+                  </Text> <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.customer.aadharCard}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={styles.subHeading}>Mobile No :{' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Mobile No{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.customer.contact}</Text>
-                </Text>
+                </View>
               </View>
               <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <Image style={styles.img} src={sansaction.customer.avatar_url} />
@@ -425,7 +437,7 @@ export default function SansactionLetter({ sansaction, configs }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={sansaction} />
+          <InvoiceHeader selectedRow={sansaction} configs={configs} />
           <View style={styles.pagePadding}>
             <View> <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>નમૂનો-૧૧ કરજ શરતોની વિગતો
               દર્શાવતું વિવરણ પત્રક નિયમ -૧૪</Text></View>
@@ -503,13 +515,16 @@ export default function SansactionLetter({ sansaction, configs }) {
                 </Text>
               </View>
               <View style={{ width: '40%' }}>
-                <View style={{ textAlign: 'center', marginBottom: 5 }}><Text style={styles.subHeading}><Text
-                  style={[styles.subText, styles.gujaratiText]}>તા.</Text>{fDate(new Date())}</Text></View>
+                <View style={{ textAlign: 'center', marginBottom: 5 }}><Text style={{
+                  fontWeight: '600',
+                  fontSize: 10,
+                }}><Text
+                  style={{ ...styles.gujaratiText, fontSize: 10 }}>તા.</Text>{fDate(new Date())}</Text></View>
                 <View style={{
                   flexDirection: 'row'
                   , display: 'flex', justifyContent: 'center',
                 }}>
-                  <Image style={styles.propertyImage} src={sansaction.propertyImage} />
+                  <Image style={styles.img} src={sansaction.propertyImage} />
                 </View>
                 <View style={{ textAlign: 'center', margin: '10px 0px 5px 0px', width: '100%' }}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 12 }}>વજન તરણની અદાજેલી કિંમતી વ.</Text>
@@ -551,7 +566,7 @@ export default function SansactionLetter({ sansaction, configs }) {
               <View style={{ marginTop: 8 }}>
                 {rules2.map((item, index) => (
                   <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}>
-                    <Text style={{ ...styles.subText, marginRight: 4 }}>•</Text> {/* Bullet point */}
+                    <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
                     <Text style={{
                       ...styles.gujaratiText,
                       fontSize: 11,
@@ -565,7 +580,7 @@ export default function SansactionLetter({ sansaction, configs }) {
             <View>
               <Text style={{
                 ...styles.gujaratiText,
-                fontWight: 900,
+                fontWeight: '900', // Fixed typo in 'fontWeight'
                 fontSize: 14,
                 marginTop: 8,
                 color: '#232C4B',
@@ -575,16 +590,29 @@ export default function SansactionLetter({ sansaction, configs }) {
               <View style={{ marginTop: 8 }}>
                 {specification.map((item, index) => (
                   <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}>
-                    <Text style={{ ...styles.subText, marginRight: 4 }}>•</Text>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 12, fontWight: 600 }}>{item.heading} :{' '}</Text>
-                    <Text style={{
-                      ...styles.gujaratiText,
-                      fontSize: 11,
-                    }}>{item.specification}</Text> {/* Condition text */}
+                    <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>
+                    <View style={{ flexDirection: 'row', flex: 1 }}>
+                      <Text style={{
+                        ...styles.gujaratiText,
+                        fontSize: 12,
+                        fontWeight: '600', // Fixed typo in 'fontWeight'
+                        width: 80, // Fixed width to align colons
+                      }}>{item.heading}</Text>
+                      <Text style={{
+                        ...styles.gujaratiText,
+                        fontSize: 12,
+                      }}>:</Text>
+                      <Text style={{
+                        ...styles.gujaratiText,
+                        fontSize: 11,
+                        marginLeft: 4,
+                      }}>{item.specification}</Text>
+                    </View>
                   </View>
                 ))}
               </View>
             </View>
+
           </View>
           <View style={styles.d_flex}>
             <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>

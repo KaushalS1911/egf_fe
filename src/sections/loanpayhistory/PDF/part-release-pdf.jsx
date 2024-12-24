@@ -49,7 +49,21 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 0px 24px',
-          height:'68%'
+          height: '68%',
+        },
+        watermarkContainer: {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: -1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        watermarkImage: {
+          width: 400,
+          opacity: 0.1,
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
@@ -160,19 +174,33 @@ const useStyles = () =>
         tableCell_3: {
           width: '15%',
         },
+        row: {
+          flexDirection: 'row',
+          marginVertical: 2,
+        },
         subHeading: {
-          fontWeight: 600,
+          fontWeight: '600',
           fontSize: 10,
+          flex: 1.2,
+        },
+        subHeading2: {
+          fontWeight: '600',
+          fontSize: 10,
+          flex: 0.8,
+        },
+        colon: {
+          fontSize: 10,
+          fontWeight: '600',
+          marginHorizontal: 3,
         },
         subText: {
           fontSize: 10,
-          lineHeight: 1.5
+          flex: 2,
         },
         img: {
-          borderRadius: 5,
-          width: '100%',
-          height: 148,
-          objectFit: 'cover',
+          height: '96px',
+          width: '96px',
+          borderRadius: 8,
         },
         d_flex: {
           display: 'flex',
@@ -180,7 +208,7 @@ const useStyles = () =>
           flexDirection: 'row',
           marginTop: 90,
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
         },
         signText: {
           fontSize: 11,
@@ -188,7 +216,7 @@ const useStyles = () =>
           paddingTop: 10,
           textAlign: 'center',
           width: '100px',
-          fontWeight: 600
+          fontWeight: 600,
         },
       }),
     [],
@@ -196,72 +224,92 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function PartReleasePdf({ selectedRow,configs }) {
+export default function PartReleasePdf({ selectedRow, configs }) {
   const styles = useStyles();
-  console.log(selectedRow,"ghfffkt");
   return (
     <>
       <Document>
         <Page size='A4' style={styles.page}>
-          <InvoiceHeader selectedRow={selectedRow.loan} configs={configs}/>
+          <View style={styles.watermarkContainer}>
+            <Image src={logo} style={styles.watermarkImage} />
+          </View>
+          <InvoiceHeader selectedRow={selectedRow.loan} configs={configs} />
           <View style={styles.pagePadding}>
-            <View style={{ width: '100%', display: 'flex',justifyContent: 'space-between',flexDirection: 'row', marginTop: 10 }}>
-              <View style={{width: '33%'}}>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Loan No : {' '}</Text>
+            <View style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              marginTop: 20,
+            }}>
+              <View style={{ width: '40%' }}>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan No{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loan.loanNo}</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Issue Date : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Issue Date{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{fDate(selectedRow.loan.issueDate)}</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Close Date : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Close Date{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>27 Aug 2024</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Loan Amount : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan Amount{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loan.loanAmount}</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Pay Amount : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Pay Amount{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Int. Loan Amount : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Int. Loan Amount{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loan.interestLoanAmount}</Text>
-                </Text>
+                </View>
               </View>
-              <View  style={{width: '33%'}}>
-                <Text style={{ marginTop: 10}}>
-                  <Text style={styles.subHeading}>Customer Name : {' '}</Text>
-                  <Text style={styles.subText}>{`${selectedRow.loan.customer.firstName} ${selectedRow.loan.customer.middleName} ${selectedRow.loan.customer.lastName}`}</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Pan No : {' '}</Text>
+              <View style={{ width: '40%' }}>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Customer Name{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text
+                    style={styles.subText}>{`${selectedRow.loan.customer.firstName} ${selectedRow.loan.customer.middleName} ${selectedRow.loan.customer.lastName}`}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Pan No{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loan.customer.panCard}</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Mobile No : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Mobile No{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loan.customer.contact}</Text>
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                  <Text style={styles.subHeading}>Remark : {' '}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Remark{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.remark}</Text>
-                </Text>
+                </View>
               </View>
-              <View  style={{width: '33%'}}>
-                <Image src={selectedRow.propertyImage} style={styles.img}/>
+              <View style={{ width: '20%' }}>
+                <Image src={selectedRow.propertyImage} style={styles.img} />
               </View>
             </View>
             <Text style={{ marginTop: 10 }}>
-              <Text style={styles.subHeading}>Accepted & Received Amount : {' '}</Text>
+              <Text style={styles.subHeading}>Accepted & Received Amount{' '}</Text>
+              <Text style={styles.colon}>:</Text>
               <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
             </Text>
           </View>
           <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ ...styles.signText , marginRight: 35 }}>Easy Gold FinCorp</Text>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
           </View>
         </Page>
       </Document>
