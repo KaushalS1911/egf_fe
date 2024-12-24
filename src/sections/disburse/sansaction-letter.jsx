@@ -358,6 +358,7 @@ export default function SansactionLetter({ sansaction, configs }) {
                 </View>
                 <View style={styles.row}>
                   <Text style={styles.subHeading}>Address{' '}</Text>
+                  <Text style={styles.colon}>:</Text>
                   <Text style={{
                     ...styles.subText,
                     textWrap: 'wrap',
