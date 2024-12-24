@@ -16,6 +16,8 @@ import { useGetCompanyDetails } from '../../../api/company_details';
 import { ACCOUNT_TYPE_OPTIONS } from '../../../_mock';
 import { useDispatch } from 'react-redux';
 import { updateConfigs } from '../slices/configSlice';
+import { useGetConfigs } from '../../../api/config';
+import { useGetBranch } from '../../../api/branch';
 
 const personalDetailsSchema = yup.object().shape({
   logo_url: yup.mixed().required('Logo is required'),
@@ -35,7 +37,7 @@ const bankDetailsSchema = yup.object().shape({
 
 export default function CompanyProfile() {
   const { user } = useAuthContext();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { companyDetail, mutate } = useGetCompanyDetails();
   const [profilePic, setProfilePic] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
@@ -43,6 +45,9 @@ export default function CompanyProfile() {
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [editingBankDetail, setEditingBankDetail] = useState(null);
+  const { branch } = useGetBranch();
+  const { configs } = useGetConfigs();
+
 
   const personalDetailsMethods = useForm({
     defaultValues: {
@@ -50,6 +55,7 @@ export default function CompanyProfile() {
       name: companyDetail?.name || '',
       email: companyDetail?.email || '',
       contact: companyDetail?.contact || '',
+      branch: configs?.headersConfig?.branch || null,
     },
     resolver: yupResolver(personalDetailsSchema),
   });
@@ -68,17 +74,18 @@ export default function CompanyProfile() {
 
   const { reset: resetPersonalDetails, handleSubmit: handleSubmitPersonalDetails } = personalDetailsMethods;
   const { reset: resetBankDetails, handleSubmit: handleSubmitBankDetails } = bankDetailsMethods;
-
+  console.log(configs?.headersConfig?.branch?.name);
   useEffect(() => {
-    if (companyDetail) {
+    if (companyDetail && configs?.headersConfig?.branch) {
       resetPersonalDetails({
         logo_url: companyDetail.logo_url || '',
         name: companyDetail.name || '',
         email: companyDetail.email || '',
         contact: companyDetail.contact || '',
+        branch: configs?.headersConfig?.branch || null,
       });
     }
-  }, [companyDetail, resetPersonalDetails]);
+  }, [companyDetail, configs, resetPersonalDetails]);
 
   const onSubmitPersonalDetails = async (data) => {
     setLoading(true);
@@ -86,13 +93,28 @@ export default function CompanyProfile() {
       name: data.name,
       email: data.email,
       contact: data.contact,
+      branch: data.branch,
     };
 
+    const details = {
+      companyDetail: {
+        name: data.name,
+        email: data.email,
+        contact: data.contact,
+      },
+      branch: data.branch
+    };
+    const payload2 = { ...configs, headersConfig: details };
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}`;
+    const URL2 = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
+    setLoading(true);
+
     try {
       await axios.put(URL, payload);
+      await axios.put(URL2,payload2)
       mutate();
       enqueueSnackbar('Personal details updated successfully', { variant: 'success' });
+      setLoading(false);
     } catch (err) {
       console.error('Update error:', err);
       enqueueSnackbar(err.response?.data?.message || 'An error occurred', { variant: 'error' });
@@ -100,7 +122,6 @@ export default function CompanyProfile() {
       setLoading(false);
     }
   };
-
   const onSubmitBankDetails = async (data) => {
     setLoading2(true);
     const newBankAccount = {
@@ -152,7 +173,7 @@ export default function CompanyProfile() {
         if (companyDetail) {
           const formData = new FormData();
           formData.append('company-logo', file);
-          dispatch(updateConfigs({ companyId : user.company, payload: formData }))
+          dispatch(updateConfigs({ companyId: user.company, payload: formData }));
         }
       }
     },
@@ -206,7 +227,7 @@ export default function CompanyProfile() {
           <Grid item sx={{ my: 'auto' }} xs={12} md={8}>
             <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
 
-            Company Details
+              Company Details
             </Typography>
             <Card>
               <Stack spacing={3} sx={{ p: 3 }}>
@@ -226,6 +247,18 @@ export default function CompanyProfile() {
                                 onInput={(e) => {
                                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
                                 }} />
+                  <RHFAutocomplete
+                    name='branch'
+                    label='Branch'
+                    fullWidth
+                    options={branch?.map((item) => item)}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option} >
+                        {option.name}
+                      </li>
+                    )}
+                  />
                 </Box>
               </Stack>
             </Card>
@@ -243,7 +276,7 @@ export default function CompanyProfile() {
       <FormProvider methods={bankDetailsMethods}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 ,px:3}}>
+            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600, px: 3 }}>
               Bank Details
             </Typography>
             <Typography variant='body2' sx={{ color: 'text.secondary', px: 3 }}>
@@ -307,8 +340,8 @@ export default function CompanyProfile() {
               <Card sx={{ margin: '10px 0px' }} key={account._id}>
                 <Stack sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant='subtitle1' sx={{fontWeight: 600 }}>
-                    {account.bankName} ({account.accountType})
+                    <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
+                      {account.bankName} ({account.accountType})
                     </Typography>
                     <Box>
                       <IconButton onClick={() => handleEditBankDetail(account)}>

@@ -21,7 +21,7 @@ import { fDate } from '../../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge} = row;
+  const { loanNo, customer, loanAmount, scheme, issueDate,interestLoanAmount,from,to} = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -43,9 +43,9 @@ export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, o
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'from'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'to'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'Days'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(to)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{calculateDateDifference(from,to)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'payment by'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'int'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'penalty'}</TableCell>

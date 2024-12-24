@@ -165,7 +165,7 @@ export default function DailyReportsListView() {
         <Card sx={{ pb: 3 }}>
           <DailyReportsTableToolbarTableToolbar filters={filters} onFilters={handleFilters}  dataFilter={dataFiltered} configs={configs}/>
           <Box>
-             <NewGoldLonListView LoanIssue={report?.loans} />
+             <NewGoldLonListView LoanIssue={dataFiltered?.loans} />
           </Box>
           <Box mt={2}>
             <GoldLoanInterestListView  interestDetail={report?.interestDetail}/>

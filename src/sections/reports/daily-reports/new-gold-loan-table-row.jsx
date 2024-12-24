@@ -20,8 +20,30 @@ import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export default function NewGoldLoanTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge} = row;
+export default function NewGoldLoanTableRow({
+                                              row,
+                                              index,
+                                              selected,
+                                              onEditRow,
+                                              onSelectRow,
+                                              onDeleteRow,
+                                              handleClick,
+                                            }) {
+  const {
+    loanNo,
+    customer,
+    loanAmount,
+    scheme,
+    cashAmount,
+    bankAmount,
+    status,
+    issueDate,
+    lastInstallmentDate,
+    nextInstallmentDate,
+    interestLoanAmount,
+    consultingCharge,
+    issuedBy
+  } = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -42,8 +64,7 @@ export default function NewGoldLoanTableRow({ row,index, selected, onEditRow, on
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'entry by'}</TableCell>
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${issuedBy.firstName} ${issuedBy.middleName} ${issuedBy.lastName}`}</TableCell>
       </TableRow>
 
       <CustomPopover

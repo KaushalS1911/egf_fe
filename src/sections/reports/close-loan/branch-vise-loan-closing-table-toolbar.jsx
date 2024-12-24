@@ -257,7 +257,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf loans={loans} branch={selectedBranch}/>
+              <AllBranchLoanSummaryPdf loans={loans}/>
             </PDFViewer>
           </Box>
         </Box>

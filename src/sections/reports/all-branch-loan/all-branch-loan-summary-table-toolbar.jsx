@@ -217,7 +217,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
         >
           {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
             onClick={() => {
-              view.onTrue()
+              // view.onTrue()
               popover.onClose();
             }}
           >
@@ -258,7 +258,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf loans={dataFilter} selectedBranch={selectedBranch} configs={configs}/>
+              <AllBranchLoanSummaryPdf loans={dataFilter}  configs={configs}/>
             </PDFViewer>
           </Box>
         </Box>

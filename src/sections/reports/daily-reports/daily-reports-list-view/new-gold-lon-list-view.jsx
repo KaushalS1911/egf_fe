@@ -42,7 +42,7 @@ import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../../components/label';
 import NewGoldLoanTableRow from '../new-gold-loan-table-row';
-import { Typography } from '@mui/material';
+import { TableCell, TableRow, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -71,7 +71,6 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function NewGoldLonListView({LoanIssue}) {
-  console.log(LoanIssue,'+++++++++++++++++++++++++++++++++++++++++++');
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -84,7 +83,7 @@ export default function NewGoldLonListView({LoanIssue}) {
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: LoanIssue,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -266,8 +265,15 @@ export default function NewGoldLonListView({LoanIssue}) {
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
-                  <TableNoData notFound={notFound} />
+                  {
+                   dataFiltered.length == 0 &&
+                  <TableRow>
+                    <TableCell colSpan={12} align='center' sx={{p:1,fontWeight:500}}>
+                      No Data Available
+                    </TableCell>
+                  </TableRow>
+                  }
+                  {/*<TableNoData notFound={notFound} />*/}
                 </TableBody>
               </Table>
             </Scrollbar>

@@ -43,7 +43,7 @@ import Tab from '@mui/material/Tab';
 import Label from '../../../../components/label';
 import NewGoldLoanTableRow from '../new-gold-loan-table-row';
 import GoldLoanIntrestDetailseTableRow from '../gold-loan-intrest-detailse-table-row';
-import { Typography } from '@mui/material';
+import { TableCell, TableRow, Typography } from '@mui/material';
 import GoldLoanUchakPaymentTableRow from '../gold-loan-uchak-payment-table-row';
 
 // ----------------------------------------------------------------------
@@ -273,7 +273,15 @@ export default function GoldLoanInterestListView({interestDetail}) {
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-                  <TableNoData notFound={notFound} />
+                  {
+                   dataFiltered.length == 0&&
+                  <TableRow>
+                    <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
+                      No Data Available
+                    </TableCell>
+                  </TableRow>
+                  }
+                  {/*<TableNoData notFound={notFound} />*/}
 
                 </TableBody>
               </Table>

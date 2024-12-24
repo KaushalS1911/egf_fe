@@ -61,7 +61,7 @@ const useStyles = () =>
         logoParent: {
           height: 94,
           width: 94,
-          // margin: '10px 10px 5px 35px ',
+          margin: '0px 0px 0px 5px ',
         },
         logo: {
           height: '100%',
@@ -94,6 +94,7 @@ const useStyles = () =>
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
           width: '100%',
+          textAlign: 'left',
         },
 
         companyNameContainer: {
@@ -106,7 +107,8 @@ const useStyles = () =>
           color: '#fff',
           fontSize: '10px',
           fontWeight: 'bold',
-          margin: '1px 2px',
+          marginLeft: 5, // Spacing between icon and text
+          marginRight: 5, // Optional, for alignment
         },
         headerDetailsParent: {
           margin: '60px 30px',
@@ -143,8 +145,10 @@ const useStyles = () =>
 
 export default function InvoiceHeader({ selectedRow, configs, selectedBranch }) {
   const styles = useStyles();
-  const branch = selectedBranch ? selectedBranch : selectedRow?.customer?.branch;
-  const company = configs?.company;
+  console.log(configs);
+  const logo = configs?.company?.logo_url;
+  const branch = configs?.headersConfig?.branch;
+  const company = configs?.headersConfig?.companyDetail;
   const branchAddress = branch ? `${branch.address.street}, ${branch.address.landmark}, ${branch.address.city}, ${branch.address.zipcode}` : '';
   const branchName = branch?.name || 'Branch Name Not Available';
   const branchCode = branch?.branchCode || 'Branch Code Not Available';
@@ -159,35 +163,49 @@ export default function InvoiceHeader({ selectedRow, configs, selectedBranch }) 
           style={{
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'start',
-            alignItems: 'flex-end',
-            padding: '0px 0px 5px 5px',
+            alignItems: 'center', // Center vertically
           }}
         >
+          {/* Logo Section */}
           <View style={styles.logoParent}>
-            <Image style={styles.logo} src={company?.logo_url || 'default_logo_url'} />
+            <Image style={styles.logo} src={logo} />
           </View>
-          <View style={{ ...styles.companyNameContainer, }}>
-            <Text style={{
-              ...styles.dynamicHeaderText,
-              fontSize: company?.name?.length > 20 ? '18px' : '26px',
-              marginTop: company?.name?.length > 15 ? 55 : 0,
-            }}>
+
+          {/* Company Name and Address Section */}
+          <View
+            style={{
+              flex: 1,
+              marginLeft: 0,
+              display: 'flex',
+              flexDirection: 'column', // Stack vertically
+              justifyContent: 'center', // Align content vertically in the available space
+              padding: ' 0px 0px 0px 5px',
+            }}
+          >
+            {/* Company Name */}
+            <Text
+              style={{
+                ...styles.dynamicHeaderText,
+                fontSize: company?.name?.length > 20 ? '18px' : '24px',
+                marginTop: 60,
+              }}
+            >
               {company?.name || 'Company Name'}
             </Text>
+
+            {/* Address */}
+            <View
+              style={{
+                flexDirection: 'row',
+                textWrap:'wrap',
+                paddingRight:10,
+              }}
+            >
+              <Image style={styles.icon} src={address} />
+              <Text style={styles.separator}>|</Text>
+              <Text style={styles.headerSubText}>{branchAddress}</Text>
+            </View>
           </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 3,
-            padding: '0px 0px 0px 10px',
-            textWrap: 'wrap',
-          }}
-        >
-          <Image style={styles.icon} src={address} />
-          <Text style={styles.separator}>|</Text>
-          <Text style={styles.headerSubText}>{branchAddress}</Text>
         </View>
       </View>
 

@@ -28,8 +28,16 @@ import { fDate } from '../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, index , loanStatus }) {
-  const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo,issueDate } = row;
+export default function LoanpayhistoryTableRow({
+                                                 row,
+                                                 selected,
+                                                 onEditRow,
+                                                 onSelectRow,
+                                                 onDeleteRow,
+                                                 index,
+                                                 loanStatus,
+                                               }) {
+  const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo, issueDate } = row;
   const confirm = useBoolean();
   const [nocData, setNocData] = useState();
   const popover = usePopover();
@@ -39,17 +47,21 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   const [dialogContent, setDialogContent] = useState(null);
 
   let color;
-  switch (status){
+  switch (status) {
     case 'Closed' : {
-      color = '#FFF1D6'
+      color = (theme) => theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07';
       break;
     }
     case 'Overdue' : {
-      color = '#FFE4DE'
+      color = (theme) => theme.palette.mode === 'light' ? '#FFE4DE' : '#611706';
+      break;
+    }
+    case 'Regular' : {
+      color = (theme) => theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403';
       break;
     }
     default : {
-      color = ''
+      color = '';
     }
   }
 
@@ -60,12 +72,13 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
 
   const renderDialogContent = () => {
     if (dialogContent === 'loanDetails') {
-      return <LoanIssueDetails selectedRow={row} configs={configs}/>;
-    } if (dialogContent === 'sanction') {
-      return <SansactionLetter sansaction={row}  configs={configs}/>;
+      return <LoanIssueDetails selectedRow={row} configs={configs} />;
+    }
+    if (dialogContent === 'sanction') {
+      return <SansactionLetter sansaction={row} configs={configs} />;
     }
     if (dialogContent === 'authority') {
-      return <LetterOfAuthority loan={row}/>;
+      return <LetterOfAuthority loan={row} />;
     }
     if (dialogContent === 'notice') {
       return <Notice noticeData={row} configs={configs} />;
@@ -78,7 +91,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
   };
   return (
     <>
-      <TableRow hover selected={selected} sx={{backgroundColor: loanStatus === status ? color : color}}>
+      <TableRow hover selected={selected} sx={{ backgroundColor: loanStatus === status ? color : color }}>
         <TableCell>
           {srNo}
         </TableCell>
@@ -164,7 +177,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
               <Iconify icon='mdi:certificate-outline' />
               NOC
             </MenuItem>
-        :
+            :
             <MenuItem
               onClick={() => {
                 handleDialogOpen('notice');
@@ -192,12 +205,12 @@ export default function LoanpayhistoryTableRow({ row, selected, onEditRow, onSel
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               {renderDialogContent()}
             </PDFViewer>
           </Box>
