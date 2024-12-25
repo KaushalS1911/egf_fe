@@ -12,7 +12,7 @@ import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function BranchViseLoanClosingFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
+export default function BranchWiseLoanClosingFilters({ filters, onFilters, onResetFilters, results, ...other }) {
 
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
@@ -68,7 +68,7 @@ export default function BranchViseLoanClosingFiltersResult({ filters, onFilters,
   );
 }
 
-BranchViseLoanClosingFiltersResult.propTypes = {
+BranchWiseLoanClosingFilters.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

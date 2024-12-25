@@ -25,14 +25,13 @@ import AllBranchLoanSummaryPdf from '../view/all-branch-loan-summary-pdf';
 
 // ----------------------------------------------------------------------
 
-export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, loans, dateError }) {
+export default function BranchWiseLoanClosingTableToolbar({ filters, onFilters, dateError, dataFilter, configs,options }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
-  const {branch}=useGetBranch()
-  const [selectedBranch,setSelectedBranch] = useState(null)
+  const { branch } = useGetBranch();
+  const [selectedBranch, setSelectedBranch] = useState(null);
   const view = useBoolean();
   const handleFilterName = useCallback(
     (event) => {
@@ -73,8 +72,8 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
     },
     [onFilters],
   );
-  const CustomStyle = {
-    maxWidth: { md: 200 },
+  const customStyle = {
+    maxWidth: { md: 350 },
     'label': {
       mt: -0.8,
       fontSize: '14px',
@@ -84,17 +83,26 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
     },
     'input': { height: 7 },
   };
-
-  const handleFilterBranch =  useCallback(
+  const sx2 = {};
+  const handleFilterBranch = useCallback(
     (event) => {
-      setSelectedBranch(event.target.value)
+      setSelectedBranch(event.target.value);
       onFilters(
         'branch',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value,
       );
     },
     [onFilters],
-  )
+  );
+  const handleFilterIssuedBy = useCallback(
+    (event) => {
+      onFilters(
+        'closedBy',
+        typeof event.target.value === 'object' && event.target.value,
+      );
+    },
+    [onFilters],
+  );
   return (
     <>
       <Stack
@@ -114,64 +122,111 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
           alignItems='center'
           spacing={2}
           flexGrow={1}
-          sx={{ width: 1, pr: 1.5 }}
+          sx={{ width: '100%', pr: 1.5 }}
         >
-          <TextField
-            sx={{ 'input': { height: 7 } }}
-            fullWidth
-            value={filters.username}
-            onChange={handleFilterName}
-            placeholder='Search...'
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
+          {/*<TextField*/}
+          {/*  sx={{ 'input': { height: 7 } }}*/}
+          {/*  fullWidth*/}
+          {/*  value={filters.username}*/}
+          {/*  onChange={handleFilterName}*/}
+          {/*  placeholder='Search...'*/}
+          {/*  InputProps={{*/}
+          {/*    startAdornment: (*/}
+          {/*      <InputAdornment position='start'>*/}
+          {/*        <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />*/}
+          {/*      </InputAdornment>*/}
+          {/*    ),*/}
+          {/*  }}*/}
+          {/*/>*/}
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 200 },
+              width: { xs: 1, sm: 350 },
             }}
           >
             <InputLabel sx={{
               mt: -0.8,
               '&.MuiInputLabel-shrink': {
-              mt: 0,
-            },
+                mt: 0,
+              },
+            }}>Closed By</InputLabel>
+
+            <Select
+              value={filters.closedBy}
+              onChange={handleFilterIssuedBy}
+              input={<OutlinedInput label='Closed By' sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 350 },
+            }}
+          >
+            <InputLabel sx={{
+              mt: -0.8,
+              '&.MuiInputLabel-shrink': {
+                mt: 0,
+              },
             }}>Branch</InputLabel>
 
             <Select
-            value={filters.branch}
-            onChange={handleFilterBranch}
-            input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240,
-                  '&::-webkit-scrollbar': {
-                    width: '5px',
+              value={filters.branch}
+              onChange={handleFilterBranch}
+              input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
                   },
-                  '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#f1f1f1',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#888',
-                    borderRadius: '4px',
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    backgroundColor: '#555',
-                  },},
-              },
-            }}
-          >
-            {branch.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
+                },
+              }}
+            >
+              {branch.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
           <DatePicker
             label='Start date'
@@ -185,7 +240,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
                 fullWidth: true,
               },
             }}
-            sx={{ ...CustomStyle }}
+            sx={{ ...customStyle }}
           />
           <DatePicker
             label='End date'
@@ -201,7 +256,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
-            sx={{ ...CustomStyle }}
+            sx={{ ...customStyle }}
           />
 
           <IconButton onClick={popover.onOpen}>
@@ -233,7 +288,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
             </MenuItem>
             <MenuItem>
               <RHFExportExcel
-                data={loans}
+                // data={loans}
                 fileName='LaonissueData'
                 sheetName='LoanissueDetails'
               />
@@ -251,13 +306,13 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf loans={loans}/>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <AllBranchLoanSummaryPdf loans={dataFilter} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>
@@ -266,7 +321,7 @@ export default function BranchViseLoanClosingTableToolbar({ filters, onFilters, 
   );
 }
 
-BranchViseLoanClosingTableToolbar.propTypes = {
+BranchWiseLoanClosingTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

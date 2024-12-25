@@ -498,7 +498,6 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
             onDrop={handleDropSingleFile}
           />
           <Dialog open={Boolean(open)} onClose={handleCancel} >
-            {console.log(capturedImage,"yrgbebiybybv")}
             {/*{imageSrc.length || capturedImage && (*/}
               <ReactCrop
                 crop={crop}

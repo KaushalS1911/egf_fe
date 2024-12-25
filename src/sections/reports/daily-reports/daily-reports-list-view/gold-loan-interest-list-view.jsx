@@ -239,7 +239,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 'auto' }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 2000 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}

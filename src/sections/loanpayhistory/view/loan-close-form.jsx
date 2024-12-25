@@ -378,6 +378,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
               Close
             </Button>
           </DialogActions>
+
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               <LoanCloseDetailsPdf data={data} configs={configs} />

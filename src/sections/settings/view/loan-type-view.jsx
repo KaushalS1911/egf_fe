@@ -18,7 +18,6 @@ export default function LoanTypeView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = () => {
-    console.log(inputVal.loanType == "" && inputVal.approvalCharge == "");
     if ( inputVal.loanType == "" || inputVal.approvalCharge == "") {
       enqueueSnackbar('Loan Type cannot be empty', { variant: 'warning' });
     }else {
