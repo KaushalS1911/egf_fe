@@ -43,7 +43,6 @@ export default function LoanpayhistoryTableRow({
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  console.log(configs,".......................++++++++++++++++++++++------------------------");
   const view = useBoolean();
   const [dialogContent, setDialogContent] = useState(null);
 

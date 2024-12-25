@@ -47,7 +47,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
   const { loanClose, refetchLoanClose } = useGetCloseLoan(currentLoan._id);
-  console.log(loanClose, '00000000000000000000');
   const view = useBoolean();
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
@@ -90,7 +89,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
     netAmount: Yup.string().required('Net Amount is required'),
     ...paymentSchema,
   });
-  console.log((currentLoan?.interestLoanAmount));
   const defaultValues = {
     totalLoanAmount: currentLoan?.loanAmount || '',
     netAmount: '',

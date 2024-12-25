@@ -16,22 +16,22 @@ import { useGetConfigs } from '../../../api/config';
 import { getResponsibilityValue } from '../../../permission/permission';
 import Label from '../../../components/label';
 import { fDate } from '../../../utils/format-time';
-
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const {from,to,penalty,days,loan,amountPaid} = row;
-  const {loanNo,customer,loanAmount,  scheme, issueDate,interestLoanAmount,}=loan
+export default function BranchWiseLoanClosingTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
+  // const moment = require('moment'); // Import moment if not already done
+  const { loanNo, customer, loanAmount, scheme,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge,totalPaidInterest,day,pendingInterest} = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+    const diffDays = moment(date1).diff(moment(date2), 'days');
+    return Math.abs(diffDays); // Return absolute value to handle negative differences
   };
+
   return (
     <>
       <TableRow hover selected={selected}>
@@ -40,17 +40,34 @@ export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, o
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(from)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(to)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'payment by'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'int'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{penalty}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap'}}>{totalPaidInterest.toFixed(2)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{day >0 ? day :0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap'}}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(nextInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Label
+            variant='soft'
+            color={
+              (status === 'Disbursed' && 'info') ||
+              (status === 'Issued' && 'secondary') ||
+              (status === 'Closed' && 'warning') ||
+              (status === 'Overdue' && 'error') ||
+              (status === 'Regular' && 'success') ||
+              'default'
+            }
+          >
+            {status}
+          </Label></TableCell>
+
       </TableRow>
 
       <CustomPopover
@@ -95,9 +112,9 @@ export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, o
 
     </>
   );
-}
+};
 
-GoldLoanIntrestDetailseTableRow.propTypes = {
+BranchWiseLoanClosingTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

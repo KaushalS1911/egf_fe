@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -34,36 +34,38 @@ import { useGetLoanissue } from '../../../api/loanissue';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { fDate, isBetween } from '../../../utils/format-time';
 import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-
+import AllBranchLoanSummaryTableRow from '../all-branch-loan/all-branch-loan-summary-table-row';
+import AllBranchLoanSummaryTableToolbar from '../all-branch-loan/all-branch-loan-summary-table-toolbar';
+import AllBranchLoanSummaryTableFiltersResult from '../all-branch-loan/all-branch-loan-summary-table-filters-result';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
-import BranchViseLoanClosingTableToolbar from '../close-loan/branch-vise-loan-closing-table-toolbar';
-import BranchViseLoanClosingFiltersResult from '../close-loan/branch-vise-loan-closing-filters-result';
-import BranchViseLoanClosingTableRow from '../close-loan/branch-vise-loan-closing-table-row';
+import { useGetAllLoanSummary } from '../../../api/all-branch-loan-summary';
+import BranchWiseLoanClosingTableToolbar from '../close-loan/branch-wise-loan-closing-table-toolbar';
+import BranchWiseLoanClosingFiltersResult from '../close-loan/branch-wise-loan-closing-filters-result';
+import BranchWiseLoanClosingTableRow from '../close-loan/branch-wise-loan-closing-table-row';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.'},
-  { id: 'CustomerName', label: 'Customer name'},
-  { id: 'ContactNo', label: 'Contact'},
-  { id: 'int%', label: 'int (%)'},
-  { id: 'OtherInt%', label: 'Other int (%)'},
-  { id: 'int%', label: 'Issue date'},
-  { id: 'LoanAmount', label: 'loan amt'},
-  { id: 'LastAmtPayDate', label: 'Last amt. pay date'},
-  { id: 'LoanAmountPay', label: 'loan amt pay'},
-  { id: 'InterestLoanAmount', label: 'Int. loan amt'},
-  { id: 'LastIntPayDate', label: 'Last int. pay date'},
-  { id: 'TotalIntPay', label: 'Total int. pay '},
-  { id: 'Day', label: ' Day '},
-  { id: 'pendingAmt', label: ' Pending int. '},
-  { id: 'nextIntPayDate', label: 'Next int. pay date'},
-  { id: 'Status', label: 'Status'},
+  { id: 'LoanNo', label: 'Loan No.' },
+  { id: 'CustomerName', label: 'Customer name' },
+  { id: 'ContactNo', label: 'Contact' },
+  { id: 'int%', label: 'int (%)' },
+  { id: 'OtherInt%', label: 'Other int (%)' },
+  { id: 'int%', label: 'Issue date' },
+  { id: 'LoanAmount', label: 'loan amt' },
+  { id: 'LastAmtPayDate', label: 'Last amt. pay date' },
+  { id: 'LoanAmountPay', label: 'loan amt pay' },
+  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'LastIntPayDate', label: 'Last int. pay date' },
+  { id: 'TotalIntPay', label: 'Total int. pay ' },
+  { id: 'Day', label: ' Day ' },
+  { id: 'pendingAmt', label: ' Pending int. ' },
+  { id: 'nextIntPayDate', label: 'Next int. pay date' },
+  { id: 'Status', label: 'Status' },
 ];
 
 const defaultFilters = {
@@ -72,25 +74,30 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   branch: '',
-
+  closedBy: '',
 };
 
 // ----------------------------------------------------------------------
 
 export default function BranchViseLoanClosingListView() {
+  const [options, setOptions] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false, false, false,true);
+  const { LoanSummary, LoanSummaryLoading } = useGetAllLoanSummary(false, true);
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(Loanissue);
+  const [tableData, setTableData] = useState(LoanSummary);
   const [filters, setFilters] = useState(defaultFilters);
 
+
+  useEffect(() => {
+    fetchStates();
+  }, [LoanSummary]);
   const dataFiltered = applyFilter({
-    inputData: Loanissue,
+    inputData: LoanSummary,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -148,7 +155,7 @@ export default function BranchViseLoanClosingListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = LoanSummary.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -172,34 +179,49 @@ export default function BranchViseLoanClosingListView() {
     [router],
   );
 
-  const loans = Loanissue.map((item) => ({
-    'Loan No': item.loanNo,
-    'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-    'Contact': item.customer.contact,
-    'OTP Contact': item.customer.otpContact,
-    Email: item.customer.email,
-    'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-    'Issue date': item.issueDate,
-    'Scheme': item.scheme.name,
-    'Rate per gram': item.scheme.ratePerGram,
-    'Interest rate': item.scheme.interestRate,
-    valuation: item.scheme.valuation,
-    'Interest period': item.scheme.interestPeriod,
-    'Renewal time': item.scheme.renewalTime,
-    'min loan time': item.scheme.minLoanTime,
-    'Loan amount': item.loanAmount,
-    'Next nextInstallment date': fDate(item.nextInstallmentDate),
-    'Payment mode': item.paymentMode,
-    'Paying cashAmount': item.payingCashAmount,
-    'Pending cashAmount': item.pendingCashAmount,
-    'Paying bankAmount': item.payingBankAmount,
-    'Pending bankAmount': item.pendingBankAmount,
-  }));
+  // const loans = Loanissue.map((item) => ({
+  //   'Loan No': item.loanNo,
+  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
+  //   'Contact': item.customer.contact,
+  //   'OTP Contact': item.customer.otpContact,
+  //   Email: item.customer.email,
+  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
+  //   'Issue date': item.issueDate,
+  //   'Scheme': item.scheme.name,
+  //   'Rate per gram': item.scheme.ratePerGram,
+  //   'Interest rate': item.scheme.interestRate,
+  //   valuation: item.scheme.valuation,
+  //   'Interest period': item.scheme.interestPeriod,
+  //   'Renewal time': item.scheme.renewalTime,
+  //   'min loan time': item.scheme.minLoanTime,
+  //   'Loan amount': item.loanAmount,
+  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
+  //   'Payment mode': item.paymentMode,
+  //   'Paying cashAmount': item.payingCashAmount,
+  //   'Pending cashAmount': item.pendingCashAmount,
+  //   'Paying bankAmount': item.payingBankAmount,nasm
+  //   'Pending bankAmount': item.pendingBankAmount,
+  // }));
 
-  if (LoanissueLoading) {
+  if (LoanSummaryLoading) {
     return (
       <LoadingScreen />
     );
+  }
+
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option.value === data.closedBy._id)) {
+          return [...item, {
+            name: `${data.closedBy.firstName} ${data.closedBy.middleName} ${data.closedBy.lastName}`,
+            value: data.closedBy._id,
+          }];
+        } else {
+          return item;
+        }
+      });
+    });
   }
 
   return (
@@ -219,11 +241,10 @@ export default function BranchViseLoanClosingListView() {
         />
 
         <Card>
-
-          <BranchViseLoanClosingTableToolbar filters={filters} onFilters={handleFilters} loans={loans} />
-
+          <BranchWiseLoanClosingTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
+                                             configs={configs} options={options} />
           {canReset && (
-            <BranchViseLoanClosingFiltersResult
+            <BranchWiseLoanClosingFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -271,7 +292,7 @@ export default function BranchViseLoanClosingListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row, index) => (
-                      <BranchViseLoanClosingTableRow
+                      <BranchWiseLoanClosingTableRow
                         key={row._id}
                         row={row}
                         index={index}
@@ -358,7 +379,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
-    console.log(inputData, 'llllllllllllllllllll');
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) =>

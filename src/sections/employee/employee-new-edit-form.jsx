@@ -475,7 +475,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               />
               <Dialog open={Boolean(open)} onClose={handleCancel}>
                 {/*{imageSrc.length || capturedImage && (*/}
-                {console.log(imageSrc,"/./././././././././././.")}
                 <ReactCrop
                   crop={crop}
                   onChange={(newCrop) => setCrop(newCrop)}

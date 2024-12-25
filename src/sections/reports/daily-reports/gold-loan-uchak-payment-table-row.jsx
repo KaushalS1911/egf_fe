@@ -21,7 +21,8 @@ import { fDate } from '../../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge} = row;
+  const { cashAmount, bankAmount,status,lastInstallmentDate,nextInstallmentDate,consultingCharge,loan,amountPaid,createdAt} = row;
+  const {loanNo, customer, loanAmount, scheme,issueDate,interestLoanAmount}=loan
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -43,9 +44,9 @@ export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEd
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'uchak amount'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
       </TableRow>
 
       <CustomPopover

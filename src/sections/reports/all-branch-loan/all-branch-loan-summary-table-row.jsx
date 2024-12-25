@@ -16,21 +16,22 @@ import { useGetConfigs } from '../../../api/config';
 import { getResponsibilityValue } from '../../../permission/permission';
 import Label from '../../../components/label';
 import { fDate } from '../../../utils/format-time';
-
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
 export default function AllBranchLoanSummaryTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge} = row;
+    // const moment = require('moment'); // Import moment if not already done
+  const { loanNo, customer, loanAmount, scheme,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge,totalPaidInterest,day,pendingInterest} = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+    const diffDays = moment(date1).diff(moment(date2), 'days');
+    return Math.abs(diffDays); // Return absolute value to handle negative differences
   };
+
   return (
     <>
         <TableRow hover selected={selected}>
@@ -48,9 +49,9 @@ export default function AllBranchLoanSummaryTableRow({ row,index, selected, onEd
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-          <TableCell sx={{ whiteSpace: 'nowrap'}}>-</TableCell>
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>{calculateDateDifference(new Date(), lastInstallmentDate)}</TableCell>
-          <TableCell sx={{ whiteSpace: 'nowrap'}}>-</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap'}}>{totalPaidInterest}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{day >0 ? day :0}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap'}}>{pendingInterest || 0}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(nextInstallmentDate) || '-'}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
             <Label

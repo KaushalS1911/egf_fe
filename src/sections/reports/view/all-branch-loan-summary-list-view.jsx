@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -41,57 +41,63 @@ import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
+import { useGetAllLoanSummary } from '../../../api/all-branch-loan-summary';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.'},
-  { id: 'CustomerName', label: 'Customer name'},
-  { id: 'ContactNo', label: 'Contact'},
-  { id: 'int%', label: 'int (%)'},
-  { id: 'OtherInt%', label: 'Other int (%)'},
-  { id: 'int%', label: 'Issue date'},
-  { id: 'LoanAmount', label: 'loan amt'},
-  { id: 'LastAmtPayDate', label: 'Last amt. pay date'},
-  { id: 'LoanAmountPay', label: 'loan amt pay'},
-  { id: 'InterestLoanAmount', label: 'Int. loan amt'},
-  { id: 'LastIntPayDate', label: 'Last int. pay date'},
-  { id: 'TotalIntPay', label: 'Total int. pay '},
-  { id: 'Day', label: ' Day '},
-  { id: 'pendingAmt', label: ' Pending int. '},
-  { id: 'nextIntPayDate', label: 'Next int. pay date'},
-  { id: 'Status', label: 'Status'},
+  { id: 'LoanNo', label: 'Loan No.' },
+  { id: 'CustomerName', label: 'Customer name' },
+  { id: 'ContactNo', label: 'Contact' },
+  { id: 'int%', label: 'int (%)' },
+  { id: 'OtherInt%', label: 'Other int (%)' },
+  { id: 'int%', label: 'Issue date' },
+  { id: 'LoanAmount', label: 'loan amt' },
+  { id: 'LastAmtPayDate', label: 'Last amt. pay date' },
+  { id: 'LoanAmountPay', label: 'loan amt pay' },
+  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'LastIntPayDate', label: 'Last int. pay date' },
+  { id: 'TotalIntPay', label: 'Total int. pay ' },
+  { id: 'Day', label: ' Day ' },
+  { id: 'pendingAmt', label: ' Pending int. ' },
+  { id: 'nextIntPayDate', label: 'Next int. pay date' },
+  { id: 'Status', label: 'Status' },
 ];
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
-  value: 'Issued',
-  label: 'Issued',
-}, { value: 'Disbursed', label: 'Disbursed' }];
+const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {value: 'Issued',label: 'Issued'},{ value: 'Disbursed', label: 'Disbursed' },{ value: 'Regular', label: 'Regular' }, {
+  value: 'Overdue',
+  label: 'Overdue',
+},];
 const defaultFilters = {
   username: '',
   status: 'All',
   startDate: null,
   endDate: null,
   branch: '',
-
+  issuedBy: '',
 };
 
 // ----------------------------------------------------------------------
 
 export default function AllBranchLoanSummaryListView() {
+  const [options, setOptions] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false, false, true);
+  const { LoanSummary, LoanSummaryLoading } = useGetAllLoanSummary(true, false);
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(Loanissue);
+  const [tableData, setTableData] = useState(LoanSummary);
   const [filters, setFilters] = useState(defaultFilters);
 
+
+  useEffect(() => {
+    fetchStates();
+  }, [LoanSummary]);
   const dataFiltered = applyFilter({
-    inputData: Loanissue,
+    inputData: LoanSummary,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -149,7 +155,7 @@ export default function AllBranchLoanSummaryListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = LoanSummary.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -173,34 +179,49 @@ export default function AllBranchLoanSummaryListView() {
     [router],
   );
 
-  const loans = Loanissue.map((item) => ({
-    'Loan No': item.loanNo,
-    'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-    'Contact': item.customer.contact,
-    'OTP Contact': item.customer.otpContact,
-    Email: item.customer.email,
-    'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-    'Issue date': item.issueDate,
-    'Scheme': item.scheme.name,
-    'Rate per gram': item.scheme.ratePerGram,
-    'Interest rate': item.scheme.interestRate,
-    valuation: item.scheme.valuation,
-    'Interest period': item.scheme.interestPeriod,
-    'Renewal time': item.scheme.renewalTime,
-    'min loan time': item.scheme.minLoanTime,
-    'Loan amount': item.loanAmount,
-    'Next nextInstallment date': fDate(item.nextInstallmentDate),
-    'Payment mode': item.paymentMode,
-    'Paying cashAmount': item.payingCashAmount,
-    'Pending cashAmount': item.pendingCashAmount,
-    'Paying bankAmount': item.payingBankAmount,
-    'Pending bankAmount': item.pendingBankAmount,
-  }));
+  // const loans = Loanissue.map((item) => ({
+  //   'Loan No': item.loanNo,
+  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
+  //   'Contact': item.customer.contact,
+  //   'OTP Contact': item.customer.otpContact,
+  //   Email: item.customer.email,
+  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
+  //   'Issue date': item.issueDate,
+  //   'Scheme': item.scheme.name,
+  //   'Rate per gram': item.scheme.ratePerGram,
+  //   'Interest rate': item.scheme.interestRate,
+  //   valuation: item.scheme.valuation,
+  //   'Interest period': item.scheme.interestPeriod,
+  //   'Renewal time': item.scheme.renewalTime,
+  //   'min loan time': item.scheme.minLoanTime,
+  //   'Loan amount': item.loanAmount,
+  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
+  //   'Payment mode': item.paymentMode,
+  //   'Paying cashAmount': item.payingCashAmount,
+  //   'Pending cashAmount': item.pendingCashAmount,
+  //   'Paying bankAmount': item.payingBankAmount,nasm
+  //   'Pending bankAmount': item.pendingBankAmount,
+  // }));
 
-  if (LoanissueLoading) {
+  if (LoanSummaryLoading) {
     return (
       <LoadingScreen />
     );
+  }
+
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option.value === data.issuedBy._id)) {
+          return [...item, {
+            name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
+            value: data.issuedBy._id,
+          }];
+        } else {
+          return item;
+        }
+      });
+    });
   }
 
   return (
@@ -239,15 +260,19 @@ export default function AllBranchLoanSummaryListView() {
                     <Label
                       style={{ margin: '5px' }}
                       variant={
-                        ((tab.value === 'All' || tab.value === filters.status) && 'filled') || 'soft'
+                        ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
                       }
                       color={
-                        (tab.value === 'Disbursed' && 'info') || (tab.value === 'Issued' && 'secondary') || 'default'
+                        (tab.value === 'Regular' && 'success') ||
+                        (tab.value === 'Overdue' && 'error') ||
+                        (tab.value === 'Disbursed' && 'info') ||
+                        (tab.value === 'Issued' && 'secondary') ||
+                        'default'
                       }
                     >
-                      {['Disbursed', 'Issued'].includes(tab.value)
-                        ? Loanissue.filter((item) => item.status === tab.value).length
-                        : Loanissue.length}
+                      {['Issued','Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
+                        ? LoanSummary.filter((item) => item.status === tab.value).length
+                        : LoanSummary.length}
                     </Label>
                   </>
                 }
@@ -255,7 +280,8 @@ export default function AllBranchLoanSummaryListView() {
             ))}
           </Tabs>
 
-          <AllBranchLoanSummaryTableToolbar filters={filters} onFilters={handleFilters} loans={loans} dataFilter={dataFiltered} configs={configs}/>
+          <AllBranchLoanSummaryTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
+                                            configs={configs} options={options} />
 
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult

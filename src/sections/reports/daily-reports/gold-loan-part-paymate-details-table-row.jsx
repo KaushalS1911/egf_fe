@@ -21,7 +21,8 @@ import { fDate } from '../../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function GoldLoanPartPaymateDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge} = row;
+  const {  scheme, cashAmount, bankAmount,statuslastInstallmentDate,nextInstallmentDate,consultingCharge,loan,amountPaid} = row;
+  const {loanNo, customer, loanAmount,issueDate,interestLoanAmount}=loan
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -40,11 +41,11 @@ export default function GoldLoanPartPaymateDetailsTableRow({ row,index, selected
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{"rate"}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'TOTAL INT'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'TOTAL pay amt'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'closing charge'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'entry date'}</TableCell>

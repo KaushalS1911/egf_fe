@@ -75,7 +75,6 @@ export default function CompanyProfile() {
 
   const { reset: resetPersonalDetails, handleSubmit: handleSubmitPersonalDetails } = personalDetailsMethods;
   const { reset: resetBankDetails, handleSubmit: handleSubmitBankDetails } = bankDetailsMethods;
-  console.log(configs?.headersConfig?.branch?.name);
   useEffect(() => {
     if (companyDetail && configs?.headersConfig?.branch) {
       resetPersonalDetails({
