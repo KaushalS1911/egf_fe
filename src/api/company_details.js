@@ -19,7 +19,7 @@ export function useGetCompanyDetails() {
       companyError: error,
       companyValidating: isValidating,
       companyEmpty: !isLoading && companyDetail.length === 0,
-      mutate,
+      companyMutate:mutate,
     };
   }, [data?.data, error, isValidating, mutate]);
 

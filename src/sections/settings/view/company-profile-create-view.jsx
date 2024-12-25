@@ -38,7 +38,7 @@ const bankDetailsSchema = yup.object().shape({
 export default function CompanyProfile() {
   const { user } = useAuthContext();
   const dispatch = useDispatch();
-  const { companyDetail, mutate } = useGetCompanyDetails();
+  const { companyDetail, companyMutate } = useGetCompanyDetails();
   const [profilePic, setProfilePic] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const mdUp = useResponsive('up', 'md');
@@ -46,7 +46,7 @@ export default function CompanyProfile() {
   const [loading2, setLoading2] = useState(false);
   const [editingBankDetail, setEditingBankDetail] = useState(null);
   const { branch } = useGetBranch();
-  const { configs } = useGetConfigs();
+  const { configs,mutate} = useGetConfigs();
 
 
   const personalDetailsMethods = useForm({
@@ -116,7 +116,8 @@ export default function CompanyProfile() {
     try {
       await axios.put(URL, payload);
       await axios.put(URL2, payload2);
-      mutate();
+      companyMutate();
+      mutate()
       enqueueSnackbar('Personal details updated successfully', { variant: 'success' });
       setLoading(false);
     } catch (err) {
@@ -152,7 +153,7 @@ export default function CompanyProfile() {
         const updatedBankAccounts = [...existingBankAccounts, newBankAccount];
         await axios.put(URL, { bankAccounts: updatedBankAccounts });
       }
-      mutate();
+      companyMutate();
       enqueueSnackbar(editingBankDetail ? 'Bank details updated successfully' : 'Bank details added successfully', { variant: 'success' });
       resetBankDetails();
       setEditingBankDetail(null);
@@ -205,7 +206,7 @@ export default function CompanyProfile() {
 
       await axios.put(URL, { bankAccounts: updatedBankAccounts });
 
-      mutate();
+      companyMutate();
 
       enqueueSnackbar('Bank details deleted successfully', { variant: 'success' });
     } catch (err) {
