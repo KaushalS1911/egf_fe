@@ -1,18 +1,13 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -30,10 +25,8 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
   const { avatar_url, contact, firstName, lastName, middleName, role, email } = user;
   const { configs } = useGetConfigs();
   const confirm = useBoolean();
-
   const popover = usePopover();
   const lightbox = useLightBox(avatar_url);
-
 
   return (
     <>
@@ -41,22 +34,9 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell padding='checkbox'>
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-
-        {/*<TableCell sx={{ display: 'flex', alignItems: 'center' }}>*/}
-        {/*  <Avatar alt={avatar_url} src={avatar_url} sx={{ mr: 2 }} />*/}
-
-        {/*  <ListItemText*/}
-        {/*    primary={`${firstName} ${middleName} ${lastName}`}*/}
-        {/*    secondary={email}*/}
-        {/*    primaryTypographyProps={{ typography: 'body2' }}*/}
-        {/*    secondaryTypographyProps={{*/}
-        {/*      component: 'span',*/}
-        {/*      color: 'text.disabled',*/}
-        {/*    }}*/}
-        {/*  />*/}
-        {/*</TableCell>*/}
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)} sx={{ mr: 2,cursor:'pointer' }} />
+          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)}
+                  sx={{ mr: 2, cursor: 'pointer' }} />
           <Lightbox
             image={avatar_url}
             open={lightbox.open}
@@ -76,15 +56,12 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
-
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
-
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -101,7 +78,6 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
         </MenuItem>}
-
         {getResponsibilityValue('update_employee', configs, loginuser) && <MenuItem
           onClick={() => {
             onEditRow();
@@ -112,7 +88,6 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
           Edit
         </MenuItem>}
       </CustomPopover>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

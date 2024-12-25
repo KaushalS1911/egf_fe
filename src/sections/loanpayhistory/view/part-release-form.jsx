@@ -10,40 +10,32 @@ import {
   TableRow,
   Paper,
   Checkbox,
-  TextField,
   Button,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Grid, Card, Dialog, Slider, IconButton, DialogActions,
+  Grid, Dialog, IconButton, DialogActions,
 } from '@mui/material';
-import FormProvider, { RHFAutocomplete, RHFTextField, RHFUpload } from '../../../components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Upload } from '../../../components/upload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
 import { fDate } from '../../../utils/format-time';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
-import { useParams } from 'react-router';
 import { useGetAllPartRelease } from '../../../api/part-release';
 import { useGetBranch } from '../../../api/branch';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
-import Cropper from 'react-easy-crop';
-import { getCroppedImg } from '../../../utils/canvasUtils';
 import Iconify from '../../../components/iconify';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { PDFViewer } from '@react-pdf/renderer';
-import InterestPdf from '../PDF/interest-pdf';
 import PartReleasePdf from '../PDF/part-release-pdf';
 import { ConfirmDialog } from '../../../components/custom-dialog';
 import { usePopover } from '../../../components/custom-popover';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useAuthContext } from '../../../auth/hooks';
 
 const tableHeaders = [
   { id: 'loanNo', label: 'Loan No.' },
@@ -67,7 +59,8 @@ const TABLE_HEAD = [
   { id: 'pdf', label: 'PDF' },
 ];
 
-function PartReleaseForm({ currentLoan, mutate,configs }) {
+function PartReleaseForm({ currentLoan, mutate, configs }) {
+  const { user } = useAuthContext();
   const [selectedRows, setSelectedRows] = useState([]);
   const [paymentMode, setPaymentMode] = useState('');
   const [properties, setProperties] = useState([]);
@@ -110,7 +103,6 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
       .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-
   } : {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
@@ -121,7 +113,6 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
       .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
     account: Yup.object().required('Account is required'),
   };
-
 
   const selectedTotals = useMemo(() => {
     return selectedRows.reduce(
@@ -207,7 +198,9 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
         bankAmount: data.bankAmount,
       };
     }
+
     const formData = new FormData();
+
     selectedRows.forEach((index) => {
       const row = currentLoan.propertyDetails[index];
       formData.append(`property[${index}][type]`, row.type);
@@ -221,16 +214,18 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
       formData.append(`property[${index}][grossAmount]`, row.grossAmount);
       formData.append(`property[${index}][netAmount]`, row.netAmount);
     });
+
     formData.append('remark', data.remark);
     formData.append('property-image', file);
     formData.append('date', data.date);
     formData.append('amountPaid', data.amountPaid);
+
     for (const [key, value] of Object.entries(paymentDetail)) {
       formData.append(`paymentDetail[${key}]`, value);
     }
+
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release`;
-
       const config = {
         method: 'post',
         url,
@@ -263,10 +258,6 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
       setValue('amountPaid', selectedTotals.netAmount);
     }
   }, [watch('paymentMode'), selectedTotals.netAmount]);
-
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  };
 
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
@@ -373,6 +364,7 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
   const handleCancel = () => {
     setImageSrc(null);
   };
+
   const handleCheckboxClick = (index) => {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(index)
@@ -427,7 +419,8 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                         />
                       </TableCell>
                       {tableHeaders.map((header) => (
-                        <TableCell key={header.id} className={'black-text'} sx={{py: 1, px: 1}}>{header.label}</TableCell>
+                        <TableCell key={header.id} className={'black-text'}
+                                   sx={{ py: 1, px: 1 }}>{header.label}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
@@ -435,52 +428,67 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                     {properties && properties.length > 0 ? (
                       properties.map((row, index) => (
                         <TableRow key={row._id} selected={isRowSelected(index)}>
-                          <TableCell padding='checkbox' sx={{py: 0, px: 1, height: 1}}>
+                          <TableCell padding='checkbox' sx={{ py: 0, px: 1, height: 1 }}>
                             <Checkbox
                               checked={isRowSelected(index)}
                               onChange={() => handleCheckboxClick(index)}
                             />
                           </TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{currentLoan.loanNo}</TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{row.type}</TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{row.carat}</TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{row.pcs}</TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.totalWeight || 0).toFixed(2)}</TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.netWeight || 0).toFixed(2)}</TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.grossAmount || 0).toFixed(2)}</TableCell>
-                          <TableCell sx={{py: 0, px: 1, height: 1}}>{parseFloat(row.netAmount || 0).toFixed(2)}</TableCell>
+                          <TableCell sx={{ py: 0, px: 1, height: 1 }}>{currentLoan.loanNo}</TableCell>
+                          <TableCell sx={{ py: 0, px: 1, height: 1 }}>{row.type}</TableCell>
+                          <TableCell sx={{ py: 0, px: 1, height: 1 }}>{row.carat}</TableCell>
+                          <TableCell sx={{ py: 0, px: 1, height: 1 }}>{row.pcs}</TableCell>
+                          <TableCell
+                            sx={{ py: 0, px: 1, height: 1 }}>{parseFloat(row.totalWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell
+                            sx={{ py: 0, px: 1, height: 1 }}>{parseFloat(row.netWeight || 0).toFixed(2)}</TableCell>
+                          <TableCell
+                            sx={{ py: 0, px: 1, height: 1 }}>{parseFloat(row.grossAmount || 0).toFixed(2)}</TableCell>
+                          <TableCell
+                            sx={{ py: 0, px: 1, height: 1 }}>{parseFloat(row.netAmount || 0).toFixed(2)}</TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={9} align='center' sx={{py: 0, px: 1, height: 1}}>
+                        <TableCell colSpan={9} align='center' sx={{ py: 0, px: 1, height: 1 }}>
                           No Property Available
                         </TableCell>
                       </TableRow>
                     )}
                     <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
                       <TableCell padding='checkbox' />
-                      <TableCell sx={{ fontWeight: '600', color: '#637381',py: 1, px: 1,}}>TOTAL AMOUNT</TableCell>
+                      <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>TOTAL AMOUNT</TableCell>
                       <TableCell />
-                      <TableCell sx={{ fontWeight: '600', color: '#637381',py: 1, px: 1,  }}>{selectedTotals.carat}</TableCell>
-                      <TableCell sx={{ fontWeight: '600', color: '#637381' ,py: 1, px: 1, }}>{selectedTotals.pcs}</TableCell>
+                      <TableCell
+                        sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{selectedTotals.carat}</TableCell>
+                      <TableCell
+                        sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{selectedTotals.pcs}</TableCell>
                       <TableCell sx={{
                         fontWeight: '600',
                         color: '#637381',
                         py: 1, px: 1,
                       }}>{(selectedTotals.totalWeight).toFixed(2)}</TableCell>
                       <TableCell
-                        sx={{ fontWeight: '600', color: '#637381' ,py: 1, px: 1, }}>{(selectedTotals.netWeight).toFixed(2)}</TableCell>
+                        sx={{
+                          fontWeight: '600',
+                          color: '#637381',
+                          py: 1,
+                          px: 1,
+                        }}>{(selectedTotals.netWeight).toFixed(2)}</TableCell>
                       <TableCell sx={{
                         fontWeight: '600',
-                        color: '#637381',py: 1, px: 1,
+                        color: '#637381', py: 1, px: 1,
 
                       }}>{(selectedTotals.grossAmount).toFixed(2)}</TableCell>
                       <TableCell
-                        sx={{ fontWeight: '600', color: '#637381' ,py: 1, px: 1, }}>{(selectedTotals.netAmount).toFixed(2)}</TableCell>
+                        sx={{
+                          fontWeight: '600',
+                          color: '#637381',
+                          py: 1,
+                          px: 1,
+                        }}>{(selectedTotals.netAmount).toFixed(2)}</TableCell>
                     </TableRow>
                   </TableBody>
-
                 </Table>
               </TableContainer>
             </Box>
@@ -520,13 +528,11 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                         )}
                       />
                     </Grid>
-
                   </Grid>
                   <Grid>
                     <Typography variant='subtitle1' my={1}>
                       Payment Details
                     </Typography>
-
                     <Box
                       rowGap={2}
                       columnGap={2}
@@ -536,7 +542,6 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                         sm: 'repeat(2, 1fr)',
                         md: 'repeat(4, 1fr)',
                       }}>
-
                       <RHFAutocomplete
                         name='paymentMode'
                         label='Payment Mode'
@@ -554,7 +559,6 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                         )}
                       />
                       {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-
                         <Controller
                           name='cashAmount'
                           control={control}
@@ -590,7 +594,6 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                               )}
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                             />
-
                             <Controller
                               name='bankAmount'
                               control={control}
@@ -639,13 +642,13 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                         crop={crop}
                         onChange={(newCrop) => setCrop(newCrop)}
                         onComplete={(newCrop) => setCompletedCrop(newCrop)}
-                        aspect={1} // Aspect ratio for cropping
+                        aspect={1}
                       >
                         <img
                           id='cropped-image'
                           src={imageSrc}
                           alt='Crop preview'
-                          onLoad={resetCrop} // Reset crop when the image loads
+                          onLoad={resetCrop}
                         />
                       </ReactCrop>
                     )}
@@ -663,13 +666,13 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
             </Box>
           </Box>
         </Box>
-
         <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
+          {getResponsibilityValue('update_loanPayHistory', configs, user) &&
           <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
             Submit
-          </LoadingButton>
+          </LoadingButton>}
         </Box>
       </FormProvider>
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
@@ -677,13 +680,14 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
         <TableBody>
           {partRelease && partRelease.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap' ,py: 0, px: 1, height: 1}}>{row.loan.loanNo}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.loan.loanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.loan.interestLoanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{fDate(row.createdAt)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{row.remark}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, height: 1 }}>{
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.loan.loanNo}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.loan.loanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.amountPaid}</TableCell>
+              <TableCell
+                sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.loan.interestLoanAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{fDate(row.createdAt)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{
                 <IconButton color='error' onClick={() => {
                   if (index === 0) {
                     confirm.onTrue();
@@ -698,18 +702,19 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' ,py: 0, px: 1, height: 1}}>{
-                <Typography onClick={() => {
-                  view.onTrue();
-                  setData(row);
-                }} sx={{
-                  cursor: 'pointer',
-                  color: 'inherit',
-                  pointerEvents: 'auto',
-                }}>
-                  <Iconify icon='basil:document-solid' />
-                </Typography>
-              }</TableCell>
+              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
+                <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1, height: 1 }}>{
+                  <Typography onClick={() => {
+                    view.onTrue();
+                    setData(row);
+                  }} sx={{
+                    cursor: 'pointer',
+                    color: 'inherit',
+                    pointerEvents: 'auto',
+                  }}>
+                    <Iconify icon='basil:document-solid' />
+                  </Typography>
+                }</TableCell> : <TableCell>'-'</TableCell>}
             </TableRow>
           ))}
         </TableBody>
@@ -736,10 +741,9 @@ function PartReleaseForm({ currentLoan, mutate,configs }) {
               Close
             </Button>
           </DialogActions>
-
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              <PartReleasePdf selectedRow={data} configs={configs}/>
+              <PartReleasePdf selectedRow={data} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>

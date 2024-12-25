@@ -32,7 +32,7 @@ import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
 export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, mutate }) {
-  const { date, firstName, lastName, contact, inquiryFor, remark,updatedAt, _id } = row;
+  const { date, firstName, lastName, contact, inquiryFor, remark, _id } = row;
   const { configs } = useGetConfigs();
   const [attempts, setAttempts] = useState(row?.attempts || []);
   const [openResponseDialog, setOpenResponseDialog] = useState(false);
@@ -96,6 +96,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
       enqueueSnackbar('Error saving responses. Please try again.', { variant: 'error' });
     }
   };
+
   const isRecentlyUpdated = () => {
     if (!row?.updatedAt || row?.updatedAt === row?.createdAt) return false; // Only apply if updatedAt is different from createdAt
     const updatedAtDate = new Date(row.updatedAt);
@@ -103,6 +104,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
     const timeDiff = currentTime - updatedAtDate;
     return timeDiff <= 24 * 60 * 60 * 1000;
   };
+
   return (
     <>
       <TableRow
@@ -111,10 +113,9 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         sx={{
           backgroundColor: isRecentlyUpdated() ? '#F6F7F8' : 'inherit',
         }}
-      >        <TableCell padding='checkbox'>
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      > <TableCell padding='checkbox'>
+        <Checkbox checked={selected} onClick={onSelectRow} />
+      </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.recallingDate ? fDate(row?.recallingDate) : '-'}
@@ -137,7 +138,6 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
             {row?.status}
           </Label>
         </TableCell>
-
         <TableCell align='right' sx={{ whiteSpace: 'nowrap' }}>
           {row?.attempts && <IconButton
             color={collapse.value ? 'inherit' : 'default'}
@@ -146,9 +146,10 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           >
             <Iconify icon='eva:arrow-ios-downward-fill' />
           </IconButton>}
-          <IconButton onClick={handleRespondedClick}>
+          {getResponsibilityValue('inquiry_follow_Up', configs, user)
+          && <IconButton onClick={handleRespondedClick}>
             <Iconify icon='eva:edit-fill' />
-          </IconButton>
+          </IconButton>}
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
@@ -218,7 +219,6 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           Edit
         </MenuItem>}
       </CustomPopover>
-
       <Dialog open={openResponseDialog} onClose={handleCloseResponseDialog} maxWidth='sm' fullWidth>
         <DialogTitle sx={{ fontWeight: 600 }}>Add Response</DialogTitle>
         <DialogContent dividers>
@@ -275,7 +275,6 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           </Button>
         </DialogActions>
       </Dialog>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

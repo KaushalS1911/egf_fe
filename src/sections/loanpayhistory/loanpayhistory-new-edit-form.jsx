@@ -1,29 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {  useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import FormProvider, { RHFTextField } from '../../components/hook-form';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
-import { Controller, useForm } from 'react-hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import { Upload } from '../../components/upload';
+import { useForm } from 'react-hook-form';
 import { useAuthContext } from '../../auth/hooks';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import Table from '@mui/material/Table';
-import { TableHeadCustom } from '../../components/table';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import Button from '@mui/material/Button';
-import Iconify from '../../components/iconify';
-import { fDate } from '../../utils/format-time';
-import InterestPayDetailsForm from './view/interest-pay-details-form';
-import PartReleaseForm from './view/part-release-form';
-import UchakInterestPayForm from './view/uchak-interest-pay-form';
-import LoanPartPaymentForm from './view/loan-part-payment-form';
-import LoanCloseForm from './view/loan-close-form';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import Typography from '@mui/material/Typography';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
@@ -33,19 +16,17 @@ import Image from '../../components/image';
 
 function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   const { user } = useAuthContext();
-
   const [file, setFile] = useState(currentLoan.propertyImage);
   const lightbox = useLightBox(file);
+
   const renewDate = () => {
     if (!currentLoan?.issueDate) return null;
 
     const { issueDate, scheme: { renewalTime } } = currentLoan;
-
     const monthsToAdd =
       renewalTime === 'Monthly' ? 1 :
         renewalTime === 'yearly' ? 12 :
           parseInt(renewalTime.split(' ')[0], 10) || 0;
-
     return new Date(new Date(issueDate).setMonth(new Date(issueDate).getMonth() + monthsToAdd));
   };
 
@@ -64,9 +45,6 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       .required('Scheme Name is required')
       .max(10, 'Scheme Name must be exactly 10 characters'),
     closedBy: Yup.string().required('Closed By is required'),
-    // oldLoanNo: Yup.string()
-    //   .matches(/^[0-9]*$/, 'Old Loan No must be numeric')
-    //   .max(12, 'Old Loan No must be 12 digits or less'),
     interest: Yup.number()
       .required('Interest is required')
       .typeError('Interest must be a number')
@@ -85,6 +63,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       .required('Last Interest Pay Date is required')
       .typeError('Invalid Last Interest Pay Date'),
   });
+
   const defaultValues = useMemo(() => ({
       loanNo: currentLoan?.loanNo || '',
       customerName: currentLoan?.customer.firstName + ' ' + currentLoan?.customer.middleName + ' ' + currentLoan?.customer.lastName || '',
@@ -94,7 +73,6 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       schemeName: currentLoan?.scheme.name || '',
       closedBy:
         currentLoan.closedBy ? (currentLoan?.closedBy?.firstName + ' ' + currentLoan?.closedBy?.lastName) : null,
-      // oldLoanNo: currentLoan?.oldLoanNo || '',
       interest: currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate,
       consultCharge: currentLoan?.consultingCharge || '',
       loanAmount: currentLoan?.loanAmount || '',
@@ -105,23 +83,19 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       renewDate: currentLoan?.issueDate ? renewDate() : null,
       nextInterestPayDate: currentLoan?.nextInstallmentDate ? new Date(currentLoan?.nextInstallmentDate) : new Date(),
       approvalCharge: currentLoan?.approvalCharge || 0,
-
       lastInterestPayDate: currentLoan?.lastInstallmentDate ? new Date(currentLoan?.lastInstallmentDate) : null,
     }),
     [currentLoan],
-    )
-  ;
+  );
+
   const methods = useForm({
     resolver: yupResolver(NewLoanPayHistorySchema),
     defaultValues,
   });
 
-
   const {
     reset,
-    watch,
     control,
-    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -135,14 +109,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
   });
-  const handleDropSingleFile = useCallback((acceptedFiles) => {
-    acceptedFiles.stopPropagation();
-    if (true) return;
-  }, []);
 
-  const handleDeleteFile = () => {
-    if (true) return;
-  };
   return (
     <>
 
@@ -212,26 +179,11 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     control={control}
                     label='Issue Date'
                   />
-
                   <RHFDatePicker
                     name='renewDate'
                     control={control}
                     label='Renew Date'
                   />
-                  {/*{/<RHFTextField/}*/}
-                  {/*/!*  name='oldLoanNo'*!/*/}
-                  {/*/!*  label='Old Loan No'*!/*/}
-                  {/*/!*  InputProps={{ readOnly: true }}*!/*/}
-                  {/*/!*  inputProps={{ maxLength: 12, pattern: '[0-9]' }}/}*/}
-                  {/*/!*  onInput={(e) => {*!/*/}
-                  {/*/!*    e.target.value = e.target.value.replace(/[^0-9]/g, '');*!/*/}
-                  {/*/!*  }}*!/*/}
-                  {/*{//>/}*/}
-
-
-                  {/*{/<RHFTextField name='closedBy' label='Closed By' InputProps={{ readOnly: true }} />/}*/}
-
-
                   <Box pb={0}>
                     <Box sx={{
                       display: 'flex',
@@ -259,13 +211,6 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                   </Box>
                 </Box>
               </Grid>
-
-
-              {/*{/<Grid item xs={12} md={3}>/}*/}
-              {/*  <Box>*/}
-              {/*  </Box>*/}
-              {/* */}
-              {/*</Grid>*/}
             </Grid>
           </Card>
         </FormProvider>

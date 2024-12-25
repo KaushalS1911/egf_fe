@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import React, {
   useMemo, useEffect, useCallback, useState,
   useRef,
@@ -35,7 +35,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Webcam from 'react-webcam';
 import DialogActions from '@mui/material/DialogActions';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+
 //---------------------------------------------------------------------
+
 const STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
   { value: 'In Active', label: 'In Active' },
@@ -70,6 +72,7 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy) ? currentCustomer.referenceBy : 'Other';
+
   const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     middleName: Yup.string().required('Middle Name is required'),
@@ -99,6 +102,7 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
     profile_pic: Yup.mixed().required('A profile picture is required'),
     referenceBy: Yup.string().required('Other detail is required'),
   });
+
   const defaultValues = useMemo(() => ({
     branchId: currentCustomer ? {
       label: currentCustomer?.branch?.name,
@@ -149,6 +153,7 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
 
   const { reset, watch, control, handleSubmit, setValue, formState: { isSubmitting } } = methods;
   const [aspectRatio, setAspectRatio] = useState(null);
+
   useEffect(() => {
     if (imageSrc) {
       const img = new Image();
@@ -222,6 +227,7 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
           formData.append(key, payload[key]);
         }
       });
+
       if (capturedImage) {
         const base64Data = capturedImage.split(',')[1];
         const binaryData = atob(base64Data);
@@ -290,32 +296,33 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
       reader.readAsDataURL(file);
     }
   }, []);
+
   const resetCrop = () => {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
+
   const handleCancel = () => {
     setImageSrc(null);
     setCapturedImage(null)
     setOpen(false)
   };
+
   const showCroppedImage = async () => {
     try {
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
         if (file || capturedImage) {
-          const imageToUpload = file || capturedImage; // Use capturedImage if available
+          const imageToUpload = file || capturedImage;
           setCroppedImage(typeof imageToUpload === 'string' ? imageToUpload : URL.createObjectURL(imageToUpload));
           setValue('profile_pic', imageToUpload);
 
           if (currentCustomer) {
             const formData = new FormData();
             if (typeof imageToUpload === 'string') {
-              // If capturedImage is a base64 string, convert it to a blob
               const response = await fetch(imageToUpload);
               const blob = await response.blob();
               formData.append('profile-pic', blob, 'captured-image.jpg');
             } else {
-              // Otherwise, upload the file directly
               formData.append('profile-pic', imageToUpload);
             }
 
@@ -338,7 +345,6 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
         return;
       }
 
-      // Handle cropping logic if completedCrop exists
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
 
@@ -403,9 +409,6 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
     }
   };
 
-
-
-
   const checkZipcode = async (zipcode, type = 'permanent') => {
     try {
       const response = await axios.get(`https://api.postalpincode.in/pincode/${zipcode}`);
@@ -463,14 +466,15 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
       enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
     }
   };
+
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        setCapturedImage(imageSrc); // Set captured image
+        setCapturedImage(imageSrc);
         setValue('profile_pic', imageSrc);
-        setOpen2(false); // Close the ca
-        setOpen(true); // Close the ca
+        setOpen2(false);
+        setOpen(true);
       }
     }
   }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentCustomer]);

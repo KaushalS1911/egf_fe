@@ -235,7 +235,6 @@ export default function PropertyListView() {
           <PropertyTableToolbar
             filters={filters} onFilters={handleFilters} propertise={propertise}
           />
-
           {canReset && (
             <PropertyTableFiltersResult
               filters={filters}
@@ -245,7 +244,6 @@ export default function PropertyListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -265,7 +263,6 @@ export default function PropertyListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -282,7 +279,6 @@ export default function PropertyListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -299,18 +295,15 @@ export default function PropertyListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -322,7 +315,6 @@ export default function PropertyListView() {
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -353,7 +345,6 @@ export default function PropertyListView() {
 function applyFilter({ inputData, comparator, filters }) {
   const { isActive, name } = filters;
 
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);

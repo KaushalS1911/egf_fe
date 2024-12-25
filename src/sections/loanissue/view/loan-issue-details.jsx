@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
@@ -16,16 +15,15 @@ Font.register({
   ],
 });
 
-// Register the NotoSansGujarati font family
 Font.register({
   family: 'NotoSansGujarati',
   src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
 });
+
 Font.register({
   family: 'Poppins',
   src: '/fonts/Overpass-VariableFont_wght.ttf',
 });
-// Font.register();
 
 const useStyles = () =>
   useMemo(
@@ -58,18 +56,6 @@ const useStyles = () =>
           padding: '0px 24px 24px 24px',
           height: '93%',
         },
-
-        // footer: {
-        //   left: 0,
-        //   right: 0,
-        //   bottom: 0,
-        //   padding: 24,
-        //   margin: 'auto',
-        //   borderTopWidth: 1,
-        //   borderStyle: 'solid',
-        //   position: 'absolute',
-        //   borderColor: '#DFE3E8',
-        // },
         gridContainer: {
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -85,7 +71,6 @@ const useStyles = () =>
           justifyContent: 'space-between',
           alignItems: 'flex-start',
         },
-
         logo: {
           width: 80,
           height: 80,
@@ -128,10 +113,6 @@ const useStyles = () =>
         mainText: {
           fontSize: 14,
           fontFamily: 'Poppins',
-          // width: "100%",
-          // textAlign: 'right',
-          // marginTop: 10,
-          // fontFamily: 'NotoSansGujarati',
         },
         wriitenBy: {
           fontSize: 14,
@@ -153,7 +134,6 @@ const useStyles = () =>
           textAlign: 'right',
           fontSize: 12,
         },
-
         watermarkContainer: {
           position: 'absolute',
           top: 0,
@@ -170,18 +150,17 @@ const useStyles = () =>
         },
         row: {
           flexDirection: 'row',
-          // alignItems: 'center',
-          marginVertical: 2, // Adjust spacing between rows
+          marginVertical: 2,
         },
         subHeading: {
           fontWeight: '600',
           fontSize: 10,
-          flex: 1, // Ensure alignment
+          flex: 1,
         },
         colon: {
           fontSize: 10,
           fontWeight: '600',
-          marginHorizontal: 3, // Space around the colon
+          marginHorizontal: 3,
         },
         subText: {
           fontSize: 10,
@@ -191,13 +170,12 @@ const useStyles = () =>
         spacing: {
           marginTop: 7,
         },
-
         img: {
           height: '48px',
           width: '48px',
           borderRadius: 5,
         },
-        customerImg:{
+        customerImg: {
           height: '90px',
           width: '90px',
           borderRadius: 5,
@@ -208,14 +186,11 @@ const useStyles = () =>
           flex: 2,
         },
         tableFooter: {
-          // color: '#fff',
-          // backgroundColor: '#232C4B',
           borderTop: '1px solid #232C4B',
           fontWeight: 'bold',
           borderBottomLeftRadius: 10,
           borderBottomRightRadius: 10,
           paddingVertical: 8,
-
         },
         tableHeader: {
           color: '#fff',
@@ -226,7 +201,6 @@ const useStyles = () =>
           textWrap: 'nowrap',
           paddingVertical: 6,
         },
-
         tableRow: {
           flexDirection: 'row',
           borderStyle: 'solid',
@@ -247,7 +221,6 @@ const useStyles = () =>
           fontWeight: '500',
           marginBottom: 5,
         },
-
         propertyCellHeading: {
           fontSize: 12,
           fontWeight: '500',
@@ -278,45 +251,37 @@ const useStyles = () =>
           display: 'flex',
           width: '100%',
           flexDirection: 'row',
-          // marginTop: 90,
           alignItems: 'center',
           justifyContent: 'space-between',
-          // position:'fixed',
-          // bottom:-50
         },
         signText: {
           fontSize: 11,
           borderTop: '1px solid 232C4B',
-          color:'#232C4B',
+          color: '#232C4B',
           paddingTop: 10,
           textAlign: 'center',
           width: '100px',
           fontWeight: 600,
-
         },
-        detailsSpacing:{
+        detailsSpacing: {
           marginLeft: 20,
           fontSize: 10,
-
-        }
+        },
       }),
     [],
   );
 
 // ----------------------------------------------------------------------
 
-export default function LoanIssueDetails({ selectedRow , configs }) {
+export default function LoanIssueDetails({ selectedRow, configs }) {
   const styles = useStyles();
   const renewDate = () => {
     if (!selectedRow?.issueDate) return null;
-
     const { issueDate, scheme: { renewalTime } } = selectedRow;
-
     const monthsToAdd =
       renewalTime === 'Monthly' ? 1 :
         renewalTime === 'Yearly' ? 12 :
           parseInt(renewalTime.split(' ')[0], 10) || 0;
-
     const renewedDate = new Date(new Date(issueDate).setMonth(new Date(issueDate).getMonth() + monthsToAdd));
     return fDate(renewedDate);
   };
@@ -328,9 +293,9 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={selectedRow} configs={configs}/>
+          <InvoiceHeader selectedRow={selectedRow} configs={configs} />
           <View style={styles.pagePadding}>
-            <View style={{ ...styles.flexContainer,gap:20 }}>
+            <View style={{ ...styles.flexContainer, gap: 20 }}>
               <View style={{ width: '48%' }}>
                 <View style={styles.row}>
                   <Text style={styles.subHeading}>Loan No</Text>
@@ -374,52 +339,51 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
                   <Text style={styles.subText}>{selectedRow.customer.contact}</Text>
                 </View>
               </View>
-
-              <View style={{width:'46%'}}>
+              <View style={{ width: '46%' }}>
                 <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading,flex:2 }}>Loan Amount</Text>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Amount</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.loanAmount}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading,flex:2 }}>Interest Rate</Text>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Interest Rate</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>
                     {selectedRow?.scheme.interestRate > 1.5 ? 1.5 : selectedRow?.scheme.interestRate}%
                   </Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading,flex:2 }}>Consult Charge</Text>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Consult Charge</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow?.consultingCharge}%</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading,flex:2 }}>Loan Int Pay Schedule</Text>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Int Pay Schedule</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.scheme.interestPeriod}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading,flex:2 }}>Issue Date</Text>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Issue Date</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{fDate(selectedRow.issueDate)}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading,flex:2 }}>Next Int Date</Text>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Next Int Date</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading,flex:2 }}>Renew Date</Text>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Renew Date</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{renewDate()}</Text>
                 </View>
               </View>
-              <View style={{marginTop:-60}}>
+              <View style={{ marginTop: -60 }}>
                 {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                 <View>
                   <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
                 </View>
-                <View style={{marginTop:5}}>
+                <View style={{ marginTop: 5 }}>
                   <Image style={styles.propertyImage} src={selectedRow.propertyImage} />
                 </View>
               </View>
@@ -428,9 +392,7 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
               <View>
                 <Image style={styles.img} src={Qr} />
               </View>
-
             </View>
-
             <View style={styles.tableFlex}>
               <View style={styles.table}>
                 <View><Text style={styles.heading}>Property Details</Text></View>
@@ -443,7 +405,6 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
                   <Text style={styles.tableCell}>Part Close Date</Text>
                   <Text style={styles.tableCell}>Sign</Text>
                 </View>
-
                 {selectedRow.propertyDetails.map((row, index) => (
                   <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
                     <Text style={styles.tableCell}>{row.type}</Text>
@@ -455,7 +416,6 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
                     <Text style={styles.tableCell}></Text>
                   </View>
                 ))}
-
                 <View style={[styles.tableRow, styles.tableFooter]}>
                   <Text style={styles.tableCell}>Total</Text>
                   <Text
@@ -471,23 +431,21 @@ export default function LoanIssueDetails({ selectedRow , configs }) {
                 </View>
               </View>
             </View>
-
           </View>
-
         </Page>
         <Page size='A4' style={styles.page}>
           <View style={styles.pagePadding2}>
-          <view style={{ marginTop: 20 }}>
-            <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
-            <View style={{ marginTop: 10 }}>
-              {configs.exportPolicyConfig.map((item, index) => (
-                <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text> {/* Bullet point */}
-                  <Text style={{  fontSize: 10, fontWeight: '500',}}>{item}</Text> {/* Condition text */}
-                </View>
-              ))}
-            </View>
-          </view>
+            <view style={{ marginTop: 20 }}>
+              <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
+              <View style={{ marginTop: 10 }}>
+                {configs.exportPolicyConfig.map((item, index) => (
+                  <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text> {/* Bullet point */}
+                    <Text style={{ fontSize: 10, fontWeight: '500' }}>{item}</Text> {/* Condition text */}
+                  </View>
+                ))}
+              </View>
+            </view>
           </View>
           <View style={styles.d_flex}>
             <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>

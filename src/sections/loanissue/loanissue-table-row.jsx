@@ -1,8 +1,5 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -12,23 +9,13 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { RouterLink } from '../../routes/components';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
-import { Box } from '@mui/system';
-import { Dialog, DialogActions } from '@mui/material';
-import { PDFViewer } from '@react-pdf/renderer';
-import LetterOfAuthority from '../disburse/letter-of-authority';
-import LoanInvoice from '../../components/invoise/invoice-header';
-import { useState } from 'react';
-import LoanIssueDetails from './view/loan-issue-details';
-import { useViews } from '@mui/x-date-pickers/internals/hooks/useViews';
-
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
+export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -61,8 +48,6 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
-
         {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
@@ -94,7 +79,6 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
           </Button>
         }
       />
-
     </>
   );
 }

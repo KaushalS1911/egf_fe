@@ -1,13 +1,10 @@
 import { paramCase } from 'src/utils/change-case';
-
 import { _id, _postTitles } from 'src/_mock/assets';
 
 // ----------------------------------------------------------------------
 
 const MOCK_ID = _id[1];
-
 const MOCK_TITLE = _postTitles[2];
-
 const ROOTS = {
   AUTH: '/auth',
   AUTH_DEMO: '/auth-demo',
@@ -97,7 +94,7 @@ export const paths = {
       verify: `${ROOTS.AUTH_DEMO}/modern/verify`,
     },
   },
-  resetPassword:{
+  resetPassword: {
     resetPassword: `/jwt/reset-password/:token`,
   },
   // DASHBOARD
@@ -196,7 +193,7 @@ export const paths = {
       bulk: `${ROOTS.DASHBOARD}/loanpayhistory/bulkInterest/new`,
       edit: (id) => `${ROOTS.DASHBOARD}/loanpayhistory/${id}/new`,
     },
-    reports:{
+    reports: {
       root: `${ROOTS.DASHBOARD}/reports`,
       'loan-list': `${ROOTS.DASHBOARD}/reports/loan-list`,
       'closed-loanList': `${ROOTS.DASHBOARD}/reports/closed-loanList`,

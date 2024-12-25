@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { Controller, useForm } from 'react-hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -13,14 +12,10 @@ import TableCell from '@mui/material/TableCell';
 import { fDate } from '../../../utils/format-time';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Card, Dialog, DialogActions, Grid, IconButton, Stack } from '@mui/material';
+import { Dialog, DialogActions, IconButton } from '@mui/material';
 import { useGetPenalty } from '../../../api/penalty';
-import { useParams } from 'react-router';
 import axios from 'axios';
-import { paths } from '../../../routes/paths';
 import { enqueueSnackbar } from 'notistack';
-import { useRouter } from '../../../routes/hooks';
-import { useAuthContext } from '../../../auth/hooks';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
@@ -28,12 +23,11 @@ import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import Iconify from '../../../components/iconify';
 import moment from 'moment';
 import { PDFViewer } from '@react-pdf/renderer';
-import Noc from '../PDF/noc';
 import InterestPdf from '../PDF/interest-pdf';
 import { useBoolean } from '../../../hooks/use-boolean';
-import PartReleasePdf from '../PDF/part-release-pdf';
 import { ConfirmDialog } from '../../../components/custom-dialog';
-// import { useGetBranch } from '../../../api/branch';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useAuthContext } from '../../../auth/hooks';
 
 const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
@@ -53,7 +47,7 @@ const TABLE_HEAD = [
   { id: 'pdf', label: 'PDF' },
 ];
 
-function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
+function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const { penalty } = useGetPenalty();
   const [paymentMode, setPaymentMode] = useState('');
   const [data, setData] = useState(null);
@@ -63,6 +57,7 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
   const [deleteId, setDeleteId] = useState('');
   const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
   const table = useTable();
+  const { user } = useAuthContext();
 
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required').typeError('Account is required'),
@@ -73,7 +68,6 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
       .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-
   } : {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
@@ -146,7 +140,6 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
   useEffect(() => {
     const endDate = new Date(to).setHours(0, 0, 0, 0);
     const differenceInDays = moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 1;
-
     const nextInstallmentDate = moment(currentLoan.nextInstallmentDate);
     const differenceInDays2 = moment(to).startOf('day').diff(nextInstallmentDate.startOf('day'), 'days', true);
     setValue('days', differenceInDays.toString());
@@ -191,9 +184,6 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
         ...data.account,
         bankAmount: data.bankAmount,
       };
-
-
-
     }
 
     const payload = {
@@ -202,7 +192,7 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
       days: data.days,
       uchakInterestAmount: data.uchakAmount,
       interestAmount: data.interestAmount,
-      from:(currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(watch('from')) :  new Date(Number(data.from)),
+      from: (currentLoan?.issueDate && loanInterest?.length === 0) ? new Date(watch('from')) : new Date(Number(data.from)),
       amountPaid: data.amountPaid,
       penalty: data.penalty,
       cr_dr: data.cr_dr,
@@ -225,7 +215,6 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
       console.error(error);
       enqueueSnackbar('Failed to pay interest', { variant: 'error' });
     }
-
   });
 
   const handleCashAmountChange = (event) => {
@@ -243,6 +232,7 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -259,16 +249,17 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
       setValue('bankAmount', 0);
     }
   };
+
   const handleDeleteInterest = async (id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment/${id}`);
-      setDeleteId(null)
+      setDeleteId(null);
       confirm.onFalse();
       refetchLoanInterest();
       mutate();
-      enqueueSnackbar((response?.data.message),{variant: 'success'});
+      enqueueSnackbar((response?.data.message), { variant: 'success' });
     } catch (err) {
-      enqueueSnackbar('Failed to pay interest',{variant: 'error'});
+      enqueueSnackbar('Failed to pay interest', { variant: 'error' });
     }
   };
 
@@ -297,7 +288,6 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
             label='To Date'
             req={'red'}
           />
-
           <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='interestAmount' label='Interest' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} InputProps={{ readOnly: true }} />
@@ -317,8 +307,8 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
         <Typography variant='subtitle1' sx={{ mt: 1, fontWeight: 600 }}>
           Payment Details
         </Typography>
-        <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-          <Box sx={{width:'90%'}}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ width: '90%' }}>
             <Box
               rowGap={3}
               columnGap={2}
@@ -346,7 +336,6 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
                   </li>
                 )}
               />
-
               {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
                 <Controller
                   name='cashAmount'
@@ -366,7 +355,6 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
                   )}
                 />
               ) : null}
-
               {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
                 <>
                   <RHFAutocomplete
@@ -401,15 +389,15 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
               )}
             </Box>
           </Box>
-          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',gap:1 }}>
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
             <Button color='inherit' sx={{ height: '36px' }}
                     variant='outlined' onClick={() => reset()}>Reset</Button>
+            {getResponsibilityValue('update_loanPayHistory', configs, user) &&
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
               Submit
-            </LoadingButton>
+            </LoadingButton>}
           </Box>
         </Box>
-
       </FormProvider>
       <Box>
         <Box sx={{
@@ -438,26 +426,25 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
             <TableBody>
               {loanInterest.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ py: 0, px: 1, }}>{fDate(row.from)}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{fDate(row.to)}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.loan.loanAmount}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{fDate(row.from)}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{fDate(row.to)}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.loan.loanAmount}</TableCell>
                   <TableCell sx={{
                     py: 0,
                     px: 1,
-
                   }}>{row.loan.scheme.interestRate > 1.5 ? 1.5 : row.loan.scheme.interestRate}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.loan.consultingCharge}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.interestAmount}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.penalty}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.cr_dr}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.adjustedPay}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{fDate(row.createdAt)}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.days}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.uchakInterestAmount || 0}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{row.amountPaid}</TableCell>
-                  <TableCell sx={{ py: 0, px: 1, }}>{
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.loan.consultingCharge}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.interestAmount}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.penalty}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.cr_dr}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.adjustedPay}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{fDate(row.createdAt)}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.days}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.uchakInterestAmount || 0}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{row.amountPaid}</TableCell>
+                  <TableCell sx={{ py: 0, px: 1 }}>{
                     <IconButton color='error' onClick={() => {
-                      if(index === 0){
+                      if (index === 0) {
                         confirm.onTrue();
                         setDeleteId(row?._id);
                       }
@@ -469,21 +456,22 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
                       <Iconify icon='eva:trash-2-outline' />
                     </IconButton>
                   }</TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>{
-                    <Typography
-                      onClick={() => {
-                        view.onTrue();
-                        setData(row);
-                      }}
-                      sx={{
-                        cursor: 'pointer',
-                        color: 'inherit',
-                        pointerEvents: 'auto',
-                      }}
-                    >
-                      <Iconify icon='basil:document-solid' />
-                    </Typography>
-                  }</TableCell>
+                  {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
+                    <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>{
+                      <Typography
+                        onClick={() => {
+                          view.onTrue();
+                          setData(row);
+                        }}
+                        sx={{
+                          cursor: 'pointer',
+                          color: 'inherit',
+                          pointerEvents: 'auto',
+                        }}
+                      >
+                        <Iconify icon='basil:document-solid' />
+                      </Typography>
+                    }</TableCell> : <TableCell>'-'</TableCell>}
                 </TableRow>
               ))}
             </TableBody>
@@ -515,7 +503,7 @@ function InterestPayDetailsForm({ currentLoan, mutate,configs }) {
 
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              <InterestPdf data={data} configs={configs}/>
+              <InterestPdf data={data} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>

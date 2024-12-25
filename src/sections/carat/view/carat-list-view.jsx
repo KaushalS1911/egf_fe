@@ -62,13 +62,13 @@ const defaultFilters = {
   name: '',
   isActive: 'all',
 };
+
 // ----------------------------------------------------------------------
 
 export default function CaratListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  ;
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
@@ -108,6 +108,7 @@ export default function CaratListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } });
@@ -116,9 +117,9 @@ export default function CaratListView() {
       enqueueSnackbar(res.data.message);
     } catch (error) {
       enqueueSnackbar('Failed to Delete carat');
-
     }
   };
+
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
@@ -127,12 +128,12 @@ export default function CaratListView() {
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
+
   const handleDeleteRows = useCallback(() => {
     const deleteRows = carat.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
-
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
@@ -152,17 +153,20 @@ export default function CaratListView() {
     },
     [handleFilters],
   );
+
   const carats = carat.map((item) => ({
     Carat: item.name,
     'Carat (%)': item.caratPercentage,
     Remark: item.remark,
     Status: item.isActive === true ? 'Active' : 'inActive',
   }));
+
   if (caratLoading) {
     return (
       <LoadingScreen />
     );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -229,7 +233,6 @@ export default function CaratListView() {
           <CaratTableToolbar
             filters={filters} onFilters={handleFilters} carats={carats}
           />
-
           {canReset && (
             <CaratTableFiltersResult
               filters={filters}
@@ -239,7 +242,6 @@ export default function CaratListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -259,7 +261,6 @@ export default function CaratListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -276,7 +277,6 @@ export default function CaratListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -293,18 +293,15 @@ export default function CaratListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -316,7 +313,6 @@ export default function CaratListView() {
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

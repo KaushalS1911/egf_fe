@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -19,8 +19,6 @@ import { useGetBranch } from '../../api/branch';
 import { Button } from '@mui/material';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import { useGetEmployee } from '../../api/employee';
-import { indexof } from 'stylis';
-import { mutate } from 'swr';
 
 // ----------------------------------------------------------------------
 
@@ -160,7 +158,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
           payload,
         );
         enqueueSnackbar(res?.data?.message);
-        // router.push(paths.dashboard.inquiry.list);
+        router.push(paths.dashboard.inquiry.list);
       } else {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${queryString}`,
@@ -176,6 +174,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       console.error(error);
     }
   });
+
   const fetchNextInquiry = () => {
     const nextInquiryIndex = inquiry.indexOf(currentInquiry) + 1;
     const nextInquiry = inquiry[nextInquiryIndex];
@@ -216,11 +215,8 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   };
 
   return (
-
     <FormProvider methods={methods} onSubmit={onSubmit}>
-
       <Grid container spacing={3}>
-
         <Grid xs={12} md={4}>
           <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
             Inquiry Details
@@ -236,7 +232,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
             </Box>
           }
           <Card sx={{ p: 3 }}>
-
             <Box
               rowGap={3}
               columnGap={2}
@@ -380,7 +375,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
             </Box>
           </Card>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-
             <Box>
               <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                       variant='outlined' onClick={() => reset()}>Reset</Button>

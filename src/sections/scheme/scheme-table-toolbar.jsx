@@ -1,17 +1,10 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
@@ -25,7 +18,6 @@ export default function SchemeTableToolbar({
                                              filters,
                                              onFilters,
                                              schemes,
-                                             roleOptions,
                                            }) {
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -71,7 +63,6 @@ export default function SchemeTableToolbar({
           <Iconify icon='eva:more-vertical-fill' />
         </IconButton>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}

@@ -1,12 +1,8 @@
 import PropTypes from 'prop-types';
-
 import Container from '@mui/material/Container';
-
 import { paths } from 'src/routes/paths';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-
 import CustomerNewEditForm from '../customer-new-edit-form';
 import { useGetCustomer } from '../../../api/customer';
 import { useParams } from '../../../routes/hooks';
@@ -38,7 +34,6 @@ export default function CustomerEditView() {
           mb: { xs: 3, md: 3 },
         }}
       />
-
       <CustomerNewEditForm currentCustomer={currentCustomer} />
     </Container>
   );

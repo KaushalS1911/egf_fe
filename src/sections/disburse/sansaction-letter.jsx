@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/logo.png';
 import { fDate } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
 import InvoiceHeader from '../../components/invoise/invoice-header';
 
 // ----------------------------------------------------------------------
@@ -12,14 +10,17 @@ Font.register({
   family: 'Roboto',
   fonts: [{ src: '/fonts/Roboto-Regular.ttf' }, { src: '/fonts/Roboto-Bold.ttf' }],
 });
+
 Font.register({
   family: 'NotoSansGujarati',
   src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
 });
+
 Font.register({
   family: 'Poppins',
   src: '/fonts/Overpass-VariableFont_wght.ttf',
 });
+
 const useStyles = () =>
   useMemo(
     () =>
@@ -41,7 +42,6 @@ const useStyles = () =>
           fontFamily: 'Roboto',
           position: 'relative',
         },
-
         watermarkContainer: {
           position: 'absolute',
           top: 0,
@@ -77,7 +77,6 @@ const useStyles = () =>
           alignItems: 'center',
           textAlign: 'center',
         },
-
         wriitenBy: {
           fontSize: 14,
           width: '100%',
@@ -126,14 +125,11 @@ const useStyles = () =>
           flex: 2,
         },
         tableFooter: {
-          // color: '#fff',
-          // backgroundColor: '#232C4B',
           borderTop: '1px solid #232C4B',
           fontWeight: 'bold',
           borderBottomLeftRadius: 10,
           borderBottomRightRadius: 10,
           paddingVertical: 8,
-
         },
         tableHeader: {
           color: '#fff',
@@ -144,14 +140,12 @@ const useStyles = () =>
           textWrap: 'nowrap',
           paddingVertical: 6,
         },
-
         tableRow: {
           flexDirection: 'row',
           borderStyle: 'solid',
           paddingVertical: 10,
           textWrap: 'nowrap',
           fontWeight: 600,
-
         },
         tableRowBorder: {
           borderBottom: '1px solid #d9d9d9',
@@ -169,7 +163,6 @@ const useStyles = () =>
           fontWeight: '500',
           marginBottom: 5,
         },
-
         propertyCellHeading: {
           fontSize: 12,
           fontWeight: '500',
@@ -218,8 +211,6 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 export default function SansactionLetter({ sansaction, configs }) {
-
-
   const styles = useStyles();
   const qty = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0);
   const totalWight = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0);
@@ -252,24 +243,21 @@ export default function SansactionLetter({ sansaction, configs }) {
       let unitIndex = 0;
 
       while (num > 0) {
-        let part = num % (unitIndex === 0 ? 1000 : 100); // Take 3 digits for the first part, 2 digits after
+        let part = num % (unitIndex === 0 ? 1000 : 100);
         if (part > 0) {
           const unit = units[unitIndex] ? ' ' + units[unitIndex] : '';
           result = convertBelowThousand(part) + unit + (result ? ' ' + result : '');
         }
-        num = Math.floor(num / (unitIndex === 0 ? 1000 : 100)); // Move to the next group
+        num = Math.floor(num / (unitIndex === 0 ? 1000 : 100));
         unitIndex++;
       }
 
       return result.trim();
     };
 
-    // Split integer and decimal parts
     const [integerPart, decimalPart] = num.toString().split('.');
-
     let words = handleWholeNumber(parseInt(integerPart)) + ' Rupees';
 
-    // Handle decimal part
     if (decimalPart) {
       const decimalWords = handleWholeNumber(parseInt(decimalPart));
       words += ' and ' + decimalWords + ' Paise';
@@ -277,7 +265,6 @@ export default function SansactionLetter({ sansaction, configs }) {
 
     return words + ' Only,';
   }
-
 
   const netAmountInWords = numberToWords(amount);
   const rules = [
@@ -328,11 +315,11 @@ export default function SansactionLetter({ sansaction, configs }) {
       specification: `૧ થી ૪ માં સમાવેશ ન થયેલ હેતુઓ માટે ધીરેલુ કરજ.`,
     },
   ];
+
   return (
     <>
       <Document>
         <Page size='A4' style={styles.page}>
-          {/* Watermark */}
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
@@ -404,7 +391,6 @@ export default function SansactionLetter({ sansaction, configs }) {
                     </View>
                   ))}
                 </View>
-
                 <View>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWight: 'bolder', marginTop: 20 }}>
                     ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે
@@ -455,7 +441,6 @@ export default function SansactionLetter({ sansaction, configs }) {
                     બિલ નં. : {' '}
                   </Text> <Text style={styles.subText}>{sansaction.loanNo}</Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૧. દેણદાર નું નામ
                     : {' '}</Text>
@@ -466,7 +451,6 @@ export default function SansactionLetter({ sansaction, configs }) {
                       fontWeight: 900,
                     }}>{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૨. દેણદાર નું સરનામું
                     : {' '}</Text>
@@ -475,41 +459,34 @@ export default function SansactionLetter({ sansaction, configs }) {
                     textWrap: 'wrap',
                   }}>{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૩. કરજ ની રકમ : {' '}</Text>
                   <Text style={styles.subText}>{sansaction.loanAmount}</Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૪. ધીયાં ની તારીખ
                     : {' '}</Text>
                   <Text style={styles.subText}>{fDate(sansaction.issueDate)}</Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૪-અ. કરજ ની પ્રકાર
                     : {' '}</Text>
                   <Text style={[styles.subText, styles.gujaratiText]}>ખેતી વિષયક,ઔદ્યોગિક વેપારી,અગત કે પ્રકીણ
                     કરજ</Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૫. કરજ પાકવાની મુદત માસ ૮ ની
                     છે .</Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૬. વાર્ષિક વ્યાજ
                     દર {((sansaction.scheme.interestRate) * 12).toFixed(2)} ટકા.
                   </Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>૭. તારણ નો પ્રકાર
                   </Text>
                 </Text>
-
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>સોનાના મુદ્દા
                   </Text>
@@ -553,7 +530,6 @@ export default function SansactionLetter({ sansaction, configs }) {
                 બિલની બધી જ શરતો મેં વાંચી છે,તે મને કાબુલ છે
               </Text>
             </View>
-
             <View>
               <Text style={{
                 ...styles.gujaratiText,
@@ -577,11 +553,10 @@ export default function SansactionLetter({ sansaction, configs }) {
                 ))}
               </View>
             </View>
-
             <View>
               <Text style={{
                 ...styles.gujaratiText,
-                fontWeight: '900', // Fixed typo in 'fontWeight'
+                fontWeight: '900',
                 fontSize: 14,
                 marginTop: 8,
                 color: '#232C4B',
@@ -596,8 +571,8 @@ export default function SansactionLetter({ sansaction, configs }) {
                       <Text style={{
                         ...styles.gujaratiText,
                         fontSize: 12,
-                        fontWeight: '600', // Fixed typo in 'fontWeight'
-                        width: 80, // Fixed width to align colons
+                        fontWeight: '600',
+                        width: 80,
                       }}>{item.heading}</Text>
                       <Text style={{
                         ...styles.gujaratiText,
@@ -613,7 +588,6 @@ export default function SansactionLetter({ sansaction, configs }) {
                 ))}
               </View>
             </View>
-
           </View>
           <View style={styles.d_flex}>
             <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>

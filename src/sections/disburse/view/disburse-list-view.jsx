@@ -34,14 +34,8 @@ import DisburseTableRow from '../disburse-table-row';
 import DisburseTableToolbar from '../disburse-table-toolbar';
 import DisburseTableFiltersResult from '../disburse-table-filters-result';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { Dialog, DialogActions } from '@mui/material';
-import { Box } from '@mui/system';
-import { PDFViewer } from '@react-pdf/renderer';
-import LetterOfAuthority from '../letter-of-authority';
-import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
-
 
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan no.' },
@@ -65,7 +59,7 @@ export default function DisburseListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false,false,true);
+  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false, false, true);
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -149,6 +143,7 @@ export default function DisburseListView() {
     },
     [router],
   );
+
   if (LoanissueLoading) {
     return (
       <LoadingScreen />
@@ -180,7 +175,6 @@ export default function DisburseListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -200,7 +194,6 @@ export default function DisburseListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -217,7 +210,6 @@ export default function DisburseListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -235,31 +227,26 @@ export default function DisburseListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -281,7 +268,6 @@ export default function DisburseListView() {
             Delete
           </Button>
         }
-
       />
     </>
   );

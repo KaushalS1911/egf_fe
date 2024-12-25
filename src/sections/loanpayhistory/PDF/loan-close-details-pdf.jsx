@@ -70,12 +70,10 @@ const useStyles = () =>
         spacing: {
           marginTop: 7,
         },
-
         table: {
           width: 'auto',
           marginTop: 10,
           borderRadius: 10,
-
         },
         tableHeader: {
           color: '#fff',
@@ -131,7 +129,6 @@ export default function LoanCloseDetailsPdf({ data, configs }) {
       <Page size='A4' style={styles.page}> <View style={styles.watermarkContainer}>
         <Image src={logo} style={styles.watermarkImage} />
       </View>
-
         <InvoiceHeader selectedRow={data.loan} configs={configs} />
         <View style={styles.pagePadding}>
           <Text style={{ ...styles.headerText2, marginTop: 25 }}>Loan Close Slip</Text>
@@ -201,8 +198,7 @@ export default function LoanCloseDetailsPdf({ data, configs }) {
         </View>
       </Page>
     </Document>
-  )
-    ;
+  );
 }
 
 LoanCloseDetailsPdf.propTypes = {

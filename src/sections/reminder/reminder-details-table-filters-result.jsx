@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
@@ -36,7 +35,6 @@ export default function ReminderDetailsTableFiltersResult({
           results found
         </Box>
       </Box>
-
       <Stack flexGrow={1} spacing={1} direction='row' flexWrap='wrap' alignItems='center'>
         {filters.startDate && filters.endDate && (
           <Block label='Date:'>
@@ -88,7 +86,6 @@ function Block({ label, children, sx, ...other }) {
       <Box component='span' sx={{ typography: 'subtitle2' }}>
         {label}
       </Box>
-
       <Stack spacing={1} direction='row' flexWrap='wrap'>
         {children}
       </Stack>

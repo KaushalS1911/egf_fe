@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter } from '../../../routes/hooks';
-import { paths } from '../../../routes/paths';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { Card, Grid } from '@mui/material';
 import PayTabs from '../view/pay-tabs';
 import LoanpayhistoryNewEditForm from '../loanpayhistory-new-edit-form';
 import { Box } from '@mui/system';
@@ -23,7 +20,7 @@ function BulkInterestPay() {
         const parsedData = JSON.parse(storedData);
         if (parsedData && parsedData.filteredLoanNo && Loanissue) {
           const filteredLoanIssue = Loanissue.filter(item =>
-            parsedData.filteredLoanNo.includes(item.loanNo)
+            parsedData.filteredLoanNo.includes(item.loanNo),
           );
           if (filteredLoanIssue.length > 0) {
             setData({ loans: filteredLoanIssue });
@@ -32,7 +29,7 @@ function BulkInterestPay() {
       }
     };
     fetchDataFromSession();
-  }, [Loanissue , mutate]);
+  }, [Loanissue, mutate]);
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
@@ -43,6 +40,7 @@ function BulkInterestPay() {
       <LoadingScreen />
     );
   }
+
   return (
     <>
       <Box sx={{ p: 3 }}>

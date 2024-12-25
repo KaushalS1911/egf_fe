@@ -9,7 +9,7 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
-import { useParams, useRouter } from 'src/routes/hooks';
+import { useParams } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -65,7 +65,6 @@ export default function ReminderDetailsListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const settings = useSettingsContext();
-  const router = useRouter();
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(reminderDetails);
   const [filters, setFilters] = useState(defaultFilters);
@@ -135,13 +134,6 @@ export default function ReminderDetailsListView() {
     });
   }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters],
-  );
-
   if (reminderLoading) {
     return (
       <LoadingScreen />
@@ -158,7 +150,6 @@ export default function ReminderDetailsListView() {
             { name: 'Reminder Details', href: paths.dashboard.reminder.list },
             { name: 'List' },
           ]}
-
           sx={{
             mb: { xs: 3, md: 5 },
           }}
@@ -184,8 +175,7 @@ export default function ReminderDetailsListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id)
-                  ,
+                  dataFiltered.map((row) => row._id),
                 )
               }
               action={

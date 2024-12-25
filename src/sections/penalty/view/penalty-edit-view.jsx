@@ -1,34 +1,26 @@
 import PropTypes from 'prop-types';
-
 import Container from '@mui/material/Container';
-
 import { paths } from 'src/routes/paths';
-
-import { _userList } from 'src/_mock';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-
 import PenaltyNewEditForm from '../penalty-new-edit-form';
-import { useGetScheme } from '../../../api/scheme';
 import { useParams } from '../../../routes/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { Box } from '@mui/material';
-import { useGetCarat } from '../../../api/carat';
 import { useGetPenalty } from '../../../api/penalty';
 
 // ----------------------------------------------------------------------
 
 export default function PenaltyEditView() {
   const settings = useSettingsContext();
-  const {penalty} = useGetPenalty()
-  const {id} = useParams()
-
+  const { penalty } = useGetPenalty();
+  const { id } = useParams();
   const currentPenalty = penalty.find((penalty) => penalty._id === id);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading='Edit'
         links={[
           {
             name: 'Dashboard',
@@ -44,7 +36,6 @@ export default function PenaltyEditView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-
       {currentPenalty ? <PenaltyNewEditForm currentPenalty={currentPenalty} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />

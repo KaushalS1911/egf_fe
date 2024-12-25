@@ -1,24 +1,20 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-
 import { useRouter } from 'src/routes/hooks';
-
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFAutocomplete,
   RHFTextField,
 } from 'src/components/hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetBranch } from '../../api/branch';
 import CardContent from '@mui/material/CardContent';
 import {
@@ -26,26 +22,29 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
 } from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
-import Button from '@mui/material/Button';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import { TableHeadCustom, useTable } from '../../components/table';
 
 // ----------------------------------------------------------------------
+
 const TABLE_HEAD = [
   { id: 'propertyName', label: 'Property Name' },
   { id: 'totalWeight', label: 'Total Weight' },
   { id: 'loseWeight', label: 'Lose Weight' },
   { id: 'grossWeight', label: 'Gross Weight' },
   { id: 'netWeight', label: 'Net Weight' },
-  { id: 'loanApplicableAmount', label: 'Loan Applicable amount',width:200 },
+  { id: 'loanApplicableAmount', label: 'Loan Applicable amount', width: 200 },
 ];
 
 export default function DisburseNewEditForm({ currentDisburse }) {
+  const router = useRouter();
+  const table = useTable();
+  const { enqueueSnackbar } = useSnackbar();
+  const { branch } = useGetBranch();
   const [cashPendingAmt, setCashPendingAmt] = useState(0);
   const [bankPendingAmt, setBankPendingAmt] = useState(0);
 
@@ -71,10 +70,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
       account: Yup.object().required('Account is required'),
     }),
   };
-  const router = useRouter();
-  const table = useTable();
-  const { enqueueSnackbar } = useSnackbar();
-  const { branch } = useGetBranch();
+
   const NewDisburse = Yup.object().shape({
     loanNo: Yup.string().required('Loan No is required'),
     customerName: Yup.string().required('Customer Name is required'),
@@ -134,8 +130,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
     handleSubmit,
     setValue,
     formState: { isSubmitting },
-    getValues,
   } = methods;
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'items',
@@ -144,23 +140,11 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   useEffect(() => {
     setCashPendingAmt(watch('cashNetAmount') - watch('payingCashAmount'));
   }, [watch('cashNetAmount'), watch('payingCashAmount')]);
+
   useEffect(() => {
     setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
 
-  const handleRemove = (index) => {
-    remove(index);
-  };
-  const handleAdd = () => {
-    append({
-      propertyName: '',
-      totalWeight: '',
-      loseWeight: '',
-      grossWeight: '',
-      netWeight: '',
-      loanApplicableAmount: '',
-    });
-  };
   const onSubmit = handleSubmit(async (data) => {
     try {
       const payload = {
@@ -172,37 +156,39 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         pendingCashAmount: cashPendingAmt,
         payingBankAmount: data.payingBankAmount,
         payingCashAmount: data.payingCashAmount,
-        approvalCharge:data.approvalCharge
+        approvalCharge: data.approvalCharge,
       };
+
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
       router.push(paths.dashboard.disburse.list);
       enqueueSnackbar(res?.data.message);
       reset();
-
     } catch (error) {
       enqueueSnackbar(currentDisburse ? 'Failed To update scheme' : 'Failed to create Scheme');
       console.error(error, 'ree');
     }
   });
+
   const handleCashAmountChange = (event) => {
     const cashPayingAmount = parseFloat(event.target.value) || '';
-    const cashNetAmount = parseFloat(watch('cashNetAmount')-watch('approvalCharge'));
-
+    const cashNetAmount = parseFloat(watch('cashNetAmount') - watch('approvalCharge'));
 
     if (cashPayingAmount > cashNetAmount) {
       setValue('payingCashAmount', cashNetAmount);
       enqueueSnackbar('Cash paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
     }
   };
+
   const handleBankAmountChange = (event) => {
     const bankPayingAmount = parseFloat(event.target.value) || '';
-    const bankNetAmount = parseFloat(watch('bankNetAmount')-watch('approvalCharge')) || '';
+    const bankNetAmount = parseFloat(watch('bankNetAmount') - watch('approvalCharge')) || '';
 
     if (bankPayingAmount > bankNetAmount) {
       setValue('payingBankAmount', bankNetAmount);
       enqueueSnackbar('Bank paying amount cannot be greater than the Net Amount.', { variant: 'warning' });
     }
   };
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -228,11 +214,9 @@ export default function DisburseNewEditForm({ currentDisburse }) {
               <RHFTextField name='address' label='Address' req={'red'} />
               <RHFTextField name='branch' label='Branch' req={'red'} />
               <RHFTextField name='approvalCharge' label='Approval Charge' req={'red'} />
-
             </Box>
           </Card>
         </Grid>
-
         <Grid item xs={12} md={12}>
           <Card
           >
@@ -308,7 +292,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
             </CardContent>
           </Card>
         </Grid>
-
         <Grid xs={12} md={12}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
@@ -332,10 +315,10 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                     <RHFTextField name='bankNetAmount' label='Net Amount' req={'red'}
                                   value={watch('bankNetAmount') - watch('approvalCharge') || 0}
                                   onKeyPress={(e) => {
-                      if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                        e.preventDefault();
-                      }
-                    }} />
+                                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                                      e.preventDefault();
+                                    }
+                                  }} />
                     <Controller
                       name='payingBankAmount'
                       control={control}
@@ -359,7 +342,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                       )}
                     />
                     <RHFTextField name='bankPendingAmount' label='Pending Amount' req={'red'}
-                                  value={(watch('bankNetAmount')-watch('approvalCharge')) - watch('payingBankAmount') || 0}
+                                  value={(watch('bankNetAmount') - watch('approvalCharge')) - watch('payingBankAmount') || 0}
                                   InputLabelProps={{ shrink: true }} />
                     <RHFAutocomplete
                       name='companyBankDetail.account'
@@ -387,7 +370,6 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                   </Box>
                 </>
               )}
-
               {(currentDisburse.paymentMode === 'Cash' || currentDisburse.paymentMode === 'Both') && (
                 <>
                   <Typography variant='subtitle2' sx={{ mb: 0.5, fontWeight: '600' }}>
@@ -434,9 +416,8 @@ export default function DisburseNewEditForm({ currentDisburse }) {
                         />
                       )}
                     />
-
                     <RHFTextField name='cashPendingAmount' label='Pending Amount' req={'red'}
-                                  value={parseFloat((watch('cashNetAmount')-watch('approvalCharge')) - watch('payingCashAmount') || 0)}
+                                  value={parseFloat((watch('cashNetAmount') - watch('approvalCharge')) - watch('payingCashAmount') || 0)}
                                   InputLabelProps={{ shrink: true }}
                                   onKeyPress={(e) => {
                                     if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -455,7 +436,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
             </Stack>
           </Card>
           {
-            currentDisburse.status !== 'Disbursed' &&  currentDisburse.status !== 'Closed' &&
+            currentDisburse.status !== 'Disbursed' && currentDisburse.status !== 'Closed' &&
             <Stack alignItems={'end'} mt={3}>
               <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                 Submit

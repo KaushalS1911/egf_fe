@@ -91,7 +91,6 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
             }}
           />
           <DatePicker
-
             label='Start date'
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}

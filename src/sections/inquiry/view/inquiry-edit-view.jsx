@@ -1,10 +1,6 @@
 import PropTypes from 'prop-types';
-
 import Container from '@mui/material/Container';
-
 import { paths } from 'src/routes/paths';
-
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useGetInquiry } from 'src/api/inquiry';
@@ -39,8 +35,7 @@ export default function InquiryEditView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-
-      {currentInquiry ? <InquiryNewEditForm currentInquiry={currentInquiry} inquiry={inquiry}/> :
+      {currentInquiry ? <InquiryNewEditForm currentInquiry={currentInquiry} inquiry={inquiry} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />
         </Box>

@@ -8,13 +8,10 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -31,7 +28,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
 import EmployeeTableRow from '../employee-table-row';
 import EmployeeTableToolbar from '../employee-table-toolbar';
 import EmployeeTableFiltersResult from '../employee-table-filters-result';
@@ -45,7 +41,6 @@ import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-
 const TABLE_HEAD = [
   { id: 'username', label: 'Name' },
   { id: 'branchname', label: 'Branch' },
@@ -58,6 +53,7 @@ const TABLE_HEAD = [
 const defaultFilters = {
   name: '',
 };
+
 // ----------------------------------------------------------------------
 
 export default function EmployeeListView() {
@@ -84,9 +80,7 @@ export default function EmployeeListView() {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
@@ -103,6 +97,7 @@ export default function EmployeeListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
@@ -115,7 +110,6 @@ export default function EmployeeListView() {
       enqueueSnackbar('Failed to delete Employee');
     }
   };
-
 
   const handleDeleteRow = useCallback(
     (id) => {
@@ -159,18 +153,18 @@ export default function EmployeeListView() {
     role: item.user.role,
     'Joining Date:': fDate(item.joiningDate),
     'Reporting to': `${item.reportingTo.firstName} ${item.reportingTo.middleName} ${item.reportingTo.lastName}`,
-    Branch: item.user.branch.name,
+    Branch: item.user.branch?.name,
     'Permanent address': `${item.permanentAddress.street} ${item.permanentAddress.landmark} ${item.permanentAddress.city} , ${item.permanentAddress.state} ${item.permanentAddress.country} ${item.permanentAddress.zipcode}`,
     Remark: item.remark,
     Status: item.status,
-
-
   }));
+
   if (employeeLoading) {
     return (
       <LoadingScreen />
     );
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -195,10 +189,8 @@ export default function EmployeeListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <EmployeeTableToolbar filters={filters} onFilters={handleFilters} employees={employees} />
-
           {canReset && (
             <EmployeeTableFiltersResult
               filters={filters}
@@ -208,7 +200,6 @@ export default function EmployeeListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -228,7 +219,6 @@ export default function EmployeeListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -245,7 +235,6 @@ export default function EmployeeListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -263,31 +252,26 @@ export default function EmployeeListView() {
                         loginuser={user}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -324,6 +308,7 @@ function applyFilter({ inputData, comparator, filters }) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+
   inputData = stabilizedThis.map((el) => el[0]);
   if (name && name.trim()) {
     inputData = inputData.filter(

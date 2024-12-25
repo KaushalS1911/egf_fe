@@ -63,11 +63,11 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ];
 
-
 const defaultFilters = {
   name: '',
   isActive: 'all',
 };
+
 // ----------------------------------------------------------------------
 
 export default function SchemeListView() {
@@ -255,7 +255,6 @@ export default function SchemeListView() {
           <SchemeTableToolbar
             filters={filters} onFilters={handleFilters} schemes={schemes}
           />
-
           {canReset && (
             <SchemeTableFiltersResult
               filters={filters}
@@ -265,7 +264,6 @@ export default function SchemeListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -286,7 +284,6 @@ export default function SchemeListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -303,7 +300,6 @@ export default function SchemeListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -320,18 +316,15 @@ export default function SchemeListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -343,7 +336,6 @@ export default function SchemeListView() {
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -377,7 +369,6 @@ function applyFilter({
 ) {
   const { isActive, name } = filters;
 
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -386,7 +377,6 @@ function applyFilter({
   });
   inputData = stabilizedThis.map((el) => el[0]);
 
-  // Filter by scheme name if provided
   if (name && name.trim()) {
     inputData = inputData.filter(
       (sch) =>

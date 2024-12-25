@@ -70,12 +70,10 @@ const useStyles = () =>
         spacing: {
           marginTop: 7,
         },
-
         table: {
           width: 'auto',
           marginTop: 10,
           borderRadius: 10,
-
         },
         tableHeader: {
           color: '#fff',

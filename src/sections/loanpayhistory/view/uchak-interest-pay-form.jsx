@@ -28,9 +28,11 @@ import { ConfirmDialog } from '../../../components/custom-dialog';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { PDFViewer } from '@react-pdf/renderer';
-import InterestPdf from '../PDF/interest-pdf';
 import { useGetConfigs } from '../../../api/config';
 import UchakInterstPayDetailPdf from '../PDF/uchak-interst-pay-detail-pdf';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useAuthContext } from '../../../auth/hooks';
+
 const TABLE_HEAD = [
   { id: 'uchakPayDate', label: 'Uchak Pay Date' },
   { id: 'uchakIntAmt', label: 'Uchak Int Amt' },
@@ -38,16 +40,19 @@ const TABLE_HEAD = [
   { id: 'action', label: 'Action' },
   { id: 'PDF', label: 'PDF' },
 ];
+
 function UchakInterestPayForm({ currentLoan, mutate }) {
+  const { user } = useAuthContext();
   const { branch } = useGetBranch();
-  const { uchak , refetchUchak}  = useGetAllUchakPay(currentLoan._id);
+  const { uchak, refetchUchak } = useGetAllUchakPay(currentLoan._id);
   const { loanInterest } = useGetAllInterest(currentLoan._id);
   const [paymentMode, setPaymentMode] = useState('');
   const confirm = useBoolean();
   const [deleteId, setDeleteId] = useState('');
   const view = useBoolean();
   const [data, setData] = useState(null);
-  const {configs} = useGetConfigs()
+  const { configs } = useGetConfigs();
+
   const paymentSchema = paymentMode === 'Bank' ? {
     account: Yup.object().required('Account is required'),
     bankAmount: Yup.string()
@@ -57,7 +62,6 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
       .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-
   } : {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
@@ -140,9 +144,9 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       amountPaid: data.uchakInterestAmount,
       paymentDetail: paymentDetail,
     };
+
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest-payment`;
-
       const config = {
         method: 'post',
         url,
@@ -192,18 +196,20 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       setValue('bankAmount', 0);
     }
   };
+
   const handleDeleteUchak = async (id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/uchak-interest-payment/${id}`);
       mutate();
-      setDeleteId(null)
+      setDeleteId(null);
       refetchUchak();
       confirm.onFalse();
-      enqueueSnackbar((response?.data.message),{variant: 'success'});
+      enqueueSnackbar((response?.data.message), { variant: 'success' });
     } catch (err) {
-      enqueueSnackbar('Failed to pay uchak interest',{variant: 'error'});
+      enqueueSnackbar('Failed to pay uchak interest', { variant: 'error' });
     }
   };
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -226,113 +232,111 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
           <Grid item xs={4}>
             <RHFTextField name='remark' label='Remark' />
           </Grid>
-
         </Grid>
         <Grid item pb={2}>
           <Typography variant='subtitle1' my={1}>
             Payment Details
           </Typography>
-          <Box sx={{display: 'flex', justifyContent: 'space-between',}}>
-          <Box
-            width={'100%'}
-            rowGap={3}
-            columnGap={2}
-            display='grid'
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)',
-              md: 'repeat(5, 1fr)',
-            }}>
-            <RHFAutocomplete
-              name='paymentMode'
-              label='Payment Mode'
-              req='red'
-              options={['Cash', 'Bank', 'Both']}
-              getOptionLabel={(option) => option}
-              onChange={(event, value) => {
-                setValue('paymentMode', value);
-                handleLoanAmountChange({ target: { value: watch('uchakInterestAmount') } });
-              }}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box
+              width={'100%'}
+              rowGap={3}
+              columnGap={2}
+              display='grid'
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                md: 'repeat(5, 1fr)',
+              }}>
+              <RHFAutocomplete
+                name='paymentMode'
+                label='Payment Mode'
+                req='red'
+                options={['Cash', 'Bank', 'Both']}
+                getOptionLabel={(option) => option}
+                onChange={(event, value) => {
+                  setValue('paymentMode', value);
+                  handleLoanAmountChange({ target: { value: watch('uchakInterestAmount') } });
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
+              {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+                <>
+                  <Controller
+                    name='cashAmount'
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label='Cash Amount'
+                        req={'red'}
+                        type='number'
+                        inputProps={{ min: 0 }}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleCashAmountChange(e);
+                        }}
+                      />
+                    )}
+                  />
+                </>
               )}
-            />
-            {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-              <>
-                <Controller
-                  name='cashAmount'
-                  control={control}
-                  render={({ field }) => (
-                    <RHFTextField
-                      {...field}
-                      label='Cash Amount'
-                      req={'red'}
-                      type='number'
-                      inputProps={{ min: 0 }}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        handleCashAmountChange(e);
-                      }}
-                    />
-                  )}
-                />
-              </>
-            )}
-            {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-              <>
-                <RHFAutocomplete
-                  name='account'
-                  label='Account'
-                  req={'red'}
-                  fullWidth
-                  options={branch.flatMap((item) => item.company.bankAccounts)}
-                  getOptionLabel={(option) => option.bankName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id || option.bankName}>
-                      {option.bankName}
-                    </li>
-                  )}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                />
-                <Controller
-                  name='bankAmount'
-                  control={control}
-                  render={({ field }) => (
-                    <RHFTextField
-                      {...field}
-                      label='Bank Amount'
-                      req={'red'}
-                      disabled={watch('paymentMode') === 'Bank' ? false : true}
-                      type='number'
-                      inputProps={{ min: 0 }}
-                    />
-                  )}
-                />
-              </>
-            )}
-          </Box>
-            <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end',gap:1}}>
+              {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+                <>
+                  <RHFAutocomplete
+                    name='account'
+                    label='Account'
+                    req={'red'}
+                    fullWidth
+                    options={branch.flatMap((item) => item.company.bankAccounts)}
+                    getOptionLabel={(option) => option.bankName || ''}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id || option.bankName}>
+                        {option.bankName}
+                      </li>
+                    )}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                  />
+                  <Controller
+                    name='bankAmount'
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label='Bank Amount'
+                        req={'red'}
+                        disabled={watch('paymentMode') === 'Bank' ? false : true}
+                        type='number'
+                        inputProps={{ min: 0 }}
+                      />
+                    )}
+                  />
+                </>
+              )}
+            </Box>
+            <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
               <Button color='inherit'
                       variant='outlined' onClick={() => reset()}>Reset</Button>
+              {getResponsibilityValue('update_loanPayHistory', configs, user) &&
               <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                 Submit
-              </LoadingButton>
+              </LoadingButton>}
             </Box>
           </Box>
         </Grid>
-
-
       </FormProvider>
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 3 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {uchak && uchak.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1, }}>{fDate(row.date)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1,}}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1,}}>{row.remark}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',py: 0, px: 1,}}>{
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{fDate(row.date)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{
                 <IconButton color='error' onClick={() => {
                   if ((new Date(loanInterest[0]?.to) > new Date(row.date)) || loanInterest.length === 0) {
                     confirm.onTrue();
@@ -346,21 +350,22 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
               }</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap',cursor: 'pointer', py: 0, px: 1 }}>{
-                <Typography
-                  onClick={() => {
-                    view.onTrue();
-                    setData(row);
-                  }}
-                  sx={{
-                    cursor: 'pointer',
-                    color: 'inherit',
-                    pointerEvents: 'auto',
-                  }}
-                >
-                  <Iconify icon='basil:document-solid' />
-                </Typography>
-              }</TableCell>
+              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
+                <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>{
+                  <Typography
+                    onClick={() => {
+                      view.onTrue();
+                      setData(row);
+                    }}
+                    sx={{
+                      cursor: 'pointer',
+                      color: 'inherit',
+                      pointerEvents: 'auto',
+                    }}
+                  >
+                    <Iconify icon='basil:document-solid' />
+                  </Typography>
+                }</TableCell> : <TableCell>'-'</TableCell>}
             </TableRow>
           ))}
         </TableBody>
@@ -386,15 +391,13 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
             Close
           </Button>
         </DialogActions>
-
         <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
           <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-            <UchakInterstPayDetailPdf data={data} configs={configs}/>
+            <UchakInterstPayDetailPdf data={data} configs={configs} />
           </PDFViewer>
         </Box>
       </Box>
     </Dialog>
-
     </>
   );
 }

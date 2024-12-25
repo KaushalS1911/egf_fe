@@ -1,15 +1,10 @@
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
-
+import { useCallback } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { FormControl, Grid, IconButton, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
-import { formHelperTextClasses } from '@mui/material/FormHelperText';
-import { MobileDatePicker } from '@mui/x-date-pickers';
-import moment from 'moment';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import { getResponsibilityValue } from '../../permission/permission';
 import { useAuthContext } from '../../auth/hooks';

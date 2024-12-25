@@ -36,6 +36,7 @@ const modules = [
       { action: 'delete Inquiry', key: 'delete_inquiry' },
       { action: 'print Inquiry', key: 'print_inquiry_detail' },
       { action: 'bulk Inquiry', key: 'bulk_inquiry_detail' },
+      { action: 'Inquiry Follow-Up', key: 'inquiry_follow_Up' },
     ],
   },
   {
@@ -66,7 +67,7 @@ const modules = [
       { action: 'update Scheme', key: 'update_scheme' },
       { action: 'delete Scheme', key: 'delete_scheme' },
       { action: 'print Scheme', key: 'print_scheme_detail' },
-      { action: 'Gold Price Change', key: 'print_gold_price_change' },
+      { action: 'Gold Price Change', key: 'gold_price_change' },
     ],
   },
   {
@@ -116,7 +117,7 @@ const modules = [
       { action: 'create Disburse', key: 'create_disburse' },
       { action: 'update Disburse', key: 'update_disburse' },
       { action: 'delete Disburse', key: 'delete_disburse' },
-      { action: 'print Disburse', key: 'print_disburse_detail' },
+      { action: 'print Disburse Detail', key: 'print_disburse_detail' },
     ],
   },
   {
@@ -142,6 +143,15 @@ const modules = [
     label: 'Gold Loan Calculator',
     value: 'Gold Loan Calculator',
     permissions: [],
+  },
+  {
+    label: 'All Reports',
+    value: 'Reports',
+    permissions: [
+      // { action: 'All Branch Loan Summary', key: 'all_branch_loan_summary' },
+      // { action: 'Branch Vise Loan Closing Report', key: 'branch_vise_loan_closing_report' },
+      // { action: 'Daily Reports', key: 'daily_reports' },
+    ],
   },
   {
     label: 'Setting',
