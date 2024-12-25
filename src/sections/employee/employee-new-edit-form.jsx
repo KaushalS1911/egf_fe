@@ -18,13 +18,17 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
-import { Autocomplete, Button, TextField } from '@mui/material';
+import { Autocomplete, Button, Dialog, TextField } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import ReactCrop from 'react-image-crop';
+import DialogTitle from '@mui/material/DialogTitle';
+import Webcam from 'react-webcam';
+import DialogActions from '@mui/material/DialogActions';
 
 // ----------------------------------------------------------------------
 
