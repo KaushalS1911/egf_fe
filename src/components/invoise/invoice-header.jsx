@@ -144,11 +144,11 @@ const useStyles = () =>
   );
 
 export default function InvoiceHeader({configs}) {
-  console.log(configs,"uhuh");
   const styles = useStyles();
   const logo = configs?.company?.logo_url;
   const branch = configs?.headersConfig?.branch;
   const company = configs?.headersConfig?.companyDetail;
+  const webUrl = configs?.headersConfig?.companyDetail?.webUrl;
   const branchAddress = branch ? `${branch.address.street}, ${branch.address.landmark}, ${branch.address.city}, ${branch.address.zipcode}` : '';
   const branchName = branch?.name || 'Branch Name Not Available';
   const branchCode = branch?.branchCode || 'Branch Code Not Available';
@@ -239,8 +239,8 @@ export default function InvoiceHeader({configs}) {
                 <Image style={styles.icon} src={website || 'default_website_icon'} />
                 <Text style={styles.separator}>|</Text>
                 <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>
-                  <Link src='https://www.easygoldfincorp.com/' style={{ textDecoration: 'none', color: '#fff' }}>
-                    www.easygoldfincorp.com
+                  <Link src={webUrl} style={{ textDecoration: 'none', color: '#fff' }}>
+                    {webUrl}
                   </Link>
                 </Text>
               </View>

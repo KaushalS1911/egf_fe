@@ -56,6 +56,7 @@ export default function CompanyProfile() {
       email: companyDetail?.email || '',
       contact: companyDetail?.contact || '',
       branch: configs?.headersConfig?.branch || null,
+      webUrl: configs?.headersConfig?.companyDetail.webUrl || '',
     },
     resolver: yupResolver(personalDetailsSchema),
   });
@@ -83,6 +84,7 @@ export default function CompanyProfile() {
         email: companyDetail.email || '',
         contact: companyDetail.contact || '',
         branch: configs?.headersConfig?.branch || null,
+        webUrl: configs?.headersConfig?.companyDetail.webUrl || '',
       });
     }
   }, [companyDetail, configs, resetPersonalDetails]);
@@ -94,6 +96,7 @@ export default function CompanyProfile() {
       email: data.email,
       contact: data.contact,
       branch: data.branch,
+      webUrl: data.webUrl
     };
 
     const details = {
@@ -101,8 +104,9 @@ export default function CompanyProfile() {
         name: data.name,
         email: data.email,
         contact: data.contact,
+        webUrl:data.webUrl
       },
-      branch: data.branch
+      branch: data.branch,
     };
     const payload2 = { ...configs, headersConfig: details };
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}`;
@@ -111,7 +115,7 @@ export default function CompanyProfile() {
 
     try {
       await axios.put(URL, payload);
-      await axios.put(URL2,payload2)
+      await axios.put(URL2, payload2);
       mutate();
       enqueueSnackbar('Personal details updated successfully', { variant: 'success' });
       setLoading(false);
@@ -254,11 +258,12 @@ export default function CompanyProfile() {
                     options={branch?.map((item) => item)}
                     getOptionLabel={(option) => option.name}
                     renderOption={(props, option) => (
-                      <li {...props} key={option} >
+                      <li {...props} key={option}>
                         {option.name}
                       </li>
                     )}
                   />
+                  <RHFTextField name='webUrl' label='Website url' />
                 </Box>
               </Stack>
             </Card>
