@@ -250,13 +250,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
+        setCapturedImage(imageSrc); // Set captured image
         setValue('property_image', imageSrc);
-        setCapturedImage(imageSrc);
-        setCroppedImage(imageSrc);
-        setOpen2(false);
+        setOpen2(false); // Close the ca
+        setOpen(true); // Close the ca
       }
     }
-  }, []);
+  }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentLoanIssue]);
   const handleRemove = (index) => {
     if (fields.length > 1) {
       remove(index);
