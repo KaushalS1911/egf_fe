@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -36,6 +36,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   const { enqueueSnackbar } = useSnackbar();
   const { branch } = useGetBranch();
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const webcamRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ unit: '%', width: 50 });
+  const [completedCrop, setCompletedCrop] = useState(null);
 
   const NewEmployeeSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
@@ -176,7 +185,19 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         }
       });
 
-      if (data.profile_pic && data.profile_pic.path) {
+      if (capturedImage) {
+        const base64Data = capturedImage.split(',')[1];
+        const binaryData = atob(base64Data);
+        const arrayBuffer = new Uint8Array(binaryData.length);
+
+        for (let i = 0; i < binaryData.length; i++) {
+          arrayBuffer[i] = binaryData.charCodeAt(i);
+        }
+
+        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
+
+        formData.append('profile-pic', blob, 'customer-image.jpg');
+      } else {
         formData.append('profile-pic', data.profile_pic);
       }
 
@@ -288,7 +309,149 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     }
   };
 
+  const videoConstraints = {
+    width: 640,
+    height: 360,
+    facingMode: 'user',
+  };
+
+  const handleDropSingleFile = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setFile(file);
+        resetCrop();
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
+  const resetCrop = () => {
+    setCrop({ unit: '%', width: 50, aspect: 1 });
+    setCompletedCrop(null);
+  };
+  const handleCancel = () => {
+    setImageSrc(null);
+    setCapturedImage(null)
+    setOpen(false)
+  };
+  const showCroppedImage = async () => {
+    try {
+      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+        if (file || capturedImage) {
+          const imageToUpload = file || capturedImage; // Use capturedImage if available
+          setCroppedImage(typeof imageToUpload === 'string' ? imageToUpload : URL.createObjectURL(imageToUpload));
+          setValue('profile_pic', imageToUpload);
+
+          if (currentEmployee) {
+            const formData = new FormData();
+            if (typeof imageToUpload === 'string') {
+              // If capturedImage is a base64 string, convert it to a blob
+              const response = await fetch(imageToUpload);
+              const blob = await response.blob();
+              formData.append('profile-pic', blob, 'captured-image.jpg');
+            } else {
+              // Otherwise, upload the file directly
+              formData.append('profile-pic', imageToUpload);
+            }
+
+            await axios
+              .put(
+                `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,
+                formData,
+              )
+              .then((res) => {
+                console.log('Profile updated successfully:', res.data);
+              })
+              .catch((err) => {
+                console.error('Error uploading original image:', err);
+              });
+          }
+
+          setOpen(false);
+          setImageSrc(null);
+        }
+        return;
+      }
+
+      // Handle cropping logic if completedCrop exists
+      const canvas = document.createElement('canvas');
+      const image = document.getElementById('cropped-image');
+
+      if (!image) {
+        console.error('Image element not found!');
+        return;
+      }
+
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+
+      canvas.width = completedCrop.width;
+      canvas.height = completedCrop.height;
+
+      const ctx = canvas.getContext('2d');
+
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        completedCrop.width * scaleX,
+        completedCrop.height * scaleY,
+        0,
+        0,
+        completedCrop.width,
+        completedCrop.height,
+      );
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          console.error('Failed to create blob');
+          return;
+        }
+
+        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+
+        setCroppedImage(URL.createObjectURL(croppedFile));
+        setFile(croppedFile);
+        setValue('profile_pic', croppedFile);
+
+        if (currentEmployee) {
+          const formData = new FormData();
+          formData.append('profile-pic', croppedFile);
+
+          await axios
+            .put(
+              `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,
+              formData,
+            )
+            .then((res) => {
+              console.log('Profile updated successfully:', res.data);
+            })
+            .catch((err) => {
+              console.error('Error uploading cropped image:', err);
+            });
+        }
+        setOpen(false);
+        setImageSrc(null);
+      }, 'image/jpeg');
+    } catch (e) {
+      console.error('Error cropping and uploading image:', e);
+    }
+  };
+  const capture = useCallback(() => {
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      if (imageSrc) {
+        setCapturedImage(imageSrc); // Set captured image
+        setValue('profile_pic', imageSrc);
+        setOpen2(false); // Close the ca
+        setOpen(true); // Close the ca
+      }
+    }
+  }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentEmployee]);
   return (
+    <>
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={3} p={0}>
@@ -296,9 +459,47 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
             <Box sx={{ pt:2, px: 3 }}>
               <RHFUploadAvatar
                 name='profile_pic'
+                camera={true}
+                setOpen2={setOpen2}
+                setOpen={setOpen}
+                setImageSrc={setImageSrc}
+                setFile={setFile}
+                file={ croppedImage || imageSrc || capturedImage || currentEmployee?.user?.avatar_url}
                 maxSize={3145728}
-                onDrop={handleDrop}
+                accept='image/*'
+                onDrop={handleDropSingleFile}
               />
+              <Dialog open={Boolean(open)} onClose={handleCancel}>
+                {/*{imageSrc.length || capturedImage && (*/}
+                {console.log(imageSrc,"/./././././././././././.")}
+                <ReactCrop
+                  crop={crop}
+                  onChange={(newCrop) => setCrop(newCrop)}
+                  onComplete={(newCrop) =>
+                    setCompletedCrop(newCrop)}
+                  aspect={1}
+                >
+                  <img
+                    id='cropped-image'
+                    src={imageSrc || capturedImage}
+                    alt='Crop preview'
+                    onLoad={resetCrop}
+                  />
+                </ReactCrop>
+                {/*)}*/}
+                <div style={{
+                  display: 'flex', justifyContent:
+                    'space-between', padding: '1rem',
+                }}>
+                  <Button variant='outlined' onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                  <Button variant='contained' color='primary'
+                          onClick={showCroppedImage}>
+                    Save Image
+                  </Button>
+                </div>
+              </Dialog>
             </Box>
           {/*</Card>*/}
         </Grid>
@@ -709,6 +910,36 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         </LoadingButton>
       </Box>
     </FormProvider>
+      <Dialog
+        fullWidth
+        maxWidth={false}
+        open={open2}
+        onClose={() => setOpen2(false)}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <DialogTitle>Camera</DialogTitle>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat='image/jpeg'
+            width={'90%'}
+            height={'100%'}
+            videoConstraints={videoConstraints}
+          />
+        </Box>
+        <DialogActions>
+          <Button variant='outlined' onClick={capture}>
+            Capture Photo
+          </Button>
+          <Button variant='contained' onClick={() => setOpen2(false)}>
+            Close Camera
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 

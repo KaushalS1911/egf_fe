@@ -70,6 +70,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [schemeId, setSchemeID] = useState();
   const webcamRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
+  const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -304,17 +305,22 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         field.netAmount);
       payload.append(`propertyDetails[${index}][id]`, field.id);
     });
-    if (capturedImage) {
+    if (croppedImage) {
+      const croppedFile = file; // Ensure cropped file is already set
+      payload.append('property-image', croppedFile, 'property-image.jpg');
+    } else if (capturedImage) {
       const base64Data = capturedImage.split(',')[1];
       const binaryData = atob(base64Data);
       const arrayBuffer = new Uint8Array(binaryData.length);
+
       for (let i = 0; i < binaryData.length; i++) {
         arrayBuffer[i] = binaryData.charCodeAt(i);
       }
-      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+
+      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
+      payload.append('property-image', blob, 'property-image.jpg');
     } else {
       payload.append('property-image', data.property_image);
-      console.log('blob');
     }
     payload.append('loanAmount', parseFloat(data.loanAmount));
     payload.append('interestLoanAmount',
@@ -542,8 +548,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       ? `&branch=${mainbranchid?._id}`
       : `&branch=${parsedBranch}`;
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/$
-{user?.company}/customer/${customerData?._id}?${branchQuery}`;
+      const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?._id}?${branchQuery}`;
       const response = await axios.put(url,
         JSON.stringify(payload), {
           headers: {
@@ -592,6 +597,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
   const showCroppedImage = async () => {
     try {
+
       if (!completedCrop || !completedCrop.width || !
         completedCrop.height) {
         if (file) {
@@ -599,6 +605,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           setCroppedImage(originalImageURL);
           setValue('property_image', file);
           setImageSrc(null);
+          setOpen(false)
           return;
         }
       }
@@ -625,14 +632,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           console.error('Failed to create blob');
           return;
         }
-        const croppedFile = new File([blob], 'cropped-image.jpg',
-          { type: 'image/jpeg' });
+        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
         const croppedImageURL = URL.createObjectURL(croppedFile);
         setCroppedImage(croppedImageURL);
-        setFile(croppedFile);
-        setValue('property_image', croppedFile);
+        setFile(croppedFile); // Update the file state
+        setValue('property_image', croppedFile); // Ensure this is updated
         setImageSrc(null);
       }, 'image/jpeg');
+      setOpen(false)
     } catch (error) {
       console.error('Error handling image upload:', error);
     }
@@ -644,6 +651,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
   const handleCancel = () => {
     setImageSrc(null);
+    setOpen(false)
   };
   const validateField = (fieldName, index, value) => {
     const updatedErrors = { ...errors };
@@ -1045,76 +1053,61 @@ customer to proceed with the loan issuance.</Alert>*/}
             </Card>
           </Grid>
           <Grid item xs={12} md={2}>
+            <Box sx={{textAlign:'center',mb:1}}>
+              <Typography variant='subtitle1'
+                          component={'span'} sx={{ fontWeight: 600 }}>
+                Property Image
+              </Typography>
+            </Box>
             <Card>
               <CardContent sx={{ height: '156px', p: 1.5 }}>
                 <Box sx={{
                   display: 'flex', justifyContent:
                     'space-between', alignItems: 'center',
                 }}>
-                  <Typography variant='subtitle1'
-                              component={'span'} sx={{ fontWeight: 600 }}>
-                    Property Image
-                  </Typography>
+
                   <Typography variant='subtitle1' sx={{
                     display:
                       'inline-block', fontWeight: 600,
                   }}>
-                    <Iconify icon='ion:camera-sharp' width={24}
-                             sx={{ color: 'gray', cursor: 'pointer' }}
-                             onClick={() => setOpen2(true)} />
+
                   </Typography>
                 </Box>
                 <Box mt={0.2}>
-                  {(croppedImage || capturedImage) ? (
-                    <RHFUploadAvatar
-                      radius={true}
-                      name='property_image'
-                      maxSize={3145728}
-                      file={croppedImage || capturedImage} //
-                      Prioritize croppedImage or capturedImage
-                      onDelete={handleDeleteImage}
-                      sx={{
-                        '.css-81o5ax .css-gyv40i .css-3n58sb .css-3n58sb': {
-                          borderRadius: 'unset !important',
-                        },
-                      }}
-                      onDrop={handleDropSingleFile}
-                    />
-                  ) : (
-                    <RHFUploadAvatar
-                      radius={true}
-                      name='property_image'
-                      file={currentLoanIssue?.propertyImage} //
-                      Fallback to currentLoanIssue image
-                      maxSize={3145728}
-                      onDelete={handleDeleteImage}
-                      sx={{
-                        '.css-m6sgpe .css-gyv40i': {
-                          borderRadius: 'unset !important',
-                        },
-                      }}
-                      onDrop={handleDropSingleFile}
-                    />
-                  )}
+                  {/*{(croppedImage || capturedImage) ? (*/}
+                  <RHFUploadAvatar
+                    radius={true}
+                    name='property_image'
+                    camera={true}
+                    setOpen2={setOpen2}
+                    setOpen={setOpen}
+                    setImageSrc={setImageSrc}
+                    setFile={setFile}
+                    file={croppedImage || capturedImage || imageSrc || currentLoanIssue?.propertyImage}
+                    maxSize={3145728}
+                    accept='image/*'
+                    onDrop={handleDropSingleFile}
+                  />
+                  {/*)}*/}
                 </Box>
-                <Dialog open={Boolean(imageSrc)}
+                <Dialog open={Boolean(open)}
                         onClose={handleCancel}>
-                  {imageSrc && (
-                    <ReactCrop
-                      crop={crop}
-                      onChange={(newCrop) => setCrop(newCrop)}
-                      onComplete={(newCrop) =>
-                        setCompletedCrop(newCrop)}
-                      aspect={1}
-                    >
-                      <img
-                        id='cropped-image'
-                        src={imageSrc}
-                        alt='Crop preview'
-                        onLoad={resetCrop}
-                      />
-                    </ReactCrop>
-                  )}
+                  {/*{imageSrc && (*/}
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(newCrop) => setCrop(newCrop)}
+                    onComplete={(newCrop) =>
+                      setCompletedCrop(newCrop)}
+                    aspect={1}
+                  >
+                    <img
+                      id='cropped-image'
+                      src={imageSrc || capturedImage}
+                      alt='Crop preview'
+                      onLoad={resetCrop}
+                    />
+                  </ReactCrop>
+                  {/*)}*/}
                   <Box style={{
                     display: 'flex', justifyContent:
                       'space-between', padding: '1rem',
