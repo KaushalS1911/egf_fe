@@ -101,6 +101,10 @@ export default function LoanissueListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!getResponsibilityValue('delete_loanIssue', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`, {
         data: { ids: id },

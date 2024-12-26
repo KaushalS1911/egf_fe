@@ -34,6 +34,8 @@ import DisburseTableRow from '../disburse-table-row';
 import DisburseTableToolbar from '../disburse-table-toolbar';
 import DisburseTableFiltersResult from '../disburse-table-filters-result';
 import { LoadingScreen } from '../../../components/loading-screen';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -59,6 +61,7 @@ export default function DisburseListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false, false, true);
   const settings = useSettingsContext();
   const router = useRouter();
@@ -97,6 +100,10 @@ export default function DisburseListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!getResponsibilityValue('delete_disburse', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`, {
         data: { ids: id },

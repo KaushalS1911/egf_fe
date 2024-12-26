@@ -132,6 +132,10 @@ export default function InquiryListView() {
   }, []);
 
   const handleDelete = (id) => {
+    if (!getResponsibilityValue('delete_inquiry', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     axios
       .delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/inquiry`, {
         data: { ids: id },

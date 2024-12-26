@@ -111,6 +111,10 @@ export default function CustomerListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!getResponsibilityValue('delete_customer', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/customer`, {
         data: { ids: id },

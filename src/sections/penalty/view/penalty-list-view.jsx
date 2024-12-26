@@ -112,8 +112,12 @@ export default function PenaltyListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!getResponsibilityValue('delete_penalty', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } });
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty`, { data: { ids: id } });
       mutate();
       confirm.onFalse();
       enqueueSnackbar(res.data.message);
