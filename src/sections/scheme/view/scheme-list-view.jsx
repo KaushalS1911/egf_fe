@@ -201,7 +201,7 @@ export default function SchemeListView() {
               >
                 Gold Price change
               </Button>}
-              {getResponsibilityValue('create_visit', configs, user) && <Button
+              {getResponsibilityValue('create_scheme', configs, user) && <Button
                 component={RouterLink}
                 href={paths.dashboard.scheme.new}
                 variant='contained'
