@@ -99,6 +99,10 @@ export default function EmployeeListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!getResponsibilityValue('delete_employee', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
         data: { ids: id },

@@ -52,9 +52,10 @@ export default function ReminderDetailsTableRow({
         <TableCell
           sx={{ whiteSpace: 'nowrap' }}>{loan.customer.firstName + ' ' + loan.customer.middleName + ' ' + loan.customer.lastName}</TableCell>
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
-          </IconButton>
+          {getResponsibilityValue('update_reminder', configs, user) && getResponsibilityValue('delete_reminder', configs, user) ?
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon='eva:more-vertical-fill' />
+            </IconButton> : '-'}
         </TableCell>
       </TableRow>
       <CustomPopover

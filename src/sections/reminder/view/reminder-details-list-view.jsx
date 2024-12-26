@@ -36,6 +36,8 @@ import ReminderDetailsTableFiltersResult from '../reminder-details-table-filters
 import { useGetReminder } from '../../../api/reminder';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetAllInterest } from '../../../api/interest-pay';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetConfigs } from '../../../api/config';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +59,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function ReminderDetailsListView() {
+  const { configs } = useGetConfigs();
   const { reminder, mutate, reminderLoading } = useGetReminder();
   const { user } = useAuthContext();
   const { id } = useParams();
@@ -103,6 +106,10 @@ export default function ReminderDetailsListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!getResponsibilityValue('delete_reminder', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`, {
         data: { ids: id },

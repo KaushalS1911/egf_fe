@@ -58,9 +58,10 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
           Loan Disburse
         </Button> || '-'}
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
-          </IconButton>
+          {getResponsibilityValue('update_disburse', configs, user) && getResponsibilityValue('update_disburse', configs, user) ?
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon='eva:more-vertical-fill' />
+            </IconButton> : '-'}
         </TableCell>
       </TableRow>
       <CustomPopover open={popover.open} onClose={popover.onClose} arrow='right-top' sx={{ width: 140 }}>

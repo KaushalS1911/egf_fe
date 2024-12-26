@@ -37,9 +37,10 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
-          </IconButton>
+          {getResponsibilityValue('update_loanIssue', configs, user) && getResponsibilityValue('delete_loanIssue', configs, user) ?
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon='eva:more-vertical-fill' />
+            </IconButton> : '-'}
         </TableCell>
       </TableRow>
       <CustomPopover

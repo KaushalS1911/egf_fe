@@ -46,9 +46,10 @@ export default function PropertyTableRow({ row, selected, onEditRow, onSelectRow
           </Label>
         </TableCell>
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
-          </IconButton>
+          {getResponsibilityValue('delete_property', configs, user) && getResponsibilityValue('update_property', configs, user) ?
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon='eva:more-vertical-fill' />
+            </IconButton> : '-'}
         </TableCell>
       </TableRow>
       <CustomPopover
