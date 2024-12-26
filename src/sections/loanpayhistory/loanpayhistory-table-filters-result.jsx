@@ -58,6 +58,11 @@ export default function LoanpayhistoryTableFiltersResult({ filters, onFilters, o
             <Chip label={filters.userName} size='small' onDelete={handleRemoveKeyword} />
           </Block>
         )}
+        {!!filters.status && (
+          <Block label='Keyword:'>
+            <Chip label={filters.status} size='small' onDelete={handleRemoveStatus} />
+          </Block>
+        )}
         <Button
           color='error'
           onClick={onResetFilters}

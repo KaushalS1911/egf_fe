@@ -41,17 +41,17 @@ export default function AllBranchLoanSummaryTableRow({ row,index, selected, onEd
             {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
           </TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{(scheme?.interestRate).toFixed(2)}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge.toFixed(2)}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-          <TableCell sx={{ whiteSpace: 'nowrap'}}>{totalPaidInterest}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap'}}>{totalPaidInterest.toFixed(2)}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{day >0 ? day :0}</TableCell>
-          <TableCell sx={{ whiteSpace: 'nowrap'}}>{pendingInterest || 0}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap'}}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(nextInstallmentDate) || '-'}</TableCell>
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
             <Label

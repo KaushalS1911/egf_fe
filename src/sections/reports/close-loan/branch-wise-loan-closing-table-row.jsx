@@ -20,17 +20,35 @@ import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
-export default function BranchWiseLoanClosingTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  // const moment = require('moment'); // Import moment if not already done
-  const { loanNo, customer, loanAmount, scheme,status,issueDate,lastInstallmentDate,nextInstallmentDate,interestLoanAmount,consultingCharge,totalPaidInterest,day,pendingInterest} = row;
+export default function BranchWiseLoanClosingTableRow({
+                                                        row,
+                                                        index,
+                                                        selected,
+                                                        onEditRow,
+                                                        onSelectRow,
+                                                        onDeleteRow,
+                                                        handleClick,
+                                                      }) {
+
+  const {
+    loanNo,
+    customer,
+    loanAmount,
+    scheme,
+    status,
+    issueDate,
+    lastInstallmentDate,
+    nextInstallmentDate,
+    interestLoanAmount,
+    consultingCharge,
+    totalPaidInterest,
+    day,
+    pendingInterest,
+  } = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const calculateDateDifference = (date1, date2) => {
-    const diffDays = moment(date1).diff(moment(date2), 'days');
-    return Math.abs(diffDays); // Return absolute value to handle negative differences
-  };
 
   return (
     <>
@@ -41,43 +59,36 @@ export default function BranchWiseLoanClosingTableRow({ row,index, selected, onE
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{(scheme?.interestRate).toFixed(2)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge.toFixed(2)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap'}}>{totalPaidInterest.toFixed(2)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{day >0 ? day :0}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap'}}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap'}}>{fDate(nextInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalPaidInterest.toFixed(2)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{day > 0 ? day : 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate) || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label
             variant='soft'
             color={
-              (status === 'Disbursed' && 'info') ||
-              (status === 'Issued' && 'secondary') ||
               (status === 'Closed' && 'warning') ||
-              (status === 'Overdue' && 'error') ||
-              (status === 'Regular' && 'success') ||
               'default'
             }
           >
             {status}
-          </Label></TableCell>
-
+          </Label>
+        </TableCell>
       </TableRow>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
-
         {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
@@ -109,7 +120,6 @@ export default function BranchWiseLoanClosingTableRow({ row,index, selected, onE
           </Button>
         }
       />
-
     </>
   );
 };

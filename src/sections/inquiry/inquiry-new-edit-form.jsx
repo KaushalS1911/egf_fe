@@ -325,11 +325,11 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 control={control}
                 label='Recalling Date'
               />
-              {configs.loanTypes && <RHFAutocomplete
+              {configs?.loanTypes && <RHFAutocomplete
                 name='inquiryFor'
                 label={'Inquiry For'}
                 autoHighlight
-                options={[...configs?.loanTypes, 'Other']?.map((option) => option)}
+                options={[...configs?.loanTypes, {loanType:'Other'}]?.map((option) => option.loanType)}
                 getOptionLabel={(option) => option}
                 req={'red'}
                 renderOption={(props, option) => (
