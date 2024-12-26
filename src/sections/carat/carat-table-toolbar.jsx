@@ -1,17 +1,10 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
@@ -25,8 +18,6 @@ export default function CaratTableToolbar({
                                             filters,
                                             onFilters,
                                             carats,
-                                            //
-                                            roleOptions,
                                           }) {
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -55,7 +46,6 @@ export default function CaratTableToolbar({
         <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             sx={{ 'input': { height: 7 } }}
-
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
@@ -73,7 +63,6 @@ export default function CaratTableToolbar({
           </IconButton>
         </Stack>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}

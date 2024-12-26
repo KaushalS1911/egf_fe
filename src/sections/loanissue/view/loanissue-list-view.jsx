@@ -202,10 +202,8 @@ export default function LoanissueListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <LoanissueTableToolbar filters={filters} onFilters={handleFilters} loans={loans} />
-
           {canReset && (
             <LoanissueTableFiltersResult
               filters={filters}
@@ -215,7 +213,6 @@ export default function LoanissueListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -235,7 +232,6 @@ export default function LoanissueListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -252,7 +248,6 @@ export default function LoanissueListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -270,31 +265,26 @@ export default function LoanissueListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

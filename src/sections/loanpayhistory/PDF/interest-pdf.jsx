@@ -74,7 +74,6 @@ const useStyles = () =>
           width: 'auto',
           marginTop: 10,
           borderRadius: 10,
-
         },
         tableHeader: {
           color: '#fff',

@@ -237,7 +237,6 @@ export default function PenaltyListView() {
           <PenaltyTableToolbar
             filters={filters} onFilters={handleFilters} penalties={penalties}
           />
-
           {canReset && (
             <PenaltyTableFiltersResult
               filters={filters}
@@ -247,7 +246,6 @@ export default function PenaltyListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -267,7 +265,6 @@ export default function PenaltyListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -284,7 +281,6 @@ export default function PenaltyListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -301,18 +297,15 @@ export default function PenaltyListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -324,7 +317,6 @@ export default function PenaltyListView() {
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -353,13 +345,11 @@ export default function PenaltyListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({
-  inputData, comparator, filters,
-},
-)
-{
+                       inputData, comparator, filters,
+                     },
+) {
   const { isActive, name } = filters;
 
-  // Sort input data based on the provided comparator (e.g., sorting by a column)
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);

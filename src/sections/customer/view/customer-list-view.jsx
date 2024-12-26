@@ -173,6 +173,7 @@ export default function CustomerListView() {
     Remark: item.remark,
     Status: item.status,
   }));
+
   if (customerLoading) {
     return (
       <LoadingScreen />
@@ -190,7 +191,7 @@ export default function CustomerListView() {
             { name: 'List' },
           ]}
           action={
-            getResponsibilityValue('create_visit', configs, user) && (
+            getResponsibilityValue('create_customer', configs, user) && (
               <Button
                 component={RouterLink}
                 href={paths.dashboard.customer.new}
@@ -205,7 +206,6 @@ export default function CustomerListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <Tabs
             value={filters.status}
@@ -241,28 +241,21 @@ export default function CustomerListView() {
               />
             ))}
           </Tabs>
-
           <CustomerTableToolbar
             filters={filters}
             onFilters={handleFilters}
             customers={customers}
-
-            //
             roleOptions={_roles}
           />
-
           {canReset && (
             <CustomerTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
-              //
               onResetFilters={handleResetFilters}
-              //
               results={dataFiltered.length}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -282,7 +275,6 @@ export default function CustomerListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -299,7 +291,6 @@ export default function CustomerListView() {
                     )
                   }
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -316,31 +307,26 @@ export default function CustomerListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

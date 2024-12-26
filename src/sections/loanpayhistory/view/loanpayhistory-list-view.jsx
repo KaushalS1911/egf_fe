@@ -10,7 +10,6 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -31,7 +30,6 @@ import {
 import LoanpayhistoryTableRow from '../loanpayhistory-table-row';
 import LoanpayhistoryTableToolbar from '../loanpayhistory-table-toolbar';
 import LoanpayhistoryTableFiltersResult from '../loanpayhistory-table-filters-result';
-import { useGetEmployee } from 'src/api/employee';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import Tabs from '@mui/material/Tabs';
@@ -40,7 +38,6 @@ import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
-import ReminderRecallingForm from '../../reminder/reminder-recalling-form';
 import BulkInterestModel from '../bulk-interest-pay/bulk-interest-model';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetConfigs } from '../../../api/config';
@@ -74,6 +71,7 @@ const defaultFilters = {
   username: '',
   status: 'All',
 };
+
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryListView() {
@@ -204,7 +202,6 @@ export default function LoanpayhistoryListView() {
               </Button>)
           }
         />
-
         <Card>
           <Tabs
             value={filters.status}
@@ -245,7 +242,6 @@ export default function LoanpayhistoryListView() {
             ))}
           </Tabs>
           <LoanpayhistoryTableToolbar filters={filters} onFilters={handleFilters} />
-
           {canReset && (
             <LoanpayhistoryTableFiltersResult
               filters={filters}
@@ -255,7 +251,6 @@ export default function LoanpayhistoryListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -275,7 +270,6 @@ export default function LoanpayhistoryListView() {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -286,7 +280,6 @@ export default function LoanpayhistoryListView() {
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -305,25 +298,21 @@ export default function LoanpayhistoryListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
@@ -360,11 +349,13 @@ export default function LoanpayhistoryListView() {
 function applyFilter({ inputData, comparator, filters }) {
   const { username, status } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
+
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+
   inputData = stabilizedThis.map((el) => el[0]);
   if (username && username.trim()) {
     inputData = inputData.filter(
@@ -373,8 +364,10 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()),
     );
   }
+
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   return inputData;
 }

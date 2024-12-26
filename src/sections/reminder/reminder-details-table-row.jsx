@@ -19,7 +19,6 @@ import { useGetConfigs } from '../../api/config';
 export default function ReminderDetailsTableRow({
                                                   row,
                                                   selected,
-                                                  onEditRow,
                                                   onSelectRow,
                                                   onDeleteRow,
                                                   loanInterest,

@@ -7,7 +7,6 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { useBoolean } from 'src/hooks/use-boolean';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -26,9 +25,6 @@ import ReminderTableRow from '../reminder-table-row';
 import { fDate, isAfter, isBetween } from '../../../utils/format-time';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
-import Notice from './notice';
-import { PDFViewer } from '@react-pdf/renderer';
-import { Box, Button, Dialog, DialogActions } from '@mui/material';
 import { useGetReminder } from '../../../api/reminder';
 import * as XLSX from 'xlsx';
 
@@ -66,8 +62,6 @@ export default function ReminderListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
-
-  const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
@@ -77,7 +71,6 @@ export default function ReminderListView() {
   });
 
   const dateError = isAfter(filters.startDate, filters.endDate);
-
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage,
@@ -87,17 +80,16 @@ export default function ReminderListView() {
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const
-    handleFilters = useCallback(
-      (name, value) => {
-        table.onResetPage();
-        setFilters((prevState) => ({
-          ...prevState,
-          [name]: value,
-        }));
-      },
-      [table],
-    );
+  const handleFilters = useCallback(
+    (name, value) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table],
+  );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -184,7 +176,6 @@ export default function ReminderListView() {
     XLSX.writeFile(workbook, 'Reminders.xlsx');
   };
 
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -253,7 +244,6 @@ export default function ReminderListView() {
                   ) : (
                     <TableNoData notFound={true} />
                   )}
-
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -269,7 +259,6 @@ export default function ReminderListView() {
           />
         </Card>
       </Container>
-
     </>
   );
 };

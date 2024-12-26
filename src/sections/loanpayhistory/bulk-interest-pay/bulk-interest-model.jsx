@@ -1,17 +1,13 @@
 import React, { useMemo } from 'react';
 import { useSnackbar } from '../../../components/snackbar';
-import { useAuthContext } from '../../../auth/hooks';
 import * as Yup from 'yup';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import axios from 'axios';
-import { mutate } from 'swr';
 import Dialog from '@mui/material/Dialog';
-import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
+import FormProvider, { RHFAutocomplete } from '../../../components/hook-form';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Box from '@mui/material/Box';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -21,8 +17,7 @@ import { paths } from '../../../routes/paths';
 import { useRouter } from '../../../routes/hooks';
 
 function BulkInterestModel({ open, setOpen }) {
-  const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter()
+  const router = useRouter();
   const loanPayHistory = true;
   const { customer } = useGetCustomer();
   const { Loanissue } = useGetLoanissue(loanPayHistory);
@@ -42,10 +37,12 @@ function BulkInterestModel({ open, setOpen }) {
     }),
     [],
   );
+
   const onClose = () => {
     setOpen(false);
     reset();
   };
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
@@ -60,17 +57,18 @@ function BulkInterestModel({ open, setOpen }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const filteredLoanNo = data.loans.map((item) => item.loanNo)
+      const filteredLoanNo = data.loans.map((item) => item.loanNo);
       const dataStore = {
-        customer : data.customer,
-        filteredLoanNo: filteredLoanNo
-      }
+        customer: data.customer,
+        filteredLoanNo: filteredLoanNo,
+      };
       sessionStorage.setItem('data', JSON.stringify(dataStore));
       router.push(paths.dashboard.loanPayHistory.bulk);
     } catch (error) {
       console.error(error);
     }
   });
+
   return (
     <Dialog
       fullWidth

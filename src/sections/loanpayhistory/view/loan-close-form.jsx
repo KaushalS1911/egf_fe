@@ -7,31 +7,27 @@ import {
   Dialog,
   DialogActions,
   Grid,
-  IconButton,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Typography,
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
-import { fDate } from '../../../utils/format-time';
 import { useAuthContext } from '../../../auth/hooks';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
 import Iconify from '../../../components/iconify';
-import { ConfirmDialog } from '../../../components/custom-dialog';
 import { PDFViewer } from '@react-pdf/renderer';
-import LoanPartPaymentDetailsPdf from '../PDF/loan-part-payment-details-pdf';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { useGetConfigs } from '../../../api/config';
 import { useGetCloseLoan } from '../../../api/loan-close';
 import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
@@ -60,12 +56,10 @@ function LoanCloseForm({ currentLoan, mutate }) {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
       .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-
   } : {
     cashAmount: Yup.string()
       .required('Cash Amount is required')
       .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-
     bankAmount: Yup.string()
       .required('Bank Amount is required')
       .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
@@ -81,14 +75,11 @@ function LoanCloseForm({ currentLoan, mutate }) {
       .min(0, 'Pending Loan Amount must be 0 or greater')
       .required('Pending Loan Amount is required')
       .typeError('Pending Loan Amount must be a number'),
-    // closingCharge: Yup.number()
-    //   .min(0, 'Closing Charge must be 0 or greater')
-    //   .required('Closing Charge is required')
-    //   .typeError('Closing Charge must be a number'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     netAmount: Yup.string().required('Net Amount is required'),
     ...paymentSchema,
   });
+
   const defaultValues = {
     totalLoanAmount: currentLoan?.loanAmount || '',
     netAmount: '',
@@ -122,6 +113,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       setValue('paymentMode', watch('paymentMode'));
     }
   }, [watch('paymentMode')]);
+
   useEffect(() => {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
@@ -159,9 +151,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
       paymentDetail: paymentDetail,
       closedBy: user._id,
     };
+
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/loan-close`;
-
       const config = {
         method: 'post',
         url,
@@ -178,6 +170,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       enqueueSnackbar('Failed to close Loan', { variant: 'error' });
     }
   });
+
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('netAmount')) || '';
@@ -193,6 +186,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -209,6 +203,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       setValue('bankAmount', 0);
     }
   };
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -279,7 +274,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   )}
                 />
                 {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
-
                   <Controller
                     name='cashAmount'
                     control={control}
@@ -299,7 +293,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   />
                 )}
                 {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
-
                   <>
                     <RHFAutocomplete
                       name='account'
@@ -335,9 +328,10 @@ function LoanCloseForm({ currentLoan, mutate }) {
               <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
                 <Button color='inherit'
                         variant='outlined' onClick={() => reset()}>Reset</Button>
+                {getResponsibilityValue('update_loanPayHistory', configs, user) &&
                 <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                   Submit
-                </LoadingButton>
+                </LoadingButton>}
               </Box>
             </Box>
           </Grid>
@@ -353,22 +347,22 @@ function LoanCloseForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.closingCharge}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0.5, px: 2 }}>{
-                <Typography
-                  onClick={() => {
-                    view.onTrue();
-                    setData(row);
-                  }}
-                  sx={{
-                    cursor: 'pointer',
-                    color: 'inherit',
-                    pointerEvents: 'auto',
-                  }}
-                >
-                  <Iconify icon='basil:document-solid' />
-                </Typography>
-              }</TableCell>
-
+              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
+                <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0.5, px: 2 }}>{
+                  <Typography
+                    onClick={() => {
+                      view.onTrue();
+                      setData(row);
+                    }}
+                    sx={{
+                      cursor: 'pointer',
+                      color: 'inherit',
+                      pointerEvents: 'auto',
+                    }}
+                  >
+                    <Iconify icon='basil:document-solid' />
+                  </Typography>
+                }</TableCell> : <TableCell>'-'</TableCell>}
             </TableRow>
           ))}
         </TableBody>

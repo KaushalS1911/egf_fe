@@ -5,14 +5,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFAutocomplete, RHFSwitch,
@@ -29,7 +26,7 @@ export default function PropertyNewEditForm({ currentProperty }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const {configs} = useGetConfigs();
+  const { configs } = useGetConfigs();
 
   const NewSchemaProperty = Yup.object().shape({
     propertyType: Yup.string().required('Property is required'),
@@ -59,10 +56,10 @@ export default function PropertyNewEditForm({ currentProperty }) {
   const {
     reset,
     watch,
-    control,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
   const values = watch();
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -78,10 +75,11 @@ export default function PropertyNewEditForm({ currentProperty }) {
         reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentProperty ? 'Failed To update Property' : error.response.data.message,{variant: "error"});
+      enqueueSnackbar(currentProperty ? 'Failed To update Property' : error.response.data.message, { variant: 'error' });
       console.error(error);
     }
   });
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -102,8 +100,8 @@ export default function PropertyNewEditForm({ currentProperty }) {
               }}
             >
               <RHFTextField
-                name="propertyType"
-                label="Property"
+                name='propertyType'
+                label='Property'
                 req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
@@ -111,7 +109,6 @@ export default function PropertyNewEditForm({ currentProperty }) {
                   methods.setValue('propertyType', e.target.value);
                 }}
               />
-
               {configs.loanTypes &&
               <RHFAutocomplete
                 name='loanType'
@@ -125,26 +122,25 @@ export default function PropertyNewEditForm({ currentProperty }) {
                     {option}
                   </li>
                 )}
-              />  }
-              <RHFTextField name='quantity' label='Quantity' req={'red'} disabled={!values.isQtyEdit}  onKeyPress={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}/>
+              />}
+              <RHFTextField name='quantity' label='Quantity' req={'red'} disabled={!values.isQtyEdit}
+                            onKeyPress={(e) => {
+                              if (!/[0-9]/.test(e.key)) {
+                                e.preventDefault();
+                              }
+                            }} />
               <RHFTextField name='remark' label='Remark' />
             </Box>
-
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
               {
                 currentProperty &&
                 <RHFSwitch name='isActive' label={'Is Active'} sx={{ m: 0 }} />
               }
-
             </Box>
             <RHFSwitch name='isQtyEdit' label={'Is Qty Edit'} sx={{ m: 0 }} />
           </Card>
-          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' ,mt:3}}>
-            <Button color='inherit' sx={{ margin: '0px 10px',height:"36px"}}
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+            <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                     variant='outlined' onClick={() => reset()}>Reset</Button>
             <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
               {currentProperty ? 'Save' : 'Submit'}

@@ -3,17 +3,14 @@ import PropTypes from 'prop-types';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFAutocomplete, RHFSwitch,
@@ -31,7 +28,6 @@ export default function SchemeNewEditForm({ currentScheme }) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-
 
   const NewSchema = Yup.object().shape({
     name: Yup.string().required('Scheme Name is required'),
@@ -78,12 +74,11 @@ export default function SchemeNewEditForm({ currentScheme }) {
   const {
     reset,
     watch,
-    control,
     handleSubmit,
     setValue,
     formState: { isSubmitting },
-
   } = methods;
+
   useEffect(() => {
     const valuation = watch('valuation');
     if (valuation) {
@@ -121,7 +116,6 @@ export default function SchemeNewEditForm({ currentScheme }) {
             Scheme Info
           </Typography>
         </Grid>
-
         <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Box
@@ -185,7 +179,6 @@ export default function SchemeNewEditForm({ currentScheme }) {
                   }
                 }}
               />
-
               <RHFAutocomplete
                 name='renewalTime'
                 label='Renewal Time'
@@ -214,15 +207,12 @@ export default function SchemeNewEditForm({ currentScheme }) {
               />
               <RHFTextField name='ratePerGram' label='Rate Per Gram' req={'red'} InputProps={{ readOnly: true }} />
               <RHFTextField name='remark' label='Remark' />
-
             </Box>
-
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
               {
                 currentScheme &&
                 <RHFSwitch name='isActive' label={'is Active'} sx={{ m: 0 }} />
               }
-
             </Box>
           </Card>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>

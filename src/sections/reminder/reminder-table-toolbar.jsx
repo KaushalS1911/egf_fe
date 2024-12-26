@@ -9,19 +9,17 @@ import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import { IconButton, MenuItem } from '@mui/material';
-import { RHFAutocomplete } from '../../components/hook-form';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Checkbox from '@mui/material/Checkbox';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function ReminderTableToolbar({ filters, onFilters, roleOptions, dateError, exportToExcel }) {
+export default function ReminderTableToolbar({ filters, onFilters, dateError, exportToExcel }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -147,7 +145,6 @@ export default function ReminderTableToolbar({ filters, onFilters, roleOptions, 
             }}
           >
             <InputLabel>Filter by Day</InputLabel>
-
             <Select
               value={day}
               onChange={handleFilterDays}

@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from '../../../assets/logo/pdf-logo.png';
 import { fDate } from '../../../utils/format-time';
-import { margin } from '@mui/system';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
 
 Font.register({
@@ -12,7 +11,6 @@ Font.register({
     { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' },
   ],
 });
-
 
 const useStyles = () =>
   useMemo(
@@ -39,7 +37,7 @@ const useStyles = () =>
           flexDirection: 'row',
           marginTop: 90,
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
         },
         nocTitle: {
           width: '100%',
@@ -55,7 +53,7 @@ const useStyles = () =>
           paddingTop: 10,
           textAlign: 'center',
           width: '100px',
-          fontWeight: 600
+          fontWeight: 600,
         },
         subtitle1: { fontSize: 10, fontWeight: 700 },
         subtitle2: { fontSize: 9, fontWeight: 700 },
@@ -66,8 +64,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 0px 24px',
-          height: '68%'
-
+          height: '68%',
         },
         footer: {
           left: 0,
@@ -96,7 +93,7 @@ const useStyles = () =>
           borderColor: '#DFE3E8',
         },
         headerContainer: {
-          backgroundColor: '#FF7F27', // Orange color
+          backgroundColor: '#FF7F27',
           padding: 20,
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -125,15 +122,6 @@ const useStyles = () =>
           letterSpacing: 1,
           fontWeight: 'bold',
         },
-        // subText: {
-        //   color: '#FFFFFF',
-        //   fontSize: 10,
-        //   marginBottom: 2,
-        //   marginTop: 10,
-        //   fontWeight: 'bold',
-        //   marginLeft: -145,
-        //   width: '40%',
-        // },
         branchDetails: {
           color: '#FFFFFF',
           marginTop: 3,
@@ -204,7 +192,7 @@ const useStyles = () =>
     [],
   );
 
-function Noc({ nocData ,configs}) {
+function Noc({ nocData, configs }) {
   const styles = useStyles();
   return (
     <>
@@ -213,26 +201,8 @@ function Noc({ nocData ,configs}) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          {/*<View style={styles.headerContainer}>*/}
-          {/*  <Image source={logo} style={styles.logo} />*/}
-          {/*  <View style={styles.logoContainer}>*/}
-          {/*    <Text style={styles.headerText}>EASY GOLD</Text>*/}
-          {/*    <Text style={styles.headerText2}>F I N C O R P</Text>*/}
-          {/*    <Text style={styles.subText}>*/}
-          {/*      Shop No.-3, First Floor, Shree Hari Complex, Yogi Chowk, Surat*/}
-          {/*    </Text>*/}
-          {/*  </View>*/}
-          {/*  <View style={styles.my4}>*/}
-          {/*    <Text*/}
-          {/*      style={styles.branchDetails}>Branch: {nocData.customer.branch.address.street + ' ' + nocData.customer.branch.address.landmark}</Text>*/}
-          {/*    <Text style={styles.branchDetails}>Branch code: {nocData.customer.branch.branchCode}</Text>*/}
-          {/*    <Text style={styles.branchDetails}>Website: easygoldfincorp.com</Text>*/}
-          {/*    <Text style={styles.branchDetails}>Email:{nocData.customer.branch.email}</Text>*/}
-          {/*    <Text style={styles.branchDetails}>Mobile: {nocData.customer.branch.contact}</Text>*/}
-          {/*  </View>*/}
-          {/*</View>*/}
-          <InvoiceHeader selectedRow={nocData} configs={configs}/>
-          <View style={{... styles.pagePadding,lineHeight: 1.6,fontSize:9 }}>
+          <InvoiceHeader selectedRow={nocData} configs={configs} />
+          <View style={{ ...styles.pagePadding, lineHeight: 1.6, fontSize: 9 }}>
             <View>
               <Text style={[styles.date, styles.fw]}>{fDate(new Date())}</Text>
             </View>
@@ -252,9 +222,12 @@ function Noc({ nocData ,configs}) {
               <Text
                 style={styles.topDetails}>{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
               <Text style={styles.mt8}>
-                <Text style={styles.bottomDetails}>This is to certify that the gold loan account bearing account number{' '}</Text>
-                <Text style={[styles.fw, styles.bottomDetails]}>{nocData.customer.bankDetails.accountNumber}</Text>, held by{' '}
-                <Text style={[styles.fw, styles.bottomDetails]}>{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text> with{' '}
+                <Text style={styles.bottomDetails}>This is to certify that the gold loan account bearing account
+                  number{' '}</Text>
+                <Text style={[styles.fw, styles.bottomDetails]}>{nocData.customer.bankDetails.accountNumber}</Text>,
+                held by{' '}
+                <Text
+                  style={[styles.fw, styles.bottomDetails]}>{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text> with{' '}
                 <Text style={[styles.fw, styles.bottomDetails]}>Easy Gold FinCorp</Text>, has been successfully closed
                 as of{' '}
                 <Text style={[styles.fw, styles.bottomDetails]}>{fDate(nocData.closingDate)}</Text>
@@ -265,8 +238,10 @@ function Noc({ nocData ,configs}) {
             <View style={styles.mt8}>
               <Text style={[styles.fw, styles.bottomDetails, styles.my4]}>Details of the closed gold loan
                 account:</Text>
-              <Text style={styles.bottomDetails}>- Loan Account Number: {nocData.customer.bankDetails.accountNumber}</Text>
-              <Text style={styles.bottomDetails}>- Customer Name: {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
+              <Text style={styles.bottomDetails}>- Loan Account
+                Number: {nocData.customer.bankDetails.accountNumber}</Text>
+              <Text style={styles.bottomDetails}>- Customer
+                Name: {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
               <Text style={styles.bottomDetails}>- Loan Amount: {nocData.loanAmount}</Text>
               <Text style={styles.bottomDetails}>- Closing Charge: {nocData.closingCharge}</Text>
               <Text style={styles.bottomDetails}>- Date of Loan Disbursement: {fDate(nocData.issueDate)}</Text>
@@ -274,7 +249,9 @@ function Noc({ nocData ,configs}) {
             </View>
             <View style={styles.mt8}>
               <Text style={styles.bottomDetails}>As a result, we hereby issue this No Objection Certificate (NOC),
-                confirming that Easy Gold FinCorp has no objection or claims against {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`} regarding the closed gold loan account.</Text>
+                confirming that Easy Gold FinCorp has no objection or claims
+                against {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`} regarding
+                the closed gold loan account.</Text>
               <Text style={styles.bottomDetails}>Please note that this NOC is issued in good faith and in accordance
                 with our internal procedures. It is provided solely for your records and future
                 reference.
@@ -283,10 +260,10 @@ function Noc({ nocData ,configs}) {
                 appreciate your continued trust and patronage.</Text>
             </View>
           </View>
-            <View style={styles.d_flex}>
-              <Text style={{ ...styles.signText ,marginLeft: 35 }}>Authority Sign</Text>
-              <Text style={{ ...styles.signText , marginRight: 35 }}>Easy Gold FinCorp</Text>
-            </View>
+          <View style={styles.d_flex}>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+          </View>
         </Page>
       </Document>
     </>

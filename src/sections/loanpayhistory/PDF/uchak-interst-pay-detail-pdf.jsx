@@ -70,12 +70,10 @@ const useStyles = () =>
         spacing: {
           marginTop: 7,
         },
-
         table: {
           width: 'auto',
           marginTop: 10,
           borderRadius: 10,
-
         },
         tableHeader: {
           color: '#fff',
@@ -126,12 +124,12 @@ const useStyles = () =>
 
 export default function UchakInterstPayDetailPdf({ data, configs }) {
   const styles = useStyles();
+
   return (
     <Document>
       <Page size='A4' style={styles.page}> <View style={styles.watermarkContainer}>
         <Image src={logo} style={styles.watermarkImage} />
       </View>
-
         <InvoiceHeader selectedRow={data.loan} configs={configs} />
         <View style={styles.pagePadding}>
           <Text style={{ ...styles.headerText2, marginTop: 25 }}>Uchak Pay Slip</Text>
@@ -197,8 +195,7 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
         </View>
       </Page>
     </Document>
-  )
-    ;
+  );
 }
 
 UchakInterstPayDetailPdf.propTypes = {

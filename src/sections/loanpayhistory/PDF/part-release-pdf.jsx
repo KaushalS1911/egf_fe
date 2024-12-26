@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
 
 // ----------------------------------------------------------------------
@@ -16,12 +14,10 @@ Font.register({
   ],
 });
 
-// Register the NotoSansGujarati font family
 Font.register({
   family: 'NotoSansGujarati',
   src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
 });
-// Font.register();
 
 const useStyles = () =>
   useMemo(
@@ -95,7 +91,6 @@ const useStyles = () =>
           borderStyle: 'solid',
           borderColor: '#DFE3E8',
         },
-
         logoContainer: {
           flexDirection: 'column',
           alignItems: 'center',

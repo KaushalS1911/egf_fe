@@ -49,7 +49,9 @@ import DialogActions from '@mui/material/DialogActions';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { useGetConfigs } from '../../api/config';
+
 //----------------------------------------------------------------------
+
 const TABLE_HEAD = [
   { id: 'type', label: 'Type' },
   { id: 'carat', label: 'Carat' },
@@ -62,6 +64,7 @@ const TABLE_HEAD = [
   { id: 'netAmt', label: 'Net Amt' },
   { id: 'actions', label: 'Actions' },
 ];
+
 export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const router = useRouter();
   const table = useTable();
@@ -91,9 +94,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(null);
+
   useEffect(() => {
     setMultiSchema(scheme);
   }, [scheme]);
+
   useEffect(() => {
     if (imageSrc) {
       const img = new Image();
@@ -103,6 +108,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       };
     }
   }, [imageSrc]);
+
   const NewLoanissueSchema = Yup.object().shape({
     customer: Yup.object().required('Customer is required'),
     scheme: Yup.object().required('Scheme is required'),
@@ -125,6 +131,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       }),
     ),
   });
+
   const defaultValues = useMemo(() => {
     const baseValues = {
       customer_url: '',
@@ -185,10 +192,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     };
     return baseValues;
   }, [currentLoanIssue]);
+
   const methods = useForm({
     resolver: yupResolver(NewLoanissueSchema),
     defaultValues,
   });
+
   const {
     reset,
     watch,
@@ -198,10 +207,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     formState: { isSubmitting },
     getValues,
   } = methods;
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'propertyDetails',
   });
+
   useEffect(() => {
     const loanType = watch('loanType');
     if (loanType && configs?.loanTypes?.length > 0) {
@@ -211,6 +222,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         '');
     }
   }, [watch('loanType'), configs.loanTypes]);
+
   const handleAdd = () => {
     append({
       type: '',
@@ -225,6 +237,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       id: uuid,
     });
   };
+
   const handleReset = (index) => {
     methods.setValue(`propertyDetails[${index}]`, {
       type: '',
@@ -238,33 +251,32 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       netAmount: '',
     });
   };
+
   const videoConstraints = {
     width: 640,
     height: 360,
     facingMode: 'user',
   };
-  const blobToFile = (blob, fileName) => {
-    return new File([blob], fileName, { type: blob.type });
-  };
+
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        setCapturedImage(imageSrc); // Set captured image
+        setCapturedImage(imageSrc);
         setValue('property_image', imageSrc);
-        setOpen2(false); // Close the ca
-        setOpen(true); // Close the ca
+        setOpen2(false);
+        setOpen(true);
       }
     }
   }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentLoanIssue]);
+
   const handleRemove = (index) => {
     if (fields.length > 1) {
       remove(index);
     }
   };
+
   const onSubmit = handleSubmit(async (data) => {
-    console.log('data.property_imagedata.property_image : ',
-      data.property_image);
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', {
         variant:
@@ -305,8 +317,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         field.netAmount);
       payload.append(`propertyDetails[${index}][id]`, field.id);
     });
+
     if (croppedImage) {
-      const croppedFile = file; // Ensure cropped file is already set
+      const croppedFile = file;
       payload.append('property-image', croppedFile, 'property-image.jpg');
     } else if (capturedImage) {
       const base64Data = capturedImage.split(',')[1];
@@ -316,12 +329,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       for (let i = 0; i < binaryData.length; i++) {
         arrayBuffer[i] = binaryData.charCodeAt(i);
       }
-
-      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
+      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
       payload.append('property-image', blob, 'property-image.jpg');
     } else {
       payload.append('property-image', data.property_image);
     }
+
     payload.append('loanAmount', parseFloat(data.loanAmount));
     payload.append('interestLoanAmount',
       parseFloat(data.loanAmount));
@@ -329,6 +342,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('cashAmount', parseFloat(data.cashAmount));
     payload.append('bankAmount', parseFloat(data.bankAmount));
     payload.append('issuedBy', user._id);
+
     if (['Bank', 'Both'].includes(watch('paymentMode'))) {
       payload.append('customerBankDetail[accountNumber]',
         data.accountNumber);
@@ -342,10 +356,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       payload.append('customerBankDetail[branchName]',
         data.branchName);
     }
+
     try {
       const url = currentLoanIssue
         ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentLoanIssue?._id}`
         : `${import.meta.env.VITE_BASE_URL}/${user?.company}/issue-loan`;
+
       const response = currentLoanIssue ? await axios.put(url,
         payload, {
           headers: {
@@ -356,10 +372,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           'Content-Type': 'multipart/form-data',
         },
       });
+
       enqueueSnackbar('Loan processed successfully!', {
         variant:
           'success',
       });
+
       router.push(paths.dashboard.loanissue.root);
       setCapturedImage(null);
       reset();
@@ -368,9 +386,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       enqueueSnackbar(currentLoanIssue ? 'Failed to update loan.' : error.response.data.message, { variant: 'error' });
     }
   });
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  };
+
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
       setIsFieldsEnabled(true);
@@ -378,6 +394,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setIsFieldsEnabled(false);
     }
   };
+
   useEffect(() => {
     const customer = watch('customer');
     const scheme = watch('scheme');
@@ -393,13 +410,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setSchemeID(null);
     }
   }, [watch('customer'), watch('scheme'), currentLoanIssue]);
+
   useEffect(() => {
     const findedCus = customer?.find((item) => item?._id ===
       customerId?.id);
     setCustomerData(findedCus);
     if (findedCus) {
       setValue('customerCode', findedCus?.customerCode);
-      setValue('customerName', `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `);setValue('customerAddress', `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`);
+      setValue('customerName', `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `);
+      setValue('customerAddress', `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`);
       setValue('contact', findedCus?.contact);
       setValue('contactOtp', findedCus?.otpContact);
       setValue('customer_url', findedCus?.avatar_url);
@@ -432,6 +451,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       }
     }
   }, [customerId, customer, setValue]);
+
   useEffect(() => {
       if (scheme && scheme.length > 0 && schemeId) {
         if (schemeId) {
@@ -461,6 +481,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     [schemeId, scheme, setValue, reset, getValues,
       watch('scheme')],
   );
+
   const calculateTotal = (field) => {
     const propertyDetails = useWatch({
       name: 'propertyDetails',
@@ -475,6 +496,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       }, 0)
       .toFixed(field === 'pcs' ? 0 : 2);
   };
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -489,6 +511,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setValue('cashAmount', newLoanAmount);
     }
   };
+
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('loanAmount')) ||
@@ -506,6 +529,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         calculatedBankAmount : '');
     }
   };
+
   const handleAmountChange = () => {
     const newCashAmount = watch('propertyDetails').reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0) || '';
     const currentLoanAmount = parseFloat(watch('loanAmount')) ||
@@ -516,13 +540,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     } else {
       setValue('loanAmount', currentLoanAmount);
     }
-    // if (watch('paymentMode') === 'Both') {
-    //   const calculatedBankAmount = currentLoanAmount -
-    //     newCashAmount;
-    //   setValue('bankAmount', calculatedBankAmount >= 0 ?
-    //     calculatedBankAmount : '');
-    // }
   };
+
   const saveCustomerBankDetails = async () => {
     const payload = {
       bankDetails: {
@@ -534,9 +553,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         bankName: watch('bankName'),
       },
     };
-    const mainbranchid = branch?.find((e) => e?._id ===
-      customerData?.branch?._id);
+
+    const mainbranchid = branch?.find((e) => e?._id === customerData?.branch?._id);
     let parsedBranch = storedBranch;
+
     if (storedBranch !== 'all') {
       try {
         parsedBranch = JSON.parse(storedBranch);
@@ -544,9 +564,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         console.error('Error parsing storedBranch:', error);
       }
     }
+
     const branchQuery = parsedBranch && parsedBranch === 'all'
       ? `&branch=${mainbranchid?._id}`
       : `&branch=${parsedBranch}`;
+
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?._id}?${branchQuery}`;
       const response = await axios.put(url,
@@ -561,6 +583,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       enqueueSnackbar(error, { variant: 'error' });
     }
   };
+
   const checkIFSC = async (ifscCode) => {
     if (ifscCode.length === 11) {
       try {
@@ -579,6 +602,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         { variant: 'warning' });
     }
   };
+
   const handleDropSingleFile = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -591,13 +615,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       reader.readAsDataURL(file);
     }
   }, []);
+
   const resetCrop = () => {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
+
   const showCroppedImage = async () => {
     try {
-
       if (!completedCrop || !completedCrop.width || !
         completedCrop.height) {
         if (file) {
@@ -605,7 +630,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           setCroppedImage(originalImageURL);
           setValue('property_image', file);
           setImageSrc(null);
-          setOpen(false)
+          setOpen(false);
           return;
         }
       }
@@ -639,20 +664,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         setValue('property_image', croppedFile); // Ensure this is updated
         setImageSrc(null);
       }, 'image/jpeg');
-      setOpen(false)
+      setOpen(false);
     } catch (error) {
       console.error('Error handling image upload:', error);
     }
   };
-  const handleDeleteImage = () => {
-    setCroppedImage(null);
-    setFile(null);
-    setImageSrc(null);
-  };
+
   const handleCancel = () => {
     setImageSrc(null);
-    setOpen(false)
+    setOpen(false);
   };
+
   const validateField = (fieldName, index, value) => {
     const updatedErrors = { ...errors };
     const schemedata = watch('scheme');
@@ -771,6 +793,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
     setErrors(updatedErrors);
   };
+
   const sx = {
     label: {
       mt: -1.4,
@@ -783,6 +806,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       height: 0,
     },
   };
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -800,7 +824,6 @@ customer to proceed with the loan issuance.</Alert>*/}
           </>
           }
           <Grid item xs={12} md={4}>
-            {/*<Card sx={{ pt: 6, pb: 2 }}>*/}
             <Box>
               <RHFUploadAvatar
                 disabled={true}
@@ -808,7 +831,6 @@ customer to proceed with the loan issuance.</Alert>*/}
                 maxSize={3145728}
               />
             </Box>
-            {/*</Card>*/}
           </Grid>
           <Grid xs={12} md={8}>
             <Box>
@@ -1053,7 +1075,7 @@ customer to proceed with the loan issuance.</Alert>*/}
             </Card>
           </Grid>
           <Grid item xs={12} md={2}>
-            <Box sx={{textAlign:'center',mb:1}}>
+            <Box sx={{ textAlign: 'center', mb: 1 }}>
               <Typography variant='subtitle1'
                           component={'span'} sx={{ fontWeight: 600 }}>
                 Property Image
@@ -1065,12 +1087,10 @@ customer to proceed with the loan issuance.</Alert>*/}
                   display: 'flex', justifyContent:
                     'space-between', alignItems: 'center',
                 }}>
-
                   <Typography variant='subtitle1' sx={{
                     display:
                       'inline-block', fontWeight: 600,
                   }}>
-
                   </Typography>
                 </Box>
                 <Box mt={0.2}>
@@ -1403,7 +1423,7 @@ customer to proceed with the loan issuance.</Alert>*/}
                       onChange={(e) => {
                         field.onChange(e);
                         handleLoanAmountChange(e);
-                        handleAmountChange()
+                        handleAmountChange();
                       }}
                     />
                   )}
@@ -1637,4 +1657,4 @@ customer to proceed with the loan issuance.</Alert>*/}
   );
 }
 LoanissueNewEditForm.propTypes =
-{ currentLoanIssue: PropTypes.object }
+  { currentLoanIssue: PropTypes.object };

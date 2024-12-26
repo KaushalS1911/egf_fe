@@ -1,10 +1,7 @@
 import Container from '@mui/material/Container';
-
 import { paths } from 'src/routes/paths';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-
 import LoanpayhistoryNew from '../loanpayhistory-new';
 import { useParams } from 'react-router';
 import { Box } from '@mui/material';
@@ -38,7 +35,6 @@ export default function LoanpayhistoryCreateView() {
           mb: 2,
         }}
       />
-
       {currentLoan ? <LoanpayhistoryNew currentLoan={currentLoan} mutate={mutate} /> :
         <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <LoadingScreen />

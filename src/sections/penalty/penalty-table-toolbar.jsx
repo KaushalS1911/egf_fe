@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IconButton } from '@mui/material';
@@ -65,7 +63,6 @@ export default function PenaltyTableToolbar({
           </IconButton>
         </Stack>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -80,7 +77,6 @@ export default function PenaltyTableToolbar({
           <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
-
           <MenuItem
             onClick={() => {
               popover.onClose();

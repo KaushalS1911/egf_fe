@@ -14,7 +14,6 @@ import FormProvider, {
   RHFUploadAvatar,
   RHFAutocomplete,
 } from 'src/components/hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
@@ -249,28 +248,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       reset();
     } catch (error) {
       enqueueSnackbar(currentEmployee ? 'Failed To update employee' : error.response.data.message, { variant: 'error' });
-
       console.error(error);
     }
   });
-
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-      if (file) {
-        setValue('profile_pic', newFile, { shouldValidate: true });
-        if (currentEmployee) {
-          const formData = new FormData();
-          formData.append('profile-pic', file);
-          axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`, formData).then((res) => console.log(res)).catch((err) => console.log(err));
-        }
-      }
-    },
-    [setValue],
-  );
 
   const checkZipcode = async (zipcode, type = 'permanent') => {
     try {
@@ -331,32 +311,33 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       reader.readAsDataURL(file);
     }
   }, []);
+
   const resetCrop = () => {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
+
   const handleCancel = () => {
     setImageSrc(null);
-    setCapturedImage(null)
-    setOpen(false)
+    setCapturedImage(null);
+    setOpen(false);
   };
+
   const showCroppedImage = async () => {
     try {
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
         if (file || capturedImage) {
-          const imageToUpload = file || capturedImage; // Use capturedImage if available
+          const imageToUpload = file || capturedImage;
           setCroppedImage(typeof imageToUpload === 'string' ? imageToUpload : URL.createObjectURL(imageToUpload));
           setValue('profile_pic', imageToUpload);
 
           if (currentEmployee) {
             const formData = new FormData();
             if (typeof imageToUpload === 'string') {
-              // If capturedImage is a base64 string, convert it to a blob
               const response = await fetch(imageToUpload);
               const blob = await response.blob();
               formData.append('profile-pic', blob, 'captured-image.jpg');
             } else {
-              // Otherwise, upload the file directly
               formData.append('profile-pic', imageToUpload);
             }
 
@@ -379,7 +360,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         return;
       }
 
-      // Handle cropping logic if completedCrop exists
       const canvas = document.createElement('canvas');
       const image = document.getElementById('cropped-image');
 
@@ -443,24 +423,26 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       console.error('Error cropping and uploading image:', e);
     }
   };
+
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        setCapturedImage(imageSrc); // Set captured image
+        setCapturedImage(imageSrc);
         setValue('profile_pic', imageSrc);
-        setOpen2(false); // Close the ca
-        setOpen(true); // Close the ca
+        setOpen2(false);
+        setOpen(true);
       }
     }
   }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentEmployee]);
+
   return (
     <>
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={3} p={0}>
-          {/*<Card >*/}
-            <Box sx={{ pt:2, px: 3 }}>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={3} p={0}>
+            {/*<Card >*/}
+            <Box sx={{ pt: 2, px: 3 }}>
               <RHFUploadAvatar
                 name='profile_pic'
                 camera={true}
@@ -468,7 +450,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 setOpen={setOpen}
                 setImageSrc={setImageSrc}
                 setFile={setFile}
-                file={ croppedImage || imageSrc || capturedImage || currentEmployee?.user?.avatar_url}
+                file={croppedImage || imageSrc || capturedImage || currentEmployee?.user?.avatar_url}
                 maxSize={3145728}
                 accept='image/*'
                 onDrop={handleDropSingleFile}
@@ -504,415 +486,411 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 </div>
               </Dialog>
             </Box>
-          {/*</Card>*/}
-        </Grid>
-        <Grid xs={12} md={9}>
-          <Card sx={{ p: 2 }}>
-            <Box
-              rowGap={1.5}
-              columnGap={1.5}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(4, 1fr)',
-              }}
-            >
-              {user?.role === 'Admin' && branch && storedBranch === 'all' && (
-                <RHFAutocomplete
-                  name='branchId'
+            {/*</Card>*/}
+          </Grid>
+          <Grid xs={12} md={9}>
+            <Card sx={{ p: 2 }}>
+              <Box
+                rowGap={1.5}
+                columnGap={1.5}
+                display='grid'
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(4, 1fr)',
+                }}
+              >
+                {user?.role === 'Admin' && branch && storedBranch === 'all' && (
+                  <RHFAutocomplete
+                    name='branchId'
+                    req={'red'}
+                    label='Branch'
+                    placeholder='Choose a Branch'
+                    options={branch?.map((branchItem) => ({
+                      label: branchItem?.name,
+                      value: branchItem?._id,
+                    })) || []}
+                    isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                  />
+                )}
+                <RHFTextField
+                  name='firstName'
+                  label='First Name'
                   req={'red'}
-                  label='Branch'
-                  placeholder='Choose a Branch'
-                  options={branch?.map((branchItem) => ({
-                    label: branchItem?.name,
-                    value: branchItem?._id,
-                  })) || []}
-                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    methods.setValue('firstName', e.target.value);
+                  }}
                 />
-              )}
-              <RHFTextField
-                name='firstName'
-                label='First Name'
-                req={'red'}
-                inputProps={{ style: { textTransform: 'uppercase' } }}
-                onChange={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                  methods.setValue('firstName', e.target.value);
+                <RHFTextField
+                  name='middleName'
+                  label='Middle Name'
+                  req={'red'}
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    methods.setValue('middleName', e.target.value);
+                  }}
+                />
+                <RHFTextField
+                  name='lastName'
+                  label='Last Name'
+                  req={'red'}
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    methods.setValue('lastName', e.target.value);
+                  }}
+                />
+                <RHFTextField
+                  name='drivingLicense'
+                  label='Driving License'
+                  onInput={(e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                  }}
+                  inputProps={{ maxLength: 16 }}
+                />
+                <RHFTextField
+                  name='panCard'
+                  label='Pan No.'
+                  req={'red'}
+                  inputProps={{ minLength: 10, maxLength: 10 }}
+                  onChange={(e) => {
+                    const value = e.target.value.toUpperCase();
+                    methods.setValue('panCard', value, { shouldValidate: true });
+                  }} />
+                <RHFTextField name='voterCard' label='Voter ID'
+                              onInput={(e) => {
+                                e.target.value = e.target.value.toUpperCase();
+                              }} />
+                <RHFTextField
+                  name='aadharCard'
+                  label='Aadhar Card'
+                  req={'red'}
+                  inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                  }}
+                />
+                <RHFTextField
+                  name='contact'
+                  label='Mobile'
+                  req={'red'}
+                  inputProps={{
+                    maxLength: 10,
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                  }}
+                  rules={{
+                    required: 'OTP is required',
+                    pattern: {
+                      value: /^[0-9]{10}$/,
+                      message: 'Please enter a valid 10-digit OTP',
+                    },
+                  }}
+                  onKeyPress={(e) => {
+                    if (!/[0-9]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }} />
+                <RHFDatePicker
+                  name='dob'
+                  control={control}
+                  label='Date of Birth'
+                  req={'red'}
+                />
+                <RHFTextField name='remark' label='Remark' />
+              </Box>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Card sx={{ p: 2 }}>
+              <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
+                Official Info
+              </Typography>
+              <Box
+                rowGap={1.5}
+                columnGap={1.5}
+                display='grid'
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(6, 1fr)',
                 }}
-              />
-
-              <RHFTextField
-                name='middleName'
-                label='Middle Name'
-                req={'red'}
-                inputProps={{ style: { textTransform: 'uppercase' } }}
-                onChange={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                  methods.setValue('middleName', e.target.value);
+              >
+                {configs.roles && <RHFAutocomplete
+                  name='role'
+                  label='Role'
+                  req={'red'}
+                  fullWidth
+                  options={configs?.roles?.map((item) => item)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />}
+                {allUser?.user && <RHFAutocomplete
+                  name='reportingTo'
+                  label='Reporting to'
+                  req={'red'}
+                  fullWidth
+                  options={allUser?.user?.map((item) => item)}
+                  getOptionLabel={(option) => option.firstName + ' ' + option.lastName}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option} value={option._id}>
+                      {option.firstName + ' ' + option.lastName}
+                    </li>
+                  )}
+                />}
+                <RHFTextField name='email' label='Email' req={'red'} />
+                {!currentEmployee && <RHFTextField name='password' label='Password' req={'red'} />}
+                <RHFDatePicker
+                  name='joiningDate'
+                  control={control}
+                  label='Join Date'
+                  req={'red'}
+                />
+                <RHFDatePicker
+                  name='leaveDate'
+                  control={control}
+                  label='Leave Date'
+                  req={'red'}
+                />
+              </Box>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Card sx={{ p: 2 }}>
+              <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
+                Permanent Address
+              </Typography>
+              <Box
+                rowGap={1.5}
+                columnGap={1.5}
+                display='grid'
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(6, 1fr)',
                 }}
-              />
-
-              <RHFTextField
-                name='lastName'
-                label='Last Name'
-                req={'red'}
-                inputProps={{ style: { textTransform: 'uppercase' } }}
-                onChange={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                  methods.setValue('lastName', e.target.value);
-                }}
-              />
-
-              <RHFTextField
-                name='drivingLicense'
-                label='Driving License'
-                onInput={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                }}
-                inputProps={{ maxLength: 16 }}
-              />
-              <RHFTextField
-                name='panCard'
-                label='Pan No.'
-                req={'red'}
-                inputProps={{ minLength: 10, maxLength: 10 }}
-                onChange={(e) => {
-                  const value = e.target.value.toUpperCase();
-                  methods.setValue('panCard', value, { shouldValidate: true });
-                }} />
-              <RHFTextField name='voterCard' label='Voter ID'
-                            onInput={(e) => {
-                              e.target.value = e.target.value.toUpperCase();
-                            }} />
-              <RHFTextField
-                name='aadharCard'
-                label='Aadhar Card'
-                req={'red'}
-                inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
-                onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                }}
-              />
-              <RHFTextField
-                name='contact'
-                label='Mobile'
-                req={'red'}
-                inputProps={{
-                  maxLength: 10,
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                }}
-                rules={{
-                  required: 'OTP is required',
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: 'Please enter a valid 10-digit OTP',
-                  },
-                }}
-                onKeyPress={(e) => {
-                  if (!/[0-9]/.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }} />
-              <RHFDatePicker
-                name='dob'
-                control={control}
-                label='Date of Birth'
-                req={'red'}
-              />
-              <RHFTextField name='remark' label='Remark' />
-            </Box>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <Card sx={{ p: 2 }}>
-            <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
-              Official Info
-            </Typography>
-
-            <Box
-              rowGap={1.5}
-              columnGap={1.5}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(6, 1fr)',
-              }}
-            >
-              {configs.roles && <RHFAutocomplete
-                name='role'
-                label='Role'
-                req={'red'}
-                fullWidth
-                options={configs?.roles?.map((item) => item)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />}
-              {allUser?.user && <RHFAutocomplete
-                name='reportingTo'
-                label='Reporting to'
-                req={'red'}
-                fullWidth
-                options={allUser?.user?.map((item) => item)}
-                getOptionLabel={(option) => option.firstName + ' ' + option.lastName}
-                renderOption={(props, option) => (
-                  <li {...props} key={option} value={option._id}>
-                    {option.firstName + ' ' + option.lastName}
-                  </li>
-                )}
-              />}
-              <RHFTextField name='email' label='Email' req={'red'} />
-              {!currentEmployee && <RHFTextField name='password' label='Password' req={'red'} />}
-              <RHFDatePicker
-                name='joiningDate'
-                control={control}
-                label='Join Date'
-                req={'red'}
-              />
-              <RHFDatePicker
-                name='leaveDate'
-                control={control}
-                label='Leave Date'
-                req={'red'}
-              />
-            </Box>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <Card sx={{ p: 2 }}>
-            <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
-              Permanent Address
-            </Typography>
-            <Box
-              rowGap={1.5}
-              columnGap={1.5}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(6, 1fr)',
-              }}
-            >
-              <RHFTextField name='permanentStreet' label='Address' req={'red'} />
-              <RHFTextField name='permanentLandmark' label='Landmark' req={'red'} />
-              <RHFTextField
-                name='permanentZipcode'
-                label={
-                  <span>
+              >
+                <RHFTextField name='permanentStreet' label='Address' req={'red'} />
+                <RHFTextField name='permanentLandmark' label='Landmark' req={'red'} />
+                <RHFTextField
+                  name='permanentZipcode'
+                  label={
+                    <span>
       Zipcode
     </span>
-                }
-                req={'red'}
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  maxLength: 6,
-                }}
-                rules={{
-                  required: 'Zipcode is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Zipcode must be exactly 6 digits',
-                  },
-                  maxLength: {
-                    value: 6,
-                    message: 'Zipcode cannot be more than 6 digits',
-                  },
-                }}
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
                   }
-                }}
-                onBlur={(event) => {
-                  const zip = event.target.value;
-                  if (zip.length === 6) {
-                    checkZipcode(zip);
-                  }
-                }}
-              />
-              <RHFAutocomplete
-                name='permanentCountry'
-                label='Country'
-                req={'red'}
-                fullWidth
-                options={countrystatecity.map((country) => country.name)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
-              <RHFAutocomplete
-                name='permanentState'
-                label='State'
-                req={'red'}
-                fullWidth
-                options={
-                  watch('permanentCountry')
-                    ? countrystatecity
-                    .find((country) => country.name === watch('permanentCountry'))
-                    ?.states.map((state) => state.name) || []
-                    : []
-                }
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
-              <RHFAutocomplete
-                name='permanentCity'
-                label='City'
-                req={'red'}
-                fullWidth
-                options={
-                  watch('permanentState')
-                    ? countrystatecity
-                    .find((country) => country.name === watch('permanentCountry'))
-                    ?.states.find((state) => state.name === watch('permanentState'))
-                    ?.cities.map((city) => city.name) || []
-                    : []
-                }
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
-            </Box>
-            <Typography variant='subtitle1' sx={{ my: 1.5, fontWeight: '600' }}>
-              Temporary Address
-            </Typography>
-            <Box
-              rowGap={1.5}
-              columnGap={1.5}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(6, 1fr)',
-              }}
-            >
-              <RHFTextField name='tempStreet' label='Address' />
-              <RHFTextField name='tempLandmark' label='Landmark' />
-              <RHFTextField
-                name='tempZipcode'
-                label='Zipcode'
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  maxLength: 6,
-                }}
-                rules={{
-                  required: 'Zipcode is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Zipcode must be at least 6 digits',
-                  },
-                  maxLength: {
-                    value: 6,
-                    message: 'Zipcode cannot be more than 6 digits',
-                  },
-                }}
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-                onBlur={(event) => {
-                  const zip = event.target.value;
-                  if (zip.length === 6) {
-                    checkZipcode(zip, 'temporary');
-                  }
-                }}
-              />
-              <Controller
-                name='tempCountry'
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    options={countrystatecity.map((country) => country.name)}
-                    onChange={(event, value) => field.onChange(value)}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    renderInput={(params) => (
-                      <TextField {...params} label='Country' variant='outlined'
-                                 sx={{
-                                   ' label': { mt: -0.8, fontSize: '14px' },
-                                   ' input': { height: 7 },
-                                 }}
-                      />
-                    )}
-                  />
-                )}
-              />
-              <Controller
-                name='tempState'
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    options={
-                      watch('tempCountry')
-                        ? countrystatecity
-                        .find((country) => country.name === watch('tempCountry'))
-                        ?.states.map((state) => state.name) || []
-                        : []
+                  req={'red'}
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    maxLength: 6,
+                  }}
+                  rules={{
+                    required: 'Zipcode is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Zipcode must be exactly 6 digits',
+                    },
+                    maxLength: {
+                      value: 6,
+                      message: 'Zipcode cannot be more than 6 digits',
+                    },
+                  }}
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
                     }
-                    onChange={(event, value) => field.onChange(value)}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    renderInput={(params) => (
-                      <TextField {...params} label='State' variant='outlined' sx={{
-                        ' label': { mt: -0.8, fontSize: '14px' },
-                        ' input': { height: 7 },
-                      }} />
-                    )}
-                  />
-                )}
-              />
-              <Controller
-                name='tempCity'
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    {...field}
-                    options={
-                      watch('tempState')
-                        ? countrystatecity
-                        .find((country) => country.name === watch('tempCountry'))
-                        ?.states.find((state) => state.name === watch('tempState'))
-                        ?.cities.map((city) => city.name) || []
-                        : []
+                  }}
+                  onBlur={(event) => {
+                    const zip = event.target.value;
+                    if (zip.length === 6) {
+                      checkZipcode(zip);
                     }
-                    onChange={(event, value) => field.onChange(value)}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    renderInput={(params) => (
-                      <TextField {...params} label='City' variant='outlined' sx={{
-                        ' label': { mt: -0.8, fontSize: '14px' },
-                        ' input': { height: 7 },
-                      }} />
-                    )}
-                  />
-                )}
-              />
-            </Box>
-          </Card>
+                  }}
+                />
+                <RHFAutocomplete
+                  name='permanentCountry'
+                  label='Country'
+                  req={'red'}
+                  fullWidth
+                  options={countrystatecity.map((country) => country.name)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+                <RHFAutocomplete
+                  name='permanentState'
+                  label='State'
+                  req={'red'}
+                  fullWidth
+                  options={
+                    watch('permanentCountry')
+                      ? countrystatecity
+                      .find((country) => country.name === watch('permanentCountry'))
+                      ?.states.map((state) => state.name) || []
+                      : []
+                  }
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+                <RHFAutocomplete
+                  name='permanentCity'
+                  label='City'
+                  req={'red'}
+                  fullWidth
+                  options={
+                    watch('permanentState')
+                      ? countrystatecity
+                      .find((country) => country.name === watch('permanentCountry'))
+                      ?.states.find((state) => state.name === watch('permanentState'))
+                      ?.cities.map((city) => city.name) || []
+                      : []
+                  }
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+              </Box>
+              <Typography variant='subtitle1' sx={{ my: 1.5, fontWeight: '600' }}>
+                Temporary Address
+              </Typography>
+              <Box
+                rowGap={1.5}
+                columnGap={1.5}
+                display='grid'
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(6, 1fr)',
+                }}
+              >
+                <RHFTextField name='tempStreet' label='Address' />
+                <RHFTextField name='tempLandmark' label='Landmark' />
+                <RHFTextField
+                  name='tempZipcode'
+                  label='Zipcode'
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    maxLength: 6,
+                  }}
+                  rules={{
+                    required: 'Zipcode is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Zipcode must be at least 6 digits',
+                    },
+                    maxLength: {
+                      value: 6,
+                      message: 'Zipcode cannot be more than 6 digits',
+                    },
+                  }}
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                  onBlur={(event) => {
+                    const zip = event.target.value;
+                    if (zip.length === 6) {
+                      checkZipcode(zip, 'temporary');
+                    }
+                  }}
+                />
+                <Controller
+                  name='tempCountry'
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      options={countrystatecity.map((country) => country.name)}
+                      onChange={(event, value) => field.onChange(value)}
+                      isOptionEqualToValue={(option, value) => option === value}
+                      renderInput={(params) => (
+                        <TextField {...params} label='Country' variant='outlined'
+                                   sx={{
+                                     ' label': { mt: -0.8, fontSize: '14px' },
+                                     ' input': { height: 7 },
+                                   }}
+                        />
+                      )}
+                    />
+                  )}
+                />
+                <Controller
+                  name='tempState'
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      options={
+                        watch('tempCountry')
+                          ? countrystatecity
+                          .find((country) => country.name === watch('tempCountry'))
+                          ?.states.map((state) => state.name) || []
+                          : []
+                      }
+                      onChange={(event, value) => field.onChange(value)}
+                      isOptionEqualToValue={(option, value) => option === value}
+                      renderInput={(params) => (
+                        <TextField {...params} label='State' variant='outlined' sx={{
+                          ' label': { mt: -0.8, fontSize: '14px' },
+                          ' input': { height: 7 },
+                        }} />
+                      )}
+                    />
+                  )}
+                />
+                <Controller
+                  name='tempCity'
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      options={
+                        watch('tempState')
+                          ? countrystatecity
+                          .find((country) => country.name === watch('tempCountry'))
+                          ?.states.find((state) => state.name === watch('tempState'))
+                          ?.cities.map((city) => city.name) || []
+                          : []
+                      }
+                      onChange={(event, value) => field.onChange(value)}
+                      isOptionEqualToValue={(option, value) => option === value}
+                      renderInput={(params) => (
+                        <TextField {...params} label='City' variant='outlined' sx={{
+                          ' label': { mt: -0.8, fontSize: '14px' },
+                          ' input': { height: 7 },
+                        }} />
+                      )}
+                    />
+                  )}
+                />
+              </Box>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
-      <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-        <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                variant='outlined' onClick={() => reset()}>Reset</Button>
-        <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-          {!currentEmployee ? 'Submit' : 'Save'}
-        </LoadingButton>
-      </Box>
-    </FormProvider>
+        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+          <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
+                  variant='outlined' onClick={() => reset()}>Reset</Button>
+          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+            {!currentEmployee ? 'Submit' : 'Save'}
+          </LoadingButton>
+        </Box>
+      </FormProvider>
       <Dialog
         fullWidth
         maxWidth={false}

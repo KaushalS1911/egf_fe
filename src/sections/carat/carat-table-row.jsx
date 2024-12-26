@@ -1,17 +1,11 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -20,13 +14,11 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
-
 // ----------------------------------------------------------------------
 
 export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const { name, caratPercentage, remark, isActive } = row;
   const confirm = useBoolean();
-  const quickEdit = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -58,8 +50,6 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
           </IconButton>
         </TableCell>
       </TableRow>
-
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -76,7 +66,6 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
           <Iconify icon='solar:trash-bin-trash-bold' />
           Delete
         </MenuItem>}
-
         {getResponsibilityValue('update_carat', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
@@ -87,7 +76,6 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
           Edit
         </MenuItem>}
       </CustomPopover>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

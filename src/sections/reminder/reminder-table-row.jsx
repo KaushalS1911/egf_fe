@@ -11,18 +11,13 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ReminderRecallingForm from './reminder-recalling-form';
 import { useState } from 'react';
 import { fDate } from '../../utils/format-time';
-import { useRouter } from '../../routes/hooks';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
-import { Box, Dialog, DialogActions } from '@mui/material';
-import { PDFViewer } from '@react-pdf/renderer';
-import Notice from './view/notice';
 
 export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index, mutate }) {
   const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate } = row;
   const [open, setOpen] = useState(false);
-  const [noticeData, setNoticeData] = useState(null);
   const confirm = useBoolean();
   const popover = usePopover();
   const recallingPopover = usePopover();
@@ -32,7 +27,6 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
   };
 
   return (
@@ -48,14 +42,12 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -79,9 +71,7 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
           <Iconify icon='carbon:view-filled' />
           Details
         </MenuItem>
-
       </CustomPopover>
-
       <CustomPopover
         open={recallingPopover.open}
         onClose={recallingPopover.onClose}
@@ -102,7 +92,6 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
           </Button>
         }
       />
-
     </>
   );
 }

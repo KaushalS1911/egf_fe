@@ -7,7 +7,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
 import { Link } from 'react-router-dom';
 import Label from '../../components/label';
@@ -31,15 +30,11 @@ import { fDate } from '../../utils/format-time';
 export default function LoanpayhistoryTableRow({
                                                  row,
                                                  selected,
-                                                 onEditRow,
-                                                 onSelectRow,
                                                  onDeleteRow,
-                                                 index,
                                                  loanStatus,
                                                }) {
   const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo, issueDate } = row;
   const confirm = useBoolean();
-  const [nocData, setNocData] = useState();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -86,9 +81,9 @@ export default function LoanpayhistoryTableRow({
     if (dialogContent === 'noc') {
       return <Noc nocData={row} configs={configs} />;
     }
-
     return null;
   };
+
   return (
     <>
       <TableRow hover selected={selected} sx={{ backgroundColor: loanStatus === status ? color : color }}>
@@ -132,15 +127,12 @@ export default function LoanpayhistoryTableRow({
           </IconButton>
         </TableCell>
       </TableRow>
-
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
         <MenuItem
           onClick={() => {
             handleDialogOpen('loanDetails');
@@ -189,7 +181,6 @@ export default function LoanpayhistoryTableRow({
             </MenuItem>
         }
       </CustomPopover>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -201,7 +192,6 @@ export default function LoanpayhistoryTableRow({
           </Button>
         }
       />
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

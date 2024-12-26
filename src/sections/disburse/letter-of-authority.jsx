@@ -1,9 +1,6 @@
 import { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/logo.png';
-import { fDate } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 
@@ -85,22 +82,16 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 export default function LetterOfAuthority({ loan }) {
-
   const styles = useStyles();
 
   return (
     <>
       <Document>
         <Page size='A4' style={styles.page}>
-          {/* Watermark */}
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-
-          {/* Header */}
           <Text style={styles.header}>Letter of Authority</Text>
-
-          {/* From Section */}
           <View style={styles.section}>
             <Text>
               <Text style={styles.bold}>From:</Text>
@@ -108,8 +99,6 @@ export default function LetterOfAuthority({ loan }) {
             <Text>{`${loan.customer.firstName} ${loan.customer.middleName} ${loan.customer.lastName}`}</Text>
             <Text>{`${loan.customer.permanentAddress.street} , ${loan.customer.permanentAddress.landmark} , ${loan.customer.permanentAddress.city} , ${loan.customer.permanentAddress.zipcode}`}</Text>
           </View>
-
-          {/* To Section */}
           <View style={styles.section}>
             <Text>
               <Text style={styles.bold}>To:</Text>
@@ -118,8 +107,6 @@ export default function LetterOfAuthority({ loan }) {
             <Text>Shop No.3, First Floor, Shree Hari Complex, Yogi Chowk, Surat</Text>
             <Text>Pin code - 395010</Text>
           </View>
-
-          {/* Body */}
           <View style={styles.section}>
             <Text>Dear Sir,</Text>
             <Text style={{ marginTop: 10 }}>
@@ -144,8 +131,6 @@ export default function LetterOfAuthority({ loan }) {
               recover the amount of dues outstanding under such ledge/loan.
             </Text>
           </View>
-
-          {/* Signature Section */}
           <View style={styles.signatureSection}>
             <View>
               <Text>Place:</Text>

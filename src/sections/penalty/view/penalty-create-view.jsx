@@ -1,10 +1,7 @@
 import Container from '@mui/material/Container';
-
 import { paths } from 'src/routes/paths';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-
 import PenaltyNewEditForm from '../penalty-new-edit-form';
 
 // ----------------------------------------------------------------------
@@ -31,7 +28,6 @@ export default function PenaltyCreateView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-
       <PenaltyNewEditForm />
     </Container>
   );

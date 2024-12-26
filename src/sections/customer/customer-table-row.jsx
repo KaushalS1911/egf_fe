@@ -1,22 +1,17 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
 import { useRouter } from '../../routes/hooks';
 import { useGetConfigs } from '../../api/config';
 import { useAuthContext } from '../../auth/hooks';
@@ -29,8 +24,6 @@ import React from 'react';
 export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const { firstName, lastName, middleName, contact, customerCode, email, avatar_url, status } = row;
   const confirm = useBoolean();
-  const router = useRouter();
-  const quickEdit = useBoolean();
   const popover = usePopover();
   const { configs } = useGetConfigs();
   const { user } = useAuthContext();
@@ -43,7 +36,8 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)} sx={{ mr: 2,cursor:'pointer' }} />
+          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)}
+                  sx={{ mr: 2, cursor: 'pointer' }} />
           <Lightbox
             image={avatar_url}
             open={lightbox.open}
@@ -80,7 +74,6 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           </IconButton>
         </TableCell>
       </TableRow>
-      {/*<CustomerQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />*/}
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
