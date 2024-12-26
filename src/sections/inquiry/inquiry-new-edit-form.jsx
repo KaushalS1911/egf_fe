@@ -55,7 +55,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       return true;
     }
   }
-
   const NewUserSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
     lastName: Yup.string().required('Last name is required'),
@@ -67,13 +66,15 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       .nullable()
       .typeError('Date is required'),
     inquiryFor: Yup.string().required('Inquiry field is required'),
-    branchId: Yup.object()
-      .shape({
-        label: Yup.string().required('Branch name is required'),
-        value: Yup.string().required('Branch ID is required'),
-      })
-      .nullable()
-      .required('Branch selection is required'),
+    // ...(user.role !== 'Employee' && {
+    //   branchId: Yup.object()
+    //     .shape({
+    //       label: Yup.string().required('Branch name is required'),
+    //       value: Yup.string().required('Branch ID is required'),
+    //     })
+    //     .nullable()
+    //     .required('Branch selection is required'),
+    // }),
   });
 
   const defaultValues = useMemo(
@@ -103,7 +104,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    // resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
 
@@ -127,42 +128,26 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       remark: data.remark === 'Other' ? data?.otherRemark : data?.remark,
       status: data.response,
       address: data.address,
-      assignTo: data.assignTo.value,
+      assignTo: user?.role === 'Employee' ? user?._id : data.assignTo?.value,
     };
 
     const mainbranchid = branch?.find((e) => e?._id === data?.branchId?.value) || branch?.[0];
-    let parsedBranch = storedBranch;
-
-    if (storedBranch !== 'all') {
-      try {
-        parsedBranch = JSON.parse(storedBranch);
-      } catch (error) {
-        console.error('Error parsing storedBranch:', error);
-      }
-    }
-
-    const branchQuery = parsedBranch && parsedBranch === 'all'
-      ? `branch=${mainbranchid?._id}`
-      : `branch=${parsedBranch}`;
-
-    const employeeQuery = user?.role === 'Admin'
-      ? `&assignTo=${data?.assignTo?.value}`
-      : ``;
-
+    const branchQuery = user?.role === 'Admin' ? `branch=${mainbranchid?._id}` : `branch=${user?.branch?._id}`
+    const employeeQuery = user?.role === 'Admin' ? `&assignTo=${data?.assignTo?.value}` : `&assignTo=${user?._id}`;
     const queryString = `${branchQuery}${employeeQuery}`;
 
     try {
       if (currentInquiry) {
         const res = await axios.put(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?${queryString}`,
-          payload,
+          payload
         );
         enqueueSnackbar(res?.data?.message);
         router.push(paths.dashboard.inquiry.list);
       } else {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${queryString}`,
-          payload,
+          payload
         );
         enqueueSnackbar(res?.data?.message);
         router.push(paths.dashboard.inquiry.list);
@@ -174,6 +159,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       console.error(error);
     }
   });
+
 
   const fetchNextInquiry = () => {
     const nextInquiryIndex = inquiry.indexOf(currentInquiry) + 1;
@@ -259,12 +245,13 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   name='assignTo'
                   req={'red'}
                   label='Employee'
-                  placeholder='Choose a Branch'
+                  placeholder='Choose an Employee'
                   options={employee?.map((employeeitem) => ({
                     label: employeeitem?.user?.firstName + ' ' + employeeitem?.user?.lastName,
                     value: employeeitem?._id,
                   })) || []}
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                  disabled={user?.role === 'Employee'}
                 />
               )}
               <RHFTextField
