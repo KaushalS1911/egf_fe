@@ -150,9 +150,11 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           && <IconButton onClick={handleRespondedClick}>
             <Iconify icon='eva:edit-fill' />
           </IconButton>}
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
-          </IconButton>
+          {getResponsibilityValue('delete_inquiry', configs, user)
+          && getResponsibilityValue('update_inquiry', configs, user)
+            ? <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon='eva:more-vertical-fill' />
+            </IconButton> : '-'}
         </TableCell>
       </TableRow>
       <TableRow>
