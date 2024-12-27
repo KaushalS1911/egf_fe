@@ -151,7 +151,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
             <Iconify icon='eva:edit-fill' />
           </IconButton>}
           {getResponsibilityValue('delete_inquiry', configs, user)
-          && getResponsibilityValue('update_inquiry', configs, user)
+          || getResponsibilityValue('update_inquiry', configs, user)
             ? <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
             </IconButton> : ''}
