@@ -63,7 +63,7 @@ export default function SchemeTableRow({ row, selected, onEditRow, onSelectRow, 
           {getResponsibilityValue('delete_scheme', configs, user) && getResponsibilityValue('update_scheme', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover

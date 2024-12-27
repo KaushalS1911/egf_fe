@@ -55,7 +55,7 @@ export default function ReminderDetailsTableRow({
           {getResponsibilityValue('update_reminder', configs, user) && getResponsibilityValue('delete_reminder', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover

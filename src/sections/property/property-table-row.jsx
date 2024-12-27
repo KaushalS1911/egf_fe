@@ -49,7 +49,7 @@ export default function PropertyTableRow({ row, selected, onEditRow, onSelectRow
           {getResponsibilityValue('delete_property', configs, user) && getResponsibilityValue('update_property', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover

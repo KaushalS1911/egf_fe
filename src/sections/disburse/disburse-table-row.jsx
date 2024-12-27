@@ -56,7 +56,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
           startIcon={<Iconify sx={{ width: '15px' }} icon='mingcute:add-line' />}
         >
           Loan Disburse
-        </Button> || '-'}
+        </Button> || ''}
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {getResponsibilityValue('update_disburse', configs, user) && getResponsibilityValue('update_disburse', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

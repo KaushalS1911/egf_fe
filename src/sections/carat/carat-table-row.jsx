@@ -48,7 +48,7 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
           {getResponsibilityValue('delete_carat', configs, user) && getResponsibilityValue('update_carat', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover

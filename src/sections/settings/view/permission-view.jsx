@@ -171,11 +171,24 @@ export default function PermissionView() {
   const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {
-    if (isFirstRender) {
-      setOpenPopup(true);
-      setIsFirstRender(false);
+    if (configs?.roles && selectedRole === null) {
+      const rolesWithoutPermissions = configs.roles.filter(
+        (role) =>
+          role !== 'Admin' &&
+          (!configs.permissions?.[role] || !configs.permissions[role]?.sections?.length),
+      );
+
+      if (rolesWithoutPermissions.length > 0) {
+        setOpenPopup(true);
+      } else {
+        setOpenPopup(false);
+      }
     }
-  }, [isFirstRender]);
+  }, [configs, selectedRole]);
+
+  const handleClosePopup = () => {
+    setOpenPopup(false);
+  };
 
   useEffect(() => {
     if (selectedRole) {
@@ -310,10 +323,6 @@ export default function PermissionView() {
       });
   };
 
-  const handleClosePopup = () => {
-    setOpenPopup(false);
-  };
-
   return (
     <FormProvider {...methods}>
       <Box sx={{ width: '100%', padding: '10px' }}>
@@ -413,8 +422,17 @@ export default function PermissionView() {
         <DialogTitle>Missing Permissions</DialogTitle>
         <DialogContent>
           <Typography>
-            Some employee types do not have permissions assigned. Please review and update as necessary.
+            Some employee roles do not have permissions assigned. Please review and update as necessary:
           </Typography>
+          {configs?.roles
+            .filter(
+              (role) =>
+                role !== 'Admin' &&
+                (!configs.permissions?.[role] || !configs.permissions[role]?.sections?.length),
+            )
+            .map((role, index) => (
+              <Typography key={index}>- {role}</Typography>
+            ))}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClosePopup} variant='contained'>

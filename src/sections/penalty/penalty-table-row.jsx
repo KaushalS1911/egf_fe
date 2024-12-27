@@ -51,7 +51,7 @@ export default function PenaltyTableRow({ row, selected, onEditRow, onSelectRow,
           {getResponsibilityValue('delete_penalty', configs, user) && getResponsibilityValue('update_penalty', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover

@@ -40,7 +40,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
           {getResponsibilityValue('update_loanIssue', configs, user) && getResponsibilityValue('delete_loanIssue', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover

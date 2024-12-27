@@ -60,7 +60,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
           {getResponsibilityValue('delete_employee', configs, loginuser) && getResponsibilityValue('update_employee', configs, loginuser) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover
