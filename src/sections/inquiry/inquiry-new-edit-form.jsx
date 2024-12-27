@@ -121,16 +121,13 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
 
   const selectedBranch = watch('branchId')
   useEffect(() => {
-    if (!selectedBranch?.value || !employee) {
-      setFilteredEmployee([]);
-      return;
-    }
     const handleFilterEmployee = employee.filter(
-      (item) => item?.user?.branch?._id || storedBranch === selectedBranch?.value
+      (item) =>
+        storedBranch === item?.user?.branch?._id ||
+        item?.user?.branch?._id === selectedBranch?.value
     );
     setFilteredEmployee(handleFilterEmployee);
-  }, [selectedBranch, employee]);
-
+  }, [selectedBranch, employee,storedBranch]);
   const onSubmit = handleSubmit(async (data) => {
     const payload = {
       firstName: data.firstName,
