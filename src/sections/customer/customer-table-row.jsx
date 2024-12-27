@@ -72,7 +72,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
           {getResponsibilityValue('delete_customer', configs, user) && getResponsibilityValue('update_customer', configs, user) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <CustomPopover

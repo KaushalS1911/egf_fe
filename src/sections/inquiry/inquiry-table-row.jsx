@@ -154,7 +154,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
           && getResponsibilityValue('update_inquiry', configs, user)
             ? <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+            </IconButton> : ''}
         </TableCell>
       </TableRow>
       <TableRow>
