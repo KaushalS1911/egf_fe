@@ -23,10 +23,13 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  const [day, setDay] = useState('Next Week');
+  // const [filters.day, setDay] = useState('Next Week');
   const days = ['Next Day', 'Next Week', 'Next Month'];
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  useEffect(() => {
+    onFilters('day', 'Next Week');
+  }, []);
 
   const handleFilterName = useCallback(
     (event) => {
@@ -56,11 +59,11 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
   };
 
   useEffect(() => {
-    if (day !== '') {
-      dayManage(day);
+    if (filters.day !== '') {
+      dayManage(filters.day);
     }
 
-  }, [day]);
+  }, [filters.day]);
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
@@ -98,7 +101,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
 
   const handleFilterDays = useCallback(
     (event) => {
-      setDay(event.target.value);
+      onFilters('day', event.target.value);
     },
     [onFilters],
   );
@@ -144,9 +147,13 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
               width: { xs: 1, sm: 200 },
             }}
           >
-            <InputLabel>Filter by Day</InputLabel>
+            <InputLabel sx={{
+              mt: -1, '&.MuiInputLabel-shrink': {
+                mt: 0,
+              },
+            }}>Filter by Day</InputLabel>
             <Select
-              value={day}
+              value={filters.day}
               onChange={handleFilterDays}
               input={<OutlinedInput label='Filter by Day' sx={{ height: '40px' }} />}
               MenuProps={{

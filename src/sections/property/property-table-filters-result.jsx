@@ -40,7 +40,7 @@ export default function PropertyTableFiltersResult({
           </Block>
         )}
         {!!filters.name && (
-          <Block label='Property :'>
+          <Block label='Keyword :'>
             <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
           </Block>
         )}

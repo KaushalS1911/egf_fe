@@ -45,6 +45,7 @@ const TABLE_HEAD = [
 
 const defaultFilters = {
   name: '',
+  day: '',
   startDate: null,
   endDate: null,
   nextInstallmentDay: [],
@@ -92,7 +93,7 @@ export default function ReminderListView() {
   );
 
   const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
+    setFilters({ ...defaultFilters,day:'' });
   }, []);
 
   const handleClick = useCallback(

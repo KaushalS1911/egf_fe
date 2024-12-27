@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -37,6 +37,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   const { enqueueSnackbar } = useSnackbar();
   const { configs } = useGetConfigs();
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const [filteredEmployee,setFilteredEmployee] = useState([])
 
   function checkInquiryFor(val) {
     const isLoanValue = configs?.loanTypes?.find((item) => item === val);
@@ -55,17 +56,19 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       return true;
     }
   }
+
   const NewUserSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name is required'),
-    lastName: Yup.string().required('Last name is required'),
-    contact: Yup.string().required('Contact is required'),
-    address: Yup.string().required('Address is required'),
-    email: Yup.string().email('Email must be valid').required('Email is required'),
-    date: Yup.date()
-      .required('Date is required')
-      .nullable()
-      .typeError('Date is required'),
-    inquiryFor: Yup.string().required('Inquiry field is required'),
+    // firstName: Yup.string().required('First name is required'),
+    // lastName: Yup.string().required('Last name is required'),
+    // contact: Yup.string().required('Contact is required'),
+    // address: Yup.string().required('Address is required'),
+    // email: Yup.string().email('Email must be valid').required('Email is required'),
+    // date: Yup.date()
+    //   .required('Date is required')
+    //   .nullable()
+    //   .typeError('Date is required'),
+    // inquiryFor: Yup.string().required('Inquiry field is required'),
+    assignTo: Yup.object().required('Inquiry field is required'),
     ...(user.role !== 'Employee' && {
       branchId: Yup.object()
         .shape({
@@ -116,6 +119,18 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
     formState: { isSubmitting },
   } = methods;
 
+  const selectedBranch = watch('branchId')
+  useEffect(() => {
+    if (!selectedBranch?.value || !employee) {
+      setFilteredEmployee([]);
+      return;
+    }
+    const handleFilterEmployee = employee.filter(
+      (item) => item?.user?.branch?._id || storedBranch === selectedBranch?.value
+    );
+    setFilteredEmployee(handleFilterEmployee);
+  }, [selectedBranch, employee]);
+
   const onSubmit = handleSubmit(async (data) => {
     const payload = {
       firstName: data.firstName,
@@ -146,7 +161,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       ? `branch=${mainbranchid?._id}`
       : `branch=${parsedBranch}`;
 
-    const employeeQuery = `&assignTo=${data?.assignTo?.value}`
+    const employeeQuery = `&assignTo=${data?.assignTo?.value}`;
 
     const queryString = `${branchQuery}${employeeQuery}`;
 
@@ -253,23 +268,22 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 />
               )}
               {/*{user?.role === 'Admin' && employee && (*/}
-                <RHFAutocomplete
-                  name='assignTo'
-                  req={'red'}
-                  label='Employee'
-                  placeholder='Choose an Employee'
-                  options={employee?.map((employeeitem) => ({
-                    label: employeeitem?.user?.firstName + ' ' + employeeitem?.user?.lastName,
-                    value: employeeitem?._id,
-                  })) || []}
-                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
-                  // disabled={user?.role === 'Employee'}
-                />
+              <RHFAutocomplete
+                name='assignTo'
+                req={'red'}
+                label='Employee'
+                placeholder='Choose an Employee'
+                options={filteredEmployee?.map((employeeitem) => ({
+                  label: employeeitem?.user?.firstName + ' '+employeeitem?.user?.middleName  + ' ' +employeeitem?.user?.lastName,
+                  value: employeeitem?._id,
+                })) || []}
+                isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                // disabled={user?.role === 'Employee'}
+              />
               {/*)}*/}
               <RHFTextField
                 name='firstName'
                 label='First Name'
-                req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   e.target.value = e.target.value.toUpperCase();
@@ -279,7 +293,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
               <RHFTextField
                 name='lastName'
                 label='Last Name'
-                req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   e.target.value = e.target.value.toUpperCase();
@@ -289,7 +302,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
               <RHFTextField
                 name='contact'
                 label='Mobile No.'
-                req={'red'}
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -307,12 +319,11 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                     e.preventDefault();
                   }
                 }} />
-              <RHFTextField name='email' label='Email' req={'red'} />
+              <RHFTextField name='email' label='Email'  />
               <RHFDatePicker
                 name='date'
                 control={control}
                 label='Date'
-                req={'red'}
               />
               <RHFDatePicker
                 name='recallingDate'
@@ -323,9 +334,9 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 name='inquiryFor'
                 label={'Inquiry For'}
                 autoHighlight
-                options={[...configs?.loanTypes, {loanType:'Other'}]?.map((option) => option.loanType)}
+                options={[...configs?.loanTypes, { loanType: 'Other' }]?.map((option) => option.loanType)}
                 getOptionLabel={(option) => option}
-                req={'red'}
+
                 renderOption={(props, option) => (
                   <li {...props} key={option}>
                     {option}
@@ -334,11 +345,10 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
               />}
               {
                 (watch('inquiryFor') === 'Other') &&
-                <RHFTextField name='other' label='Other' req={'red'} />
+                <RHFTextField name='other' label='Other' />
               }
               <RHFAutocomplete
                 name='response'
-                req={'red'}
                 label='Status'
                 placeholder='Choose a Status'
                 options={STATUS_OPTIONS.map((item) => item.value)}
@@ -349,10 +359,9 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   }
                 }}
               />
-              <RHFTextField name='address' label='Address' req={'red'} />
+              <RHFTextField name='address' label='Address' />
               <RHFAutocomplete
                 name='remark'
-                req='red'
                 label='Remark'
                 placeholder='Choose a Remark'
                 options={[...configs?.remarks || [], 'Other']}
@@ -367,7 +376,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 <RHFTextField
                   name='otherRemark'
                   label='Other Remark'
-                  req={'red'}
                   placeholder='Enter other remark'
                 />
               )}

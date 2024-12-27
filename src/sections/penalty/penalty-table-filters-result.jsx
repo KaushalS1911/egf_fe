@@ -40,7 +40,7 @@ export default function PenaltyTableFiltersResult({
           </Block>
         )}
         {!!filters.name && (
-          <Block label='Penalty Name:'>
+          <Block label='Keyword :'>
             <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
           </Block>
         )}

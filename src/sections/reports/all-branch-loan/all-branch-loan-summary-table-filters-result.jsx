@@ -13,10 +13,21 @@ import { shortDateLabel } from 'src/components/custom-date-range-picker';
 // ----------------------------------------------------------------------
 
 export default function AllBranchLoanSummaryTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
 
-  const handleRemoveKeyword = useCallback(() => {
-    onFilters('username', '');
+  const handleRemoveIssuedBy = useCallback(() => {
+    onFilters('issuedBy', '');
   }, [onFilters]);
+
+  const handleRemoveBranch = useCallback(() => {
+    onFilters('branch', '');
+  }, [onFilters]);
+
+  const handleRemoveDate = useCallback(() => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
+  }, [onFilters]);
+
 
   const handleRemoveService = useCallback(
     (inputValue) => {
@@ -27,7 +38,7 @@ export default function AllBranchLoanSummaryTableFiltersResult({ filters, onFilt
   );
 
   const handleRemoveStatus = useCallback(() => {
-    onFilters('status', 'all');
+    onFilters('status', 'All');
   }, [onFilters]);
 
   return (
@@ -51,9 +62,24 @@ export default function AllBranchLoanSummaryTableFiltersResult({ filters, onFilt
             ))}
           </Block>
         )}
-        {!!filters.userName && (
-          <Block label='Keyword:'>
-            <Chip label={filters.userName} size='small' onDelete={handleRemoveKeyword} />
+        {!!filters.issuedBy && (
+          <Block label='Issued By:'>
+            <Chip label={filters.issuedBy.name} size='small' onDelete={handleRemoveIssuedBy} />
+          </Block>
+        )}
+        {!!filters.branch && (
+          <Block label='Branch:'>
+            <Chip label={filters.branch.name} size='small' onDelete={handleRemoveBranch} />
+          </Block>
+        )}
+        {filters.startDate && filters.endDate && (
+          <Block label='Date:'>
+            <Chip size='small' label={shortLabel} onDelete={handleRemoveDate} />
+          </Block>
+        )}
+        {filters.status !== 'All' && (
+          <Block label='Status:'>
+            <Chip size='small' label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
         <Button

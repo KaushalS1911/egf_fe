@@ -40,7 +40,7 @@ export default function CaratTableFiltersResult({
           </Block>
         )}
         {!!filters.name && (
-          <Block label='Carat Name:'>
+          <Block label='Keyword :'>
             <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
           </Block>
         )}

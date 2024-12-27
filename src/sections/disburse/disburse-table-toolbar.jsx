@@ -19,7 +19,7 @@ export default function DisburseTableToolbar({ filters, onFilters }) {
 
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('userName', event.target.value);
+      onFilters('username', event.target.value);
     },
     [onFilters],
   );
@@ -48,7 +48,7 @@ export default function DisburseTableToolbar({ filters, onFilters }) {
           <TextField
             sx={{ 'input': { height: 7 } }}
             fullWidth
-            value={filters.userName}
+            value={filters.username}
             onChange={handleFilterName}
             placeholder='Search...'
             InputProps={{

@@ -50,7 +50,7 @@ export default function EmployeeTableToolbar({ filters, onFilters, employees }) 
             sx={{ 'input': { height: 7 } }}
 
             fullWidth
-            value={filters.userName}
+            value={filters.name}
             onChange={handleFilterName}
             placeholder='Search...'
             InputProps={{

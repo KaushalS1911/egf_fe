@@ -22,6 +22,10 @@ export default function LoanpayhistoryTableFiltersResult({ filters, onFilters, o
     [filters.service, onFilters],
   );
 
+  const handleRemoveStatus = useCallback(() => {
+    onFilters('status', 'All');
+  }, [onFilters]);
+
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
@@ -43,14 +47,14 @@ export default function LoanpayhistoryTableFiltersResult({ filters, onFilters, o
             ))}
           </Block>
         )}
-        {!!filters.userName && (
+        {!!filters.username && (
           <Block label='Keyword:'>
-            <Chip label={filters.userName} size='small' onDelete={handleRemoveKeyword} />
+            <Chip label={filters.username} size='small' onDelete={handleRemoveKeyword} />
           </Block>
         )}
-        {!!filters.status && (
-          <Block label='Keyword:'>
-            <Chip label={filters.status} size='small' onDelete={handleRemoveStatus} />
+        {filters.status !== 'All' && (
+          <Block label='Status:'>
+            <Chip size='small' label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
         <Button

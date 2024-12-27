@@ -18,6 +18,7 @@ export default function ReminderTableFiltersResult({
                                                      ...other
                                                    }) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+  const DayLabel = shortDateLabel(filters.startDay, filters.endDay);
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
@@ -25,6 +26,9 @@ export default function ReminderTableFiltersResult({
   const handleRemoveDate = useCallback(() => {
     onFilters('startDate', null);
     onFilters('endDate', null);
+  }, [onFilters]);
+  const handleRemoveDay = useCallback(() => {
+    onFilters('day', 'Next Week');
   }, [onFilters]);
 
   return (
@@ -44,6 +48,11 @@ export default function ReminderTableFiltersResult({
         {!!filters.name && (
           <Block label='Customer Name:'>
             <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
+          </Block>
+        )}
+        {filters.day  && (
+          <Block label='Day:'>
+            <Chip size='small' label={DayLabel} onDelete={handleRemoveDay} />
           </Block>
         )}
         <Button

@@ -43,9 +43,9 @@ export default function DisburseTableFiltersResult({ filters, onFilters, onReset
             ))}
           </Block>
         )}
-        {!!filters.userName && (
+        {!!filters.username && (
           <Block label='Keyword:'>
-            <Chip label={filters.userName} size='small' onDelete={handleRemoveKeyword} />
+            <Chip label={filters.username} size='small' onDelete={handleRemoveKeyword} />
           </Block>
         )}
         <Button

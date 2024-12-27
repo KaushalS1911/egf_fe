@@ -293,8 +293,12 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
   if (username && username.trim()) {
     inputData = inputData.filter(
-      (inq) =>
-        inq.username.toLowerCase().includes(username.toLowerCase()),
+      (item) =>
+        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
     );
   }
   return inputData;

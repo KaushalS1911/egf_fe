@@ -12,7 +12,7 @@ import Iconify from 'src/components/iconify';
 export default function EmployeeTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
 
   const handleRemoveKeyword = useCallback(() => {
-    onFilters('username', '');
+    onFilters('name', '');
   }, [onFilters]);
 
   const handleRemoveService = useCallback(
@@ -44,9 +44,9 @@ export default function EmployeeTableFiltersResult({ filters, onFilters, onReset
             ))}
           </Block>
         )}
-        {!!filters.userName && (
+        {!!filters.name && (
           <Block label='Keyword:'>
-            <Chip label={filters.userName} size='small' onDelete={handleRemoveKeyword} />
+            <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
           </Block>
         )}
         <Button
