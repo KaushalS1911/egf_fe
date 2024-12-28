@@ -57,7 +57,7 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
         <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('delete_employee', configs, loginuser) && getResponsibilityValue('update_employee', configs, loginuser) ?
+          {getResponsibilityValue('delete_employee', configs, loginuser) || getResponsibilityValue('update_employee', configs, loginuser) ?
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon='eva:more-vertical-fill' />
             </IconButton> : ''}
