@@ -60,7 +60,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   const NewUserSchema = Yup.object().shape({
     // firstName: Yup.string().required('First name is required'),
     // lastName: Yup.string().required('Last name is required'),
-    // contact: Yup.string().required('Contact is required'),
+    contact: Yup.string().required('Contact is required'),
     // address: Yup.string().required('Address is required'),
     // email: Yup.string().email('Email must be valid').required('Email is required'),
     // date: Yup.date()
@@ -298,6 +298,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
               />
               <RHFTextField
                 name='contact'
+                req={'red'}
                 label='Mobile No.'
                 inputProps={{
                   maxLength: 10,

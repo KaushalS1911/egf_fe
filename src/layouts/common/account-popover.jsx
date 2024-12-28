@@ -19,6 +19,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import Image from '../../components/image';
 
 // ----------------------------------------------------------------------
 
@@ -83,7 +84,7 @@ export default function AccountPopover() {
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {user?.firstName?.charAt(0).toUpperCase()}
+          <Image src={user?.avatar_url}/>
         </Avatar>
       </IconButton>
 

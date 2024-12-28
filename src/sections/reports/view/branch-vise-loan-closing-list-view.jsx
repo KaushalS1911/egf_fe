@@ -356,7 +356,7 @@ export default function BranchViseLoanClosingListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch } = filters;
+  const { username, status, startDate, endDate, branch,closedBy} = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -373,6 +373,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.contact.toLowerCase().includes(username.toLowerCase()),
     );
+  }
+  if(closedBy){
+    inputData = inputData.filter((item) => item?.closedBy?._id === closedBy?.value)
   }
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);

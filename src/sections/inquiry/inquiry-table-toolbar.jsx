@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Grid, IconButton, MenuItem } from '@mui/material';
+import { FormControl, Grid, IconButton, MenuItem } from '@mui/material';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -13,10 +13,13 @@ import { getResponsibilityValue } from '../../permission/permission';
 import { useGetConfigs } from '../../api/config';
 import { useAuthContext } from '../../auth/hooks';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryTableToolbar({ filters, onFilters, roleOptions, dateError, inquiries }) {
+export default function InquiryTableToolbar({ filters, onFilters,options, roleOptions, dateError, inquiries }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -64,6 +67,15 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
     [onFilters],
   );
 
+  const handleFilterAssignTo = useCallback(
+    (event) => {
+      onFilters(
+        'assignTo',
+        typeof event.target.value === 'object' && event.target.value,
+      );
+    },
+    [onFilters],
+  );
   return (
     <>
       <Stack
@@ -99,6 +111,51 @@ export default function InquiryTableToolbar({ filters, onFilters, roleOptions, d
               ),
             }}
           />
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 200 },
+            }}
+          >
+            <InputLabel sx={{
+              mt: -0.8,
+              '&.MuiInputLabel-shrink': {
+                mt: 0,
+              },
+            }}>Assign To</InputLabel>
+
+            <Select
+              value={filters.assignTo}
+              onChange={handleFilterAssignTo}
+              input={<OutlinedInput label='Assign To' sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <DatePicker
             label='Start date'
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

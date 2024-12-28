@@ -71,6 +71,7 @@ const defaultFilters = {
   status: 'all',
   startDate: null,
   endDate: null,
+  assignTo:''
 };
 
 // ----------------------------------------------------------------------
@@ -91,6 +92,11 @@ export default function InquiryListView() {
   const [tableData, setTableData] = useState(inquiry);
   const [filters, setFilters] = useState(defaultFilters);
   const storedBranch = sessionStorage.getItem('selectedBranch');
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    fetchStates();
+  }, [inquiry]);
 
   const dataFiltered = applyFilter({
     inputData: inquiry,
@@ -269,6 +275,20 @@ export default function InquiryListView() {
 
   if (inquiryLoading) {
     return <LoadingScreen />;
+  }
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option?.value === data?.assignTo?.user?._id)) {
+          return [...item, {
+            name: `${data?.assignTo?.user?.firstName} ${data?.assignTo?.user?.middleName} ${data?.assignTo?.user?.lastName}`,
+            value: data?.assignTo?.user?._id,
+          }];
+        } else {
+          return item;
+        }
+      });
+    });
   }
 
   return (
@@ -469,7 +489,7 @@ export default function InquiryListView() {
             ))}
           </Tabs>
           <InquiryTableToolbar
-            filters={filters} onFilters={handleFilters} dateError={dateError} inquiries={inquiries}
+            filters={filters} onFilters={handleFilters} dateError={dateError} inquiries={inquiries} options={options}
           />
           {canReset && (
             <InquiryTableFiltersResult
@@ -571,10 +591,8 @@ export default function InquiryListView() {
   );
 }
 
-function applyFilter({
-                       inputData, comparator, filters,
-                     }) {
-  const { status, name, startDate, endDate } = filters;
+function applyFilter({ inputData, comparator, filters, }) {
+  const { status, name, startDate, endDate,assignTo } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -595,7 +613,9 @@ function applyFilter({
       user.firstName.toLowerCase().includes(name.toLowerCase()),
     );
   }
-
+  if(assignTo){
+    inputData = inputData.filter((item) => item?.assignTo?.user?._id === assignTo?.value)
+  }
   if (startDate && endDate) {
     inputData = inputData.filter((user) =>
       isBetween(user.date, startDate, endDate),

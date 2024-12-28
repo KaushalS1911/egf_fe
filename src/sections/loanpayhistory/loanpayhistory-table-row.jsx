@@ -33,7 +33,7 @@ export default function LoanpayhistoryTableRow({
                                                  onDeleteRow,
                                                  loanStatus,
                                                }) {
-  const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo, issueDate } = row;
+  const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo, issueDate,interestLoanAmount } = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -105,6 +105,8 @@ export default function LoanpayhistoryTableRow({
           sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount -interestLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>

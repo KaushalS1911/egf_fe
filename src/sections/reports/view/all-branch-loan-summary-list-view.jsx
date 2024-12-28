@@ -396,7 +396,7 @@ export default function AllBranchLoanSummaryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch } = filters;
+  const { username, status, startDate, endDate, branch,issuedBy } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -419,6 +419,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
+  }
+  if(issuedBy){
+    inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value)
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) =>

@@ -17,7 +17,7 @@ import FormProvider, {
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
-import { Autocomplete, Button, Dialog, TextField } from '@mui/material';
+import { Autocomplete, Button, Dialog, IconButton, TextField } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
@@ -28,6 +28,7 @@ import ReactCrop from 'react-image-crop';
 import DialogTitle from '@mui/material/DialogTitle';
 import Webcam from 'react-webcam';
 import DialogActions from '@mui/material/DialogActions';
+import Iconify from '../../components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   const [capturedImage, setCapturedImage] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
+  const [rotation, setRotation] = useState(0);
   const [completedCrop, setCompletedCrop] = useState(null);
 
   const NewEmployeeSchema = Yup.object().shape({
@@ -199,7 +201,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
         const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
 
-        formData.append('profile-pic', blob, 'customer-image.jpg');
+        formData.append('profile-pic', blob, 'employee-image.jpg');
       } else {
         formData.append('profile-pic', data.profile_pic);
       }
@@ -322,103 +324,114 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     setCapturedImage(null);
     setOpen(false);
   };
-
+  const rotateImage = (angle) => {
+    setRotation((prevRotation) => prevRotation + angle);
+  };
   const showCroppedImage = async () => {
     try {
-      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        if (file || capturedImage) {
-          const imageToUpload = file || capturedImage;
-          setCroppedImage(typeof imageToUpload === 'string' ? imageToUpload : URL.createObjectURL(imageToUpload));
-          setValue('profile_pic', imageToUpload);
+      let imageToUpload = null;
+      if (completedCrop && completedCrop.width && completedCrop.height) {
+        // If the user has cropped the image
+        const canvas = document.createElement('canvas');
+        const image = document.getElementById('cropped-image');
 
-          if (currentEmployee) {
-            const formData = new FormData();
-            if (typeof imageToUpload === 'string') {
-              const response = await fetch(imageToUpload);
-              const blob = await response.blob();
-              formData.append('profile-pic', blob, 'captured-image.jpg');
-            } else {
-              formData.append('profile-pic', imageToUpload);
-            }
-
-            await axios
-              .put(
-                `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,
-                formData,
-              )
-              .then((res) => {
-                console.log('Profile updated successfully:', res.data);
-              })
-              .catch((err) => {
-                console.error('Error uploading original image:', err);
-              });
-          }
-
-          setOpen(false);
-          setImageSrc(null);
-        }
-        return;
-      }
-
-      const canvas = document.createElement('canvas');
-      const image = document.getElementById('cropped-image');
-
-      if (!image) {
-        console.error('Image element not found!');
-        return;
-      }
-
-      const scaleX = image.naturalWidth / image.width;
-      const scaleY = image.naturalHeight / image.height;
-
-      canvas.width = completedCrop.width;
-      canvas.height = completedCrop.height;
-
-      const ctx = canvas.getContext('2d');
-
-      ctx.drawImage(
-        image,
-        completedCrop.x * scaleX,
-        completedCrop.y * scaleY,
-        completedCrop.width * scaleX,
-        completedCrop.height * scaleY,
-        0,
-        0,
-        completedCrop.width,
-        completedCrop.height,
-      );
-
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          console.error('Failed to create blob');
+        if (!image) {
+          console.error('Image element not found!');
           return;
         }
 
-        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
 
-        setCroppedImage(URL.createObjectURL(croppedFile));
-        setFile(croppedFile);
-        setValue('profile_pic', croppedFile);
+        // Apply the cropped dimensions to the canvas
+        canvas.width = completedCrop.width;
+        canvas.height = completedCrop.height;
 
-        if (currentEmployee) {
-          const formData = new FormData();
-          formData.append('profile-pic', croppedFile);
+        const ctx = canvas.getContext('2d');
 
-          await axios
-            .put(
-              `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,
-              formData,
-            )
-            .then((res) => {
-              console.log('Profile updated successfully:', res.data);
-            })
-            .catch((err) => {
-              console.error('Error uploading cropped image:', err);
-            });
-        }
-        setOpen(false);
-        setImageSrc(null);
-      }, 'image/jpeg');
+        // Apply the rotation to the canvas
+        ctx.save();
+        ctx.translate(completedCrop.width / 2, completedCrop.height / 2); // Move to the center of the canvas
+        ctx.rotate((rotation * Math.PI) / 180); // Convert the rotation to radians
+        ctx.translate(-completedCrop.width / 2, -completedCrop.height / 2); // Move back to the top-left corner
+
+        // Draw the cropped image with rotation
+        ctx.drawImage(
+          image,
+          completedCrop.x * scaleX,
+          completedCrop.y * scaleY,
+          completedCrop.width * scaleX,
+          completedCrop.height * scaleY,
+          0,
+          0,
+          completedCrop.width,
+          completedCrop.height,
+        );
+        ctx.restore(); // Restore the context state
+
+        imageToUpload = canvas.toBlob((blob) => {
+          if (!blob) {
+            console.error('Failed to create blob');
+            return;
+          }
+          const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+          setCroppedImage(URL.createObjectURL(croppedFile));
+          setFile(croppedFile);
+          setValue('profile_pic', croppedFile);
+        });
+      } else {
+        // If the user has not cropped the image, rotate the original image
+        const canvas = document.createElement('canvas');
+        const image = new Image();
+        image.src = imageSrc || capturedImage; // Take the original image source
+
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          const ctx = canvas.getContext('2d');
+
+          // Apply rotation to the canvas before drawing the image
+          ctx.save();
+          ctx.translate(image.width / 2, image.height / 2); // Move to the center of the canvas
+          ctx.rotate((rotation * Math.PI) / 180); // Rotate by the current angle
+          ctx.translate(-image.width / 2, -image.height / 2); // Move back to top-left corner
+
+          // Draw the image with the applied rotation
+          ctx.drawImage(image, 0, 0);
+
+          // Create a file from the rotated image
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              console.error('Failed to create blob');
+              return;
+            }
+
+            const rotatedFile = new File([blob], 'rotated-image.jpg', { type: 'image/jpeg' });
+            setCroppedImage(URL.createObjectURL(rotatedFile));
+            setFile(rotatedFile);
+            setValue('profile_pic', rotatedFile);
+
+            if (currentEmployee) {
+              const formData = new FormData();
+              formData.append('profile-pic', rotatedFile);
+
+              await axios
+                .put(
+                  `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,
+                  formData,
+                )
+                .then((res) => {
+                  console.log('Profile updated successfully:', res.data);
+                })
+                .catch((err) => {
+                  console.error('Error uploading cropped image:', err);
+                });
+            }
+            setOpen(false);
+            setImageSrc(null);
+          }, 'image/jpeg');
+        };
+      }
     } catch (e) {
       console.error('Error cropping and uploading image:', e);
     }
@@ -469,21 +482,36 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     src={imageSrc || capturedImage}
                     alt='Crop preview'
                     onLoad={resetCrop}
+                    style={{ transform: `rotate(${rotation}deg)` }}
                   />
                 </ReactCrop>
                 {/*)}*/}
-                <div style={{
-                  display: 'flex', justifyContent:
-                    'space-between', padding: '1rem',
-                }}>
+                <Box
+                  sx={{
+                    display: 'flex', justifyContent:
+                      'space-between', padding: '1rem',
+                  }}>
                   <Button variant='outlined' onClick={handleCancel}>
                     Cancel
                   </Button>
+                  <Box sx={{ display: 'flex' }}>
+                    <IconButton
+                      onClick={() => rotateImage(-90)} // Rotate left by 90 degrees
+                      style={{ marginRight: '10px' }}
+                    >
+                      <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
+
+                    </IconButton>
+                    <IconButton onClick={() => rotateImage(90)} // Rotate right by 90 degrees
+                    >
+                      <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
+                    </IconButton>
+                  </Box>
                   <Button variant='contained' color='primary'
                           onClick={showCroppedImage}>
                     Save Image
                   </Button>
-                </div>
+                </Box>
               </Dialog>
             </Box>
             {/*</Card>*/}

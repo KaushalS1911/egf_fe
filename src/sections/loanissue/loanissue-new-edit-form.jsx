@@ -93,6 +93,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
+  const [rotation, setRotation] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(null);
 
   useEffect(() => {
@@ -620,55 +621,90 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
-
+  const rotateImage = (angle) => {
+    setRotation((prevRotation) => prevRotation + angle);
+  };
   const showCroppedImage = async () => {
     try {
-      if (!completedCrop || !completedCrop.width || !
-        completedCrop.height) {
-        if (file) {
-          const originalImageURL = URL.createObjectURL(file);
-          setCroppedImage(originalImageURL);
-          setValue('property_image', file);
-          setImageSrc(null);
-          setOpen(false);
-          return;
-        }
-      }
       const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
       const image = document.getElementById('cropped-image');
+
+      if (!image) {
+        console.error('Image element not found!');
+        return;
+      }
+
       const scaleX = image.naturalWidth / image.width;
       const scaleY = image.naturalHeight / image.height;
-      canvas.width = completedCrop.width;
-      canvas.height = completedCrop.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(
-        image,
-        completedCrop.x * scaleX,
-        completedCrop.y * scaleY,
-        completedCrop.width * scaleX,
-        completedCrop.height * scaleY,
-        0,
-        0,
-        completedCrop.width,
-        completedCrop.height,
-      );
+
+      const angleRadians = (rotation * Math.PI) / 180;
+
+      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+        // No cropping, save the entire rotated image
+        const rotatedCanvasWidth = Math.abs(image.naturalWidth * Math.cos(angleRadians)) + Math.abs(image.naturalHeight * Math.sin(angleRadians));
+        const rotatedCanvasHeight = Math.abs(image.naturalWidth * Math.sin(angleRadians)) + Math.abs(image.naturalHeight * Math.cos(angleRadians));
+
+        canvas.width = rotatedCanvasWidth;
+        canvas.height = rotatedCanvasHeight;
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(angleRadians);
+        ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2, image.naturalWidth, image.naturalHeight);
+        ctx.restore();
+      } else {
+        // Cropping is required
+        const cropX = completedCrop.x * scaleX;
+        const cropY = completedCrop.y * scaleY;
+        const cropWidth = completedCrop.width * scaleX;
+        const cropHeight = completedCrop.height * scaleY;
+
+        const rotatedCanvasWidth = Math.abs(cropWidth * Math.cos(angleRadians)) + Math.abs(cropHeight * Math.sin(angleRadians));
+        const rotatedCanvasHeight = Math.abs(cropWidth * Math.sin(angleRadians)) + Math.abs(cropHeight * Math.cos(angleRadians));
+
+        canvas.width = rotatedCanvasWidth;
+        canvas.height = rotatedCanvasHeight;
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(angleRadians);
+        ctx.drawImage(
+          image,
+          cropX,
+          cropY,
+          cropWidth,
+          cropHeight,
+          -cropWidth / 2,
+          -cropHeight / 2,
+          cropWidth,
+          cropHeight
+        );
+        ctx.restore();
+      }
+
+      // Convert canvas to Blob and handle it
       canvas.toBlob((blob) => {
         if (!blob) {
           console.error('Failed to create blob');
           return;
         }
-        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
-        const croppedImageURL = URL.createObjectURL(croppedFile);
-        setCroppedImage(croppedImageURL);
-        setFile(croppedFile); // Update the file state
-        setValue('property_image', croppedFile); // Ensure this is updated
+        const fileName = !completedCrop ? 'rotated-image.jpg' : 'cropped-rotated-image.jpg';
+        const file = new File([blob], fileName, { type: 'image/jpeg' });
+        const fileURL = URL.createObjectURL(file);
+
+        setCroppedImage(fileURL);
+        setFile(file);
+        setValue('property_image', file);
         setImageSrc(null);
+        setOpen(false);
       }, 'image/jpeg');
-      setOpen(false);
     } catch (error) {
       console.error('Error handling image upload:', error);
     }
   };
+
+
 
   const handleCancel = () => {
     setImageSrc(null);
@@ -818,8 +854,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             {/*  </Typography>*/}
             {/*</Grid>*/}
             {/*<Grid item xs={12} md={8}>*/}
-            {/*  <Alert severity='warning'>Please select a
-customer to proceed with the loan issuance.</Alert>*/}
+            {/*  <Alert severity='warning'>Please select acustomer to proceed with the loan issuance.</Alert>*/}
             {/*</Grid>*/}
           </>
           }
@@ -1095,53 +1130,68 @@ customer to proceed with the loan issuance.</Alert>*/}
                 </Box>
                 <Box mt={0.2}>
                   {/*{(croppedImage || capturedImage) ? (*/}
-                  <RHFUploadAvatar
-                    radius={true}
-                    name='property_image'
-                    camera={true}
-                    setOpen2={setOpen2}
-                    setOpen={setOpen}
-                    setImageSrc={setImageSrc}
-                    setFile={setFile}
-                    file={croppedImage || capturedImage || imageSrc || currentLoanIssue?.propertyImage}
-                    maxSize={3145728}
-                    accept='image/*'
-                    onDrop={handleDropSingleFile}
-                  />
-                  {/*)}*/}
-                </Box>
-                <Dialog open={Boolean(open)}
-                        onClose={handleCancel}>
-                  {/*{imageSrc && (*/}
-                  <ReactCrop
-                    crop={crop}
-                    onChange={(newCrop) => setCrop(newCrop)}
-                    onComplete={(newCrop) =>
-                      setCompletedCrop(newCrop)}
-                    aspect={1}
-                  >
-                    <img
-                      id='cropped-image'
-                      src={imageSrc || capturedImage}
-                      alt='Crop preview'
-                      onLoad={resetCrop}
+                    <RHFUploadAvatar
+                      radius={true}
+                      name='property_image'
+                      camera={true}
+                      setOpen2={setOpen2}
+                      setOpen={setOpen}
+                      setImageSrc={setImageSrc}
+                      setFile={setFile}
+                      file={croppedImage || capturedImage || imageSrc || currentLoanIssue?.propertyImage}
+                      maxSize={3145728}
+                      accept='image/*'
+                      onDrop={handleDropSingleFile}
                     />
-                  </ReactCrop>
-                  {/*)}*/}
-                  <Box style={{
-                    display: 'flex', justifyContent:
-                      'space-between', padding: '1rem',
-                  }}>
-                    <Button variant='outlined'
-                            onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                    <Button variant='contained' color='primary'
-                            onClick={showCroppedImage}>
-                      Save Image
-                    </Button>
+                    {/*)}*/}
                   </Box>
-                </Dialog>
+                  <Dialog open={Boolean(open)}
+                          onClose={handleCancel}>
+                    {/*{imageSrc && (*/}
+                    <ReactCrop
+                      crop={crop}
+                      onChange={(newCrop) => setCrop(newCrop)}
+                      onComplete={(newCrop) =>
+                        setCompletedCrop(newCrop)}
+                      aspect={1}
+                    >
+                      <img
+                        id='cropped-image'
+                        src={imageSrc || capturedImage}
+                        alt='Crop preview'
+                        onLoad={resetCrop}
+                        style={{ transform: `rotate(${rotation}deg)` }}
+
+                      />
+                    </ReactCrop>
+                    {/*)}*/}
+                    <Box style={{
+                      display: 'flex', justifyContent:
+                        'space-between', padding: '1rem',
+                    }}>
+                      <Button variant='outlined'
+                              onClick={handleCancel}>
+                        Cancel
+                      </Button>
+                      <Box sx={{ display: 'flex' }}>
+                        <IconButton
+                          onClick={() => rotateImage(-90)} // Rotate left by 90 degrees
+                          style={{ marginRight: '10px' }}
+                        >
+                          <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
+
+                        </IconButton>
+                        <IconButton onClick={() => rotateImage(90)} // Rotate right by 90 degrees
+                        >
+                          <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
+                        </IconButton>
+                      </Box>
+                      <Button variant='contained' color='primary'
+                              onClick={showCroppedImage}>
+                        Save Image
+                      </Button>
+                    </Box>
+                  </Dialog>
               </CardContent>
             </Card>
           </Grid>

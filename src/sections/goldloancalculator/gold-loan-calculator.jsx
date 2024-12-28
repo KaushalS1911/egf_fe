@@ -11,10 +11,11 @@ import {
   TableRow,
   Paper,
   Box,
-  Button,
+  Button, IconButton,
 } from '@mui/material';
 import { useGetCarat } from '../../api/carat';
 import { useGetScheme } from '../../api/scheme';
+import Iconify from '../../components/iconify';
 
 function GoldLoanCalculator() {
   const { carat } = useGetCarat();
@@ -25,6 +26,16 @@ function GoldLoanCalculator() {
   const [financeTables, setFinanceTables] = useState([[{ netGram: '' }]]);
   const [totalsNetGram, setTotalsNetGram] = useState([0]);
   const [totalsFinance, setTotalsFinance] = useState([0]);
+
+
+  const deleteTable = (tableIndex) => {
+    if (goldGramsTables.length > 1) {
+      setGoldGramsTables((prevTables) => prevTables.filter((_, index) => index !== tableIndex));
+      setFinanceTables((prevTables) => prevTables.filter((_, index) => index !== tableIndex));
+      setTotalsNetGram((prev) => prev.filter((_, index) => index !== tableIndex));
+      setTotalsFinance((prev) => prev.filter((_, index) => index !== tableIndex));
+    }
+  };
 
   const handleNumericInput = (value) => value.replace(/[^0-9.]/g, '');
 
@@ -108,98 +119,119 @@ function GoldLoanCalculator() {
   };
 
   const renderTable = (rows, tableIndex, handleChange, dataTable, totals, type) => (
-    <TableContainer component={Paper} key={tableIndex}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {type === 'gold' && (
-              <>
-                <TableCell sx={sx}>Carat</TableCell>
-                <TableCell sx={sx}>Value</TableCell>
-                <TableCell sx={sx}>Gold Gram</TableCell>
-                <TableCell sx={sx}>Net Gram</TableCell>
-              </>
-            )}
-            {type === 'finance' && (
-              <>
-                <TableCell sx={sx}>No.</TableCell>
-                <TableCell sx={sx}>Scheme Name</TableCell>
-                <TableCell sx={sx}>Interest Rate</TableCell>
-                <TableCell sx={sx}>Per Gram</TableCell>
-                <TableCell sx={sx}>Net Gram</TableCell>
-                <TableCell sx={sx}>Total Finance</TableCell>
-              </>
-            )}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, rowIndex) => (
-            <TableRow key={rowIndex}>
+    <>
+      <Box key={tableIndex} mb={4}>
+        <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
+          <Typography variant='subtitle1'>
+            {type === 'gold' ? `Gold Calculator ${tableIndex + 1}` : `Finance Calculator ${tableIndex + 1}`}
+          </Typography>
+          {type === 'gold' &&
+          <IconButton
+            color="error"
+            onClick={() => deleteTable(tableIndex)}
+            disabled={goldGramsTables.length <= 1} // Prevent deleting the last remaining table
+            sx={{
+              visibility: goldGramsTables.length > 1 ? 'visible' : 'hidden', // Hide the button if only one table remains
+            }}
+          >
+            <Iconify icon='oui:cross-in-circle-filled' />
+
+          </IconButton>}
+        </Box>
+      </Box>
+      <TableContainer component={Paper} key={tableIndex}>
+        <Table>
+          <TableHead>
+            <TableRow>
               {type === 'gold' && (
                 <>
-                  <TableCell sx={{ padding: '8px' }}>{row.name}</TableCell>
-                  <TableCell sx={{ padding: '8px' }}>{row.caratPercentage}</TableCell>
-                  <TableCell sx={{ padding: '8px' }}>
-                    <TextField
-                      sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
-                      variant="outlined"
-                      size="small"
-                      value={dataTable[tableIndex][rowIndex]?.goldGram || ''}
-                      onChange={(e) =>
-                        handleChange(tableIndex, rowIndex, handleNumericInput(e.target.value))
-                      }
-                      inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                    />
-                  </TableCell>
-                  <TableCell sx={{ padding: '8px' }}>
-                    <TextField
-                      sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
-                      variant="outlined"
-                      size="small"
-                      value={dataTable[tableIndex][rowIndex]?.netGram || ''}
-                      inputProps={{ readOnly: true }}
-                    />
-                  </TableCell>
+                  <TableCell sx={sx}>Carat</TableCell>
+                  <TableCell sx={sx}>Value</TableCell>
+                  <TableCell sx={sx}>Gold Gram</TableCell>
+                  <TableCell sx={sx}>Net Gram</TableCell>
                 </>
               )}
               {type === 'finance' && (
                 <>
-                  <TableCell sx={{ padding: '8px' }}>{rowIndex + 1}</TableCell>
-                  <TableCell sx={{ padding: '8px' }}>{row.name}</TableCell>
-                  <TableCell sx={{ padding: '8px' }}>{row.interestRate}</TableCell>
-                  <TableCell sx={{ padding: '8px' }}>{row.ratePerGram}</TableCell>
-                  <TableCell sx={{ padding: '8px' }}>
-                    <TextField
-                      sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
-                      variant="outlined"
-                      size="small"
-                      value={dataTable[tableIndex][rowIndex]?.netGram || ''}
-                      onChange={(e) =>
-                        handleChange(tableIndex, rowIndex, handleNumericInput(e.target.value))
-                      }
-                      inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                    />
-                  </TableCell>
-                  <TableCell sx={{ padding: '8px' }}>
-                    {dataTable[tableIndex][rowIndex]?.netGram && row.ratePerGram
-                      ? (
-                        Number(dataTable[tableIndex][rowIndex].netGram) *
-                        Number(row.ratePerGram)
-                      ).toFixed(2)
-                      : ''}
-                  </TableCell>
+                  <TableCell sx={sx}>No.</TableCell>
+                  <TableCell sx={sx}>Scheme Name</TableCell>
+                  <TableCell sx={sx}>Interest Rate</TableCell>
+                  <TableCell sx={sx}>Per Gram</TableCell>
+                  <TableCell sx={sx}>Net Gram</TableCell>
+                  <TableCell sx={sx}>Total Finance</TableCell>
                 </>
               )}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {type === 'gold' && (
-        <Box mt={2} textAlign="left">
-          <Typography variant="subtitle1">Total Net Gram: {totals[tableIndex]}</Typography>
-        </Box>
-      )}
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {rows.map((row, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {type === 'gold' && (
+                  <>
+                    <TableCell sx={{ padding: '8px' }}>{row.name}</TableCell>
+                    <TableCell sx={{ padding: '8px' }}>{row.caratPercentage}</TableCell>
+                    <TableCell sx={{ padding: '8px' }}>
+                      <TextField
+                        sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
+                        variant='outlined'
+                        size='small'
+                        value={dataTable[tableIndex][rowIndex]?.goldGram || ''}
+                        onChange={(e) =>
+                          handleChange(tableIndex, rowIndex, handleNumericInput(e.target.value))
+                        }
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ padding: '8px' }}>
+                      <TextField
+                        sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
+                        variant='outlined'
+                        size='small'
+                        value={dataTable[tableIndex][rowIndex]?.netGram || ''}
+                        inputProps={{ readOnly: true }}
+                      />
+                    </TableCell>
+                  </>
+                )}
+                {type === 'finance' && (
+                  <>
+                    <TableCell sx={{ padding: '8px' }}>{rowIndex + 1}</TableCell>
+                    <TableCell sx={{ padding: '8px' }}>{row.name}</TableCell>
+                    <TableCell sx={{ padding: '8px' }}>{row.interestRate}</TableCell>
+                    <TableCell sx={{ padding: '8px' }}>{row.ratePerGram}</TableCell>
+                    <TableCell sx={{ padding: '8px' }}>
+                      <TextField
+                        sx={{ ' .css-aplpb4-MuiInputBase-input-MuiOutlinedInput-input': { p: 0.5 } }}
+                        variant='outlined'
+                        size='small'
+                        value={dataTable[tableIndex][rowIndex]?.netGram || ''}
+                        onChange={(e) =>
+                          handleChange(tableIndex, rowIndex, handleNumericInput(e.target.value))
+                        }
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ padding: '8px' }}>
+                      {dataTable[tableIndex][rowIndex]?.netGram && row.ratePerGram
+                        ? (
+                          Number(dataTable[tableIndex][rowIndex].netGram) *
+                          Number(row.ratePerGram)
+                        ).toFixed(2)
+                        : ''}
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {type === 'gold' && (
+          <Box mt={2} textAlign='left'>
+            <Typography variant='subtitle1'>Total Net Gram: {totals[tableIndex]}</Typography>
+          </Box>
+        )}
+      </TableContainer>
+    </>
   );
 
   return (

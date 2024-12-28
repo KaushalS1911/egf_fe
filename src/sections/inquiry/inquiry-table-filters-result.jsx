@@ -15,6 +15,10 @@ export default function InquiryTableFiltersResult({ filters, onFilters, onResetF
 
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
+  },[onFilters])
+
+  const handleRemoveAssignTo = useCallback(() => {
+    onFilters('assignTo', '');
   }, [onFilters]);
 
   const handleRemoveService = useCallback(
@@ -68,6 +72,11 @@ export default function InquiryTableFiltersResult({ filters, onFilters, onResetF
         {!!filters.name && (
           <Block label='Keyword:'>
             <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
+          </Block>
+        )}
+        {!!filters.assignTo && (
+          <Block label='Assigb To :'>
+            <Chip label={filters.assignTo.name} size='small' onDelete={handleRemoveAssignTo} />
           </Block>
         )}
         <Button

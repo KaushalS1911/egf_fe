@@ -180,7 +180,10 @@ export default function MyProfile() {
                   <RHFTextField label='Middle Name' name='middleName' onClick={handleDisable} />
                   <RHFTextField label='Last Name' name='lastName' onClick={handleDisable} />
                   <RHFTextField label='Email' name='email' onClick={handleDisable} />
+                  {
+                    user?.role === 'Admin' &&
                   <RHFTextField label='Contact' name='contact' onClick={handleDisable} />
+                  }
                 </Box>
                 <Stack direction='row' justifyContent='flex-end'>
                   <LoadingButton

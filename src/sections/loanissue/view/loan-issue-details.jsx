@@ -51,6 +51,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
+          height: '78%',
         },
         pagePadding2: {
           padding: '0px 24px 24px 24px',
@@ -358,6 +359,11 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <Text style={styles.subText}>{selectedRow?.consultingCharge}%</Text>
                 </View>
                 <View style={styles.row}>
+                  <Text style={{ ...styles.subHeading, flex: 2 }}>Approval Charge</Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{selectedRow?.approvalCharge}</Text>
+                </View>
+                <View style={styles.row}>
                   <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Int Pay Schedule</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{selectedRow.scheme.interestPeriod}</Text>
@@ -431,7 +437,10 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                 </View>
               </View>
             </View>
-          </View>
+          </View> <View style={styles.d_flex}>
+          <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+          <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+        </View>
         </Page>
         <Page size='A4' style={styles.page}>
           <View style={styles.pagePadding2}>

@@ -22,7 +22,7 @@ import FormProvider, {
   RHFAutocomplete,
   RHFUploadAvatar, RHFRadioGroup,
 } from 'src/components/hook-form';
-import { Button, Dialog } from '@mui/material';
+import { Button, Dialog, IconButton } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
@@ -35,6 +35,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Webcam from 'react-webcam';
 import DialogActions from '@mui/material/DialogActions';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import Iconify from '../../components/iconify';
 
 //---------------------------------------------------------------------
 
@@ -52,7 +53,7 @@ const INQUIRY_REFERENCE_BY = [
   { value: 'Other', label: 'Other' },
 ];
 
-export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
+export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -70,6 +71,7 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
   const [capturedImage, setCapturedImage] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ unit: '%', width: 50 });
+    const [rotation, setRotation] = useState(0);
   const [completedCrop, setCompletedCrop] = useState(null);
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy) ? currentCustomer.referenceBy : 'Other';
 
@@ -304,106 +306,119 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
 
   const handleCancel = () => {
     setImageSrc(null);
-    setCapturedImage(null)
-    setOpen(false)
+    setCapturedImage(null);
+    setOpen(false);
   };
-
+  const rotateImage = (angle) => {
+    setRotation((prevRotation) => prevRotation + angle);
+  };
   const showCroppedImage = async () => {
     try {
-      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        if (file || capturedImage) {
-          const imageToUpload = file || capturedImage;
-          setCroppedImage(typeof imageToUpload === 'string' ? imageToUpload : URL.createObjectURL(imageToUpload));
-          setValue('profile_pic', imageToUpload);
+      let imageToUpload = null;
+      if (completedCrop && completedCrop.width && completedCrop.height) {
+        // If the user has cropped the image
+        const canvas = document.createElement('canvas');
+        const image = document.getElementById('cropped-image');
 
-          if (currentCustomer) {
-            const formData = new FormData();
-            if (typeof imageToUpload === 'string') {
-              const response = await fetch(imageToUpload);
-              const blob = await response.blob();
-              formData.append('profile-pic', blob, 'captured-image.jpg');
-            } else {
-              formData.append('profile-pic', imageToUpload);
-            }
-
-            await axios
-              .put(
-                `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
-                formData,
-              )
-              .then((res) => {
-                console.log('Profile updated successfully:', res.data);
-              })
-              .catch((err) => {
-                console.error('Error uploading original image:', err);
-              });
-          }
-
-          setOpen(false);
-          setImageSrc(null);
-        }
-        return;
-      }
-
-      const canvas = document.createElement('canvas');
-      const image = document.getElementById('cropped-image');
-
-      if (!image) {
-        console.error('Image element not found!');
-        return;
-      }
-
-      const scaleX = image.naturalWidth / image.width;
-      const scaleY = image.naturalHeight / image.height;
-
-      canvas.width = completedCrop.width;
-      canvas.height = completedCrop.height;
-
-      const ctx = canvas.getContext('2d');
-
-      ctx.drawImage(
-        image,
-        completedCrop.x * scaleX,
-        completedCrop.y * scaleY,
-        completedCrop.width * scaleX,
-        completedCrop.height * scaleY,
-        0,
-        0,
-        completedCrop.width,
-        completedCrop.height,
-      );
-
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          console.error('Failed to create blob');
+        if (!image) {
+          console.error('Image element not found!');
           return;
         }
 
-        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
 
-        setCroppedImage(URL.createObjectURL(croppedFile));
-        setFile(croppedFile);
-        setValue('profile_pic', croppedFile);
+        // Apply the cropped dimensions to the canvas
+        canvas.width = completedCrop.width;
+        canvas.height = completedCrop.height;
 
-        if (currentCustomer) {
-          const formData = new FormData();
-          formData.append('profile-pic', croppedFile);
+        const ctx = canvas.getContext('2d');
 
-          await axios
-            .put(
-              `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
-              formData,
-            )
-            .then((res) => {
-              console.log('Profile updated successfully:', res.data);
-            })
-            .catch((err) => {
-              console.error('Error uploading cropped image:', err);
-            });
-        }
-        setOpen(false);
-        setImageSrc(null);
-      }, 'image/jpeg');
+        // Apply the rotation to the canvas
+        ctx.save();
+        ctx.translate(completedCrop.width / 2, completedCrop.height / 2); // Move to the center of the canvas
+        ctx.rotate((rotation * Math.PI) / 180); // Convert the rotation to radians
+        ctx.translate(-completedCrop.width / 2, -completedCrop.height / 2); // Move back to the top-left corner
+
+        // Draw the cropped image with rotation
+        ctx.drawImage(
+          image,
+          completedCrop.x * scaleX,
+          completedCrop.y * scaleY,
+          completedCrop.width * scaleX,
+          completedCrop.height * scaleY,
+          0,
+          0,
+          completedCrop.width,
+          completedCrop.height,
+        );
+        ctx.restore(); // Restore the context state
+
+        imageToUpload = canvas.toBlob((blob) => {
+          if (!blob) {
+            console.error('Failed to create blob');
+            return;
+          }
+          const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+          setCroppedImage(URL.createObjectURL(croppedFile));
+          setFile(croppedFile);
+          setValue('profile_pic', croppedFile);
+        });
+      } else {
+        // If the user has not cropped the image, rotate the original image
+        const canvas = document.createElement('canvas');
+        const image = new Image();
+        image.src = imageSrc || capturedImage; // Take the original image source
+
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          const ctx = canvas.getContext('2d');
+
+          // Apply rotation to the canvas before drawing the image
+          ctx.save();
+          ctx.translate(image.width / 2, image.height / 2); // Move to the center of the canvas
+          ctx.rotate((rotation * Math.PI) / 180); // Rotate by the current angle
+          ctx.translate(-image.width / 2, -image.height / 2); // Move back to top-left corner
+
+          // Draw the image with the applied rotation
+          ctx.drawImage(image, 0, 0);
+
+          // Create a file from the rotated image
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              console.error('Failed to create blob');
+              return;
+            }
+
+            const rotatedFile = new File([blob], 'rotated-image.jpg', { type: 'image/jpeg' });
+            setCroppedImage(URL.createObjectURL(rotatedFile));
+            setFile(rotatedFile);
+            setValue('profile_pic', rotatedFile);
+
+            // Upload the rotated image
+            if (currentCustomer) {
+              const formData = new FormData();
+              formData.append('profile-pic', rotatedFile);
+
+              await axios
+                .put(
+                  `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
+                  formData,
+                )
+                .then((res) => {
+                  console.log('Profile updated successfully:', res.data);
+                })
+                .catch((err) => {
+                  console.error('Error uploading rotated image:', err);
+                });
+            }
+
+            setOpen(false);
+            setImageSrc(null);
+          }, 'image/jpeg');
+        };
+      }
     } catch (e) {
       console.error('Error cropping and uploading image:', e);
     }
@@ -491,42 +506,56 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
             setOpen={setOpen}
             setImageSrc={setImageSrc}
             setFile={setFile}
-            file={ croppedImage || imageSrc || capturedImage ||
-            currentCustomer?.avatar_url}
+            file={croppedImage || imageSrc || capturedImage || currentCustomer?.avatar_url}
             maxSize={3145728}
             accept='image/*'
             onDrop={handleDropSingleFile}
           />
-          <Dialog open={Boolean(open)} onClose={handleCancel} >
-            {/*{imageSrc.length || capturedImage && (*/}
-              <ReactCrop
-                crop={crop}
-                onChange={(newCrop) => setCrop(newCrop)}
-                onComplete={(newCrop) =>
-                  setCompletedCrop(newCrop)}
-                aspect={1}
-              >
-                <img
-                  id='cropped-image'
-                  src={imageSrc || capturedImage}
-                  alt='Crop preview'
-                  onLoad={resetCrop}
-                />
-              </ReactCrop>
-            {/*)}*/}
-            <div style={{
-              display: 'flex', justifyContent:
-                'space-between', padding: '1rem',
-            }}>
+
+          <Dialog open={Boolean(open)} onClose={handleCancel}>
+            <ReactCrop
+              crop={crop}
+              onChange={(newCrop) => setCrop(newCrop)}
+              onComplete={(newCrop) => setCompletedCrop(newCrop)}
+              aspect={1}
+            >
+              <img
+                id='cropped-image'
+                src={imageSrc || capturedImage}
+                alt='Crop preview'
+                onLoad={resetCrop}
+                style={{ transform: `rotate(${rotation}deg)` }} // Apply rotation here
+              />
+            </ReactCrop>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
               <Button variant='outlined' onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button variant='contained' color='primary'
-                      onClick={showCroppedImage}>
+              <Box sx={{ display: 'flex' }}>
+                <IconButton
+                  onClick={() => rotateImage(-90)} // Rotate left by 90 degrees
+                  style={{ marginRight: '10px' }}
+                >
+                  <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
+
+                </IconButton>
+                <IconButton onClick={() => rotateImage(90)} // Rotate right by 90 degrees
+                >
+                  <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
+                </IconButton>
+              </Box>
+
+              <Button variant='contained' color='primary' onClick={showCroppedImage}>
                 Save Image
               </Button>
+
             </div>
+
+            {/* Rotation Controls */}
+
           </Dialog>
+
         </Box>
         {/*</Card>*/}
       </Grid>
@@ -709,8 +738,8 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
       <Grid xs={12} md={12} pb={0.5}>
         <Card>
           {!mdUp && <CardHeader title='Properties' />}
-          <Stack spacing={1} sx={{ p: 2 ,pb:0,pt:1.5}}>
-            <Typography variant='subtitle1' sx={{fontWeight: '600' }}>
+          <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
+            <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
               Permanent Address
             </Typography>
             <Box
@@ -948,7 +977,7 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
       <Grid xs={12} md={12}>
         <Card>
           {!mdUp && <CardHeader title='Bank Accounts' />}
-          <Stack spacing={3} sx={{ p: 2 ,pt:0.5}}>
+          <Stack spacing={3} sx={{ p: 2, pt: 0.5 }}>
             <Box>
               <Typography variant='subtitle1' sx={{ my: 1, fontWeight: '600' }}>
                 Bank Account Details
@@ -1010,15 +1039,15 @@ export default function CustomerNewEditForm({ currentCustomer ,mutate2}) {
 
   return (
     <>
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        {PersonalDetails}
-        {addressDetails}
-        {referenceDetails}
-        {BankDetails}
-        {renderActions}
-      </Grid>
-    </FormProvider>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={3}>
+          {PersonalDetails}
+          {addressDetails}
+          {referenceDetails}
+          {BankDetails}
+          {renderActions}
+        </Grid>
+      </FormProvider>
       <Dialog
         fullWidth
         maxWidth={false}
