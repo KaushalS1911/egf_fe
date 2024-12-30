@@ -11,17 +11,17 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-import Label from '../../../components/label';
-import { fDate } from '../../../utils/format-time';
+import { useAuthContext } from '../../../../auth/hooks';
+import { useGetConfigs } from '../../../../api/config';
+import { getResponsibilityValue } from '../../../../permission/permission';
+import Label from '../../../../components/label';
+import { fDate } from '../../../../utils/format-time';
 
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const {from,to,penalty,days,loan,amountPaid} = row;
+export default function LoanUchakpayDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
+  const {from,to,penalty,days,loan,amountPaid,date,remark} = row;
   const {loanNo,customer,loanAmount,  scheme, issueDate,interestLoanAmount,}=loan
   const confirm = useBoolean();
   const popover = usePopover();
@@ -36,21 +36,9 @@ export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, o
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
-        </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(from)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(to)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'payment by'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'int'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{penalty}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
       </TableRow>
 
       <CustomPopover
@@ -97,7 +85,7 @@ export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, o
   );
 }
 
-GoldLoanIntrestDetailseTableRow.propTypes = {
+LoanUchakpayDetailsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

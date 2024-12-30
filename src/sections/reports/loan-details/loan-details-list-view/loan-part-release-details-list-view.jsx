@@ -41,28 +41,20 @@ import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../../components/label';
-import NewGoldLoanTableRow from '../daily-reports-table/new-gold-loan-table-row';
-import GoldLoanIntrestDetailseTableRow from '../daily-reports-table/gold-loan-intrest-detailse-table-row';
 import { TableCell, TableRow, Typography } from '@mui/material';
-import GoldLoanUchakPaymentTableRow from '../daily-reports-table/gold-loan-uchak-payment-table-row';
+import LoanInterestDetailsTableRow from '../loan-details-table/loan-interest-details-table-row';
+import LoanPartReleaseDetailsTableRow from '../loan-details-table/loan-part-release-details-table-row';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.'},
-  { id: 'CustomerName', label: 'Customer name'},
-  { id: 'LoanAmount', label: 'loan amt'},
-  { id: 'Rate', label: 'Rate'},
-  { id: 'IssueDate', label: 'Issue date'},
-  { id: 'LoanIntAmt', label: 'Loan int. amt'},
-  { id: 'From date', label: 'From date'},
-  { id: 'To date', label: 'To date'},
-  { id: 'Days', label: 'Days'},
-  { id: 'PaymentBy', label: 'Payment by'},
-  { id: 'Interest', label: 'Interest'},
-  { id: 'Penalty', label: 'Penalty'},
-  { id: 'TotalPay', label: 'Total pay'},
+  { id: 'loanNo', label: 'Loan No.' },
+  { id: 'loanAmount', label: 'Loan Amount' },
+  { id: 'payAmount', label: 'Pay Amount' },
+  { id: 'pendingAmount', label: 'Pending Amount' },
+  { id: 'payDate', label: 'Pay Date' },
+  { id: 'remarks', label: 'Remarks' },
 ];
 const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
   value: 'Issued',
@@ -79,7 +71,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanInterestListView({interestDetail}) {
+export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -87,23 +79,23 @@ export default function GoldLoanInterestListView({interestDetail}) {
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(interestDetail);
+  const [tableData, setTableData] = useState(partReleaseDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: interestDetail,
+    inputData: partReleaseDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
-  const dataInPage = dataFiltered.slice(
+  const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  // const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -149,7 +141,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = partReleaseDetail.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -206,7 +198,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{fontSize:22,fontWeight:600}}> Gold Loan Interest Details</Typography>
+        <Typography sx={{fontSize:22,fontWeight:600}}>Loan part Release Details</Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -239,7 +231,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 2000 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -257,7 +249,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row, index) => (
-                      <GoldLoanIntrestDetailseTableRow
+                      <LoanPartReleaseDetailsTableRow
                         key={row._id}
                         row={row}
                         index={index}
@@ -274,12 +266,12 @@ export default function GoldLoanInterestListView({interestDetail}) {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
                   {
-                   dataFiltered.length == 0&&
-                  <TableRow>
-                    <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
-                      No Data Available
-                    </TableCell>
-                  </TableRow>
+                    dataFiltered.length == 0&&
+                    <TableRow>
+                      <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
+                        No Data Available
+                      </TableCell>
+                    </TableRow>
                   }
                   {/*<TableNoData notFound={notFound} />*/}
 
@@ -329,7 +321,6 @@ export default function GoldLoanInterestListView({interestDetail}) {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch } = filters;
-
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -337,6 +328,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
+
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>

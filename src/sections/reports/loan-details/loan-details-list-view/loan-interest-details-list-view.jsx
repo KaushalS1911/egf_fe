@@ -41,29 +41,28 @@ import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../../components/label';
-import NewGoldLoanTableRow from '../daily-reports-table/new-gold-loan-table-row';
-import GoldLoanIntrestDetailseTableRow from '../daily-reports-table/gold-loan-intrest-detailse-table-row';
 import { TableCell, TableRow, Typography } from '@mui/material';
-import GoldLoanUchakPaymentTableRow from '../daily-reports-table/gold-loan-uchak-payment-table-row';
+import LoanInterestDetailsTableRow from '../loan-details-table/loan-interest-details-table-row';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.'},
-  { id: 'CustomerName', label: 'Customer name'},
-  { id: 'LoanAmount', label: 'loan amt'},
-  { id: 'Rate', label: 'Rate'},
-  { id: 'IssueDate', label: 'Issue date'},
-  { id: 'LoanIntAmt', label: 'Loan int. amt'},
-  { id: 'From date', label: 'From date'},
-  { id: 'To date', label: 'To date'},
-  { id: 'Days', label: 'Days'},
-  { id: 'PaymentBy', label: 'Payment by'},
-  { id: 'Interest', label: 'Interest'},
-  { id: 'Penalty', label: 'Penalty'},
-  { id: 'TotalPay', label: 'Total pay'},
+  { id: 'from', label: 'From Date' },
+  { id: 'to', label: 'To Date' },
+  { id: 'loanAmount', label: 'Loan Amt' },
+  { id: 'interestRate', label: 'Interest Rate' },
+  { id: 'consultantInterest', label: 'Consultant Int' },
+  { id: 'totalInterest', label: 'Total Int' },
+  { id: 'penaltyAmount', label: 'Penalty Amt' },
+  { id: 'crDrAmt', label: 'CR/DR Amt' },
+  { id: 'payAfterAdjust', label: 'Pay After Adjust' },
+  { id: 'entryDate', label: 'Entry Date' },
+  { id: 'days', label: 'Days' },
+  { id: 'uchakAmt', label: 'Uchak Amt' },
+  { id: 'totalPay', label: 'Total Pay Amt' },
 ];
+
 const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
   value: 'Issued',
   label: 'Issued',
@@ -79,7 +78,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanInterestListView({interestDetail}) {
+export default function LoanInterestDetailsListView({interestDetail}) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -206,7 +205,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{fontSize:22,fontWeight:600}}> Gold Loan Interest Details</Typography>
+        <Typography sx={{fontSize:22,fontWeight:600}}>Loan Interest Details</Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -257,7 +256,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row, index) => (
-                      <GoldLoanIntrestDetailseTableRow
+                      <LoanInterestDetailsTableRow
                         key={row._id}
                         row={row}
                         index={index}
@@ -274,12 +273,12 @@ export default function GoldLoanInterestListView({interestDetail}) {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
                   {
-                   dataFiltered.length == 0&&
-                  <TableRow>
-                    <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
-                      No Data Available
-                    </TableCell>
-                  </TableRow>
+                    dataFiltered.length == 0&&
+                    <TableRow>
+                      <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
+                        No Data Available
+                      </TableCell>
+                    </TableRow>
                   }
                   {/*<TableNoData notFound={notFound} />*/}
 

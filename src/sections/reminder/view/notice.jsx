@@ -211,7 +211,7 @@ export default function Notice({ noticeData, configs }) {
           <View style={styles.pagePadding}>
             <View>
               <Text style={styles.noticeTitle}>નોટીસ</Text>
-              <Text style={styles.date}>{fDate(date)}</Text>
+              <Text style={styles.date}>{fDate(new Date())}</Text>
             </View>
             <View>
               <Text
@@ -233,7 +233,7 @@ export default function Notice({ noticeData, configs }) {
                 આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી
                 તારીખ {fDate(noticeData?.issueDate)} ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા {noticeData.loanAmount}.00/- નું
                 વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે
-                તારીખ {fDate(noticeData.nextInstallmentDate)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ
+                તારીખ {fDate(date)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ
                 આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા ગોલ્ડની હરાજી કરશે અને બદલામાં
                 મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે.
                 જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની

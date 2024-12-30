@@ -41,29 +41,23 @@ import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../../components/label';
-import NewGoldLoanTableRow from '../daily-reports-table/new-gold-loan-table-row';
-import GoldLoanIntrestDetailseTableRow from '../daily-reports-table/gold-loan-intrest-detailse-table-row';
 import { TableCell, TableRow, Typography } from '@mui/material';
-import GoldLoanUchakPaymentTableRow from '../daily-reports-table/gold-loan-uchak-payment-table-row';
+import LoanInterestDetailsTableRow from '../loan-details-table/loan-interest-details-table-row';
+import LoanPartPaymentDetailsTableRow from '../loan-details-table/loan-part-payment-details-table-row';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.'},
-  { id: 'CustomerName', label: 'Customer name'},
-  { id: 'LoanAmount', label: 'loan amt'},
-  { id: 'Rate', label: 'Rate'},
-  { id: 'IssueDate', label: 'Issue date'},
-  { id: 'LoanIntAmt', label: 'Loan int. amt'},
-  { id: 'From date', label: 'From date'},
-  { id: 'To date', label: 'To date'},
-  { id: 'Days', label: 'Days'},
-  { id: 'PaymentBy', label: 'Payment by'},
-  { id: 'Interest', label: 'Interest'},
-  { id: 'Penalty', label: 'Penalty'},
-  { id: 'TotalPay', label: 'Total pay'},
+  { id: 'loanAmount', label: 'Loan Amount' },
+  { id: 'payAmount', label: 'Pay Amount' },
+  { id: 'intLoanAmount', label: 'INT Loan Amt' },
+  { id: 'payDate', label: 'Pay Date' },
+  { id: 'entryDate', label: 'Entry Date' },
+  { id: 'remarks', label: 'Remarks' },
 ];
+
+
 const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
   value: 'Issued',
   label: 'Issued',
@@ -79,7 +73,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanInterestListView({interestDetail}) {
+export default function LoanPartPaymentDetailsListView({partPaymentDetail}) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -87,11 +81,11 @@ export default function GoldLoanInterestListView({interestDetail}) {
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(interestDetail);
+  const [tableData, setTableData] = useState(partPaymentDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: interestDetail,
+    inputData: partPaymentDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -206,7 +200,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{fontSize:22,fontWeight:600}}> Gold Loan Interest Details</Typography>
+        <Typography sx={{fontSize:22,fontWeight:600}}>Loan part Payment Details</Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -239,7 +233,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 2000 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -257,7 +251,7 @@ export default function GoldLoanInterestListView({interestDetail}) {
                       table.page * table.rowsPerPage + table.rowsPerPage,
                     )
                     .map((row, index) => (
-                      <GoldLoanIntrestDetailseTableRow
+                      <LoanPartPaymentDetailsTableRow
                         key={row._id}
                         row={row}
                         index={index}
@@ -274,12 +268,12 @@ export default function GoldLoanInterestListView({interestDetail}) {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
                   {
-                   dataFiltered.length == 0&&
-                  <TableRow>
-                    <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
-                      No Data Available
-                    </TableCell>
-                  </TableRow>
+                    dataFiltered.length == 0&&
+                    <TableRow>
+                      <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
+                        No Data Available
+                      </TableCell>
+                    </TableRow>
                   }
                   {/*<TableNoData notFound={notFound} />*/}
 

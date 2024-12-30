@@ -11,39 +11,18 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-import Label from '../../../components/label';
-import { fDate } from '../../../utils/format-time';
+import { useAuthContext } from '../../../../auth/hooks';
+import { useGetConfigs } from '../../../../api/config';
+import { getResponsibilityValue } from '../../../../permission/permission';
+import Label from '../../../../components/label';
+import { fDate } from '../../../../utils/format-time';
 
 
 // ----------------------------------------------------------------------
 
-export default function NewGoldLoanTableRow({
-                                              row,
-                                              index,
-                                              selected,
-                                              onEditRow,
-                                              onSelectRow,
-                                              onDeleteRow,
-                                              handleClick,
-                                            }) {
-  const {
-    loanNo,
-    customer,
-    loanAmount,
-    scheme,
-    cashAmount,
-    bankAmount,
-    status,
-    issueDate,
-    lastInstallmentDate,
-    nextInstallmentDate,
-    interestLoanAmount,
-    consultingCharge,
-    issuedBy
-  } = row;
+export default function LoanCloseDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
+  const {from,to,penalty,days,loan,amountPaid,totalLoanAmount,closingCharge,netAmount} = row;
+  const {loanNo,customer,loanAmount,  scheme, issueDate,interestLoanAmount,}=loan
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -57,14 +36,11 @@ export default function NewGoldLoanTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
-        </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${issuedBy.firstName} ${issuedBy.middleName} ${issuedBy.lastName}`}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalLoanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalLoanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{netAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{closingCharge}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{netAmount}</TableCell>
       </TableRow>
 
       <CustomPopover
@@ -109,9 +85,9 @@ export default function NewGoldLoanTableRow({
 
     </>
   );
-};
+}
 
-NewGoldLoanTableRow.propTypes = {
+LoanCloseDetailsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

@@ -41,7 +41,7 @@ import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../../components/label';
-import NewGoldLoanTableRow from '../new-gold-loan-table-row';
+import NewGoldLoanTableRow from '../daily-reports-table/new-gold-loan-table-row';
 import { TableCell, TableRow, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------

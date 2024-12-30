@@ -1,56 +1,30 @@
 import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
-import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  emptyRows,
-  TableNoData,
   getComparator,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableSelectedAction,
-  TablePaginationCustom,
 } from 'src/components/table';
-import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetLoanissue } from '../../../api/loanissue';
-import { LoadingScreen } from '../../../components/loading-screen';
-import { fDate, isBetween } from '../../../utils/format-time';
 import { useGetConfigs } from '../../../api/config';
-import AllBranchLoanSummaryTableRow from '../all-branch-loan/all-branch-loan-summary-table-row';
-import AllBranchLoanSummaryTableToolbar from '../all-branch-loan/all-branch-loan-summary-table-toolbar';
-import AllBranchLoanSummaryTableFiltersResult from '../all-branch-loan/all-branch-loan-summary-table-filters-result';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Label from '../../../components/label';
-import NewGoldLoanTableRow from '../daily-reports/daily-reports-table/new-gold-loan-table-row';
-import NewGoldLonListView from '../daily-reports/daily-reports-list-view/new-gold-lon-list-view';
-import GoldLoanInterestListView from '../daily-reports/daily-reports-list-view/gold-loan-interest-list-view';
 import { Box } from '@mui/system';
-import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-view/gold-loan-part-payment-list-view';
-import GoldLoanUchakPaymentTableRow from '../daily-reports/daily-reports-table/gold-loan-uchak-payment-table-row';
-import GoldLoanUchakPartListView from '../daily-reports/daily-reports-list-view/gold-loan-uchak-part-list-view';
-import { useGetAllInterest } from '../../../api/interest-pay';
-import DailyReportsTableToolbarTableToolbar from '../daily-reports/daily-reports-table/daily-reports-table-toolbar-table-toolbar';
-import { useGetDailyReport } from '../../../api/daily-report';
+import LoanInterestDetailsListView from '../loan-details/loan-details-list-view/loan-interest-details-list-view';
+import LoanPartReleaseDetailsListView from '../loan-details/loan-details-list-view/loan-part-release-details-list-view';
+import LoanUchakPayDetailsListView from '../loan-details/loan-details-list-view/loan-uchakPay-details-list-view';
+import LoanPartPaymentDetailsListView
+  from '../loan-details/loan-details-list-view/loan-part-payment-details-list-view';
+import LoanCloseDetailsListView from '../loan-details/loan-details-list-view/loan-close-details-list-view';
+import { useGetSingleLoan } from '../../../api/single-loan-details';
+import LoanDetailTableToolbarTableToolbar from '../loan-details/loan-details-table/loan-detail-table-toolbar-table-toolbar';
 
 // ----------------------------------------------------------------------
 
@@ -65,12 +39,12 @@ const defaultFilters = {
   startDate: new Date(),
   endDate: null,
   branch: '',
-
+  loan:''
 };
 
 // ----------------------------------------------------------------------
 
-export default function DailyReportsListView() {
+export default function LoanDetailsListView() {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -79,20 +53,21 @@ export default function DailyReportsListView() {
   const router = useRouter();
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
+  const loan = filters?.loan
+  const {loanDetail} = useGetSingleLoan(loan)
   const params = new URLSearchParams();
-  if(filters.branch._id) params.append('branch',filters.branch._id)
-  if(filters.startDate) params.append('date',filters.startDate.toLocaleDateString())
+  // if (filters.branch._id) params.append('branch', filters.branch._id);
+  // if (filters.startDate) params.append('date', filters.startDate.toLocaleDateString());
   // if(filters.username) params.append('username',filters.username)
   const date = (filters.startDate).toLocaleDateString();
-  const{report,reportLoading} = useGetDailyReport(params)
-  const [tableData, setTableData] = useState(report);
+  // const { report, reportLoading } = useGetDailyReport(params);
+  const [tableData, setTableData] = useState(loanDetail);
 
   const dataFiltered = applyFilter({
-    inputData: report ,
+    inputData: loanDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
   // const dataInPage = dataFiltered.slice(
   //   table.page * table.rowsPerPage,
   //   table.page * table.rowsPerPage + table.rowsPerPage,
@@ -112,8 +87,6 @@ export default function DailyReportsListView() {
     },
     [table],
   );
-
-
 
 
   // const loans = Loanissue.map((item) => ({
@@ -140,21 +113,21 @@ export default function DailyReportsListView() {
   //   'Pending bankAmount': item.pendingBankAmount,
   // }));
 
-  if (reportLoading) {
-    return (
-      <LoadingScreen />
-    );
-  }
-
+  // if (reportLoading) {
+  //   return (
+  //     <LoadingScreen />
+  //   );
+  // }
+  console.log(loanDetail?.partReleaseDetail,"..3.3.3.33.3.3.3.3..33...33.3.3..33..3.3.3.3");
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Daily Reports'
+          heading='Loan Details'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reports', href: paths.dashboard.reports.root },
-            { name: 'Daily Reports', href: paths.dashboard.reports.root },
+            { name: 'Loan details', href: paths.dashboard.reports.root },
             { name: ' List' },
           ]}
           sx={{
@@ -163,18 +136,23 @@ export default function DailyReportsListView() {
         />
 
         <Card sx={{ pb: 3 }}>
-          <DailyReportsTableToolbarTableToolbar filters={filters} onFilters={handleFilters}  dataFilter={dataFiltered} configs={configs}/>
+          <LoanDetailTableToolbarTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
+                                                configs={configs} />
           <Box>
-             <NewGoldLonListView LoanIssue={dataFiltered?.loans} />
+            <LoanInterestDetailsListView interestDetail={loanDetail?.interestDetail || []}/>
           </Box>
           <Box mt={2}>
-            <GoldLoanInterestListView  interestDetail={report?.interestDetail}/>
+            <LoanPartReleaseDetailsListView partReleaseDetail = {loanDetail?.partReleaseDetail || []}/>
           </Box>
           <Box mt={2}>
-            <GoldLoanPartPaymentListView partPayment={report?.partReleaseDetail} />
-          </Box> <Box mt={2}>
-          <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail}/>
-        </Box>
+            <LoanUchakPayDetailsListView uchakInterestDetail={loanDetail?.uchakInterestDetail || []}/>
+          </Box>
+          <Box mt={2}>
+            <LoanPartPaymentDetailsListView partPaymentDetail={loanDetail?.partPaymentDetail || []}/>
+          </Box>
+          <Box mt={2}>
+            <LoanCloseDetailsListView loanCloseDetail={loanDetail?.loanCloseDetail || []}/>
+          </Box>
         </Card>
 
       </Container>
@@ -226,7 +204,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   //   );
   // }
   // if (status && status !== 'All') {
-    // inputData = inputData.filter((item) => item.status === status);
+  // inputData = inputData.filter((item) => item.status === status);
   // }
   // if (branch) {
   //   inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);

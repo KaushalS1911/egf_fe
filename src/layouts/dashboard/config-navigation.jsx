@@ -154,6 +154,10 @@ export function useNavData() {
                 title: t('daily reports'),
                 path: paths.dashboard.reports['daily-reports'],
               },
+              {
+                title: t('loan details'),
+                path: paths.dashboard.reports['loan-details'],
+              },
             ],
           },
         ],

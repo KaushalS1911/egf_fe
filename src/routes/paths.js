@@ -198,6 +198,8 @@ export const paths = {
       'loan-list': `${ROOTS.DASHBOARD}/reports/loan-list`,
       'closed-loanList': `${ROOTS.DASHBOARD}/reports/closed-loanList`,
       'daily-reports': `${ROOTS.DASHBOARD}/reports/daily-reports`,
+      'loan-details':`${ROOTS.DASHBOARD}/reports/loan-details`,
+
     },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
