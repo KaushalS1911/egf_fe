@@ -123,16 +123,16 @@ export function useNavData() {
             path: paths.dashboard.disburse.root,
             icon: ICONS.disburse,
           },
-          // {
-          //   title: t('loan pay history'),
-          //   path: paths.dashboard.loanPayHistory.list,
-          //   icon: ICONS.loanPayHistory,
-          // },
           {
-            title: t('other loan pay history'),
-            path: paths.dashboard.other_loanPayHistory.list,
+            title: t('loan pay history'),
+            path: paths.dashboard.loanPayHistory.list,
             icon: ICONS.loanPayHistory,
           },
+          // {
+          //   title: t('other loan pay history'),
+          //   path: paths.dashboard.other_loanPayHistory.list,
+          //   icon: ICONS.loanPayHistory,
+          // },
         ],
       }, {
         subheader: t('Loan Utilities'),
