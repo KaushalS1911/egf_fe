@@ -155,7 +155,7 @@ const modules = [
   },
   {
     label: 'Setting',
-    value: 'setting',
+    value: 'config',
     permissions: [],
   },
 ];
