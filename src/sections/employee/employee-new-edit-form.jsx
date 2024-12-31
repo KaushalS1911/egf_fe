@@ -190,7 +190,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         }
       });
 
-      if (capturedImage) {
+      if (croppedImage) {
+        const croppedFile = file;
+        formData.append('profile-pic', croppedFile, 'employee-image.jpg');
+      } else if (capturedImage) {
         const base64Data = capturedImage.split(',')[1];
         const binaryData = atob(base64Data);
         const arrayBuffer = new Uint8Array(binaryData.length);
@@ -198,9 +201,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         for (let i = 0; i < binaryData.length; i++) {
           arrayBuffer[i] = binaryData.charCodeAt(i);
         }
-
-        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' }); // Create a Blob
-
+        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
         formData.append('profile-pic', blob, 'employee-image.jpg');
       } else {
         formData.append('profile-pic', data.profile_pic);
@@ -329,114 +330,87 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
   };
   const showCroppedImage = async () => {
     try {
-      let imageToUpload = null;
-      if (completedCrop && completedCrop.width && completedCrop.height) {
-        // If the user has cropped the image
-        const canvas = document.createElement('canvas');
-        const image = document.getElementById('cropped-image');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const image = document.getElementById('cropped-image');
 
-        if (!image) {
-          console.error('Image element not found!');
+      if (!image) {
+        console.error('Image element not found!');
+        return;
+      }
+
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+      const angleRadians = (rotation * Math.PI) / 180;
+
+      // Determine cropping and rotation dimensions
+      const cropX = completedCrop?.x * scaleX || 0;
+      const cropY = completedCrop?.y * scaleY || 0;
+      const cropWidth = completedCrop?.width * scaleX || image.naturalWidth;
+      const cropHeight = completedCrop?.height * scaleY || image.naturalHeight;
+
+      const rotatedCanvasWidth =
+        Math.abs(cropWidth * Math.cos(angleRadians)) +
+        Math.abs(cropHeight * Math.sin(angleRadians));
+      const rotatedCanvasHeight =
+        Math.abs(cropWidth * Math.sin(angleRadians)) +
+        Math.abs(cropHeight * Math.cos(angleRadians));
+
+      canvas.width = rotatedCanvasWidth;
+      canvas.height = rotatedCanvasHeight;
+
+      // Rotate and draw image
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(angleRadians);
+      ctx.drawImage(
+        image,
+        cropX,
+        cropY,
+        cropWidth,
+        cropHeight,
+        -cropWidth / 2,
+        -cropHeight / 2,
+        cropWidth,
+        cropHeight
+      );
+      ctx.restore();
+
+      // Convert canvas to Blob and handle it
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          console.error('Failed to create blob');
           return;
         }
 
-        const scaleX = image.naturalWidth / image.width;
-        const scaleY = image.naturalHeight / image.height;
+        const fileName = completedCrop ? 'cropped-rotated-image.jpg' : 'rotated-image.jpg';
+        const file = new File([blob], fileName, { type: 'image/jpeg' });
+        const fileURL = URL.createObjectURL(file);
 
-        // Apply the cropped dimensions to the canvas
-        canvas.width = completedCrop.width;
-        canvas.height = completedCrop.height;
+        setCroppedImage(fileURL);
+        setFile(file);
+        setValue('profile_pic', file);
 
-        const ctx = canvas.getContext('2d');
+        if (currentEmployee) {
+          const formData = new FormData();
+          formData.append('profile-pic', file);
 
-        // Apply the rotation to the canvas
-        ctx.save();
-        ctx.translate(completedCrop.width / 2, completedCrop.height / 2); // Move to the center of the canvas
-        ctx.rotate((rotation * Math.PI) / 180); // Convert the rotation to radians
-        ctx.translate(-completedCrop.width / 2, -completedCrop.height / 2); // Move back to the top-left corner
-
-        // Draw the cropped image with rotation
-        ctx.drawImage(
-          image,
-          completedCrop.x * scaleX,
-          completedCrop.y * scaleY,
-          completedCrop.width * scaleX,
-          completedCrop.height * scaleY,
-          0,
-          0,
-          completedCrop.width,
-          completedCrop.height,
-        );
-        ctx.restore(); // Restore the context state
-
-        imageToUpload = canvas.toBlob((blob) => {
-          if (!blob) {
-            console.error('Failed to create blob');
-            return;
+          try {
+            const response = await axios.put(
+              `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`, formData
+            );
+            console.log('Profile updated successfully:', response.data);
+          } catch (err) {
+            console.error('Error uploading rotated image:', err);
           }
-          const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
-          setCroppedImage(URL.createObjectURL(croppedFile));
-          setFile(croppedFile);
-          setValue('profile_pic', croppedFile);
-        });
-      } else {
-        // If the user has not cropped the image, rotate the original image
-        const canvas = document.createElement('canvas');
-        const image = new Image();
-        image.src = imageSrc || capturedImage; // Take the original image source
-
-        image.onload = () => {
-          canvas.width = image.width;
-          canvas.height = image.height;
-          const ctx = canvas.getContext('2d');
-
-          // Apply rotation to the canvas before drawing the image
-          ctx.save();
-          ctx.translate(image.width / 2, image.height / 2); // Move to the center of the canvas
-          ctx.rotate((rotation * Math.PI) / 180); // Rotate by the current angle
-          ctx.translate(-image.width / 2, -image.height / 2); // Move back to top-left corner
-
-          // Draw the image with the applied rotation
-          ctx.drawImage(image, 0, 0);
-
-          // Create a file from the rotated image
-          canvas.toBlob(async (blob) => {
-            if (!blob) {
-              console.error('Failed to create blob');
-              return;
-            }
-
-            const rotatedFile = new File([blob], 'rotated-image.jpg', { type: 'image/jpeg' });
-            setCroppedImage(URL.createObjectURL(rotatedFile));
-            setFile(rotatedFile);
-            setValue('profile_pic', rotatedFile);
-
-            if (currentEmployee) {
-              const formData = new FormData();
-              formData.append('profile-pic', rotatedFile);
-
-              await axios
-                .put(
-                  `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,
-                  formData,
-                )
-                .then((res) => {
-                  console.log('Profile updated successfully:', res.data);
-                })
-                .catch((err) => {
-                  console.error('Error uploading cropped image:', err);
-                });
-            }
-            setOpen(false);
-            setImageSrc(null);
-          }, 'image/jpeg');
-        };
-      }
+        }
+        setImageSrc(null);
+        setOpen(false);
+      }, 'image/jpeg');
     } catch (e) {
       console.error('Error cropping and uploading image:', e);
     }
   };
-
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
