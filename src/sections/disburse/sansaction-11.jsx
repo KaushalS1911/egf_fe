@@ -58,7 +58,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '78%',
+          height: '70%',
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
@@ -116,7 +116,7 @@ const useStyles = () =>
           flex: 2,
         },
         spacing: {
-          marginTop: 7,
+          marginTop: 5,
         },
 
         table: {
@@ -138,12 +138,12 @@ const useStyles = () =>
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
           textWrap: 'nowrap',
-          paddingVertical: 6,
+          paddingVertical: 5,
         },
         tableRow: {
           flexDirection: 'row',
           borderStyle: 'solid',
-          paddingVertical: 10,
+          paddingVertical: 8,
           textWrap: 'nowrap',
           fontWeight: 600,
         },
@@ -186,7 +186,7 @@ const useStyles = () =>
           textWrap: 'nowrap',
           fontSize: 12,
           textAlign: 'center',
-          marginTop: 20,
+          marginTop: 10,
         },
         d_flex: {
           display: 'flex',
@@ -195,14 +195,22 @@ const useStyles = () =>
           alignItems: 'center',
           justifyContent: 'space-between',
         },
+        box: {
+          width: 76,
+          height: 76,
+          borderWidth: 1,
+          borderColor: '#232C4B',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
         signText: {
           fontSize: 11,
-          borderTop: '1px solid 232C4B',
           color: '#232C4B',
-          paddingTop: 10,
           textAlign: 'center',
-          width: '100px',
-          fontWeight: 600,
+          fontWeight: '600',
+          marginLeft:2,
+          marginTop:10
         },
       }),
     [],
@@ -210,7 +218,7 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function SansactionLetter({ sansaction, configs }) {
+export default function Sansaction11({ sansaction, configs }) {
   const styles = useStyles();
   const qty = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0);
   const totalWight = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0);
@@ -326,107 +334,6 @@ export default function SansactionLetter({ sansaction, configs }) {
           </View>
           <InvoiceHeader selectedRow={sansaction} configs={configs} />
           <View style={styles.pagePadding}>
-            <View style={styles.flexContainer}>
-              <View style={{ width: '50%' }}>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan No{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.loanNo}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan Type{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.loanType}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Name{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text
-                    style={styles.subText}>{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Address{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={{
-                    ...styles.subText,
-                    textWrap: 'wrap',
-                  }}>{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Pan No{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.customer.panCard}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Aadhar Card No{' '}
-                  </Text> <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.customer.aadharCard}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Mobile No{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.customer.contact}</Text>
-                </View>
-              </View>
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <Image style={styles.img} src={sansaction.customer.avatar_url} />
-                <Image style={styles.img} src={sansaction.propertyImage} />
-              </View>
-            </View>
-            <View style={styles.tableFlex}>
-              <View style={styles.table}>
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                  <Text style={{ ...styles.tableCell, fontWight: 900 }}>તારીખ</Text>
-                  <Text style={styles.tableCell}>અમોઉન્ટ</Text>
-                  <Text style={styles.tableCell}>દાગીના</Text>
-                  <Text style={styles.tableCell}>સહી</Text>
-                  <Text style={styles.tableCell}>કસ્ટમર ની સહી</Text>
-                  <Text style={styles.tableCell}>વિગત</Text>
-                </View>
-                <View>
-                  {Array.from({ length: 7 }).map((_, index) => (
-                    <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
-                      {Array.from({ length: 6 }).map((_, cellIndex) => (
-                        <Text key={cellIndex}></Text>
-                      ))}
-                    </View>
-                  ))}
-                </View>
-                <View>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWight: 'bolder', marginTop: 20 }}>
-                    ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે
-                    મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી
-                    ગયેલ છે.જેની હું આપને લેખિત માં બાહેંધરી આપું છું.</Text>
-                </View>
-                <View style={{ width: '80%', flexDirection: 'row', display: 'flex', justifyContent: 'flex-end' }}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 12, fontWight: 600 }}>તારીખ :- </Text>
-                </View>
-                <view>
-                  <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>નમૂનો-૮ કરજ શરતોની વિગતો
-                    દર્શાવતું વિવરણ પત્રક નિયમ -૧૬</Text>
-                  <View style={{ marginTop: 10 }}>
-                    {rules.map((item, index) => (
-                      <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}>
-                        <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
-                        <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>{item.rule}</Text> {/* Condition text */}
-                      </View>
-                    ))}
-                  </View>
-                </view>
-              </View>
-            </View>
-          </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Customer Sign</Text>
-          </View>
-        </Page>
-        <Page size='A4' style={styles.page}>
-          <View style={styles.watermarkContainer}>
-            <Image src={logo} style={styles.watermarkImage} />
-          </View>
-          <InvoiceHeader selectedRow={sansaction} configs={configs} />
-          <View style={styles.pagePadding}>
             <View> <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>નમૂનો-૧૧ કરજ શરતોની વિગતો
               દર્શાવતું વિવરણ પત્રક નિયમ -૧૪</Text></View>
             <View style={{
@@ -434,7 +341,7 @@ export default function SansactionLetter({ sansaction, configs }) {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'flex-start',
-              marginTop: 15,
+              marginTop: 7,
             }}>
               <View style={{ width: '60%' }}>
                 <Text style={styles.spacing}>
@@ -505,7 +412,7 @@ export default function SansactionLetter({ sansaction, configs }) {
                 }}>
                   <Image style={styles.img} src={sansaction.propertyImage} />
                 </View>
-                <View style={{ textAlign: 'center', margin: '10px 0px 5px 0px', width: '100%' }}>
+                <View style={{ textAlign: 'center', margin: '5px 0px 5px 0px', width: '100%' }}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 12 }}>વજન તરણની અદાજેલી કિંમતી વ.</Text>
                 </View>
                 <View style={[styles.tableRow, styles.tableHeader]}>
@@ -591,8 +498,14 @@ export default function SansactionLetter({ sansaction, configs }) {
             </View>
           </View>
           <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Customer Sign</Text>
+            <View style={{ marginLeft: 35}}>
+              <View style={styles.box}></View>
+              <Text style={styles.signText}>Authority Sign</Text>
+            </View>
+            <View style={{ marginRight: 35}}>
+              <View style={styles.box}></View>
+              <Text style={styles.signText}>Customer Sign</Text>
+            </View>
           </View>
         </Page>
       </Document>

@@ -58,8 +58,9 @@ const useStyles = () =>
         signatureBox: {
           textAlign: 'center',
           border: '1px solid black',
-          width: '100%',
-          height: '20%',
+          width: '76px',
+          height: '76px',
+          marginLeft:40
         },
         watermarkContainer: {
           position: 'absolute',

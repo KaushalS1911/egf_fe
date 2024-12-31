@@ -362,9 +362,9 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                   Reset
                 </Button>
                 {getResponsibilityValue('update_loanPayHistory', configs, user) &&
-                <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-                  Submit
-                </LoadingButton>}
+                  <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                    Submit
+                  </LoadingButton>}
               </Box>
             </Box>
           </Grid>
@@ -386,17 +386,17 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.remark}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{
-                <IconButton color='error' onClick={() => {
-                  confirm.onTrue();
-                  popover.onClose();
-                  setDeleteId(row?._id);
-                }
-                }>
-                  <Iconify icon='eva:trash-2-outline' />
-                </IconButton>
-              }
-              </TableCell>
+              {getResponsibilityValue('delete_loan_part_payment', configs, user) ?
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{
+                  <IconButton color='error' onClick={() => {
+                    confirm.onTrue();
+                    popover.onClose();
+                    setDeleteId(row?._id);
+                  }
+                  }>
+                    <Iconify icon='eva:trash-2-outline' />
+                  </IconButton>
+                  }</TableCell> : <TableCell>-</TableCell>}
               {getResponsibilityValue('update_disburse', configs, user) ?
                 <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>{
                   <Typography
@@ -412,7 +412,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                   >
                     <Iconify icon='basil:document-solid' />
                   </Typography>
-                }</TableCell> : <TableCell>'-'</TableCell>}
+                }</TableCell> : <TableCell>-</TableCell>}
             </TableRow>
           ))}
         </TableBody>

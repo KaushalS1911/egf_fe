@@ -17,18 +17,17 @@ import { Box, Dialog, DialogActions, Typography } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import Notice from '../reminder/view/notice';
 import Noc from './PDF/noc';
+import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import LetterOfAuthority from '../disburse/letter-of-authority';
 import Sansaction11 from '../disburse/sansaction-11.jsx';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details';
 import { fDate } from '../../utils/format-time';
-import Sansaction8 from '../disburse/sansaction-8.jsx';
-import { useState } from 'react';
 
 
 // ----------------------------------------------------------------------
 
-export default function LoanpayhistoryTableRow({
+export default function OtherLoanpayhistoryTableRow({
                                                  row,
                                                  selected,
                                                  onDeleteRow,
@@ -70,10 +69,7 @@ export default function LoanpayhistoryTableRow({
     if (dialogContent === 'loanDetails') {
       return <LoanIssueDetails selectedRow={row} configs={configs} />;
     }
-    if (dialogContent === 'sanction-8') {
-      return <Sansaction8 sansaction={row} configs={configs} />;
-    }
-    if (dialogContent === 'sanction-11') {
+    if (dialogContent === 'sanction') {
       return <Sansaction11 sansaction={row} configs={configs} />;
     }
     if (dialogContent === 'authority') {
@@ -95,7 +91,7 @@ export default function LoanpayhistoryTableRow({
           {srNo}
         </TableCell>
         {getResponsibilityValue('create_loanIssue', configs, user) ? <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {<Link to={paths.dashboard.loanPayHistory.edit(_id)} style={{
+            {<Link to={paths.dashboard.other_loanPayHistory.edit(_id)} style={{
               textDecoration: 'none',
               fontWeight: 'bold',
               color: 'inherit',
@@ -150,20 +146,12 @@ export default function LoanpayhistoryTableRow({
         </MenuItem>
         <MenuItem
           onClick={() => {
-            handleDialogOpen('sanction-8');
+            handleDialogOpen('sanction');
             popover.onClose();
           }}
         >
           <Iconify icon='mdi:file-document-outline' />
-          Sanction-8 </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('sanction-11');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='mdi:file-document-outline' />
-          Sanction-11 </MenuItem>
+          Sanction </MenuItem>
         <MenuItem
           onClick={() => {
             handleDialogOpen('authority');
@@ -224,7 +212,7 @@ export default function LoanpayhistoryTableRow({
   );
 }
 
-LoanpayhistoryTableRow.propTypes = {
+OtherLoanpayhistoryTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

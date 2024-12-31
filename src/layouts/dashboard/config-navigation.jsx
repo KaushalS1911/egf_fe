@@ -113,14 +113,24 @@ export function useNavData() {
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
           },
+          // {
+          //   title: t('other loan issue'),
+          //   path: paths.dashboard.other_loanissue.root,
+          //   icon: ICONS.loanissue,
+          // },
           {
             title: t('disburse'),
             path: paths.dashboard.disburse.root,
             icon: ICONS.disburse,
           },
+          // {
+          //   title: t('loan pay history'),
+          //   path: paths.dashboard.loanPayHistory.list,
+          //   icon: ICONS.loanPayHistory,
+          // },
           {
-            title: t('Loan Pay History'),
-            path: paths.dashboard.loanPayHistory.list,
+            title: t('other loan pay history'),
+            path: paths.dashboard.other_loanPayHistory.list,
             icon: ICONS.loanPayHistory,
           },
         ],

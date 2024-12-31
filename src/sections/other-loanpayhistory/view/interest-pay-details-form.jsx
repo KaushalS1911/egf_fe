@@ -442,8 +442,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                   <TableCell sx={{ py: 0, px: 1 }}>{row.days}</TableCell>
                   <TableCell sx={{ py: 0, px: 1 }}>{row.uchakInterestAmount || 0}</TableCell>
                   <TableCell sx={{ py: 0, px: 1 }}>{row.amountPaid}</TableCell>
-                  {getResponsibilityValue('delete_interest', configs, user) ?
-                    <TableCell sx={{ py: 0, px: 1 }}>{
+                  <TableCell sx={{ py: 0, px: 1 }}>{
                     <IconButton color='error' onClick={() => {
                       if (index === 0) {
                         confirm.onTrue();
@@ -456,7 +455,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     }}>
                       <Iconify icon='eva:trash-2-outline' />
                     </IconButton>
-                  }</TableCell> : <TableCell>-</TableCell>}
+                  }</TableCell>
                   {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
                     <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>{
                       <Typography
@@ -472,7 +471,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       >
                         <Iconify icon='basil:document-solid' />
                       </Typography>
-                    }</TableCell> : <TableCell>-</TableCell>}
+                    }</TableCell> : <TableCell>'-'</TableCell>}
                 </TableRow>
               ))}
             </TableBody>

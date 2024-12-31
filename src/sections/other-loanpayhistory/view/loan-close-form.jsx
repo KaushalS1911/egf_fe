@@ -362,7 +362,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   >
                     <Iconify icon='basil:document-solid' />
                   </Typography>
-                }</TableCell> : <TableCell>-</TableCell>}
+                }</TableCell> : <TableCell>'-'</TableCell>}
             </TableRow>
           ))}
         </TableBody>

@@ -25,6 +25,7 @@ import LoanPartPaymentDetailsListView
 import LoanCloseDetailsListView from '../loan-details/loan-details-list-view/loan-close-details-list-view';
 import { useGetSingleLoan } from '../../../api/single-loan-details';
 import LoanDetailTableToolbarTableToolbar from '../loan-details/loan-details-table/loan-detail-table-toolbar-table-toolbar';
+import { LoadingScreen } from '../../../components/loading-screen/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -54,7 +55,7 @@ export default function LoanDetailsListView() {
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
   const loan = filters?.loan
-  const {loanDetail} = useGetSingleLoan(loan)
+  const {loanDetail,loanDetailLoading} = useGetSingleLoan(loan)
   const params = new URLSearchParams();
   // if (filters.branch._id) params.append('branch', filters.branch._id);
   // if (filters.startDate) params.append('date', filters.startDate.toLocaleDateString());
@@ -113,11 +114,11 @@ export default function LoanDetailsListView() {
   //   'Pending bankAmount': item.pendingBankAmount,
   // }));
 
-  // if (reportLoading) {
-  //   return (
-  //     <LoadingScreen />
-  //   );
-  // }
+  if (loanDetailLoading) {
+    return (
+      <LoadingScreen />
+    );
+  }
   console.log(loanDetail?.partReleaseDetail,"..3.3.3.33.3.3.3.3..33...33.3.3..33..3.3.3.3");
   return (
     <>

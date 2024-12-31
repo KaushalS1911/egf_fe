@@ -740,8 +740,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.loan.interestLoanAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.remark}</TableCell>
-              {getResponsibilityValue('delete_part_release', configs, user) ?
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{
                 <IconButton color='error' onClick={() => {
                   if (index === 0) {
                     confirm.onTrue();
@@ -755,7 +754,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 }}>
                   <Iconify icon='eva:trash-2-outline' />
                 </IconButton>
-              }</TableCell> : <TableCell>-</TableCell>}
+              }</TableCell>
               {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
                 <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1, height: 1 }}>{
                   <Typography onClick={() => {
@@ -768,7 +767,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   }}>
                     <Iconify icon='basil:document-solid' />
                   </Typography>
-                }</TableCell> : <TableCell>-</TableCell>}
+                }</TableCell> : <TableCell>'-'</TableCell>}
             </TableRow>
           ))}
         </TableBody>

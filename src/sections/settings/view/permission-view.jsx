@@ -121,12 +121,16 @@ const modules = [
     ],
   },
   {
-    label: 'Loan Pay History',
-    value: 'Loan Pay History',
+    label: 'loan pay history',
+    value: 'loan pay history',
     permissions: [
       { action: 'Bulk Interest Pay', key: 'bulk_interest_pay' },
       { action: 'update Loan Pay History', key: 'update_loanPayHistory' },
       { action: 'print Loan Pay History', key: 'print_loanPayHistory_detail' },
+      { action: 'Delete Interest', key: 'delete_interest' },
+      { action: 'Delete Part Release', key: 'delete_part_release' },
+      { action: 'Delete Uchak Interest', key: 'delete_uchak_interest' },
+      { action: 'Delete Loan Part Payment', key: 'delete_loan_part_payment' },
     ],
   },
   {

@@ -176,6 +176,12 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/loanissue/list`,
       edit: (id) => `${ROOTS.DASHBOARD}/loanissue/${id}/edit`,
     },
+    other_loanissue: {
+      root: `${ROOTS.DASHBOARD}/other-loanissue`,
+      new: `${ROOTS.DASHBOARD}/other-loanissue/new`,
+      list: `${ROOTS.DASHBOARD}/other-loanissue/list`,
+      edit: (id) => `${ROOTS.DASHBOARD}/other-loanissue/${id}/edit`,
+    },
     disburse: {
       root: `${ROOTS.DASHBOARD}/disburse`,
       list: `${ROOTS.DASHBOARD}/disburse/list`,
@@ -192,6 +198,12 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/loanpayhistory/list`,
       bulk: `${ROOTS.DASHBOARD}/loanpayhistory/bulkInterest/new`,
       edit: (id) => `${ROOTS.DASHBOARD}/loanpayhistory/${id}/new`,
+    },
+    other_loanPayHistory: {
+      root: `${ROOTS.DASHBOARD}/other-loanpayhistory`,
+      list: `${ROOTS.DASHBOARD}/other-loanpayhistory/list`,
+      bulk: `${ROOTS.DASHBOARD}/other-loanpayhistory/bulkInterest/new`,
+      edit: (id) => `${ROOTS.DASHBOARD}/other-loanpayhistory/${id}/new`,
     },
     reports: {
       root: `${ROOTS.DASHBOARD}/reports`,

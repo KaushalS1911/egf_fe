@@ -44,6 +44,10 @@ const PropertyListView = lazy(() => import('../../sections/property/view/propert
 const LoanpayhistoryListView = lazy(() => import('../../sections/loanpayhistory/view/loanpayhistory-list-view'));
 const LoanpayhistoryCreateView = lazy(() => import('../../sections/loanpayhistory/view/loanpayhistory-create-view'));
 const BulkInterestPay = lazy(() => import('../../sections/loanpayhistory/bulk-interest-pay/bulk-interest-pay'));
+//LOAN PAY HISTORY
+const OtherLoanpayhistoryListView = lazy(() => import('../../sections/other-loanpayhistory/view/other-loanpayhistory-list-view'));
+const OtherLoanpayhistoryCreateView = lazy(() => import('../../sections/other-loanpayhistory/view/other-loanpayhistory-create-view'));
+const OtherBulkInterestPay = lazy(() => import('../../sections/other-loanpayhistory/bulk-interest-pay/bulk-interest-pay'));
 // PENALTY
 const PenaltyListView = lazy(() => import('../../sections/penalty/view/penalty-list-view'));
 const PenaltyCreateview = lazy(() => import('../../sections/penalty/view/penalty-create-view'));
@@ -57,6 +61,10 @@ const ReminderListView = lazy(() => import('../../sections/reminder/view/reminde
 const LoanissueEditView = lazy(() => import('../../sections/loanissue/view/loanissue-edit-view'));
 const LoanissueCreateView = lazy(() => import('../../sections/loanissue/view/loanissue-create-view'));
 const LoanissueListView = lazy(() => import('../../sections/loanissue/view/loanissue-list-view'));
+// OTHER LOAN ISSUE
+const OtherLoanissueEditView = lazy(() => import('../../sections/other-loanissue/view/other-loanissue-edit-view'));
+const OtherLoanissueCreateView = lazy(() => import('../../sections/other-loanissue/view/other-loanissue-create-view'));
+const OtherLoanissueListView = lazy(() => import('../../sections/other-loanissue/view/other-loanissue-list-view'));
 // REMINDER-DETAILS
 const ReminderDetailsListView = lazy(() => import('../../sections/reminder/view/reminder-details-list-view'));
 //REPORTS
@@ -177,12 +185,30 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'other-loanissue',
+        children: [
+          { element: <OtherLoanissueListView />, index: true },
+          { path: 'list', element: <OtherLoanissueListView /> },
+          { path: 'new', element: <OtherLoanissueCreateView /> },
+          { path: ':id/edit', element: <OtherLoanissueEditView /> },
+        ],
+      },
+      {
         path: 'loanpayhistory',
         children: [
           { element: <LoanpayhistoryListView />, index: true },
           { path: 'list', element: <LoanpayhistoryListView /> },
           { path: ':id/new', element: <LoanpayhistoryCreateView /> },
           { path: 'bulkInterest/new', element: <BulkInterestPay /> },
+        ],
+      },
+      {
+        path: 'other-loanPayHistory',
+        children: [
+          { element: <OtherLoanpayhistoryListView />, index: true },
+          { path: 'list', element: <OtherLoanpayhistoryListView /> },
+          { path: ':id/new', element: <OtherLoanpayhistoryCreateView/> },
+          { path: 'bulkInterest/new', element: <OtherBulkInterestPay/> },
         ],
       },
       {

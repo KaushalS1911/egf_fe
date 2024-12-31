@@ -165,6 +165,7 @@ const useStyles = () =>
         },
         subText: {
           fontSize: 10,
+          fontWeight: '500',
           flex: 2,
         },
         spacing: {
@@ -273,7 +274,7 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function LoanIssueDetails({ selectedRow, configs }) {
+export default function OtherLoanIssueDetails({ selectedRow, configs }) {
   const styles = useStyles();
   const renewDate = () => {
     if (!selectedRow?.issueDate) return null;
