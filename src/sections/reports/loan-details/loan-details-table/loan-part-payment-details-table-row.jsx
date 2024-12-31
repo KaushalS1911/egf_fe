@@ -11,18 +11,18 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-import Label from '../../../components/label';
-import { fDate } from '../../../utils/format-time';
+import { useAuthContext } from '../../../../auth/hooks';
+import { useGetConfigs } from '../../../../api/config';
+import { getResponsibilityValue } from '../../../../permission/permission';
+import Label from '../../../../components/label';
+import { fDate } from '../../../../utils/format-time';
 
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanPartPaymateDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const {  scheme, cashAmount, bankAmount,statuslastInstallmentDate,nextInstallmentDate,consultingCharge,loan,amountPaid} = row;
-  const {loanNo, customer, loanAmount,issueDate,interestLoanAmount}=loan
+export default function LoanPartPaymentDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
+  const {from,to,penalty,days,loan,amountPaid,createdAt,date,remark} = row;
+  const {loanNo,customer,loanAmount,  scheme, issueDate,interestLoanAmount,}=loan
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -36,19 +36,13 @@ export default function GoldLoanPartPaymateDetailsTableRow({ row,index, selected
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
-        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{"rate"}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'TOTAL INT'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'closing charge'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'entry date'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
+
       </TableRow>
 
       <CustomPopover
@@ -93,9 +87,9 @@ export default function GoldLoanPartPaymateDetailsTableRow({ row,index, selected
 
     </>
   );
-};
+}
 
-GoldLoanPartPaymateDetailsTableRow.propTypes = {
+LoanPartPaymentDetailsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

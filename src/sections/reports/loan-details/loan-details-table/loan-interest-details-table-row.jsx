@@ -11,18 +11,19 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-import Label from '../../../components/label';
-import { fDate } from '../../../utils/format-time';
+import { useAuthContext } from '../../../../auth/hooks';
+import { useGetConfigs } from '../../../../api/config';
+import { getResponsibilityValue } from '../../../../permission/permission';
+import Label from '../../../../components/label';
+import { fDate } from '../../../../utils/format-time';
 
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const { cashAmount, bankAmount,status,lastInstallmentDate,nextInstallmentDate,consultingCharge,loan,amountPaid,createdAt} = row;
-  const {loanNo, customer, loanAmount, scheme,issueDate,interestLoanAmount}=loan
+export default function LoanInterestDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
+  const {from,to,penalty,days,loan,amountPaid,cr_dr,adjustedPay,createdAt,uchakInterestAmount} = row;
+  const {consultingCharge} = loan
+  const {loanNo,customer,loanAmount,  scheme, issueDate,interestLoanAmount,}=loan
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -36,17 +37,19 @@ export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEd
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(to)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate >=1.5 ?1.5:scheme?.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{penalty}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{cr_dr.toFixed(2)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{adjustedPay}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{uchakInterestAmount || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
       </TableRow>
 
       <CustomPopover
@@ -55,6 +58,8 @@ export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEd
         arrow='right-top'
         sx={{ width: 140 }}
       >
+
+
         {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
@@ -89,9 +94,9 @@ export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEd
 
     </>
   );
-};
+}
 
-GoldLoanUchakPaymentTableRow.propTypes = {
+LoanInterestDetailsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,
