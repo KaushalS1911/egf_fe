@@ -73,10 +73,7 @@ export default function PolicyConfigCreateView() {
 
     const apiEndpoint = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
     axios.put(apiEndpoint, { ...configs, exportPolicyConfig: reorderedList })
-      .then(() => {
-        enqueueSnackbar('Order updated successfully', { variant: 'success' });
-        mutate();
-      })
+      .then(() => {mutate()})
       .catch(() => {
         enqueueSnackbar('Failed to update order', { variant: 'error' });
         setLocalPolicyConfig(localPolicyConfig);

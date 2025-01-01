@@ -84,7 +84,11 @@ export default function AccountPopover() {
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
+          {
+            user?.avatar_url ?
           <Image src={user?.avatar_url}/>
+              : user?.firstName?.charAt(0).toUpperCase()
+          }
         </Avatar>
       </IconButton>
 
