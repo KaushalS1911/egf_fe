@@ -38,20 +38,20 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
-  inquiry: <Iconify icon='heroicons-solid:newspaper' sx={{ width: 1, height: 1 }} />,
+  inquiry: <Iconify icon="heroicons-solid:newspaper" sx={{ width: 1, height: 1 }} />,
   customer: icon('ic_user'),
-  employee: <Iconify icon='clarity:employee-solid' sx={{ width: 1, height: 1 }} />,
-  scheme: <Iconify icon='bxs:offer' sx={{ width: 1, height: 1 }} />,
-  carat: <Iconify icon='mdi:gold' sx={{ width: 1, height: 1 }} />,
-  loanType: <Iconify icon='mdi:currency-usd-outline' sx={{ width: 1, height: 1 }} />,
-  property: <Iconify icon='clarity:building-solid' sx={{ width: 1, height: 1 }} />,
-  penalty: <Iconify icon='icon-park-outline:gavel' sx={{ width: 1, height: 1 }} />,
-  loanissue: <Iconify icon='streamline:bank-solid' />,
-  disburse: <Iconify icon='mdi:bank-transfer-out' sx={{ width: '30px', height: '30px' }} />,
-  reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />,
-  setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
-  goldLoanCalculator: <Iconify icon='icon-park-solid:calculator' width={24} />,
-  loanPayHistory: <Iconify icon='cuida:history-outline' width={24} />,
+  employee: <Iconify icon="clarity:employee-solid" sx={{ width: 1, height: 1 }} />,
+  scheme: <Iconify icon="bxs:offer" sx={{ width: 1, height: 1 }} />,
+  carat: <Iconify icon="mdi:gold" sx={{ width: 1, height: 1 }} />,
+  loanType: <Iconify icon="mdi:currency-usd-outline" sx={{ width: 1, height: 1 }} />,
+  property: <Iconify icon="clarity:building-solid" sx={{ width: 1, height: 1 }} />,
+  penalty: <Iconify icon="icon-park-outline:gavel" sx={{ width: 1, height: 1 }} />,
+  loanissue: <Iconify icon="streamline:bank-solid" />,
+  disburse: <Iconify icon="mdi:bank-transfer-out" sx={{ width: '30px', height: '30px' }} />,
+  reminder: <Iconify icon="carbon:reminder" sx={{ width: 1, height: 1 }} />,
+  setting: <Iconify icon="solar:settings-bold-duotone" width={24} />,
+  goldLoanCalculator: <Iconify icon="icon-park-solid:calculator" width={24} />,
+  loanPayHistory: <Iconify icon="cuida:history-outline" width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -113,11 +113,11 @@ export function useNavData() {
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
           },
-          // {
-          //   title: t('other loan issue'),
-          //   path: paths.dashboard.other_loanissue.root,
-          //   icon: ICONS.loanissue,
-          // },
+          {
+            title: t('other loan issue'),
+            path: paths.dashboard.other_loanissue.root,
+            icon: ICONS.loanissue,
+          },
           {
             title: t('disburse'),
             path: paths.dashboard.disburse.root,
@@ -128,13 +128,14 @@ export function useNavData() {
             path: paths.dashboard.loanPayHistory.list,
             icon: ICONS.loanPayHistory,
           },
-          // {
-          //   title: t('other loan pay history'),
-          //   path: paths.dashboard.other_loanPayHistory.list,
-          //   icon: ICONS.loanPayHistory,
-          // },
+          {
+            title: t('other loan pay history'),
+            path: paths.dashboard.other_loanPayHistory.list,
+            icon: ICONS.loanPayHistory,
+          },
         ],
-      }, {
+      },
+      {
         subheader: t('Loan Utilities'),
         items: [
           {
@@ -183,18 +184,22 @@ export function useNavData() {
         ],
       },
     ],
-    [t],
+    [t]
   );
 
-  const module = user?.role !== 'Admin' && data?.map((data) => {
-    if (!data) return null;
-    return {
-      subheader: data?.subheader,
-      items: data?.items?.filter((item) => {
-        return configs?.permissions?.[user?.role]?.sections?.includes(item?.title);
-      }),
-    };
-  }).filter(Boolean);
+  const module =
+    user?.role !== 'Admin' &&
+    data
+      ?.map((data) => {
+        if (!data) return null;
+        return {
+          subheader: data?.subheader,
+          items: data?.items?.filter((item) => {
+            return configs?.permissions?.[user?.role]?.sections?.includes(item?.title);
+          }),
+        };
+      })
+      .filter(Boolean);
 
   const moduleFilter = user?.role !== 'Admin' && module?.filter((data) => data?.items?.length > 0);
   return user?.role === 'Admin' ? data : moduleFilter;

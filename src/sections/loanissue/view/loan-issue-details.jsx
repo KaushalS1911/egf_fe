@@ -4,6 +4,7 @@ import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
 import Qr from 'src/assets/icon/qr.png';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
+import InvoiceFooter from '../../../components/invoise/invoice-footer.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -48,14 +49,15 @@ const useStyles = () =>
           backgroundColor: '#FFFFFF',
           textTransform: 'capitalize',
           position: 'relative',
+          border: '1px solid #000',
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '78%',
+          height: '73.4%',
         },
         pagePadding2: {
           padding: '0px 24px 24px 24px',
-          height: '93%',
+          height: '87.6%',
         },
         gridContainer: {
           flexDirection: 'row',
@@ -171,8 +173,8 @@ const useStyles = () =>
           marginTop: 7,
         },
         img: {
-          height: '48px',
-          width: '48px',
+          height: '72px',
+          width: '72px',
           borderRadius: 5,
         },
         customerImg: {
@@ -253,6 +255,7 @@ const useStyles = () =>
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
+          marginBottom: 16.9,
         },
         signText: {
           fontSize: 11,
@@ -268,7 +271,7 @@ const useStyles = () =>
           fontSize: 10,
         },
       }),
-    [],
+    []
   );
 
 // ----------------------------------------------------------------------
@@ -277,19 +280,26 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
   const styles = useStyles();
   const renewDate = () => {
     if (!selectedRow?.issueDate) return null;
-    const { issueDate, scheme: { renewalTime } } = selectedRow;
+    const {
+      issueDate,
+      scheme: { renewalTime },
+    } = selectedRow;
     const monthsToAdd =
-      renewalTime === 'Monthly' ? 1 :
-        renewalTime === 'Yearly' ? 12 :
-          parseInt(renewalTime.split(' ')[0], 10) || 0;
-    const renewedDate = new Date(new Date(issueDate).setMonth(new Date(issueDate).getMonth() + monthsToAdd));
+      renewalTime === 'Monthly'
+        ? 1
+        : renewalTime === 'Yearly'
+          ? 12
+          : parseInt(renewalTime.split(' ')[0], 10) || 0;
+    const renewedDate = new Date(
+      new Date(issueDate).setMonth(new Date(issueDate).getMonth() + monthsToAdd)
+    );
     return fDate(renewedDate);
   };
 
   return (
     <>
       <Document>
-        <Page size='A4' style={styles.page}>
+        <Page size="A4" style={styles.page}>
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
@@ -311,7 +321,8 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <Text style={styles.subHeading}>Name</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text
-                    style={styles.subText}>{`${selectedRow.customer.firstName} ${selectedRow.customer.middleName} ${selectedRow.customer.lastName}`}</Text>
+                    style={styles.subText}
+                  >{`${selectedRow.customer.firstName} ${selectedRow.customer.middleName} ${selectedRow.customer.lastName}`}</Text>
                 </View>
                 <View style={styles.row}>
                   <Text style={styles.subHeading}>Address</Text>
@@ -321,7 +332,8 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       ...styles.subText,
                       textWrap: 'wrap',
                       fontSize: 9,
-                    }}>{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
+                    }}
+                  >{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
                 </View>
                 <View style={styles.row}>
                   <Text style={styles.subHeading}>Pan No</Text>
@@ -349,7 +361,10 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <Text style={{ ...styles.subHeading, flex: 2 }}>Interest Rate</Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>
-                    {selectedRow?.scheme.interestRate > 1.5 ? 1.5 : selectedRow?.scheme.interestRate}%
+                    {selectedRow?.scheme.interestRate > 1.5
+                      ? 1.5
+                      : selectedRow?.scheme.interestRate}
+                    %
                   </Text>
                 </View>
                 <View style={styles.row}>
@@ -383,7 +398,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <Text style={styles.subText}>{renewDate()}</Text>
                 </View>
               </View>
-              <View style={{ marginTop: -60 }}>
+              <View style={{ marginTop: -100 }}>
                 {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                 <View>
                   <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
@@ -393,14 +408,16 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                 </View>
               </View>
             </View>
-            <View style={{ position: 'absolute', top: -68, right: 155 }}>
+            <View style={{ position: 'absolute', top: -100, right: 145 }}>
               <View>
                 <Image style={styles.img} src={Qr} />
               </View>
             </View>
             <View style={styles.tableFlex}>
               <View style={styles.table}>
-                <View><Text style={styles.heading}>Property Details</Text></View>
+                <View>
+                  <Text style={styles.heading}>Property Details</Text>
+                </View>
                 <View style={[styles.tableRow, styles.tableHeader]}>
                   <Text style={styles.tableCell}>Property Name</Text>
                   <Text style={styles.tableCell}>Qty</Text>
@@ -423,33 +440,60 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                 ))}
                 <View style={[styles.tableRow, styles.tableFooter]}>
                   <Text style={styles.tableCell}>Total</Text>
-                  <Text
-                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0)}</Text>
-                  <Text
-                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)}</Text>
-                  <Text
-                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)}</Text>
-                  <Text
-                    style={styles.tableCell}> {selectedRow.propertyDetails.reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)}</Text>
+                  <Text style={styles.tableCell}>
+                    {' '}
+                    {selectedRow.propertyDetails.reduce(
+                      (prev, next) => prev + (Number(next?.pcs) || 0),
+                      0
+                    )}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {' '}
+                    {selectedRow.propertyDetails.reduce(
+                      (prev, next) => prev + (Number(next?.totalWeight) || 0),
+                      0
+                    )}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {' '}
+                    {selectedRow.propertyDetails.reduce(
+                      (prev, next) => prev + (Number(next?.netWeight) || 0),
+                      0
+                    )}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {' '}
+                    {selectedRow.propertyDetails.reduce(
+                      (prev, next) => prev + (Number(next?.netAmount) || 0),
+                      0
+                    )}
+                  </Text>
                   <Text style={styles.tableCell}></Text>
                   <Text style={styles.tableCell}></Text>
                 </View>
               </View>
             </View>
-          </View> <View style={styles.d_flex}>
-          <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-          <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
-        </View>
+          </View>{' '}
+          <View style={styles.d_flex}>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+          </View>
+          <InvoiceFooter configs={configs} />
         </Page>
-        <Page size='A4' style={styles.page}>
+        <Page size="A4" style={styles.page}>
           <View style={styles.pagePadding2}>
             <view style={{ marginTop: 20 }}>
               <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
               <View style={{ marginTop: 10 }}>
                 {configs.exportPolicyConfig.map((item, index) => (
-                  <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
-                    <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text> {/* Bullet point */}
-                    <Text style={{ fontSize: 10, fontWeight: '500' }}>{item}</Text> {/* Condition text */}
+                  <View
+                    key={index}
+                    style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}
+                  >
+                    <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text>{' '}
+                    {/* Bullet point */}
+                    <Text style={{ fontSize: 10, fontWeight: '500' }}>{item}</Text>{' '}
+                    {/* Condition text */}
                   </View>
                 ))}
               </View>
@@ -459,6 +503,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
             <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
             <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
           </View>
+          <InvoiceFooter configs={configs} />
         </Page>
       </Document>
     </>
