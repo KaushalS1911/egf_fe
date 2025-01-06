@@ -119,22 +119,13 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
 
   const NewLoanissueSchema = Yup.object().shape({
     loan: Yup.object().required('Loan is required'),
-    scheme: Yup.object().required('Scheme is required'),
-    issueDate: Yup.date().required('Issue Date is required'),
-    jewellerName: Yup.string().required('Jeweller Name is required'),
-    loanAmount: Yup.string().required('Loan Amount is required'),
-    paymentMode: Yup.string().required('Payment Mode is required'),
-    cashAmount: Yup.string().required('Cash Amount is required'),
-    approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
-    loanType: Yup.string().required('Loan Type is required'),
     otherName: Yup.string().required('Other Name is required'),
-    otherNumber: Yup.string().required('Other Number is required'),
     amount: Yup.string().required('Amount is required'),
     percentage: Yup.string().required('Percent is required'),
     date: Yup.date().required('Date is required'),
     grossWt: Yup.string().required('groos wt'),
     netWt: Yup.string().required('NetWas wt'),
-    month: Yup.string().required('Month is required'),
+    mounth: Yup.string().required('Month is required'),
     renewalDate: Yup.date().required('Renewaldate is required'),
     closeDate: Yup.string().required('Colse Date is required'),
     otherCharge: Yup.string().required('OtherCharge is required'),
@@ -201,7 +192,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       date: currentOtherLoanIssue?.date ? new Date(currentOtherLoanIssue.date) : new Date(),
       grossWt: currentOtherLoanIssue?.grossWt || 0,
       netWt: currentOtherLoanIssue?.netWt || 0,
-      mounth: currentOtherLoanIssue?.mounth || 0,
+      mounth: currentOtherLoanIssue?.mounth || '',
       renewalDate: currentOtherLoanIssue?.renewalDate
         ? new Date(currentOtherLoanIssue.renewalDate)
         : new Date(),
@@ -1552,12 +1543,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   req={'red'}
                   disabled={!isFieldsEnabled}
                 />
-                <RHFTextField
-                  name="otherNumber"
-                  label="Other Number"
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
-                />
+                <RHFTextField name="otherNumber" label="Other Number" req={'red'} disabled />
                 <RHFTextField
                   name="amount"
                   label="Amount"
