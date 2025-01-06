@@ -41,6 +41,7 @@ import { getResponsibilityValue } from '../../../permission/permission';
 import OtherLoanissueTableFiltersResult from '../other-loanissue-table-filters-result';
 import OtherLoanissueTableRow from '../other-loanissue-table-row';
 import OtherLoanissueTableToolbar from '../other-loanissue-table-toolbar';
+import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
 
 // ----------------------------------------------------------------------
 
@@ -62,26 +63,26 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function OtherLoanissueListView() {
+  const { otherLoanissue, otherLoanissueLoading, mutate } = useGetOtherLoanissue();
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(Loanissue);
+  const [tableData, setTableData] = useState(otherLoanissue);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: Loanissue,
+    inputData: otherLoanissue,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -96,7 +97,7 @@ export default function OtherLoanissueListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -109,9 +110,12 @@ export default function OtherLoanissueListView() {
       return;
     }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`, {
-        data: { ids: id },
-      });
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loans`,
+        {
+          data: { ids: id },
+        }
+      );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
@@ -127,11 +131,11 @@ export default function OtherLoanissueListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = otherLoanissue.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -145,72 +149,74 @@ export default function OtherLoanissueListView() {
     (id) => {
       router.push(paths.dashboard.other_loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
-  const loans = Loanissue.map((item) => ({
-    'Loan No': item.loanNo,
-    'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-    'Contact': item.customer.contact,
-    'OTP Contact': item.customer.otpContact,
-    Email: item.customer.email,
-    'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-    'Issue date': item.issueDate,
-    'Scheme': item.scheme.name,
-    'Rate per gram': item.scheme.ratePerGram,
-    'Interest rate': item.scheme.interestRate,
-    valuation: item.scheme.valuation,
-    'Interest period': item.scheme.interestPeriod,
-    'Renewal time': item.scheme.renewalTime,
-    'min loan time': item.scheme.minLoanTime,
-    'Loan amount': item.loanAmount,
-    'Next nextInstallment date': fDate(item.nextInstallmentDate),
-    'Payment mode': item.paymentMode,
-    'Paying cashAmount': item.payingCashAmount,
-    'Pending cashAmount': item.pendingCashAmount,
-    'Paying bankAmount': item.payingBankAmount,
-    'Pending bankAmount': item.pendingBankAmount,
-  }));
+  // const loans = otherLoanissue.map((item) => ({
+  //   'Loan No': item.loan.loanNo,
+  //   'Customer Name': `${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`,
+  //   Contact: item.loan.customer.contact,
+  //   'OTP Contact': item.loan.customer.otpContact,
+  //   Email: item.loan.customer.email,
+  //   'Permanent address': `${item.loan.customer.permanentAddress.street} ${item.loan.customer.permanentAddress.landmark} ${item.loan.customer.permanentAddress.city} , ${item.loan.customer.permanentAddress.state} ${item.loan.customer.permanentAddress.country} ${item.loan.customer.permanentAddress.zipcode}`,
+  //   'Issue date': item.loan.issueDate,
+  //   Scheme: item.loan.scheme.name,
+  //   'Rate per gram': item.loan.scheme.ratePerGram,
+  //   'Interest rate': item.loan.scheme.interestRate,
+  //   valuation: item.loan.scheme.valuation,
+  //   'Interest period': item.loan.scheme.interestPeriod,
+  //   'Renewal time': item.loan.scheme.renewalTime,
+  //   'min loan time': item.loan.scheme.minLoanTime,
+  //   'Loan amount': item.loan.loanAmount,
+  //   'Next nextInstallment date': fDate(item.loan.nextInstallmentDate),
+  //   'Payment mode': item.loan.paymentMode,
+  //   'Paying cashAmount': item.loan.payingCashAmount,
+  //   'Pending cashAmount': item.loan.pendingCashAmount,
+  //   'Paying bankAmount': item.loan.payingBankAmount,
+  //   'Pending bankAmount': item.loan.pendingBankAmount,
+  // }));
 
-  if (LoanissueLoading) {
-    return (
-      <LoadingScreen />
-    );
+  if (otherLoanissueLoading) {
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Other Issued Loans'
+          heading="Other Issued Loans"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Other Loan Issue', href: paths.dashboard.other_loanissue.root },
             { name: ' List' },
           ]}
           action={
-            getResponsibilityValue('create_loanIssue', configs, user) && (<><Button
-              component={RouterLink}
-              href={paths.dashboard.other_loanissue.new}
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-            >
-              Add Loan issue
-            </Button></>)
+            getResponsibilityValue('create_loanIssue', configs, user) && (
+              <>
+                <Button
+                  component={RouterLink}
+                  href={paths.dashboard.other_loanissue.new}
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                >
+                  Add Other Loan issue
+                </Button>
+              </>
+            )
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
-          <OtherLoanissueTableToolbar filters={filters} onFilters={handleFilters} loans={loans} />
+          <OtherLoanissueTableToolbar filters={filters} onFilters={handleFilters} />
           {canReset && (
             <OtherLoanissueTableFiltersResult
               filters={filters}
@@ -228,13 +234,13 @@ export default function OtherLoanissueListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -251,7 +257,7 @@ export default function OtherLoanissueListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row._id),
+                      dataFiltered.map((row) => row._id)
                     )
                   }
                 />
@@ -259,7 +265,7 @@ export default function OtherLoanissueListView() {
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
                       <OtherLoanissueTableRow
@@ -295,7 +301,7 @@ export default function OtherLoanissueListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -303,8 +309,8 @@ export default function OtherLoanissueListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -336,7 +342,7 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   return inputData;

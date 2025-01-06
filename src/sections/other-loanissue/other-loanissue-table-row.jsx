@@ -15,8 +15,15 @@ import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function OtherLoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount } = row;
+export default function OtherLoanissueTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}) {
+  const { loan } = row;
+  const { loanNo, customer, scheme, cashAmount, bankAmount, loanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -25,57 +32,66 @@ export default function OtherLoanissueTableRow({ row, selected, onEditRow, onSel
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell
-          sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('update_loanIssue', configs, user) || getResponsibilityValue('delete_loanIssue', configs, user) ?
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {getResponsibilityValue('update_loanIssue', configs, user) ||
+          getResponsibilityValue('delete_loanIssue', configs, user) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : ''}
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

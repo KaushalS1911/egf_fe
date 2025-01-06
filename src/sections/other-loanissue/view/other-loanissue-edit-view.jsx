@@ -8,19 +8,21 @@ import { useParams } from '../../../routes/hooks';
 import { Box } from '@mui/material';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
+import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
+import OtherLoanissueNewEditForm from '../other-loanissue-new-edit-form';
 
 // ----------------------------------------------------------------------
 
 export default function OtherLoanissueEditView() {
   const settings = useSettingsContext();
-  const { Loanissue } = useGetLoanissue();
+  const { otherLoanissue } = useGetOtherLoanissue();
   const { id } = useParams();
-  const currentLoanIssue = Loanissue?.find((loan) => loan?._id === id);
+  const currentOtherLoanIssue = otherLoanissue?.find((loan) => loan?._id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading='Edit Other Loanissue'
+        heading="Edit Other Loanissue"
         links={[
           {
             name: 'Dashboard',
@@ -36,11 +38,15 @@ export default function OtherLoanissueEditView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      {currentLoanIssue ? <LoanissueNewEditForm currentLoanIssue={currentLoanIssue} /> :
-        <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {currentOtherLoanIssue ? (
+        <OtherLoanissueNewEditForm currentOtherLoanIssue={currentOtherLoanIssue} />
+      ) : (
+        <Box
+          sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
           <LoadingScreen />
         </Box>
-      }
+      )}
     </Container>
   );
 }

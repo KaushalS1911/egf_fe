@@ -13,7 +13,7 @@ import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function OtherLoanissueTableToolbar({ filters, onFilters, loans }) {
+export default function OtherLoanissueTableToolbar({ filters, onFilters }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -22,7 +22,7 @@ export default function OtherLoanissueTableToolbar({ filters, onFilters, loans }
     (event) => {
       onFilters('username', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   return (
@@ -40,65 +40,70 @@ export default function OtherLoanissueTableToolbar({ filters, onFilters, loans }
         }}
       >
         <Stack
-          direction='row'
-          alignItems='center'
+          direction="row"
+          alignItems="center"
           spacing={2}
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{ 'input': { height: 7 } }}
+            sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.username}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
           />
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
-          arrow='right-top'
+          arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel
-                data={loans}
-                fileName='LaonissueData'
-                sheetName='LoanissueDetails'
-              />
-            </MenuItem></>)}
+          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
+            <>
+              {' '}
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="solar:printer-minimalistic-bold" />
+                Print
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="ant-design:file-pdf-filled" />
+                PDF
+              </MenuItem>
+              {/*<MenuItem>*/}
+              {/*  <RHFExportExcel*/}
+              {/*    data={loans}*/}
+              {/*    fileName='LaonissueData'*/}
+              {/*    sheetName='LoanissueDetails'*/}
+              {/*  />*/}
+              {/*</MenuItem>*/}
+            </>
+          )}
           <MenuItem
             onClick={() => {
               popover.onClose();
             }}
           >
-            <Iconify icon='ic:round-whatsapp' />
+            <Iconify icon="ic:round-whatsapp" />
             whatsapp share
           </MenuItem>
         </CustomPopover>
