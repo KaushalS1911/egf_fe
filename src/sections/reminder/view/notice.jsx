@@ -132,13 +132,14 @@ const useStyles = () =>
         mainText: {
           fontSize: 14,
           fontFamily: 'Roboto',
-        }, d_flex: {
+        },
+        d_flex: {
           display: 'flex',
           width: '100%',
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'flex-end',
-          marginTop:100
+          marginTop: 100,
         },
         wriitenBy: {
           fontSize: 14,
@@ -153,7 +154,6 @@ const useStyles = () =>
           textAlign: 'center',
           width: '100px',
           fontWeight: 600,
-
         },
         write: {
           fontSize: 14,
@@ -192,18 +192,18 @@ const useStyles = () =>
           width: '15%',
         },
       }),
-    [],
+    []
   );
 
 // ----------------------------------------------------------------------
 
 export default function Notice({ noticeData, configs }) {
   const styles = useStyles();
-  const date=new Date(new Date().setDate(new Date().getDate() + 10))
+  const date = new Date(new Date().setDate(new Date().getDate() + 10));
   return (
     <>
       <Document>
-        <Page size='A4' style={styles.page}>
+        <Page size="A4" style={styles.page}>
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
@@ -215,30 +215,36 @@ export default function Notice({ noticeData, configs }) {
             </View>
             <View>
               <Text
-                style={styles.topDetails}>{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
+                style={styles.topDetails}
+              >{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
               <Text style={styles.topDetails}>
                 {`${noticeData.customer.permanentAddress.street},\n`}
                 {`${noticeData.customer.permanentAddress.landmark},\n`}
                 {`${noticeData.customer.permanentAddress.city} - ${noticeData.customer.permanentAddress.zipcode},\n`}
                 {`${noticeData.customer.permanentAddress.state}`}
               </Text>
+              <Text style={styles.topDetails}>Mo : {noticeData?.customer?.contact}</Text>
             </View>
             <View>
               <Text style={styles.noticeTitle}>વિષય : ગોલ્ડ જપ્ત કરવા બાબત</Text>
             </View>
             <View style={styles.bottomDetails}>
               <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
-              <Text
-                style={styles.bottomDetails}>  {'\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'}
-                આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી
-                તારીખ {fDate(noticeData?.issueDate)} ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા {noticeData.loanAmount}.00/- નું
-                વ્યાજ કંપનીના નિયમ પ્રમાણે મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે
-                તારીખ {fDate(date)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી. જો કંપનીએ
-                આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા ગોલ્ડની હરાજી કરશે અને બદલામાં
-                મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે.
-                જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની
-                તકરાર કરવી નહિ તેમજ એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ
-                લેવી.</Text>
+              <Text style={styles.bottomDetails}>
+                {' '}
+                {
+                  '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
+                }
+                આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ {fDate(noticeData?.issueDate)}{' '}
+                ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા {(noticeData?.loanAmount).toFixed(2)}/- નું વ્યાજ
+                કંપનીના નિયમ પ્રમાણે નિયત મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે
+                તારીખ {fDate(date)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી.અગર કંપનીએ આપેલી
+                મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા ગોલ્ડની હરાજી કરશે
+                અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ
+                કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત
+                સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના
+                માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.
+              </Text>
               <View style={styles.d_flex}>
                 <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>
               </View>

@@ -65,7 +65,8 @@ const useStyles = () =>
         },
         flexContainer: {
           flexDirection: 'row',
-          marginTop: 10, justifyContent: 'space-between',
+          marginTop: 10,
+          justifyContent: 'space-between',
           alignItems: 'center',
         },
         gridContainer: {
@@ -209,11 +210,11 @@ const useStyles = () =>
           color: '#232C4B',
           textAlign: 'center',
           fontWeight: '600',
-          marginLeft:2,
-          marginTop:10
+          marginLeft: 2,
+          marginTop: 10,
         },
       }),
-    [],
+    []
   );
 
 // ----------------------------------------------------------------------
@@ -221,19 +222,54 @@ const useStyles = () =>
 export default function Sansaction8({ sansaction, configs }) {
   const styles = useStyles();
   const qty = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0);
-  const totalWight = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0);
-  const netWight = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0);
+  const totalWight = sansaction.propertyDetails.reduce(
+    (prev, next) => prev + (Number(next?.totalWeight) || 0),
+    0
+  );
+  const netWight = sansaction.propertyDetails.reduce(
+    (prev, next) => prev + (Number(next?.netWeight) || 0),
+    0
+  );
   const amount = sansaction.loanAmount;
 
   function numberToWords(num) {
     if (num === 0) return 'Zero Rupees Only';
 
     const belowTwenty = [
-      '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
-      'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen',
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen',
     ];
 
-    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const tens = [
+      '',
+      '',
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety',
+    ];
     const units = ['', 'Thousand', 'Lakh', 'Crore'];
 
     const convertBelowHundred = (n) => {
@@ -243,7 +279,11 @@ export default function Sansaction8({ sansaction, configs }) {
 
     const convertBelowThousand = (n) => {
       if (n < 100) return convertBelowHundred(n);
-      return belowTwenty[Math.floor(n / 100)] + ' Hundred' + (n % 100 > 0 ? ' ' + convertBelowHundred(n % 100) : '');
+      return (
+        belowTwenty[Math.floor(n / 100)] +
+        ' Hundred' +
+        (n % 100 > 0 ? ' ' + convertBelowHundred(n % 100) : '')
+      );
     };
 
     const handleWholeNumber = (num) => {
@@ -278,8 +318,9 @@ export default function Sansaction8({ sansaction, configs }) {
   const rules = [
     {
       rule: `હું પોતે બાહેંધરી આપું છું કે મેં આજ રોજ તારીખ ${fDate(sansaction?.issueDate)} ના રોજ ગિરવે મુકેલા ટોટલ ${qty} નંગ દાગીના નું ટોટલ વજન ${totalWight} અને નેટ વજન ${netWight} છે.જે મારી પોતાની માલિકી નું છે .જે મેં ${sansaction.jewellerName} જવેલર્સ માંથી બનાવેલ છે.જેની સંપૂર્ણં જવાબદારી મારી છે .`,
-    }, {
-      rule: `આ ગોલ્ડ પર બીજી કોઈ વ્યકતિ નો હક કે હિસ્સો નથી છતાં મેં પણ ગોલ્ડ લોન લીધા પછી ગોલ્ડ બાબતે કોઈપણ વ્યક્તિ નો હક કે હિસ્સો જાહેર થાય અથવા કોઈ પણ જાત ની તકરાર આવે તો મને લોન પેટે મળેલ રકમ રૂ .${amount} શબ્દોમાં ${netAmountInWords} હું મારી કોઈ પણ જાત ની કફોડી હાલત માં પણ ભરપાઈ કરવા માટે રાજીખુશી થી બંધાયેલો છું.જો ભરપાઈ ન કરી શકું તો કંપની મારી મિલકત પર દાવો માંડીને કાયદેસરની કાર્યવાહી કરી શકે છે.જે મને મંજુર છે..`,
+    },
+    {
+      rule: `આ ગોલ્ડ પર બીજી કોઈ વ્યકતિ નો હક કે હિસ્સો નથી છતાં પણ મેં ગોલ્ડ લોન લીધા પછી ગોલ્ડ બાબતે કોઈપણ વ્યક્તિ નો હક કે હિસ્સો જાહેર થાય અથવા કોઈ પણ જાત ની તકરાર આવે તો મને લોન પેટે મળેલ રકમ રૂ .${amount} શબ્દોમાં ${netAmountInWords} હું મારી કોઈ પણ જાત ની કફોડી હાલત માં પણ ભરપાઈ કરવા માટે રાજીખુશી થી બંધાયેલો છું.જો ભરપાઈ ન કરી શકું તો કંપની મારી મિલકત પર દાવો માંડીને કાયદેસરની કાર્યવાહી કરી શકે છે.જે મને મંજુર છે..`,
     },
     {
       rule: `મેં કંપની ના બધા નિયમો પુરા હોશ માં વાંચી જાગૃત મતે સમજેલ છે. જે મને (કબુલ) મંજુર છે.જેની હું બાહેંધરી આપું છું.`,
@@ -289,19 +330,26 @@ export default function Sansaction8({ sansaction, configs }) {
   const rules2 = [
     {
       rule: `બેંક બંધના દિવસે દાગીના પરત મળશે નહિ`,
-    }, {
+    },
+    {
       rule: `દર મહિને વ્યાજ ભરી જવું`,
-    }, {
+    },
+    {
       rule: `આપેલ બિલ સાથે લેતા આવું`,
-    }, {
+    },
+    {
       rule: `સરનામું બદલે ત્યારે ફેરફાર કરાવી જવું`,
-    }, {
+    },
+    {
       rule: `દર રવિવારે ઓફિસ બંધ રહેશે`,
-    }, {
+    },
+    {
       rule: `કરજ ની રકમ ભર્યા પછી જે વ્યકતિના નામનું બિલ હશે તે વ્યક્તિને જ દાગીના પરત મળશે `,
-    }, {
+    },
+    {
       rule: `નક્કી કરેલી મુદત પુરી થયા બાદ નાણાં વસુલ આપનાર પાસે ચક્રવૃદ્ધિ વ્યાજ વસુલ કરવામાં આવશે `,
-    }, {
+    },
+    {
       rule: `દાગીના શુરક્ષિત સ્થળે મુકેલા હોવાથી કરજ ની રકમ ભર્યા પછી બીજા દિવસે દાગીના પરત મળશે`,
     },
   ];
@@ -310,16 +358,20 @@ export default function Sansaction8({ sansaction, configs }) {
     {
       heading: `ખેતી વિષયક કરજ`,
       specification: `પાકના વાવેતર, ઉત્પાદન અને ખેતી સાથે સંબંધ ધરાવતા હેતુઓ માટે ધીરેલું કરજ.`,
-    }, {
+    },
+    {
       heading: `ઔદ્યોગિક કરજ`,
       specification: `માલ બનાવવાના હેતુઓ માટે ધીરેલું કરજ .`,
-    }, {
+    },
+    {
       heading: `વેપારી કરજ`,
       specification: `વેપાર, મિલકત ખરીદ અને વેચાણ માટે ધીરેલુ કરજ .`,
-    }, {
+    },
+    {
       heading: `અગત કરજ`,
       specification: ` લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અને અગત જરૂરિયાતો માટે ધીરેલુ કરજ .`,
-    }, {
+    },
+    {
       heading: `પ્રકીર્ણ  કરજ `,
       specification: `૧ થી ૪ માં સમાવેશ ન થયેલ હેતુઓ માટે ધીરેલુ કરજ.`,
     },
@@ -328,7 +380,7 @@ export default function Sansaction8({ sansaction, configs }) {
   return (
     <>
       <Document>
-        <Page size='A4' style={styles.page}>
+        <Page size="A4" style={styles.page}>
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
@@ -337,46 +389,51 @@ export default function Sansaction8({ sansaction, configs }) {
             <View style={styles.flexContainer}>
               <View style={{ width: '50%' }}>
                 <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan No{' '}</Text>
+                  <Text style={styles.subHeading}>Loan No </Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.loanNo}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan Type{' '}</Text>
+                  <Text style={styles.subHeading}>Loan Type </Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.loanType}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.subHeading}>Name{' '}</Text>
+                  <Text style={styles.subHeading}>Name </Text>
                   <Text style={styles.colon}>:</Text>
                   <Text
-                    style={styles.subText}>{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
+                    style={styles.subText}
+                  >{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.subHeading}>Address{' '}</Text>
+                  <Text style={styles.subHeading}>Address </Text>
                   <Text style={styles.colon}>:</Text>
-                  <Text style={{
-                    ...styles.subText,
-                    textWrap: 'wrap',
-                  }}>{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
+                  <Text
+                    style={{
+                      ...styles.subText,
+                      textWrap: 'wrap',
+                    }}
+                  >{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.subHeading}>Pan No{' '}</Text>
+                  <Text style={styles.subHeading}>Pan No </Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.customer.panCard}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.subHeading}>Aadhar Card No{' '}
-                  </Text> <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subHeading}>Aadhar Card No </Text>{' '}
+                  <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.customer.aadharCard}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.subHeading}>Mobile No{' '}</Text>
+                  <Text style={styles.subHeading}>Mobile No </Text>
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{sansaction.customer.contact}</Text>
                 </View>
               </View>
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <View
+                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}
+              >
                 <Image style={styles.img} src={sansaction.customer.avatar_url} />
                 <Image style={styles.img} src={sansaction.propertyImage} />
               </View>
@@ -392,7 +449,7 @@ export default function Sansaction8({ sansaction, configs }) {
                   <Text style={styles.tableCell}>વિગત</Text>
                 </View>
                 <View>
-                  {Array.from({ length: 7 }).map((_, index) => (
+                  {Array.from({ length: 5 }).map((_, index) => (
                     <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
                       {Array.from({ length: 6 }).map((_, cellIndex) => (
                         <Text key={cellIndex}></Text>
@@ -401,22 +458,46 @@ export default function Sansaction8({ sansaction, configs }) {
                   ))}
                 </View>
                 <View>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWight: 'bolder', marginTop: 20 }}>
-                    ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે
-                    મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી
-                    ગયેલ છે.જેની હું આપને લેખિત માં બાહેંધરી આપું છું.</Text>
+                  <Text
+                    style={{
+                      ...styles.gujaratiText,
+                      fontSize: 11,
+                      fontWight: 'bolder',
+                      marginTop: 20,
+                    }}
+                  >
+                    ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ
+                    મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી ગયેલ છે.જેની હું આપને લેખિત
+                    માં બાહેંધરી આપું છું.
+                  </Text>
                 </View>
-                <View style={{ width: '80%', flexDirection: 'row', display: 'flex', justifyContent: 'flex-end' }}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 12, fontWight: 600 }}>તારીખ :- </Text>
-                </View>
+                {/*<View*/}
+                {/*  style={{*/}
+                {/*    width: '80%',*/}
+                {/*    flexDirection: 'row',*/}
+                {/*    display: 'flex',*/}
+                {/*    justifyContent: 'flex-end',*/}
+                {/*  }}*/}
+                {/*>*/}
+                {/*  <Text style={{ ...styles.gujaratiText, fontSize: 12, fontWight: 600 }}>*/}
+                {/*    તારીખ :-{' '}*/}
+                {/*  </Text>*/}
+                {/*</View>*/}
                 <view>
-                  <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>નમૂનો-૮ કરજ શરતોની વિગતો
-                    દર્શાવતું વિવરણ પત્રક નિયમ -૧૬</Text>
+                  <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
+                    નમૂનો-૮ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૬
+                  </Text>
                   <View style={{ marginTop: 10 }}>
                     {rules.map((item, index) => (
-                      <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}>
+                      <View
+                        key={index}
+                        style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}
+                      >
                         <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
-                        <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>{item.rule}</Text> {/* Condition text */}
+                        <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
+                          {item.rule}
+                        </Text>{' '}
+                        {/* Condition text */}
                       </View>
                     ))}
                   </View>
@@ -425,12 +506,12 @@ export default function Sansaction8({ sansaction, configs }) {
             </View>
           </View>
           <View style={styles.d_flex}>
-            <View style={{ marginLeft: 35}}>
+            <View style={{ marginLeft: 35 }}>
               <View style={styles.box}></View>
               <Text style={styles.signText}>Authority Sign</Text>
             </View>
-            <View style={{ marginRight: 35}}>
-            <View style={styles.box}></View>
+            <View style={{ marginRight: 35 }}>
+              <View style={styles.box}></View>
               <Text style={styles.signText}>Customer Sign</Text>
             </View>
           </View>

@@ -2,7 +2,6 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import LoanissueNewEditForm from '../other-loanissue-new-edit-form';
 import OtherLoanissueNewEditForm from '../other-loanissue-new-edit-form';
 
 // ----------------------------------------------------------------------
@@ -13,7 +12,7 @@ export default function OtherLoanissueCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading='Create Loan Issue'
+        heading="Create Loan Issue"
         links={[
           {
             name: 'Dashboard',
@@ -29,7 +28,7 @@ export default function OtherLoanissueCreateView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      <OtherLoanissueNewEditForm/>
+      <OtherLoanissueNewEditForm />
     </Container>
   );
 }

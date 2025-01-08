@@ -60,7 +60,7 @@ const useStyles = () =>
           border: '1px solid black',
           width: '76px',
           height: '76px',
-          marginLeft:40
+          marginLeft: 40,
         },
         watermarkContainer: {
           position: 'absolute',
@@ -77,7 +77,7 @@ const useStyles = () =>
           opacity: 0.1,
         },
       }),
-    [],
+    []
   );
 
 // ----------------------------------------------------------------------
@@ -88,7 +88,7 @@ export default function LetterOfAuthority({ loan }) {
   return (
     <>
       <Document>
-        <Page size='A4' style={styles.page}>
+        <Page size="A4" style={styles.page}>
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
@@ -111,25 +111,28 @@ export default function LetterOfAuthority({ loan }) {
           <View style={styles.section}>
             <Text>Dear Sir,</Text>
             <Text style={{ marginTop: 10 }}>
-              This has reference to the gold ornaments/articles pledged by me to you having a gross weight of{' '}
+              This has reference to the gold ornaments/articles pledged by me to you having a gross
+              weight of{' '}
               <Text style={styles.bold}>
-                {loan.propertyDetails.reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)}
-              </Text> for availing an advance of{' '}
-              <Text
-                style={styles.bold}>Rs {loan.propertyDetails.reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)}
-              </Text> from you. I/We hereby declare that
-              the said gold ornaments/articles exclusively belong to me, and I have handed over possession to you as a
-              pledgee of those ornaments.
+                {loan.propertyDetails.reduce(
+                  (prev, next) => prev + (Number(next?.netWeight) || 0),
+                  0
+                )}
+              </Text>{' '}
+              for availing an advance of{' '}
+              <Text style={styles.bold}>Rs {(loan?.loanAmount).toFixed(2)} /-</Text> from you. I/We
+              hereby declare that the said gold ornaments/articles exclusively belong to me, and I
+              have handed over possession to you as a pledgee of those ornaments.
             </Text>
             <Text style={{ marginTop: 10 }}>
-              In the above respect, I/we agree and authorize you to apply for, obtain, and avail a loan from any bank or
-              financial institution by a further pledge of the said gold ornaments/articles. I/we hereby give
-              unconditional
-              authority to you to offer the said gold ornaments/articles in your capacity as the ostensible owner of the
-              same as security for such loans to be applied for/availed by you and to authorize such Bank/Financial
-              Institution to sell the said pledged gold ornaments/articles in public auction or by way of private treaty
-              to
-              recover the amount of dues outstanding under such ledge/loan.
+              In the above respect, I/we agree and authorize you to apply for, obtain, and avail a
+              loan from any bank or financial institution by a further pledge of the said gold
+              ornaments/articles.And I/we hereby give unconditional authority to you to offer the
+              said gold ornaments/articles in your capacity as the ostensible owner of the same as
+              security for such loans to be applied for/availed by you and to authorize such
+              Bank/Financial Institution to sell the said pledged gold ornaments/articles in public
+              auction or by way of private treaty to recover the amount of dues outstanding under
+              such ledge/loan.
             </Text>
           </View>
           <View style={styles.signatureSection}>

@@ -421,6 +421,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                 <View style={[styles.tableRow, styles.tableHeader]}>
                   <Text style={styles.tableCell}>Property Name</Text>
                   <Text style={styles.tableCell}>Qty</Text>
+                  <Text style={styles.tableCell}>carat</Text>
                   <Text style={styles.tableCell}>Total Wt</Text>
                   <Text style={styles.tableCell}>Net Wt</Text>
                   <Text style={styles.tableCell}>Net Amt</Text>
@@ -431,8 +432,8 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
                     <Text style={styles.tableCell}>{row.type}</Text>
                     <Text style={styles.tableCell}>{row.pcs}</Text>
-                    <Text style={styles.tableCell}>{row.totalWeight}</Text>
-                    <Text style={styles.tableCell}>{row.netWeight}</Text>
+                    <Text style={styles.tableCell}>{row.carat}</Text>
+                    <Text style={styles.tableCell}>{Number(row.netWeight).toFixed(2)}</Text>
                     <Text style={styles.tableCell}>{row.netAmount}</Text>
                     <Text style={styles.tableCell}></Text>
                     <Text style={styles.tableCell}></Text>
@@ -446,27 +447,31 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       (prev, next) => prev + (Number(next?.pcs) || 0),
                       0
                     )}
-                  </Text>
+                  </Text>{' '}
                   <Text style={styles.tableCell}>
                     {' '}
                     {selectedRow.propertyDetails.reduce(
-                      (prev, next) => prev + (Number(next?.totalWeight) || 0),
+                      (prev, next) => prev + (Number(next?.carat) || 0),
                       0
                     )}
                   </Text>
                   <Text style={styles.tableCell}>
                     {' '}
-                    {selectedRow.propertyDetails.reduce(
-                      (prev, next) => prev + (Number(next?.netWeight) || 0),
-                      0
-                    )}
+                    {selectedRow.propertyDetails
+                      .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
+                      .toFixed(2)}
                   </Text>
                   <Text style={styles.tableCell}>
                     {' '}
-                    {selectedRow.propertyDetails.reduce(
-                      (prev, next) => prev + (Number(next?.netAmount) || 0),
-                      0
-                    )}
+                    {selectedRow.propertyDetails
+                      .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
+                      .toFixed(2)}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {' '}
+                    {selectedRow.propertyDetails
+                      .reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)
+                      .toFixed(2)}
                   </Text>
                   <Text style={styles.tableCell}></Text>
                   <Text style={styles.tableCell}></Text>
@@ -475,7 +480,10 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
             </View>
           </View>{' '}
           <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>{' '}
+            <Text style={{ fontSize: 10, color: '#232C4B' }}>
+              Cash free Payment Service Provide
+            </Text>
             <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
           </View>
           <InvoiceFooter configs={configs} />
@@ -501,6 +509,9 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
           </View>
           <View style={styles.d_flex}>
             <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ fontSize: 10, color: '#232C4B' }}>
+              Cash free Payment Service Provide
+            </Text>
             <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
           </View>
           <InvoiceFooter configs={configs} />
