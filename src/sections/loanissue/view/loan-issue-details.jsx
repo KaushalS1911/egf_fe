@@ -433,6 +433,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                     <Text style={styles.tableCell}>{row.type}</Text>
                     <Text style={styles.tableCell}>{row.pcs}</Text>
                     <Text style={styles.tableCell}>{row.carat}</Text>
+                    <Text style={styles.tableCell}>{Number(row.totalWeight).toFixed(2)}</Text>
                     <Text style={styles.tableCell}>{Number(row.netWeight).toFixed(2)}</Text>
                     <Text style={styles.tableCell}>{row.netAmount}</Text>
                     <Text style={styles.tableCell}></Text>
