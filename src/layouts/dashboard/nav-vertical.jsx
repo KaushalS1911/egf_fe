@@ -65,10 +65,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
       } else {
         const foundBranch = branch?.find((branchItem) => branchItem?._id === storedBranch);
         if (foundBranch) {
-          setValue(
-            'branchId',
-            { label: foundBranch.name, value: foundBranch._id },
-          );
+          setValue('branchId', { label: foundBranch.name, value: foundBranch._id });
         }
       }
     }
@@ -84,6 +81,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
     <Scrollbar
       sx={{
         height: 1,
+        backgroundColor: (theme) => (theme.palette.mode === 'light' ? '#0c0c1d' : '#212b36'),
         '& .simplebar-content': {
           height: 1,
           display: 'flex',
@@ -95,7 +93,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
 
       {user?.role === 'Admin' && branch && (
         <FormProvider {...methods}>
-          <Box sx={{ mt: 2, mx: 4}}>
+          <Box sx={{ mt: 2, mx: 4 }}>
             <RHFAutocomplete
               sx={{
                 '& .MuiOutlinedInput-root': {
@@ -114,7 +112,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
                   color: '#fff !important',
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#fff !important' ,
+                  color: '#fff !important',
                 },
               }}
               name="branchId"
@@ -129,7 +127,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
               ]}
               isOptionEqualToValue={(option, value) => option?.value === value?.value}
             />
-
           </Box>
         </FormProvider>
       )}
@@ -141,7 +138,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
         }}
       />
 
-      <Box sx={{ flexGrow: 1 }} />
+      <Box sx={{ pb: '30px' }}></Box>
     </Scrollbar>
   );
 
@@ -160,8 +157,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
             height: 1,
             position: 'fixed',
             width: NAV.W_VERTICAL,
-            backgroundColor:(theme)=>theme.palette.mode === 'light' ? "#0c0c1d":"#212b36",
-            paddingBottom:"15px",
             borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           }}
         >
@@ -182,8 +177,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
               height: 1,
               position: 'fixed',
               width: NAV.W_VERTICAL,
-              backgroundColor:(theme)=>theme.palette.mode === 'light' ? "#393939":"#212b36",
-              paddingBottom:"15px",
               borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
             }}
           >

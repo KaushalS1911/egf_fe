@@ -28,69 +28,84 @@ import { useGetConfigs } from '../../../api/config';
 import { useGetCloseLoan } from '../../../api/loan-close';
 import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetOtherCloseLoan } from '../../../api/other-loan-close.js';
 
 const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
-  { id: 'pendingLoanAmt', label: 'pending loan Amt' },
-  { id: 'closinCharge', label: 'Closing charge' },
-  { id: 'netAmt', label: 'Net amt' },
+  { id: 'remark', label: 'Remark' },
   { id: 'PDF', label: 'PDF' },
 ];
 
-function LoanCloseForm({ currentLoan, mutate }) {
+function LoanCloseForm({ currentOtherLoan, mutate }) {
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
-  const { loanClose, refetchLoanClose } = useGetCloseLoan(currentLoan._id);
+  const { otherLoanClose, refetchOtherLoanClose } = useGetOtherCloseLoan(currentOtherLoan._id);
   const view = useBoolean();
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
 
-  const paymentSchema = paymentMode === 'Bank' ? {
-    account: Yup.object().required('Account is required'),
-    bankAmount: Yup.string()
-      .required('Bank Amount is required')
-      .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
-  } : paymentMode === 'Cash' ? {
-    cashAmount: Yup.string()
-      .required('Cash Amount is required')
-      .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-  } : {
-    cashAmount: Yup.string()
-      .required('Cash Amount is required')
-      .test('is-positive', 'Cash Amount must be a positive number', value => parseFloat(value) >= 0),
-    bankAmount: Yup.string()
-      .required('Bank Amount is required')
-      .test('is-positive', 'Bank Amount must be a positive number', value => parseFloat(value) >= 0),
-    account: Yup.object().required('Account is required'),
-  };
+  const paymentSchema =
+    paymentMode === 'Bank'
+      ? {
+          account: Yup.object().required('Account is required'),
+          bankAmount: Yup.string()
+            .required('Bank Amount is required')
+            .test(
+              'is-positive',
+              'Bank Amount must be a positive number',
+              (value) => parseFloat(value) >= 0
+            ),
+        }
+      : paymentMode === 'Cash'
+        ? {
+            cashAmount: Yup.string()
+              .required('Cash Amount is required')
+              .test(
+                'is-positive',
+                'Cash Amount must be a positive number',
+                (value) => parseFloat(value) >= 0
+              ),
+          }
+        : {
+            cashAmount: Yup.string()
+              .required('Cash Amount is required')
+              .test(
+                'is-positive',
+                'Cash Amount must be a positive number',
+                (value) => parseFloat(value) >= 0
+              ),
+            bankAmount: Yup.string()
+              .required('Bank Amount is required')
+              .test(
+                'is-positive',
+                'Bank Amount must be a positive number',
+                (value) => parseFloat(value) >= 0
+              ),
+            account: Yup.object().required('Account is required'),
+          };
 
   const NewLoanCloseSchema = Yup.object().shape({
     totalLoanAmount: Yup.number()
       .min(1, 'Total Loan Amount must be greater than 0')
       .required('Total Loan Amount is required')
       .typeError('Total Loan Amount must be a number'),
-    pendingLoanAmount: Yup.number()
-      .min(0, 'Pending Loan Amount must be 0 or greater')
-      .required('Pending Loan Amount is required')
-      .typeError('Pending Loan Amount must be a number'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    netAmount: Yup.string().required('Net Amount is required'),
     ...paymentSchema,
   });
 
   const defaultValues = {
-    totalLoanAmount: currentLoan?.loanAmount || '',
-    netAmount: '',
-    paidLoanAmount: (currentLoan?.loanAmount - currentLoan?.interestLoanAmount) || '0',
-    pendingLoanAmount: currentLoan?.interestLoanAmount || '',
-    closingCharge: '0',
+    totalLoanAmount: currentOtherLoan.loan?.loanAmount || '',
+    paidLoanAmount:
+      currentOtherLoan.loan?.loanAmount - currentOtherLoan.loan?.interestLoanAmount || '0',
+    pendingLoanAmount: currentOtherLoan.loan?.interestLoanAmount || '',
     closeRemarks: '',
     paymentMode: '',
     cashAmount: '',
     account: null,
     bankAmount: null,
+    remark: '',
   };
 
   const methods = useForm({
@@ -145,15 +160,13 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
     const payload = {
       totalLoanAmount: data.totalLoanAmount,
-      netAmount: data.netAmount,
-      closingCharge: data.closingCharge,
+      paidLoanAmount: data.paidLoanAmount,
       remark: data.remark,
       paymentDetail: paymentDetail,
-      closedBy: user._id,
     };
 
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/loan-close`;
+      const url = `${import.meta.env.VITE_BASE_URL}/${user._id}/other-loans/${currentOtherLoan._id}/loan-close`;
       const config = {
         method: 'post',
         url,
@@ -162,7 +175,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
       const response = await axios(config);
       reset();
-      refetchLoanClose();
+      refetchOtherLoanClose();
       mutate();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
@@ -177,7 +190,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
     if (newCashAmount > currentLoanAmount) {
       setValue('cashAmount', currentLoanAmount);
-      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', { variant: 'warning' });
+      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
+        variant: 'warning',
+      });
     } else {
       setValue('cashAmount', newCashAmount);
     }
@@ -211,39 +226,58 @@ function LoanCloseForm({ currentLoan, mutate }) {
           <Box
             rowGap={3}
             columnGap={2}
-            display='grid'
+            display="grid"
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(5, 1fr)',
             }}
           >
-            <RHFTextField name='totalLoanAmount' label='Total Loan Amount' req={'red'} onKeyPress={(e) => {
-              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                e.preventDefault();
-              }
-            }} />
-            <RHFTextField name='paidLoanAmount' label='Paid Loan Amount' InputProps={{ readOnly: true }} />
-            <RHFTextField name='pendingLoanAmount' label='Pending Loan Amount' req={'red'} onKeyPress={(e) => {
-              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                e.preventDefault();
-              }
-            }} />
-            <RHFTextField name='closingCharge' label='Closing Charge' onKeyPress={(e) => {
-              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                e.preventDefault();
-              }
-            }} />
-            <RHFTextField name='netAmount' label='Net Amount' onKeyPress={(e) => {
-              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                e.preventDefault();
-              }
-            }} InputProps={{ readOnly: true }} />
-            <RHFTextField name='closeRemarks' label='Close Remarks' />
+            <RHFTextField
+              name="totalLoanAmount"
+              label="Total Loan Amount"
+              req={'red'}
+              onKeyPress={(e) => {
+                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                  e.preventDefault();
+                }
+              }}
+            />
+            <RHFTextField name="paidLoanAmount" label="Paid Loan Amount" />
+            {/*<RHFTextField*/}
+            {/*  name="pendingLoanAmount"*/}
+            {/*  label="Pending Loan Amount"*/}
+            {/*  req={'red'}*/}
+            {/*  onKeyPress={(e) => {*/}
+            {/*    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
+            {/*      e.preventDefault();*/}
+            {/*    }*/}
+            {/*  }}*/}
+            {/*/>*/}
+            {/*<RHFTextField*/}
+            {/*  name="closingCharge"*/}
+            {/*  label="Closing Charge"*/}
+            {/*  onKeyPress={(e) => {*/}
+            {/*    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
+            {/*      e.preventDefault();*/}
+            {/*    }*/}
+            {/*  }}*/}
+            {/*/>*/}
+            {/*<RHFTextField*/}
+            {/*  name="netAmount"*/}
+            {/*  label="Net Amount"*/}
+            {/*  onKeyPress={(e) => {*/}
+            {/*    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
+            {/*      e.preventDefault();*/}
+            {/*    }*/}
+            {/*  }}*/}
+            {/*  InputProps={{ readOnly: true }}*/}
+            {/*/>*/}
+            <RHFTextField name="remark" label="Remark" />
           </Box>
         </Grid>
         <Grid pb={2}>
           <Grid item xs={4}>
-            <Typography variant='subtitle1' my={1}>
+            <Typography variant="subtitle1" my={1}>
               Payment Details
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -251,21 +285,21 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 width={'100%'}
                 rowGap={3}
                 columnGap={2}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(5, 1fr)',
                 }}
               >
                 <RHFAutocomplete
-                  name='paymentMode'
-                  label='Payment Mode'
-                  req='red'
+                  name="paymentMode"
+                  label="Payment Mode"
+                  req="red"
                   options={['Cash', 'Bank', 'Both']}
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
                     setValue('paymentMode', value);
-                    handleLoanAmountChange({ target: { value: watch('netAmount') } });
+                    // handleLoanAmountChange({ target: { value: watch('netAmount') } });
                   }}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -275,18 +309,18 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 />
                 {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
                   <Controller
-                    name='cashAmount'
+                    name="cashAmount"
                     control={control}
                     render={({ field }) => (
                       <RHFTextField
                         {...field}
-                        label='Cash Amount'
+                        label="Cash Amount"
                         req={'red'}
-                        type='number'
+                        type="number"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
-                          handleCashAmountChange(e);
+                          // handleCashAmountChange(e);
                         }}
                       />
                     )}
@@ -295,8 +329,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
                   <>
                     <RHFAutocomplete
-                      name='account'
-                      label='Account'
+                      name="account"
+                      label="Account"
                       req={'red'}
                       fullWidth
                       options={branch.flatMap((item) => item.company.bankAccounts)}
@@ -309,15 +343,15 @@ function LoanCloseForm({ currentLoan, mutate }) {
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                     <Controller
-                      name='bankAmount'
+                      name="bankAmount"
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
-                          label='Bank Amount'
+                          label="Bank Amount"
                           req={'red'}
                           disabled={watch('paymentMode') === 'Bank' ? false : true}
-                          type='number'
+                          type="number"
                           inputProps={{ min: 0 }}
                         />
                       )}
@@ -325,14 +359,18 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   </>
                 )}
               </Box>
-              <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
-                <Button color='inherit'
-                        variant='outlined' onClick={() => reset()}>Reset</Button>
-                {getResponsibilityValue('update_loanPayHistory', configs, user) &&
-                <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-                  Submit
-                </LoadingButton>}
-              </Box>
+              {otherLoanClose.length === 0 && (
+                <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
+                  <Button color="inherit" variant="outlined" onClick={() => reset()}>
+                    Reset
+                  </Button>
+                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                    <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                      Submit
+                    </LoadingButton>
+                  )}
+                </Box>
+              )}
             </Box>
           </Grid>
         </Grid>
@@ -340,29 +378,38 @@ function LoanCloseForm({ currentLoan, mutate }) {
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
-          {loanClose.map((row, index) => (
+          {otherLoanClose.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.totalLoanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.totalLoanAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.closingCharge}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
-              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
-                <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0.5, px: 2 }}>{
-                  <Typography
-                    onClick={() => {
-                      view.onTrue();
-                      setData(row);
-                    }}
-                    sx={{
-                      cursor: 'pointer',
-                      color: 'inherit',
-                      pointerEvents: 'auto',
-                    }}
-                  >
-                    <Iconify icon='basil:document-solid' />
-                  </Typography>
-                }</TableCell> : <TableCell>'-'</TableCell>}
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.totalLoanAmount}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.paidLoanAmount}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.remark || '-'}
+              </TableCell>
+              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
+                <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0.5, px: 2 }}>
+                  {
+                    <Typography
+                      onClick={() => {
+                        view.onTrue();
+                        setData(row);
+                      }}
+                      sx={{
+                        cursor: 'pointer',
+                        color: 'inherit',
+                        pointerEvents: 'auto',
+                      }}
+                    >
+                      <Iconify icon="basil:document-solid" />
+                    </Typography>
+                  }
+                </TableCell>
+              ) : (
+                <TableCell>'-'</TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
@@ -374,13 +421,13 @@ function LoanCloseForm({ currentLoan, mutate }) {
               p: 1.5,
             }}
           >
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
 
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <LoanCloseDetailsPdf data={data} configs={configs} />
             </PDFViewer>
           </Box>

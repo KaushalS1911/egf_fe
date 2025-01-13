@@ -24,16 +24,43 @@ import Sansaction11 from '../disburse/sansaction-11.jsx';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details';
 import { fDate } from '../../utils/format-time';
 
-
 // ----------------------------------------------------------------------
 
 export default function OtherLoanpayhistoryTableRow({
-                                                 row,
-                                                 selected,
-                                                 onDeleteRow,
-                                                 loanStatus,
-                                               }) {
-  const { loanNo, customer, scheme, loanAmount, cashAmount, bankAmount, _id, status, srNo, issueDate,interestLoanAmount } = row;
+  row,
+  selected,
+  onDeleteRow,
+  loanStatus,
+  index,
+}) {
+  const {
+    loan,
+    otherName,
+    otherNumber,
+    rate,
+    amount,
+    srNo,
+    percentage,
+    date,
+    grossWt,
+    netWt,
+    month,
+    closeDate,
+    closingCharge,
+    renewalDate,
+    _id,
+  } = row;
+  const {
+    loanNo,
+    customer,
+    scheme,
+    loanAmount,
+    cashAmount,
+    bankAmount,
+    status,
+    issueDate,
+    interestLoanAmount,
+  } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -43,19 +70,19 @@ export default function OtherLoanpayhistoryTableRow({
 
   let color;
   switch (status) {
-    case 'Closed' : {
-      color = (theme) => theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07';
+    case 'Closed': {
+      color = (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07');
       break;
     }
-    case 'Overdue' : {
-      color = (theme) => theme.palette.mode === 'light' ? '#FFE4DE' : '#611706';
+    case 'Overdue': {
+      color = (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706');
       break;
     }
-    case 'Regular' : {
-      color = (theme) => theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403';
+    case 'Regular': {
+      color = (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403');
       break;
     }
-    default : {
+    default: {
       color = '';
     }
   }
@@ -86,53 +113,66 @@ export default function OtherLoanpayhistoryTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected} sx={{ backgroundColor: loanStatus === status ? color : color }}>
-        <TableCell>
-          {srNo}
-        </TableCell>
-        {getResponsibilityValue('create_loanIssue', configs, user) ? <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {<Link to={paths.dashboard.other_loanPayHistory.edit(_id)} style={{
-              textDecoration: 'none',
-              fontWeight: 'bold',
-              color: 'inherit',
-            }}>{loanNo}</Link>}
-          </TableCell> :
+      <TableRow
+        hover
+        selected={selected}
+        sx={{ backgroundColor: loanStatus === status ? color : color }}
+      >
+        <TableCell>{srNo}</TableCell>
+        {getResponsibilityValue('create_loanIssue', configs, user) ? (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {loanNo}
-          </TableCell>}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell
-          sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount -interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <Label
-            variant='soft'
-            color={
-              (status === 'Disbursed' && 'info') ||
-              (status === 'Closed' && 'warning') ||
-              (status === 'Overdue' && 'error') ||
-              (status === 'Regular' && 'success') ||
-              'default'
+            {
+              <Link
+                to={paths.dashboard.other_loanPayHistory.edit(_id)}
+                style={{
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  color: 'inherit',
+                }}
+              >
+                {otherName}
+              </Link>
             }
-          >
-            {status}
-          </Label></TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
-          </IconButton>
-        </TableCell>
+          </TableCell>
+        ) : (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherName}</TableCell>
+        )}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{percentage}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{rate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{grossWt}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{netWt}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{month}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(closeDate)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{closingCharge}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(renewalDate)}</TableCell>
+        {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>*/}
+        {/*  <Label*/}
+        {/*    variant="soft"*/}
+        {/*    color={*/}
+        {/*      (status === 'Disbursed' && 'info') ||*/}
+        {/*      (status === 'Closed' && 'warning') ||*/}
+        {/*      (status === 'Overdue' && 'error') ||*/}
+        {/*      (status === 'Regular' && 'success') ||*/}
+        {/*      'default'*/}
+        {/*    }*/}
+        {/*  >*/}
+        {/*    {status}*/}
+        {/*  </Label>*/}
+        {/*</TableCell>*/}
+        {/*<TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>*/}
+        {/*  <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>*/}
+        {/*    <Iconify icon="eva:more-vertical-fill" />*/}
+        {/*  </IconButton>*/}
+        {/*</TableCell>*/}
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -141,7 +181,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='clarity:details-line' />
+          <Iconify icon="clarity:details-line" />
           Loan Details
         </MenuItem>
         <MenuItem
@@ -150,46 +190,47 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='mdi:file-document-outline' />
-          Sanction </MenuItem>
+          <Iconify icon="mdi:file-document-outline" />
+          Sanction{' '}
+        </MenuItem>
         <MenuItem
           onClick={() => {
             handleDialogOpen('authority');
             popover.onClose();
           }}
         >
-          <Iconify icon='material-symbols:verified-user-outline' />
-          Authority </MenuItem>
-        {
-          row.status === 'Closed' ?
-            <MenuItem
-              onClick={() => {
-                handleDialogOpen('noc');
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='mdi:certificate-outline' />
-              NOC
-            </MenuItem>
-            :
-            <MenuItem
-              onClick={() => {
-                handleDialogOpen('notice');
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='gridicons:notice' />
-              Notice
-            </MenuItem>
-        }
+          <Iconify icon="material-symbols:verified-user-outline" />
+          Authority{' '}
+        </MenuItem>
+        {row.status === 'Closed' ? (
+          <MenuItem
+            onClick={() => {
+              handleDialogOpen('noc');
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="mdi:certificate-outline" />
+            NOC
+          </MenuItem>
+        ) : (
+          <MenuItem
+            onClick={() => {
+              handleDialogOpen('notice');
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="gridicons:notice" />
+            Notice
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -197,12 +238,12 @@ export default function OtherLoanpayhistoryTableRow({
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               {renderDialogContent()}
             </PDFViewer>
           </Box>

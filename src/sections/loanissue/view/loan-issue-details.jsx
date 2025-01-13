@@ -310,7 +310,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                 <View style={styles.row}>
                   <Text style={styles.subHeading}>Loan No</Text>
                   <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loanNo}</Text>
+                  <Text style={styles.subText}>{selectedRow?.loanNo}</Text>
                 </View>
                 <View style={styles.row}>
                   <Text style={styles.subHeading}>Loan Type</Text>

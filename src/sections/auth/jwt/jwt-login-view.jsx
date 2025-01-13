@@ -20,6 +20,7 @@ import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import Logo from 'src/components/logo';
 import { useAuthContext } from '../../../auth/hooks';
+import { Box } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -64,7 +65,9 @@ export default function JwtLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 1 }}>
-      <Typography sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Logo /></Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Logo />
+      </Box>
     </Stack>
   );
 
@@ -73,15 +76,15 @@ export default function JwtLoginView() {
       {renderHead}
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Stack spacing={2.5}>
-          <RHFTextField name='email' label='Email address' />
+          <RHFTextField name="email" label="Email address" />
           <RHFTextField
-            name='password'
-            label='Password'
+            name="password"
+            label="Password"
             type={password.value ? 'text' : 'password'}
             InputProps={{
               endAdornment: (
-                <InputAdornment position='end'>
-                  <IconButton onClick={password.onToggle} edge='end'>
+                <InputAdornment position="end">
+                  <IconButton onClick={password.onToggle} edge="end">
                     <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
                   </IconButton>
                 </InputAdornment>
@@ -89,25 +92,30 @@ export default function JwtLoginView() {
             }}
           />
           <Stack>
-            <Link component={RouterLink} href={paths.auth.jwt.forgotPassword} variant='subtitle2'>
+            <Link component={RouterLink} href={paths.auth.jwt.forgotPassword} variant="subtitle2">
               Forgot Password?
             </Link>
           </Stack>
 
           <LoadingButton
             fullWidth
-            color='inherit'
-            size='large'
-            type='submit'
-            variant='contained'
+            color="inherit"
+            size="large"
+            type="submit"
+            variant="contained"
             loading={isSubmitting}
           >
             Login
           </LoadingButton>
 
           <Stack sx={{ textAlign: 'center', mt: '10px' }}>
-            <Typography variant='body2'>Don't have an account?</Typography>
-            <Link component={RouterLink} href={paths.auth.jwt.register} variant='subtitle2' sx={{ mt: '8px' }}>
+            <Typography variant="body2">Don't have an account?</Typography>
+            <Link
+              component={RouterLink}
+              href={paths.auth.jwt.register}
+              variant="subtitle2"
+              sx={{ mt: '8px' }}
+            >
               Create an account
             </Link>
           </Stack>

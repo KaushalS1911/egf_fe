@@ -8,6 +8,7 @@ import { Box } from '@mui/material';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
 import OtherLoanpayhistoryNew from '../other-loanpayhistory-new';
+import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
 
 // ----------------------------------------------------------------------
 
@@ -15,12 +16,13 @@ export default function LoanpayhistoryCreateView() {
   const settings = useSettingsContext();
   const { id } = useParams();
   const loanPayHistory = true;
-  const { Loanissue, mutate } = useGetLoanissue(loanPayHistory);
-  const currentLoan = Loanissue.find((item) => item._id === id);
+  const { otherLoanissue, mutate } = useGetOtherLoanissue();
+
+  const currentOtherLoan = otherLoanissue.find((item) => item._id === id);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading='Other Loan Pay History'
+        heading="Other Loan Pay History"
         links={[
           {
             name: 'Dashboard',
@@ -36,11 +38,15 @@ export default function LoanpayhistoryCreateView() {
           mb: 2,
         }}
       />
-      {currentLoan ? <OtherLoanpayhistoryNew currentLoan={currentLoan} mutate={mutate} /> :
-        <Box sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {currentOtherLoan ? (
+        <OtherLoanpayhistoryNew currentOtherLoan={currentOtherLoan} mutate={mutate} />
+      ) : (
+        <Box
+          sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
           <LoadingScreen />
         </Box>
-      }
+      )}
     </Container>
   );
 }

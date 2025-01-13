@@ -46,21 +46,24 @@ export default function BranchCreateView() {
   const [loading, setLoading] = useState(false);
   const [editingBranch, setEditingBranch] = useState(null);
 
-  const defaultValues = useMemo(() => ({
-    name: '',
-    email: '',
-    contact: '',
-    address: {
-      street: '',
-      landmark: '',
-      country: '',
-      state: '',
-      city: '',
-      zipcode: '',
-    },
-    isActive: false,
-    branchCode: '',
-  }), []);
+  const defaultValues = useMemo(
+    () => ({
+      name: '',
+      email: '',
+      contact: '',
+      address: {
+        street: '',
+        landmark: '',
+        country: '',
+        state: '',
+        city: '',
+        zipcode: '',
+      },
+      isActive: false,
+      branchCode: '',
+    }),
+    []
+  );
 
   const methods = useForm({
     defaultValues,
@@ -120,9 +123,12 @@ export default function BranchCreateView() {
   const handleDeleteBranches = async (ids) => {
     setLoading(true);
     try {
-      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/branch`, {
-        data: { ids: ids },
-      });
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/branch`,
+        {
+          data: { ids: ids },
+        }
+      );
       enqueueSnackbar(response.data.message);
       mutate();
     } catch (error) {
@@ -145,7 +151,9 @@ export default function BranchCreateView() {
         setValue('address.country', '', { shouldValidate: true });
         setValue('address.state', '', { shouldValidate: true });
         setValue('address.city', '', { shouldValidate: true });
-        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
+        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', {
+          variant: 'error',
+        });
       }
     } catch (error) {
       console.error('Error fetching country and state:', error);
@@ -159,141 +167,154 @@ export default function BranchCreateView() {
   return (
     <FormProvider methods={methods}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant='h5' sx={{ fontWeight: 600 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Manage Branches
         </Typography>
       </Box>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <Box sx={{ p: 3 }}>
-              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
-                Branch Details
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <RHFTextField name='name' label='Branch Name' fullWidth />
-                </Grid>
-                {editingBranch && (
+        {user?.role === 'Admin' && (
+          <Grid item xs={12} md={6}>
+            <Card>
+              <Box sx={{ p: 3 }}>
+                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+                  Branch Details
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <RHFTextField name="name" label="Branch Name" fullWidth />
+                  </Grid>
+                  {editingBranch && (
+                    <Grid item xs={12} sm={6}>
+                      <RHFTextField
+                        name="branchCode"
+                        label="Branch Code"
+                        fullWidth
+                        sx={{ mb: 2 }}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    </Grid>
+                  )}
+                  <Grid item xs={12} sm={6}>
+                    <RHFTextField name="email" label="Email" fullWidth />
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFTextField
-                      name='branchCode'
-                      label='Branch Code'
+                      name="contact"
+                      label="Phone Number"
                       fullWidth
-                      sx={{ mb: 2 }}
-                      InputProps={{
-                        readOnly: true,
-                      }} />
+                      inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                      }}
+                    />
                   </Grid>
-                )}
-                <Grid item xs={12} sm={6}>
-                  <RHFTextField name='email' label='Email' fullWidth />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFTextField name='contact' label='Phone Number' fullWidth
-                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                onInput={(e) => {
-                                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                                }} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFTextField
-                    name='address.zipcode'
-                    label='Zipcode'
-                    inputProps={{
-                      inputMode: 'numeric',
-                      pattern: '[0-9]*',
-                      maxLength: 6,
-                    }}
-                    rules={{
-                      required: 'Zipcode is required',
-                      minLength: {
-                        value: 6,
-                        message: 'Zipcode must be at least 6 digits',
-                      },
-                      maxLength: {
-                        value: 6,
-                        message: 'Zipcode cannot be more than 6 digits',
-                      },
-                    }}
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        event.preventDefault();
+                  <Grid item xs={12} sm={6}>
+                    <RHFTextField
+                      name="address.zipcode"
+                      label="Zipcode"
+                      inputProps={{
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                        maxLength: 6,
+                      }}
+                      rules={{
+                        required: 'Zipcode is required',
+                        minLength: {
+                          value: 6,
+                          message: 'Zipcode must be at least 6 digits',
+                        },
+                        maxLength: {
+                          value: 6,
+                          message: 'Zipcode cannot be more than 6 digits',
+                        },
+                      }}
+                      onKeyPress={(event) => {
+                        if (!/[0-9]/.test(event.key)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      onBlur={(event) => {
+                        const zip = event.target.value;
+                        if (zip.length === 6) {
+                          checkZipcode(zip);
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <RHFAutocomplete
+                      name="address.country"
+                      label="Country"
+                      placeholder="Choose a country"
+                      options={countrystatecity.map((country) => country.name)}
+                      isOptionEqualToValue={(option, value) => option === value}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <RHFAutocomplete
+                      name="address.state"
+                      label="State"
+                      placeholder="Choose a state"
+                      options={
+                        watch('address.country')
+                          ? countrystatecity
+                              .find((country) => country.name === watch('address.country'))
+                              ?.states.map((state) => state.name) || []
+                          : []
                       }
-                    }}
-                    onBlur={(event) => {
-                      const zip = event.target.value;
-                      if (zip.length === 6) {
-                        checkZipcode(zip);
+                      isOptionEqualToValue={(option, value) => option === value}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <RHFAutocomplete
+                      name="address.city"
+                      label="City"
+                      placeholder="Choose a city"
+                      options={
+                        watch('address.state')
+                          ? countrystatecity
+                              .find((country) => country.name === watch('address.country'))
+                              ?.states.find((state) => state.name === watch('address.state'))
+                              ?.cities.map((city) => city.name) || []
+                          : []
                       }
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFAutocomplete
-                    name='address.country'
-                    label='Country'
-                    placeholder='Choose a country'
-                    options={countrystatecity.map((country) => country.name)}
-                    isOptionEqualToValue={(option, value) => option === value}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFAutocomplete
-                    name='address.state'
-                    label='State'
-                    placeholder='Choose a state'
-                    options={
-                      watch('address.country')
-                        ? countrystatecity.find((country) => country.name === watch('address.country'))
-                        ?.states.map((state) => state.name) || []
-                        : []
-                    }
-                    isOptionEqualToValue={(option, value) => option === value}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFAutocomplete
-                    name='address.city'
-                    label='City'
-                    placeholder='Choose a city'
-                    options={
-                      watch('address.state')
-                        ? countrystatecity.find((country) => country.name === watch('address.country'))
-                        ?.states.find((state) => state.name === watch('address.state'))
-                        ?.cities.map((city) => city.name) || []
-                        : []
-                    }
-                    isOptionEqualToValue={(option, value) => option === value}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFTextField name='address.street' label='Street' fullWidth />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <RHFTextField name='address.landmark' label='Landmark' />
-                </Grid>
-                {editingBranch && (
+                      isOptionEqualToValue={(option, value) => option === value}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <RHFTextField name="address.street" label="Street" fullWidth />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <RHFTextField name="address.landmark" label="Landmark" />
+                  </Grid>
+                  {editingBranch && (
+                    <Grid item xs={12}>
+                      <RHFSwitch name="isActive" label="Is Active" />
+                    </Grid>
+                  )}
                   <Grid item xs={12}>
-                    <RHFSwitch name='isActive' label='Is Active' />
+                    <LoadingButton
+                      variant="contained"
+                      type="submit"
+                      onClick={handleSubmit(onSubmitBranchDetails)}
+                      loading={loading}
+                    >
+                      {editingBranch ? 'Update Branch' : 'Add Branch'}
+                    </LoadingButton>
                   </Grid>
-                )}
-                <Grid item xs={12}>
-                  <LoadingButton
-                    variant='contained'
-                    type='submit'
-                    onClick={handleSubmit(onSubmitBranchDetails)}
-                    loading={loading}
-                  >
-                    {editingBranch ? 'Update Branch' : 'Add Branch'}
-                  </LoadingButton>
                 </Grid>
-              </Grid>
-            </Box>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
+              </Box>
+            </Card>
+          </Grid>
+        )}
+        <Grid
+          item
+          xs={12}
+          md={user?.role === 'Admin' ? 6 : 12}
+          {...(user?.role !== 'Admin' && { display: 'flex' })}
+        >
           {branch.map((branch) => (
             <Grid item xs={12} md={12} mb={2} key={branch.id} mx={1}>
               <Card>
@@ -302,35 +323,52 @@ export default function BranchCreateView() {
                   sx={{ mb: 2.5 }}
                   action={
                     <>
-                      <IconButton color='primary' onClick={() => handleEditBranch(branch)}>
-                        <Iconify icon='eva:edit-fill' />
-                      </IconButton>
-                      <IconButton color='error' onClick={() => handleDeleteBranches([branch._id])}>
-                        <Iconify icon='eva:trash-2-outline' />
-                      </IconButton>
+                      {user?.role === 'Admin' && (
+                        <>
+                          <IconButton color="primary" onClick={() => handleEditBranch(branch)}>
+                            <Iconify icon="eva:edit-fill" />
+                          </IconButton>
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDeleteBranches([branch._id])}
+                          >
+                            <Iconify icon="eva:trash-2-outline" />
+                          </IconButton>
+                        </>
+                      )}
                     </>
                   }
                 />
                 <Divider />
                 <Box sx={{ p: 3 }}>
                   <Stack spacing={1.5} sx={{ typography: 'body2' }}>
-                    <Stack direction='row' alignItems='center'>
-                      <Box component='span' sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}>
+                    <Stack direction="row" alignItems="center">
+                      <Box
+                        component="span"
+                        sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}
+                      >
                         Email
                       </Box>
                       {branch.email}
                     </Stack>
-                    <Stack direction='row' alignItems='center'>
-                      <Box component='span' sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}>
+                    <Stack direction="row" alignItems="center">
+                      <Box
+                        component="span"
+                        sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}
+                      >
                         Contact
                       </Box>
                       {branch.contact}
                     </Stack>
-                    <Stack direction='row' alignItems='center'>
-                      <Box component='span' sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}>
+                    <Stack direction="row" alignItems="center">
+                      <Box
+                        component="span"
+                        sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}
+                      >
                         Address
                       </Box>
-                      {branch.address.street}, {branch.address.city}, {branch.address.state}, {branch.address.country}, {branch.address.zipcode}
+                      {branch.address.street}, {branch.address.city}, {branch.address.state},{' '}
+                      {branch.address.country}, {branch.address.zipcode}
                     </Stack>
                   </Stack>
                 </Box>
@@ -338,7 +376,6 @@ export default function BranchCreateView() {
             </Grid>
           ))}
         </Grid>
-
       </Grid>
     </FormProvider>
   );

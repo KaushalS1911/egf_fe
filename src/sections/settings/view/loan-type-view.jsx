@@ -13,20 +13,19 @@ export default function LoanTypeView() {
   const [inputVal, setInputVal] = useState({
     loanType: '',
     approvalCharge: '',
-
   });
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = () => {
-    if ( inputVal.loanType == "" || inputVal.approvalCharge == "") {
+    if (inputVal.loanType == '' || inputVal.approvalCharge == '') {
       enqueueSnackbar('Loan Type cannot be empty', { variant: 'warning' });
-    }else {
-
+    } else {
       const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
       const updatedLoanTypes = configs.loanTypes ? [...configs.loanTypes, inputVal] : [inputVal];
       const payload = { ...configs, loanTypes: updatedLoanTypes };
 
-      axios.put(URL, payload)
+      axios
+        .put(URL, payload)
         .then((res) => {
           if (res.status === 200) {
             setInputVal({
@@ -49,7 +48,8 @@ export default function LoanTypeView() {
     const apiEndpoint = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
     const payload = { ...configs, loanTypes: updatedLoanTypes };
 
-    axios.put(apiEndpoint, payload)
+    axios
+      .put(apiEndpoint, payload)
       .then(() => {
         enqueueSnackbar('Loan Type deleted successfully', { variant: 'success' });
         mutate();
@@ -64,9 +64,8 @@ export default function LoanTypeView() {
     <Box sx={{ width: '100%', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant='h5' sx={{ fontWeight: 600 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
             Add Loan Type
-
           </Typography>
         </Grid>
 
@@ -77,9 +76,7 @@ export default function LoanTypeView() {
               variant="outlined"
               label="Loan Type"
               value={inputVal.loanType}
-              onChange={(e) =>
-                setInputVal({ ...inputVal, loanType: e.target.value.toUpperCase() })
-              }
+              onChange={(e) => setInputVal({ ...inputVal, loanType: e.target.value.toUpperCase() })}
               sx={{ fontSize: '16px' }}
             />
 
@@ -90,7 +87,7 @@ export default function LoanTypeView() {
               value={inputVal.approvalCharge}
               onChange={(e) => {
                 const value = e.target.value;
-                if (/^\d*\.?\d*$/.test(value)) { // Regex to allow numbers and one decimal point
+                if (/^\d*\.?\d*$/.test(value)) {
                   setInputVal({ ...inputVal, approvalCharge: value });
                 }
               }}
@@ -98,7 +95,7 @@ export default function LoanTypeView() {
             />
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
-              <Button variant='contained' onClick={handleClick}>
+              <Button variant="contained" onClick={handleClick}>
                 Add
               </Button>
             </Box>
@@ -111,45 +108,47 @@ export default function LoanTypeView() {
               <Box
                 columnGap={2}
                 rowGap={2}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(2, 1fr)',
                 }}
               >
-                {configs?.loanTypes && configs.loanTypes.length !== 0 && configs.loanTypes.map((loan, index) => (
-                  <Grid
-                    container
-                    key={index}
-                    sx={{
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      boxShadow: 4,
-                      borderRadius: 1,
-                      p: 2,
-                      m: 1,
-                    }}
-                  >
-                    <Grid item>
-                      <Typography sx={{ fontSize: '14px' }}>
-                        <strong>Loan Type : </strong> {loan.loanType}
-                      </Typography>
-                      <Typography sx={{ fontSize: '14px' }}>
-                        <strong>Approval Charge : </strong> {loan.approvalCharge}
-                      </Typography>
-                    </Grid>
+                {configs?.loanTypes &&
+                  configs.loanTypes.length !== 0 &&
+                  configs.loanTypes.map((loan, index) => (
+                    <Grid
+                      container
+                      key={index}
+                      sx={{
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        boxShadow: 4,
+                        borderRadius: 1,
+                        p: 2,
+                        m: 1,
+                      }}
+                    >
+                      <Grid item>
+                        <Typography sx={{ fontSize: '14px' }}>
+                          <strong>Loan Type : </strong> {loan.loanType}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px' }}>
+                          <strong>Approval Charge : </strong> {loan.approvalCharge}
+                        </Typography>
+                      </Grid>
 
-                    <Grid item>
-                      <Box
-                        sx={{ color: 'error.main', cursor: 'pointer' }}
-                        onClick={() => handleDelete(loan)}
-                      >
-                        <Iconify icon='solar:trash-bin-trash-bold' />
-                      </Box>
+                      <Grid item>
+                        <Box
+                          sx={{ color: 'error.main', cursor: 'pointer' }}
+                          onClick={() => handleDelete(loan)}
+                        >
+                          <Iconify icon="solar:trash-bin-trash-bold" />
+                        </Box>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                ))}
+                  ))}
               </Box>
             </Stack>
           </Card>

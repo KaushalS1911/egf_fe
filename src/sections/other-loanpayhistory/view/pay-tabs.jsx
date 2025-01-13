@@ -10,7 +10,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import { useGetConfigs } from '../../../api/config';
 
-function PayTabs({ mutate, currentLoan }) {
+function PayTabs({ mutate, currentOtherLoan }) {
   const [activeTab, setActiveTab] = useState(0);
   const { configs } = useGetConfigs();
   const handleChange = (event, newValue) => {
@@ -21,27 +21,39 @@ function PayTabs({ mutate, currentLoan }) {
     <>
       <Grid container spacing={3} sx={{ mt: 1.5 }}>
         <Grid item xs={12} p={0}>
-          <Typography variant='subtitle1' sx={{ fontWeight: 600, px: 2 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600, px: 2 }}>
             Loan Pay Details
           </Typography>
         </Grid>
         <Grid item xs={12} P={0}>
           <Card sx={{ py: 0, px: 2 }}>
-            <Tabs value={activeTab} onChange={handleChange} variant='scrollable' scrollButtons='auto'
-                  sx={{ mb: 1.5, '.css-1obiyde-MuiTabs-indicator': { bottom: 8 } }}>
-              <Tab label='Interest Pay Details' />
+            <Tabs
+              value={activeTab}
+              onChange={handleChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ mb: 1.5, '.css-1obiyde-MuiTabs-indicator': { bottom: 8 } }}
+            >
+              <Tab label="Interest Pay Details" />
               {/*<Tab label='Part Release' />*/}
               {/*<Tab label='Uchak Interest Pay Details' />*/}
               {/*<Tab label='Loan Part Payment' />*/}
-              <Tab label='Loan Close' />
+              <Tab label="Loan Close" />
             </Tabs>
-            {(activeTab === 0 && currentLoan) &&
-            <InterestPayDetailsForm currentLoan={currentLoan} mutate={mutate} configs={configs} />}
+            {activeTab === 0 && currentOtherLoan && (
+              <InterestPayDetailsForm
+                currentOtherLoan={currentOtherLoan}
+                mutate={mutate}
+                configs={configs}
+              />
+            )}
             {/*{(activeTab === 1 && currentLoan) &&*/}
             {/*<PartReleaseForm currentLoan={currentLoan} mutate={mutate} configs={configs} />}*/}
             {/*{(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} mutate={mutate} />}*/}
             {/*{(activeTab === 3 && currentLoan) && <LoanPartPaymentForm currentLoan={currentLoan} mutate={mutate} />}*/}
-            {(activeTab === 1 && currentLoan) && <LoanCloseForm currentLoan={currentLoan} mutate={mutate} />}
+            {activeTab === 1 && currentOtherLoan && (
+              <LoanCloseForm currentOtherLoan={currentOtherLoan} mutate={mutate} />
+            )}
           </Card>
         </Grid>
       </Grid>

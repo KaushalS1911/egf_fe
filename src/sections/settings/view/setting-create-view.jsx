@@ -14,47 +14,59 @@ import BranchCreateView from './branch-create-view';
 import LoanTypeView from './loan-type-view';
 import RemarkCreateView from './remark-create-view';
 import PolicyConfigCreateView from './policy-config-create-view';
+import MonthCreateView from './month-create-view.jsx';
+import OtherNameCreateView from './other-name-create-view.jsx';
 
 const TABS = [
   {
     value: 'Company Profile',
     label: 'Company Profile',
-    icon: <Iconify icon='mdi:company' width={24} />,
+    icon: <Iconify icon="mdi:company" width={24} />,
   },
   {
     value: 'Roles',
     label: 'Roles',
-    icon: <Iconify icon='oui:app-users-roles' width={24} />,
+    icon: <Iconify icon="oui:app-users-roles" width={24} />,
   },
   {
     value: 'Permission',
     label: 'Permission',
-    icon: <Iconify icon='mdi:eye-lock' width={24} />,
+    icon: <Iconify icon="mdi:eye-lock" width={24} />,
   },
   {
     value: 'Branch',
     label: 'Branch',
-    icon: <Iconify icon='carbon:branch' width={24} />,
+    icon: <Iconify icon="carbon:branch" width={24} />,
   },
   {
     value: 'Business type',
     label: 'Business type',
-    icon: <Iconify icon='material-symbols:add-business' width={24} />,
+    icon: <Iconify icon="material-symbols:add-business" width={24} />,
   },
   {
     value: 'Loan type',
     label: 'Loan type',
-    icon: <Iconify icon='mdi:cash-sync' width={24} />,
+    icon: <Iconify icon="mdi:cash-sync" width={24} />,
   },
   {
     value: 'Remark type',
     label: 'Remark type',
-    icon: <Iconify icon='mdi:cash-sync' width={24} />,
+    icon: <Iconify icon="mdi:cash-sync" width={24} />,
   },
   {
     value: 'Export Policy Config',
     label: 'Export Policy Config',
-    icon: <Iconify icon='icon-park-outline:agreement' width={20} />,
+    icon: <Iconify icon="icon-park-outline:agreement" width={20} />,
+  },
+  {
+    value: 'Other Name',
+    label: 'Other Name',
+    icon: <Iconify icon="icon-park-outline:agreement" width={20} />,
+  },
+  {
+    value: 'Month',
+    label: 'Month',
+    icon: <Iconify icon="icon-park-outline:agreement" width={20} />,
   },
 ];
 
@@ -70,7 +82,7 @@ export default function SettingsPage() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Settings'
+          heading="Settings"
           links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Settings' }]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -95,6 +107,8 @@ export default function SettingsPage() {
         {currentTab === 'Branch' && <BranchCreateView />}
         {currentTab === 'Remark type' && <RemarkCreateView />}
         {currentTab === 'Export Policy Config' && <PolicyConfigCreateView />}
+        {currentTab === 'Other Name' && <OtherNameCreateView />}
+        {currentTab === 'Month' && <MonthCreateView />}
       </Container>
     </>
   );

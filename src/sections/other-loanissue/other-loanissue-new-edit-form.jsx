@@ -120,12 +120,13 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
   const NewLoanissueSchema = Yup.object().shape({
     loan: Yup.object().required('Loan is required'),
     otherName: Yup.string().required('Other Name is required'),
+    otherNumber: Yup.string().required('Other Name is Number').max(10),
     amount: Yup.string().required('Amount is required'),
     percentage: Yup.string().required('Percent is required'),
     date: Yup.date().required('Date is required'),
     grossWt: Yup.string().required('groos wt'),
     netWt: Yup.string().required('NetWas wt'),
-    mounth: Yup.string().required('Month is required'),
+    month: Yup.string().required('Month is required'),
     renewalDate: Yup.date().required('Renewaldate is required'),
     closeDate: Yup.string().required('Colse Date is required'),
     otherCharge: Yup.string().required('OtherCharge is required'),
@@ -176,6 +177,9 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       jewellerName: currentOtherLoanIssue?.loan?.jewellerName || '',
       loanType: currentOtherLoanIssue?.loan?.loanType || '',
       loanAmount: currentOtherLoanIssue?.loan?.loanAmount || '',
+      partLoanAmount: currentOtherLoanIssue?.loan?.partLoanAmount || '',
+      intLoanAmount: currentOtherLoanIssue?.loan?.intLoanAmount || '',
+      intRate: currentOtherLoanIssue?.loan?.intRate || '',
       paymentMode: currentOtherLoanIssue?.loan?.paymentMode || '',
       cashAmount: currentOtherLoanIssue?.loan?.cashAmount || '',
       bankAmount: currentOtherLoanIssue?.loan?.bankAmount || 0,
@@ -187,21 +191,22 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       branchName: currentOtherLoanIssue?.loan?.customerBankDetail?.branchName || null,
       otherName: currentOtherLoanIssue?.otherName || '',
       otherNumber: currentOtherLoanIssue?.otherNumber || '',
-      amount: currentOtherLoanIssue?.amount || '',
+      amount: currentOtherLoanIssue?.amount || 0,
       percentage: currentOtherLoanIssue?.percentage || 0,
       date: currentOtherLoanIssue?.date ? new Date(currentOtherLoanIssue.date) : new Date(),
       grossWt: currentOtherLoanIssue?.grossWt || 0,
       netWt: currentOtherLoanIssue?.netWt || 0,
-      mounth: currentOtherLoanIssue?.mounth || '',
+      rate: currentOtherLoanIssue?.rate || 0,
+      month: currentOtherLoanIssue?.month || '',
       renewalDate: currentOtherLoanIssue?.renewalDate
         ? new Date(currentOtherLoanIssue.renewalDate)
-        : new Date(),
+        : '',
       closeDate: currentOtherLoanIssue?.closeDate
         ? new Date(currentOtherLoanIssue.closeDate)
         : new Date(),
-      otherCharge: currentOtherLoanIssue?.otherCharge || '',
-      closingCharge: currentOtherLoanIssue?.closingCharge || '',
-      interestAmount: currentOtherLoanIssue?.interestAmount || '',
+      otherCharge: currentOtherLoanIssue?.otherCharge || 0,
+      closingCharge: currentOtherLoanIssue?.closingCharge || 0,
+      interestAmount: currentOtherLoanIssue?.interestAmount || 0,
       remark: currentOtherLoanIssue?.remark || '',
       // propertyDetails: currentOtherLoanIssue?.propertyDetails || [
       //   {
@@ -312,7 +317,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       date: data.date,
       grossWt: data.grossWt,
       netWt: data.netWt,
-      mounth: data.mounth,
+      rate: data.rate,
+      month: data.month,
       renewalDate: data.renewalDate,
       closeDate: data.closeDate,
       otherCharge: data.otherCharge,
@@ -346,6 +352,24 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       );
     }
   });
+
+  useEffect(() => {
+    const month = watch('month');
+
+    if (!month) {
+      // Handle empty month value
+      setValue('renewalDate', new Date()); // Reset or clear the renewal date
+      return;
+    }
+
+    const monthsToAdd =
+      month === 'MONTHLY' ? 1 : month === 'YEARLY' ? 12 : parseInt(month.split(' ')[0], 10) || 0;
+
+    const calculatedDate = new Date();
+    calculatedDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
+
+    setValue('renewalDate', calculatedDate);
+  }, [watch('month')]);
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -395,19 +419,19 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
         setValue('periodTime', findLoan?.scheme?.interestPeriod);
         setValue('renewalTime', findLoan?.scheme?.renewalTime);
         setValue('loanCloseTime', findLoan?.scheme?.minLoanTime);
-        if (findLoan?.scheme?.interestRate <= 1.5) {
-          setValue('consultingCharge', 0);
-          setValue('interestRate', findLoan?.scheme?.interestRate);
-        } else {
-          setValue('consultingCharge', findLoan?.scheme?.interestRate - 1.5);
-          setValue('interestRate', '1.5');
-        }
+        setValue(
+          'intRate',
+          findLoan?.scheme?.interestRate <= 1.5 ? findLoan?.scheme?.interestRate : 1.5
+        );
       }
+      setValue('consultingCharge', findLoan?.consultingCharge);
       setValue('issueDate', new Date(findLoan?.issueDate));
       setValue('loanType', findLoan?.loanType);
       setValue('approvalCharge', findLoan?.approvalCharge);
       setValue('jewellerName', findLoan?.jewellerName);
       setValue('loanAmount', findLoan?.loanAmount);
+      setValue('partLoanAmount', findLoan?.loanAmount - findLoan?.interestLoanAmount);
+      setValue('intLoanAmount', findLoan?.interestLoanAmount);
       setValue('paymentMode', findLoan?.paymentMode);
       setValue('cashAmount', findLoan?.cashAmount);
 
@@ -950,7 +974,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   fontWeight: 600,
                 }}
               >
-                Loan Scheme Details
+                Loan Details
               </Typography>
               <Box
                 rowGap={1.5}
@@ -976,141 +1000,164 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   req={'red'}
                   disabled
                 />
-                <RHFAutocomplete
-                  name="scheme"
-                  label="Scheme"
-                  req="red"
-                  disabled
-                  fullWidth
-                  options={scheme?.filter((item) => item.isActive)}
-                  getOptionLabel={(option) => option?.name || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option?.id}>
-                      {option?.name}
-                    </li>
-                  )}
-                  onChange={(e, selectedScheme) => {
-                    setValue('scheme', selectedScheme);
-                    const schemedata = selectedScheme;
-                    if (schemedata?.ratePerGram) {
-                      fields.forEach((_, index) => {
-                        const totalWeight =
-                          parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
-                        const lossWeight =
-                          parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
-                        const caratValue =
-                          carat?.find(
-                            (item) =>
-                              item?.name ===
-                              parseFloat(getValues(`propertyDetails[${index}].carat`))
-                          ) || {};
-                        const caratPercentage = caratValue?.caratPercentage || 100;
-                        const grossWeight = totalWeight - lossWeight;
-                        const netWeight = grossWeight * (caratPercentage / 100);
-                        const grossAmount = grossWeight * schemedata?.ratePerGram;
-                        const netAmount = netWeight * schemedata?.ratePerGram;
-                        if (!isNaN(grossWeight))
-                          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
-                        if (!isNaN(netWeight))
-                          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-                        if (!isNaN(grossAmount))
-                          setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));
-                        if (!isNaN(netAmount))
-                          setValue(`propertyDetails[${index}].netAmount`, netAmount.toFixed(2));
-                      });
-                    }
-                  }}
-                />
                 <RHFTextField
-                  name="interestRate"
-                  label="InstrestRate"
-                  InputProps={{ readOnly: true }}
-                  disabled
-                />
-                <Controller
-                  name="consultingCharge"
-                  control={control}
-                  render={({ field }) => (
-                    <RHFTextField
-                      {...field}
-                      disabled={true}
-                      label="Consulting Charge"
-                      req={'red'}
-                    />
-                  )}
-                />
-                <RHFTextField
-                  name="approvalCharge"
-                  label="Approval Charge"
-                  disabled
+                  name="loanAmount"
+                  label="Total Loan Amount"
                   req={'red'}
-                  inputProps={{
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*',
-                    onInput: (e) => {
-                      e.target.value = e.target.value
-                        .replace(/ [^0-9.]/g, '')
-                        .replace(/(\..*?)\..*/g, '$1');
-                    },
-                  }}
-                />
-                <RHFTextField
-                  name="periodTime"
-                  label="INT. Period Time"
                   InputProps={{ readOnly: true }}
                   disabled
                 />
                 <RHFTextField
-                  name="renewalTime"
-                  label="Renewal Time"
+                  name="partLoanAmount"
+                  label="Part Loan Amount"
+                  req={'red'}
                   InputProps={{ readOnly: true }}
                   disabled
                 />
                 <RHFTextField
-                  name="loanCloseTime"
-                  label="Minimun Loan Close Time"
+                  name="intLoanAmount"
+                  label="Int. Loan Amount"
+                  req={'red'}
                   InputProps={{ readOnly: true }}
                   disabled
                 />
-                {currentOtherLoanIssue && (
-                  <RHFTextField
-                    name="loanAmount"
-                    label="Loan AMT."
-                    req={'red'}
-                    disabled
-                    type="number"
-                    inputProps={{ min: 0 }}
-                  />
-                )}
-                {currentOtherLoanIssue && (
-                  <RHFDatePicker
-                    name="nextInstallmentDate"
-                    control={control}
-                    label="Next Installment Date"
-                    req={'red'}
-                    disabled
-                  />
-                )}
-                <RHFTextField name="jewellerName" label="JewellerName" req={'red'} disabled />
-                <RHFAutocomplete
+                <RHFTextField
+                  name="intRate"
+                  label="Int. Rate"
+                  req={'red'}
+                  InputProps={{ readOnly: true }}
                   disabled
-                  name="loanType"
-                  label="Loan Type"
-                  req="red"
-                  fullWidth
-                  options={
-                    configs?.loanTypes?.length > 0
-                      ? configs.loanTypes.map((loan) => loan.loanType)
-                      : []
-                  }
-                  getOptionLabel={(option) => option || ''}
-                  onChange={(event, value) => setValue('loanType', value || '')}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option}>
-                      {option}
-                    </li>
-                  )}
                 />
+                <RHFTextField
+                  name="consultingCharge"
+                  label="Consulting Charge"
+                  req={'red'}
+                  InputProps={{ readOnly: true }}
+                  disabled
+                />
+                <RHFTextField name="approvalCharge" label="Approval Charge" disabled req={'red'} />
+                <RHFTextField name="closingCharge" label="Closing Charge" disabled req={'red'} />
+                {/*<RHFAutocomplete*/}
+                {/*  name="scheme"*/}
+                {/*  label="Scheme"*/}
+                {/*  req="red"*/}
+                {/*  disabled*/}
+                {/*  fullWidth*/}
+                {/*  options={scheme?.filter((item) => item.isActive)}*/}
+                {/*  getOptionLabel={(option) => option?.name || ''}*/}
+                {/*  renderOption={(props, option) => (*/}
+                {/*    <li {...props} key={option?.id}>*/}
+                {/*      {option?.name}*/}
+                {/*    </li>*/}
+                {/*  )}*/}
+                {/*  onChange={(e, selectedScheme) => {*/}
+                {/*    setValue('scheme', selectedScheme);*/}
+                {/*    const schemedata = selectedScheme;*/}
+                {/*    if (schemedata?.ratePerGram) {*/}
+                {/*      fields.forEach((_, index) => {*/}
+                {/*        const totalWeight =*/}
+                {/*          parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;*/}
+                {/*        const lossWeight =*/}
+                {/*          parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;*/}
+                {/*        const caratValue =*/}
+                {/*          carat?.find(*/}
+                {/*            (item) =>*/}
+                {/*              item?.name ===*/}
+                {/*              parseFloat(getValues(`propertyDetails[${index}].carat`))*/}
+                {/*          ) || {};*/}
+                {/*        const caratPercentage = caratValue?.caratPercentage || 100;*/}
+                {/*        const grossWeight = totalWeight - lossWeight;*/}
+                {/*        const netWeight = grossWeight * (caratPercentage / 100);*/}
+                {/*        const grossAmount = grossWeight * schemedata?.ratePerGram;*/}
+                {/*        const netAmount = netWeight * schemedata?.ratePerGram;*/}
+                {/*        if (!isNaN(grossWeight))*/}
+                {/*          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));*/}
+                {/*        if (!isNaN(netWeight))*/}
+                {/*          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));*/}
+                {/*        if (!isNaN(grossAmount))*/}
+                {/*          setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));*/}
+                {/*        if (!isNaN(netAmount))*/}
+                {/*          setValue(`propertyDetails[${index}].netAmount`, netAmount.toFixed(2));*/}
+                {/*      });*/}
+                {/*    }*/}
+                {/*  }}*/}
+                {/*/>*/}
+                {/*<RHFTextField*/}
+                {/*  name="interestRate"*/}
+                {/*  label="InstrestRate"*/}
+                {/*  InputProps={{ readOnly: true }}*/}
+                {/*  disabled*/}
+                {/*/>*/}
+                {/*<Controller*/}
+                {/*  name="consultingCharge"*/}
+                {/*  control={control}*/}
+                {/*  render={({ field }) => (*/}
+                {/*    <RHFTextField*/}
+                {/*      {...field}*/}
+                {/*      disabled={true}*/}
+                {/*      label="Consulting Charge"*/}
+                {/*      req={'red'}*/}
+                {/*    />*/}
+                {/*  )}*/}
+                {/*/>*/}
+
+                {/*<RHFTextField*/}
+                {/*  name="periodTime"*/}
+                {/*  label="INT. Period Time"*/}
+                {/*  InputProps={{ readOnly: true }}*/}
+                {/*  disabled*/}
+                {/*/>*/}
+                {/*<RHFTextField*/}
+                {/*  name="renewalTime"*/}
+                {/*  label="Renewal Time"*/}
+                {/*  InputProps={{ readOnly: true }}*/}
+                {/*  disabled*/}
+                {/*/>*/}
+                {/*<RHFTextField*/}
+                {/*  name="loanCloseTime"*/}
+                {/*  label="Minimun Loan Close Time"*/}
+                {/*  InputProps={{ readOnly: true }}*/}
+                {/*  disabled*/}
+                {/*/>*/}
+                {/*{currentOtherLoanIssue && (*/}
+                {/*  <RHFTextField*/}
+                {/*    name="loanAmount"*/}
+                {/*    label="Loan AMT."*/}
+                {/*    req={'red'}*/}
+                {/*    disabled*/}
+                {/*    type="number"*/}
+                {/*    inputProps={{ min: 0 }}*/}
+                {/*  />*/}
+                {/*)}*/}
+                {/*{currentOtherLoanIssue && (*/}
+                {/*  <RHFDatePicker*/}
+                {/*    name="nextInstallmentDate"*/}
+                {/*    control={control}*/}
+                {/*    label="Next Installment Date"*/}
+                {/*    req={'red'}*/}
+                {/*    disabled*/}
+                {/*  />*/}
+                {/*)}*/}
+                {/*<RHFTextField name="jewellerName" label="JewellerName" req={'red'} disabled />*/}
+                {/*<RHFAutocomplete*/}
+                {/*  disabled*/}
+                {/*  name="loanType"*/}
+                {/*  label="Loan Type"*/}
+                {/*  req="red"*/}
+                {/*  fullWidth*/}
+                {/*  options={*/}
+                {/*    configs?.loanTypes?.length > 0*/}
+                {/*      ? configs.loanTypes.map((loan) => loan.loanType)*/}
+                {/*      : []*/}
+                {/*  }*/}
+                {/*  getOptionLabel={(option) => option || ''}*/}
+                {/*  onChange={(event, value) => setValue('loanType', value || '')}*/}
+                {/*  renderOption={(props, option) => (*/}
+                {/*    <li {...props} key={option}>*/}
+                {/*      {option}*/}
+                {/*    </li>*/}
+                {/*  )}*/}
+                {/*/>*/}
                 {isFieldsEnabled && (
                   <Box pb={0}>
                     <Box
@@ -1537,39 +1584,101 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   md: 'repeat(7, 1fr)',
                 }}
               >
-                <RHFTextField
+                <RHFAutocomplete
+                  disabled={!isFieldsEnabled}
                   name="otherName"
                   label="Other Name"
+                  req="red"
+                  fullWidth
+                  options={
+                    configs?.otherNames?.length > 0 ? configs.otherNames.map((item) => item) : []
+                  }
+                  getOptionLabel={(option) => option || ''}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+
+                <RHFTextField
+                  name="otherNumber"
+                  label="Other Number"
                   req={'red'}
                   disabled={!isFieldsEnabled}
+                  inputProps={{
+                    maxLength: 10,
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                  }}
+                  rules={{
+                    required: 'Contact number is required',
+                    pattern: {
+                      value: /^[0-9]{10}$/,
+                      message: 'Please enter a valid 10-digit contact number',
+                    },
+                  }}
+                  onKeyPress={(e) => {
+                    if (!/[0-9]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
-                <RHFTextField name="otherNumber" label="Other Number" req={'red'} disabled />
                 <RHFTextField
                   name="amount"
                   label="Amount"
                   req={'red'}
                   disabled={!isFieldsEnabled}
+                  onKeyPress={(e) => {
+                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <RHFTextField
                   name="percentage"
                   label="Percentage"
                   req={'red'}
                   disabled={!isFieldsEnabled}
+                  onKeyPress={(e) => {
+                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
-                <RHFDatePicker name="date" control={control} label="Date" req={'red'} />
+                <RHFDatePicker
+                  name="date"
+                  control={control}
+                  label="Date"
+                  req={'red'}
+                  disabled={!isFieldsEnabled}
+                />
                 <RHFTextField
                   name="grossWt"
                   label="Gross Wt"
                   req={'red'}
                   disabled={!isFieldsEnabled}
+                  onKeyPress={(e) => {
+                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <RHFTextField name="netWt" label="Net Wt" req={'red'} disabled={!isFieldsEnabled} />
+                <RHFTextField
+                  name="rate"
+                  label="Rate"
+                  req={'red'}
+                  disabled
+                  value={watch('netWt') ? (watch('amount') / watch('netWt')).toFixed(2) : 0}
+                />
                 <RHFAutocomplete
-                  name="mounth"
-                  label="Mounth"
+                  name="month"
+                  label="Month"
                   req={'red'}
                   fullWidth
-                  options={['Monthly', '3 Months', '6 Months', '9 Months', 'Yearly']}
+                  disabled={!isFieldsEnabled}
+                  options={configs?.months?.length > 0 ? configs.months.map((item) => item) : []}
                   getOptionLabel={(option) => option}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -1582,8 +1691,15 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   control={control}
                   label="Renewal Date"
                   req={'red'}
+                  disabled={!isFieldsEnabled}
                 />
-                <RHFDatePicker name="closeDate" control={control} label="Close Date" req={'red'} />
+                <RHFDatePicker
+                  name="closeDate"
+                  control={control}
+                  label="Close Date"
+                  req={'red'}
+                  disabled={!isFieldsEnabled}
+                />
                 <RHFTextField
                   name="otherCharge"
                   label="Other Charge"
@@ -1595,12 +1711,22 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   label="Closing charge"
                   req={'red'}
                   disabled={!isFieldsEnabled}
+                  onKeyPress={(e) => {
+                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <RHFTextField
                   name="interestAmount"
                   label="Interest Amount"
                   req={'red'}
                   disabled={!isFieldsEnabled}
+                  onKeyPress={(e) => {
+                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <RHFTextField
                   name="remark"

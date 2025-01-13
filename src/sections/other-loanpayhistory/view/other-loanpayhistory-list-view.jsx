@@ -27,9 +27,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import LoanpayhistoryTableRow from '../other-loanpayhistory-table-row';
-import LoanpayhistoryTableToolbar from '../other-loanpayhistory-table-toolbar';
-import LoanpayhistoryTableFiltersResult from '../other-loanpayhistory-table-filters-result';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import Tabs from '@mui/material/Tabs';
@@ -41,37 +38,36 @@ import { useGetLoanissue } from '../../../api/loanissue';
 import BulkInterestModel from '../bulk-interest-pay/bulk-interest-model';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetConfigs } from '../../../api/config';
+import OtherLoanpayhistoryTableRow from '../other-loanpayhistory-table-row.jsx';
+import OtherLoanpayhistoryTableToolbar from '../other-loanpayhistory-table-toolbar.jsx';
+import OtherLoanpayhistoryTableFiltersResult from '../other-loanpayhistory-table-filters-result.jsx';
+import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
+import { isBetween } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: '', label: '#' },
-  { id: 'loanNo', label: 'Loan no.' },
-  { id: 'issueDate', label: 'Issue date' },
-  { id: 'customerName', label: 'Customer name' },
-  { id: 'ContactNo', label: 'Contact' },
-  { id: 'loanAmt', label: 'Total loan amt' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'PartLoanAmount', label: 'Part loan amt' },
-  { id: 'InterestRate', label: 'Int. rate' },
-  { id: 'CashAmount', label: 'Cash amt' },
-  { id: 'BankAmount', label: 'Bank amt' },
-  { id: 'status', label: 'Status' },
-  { id: 'reports', label: 'Reports' },
+  { id: 'otherName', label: 'Other Name ' },
+  { id: 'loanNo', label: 'Loan No.' },
+  { id: 'otherNo', label: 'Other No.' },
+  { id: 'otherAmount', label: 'Other Amt.' },
+  { id: 'rate', label: 'Rate (%)' },
+  { id: 'date', label: 'Date' },
+  { id: 'rate', label: 'Rate' },
+  { id: 'grossWeight', label: 'Gross Wt' },
+  { id: 'netWeight', label: 'Net Wt' },
+  { id: 'month', label: 'Month' },
+  { id: 'closeDate', label: 'Close Date' },
+  { id: 'closeAmount', label: 'Close Amt' },
+  { id: 'renewDate', label: 'Renew Date' },
 ];
-
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, { value: 'Regular', label: 'Regular' }, {
-  value: 'Overdue',
-  label: 'Overdue',
-},
-  { value: 'Disbursed', label: 'Disbursed' }, {
-    value: 'Closed',
-    label: 'Closed',
-  }];
 
 const defaultFilters = {
   username: '',
   status: 'All',
+  startDate: null,
+  endDate: null,
 };
 
 // ----------------------------------------------------------------------
@@ -83,21 +79,21 @@ export default function LoanpayhistoryListView() {
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const loanPayHistory = true;
-  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(loanPayHistory);
+  const { otherLoanissue, mutate, otherLoanissueLoading } = useGetOtherLoanissue();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(Loanissue);
+  const [tableData, setTableData] = useState(otherLoanissue);
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
 
   useEffect(() => {
-    const updatedData = Loanissue.map((item, index) => ({
+    const updatedData = otherLoanissue.map((item, index) => ({
       ...item,
       srNo: index + 1,
     }));
     setSrData(updatedData);
-  }, [Loanissue]);
+  }, [otherLoanissue]);
 
   const dataFiltered = applyFilter({
     inputData: srData,
@@ -107,7 +103,7 @@ export default function LoanpayhistoryListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -122,7 +118,7 @@ export default function LoanpayhistoryListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -146,7 +142,7 @@ export default function LoanpayhistoryListView() {
     (event, newValue) => {
       handleFilters('status', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
 
   const handleDeleteRow = useCallback(
@@ -156,7 +152,7 @@ export default function LoanpayhistoryListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -175,20 +171,18 @@ export default function LoanpayhistoryListView() {
     (id) => {
       router.push(paths.dashboard.loanPayHistory.edit(id));
     },
-    [router],
+    [router]
   );
 
-  if (LoanissueLoading) {
-    return (
-      <LoadingScreen />
-    );
+  if (otherLoanissueLoading) {
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Other Loan pay history'
+          heading="Other Loan pay history"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Other Loan Pay History', href: paths.dashboard.other_loanPayHistory.root },
@@ -197,55 +191,11 @@ export default function LoanpayhistoryListView() {
           sx={{
             mb: { xs: 3, md: 5 },
           }}
-          action={
-            getResponsibilityValue('bulk_interest_pay', configs, user) && (
-              <Button variant='contained' onClick={() => setOpen(true)}>
-                Bulk Interest Pay
-              </Button>)
-          }
         />
         <Card>
-          <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition='end'
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <>
-                    <Label
-                      style={{ margin: '5px' }}
-                      variant={
-                        ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
-                      }
-                      color={
-                        (tab.value === 'Regular' && 'success') ||
-                        (tab.value === 'Overdue' && 'error') ||
-                        (tab.value === 'Disbursed' && 'info') ||
-                        (tab.value === 'Closed' && 'warning') ||
-                        'default'
-                      }
-                    >
-                      {['Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
-                        ? Loanissue.filter((item) => item.status === tab.value).length
-                        : Loanissue.length}
-                    </Label>
-                  </>
-                }
-              />
-            ))}
-          </Tabs>
-          <LoanpayhistoryTableToolbar filters={filters} onFilters={handleFilters} />
+          <OtherLoanpayhistoryTableToolbar filters={filters} onFilters={handleFilters} />
           {canReset && (
-            <LoanpayhistoryTableFiltersResult
+            <OtherLoanpayhistoryTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -261,13 +211,13 @@ export default function LoanpayhistoryListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -286,10 +236,10 @@ export default function LoanpayhistoryListView() {
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row, index) => (
-                      <LoanpayhistoryTableRow
+                      <OtherLoanpayhistoryTableRow
                         key={row._id}
                         index={index}
                         row={row}
@@ -324,7 +274,7 @@ export default function LoanpayhistoryListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -332,8 +282,8 @@ export default function LoanpayhistoryListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -348,8 +298,8 @@ export default function LoanpayhistoryListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
-  const { username, status } = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { username, status, startDate, endDate } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -366,13 +316,17 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
 
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
-
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((order) =>
+      isBetween(new Date(order.renewalDate), startDate, endDate)
+    );
+  }
   return inputData;
 }

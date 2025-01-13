@@ -5,11 +5,11 @@ import OtherLoanpayhistoryNewEditForm from './other-loanpayhistory-new-edit-form
 
 // ----------------------------------------------------------------------
 
-export default function OtherLoanpayhistoryNew({ currentLoan, mutate }) {
+export default function OtherLoanpayhistoryNew({ currentOtherLoan, mutate }) {
   return (
     <>
-      <OtherLoanpayhistoryNewEditForm currentLoan={currentLoan} mutate={mutate} />
-      <PayTabs currentLoan={currentLoan} mutate={mutate} />
+      <OtherLoanpayhistoryNewEditForm currentOtherLoan={currentOtherLoan} mutate={mutate} />
+      <PayTabs currentOtherLoan={currentOtherLoan} mutate={mutate} />
     </>
   );
 }

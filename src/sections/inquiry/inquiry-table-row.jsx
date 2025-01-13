@@ -31,7 +31,14 @@ import Label from '../../components/label';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
-export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, mutate }) {
+export default function InquiryTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  mutate,
+}) {
   const { date, firstName, lastName, contact, inquiryFor, remark, _id } = row;
   const { configs } = useGetConfigs();
   const [attempts, setAttempts] = useState(row?.attempts || []);
@@ -77,15 +84,17 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         }
       }
 
-      const branchQuery = parsedBranch && parsedBranch === 'all'
-        ? `branch=${mainbranchid?._id}`
-        : `branch=${parsedBranch}`;
-      const employeeQuery = user?.role === 'Admin'
-        ? `&assignTo=${row?.assignTo?._id}`
-        : ``;
+      const branchQuery =
+        parsedBranch && parsedBranch === 'all'
+          ? `branch=${mainbranchid?._id}`
+          : `branch=${parsedBranch}`;
+      const employeeQuery = user?.role === 'Admin' ? `&assignTo=${row?.assignTo?._id}` : ``;
       const queryString = `${branchQuery}${employeeQuery}`;
 
-      const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${_id}?${queryString}`, payload);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${_id}?${queryString}`,
+        payload
+      );
 
       enqueueSnackbar('Responses saved successfully!', { variant: 'success' });
       setAttempts(response?.data?.data?.attempts);
@@ -113,20 +122,22 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         sx={{
           backgroundColor: isRecentlyUpdated() ? '#F6F7F8' : 'inherit',
         }}
-      > <TableCell padding='checkbox'>
-        <Checkbox checked={selected} onClick={onSelectRow} />
-      </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
+      >
+        {' '}
+        <TableCell padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date) || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.recallingDate ? fDate(row?.recallingDate) : '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
         <TableCell>
           <Label
-            variant='soft'
+            variant="soft"
             color={
               (row?.status === 'Completed' && 'success') ||
               (row?.status === 'Responded' && 'warning') ||
@@ -138,30 +149,36 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
             {row?.status}
           </Label>
         </TableCell>
-        <TableCell align='right' sx={{ whiteSpace: 'nowrap' }}>
-          {row?.attempts && <IconButton
-            color={collapse.value ? 'inherit' : 'default'}
-            onClick={collapse.onToggle}
-            sx={{ ...(collapse.value && { bgcolor: 'action.hover' }) }}
-          >
-            <Iconify icon='eva:arrow-ios-downward-fill' />
-          </IconButton>}
-          {getResponsibilityValue('inquiry_follow_Up', configs, user)
-          && <IconButton onClick={handleRespondedClick}>
-            <Iconify icon='eva:edit-fill' />
-          </IconButton>}
-          {getResponsibilityValue('delete_inquiry', configs, user)
-          || getResponsibilityValue('update_inquiry', configs, user)
-            ? <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : ''}
+        <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
+          {row?.attempts && (
+            <IconButton
+              color={collapse.value ? 'inherit' : 'default'}
+              onClick={collapse.onToggle}
+              sx={{ ...(collapse.value && { bgcolor: 'action.hover' }) }}
+            >
+              <Iconify icon="eva:arrow-ios-downward-fill" />
+            </IconButton>
+          )}
+          {getResponsibilityValue('inquiry_follow_Up', configs, user) && (
+            <IconButton onClick={handleRespondedClick}>
+              <Iconify icon="eva:edit-fill" />
+            </IconButton>
+          )}
+          {getResponsibilityValue('delete_inquiry', configs, user) ||
+          getResponsibilityValue('update_inquiry', configs, user) ? (
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <TableRow>
         <TableCell sx={{ p: 0, border: 'none' }} colSpan={9}>
           <Collapse
             in={collapse.value}
-            timeout='auto'
+            timeout="auto"
             unmountOnExit
             sx={{ bgcolor: 'background.neutral' }}
           >
@@ -169,14 +186,13 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
               {attempts?.map((item, index) => (
                 <Stack
                   key={index}
-                  direction='row'
-                  alignItems='center'
+                  direction="row"
+                  alignItems="center"
                   sx={{
                     px: 1,
                     p: (theme) => theme.spacing(1.5, 2, 1.5, 1.5),
                     '&:not(:last-of-type)': {
-                      borderBottom: (theme) =>
-                        `solid 2px ${theme.palette.background.neutral}`,
+                      borderBottom: (theme) => `solid 2px ${theme.palette.background.neutral}`,
                     },
                   }}
                 >
@@ -196,44 +212,49 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('delete_inquiry', configs, user)
-        && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
-        {getResponsibilityValue('update_inquiry', configs, user)
-        && <MenuItem
-          onClick={() => {
-            onEditRow(_id);
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
+        {getResponsibilityValue('delete_inquiry', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
+        {getResponsibilityValue('update_inquiry', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow(_id);
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
       </CustomPopover>
-      <Dialog open={openResponseDialog} onClose={handleCloseResponseDialog} maxWidth='sm' fullWidth>
+      <Dialog open={openResponseDialog} onClose={handleCloseResponseDialog} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 600 }}>Add Response</DialogTitle>
         <DialogContent dividers>
           {attempts.map((attempt, index) => (
-            <Stack key={index} spacing={1.5}
-                   sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'grey.300', borderRadius: 2 }}>
-              <Typography variant='subtitle2' sx={{ fontWeight: 500 }}>
+            <Stack
+              key={index}
+              spacing={1.5}
+              sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'grey.300', borderRadius: 2 }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 500 }}>
                 Response {index + 1}
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <TextField
-                  label='Date'
-                  type='date'
+                  label="Date"
+                  type="date"
                   value={attempt.date}
                   onChange={(e) => {
                     const newAttempts = [...attempts];
@@ -245,7 +266,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
                 />
                 <TextField
                   sx={{ px: 1 }}
-                  label='Remark'
+                  label="Remark"
                   value={attempt.remark}
                   onChange={(e) => {
                     const newAttempts = [...attempts];
@@ -254,16 +275,16 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
                   }}
                   multiline
                   rows={1}
-                  placeholder='Add a remark'
+                  placeholder="Add a remark"
                   fullWidth
                 />
               </Box>
             </Stack>
           ))}
-          <Stack direction='row' justifyContent='flex-end' spacing={1} sx={{ mt: 1 }}>
+          <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 1 }}>
             <Button
               onClick={handleAddResponse}
-              variant='outlined'
+              variant="outlined"
               sx={{ borderColor: 'primary.main', color: 'primary.main' }}
             >
               Add Another Response
@@ -272,7 +293,7 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={handleCloseResponseDialog}>Cancel</Button>
-          <Button onClick={handleSaveResponses} variant='contained' color='primary'>
+          <Button onClick={handleSaveResponses} variant="contained" color="primary">
             Save
           </Button>
         </DialogActions>
@@ -280,10 +301,10 @@ export default function InquiryTableRow({ row, selected, onEditRow, onSelectRow,
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure you want to delete?'
+        title="Delete"
+        content="Are you sure you want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

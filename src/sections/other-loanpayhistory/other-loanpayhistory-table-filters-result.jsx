@@ -6,10 +6,19 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify';
+import { shortDateLabel } from '../../components/custom-date-range-picker/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function OtherLoanpayhistoryTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
+export default function OtherLoanpayhistoryTableFiltersResult({
+  filters,
+  onFilters,
+  onResetFilters,
+  results,
+  ...other
+}) {
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+  const DayLabel = shortDateLabel(filters.startDay, filters.endDay);
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
   }, [onFilters]);
@@ -19,48 +28,57 @@ export default function OtherLoanpayhistoryTableFiltersResult({ filters, onFilte
       const newValue = filters.service.filter((item) => item !== inputValue);
       onFilters('service', newValue);
     },
-    [filters.service, onFilters],
+    [filters.service, onFilters]
   );
 
   const handleRemoveStatus = useCallback(() => {
     onFilters('status', 'All');
   }, [onFilters]);
 
+  const handleRemoveDate = useCallback(() => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
+  }, [onFilters]);
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
-        <Box component='span' sx={{ color: 'text.secondary', ml: 0.25 }}>
+        <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
           results found
         </Box>
       </Box>
-      <Stack flexGrow={1} spacing={1} direction='row' flexWrap='wrap' alignItems='center'>
+      <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {!!filters.service && (
-          <Block label='Service:'>
+          <Block label="Service:">
             {filters.service.map((item) => (
               <Chip
                 key={item}
                 label={item}
-                size='small'
+                size="small"
                 onDelete={() => handleRemoveService(item)}
               />
             ))}
           </Block>
         )}
         {!!filters.username && (
-          <Block label='Keyword:'>
-            <Chip label={filters.username} size='small' onDelete={handleRemoveKeyword} />
+          <Block label="Keyword:">
+            <Chip label={filters.username} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
         {filters.status !== 'All' && (
-          <Block label='Status:'>
-            <Chip size='small' label={filters.status} onDelete={handleRemoveStatus} />
+          <Block label="Status:">
+            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+          </Block>
+        )}
+        {filters.startDate && filters.endDate && (
+          <Block label="Date:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
           </Block>
         )}
         <Button
-          color='error'
+          color="error"
           onClick={onResetFilters}
-          startIcon={<Iconify icon='solar:trash-bin-trash-bold' />}
+          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
           Clear
         </Button>
@@ -82,9 +100,9 @@ function Block({ label, children, sx, ...other }) {
   return (
     <Stack
       component={Paper}
-      variant='outlined'
+      variant="outlined"
       spacing={1}
-      direction='row'
+      direction="row"
       sx={{
         p: 1,
         borderRadius: 1,
@@ -94,10 +112,10 @@ function Block({ label, children, sx, ...other }) {
       }}
       {...other}
     >
-      <Box component='span' sx={{ typography: 'subtitle2' }}>
+      <Box component="span" sx={{ typography: 'subtitle2' }}>
         {label}
       </Box>
-      <Stack spacing={1} direction='row' flexWrap='wrap'>
+      <Stack spacing={1} direction="row" flexWrap="wrap">
         {children}
       </Stack>
     </Stack>
