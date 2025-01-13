@@ -51,7 +51,7 @@ const TABS = [
   {
     value: 'Remark type',
     label: 'Remark type',
-    icon: <Iconify icon="mdi:cash-sync" width={24} />,
+    icon: <Iconify icon="subway:mark-1" width={18} />,
   },
   {
     value: 'Export Policy Config',
@@ -61,12 +61,12 @@ const TABS = [
   {
     value: 'Other Name',
     label: 'Other Name',
-    icon: <Iconify icon="icon-park-outline:agreement" width={20} />,
+    icon: <Iconify icon="icon-park-solid:edit-name" width={20} />,
   },
   {
     value: 'Month',
     label: 'Month',
-    icon: <Iconify icon="icon-park-outline:agreement" width={20} />,
+    icon: <Iconify icon="tabler:calendar-month-filled" width={20} />,
   },
 ];
 
