@@ -21,7 +21,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import Logo from 'src/components/logo';
 import { useAuthContext } from '../../../auth/hooks';
 import { Box } from '@mui/system';
-
+import logo from 'src/assets/logo/logo.png';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
@@ -64,9 +64,9 @@ export default function JwtLoginView() {
   });
 
   const renderHead = (
-    <Stack spacing={2} sx={{ mb: 1 }}>
+    <Stack spacing={2} sx={{ mb: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Logo />
+        <img src={logo} alt="logo" width={100} />
       </Box>
     </Stack>
   );
