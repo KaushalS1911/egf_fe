@@ -68,25 +68,6 @@ export default function OtherLoanpayhistoryTableRow({
   const view = useBoolean();
   const [dialogContent, setDialogContent] = useState(null);
 
-  let color;
-  switch (status) {
-    case 'Closed': {
-      color = (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07');
-      break;
-    }
-    case 'Overdue': {
-      color = (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706');
-      break;
-    }
-    case 'Regular': {
-      color = (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403');
-      break;
-    }
-    default: {
-      color = '';
-    }
-  }
-
   const handleDialogOpen = (content) => {
     setDialogContent(content);
     view.onTrue();
@@ -113,11 +94,7 @@ export default function OtherLoanpayhistoryTableRow({
 
   return (
     <>
-      <TableRow
-        hover
-        selected={selected}
-        sx={{ backgroundColor: loanStatus === status ? color : color }}
-      >
+      <TableRow hover selected={selected}>
         <TableCell>{srNo}</TableCell>
         {getResponsibilityValue('create_loanIssue', configs, user) ? (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
