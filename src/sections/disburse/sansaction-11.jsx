@@ -197,14 +197,16 @@ const useStyles = () =>
           justifyContent: 'space-between',
         },
         box: {
-          width: 76,
-          height: 76,
+          width: 60,
+          height: 60,
           borderWidth: 1,
           borderColor: '#232C4B',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          marginLeft: 5,
         },
+
         signText: {
           fontSize: 11,
           color: '#232C4B',
