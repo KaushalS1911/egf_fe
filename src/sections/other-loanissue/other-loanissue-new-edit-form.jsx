@@ -176,19 +176,21 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
         : null,
       jewellerName: currentOtherLoanIssue?.loan?.jewellerName || '',
       loanType: currentOtherLoanIssue?.loan?.loanType || '',
-      loanAmount: currentOtherLoanIssue?.loan?.loanAmount || '',
+      loanAmount: '',
+      totalLoanAmount: currentOtherLoanIssue?.loan?.loanAmount || '',
       partLoanAmount: currentOtherLoanIssue?.loan?.partLoanAmount || '',
       intLoanAmount: currentOtherLoanIssue?.loan?.intLoanAmount || '',
       intRate: currentOtherLoanIssue?.loan?.intRate || '',
-      paymentMode: currentOtherLoanIssue?.loan?.paymentMode || '',
-      cashAmount: currentOtherLoanIssue?.loan?.cashAmount || '',
-      bankAmount: currentOtherLoanIssue?.loan?.bankAmount || 0,
-      accountNumber: currentOtherLoanIssue?.loan?.customerBankDetail?.accountNumber || '',
-      accountType: currentOtherLoanIssue?.loan?.customerBankDetail?.accountType || '',
-      accountHolderName: currentOtherLoanIssue?.loan?.customerBankDetail?.accountHolderName || '',
-      IFSC: currentOtherLoanIssue?.loan?.customerBankDetail?.IFSC || '',
-      bankName: currentOtherLoanIssue?.loan?.customerBankDetail?.bankName || '',
-      branchName: currentOtherLoanIssue?.loan?.customerBankDetail?.branchName || null,
+      paymentMode: currentOtherLoanIssue?.paymentMode || '',
+      account: currentOtherLoanIssue?.bankDetails?.account || '',
+      cashAmount: currentOtherLoanIssue?.cashAmount || '',
+      bankAmount: currentOtherLoanIssue?.bankAmount || 0,
+      accountNumber: currentOtherLoanIssue?.bankDetails?.accountNumber || '',
+      accountType: currentOtherLoanIssue?.bankDetails?.accountType || '',
+      accountHolderName: currentOtherLoanIssue?.bankDetails?.accountHolderName || '',
+      IFSC: currentOtherLoanIssue?.bankDetails?.IFSC || '',
+      bankName: currentOtherLoanIssue?.bankDetails?.bankName || '',
+      branchName: currentOtherLoanIssue?.bankDetails?.branchName || null,
       otherName: currentOtherLoanIssue?.otherName || '',
       otherNumber: currentOtherLoanIssue?.otherNumber || '',
       amount: currentOtherLoanIssue?.amount || 0,
@@ -241,6 +243,9 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     getValues,
   } = methods;
 
+  useEffect(() => {
+    setValue('loanAmount', watch('amount'));
+  }, [watch('amount'), watch('loanAmount')]);
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'propertyDetails',
@@ -289,24 +294,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     facingMode: 'user',
   };
 
-  const capture = useCallback(() => {
-    if (webcamRef.current) {
-      const imageSrc = webcamRef.current.getScreenshot();
-      if (imageSrc) {
-        setCapturedImage(imageSrc);
-        setValue('property_image', imageSrc);
-        setOpen2(false);
-        setOpen(true);
-      }
-    }
-  }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentOtherLoanIssue]);
-
-  const handleRemove = (index) => {
-    if (fields.length > 1) {
-      remove(index);
-    }
-  };
-
   const onSubmit = handleSubmit(async (data) => {
     const payload = {
       loan: data.loan.id,
@@ -325,6 +312,18 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       closingCharge: data.closingCharge,
       interestAmount: data.interestAmount,
       remark: data.remark,
+      paymentMode: data.paymentMode,
+      cashAmount: data.cashAmount,
+      bankAmount: data.bankAmount,
+      bankDetails: {
+        account: data.account,
+        accountNumber: data.accontNumber,
+        accountType: data.accountType,
+        accountHolderName: data.accountHolderName,
+        IFSC: data.IFSC,
+        bankName: data.bankName,
+        branchName: data.branchName,
+      },
     };
     try {
       const url = currentOtherLoanIssue
@@ -365,11 +364,11 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     const monthsToAdd =
       month === 'MONTHLY' ? 1 : month === 'YEARLY' ? 12 : parseInt(month.split(' ')[0], 10) || 0;
 
-    const calculatedDate = new Date();
+    const calculatedDate = new Date(watch('date'));
     calculatedDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
 
     setValue('renewalDate', calculatedDate);
-  }, [watch('month')]);
+  }, [watch('month'), watch('date')]);
 
   const handleCustomerSelect = (selectedCustomer) => {
     if (selectedCustomer) {
@@ -398,7 +397,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
   useEffect(() => {
     const findLoan = Loanissue?.find((item) => item?._id === loanId?.id);
     setPropertImg(findLoan?.propertyImage);
-    console.log(findLoan, '0000');
     setCustomerData(findLoan?.customer);
     if (findLoan) {
       setValue('loanNo', findLoan?.loanNo);
@@ -429,20 +427,20 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       setValue('loanType', findLoan?.loanType);
       setValue('approvalCharge', findLoan?.approvalCharge);
       setValue('jewellerName', findLoan?.jewellerName);
-      setValue('loanAmount', findLoan?.loanAmount);
+      setValue('totalLoanAmount', findLoan?.loanAmount);
       setValue('partLoanAmount', findLoan?.loanAmount - findLoan?.interestLoanAmount);
       setValue('intLoanAmount', findLoan?.interestLoanAmount);
-      setValue('paymentMode', findLoan?.paymentMode);
-      setValue('cashAmount', findLoan?.cashAmount);
+      // setValue('paymentMode', findLoan?.paymentMode);
+      // setValue('cashAmount', findLoan?.cashAmount);
 
-      if (!currentOtherLoanIssue) {
-        setValue('accountNumber', findLoan?.customer?.bankDetails?.accountNumber);
-        setValue('accountType', findLoan?.customer?.bankDetails?.accountType);
-        setValue('accountHolderName', findLoan?.customer?.bankDetails?.accountHolderName);
-        setValue('IFSC', findLoan?.customer?.bankDetails?.IFSC);
-        setValue('bankName', findLoan?.customer?.bankDetails?.bankName);
-        setValue('branchName', findLoan?.customer?.bankDetails?.branchName);
-      }
+      // if (!currentOtherLoanIssue) {
+      //   setValue('accountNumber', findLoan?.customer?.bankDetails?.accountNumber);
+      //   setValue('accountType', findLoan?.customer?.bankDetails?.accountType);
+      //   setValue('accountHolderName', findLoan?.customer?.bankDetails?.accountHolderName);
+      //   setValue('IFSC', findLoan?.customer?.bankDetails?.IFSC);
+      //   setValue('bankName', findLoan?.customer?.bankDetails?.bankName);
+      //   setValue('branchName', findLoan?.customer?.bankDetails?.branchName);
+      // }
     } else {
       setValue('customerCode', '');
       setValue('customerName', '');
@@ -502,20 +500,30 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       .toFixed(field === 'pcs' ? 0 : 2);
   };
 
-  // const handleLoanAmountChange = (event) => {
-  //   const newLoanAmount = parseFloat(event.target.value) || '';
-  //   setValue('loanAmount', newLoanAmount);
-  //   const paymentMode = watch('paymentMode');
-  //   if (paymentMode === 'Cash') {
-  //     setValue('cashAmount', newLoanAmount);
-  //     setValue('bankAmount', 0);
-  //   } else if (paymentMode === 'Bank') {
-  //     setValue('bankAmount', newLoanAmount);
-  //     setValue('cashAmount', 0);
-  //   } else if (paymentMode === 'Both') {
-  //     setValue('cashAmount', newLoanAmount);
-  //   }
-  // };
+  useEffect(() => {
+    const accountDetails = watch('account');
+    setValue('accountNumber', accountDetails?.accountNumber);
+    setValue('accountType', accountDetails?.accountType);
+    setValue('accountHolderName', accountDetails?.accountHolderName);
+    setValue('IFSC', accountDetails?.IFSC);
+    setValue('bankName', accountDetails?.bankName);
+    setValue('branchName', accountDetails?.branchName);
+  }, [watch('account')]);
+  const handleLoanAmountChange = (event) => {
+    const newLoanAmount = parseFloat(event.target.value) || '';
+    setValue('loanAmount', newLoanAmount);
+    const paymentMode = watch('paymentMode');
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', newLoanAmount);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    }
+  };
 
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
@@ -533,19 +541,33 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+  const handleBankAmountChange = (event) => {
+    const newBankAmount = parseFloat(event.target.value) || '';
+    const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
+    if (newBankAmount > currentLoanAmount) {
+      setValue('bankAmount', currentLoanAmount);
+      enqueueSnackbar('Bank amount cannot be greater than the loan amount.', {
+        variant: 'warning',
+      });
+    } else {
+      setValue('bankAmount', newBankAmount);
+    }
+    if (watch('paymentMode') === 'Both') {
+      const calculatedBankAmount = currentLoanAmount - newBankAmount;
+      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
 
-  // const handleAmountChange = () => {
-  //   const newCashAmount =
-  //     watch('propertyDetails').reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0) ||
-  //     '';
-  //   const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
-  //   if (currentLoanAmount > newCashAmount) {
-  //     setValue('loanAmount', newCashAmount);
-  //     enqueueSnackbar('Loan amount cannot be greater than the net amount.', { variant: 'warning' });
-  //   } else {
-  //     setValue('loanAmount', currentLoanAmount);
-  //   }
-  // };
+  const handleAmountChange = () => {
+    const newCashAmount = watch('loanAmount') || '';
+    const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
+    if (currentLoanAmount > newCashAmount) {
+      setValue('loanAmount', newCashAmount);
+      enqueueSnackbar('Loan amount cannot be greater than the net amount.', { variant: 'warning' });
+    } else {
+      setValue('loanAmount', currentLoanAmount);
+    }
+  };
 
   const saveCustomerBankDetails = async () => {
     const payload = {
@@ -1001,7 +1023,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   disabled
                 />
                 <RHFTextField
-                  name="loanAmount"
+                  name="totalLoanAmount"
                   label="Total Loan Amount"
                   req={'red'}
                   InputProps={{ readOnly: true }}
@@ -1766,14 +1788,15 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                       {...field}
                       label="Loan Amount"
                       req={'red'}
-                      disabled
+                      value={watch('amount')}
+                      disabled={!isFieldsEnabled}
                       type="number"
                       inputProps={{ min: 0 }}
-                      // onChange={(e) => {
-                      //   field.onChange(e);
-                      //   // handleLoanAmountChange(e);
-                      //   handleAmountChange();
-                      // }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleLoanAmountChange(e);
+                        handleAmountChange();
+                      }}
                     />
                   )}
                 />
@@ -1781,7 +1804,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   name="paymentMode"
                   label="Payment Mode"
                   req={'red'}
-                  disabled
+                  disabled={!isFieldsEnabled}
                   fullWidth
                   options={['Cash', 'Bank', 'Both']}
                   getOptionLabel={(option) => option}
@@ -1808,7 +1831,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                         {...field}
                         label="Cash Amount"
                         req={'red'}
-                        disabled
+                        disabled={!isFieldsEnabled}
                         type="number"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
@@ -1828,9 +1851,13 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                         {...field}
                         label="Bank Amount"
                         req={'red'}
-                        disabled
+                        disabled={!isFieldsEnabled}
                         type="number"
                         inputProps={{ min: 0 }}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleBankAmountChange(e);
+                        }}
                       />
                     )}
                   />
@@ -1845,7 +1872,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                           {...field}
                           label="Cash Amount"
                           req={'red'}
-                          disabled
+                          disabled={!isFieldsEnabled}
                           type="number"
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
@@ -1866,6 +1893,10 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                           disabled
                           type="number"
                           inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleBankAmountChange(e);
+                          }}
                         />
                       )}
                     />
@@ -1902,18 +1933,18 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                         pb: 1.5,
                       }}
                     >
-                      <Button
-                        variant={'outlined'}
-                        disabled={!isFieldsEnabled}
-                        onClick={() => saveCustomerBankDetails()}
-                        style={{
-                          fontWeight: 'bold',
-                          textDecoration: 'none',
-                          color: 'inherit',
-                        }}
-                      >
-                        Add beneficiary
-                      </Button>
+                      {/*<Button*/}
+                      {/*  variant={'outlined'}*/}
+                      {/*  disabled={!isFieldsEnabled}*/}
+                      {/*  onClick={() => saveCustomerBankDetails()}*/}
+                      {/*  style={{*/}
+                      {/*    fontWeight: 'bold',*/}
+                      {/*    textDecoration: 'none',*/}
+                      {/*    color: 'inherit',*/}
+                      {/*  }}*/}
+                      {/*>*/}
+                      {/*  Add beneficiary*/}
+                      {/*</Button>*/}
                     </Box>
                   </Box>
                   <Box
@@ -1922,14 +1953,29 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     display="grid"
                     gridTemplateColumns={{
                       xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(6, 1fr)',
+                      sm: 'repeat(7, 1fr)',
                     }}
                   >
+                    <RHFAutocomplete
+                      name="account"
+                      label="Account"
+                      req={'red'}
+                      fullWidth
+                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      getOptionLabel={(option) => option.bankName || ''}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option.id || option.bankName}>
+                          {option.bankName}
+                        </li>
+                      )}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                    />
                     <RHFTextField
                       name="accountNumber"
                       label="Account No."
                       req={'red'}
                       disabled
+                      led
                       type="number"
                       inputProps={{ min: 0 }}
                     />
@@ -1938,6 +1984,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                       label="Account Type"
                       req={'red'}
                       disabled
+                      led
                       fullWidth
                       options={ACCOUNT_TYPE_OPTIONS?.map((item) => item)}
                       getOptionLabel={(option) => option}
@@ -1951,11 +1998,13 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                       name="accountHolderName"
                       label="Account Holder Name"
                       disabled
+                      led
                       req={'red'}
                     />
                     <RHFTextField
                       name="IFSC"
                       label="IFSC Code"
+                      disabled
                       inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                       onInput={(e) => {
                         e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();

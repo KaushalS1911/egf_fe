@@ -22,8 +22,8 @@ export default function OtherLoanissueTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  const { loan } = row;
-  const { loanNo, customer, scheme, cashAmount, bankAmount, loanAmount } = loan;
+  const { loan, cashAmount, bankAmount } = row;
+  const { loanNo, customer, scheme, loanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -42,8 +42,8 @@ export default function OtherLoanissueTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount || 0}</TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {getResponsibilityValue('update_loanIssue', configs, user) ||
           getResponsibilityValue('delete_loanIssue', configs, user) ? (

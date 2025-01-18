@@ -119,7 +119,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
         : new Date(),
     days: '',
     amountPaid: '',
-    interestAmount: '',
+    interest: currentOtherLoan?.percentage,
     consultingCharge: currentOtherLoan?.loan?.consultingCharge || 0,
     penalty: '',
     uchakAmount: currentOtherLoan?.loan?.uchakInterestAmount || 0,
@@ -146,6 +146,19 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    const interest = watch('interest');
+    const days = watch('days');
+
+    const totalLoanAmount = (
+      (((currentOtherLoan.loan.interestLoanAmount * currentOtherLoan.percentage) / 100) *
+        (12 * days)) /
+      365
+    ).toFixed(2);
+    setValue('amountPaid', totalLoanAmount);
+  }, [watch, currentOtherLoan]);
+
   useEffect(() => {
     const toDate = watch('to');
     const fromDate = watch('from');
@@ -356,7 +369,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
           <RHFDatePicker name="from" control={control} label="From Date" req={'red'} />
           <RHFDatePicker name="to" control={control} label="To Date" req={'red'} />
           <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
-          <RHFTextField name="interestAmount" label="Interest" req={'red'} />
+          <RHFTextField name="interest" label="Interest" req={'red'} />
           {/*<RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} InputProps={{ readOnly: true }} />*/}
           {/*<RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} InputProps={{ readOnly: true }} />*/}
           {/*<RHFTextField name='penalty' label='Penalty' req={'red'} InputProps={{ readOnly: true }} />*/}
@@ -369,6 +382,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
             name="amountPaid"
             label="Total Pay Amount"
             req={'red'}
+            disabled
             onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
                 e.preventDefault();
