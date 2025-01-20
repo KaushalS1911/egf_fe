@@ -11,14 +11,15 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 // ----------------------------------------------------------------------
 
 export default function RHFRadioGroup({
-  row,
-  name,
-  label,
-  options,
-  spacing,
-  helperText,
-  ...other
-}) {
+                                        row,
+                                        name,
+                                        label,
+                                        options,
+                                        spacing,
+                                        helperText,
+                                        disabled,
+                                        ...other
+                                      }) {
   const { control } = useFormContext();
 
   const labelledby = label ? `${name}-${label}` : '';
@@ -28,9 +29,9 @@ export default function RHFRadioGroup({
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <FormControl component="fieldset">
+        <FormControl component='fieldset'>
           {label && (
-            <FormLabel component="legend" id={labelledby} sx={{ typography: 'body2' }}>
+            <FormLabel component='legend' id={labelledby} sx={{ typography: 'body2' }}>
               {label}
             </FormLabel>
           )}
@@ -40,7 +41,7 @@ export default function RHFRadioGroup({
               <FormControlLabel
                 key={option.value}
                 value={option.value}
-                control={<Radio />}
+                control={<Radio disabled={disabled} />}
                 label={option.label}
                 sx={{
                   '&:not(:last-of-type)': {
