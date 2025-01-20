@@ -70,6 +70,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   const [rotation, setRotation] = useState(0);
   const [completedCrop, setCompletedCrop] = useState(null);
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy) ? currentCustomer.referenceBy : 'Other';
+  const [disabledField, setDisabledField] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
+  const handleClosePopup = () => {
+    if (user?.role.toLowerCase() === 'employee') {
+      setDisabledField(true);
+      enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
+    }
+    setOpenPopup(false);
+  };
+  const handleClose = () => {
+    setOpenPopup(false);
+  };
+
+  useEffect(() => {
+    setOpenPopup(true);
+  }, []);
 
   const NewCustomerSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
@@ -420,6 +436,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   }, [webcamRef, setCapturedImage, setValue, setOpen2, user, currentCustomer]);
 
   const handleSubmitAction = async () => {
+    const userRole = user?.role;
     const aadharNumber = watch('aadharCard');
     const isValidAadhar = /^\d{12}$/.test(aadharNumber);
 
@@ -440,6 +457,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         }
       } catch (error) {
         enqueueSnackbar('Failed to send OTP for Aadhar verification. Please try again.', { variant: 'error' });
+
+        if (userRole.toLowerCase() === 'employee') {
+          setDisabledField(true);
+          enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
+          return;
+        }
         console.error('Error in Aadhar verification:', error);
       }
     } else {
@@ -448,7 +471,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
         if (otpCode.length !== 6) {
           enqueueSnackbar('Invalid OTP. Please enter a 6-digit code.', { variant: 'warning' });
-          return;
         }
 
         const reference = sessionStorage.getItem('aadharVerificationResponse');
@@ -478,6 +500,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         }
       } catch (error) {
         enqueueSnackbar('Error in OTP verification. Please try again.', { variant: 'error' });
+        if (userRole.toLowerCase() === 'employee') {
+          setDisabledField(true);
+          enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
+        }
         console.error('Error in OTP verification:', error);
       }
     }
@@ -569,11 +595,13 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               name='joiningDate'
               control={control}
               label='Joining Date'
+              disabled={disabledField}
               req={'red'}
             />
             <RHFTextField
               name='firstName'
               label='First Name'
+              disabled={disabledField}
               inputProps={{ style: { textTransform: 'uppercase' } }}
               onChange={(e) => {
                 const value = e.target.value.toUpperCase();
@@ -582,6 +610,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               req={'red'}
             />
             <RHFTextField
+              disabled={disabledField}
               name='middleName'
               label='Middle Name'
               inputProps={{ style: { textTransform: 'uppercase' } }}
@@ -592,6 +621,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               req={'red'}
             />
             <RHFTextField
+              disabled={disabledField}
               name='lastName'
               label='Last Name'
               inputProps={{ style: { textTransform: 'uppercase' } }}
@@ -602,6 +632,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               req={'red'}
             />
             <RHFTextField
+              disabled={disabledField}
               name='contact'
               label='Contact'
               inputProps={{
@@ -620,6 +651,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               req={'red'}
             />
             <RHFTextField
+              disabled={disabledField}
               name='otpContact'
               label='OTP Mobile'
               inputProps={{
@@ -638,6 +670,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               req={'red'}
             />
             <RHFTextField
+              disabled={disabledField}
               name='drivingLicense'
               label='Driving License'
               onInput={(e) => {
@@ -646,6 +679,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               inputProps={{ maxLength: 16 }}
             />
             <RHFTextField
+              disabled={disabledField}
               name='panCard'
               label='PAN No.'
               req={'red'}
@@ -656,6 +690,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               }}
             />
             <RHFTextField
+              disabled={disabledField}
               name='aadharCard'
               label='Aadhar Card'
               req='red'
@@ -680,21 +715,24 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
             />
             {configs?.businessTypes && (<RHFAutocomplete
               name='businessType'
+              disabled={disabledField}
               label='Business Type'
               placeholder='Choose Business Type'
               options={configs?.businessTypes?.length > 0 ? configs.businessTypes.map((type) => type) : []}
               isOptionEqualToValue={(option, value) => option === value}
             />)}
-            <RHFTextField name='email' label='Email' />
+            <RHFTextField disabled={disabledField} name='email' label='Email' />
             <RHFDatePicker
+              disabled={disabledField}
               name='dob'
               control={control}
               label='Date of Birth'
               req={'red'}
             />
-            <RHFTextField name='remark' label='Remark' />
+            <RHFTextField disabled={disabledField} name='remark' label='Remark' />
             {currentCustomer && (<RHFAutocomplete
               name='status'
+              disabled={disabledField}
               req={'red'}
               label='Status'
               placeholder='Choose a Status'
@@ -745,9 +783,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
             }}
           >
-            <RHFTextField name='PerStreet' label='Street' req={'red'} />
-            <RHFTextField name='PerLandmark' label='landmark' req={'red'} />
+            <RHFTextField disabled={disabledField} name='PerStreet' label='Street' req={'red'} />
+            <RHFTextField disabled={disabledField} name='PerLandmark' label='landmark' req={'red'} />
             <RHFTextField
+              disabled={disabledField}
               name='PerZipcode'
               label={<span>Zipcode</span>}
               req={'red'}
@@ -768,6 +807,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               }}
             />
             <RHFAutocomplete
+              disabled={disabledField}
               name='PerCountry'
               req={'red'}
               label='Country'
@@ -777,6 +817,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               defaultValue='India'
             />
             <RHFAutocomplete
+              disabled={disabledField}
               name='PerState'
               req={'red'}
               label='State'
@@ -788,6 +829,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               isOptionEqualToValue={(option, value) => option === value}
             />
             <RHFAutocomplete
+              disabled={disabledField}
               name='PerCity'
               label='City'
               req={'red'}
@@ -813,9 +855,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
             }}
           >
-            <RHFTextField name='tempStreet' label='Street' req={'red'} />
-            <RHFTextField name='tempLandmark' label='landmark' req={'red'} />
+            <RHFTextField disabled={disabledField} name='tempStreet' label='Street' req={'red'} />
+            <RHFTextField disabled={disabledField} name='tempLandmark' label='landmark' req={'red'} />
             <RHFTextField
+              disabled={disabledField}
               req={'red'}
               name='tempZipcode'
               label='Zipcode'
@@ -842,6 +885,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               }}
             />
             <RHFAutocomplete
+              disabled={disabledField}
               req={'red'}
               name='tempCountry'
               label='Country'
@@ -851,6 +895,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               defaultValue='India'
             />
             <RHFAutocomplete
+              disabled={disabledField}
               req={'red'}
               name='tempState'
               label='State'
@@ -862,6 +907,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               isOptionEqualToValue={(option, value) => option === value}
             />
             <RHFAutocomplete
+              disabled={disabledField}
               req={'red'}
               name='tempCity'
               label='City'
@@ -899,6 +945,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
             <Stack spacing={2}>
               <RHFRadioGroup
                 row
+                disabled={disabledField}
                 spacing={4}
                 sx={{ display: 'flex' }}
                 name='referenceBy'
@@ -911,7 +958,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           }} justifyContent={'end'}>
             {watch('referenceBy') === 'Other' && (<Stack spacing={1}>
               <Typography variant='subtitle2'>Write other reference name</Typography>
-              <RHFTextField name='otherReferenceBy' label='Reference By' />
+              <RHFTextField name='otherReferenceBy' label='Reference By' disabled={disabledField} />
             </Stack>)}
           </Stack>
         </Box>
@@ -936,14 +983,16 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
               }}
             >
-              <RHFTextField name='accountHolderName' label='Account Holder Name' />
+              <RHFTextField name='accountHolderName' label='Account Holder Name' disabled={disabledField} />
               <RHFTextField
+                disabled={disabledField}
                 name='accountNumber'
                 label='Account Number'
                 type='number'
                 inputProps={{ min: 0 }}
               />
               <RHFAutocomplete
+                disabled={disabledField}
                 name='accountType'
                 label='Account Type'
                 placeholder='Choose account type'
@@ -951,6 +1000,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 isOptionEqualToValue={(option, value) => option === value}
               />
               <RHFTextField
+                disabled={disabledField}
                 name='IFSC'
                 label='IFSC Code'
                 inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
@@ -959,8 +1009,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 }}
                 onBlur={(e) => checkIFSC(e.target.value)}
               />
-              <RHFTextField name='bankName' label='Bank Name' />
-              <RHFTextField name='branchName' label='Branch Name' />
+              <RHFTextField disabled={disabledField} name='bankName' label='Bank Name' />
+              <RHFTextField disabled={disabledField} name='branchName' label='Branch Name' />
             </Box>
           </Box>
         </Stack>
@@ -999,6 +1049,32 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <Button onClick={handleSubmitAction} variant='outlined'>
             Submit
           </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openPopup} onClose={null}>
+        <DialogTitle sx={{ pb: 0 }}>Aadhar Verification</DialogTitle>
+        <DialogActions>
+          <Box sx={{ width: '500px' }}>
+            <RHFTextField
+              name='aadharCard'
+              label='Aadhar Number'
+              inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+              }}
+            />
+            <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', mt: 2 }}>
+              <Box>
+                <Button onClick={handleClosePopup} variant={'contained'} sx={{ mx: 1 }}>Cancel</Button>
+                <Button variant={'contained'} onClick={() => {
+                  handleSubmitAction();
+                  handleClose();
+                }}>
+                  Confirm
+                </Button>
+              </Box>
+            </Box>
+          </Box>
         </DialogActions>
       </Dialog>
     </FormProvider>
