@@ -1021,9 +1021,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   const renderActions = (<>
     {mdUp && <Grid md={4} />}
     <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' }}>
-      <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
+      <Button disabled={disabledField} color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
               variant='outlined' onClick={() => reset()}>Reset</Button>
-      <LoadingButton type='submit' variant='contained' size='large' loading={isSubmitting} sx={{ height: '36px' }}>
+      <LoadingButton type='submit' variant='contained' size='large' loading={isSubmitting} disabled={disabledField}
+                     sx={{ height: '36px' }}>
         {!currentCustomer ? 'Submit' : 'Save'}
       </LoadingButton>
     </Grid>
