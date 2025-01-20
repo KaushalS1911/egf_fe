@@ -152,7 +152,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     ).toFixed(2);
     console.log(totalLoanAmount, '00000');
     setValue('interestAmount', totalLoanAmount);
-  }, [watch, currentOtherLoan]);
+  }, [currentOtherLoan.loan.interestLoanAmount, currentOtherLoan.percentage, watch('days')]);
 
   useEffect(() => {
     const toDate = watch('to');
