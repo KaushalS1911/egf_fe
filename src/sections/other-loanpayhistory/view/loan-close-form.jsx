@@ -33,6 +33,7 @@ import { useGetOtherCloseLoan } from '../../../api/other-loan-close.js';
 const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
+  { id: 'closingCharge', label: 'Closing Charge' },
   { id: 'remark', label: 'Remark' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -105,6 +106,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
     cashAmount: '',
     account: null,
     bankAmount: null,
+    closingCharge: '',
     remark: '',
   };
 
@@ -163,6 +165,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
       paidLoanAmount: data.paidLoanAmount,
       remark: data.remark,
       paymentDetail: paymentDetail,
+      closingCharge: data.closingCharge,
     };
 
     try {
@@ -186,7 +189,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
 
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
-    const currentLoanAmount = parseFloat(watch('netAmount')) || '';
+    const currentLoanAmount = parseFloat(watch('paidLoanAmount')) || '';
 
     if (newCashAmount > currentLoanAmount) {
       setValue('cashAmount', currentLoanAmount);
@@ -272,6 +275,15 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
             {/*  }}*/}
             {/*  InputProps={{ readOnly: true }}*/}
             {/*/>*/}
+            <RHFTextField
+              name="closingCharge"
+              label="Closing charge"
+              onKeyPress={(e) => {
+                if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                  e.preventDefault();
+                }
+              }}
+            />
             <RHFTextField name="remark" label="Remark" />
           </Box>
         </Grid>
@@ -299,7 +311,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
                     setValue('paymentMode', value);
-                    // handleLoanAmountChange({ target: { value: watch('netAmount') } });
+                    handleLoanAmountChange({ target: { value: watch('paidLoanAmount') } });
                   }}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -320,7 +332,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
-                          // handleCashAmountChange(e);
+                          handleCashAmountChange(e);
                         }}
                       />
                     )}
@@ -359,18 +371,16 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                   </>
                 )}
               </Box>
-              {otherLoanClose.length === 0 && (
-                <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
-                  <Button color="inherit" variant="outlined" onClick={() => reset()}>
-                    Reset
-                  </Button>
-                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-                    <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                      Submit
-                    </LoadingButton>
-                  )}
-                </Box>
-              )}
+              <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
+                <Button color="inherit" variant="outlined" onClick={() => reset()}>
+                  Reset
+                </Button>
+                {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                    Submit
+                  </LoadingButton>
+                )}
+              </Box>
             </Box>
           </Grid>
         </Grid>
@@ -385,6 +395,9 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.paidLoanAmount}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.closingCharge || '-'}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.remark || '-'}

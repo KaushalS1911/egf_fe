@@ -166,7 +166,7 @@ const useStyles = () =>
           fontSize: 24,
           color: '#fff',
           fontWeight: 'bold',
-          textAlign: 'center',
+          // textAlign: 'center',
           // flex: 1,
         },
         letterSpacingText: {
@@ -214,15 +214,23 @@ export default function InvoiceHeader({ configs }) {
               <Text
                 style={{
                   ...styles.companyName,
-                  fontSize: company?.name?.length > 17 ? '18px' : '34px',
+                  fontSize: '34px',
+                  width: 220,
                 }}
               >
-                {company?.name || 'EASY GOLD FINCORP'}
+                {company?.name ? company.name.split(' ').slice(0, -1).join(' ') : 'EASY GOLD'}
               </Text>
               <Text
-                style={{ ...styles.letterSpacingText, fontSize: 14, color: '#fff', marginLeft: 3 }}
+                style={{
+                  ...styles.letterSpacingText,
+                  fontSize: company?.name?.length > 17 ? '12px' : '14px',
+                  color: '#fff',
+                  marginLeft: 3,
+                }}
               >
-                FINCORP
+                {company?.name
+                  ? company.name.split(' ').pop() // Show only the last word
+                  : 'FINCORP'}
               </Text>
             </View>
           </View>

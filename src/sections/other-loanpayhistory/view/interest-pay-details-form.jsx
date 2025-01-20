@@ -98,11 +98,9 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     from: Yup.string().required('From Date is required'),
     to: Yup.string().required('To Date is required'),
     days: Yup.string().required('Days is required'),
-    amountPaid: Yup.string()
-      .required('Total is required')
-      .test('is-positive', 'Amount must be a positive number', (value) => parseFloat(value) >= 0),
-    interestAmount: Yup.string().required('Interest is required'),
+
     paymentMode: Yup.string().required('Payment Mode is required'),
+    payAfterAdjusted: Yup.string().required('pay After Adjusted is required'),
     ...paymentSchema,
   });
 
@@ -120,13 +118,10 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     days: '',
     amountPaid: '',
     interest: currentOtherLoan?.percentage,
-    consultingCharge: currentOtherLoan?.loan?.consultingCharge || 0,
-    penalty: '',
-    uchakAmount: currentOtherLoan?.loan?.uchakInterestAmount || 0,
+    interestAmount: '',
+    payAfterAdjusted: '',
     cr_dr: '',
     totalPay: '',
-    payAfterAdjusted1: '',
-    oldCrDr: otherLoanInterest[0]?.cr_dr || 0,
     paymentMode: '',
     account: '',
     cashAmount: '',
@@ -134,7 +129,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   };
 
   const methods = useForm({
-    // resolver: yupResolver(NewInterestPayDetailsSchema),
+    resolver: yupResolver(NewInterestPayDetailsSchema),
     defaultValues,
   });
 
@@ -148,7 +143,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   } = methods;
 
   useEffect(() => {
-    const interest = watch('interest');
     const days = watch('days');
 
     const totalLoanAmount = (
@@ -156,7 +150,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
         (12 * days)) /
       365
     ).toFixed(2);
-    setValue('amountPaid', totalLoanAmount);
+    setValue('interestAmount', totalLoanAmount);
   }, [watch, currentOtherLoan]);
 
   useEffect(() => {
@@ -168,7 +162,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       const diffTime = new Date(toDate) - new Date(fromDate);
 
       // Convert the difference to days
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 1000ms * 60s * 60min * 24h
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       setValue('days', diffDays);
     } else {
@@ -177,14 +171,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     }
   }, [watch('to'), watch('from')]);
 
-  const from = watch('from');
-  const to = watch('to');
-
-  function calculatePenalty(interestLoanAmount, interestRate, differenceInDays) {
-    const penalty = (((interestLoanAmount * interestRate) / 100) * (12 * differenceInDays)) / 365;
-    return penalty.toFixed(2);
-  }
-
   useEffect(() => {
     if (otherLoanInterest && currentOtherLoan) {
       reset(defaultValues);
@@ -192,55 +178,62 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   }, [otherLoanInterest, currentOtherLoan?.loan, setValue]);
 
   useEffect(() => {
-    const endDate = new Date(to).setHours(0, 0, 0, 0);
-    const differenceInDays =
-      moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 1;
-    const nextInstallmentDate = moment(currentOtherLoan?.loan?.nextInstallmentDate);
-    const differenceInDays2 = moment(to)
-      .startOf('day')
-      .diff(nextInstallmentDate.startOf('day'), 'days', true);
-    setValue('days', differenceInDays.toString());
-    let penaltyPer = 0;
-    penalty.forEach((penaltyItem) => {
-      if (
-        differenceInDays2 >= penaltyItem.afterDueDateFromDate &&
-        differenceInDays2 <= penaltyItem.afterDueDateToDate &&
-        penaltyItem.isActive === true &&
-        nextInstallmentDate < endDate
-      ) {
-        penaltyPer = calculatePenalty(
-          currentOtherLoan?.loan?.interestLoanAmount,
-          penaltyItem.penaltyInterest,
-          differenceInDays
-        );
-      }
-    });
-    // setValue(
-    //   'interestAmount',
-    //   (
-    //     (((currentOtherLoan?.loan?.interestLoanAmount *
-    //       currentOtherLoan?.loan?.scheme.interestRate) /
-    //       100) *
-    //       (12 * differenceInDays)) /
-    //     365
-    //   ).toFixed(2)
-    // );
-    setValue('penalty', penaltyPer);
-    setValue(
-      'totalPay',
-      (
-        Number(watch('interestAmount')) + Number(watch('penalty') - Number(watch('uchakAmount')))
-      ).toFixed(2)
-    );
-    setValue(
-      'payAfterAdjusted1',
-      (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2)
-    );
-    setValue(
-      'cr_dr',
-      (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2)
-    );
-  }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
+    const loanAmount = currentOtherLoan?.loan?.loanAmount;
+    const interestAmount = watch('interestAmount');
+    const totalAmount = Number(loanAmount) + Number(interestAmount);
+    setValue('amountPaid', totalAmount);
+  }, [currentOtherLoan?.loan?.loanAmount, watch('interestAmount')]);
+
+  // useEffect(() => {
+  //   const endDate = new Date(to).setHours(0, 0, 0, 0);
+  //   const differenceInDays =
+  //     moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 1;
+  //   const nextInstallmentDate = moment(currentOtherLoan?.loan?.nextInstallmentDate);
+  //   const differenceInDays2 = moment(to)
+  //     .startOf('day')
+  //     .diff(nextInstallmentDate.startOf('day'), 'days', true);
+  //   setValue('days', differenceInDays.toString());
+  //   let penaltyPer = 0;
+  //   penalty.forEach((penaltyItem) => {
+  //     if (
+  //       differenceInDays2 >= penaltyItem.afterDueDateFromDate &&
+  //       differenceInDays2 <= penaltyItem.afterDueDateToDate &&
+  //       penaltyItem.isActive === true &&
+  //       nextInstallmentDate < endDate
+  //     ) {
+  //       penaltyPer = calculatePenalty(
+  //         currentOtherLoan?.loan?.interestLoanAmount,
+  //         penaltyItem.penaltyInterest,
+  //         differenceInDays
+  //       );
+  //     }
+  //   });
+  // setValue(
+  //   'interestAmount',
+  //   (
+  //     (((currentOtherLoan?.loan?.interestLoanAmount *
+  //       currentOtherLoan?.loan?.scheme.interestRate) /
+  //       100) *
+  //       (12 * differenceInDays)) /
+  //     365
+  //   ).toFixed(2)
+  // );
+  //   setValue('penalty', penaltyPer);
+  //   setValue(
+  //     'totalPay',
+  //     (
+  //       Number(watch('interestAmount')) + Number(watch('penalty') - Number(watch('uchakAmount')))
+  //     ).toFixed(2)
+  //   );
+  //   setValue(
+  //     'payAfterAdjusted1',
+  //     (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2)
+  //   );
+  //   setValue(
+  //     'cr_dr',
+  //     (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2)
+  //   );
+  // }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
 
   useEffect(() => {
     if (watch('paymentMode')) {
@@ -249,7 +242,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   }, [watch('paymentMode')]);
 
   const onSubmit = handleSubmit(async (data) => {
-    alert('62');
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
@@ -281,6 +273,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
           : new Date(Number(data.from)),
       days: data.days,
       amountPaid: data.amountPaid,
+      interestAmount: data.interestAmount,
+      payAfterAdjusted: data.payAfterAdjusted,
       remark: data.remark,
       paymentDetail,
     };
@@ -303,40 +297,40 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     }
   });
 
-  // const handleCashAmountChange = (event) => {
-  //   const newCashAmount = parseFloat(event.target.value) || '';
-  //   const currentOtherLoanAmount = parseFloat(watch('amountPaid')) || '';
-  //
-  //   if (newCashAmount > currentOtherLoanAmount) {
-  //     setValue('cashAmount', currentOtherLoanAmount);
-  //     enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
-  //       variant: 'warning',
-  //     });
-  //   } else {
-  //     setValue('cashAmount', newCashAmount);
-  //   }
-  //   if (watch('paymentMode') === 'Both') {
-  //     const calculatedBankAmount = currentOtherLoanAmount - newCashAmount;
-  //     setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
-  //   }
-  // };
+  const handleCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || '';
+    const currentOtherLoanAmount = parseFloat(watch('payAfterAdjusted')) || '';
 
-  // const handleLoanAmountChange = (event) => {
-  //   const newLoanAmount = parseFloat(event.target.value) || '';
-  //   setValue('loanAmount', newLoanAmount);
-  //   const paymentMode = watch('paymentMode');
-  //
-  //   if (paymentMode === 'Cash') {
-  //     setValue('cashAmount', newLoanAmount);
-  //     setValue('bankAmount', 0);
-  //   } else if (paymentMode === 'Bank') {
-  //     setValue('bankAmount', newLoanAmount);
-  //     setValue('cashAmount', 0);
-  //   } else if (paymentMode === 'Both') {
-  //     setValue('cashAmount', newLoanAmount);
-  //     setValue('bankAmount', 0);
-  //   }
-  // };
+    if (newCashAmount > currentOtherLoanAmount) {
+      setValue('cashAmount', currentOtherLoanAmount);
+      enqueueSnackbar('Cash amount cannot be Pay after adjusted than the loan amount.', {
+        variant: 'warning',
+      });
+    } else {
+      setValue('cashAmount', newCashAmount);
+    }
+    if (watch('paymentMode') === 'Both') {
+      const calculatedBankAmount = currentOtherLoanAmount - newCashAmount;
+      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
+
+  const handleLoanAmountChange = (event) => {
+    const newLoanAmount = parseFloat(event.target.value) || '';
+    setValue('loanAmount', newLoanAmount);
+    const paymentMode = watch('paymentMode');
+
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', newLoanAmount);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    }
+  };
 
   const handleDeleteInterest = async (id) => {
     try {
@@ -375,9 +369,18 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
           {/*<RHFTextField name='penalty' label='Penalty' req={'red'} InputProps={{ readOnly: true }} />*/}
           {/*<RHFTextField name='totalPay' label='Total Pay' req={'red'} InputProps={{ readOnly: true }} />*/}
           {/*<RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} InputProps={{ readOnly: true }} />*/}
-          {/*<RHFTextField name='payAfterAdjusted1' label='Pay After Adjusted 1' req={'red'}*/}
-          {/*              InputProps={{ readOnly: true }} />*/}
           {/*<RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }} />*/}
+          <RHFTextField
+            name="interestAmount"
+            label="Interest Amount"
+            req={'red'}
+            disabled
+            onKeyPress={(e) => {
+              if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                e.preventDefault();
+              }
+            }}
+          />
           <RHFTextField
             name="amountPaid"
             label="Total Pay Amount"
@@ -389,6 +392,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
               }
             }}
           />
+          <RHFTextField name="payAfterAdjusted" label="Pay After Adjusted" req={'red'} />
         </Box>
         <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 600 }}>
           Payment Details
@@ -414,7 +418,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                 getOptionLabel={(option) => option}
                 onChange={(event, value) => {
                   setValue('paymentMode', value);
-                  // handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+                  handleLoanAmountChange({ target: { value: watch('payAfterAdjusted') } });
                 }}
                 renderOption={(props, option) => (
                   <li {...props} key={option}>
@@ -435,7 +439,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                       inputProps={{ min: 0 }}
                       onChange={(e) => {
                         field.onChange(e);
-                        // handleCashAmountChange(e);
+                        handleCashAmountChange(e);
                       }}
                     />
                   )}

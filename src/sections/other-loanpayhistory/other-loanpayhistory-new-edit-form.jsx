@@ -16,7 +16,7 @@ import Image from '../../components/image';
 
 function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
   const { user } = useAuthContext();
-  const [file, setFile] = useState(currentOtherLoan.propertyImage);
+  const [file, setFile] = useState(currentOtherLoan?.loan?.propertyImage);
   const lightbox = useLightBox(file);
 
   const renewDate = () => {

@@ -309,8 +309,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       renewalDate: data.renewalDate,
       closeDate: data.closeDate,
       otherCharge: data.otherCharge,
-      closingCharge: data.closingCharge,
-      interestAmount: data.interestAmount,
       remark: data.remark,
       paymentMode: data.paymentMode,
       cashAmount: data.cashAmount,
@@ -1058,7 +1056,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   disabled
                 />
                 <RHFTextField name="approvalCharge" label="Approval Charge" disabled req={'red'} />
-                <RHFTextField name="closingCharge" label="Closing Charge" disabled req={'red'} />
                 {/*<RHFAutocomplete*/}
                 {/*  name="scheme"*/}
                 {/*  label="Scheme"*/}
@@ -1727,28 +1724,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   label="Other Charge"
                   req={'red'}
                   disabled={!isFieldsEnabled}
-                />
-                <RHFTextField
-                  name="closingCharge"
-                  label="Closing charge"
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
-                  onKeyPress={(e) => {
-                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                      e.preventDefault();
-                    }
-                  }}
-                />
-                <RHFTextField
-                  name="interestAmount"
-                  label="Interest Amount"
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
-                  onKeyPress={(e) => {
-                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                      e.preventDefault();
-                    }
-                  }}
                 />
                 <RHFTextField
                   name="remark"
