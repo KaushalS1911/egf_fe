@@ -150,6 +150,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
         (12 * days)) /
       365
     ).toFixed(2);
+    console.log(totalLoanAmount, '00000');
     setValue('interestAmount', totalLoanAmount);
   }, [watch, currentOtherLoan]);
 
