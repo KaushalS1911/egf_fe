@@ -58,7 +58,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '70%',
+          height: '72%',
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
@@ -193,7 +193,7 @@ const useStyles = () =>
           display: 'flex',
           width: '100%',
           flexDirection: 'row',
-          alignItems: 'center',
+          alignItems: 'flex-end',
           justifyContent: 'space-between',
         },
         box: {
@@ -206,7 +206,15 @@ const useStyles = () =>
           alignItems: 'center',
           marginLeft: 5,
         },
-
+        box2: {
+          fontSize: 11,
+          borderTop: '1px solid 232C4B',
+          color: '#232C4B',
+          paddingTop: 10,
+          textAlign: 'center',
+          width: '100px',
+          fontWeight: 600,
+        },
         signText: {
           fontSize: 11,
           color: '#232C4B',
@@ -620,10 +628,7 @@ export default function Sansaction11({ sansaction, configs }) {
             </View>
           </View>
           <View style={styles.d_flex}>
-            <View style={{ marginLeft: 35 }}>
-              <View style={styles.box}></View>
-              <Text style={styles.signText}>Authority Sign</Text>
-            </View>
+            <Text style={{ ...styles.box2, marginLeft: 35 }}>Authority Sign</Text>
             <View style={{ marginRight: 35 }}>
               <View style={styles.box}></View>
               <Text style={styles.signText}>Customer Sign</Text>
