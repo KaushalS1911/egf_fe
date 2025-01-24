@@ -120,7 +120,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
   const NewLoanissueSchema = Yup.object().shape({
     loan: Yup.object().required('Loan is required'),
     otherName: Yup.string().required('Other Name is required'),
-    otherNumber: Yup.string().required('Other Name is Number').max(10),
+    otherNumber: Yup.string().required('Other Number is Number').max(10),
     amount: Yup.string().required('Amount is required'),
     percentage: Yup.string().required('Percent is required'),
     date: Yup.date().required('Date is required'),
@@ -166,6 +166,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
         : null,
       scheme: currentOtherLoanIssue ? currentOtherLoanIssue?.loan?.scheme : null,
       loanNo: currentOtherLoanIssue?.loanNo || '',
+      otherLoanNumber: currentOtherLoanIssue?.otherLoanNumber || '',
       issueDate: currentOtherLoanIssue
         ? new Date(currentOtherLoanIssue?.loan?.issueDate)
         : new Date(),
@@ -203,9 +204,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       renewalDate: currentOtherLoanIssue?.renewalDate
         ? new Date(currentOtherLoanIssue.renewalDate)
         : '',
-      closeDate: currentOtherLoanIssue?.closeDate
-        ? new Date(currentOtherLoanIssue.closeDate)
-        : new Date(),
+      closeDate: currentOtherLoanIssue?.closeDate || '',
       otherCharge: currentOtherLoanIssue?.otherCharge || 0,
       closingCharge: currentOtherLoanIssue?.closingCharge || 0,
       interestAmount: currentOtherLoanIssue?.interestAmount || 0,
@@ -250,6 +249,10 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     control,
     name: 'propertyDetails',
   });
+  useEffect(() => {
+    const rate = (watch('amount') / watch('netWt')).toFixed(2);
+    setValue('rate', rate);
+  }, [watch('amount'), watch('netWt')]);
   //
   // useEffect(() => {
   //   const loanType = watch('loanType');
@@ -1603,6 +1606,13 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   md: 'repeat(7, 1fr)',
                 }}
               >
+                <RHFTextField
+                  name="otherLoanNumber"
+                  label="Other Loan No."
+                  req={'red'}
+                  InputProps={{ readOnly: true }}
+                  disabled
+                />
                 <RHFAutocomplete
                   disabled={!isFieldsEnabled}
                   name="otherName"
@@ -1684,13 +1694,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   }}
                 />
                 <RHFTextField name="netWt" label="Net Wt" req={'red'} disabled={!isFieldsEnabled} />
-                <RHFTextField
-                  name="rate"
-                  label="Rate"
-                  req={'red'}
-                  disabled
-                  value={watch('netWt') ? (watch('amount') / watch('netWt')).toFixed(2) : 0}
-                />
+                <RHFTextField name="rate" label="Rate" req={'red'} disabled />
                 <RHFAutocomplete
                   name="month"
                   label="Month"

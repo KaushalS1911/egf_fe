@@ -1,69 +1,92 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
-
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import { Box, Stack, IconButton, Typography, InputAdornment, Link } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import InputAdornment from '@mui/material/InputAdornment';
+import axios from 'axios';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { AUTH_API, PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import Logo from 'src/components/logo';
-import { useAuthContext } from '../../../auth/hooks';
-import { Box } from '@mui/system';
 import logo from 'src/assets/logo/logo.png';
+import { useAuthContext } from '../../../auth/hooks';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { enqueueSnackbar } from 'notistack';
+import { useState } from 'react';
+
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
   const { login } = useAuthContext();
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  const [canResendOTP, setCanResendOTP] = useState(false);
   const returnTo = searchParams.get('returnTo');
-
   const password = useBoolean();
 
+  // Validation schema
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    contact: Yup.string()
+      .required('Contact is required')
+      .matches(/^\d{10}$/, 'Contact must be a 10-digit number'),
+    otp: Yup.string().required('OTP is required'),
   });
 
+  // Default form values
   const defaultValues = {
-    email: '',
-    password: '',
+    contact: '',
+    otp: '',
   };
 
   const methods = useForm({
+    resolver: yupResolver(LoginSchema),
     defaultValues,
   });
-
   const {
     reset,
     handleSubmit,
     formState: { isSubmitting },
+    watch,
   } = methods;
 
-  const onSubmit = handleSubmit(async (data) => {
+  const contactValue = watch('contact');
+
+  const onSubmit = async (data) => {
     try {
-      await login(data.email, data.password);
+      await login(data.contact, data.otp);
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-      console.error(error);
+      console.error('Login failed:', error);
       reset();
     }
-  });
+  };
 
-  const renderHead = (
+  const handleSendOTP = async () => {
+    if (!contactValue || !/^\d{10}$/.test(contactValue)) {
+      alert('Please enter a valid 10-digit contact number.');
+      return;
+    }
+
+    try {
+      const URL = `${AUTH_API}/send-otp`;
+      await axios.post(URL, { contact: contactValue });
+      enqueueSnackbar(`OTP sent successfully`);
+      alert(`OTP sent to ${contactValue}`);
+
+      setCanResendOTP(false);
+      setTimeout(() => setCanResendOTP(true), 5000);
+    } catch (error) {
+      console.error('Failed to send OTP:', error);
+    }
+  };
+
+  // Render header
+  const renderHeader = (
     <Stack spacing={2} sx={{ mb: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <img src={logo} alt="logo" width={100} />
@@ -73,28 +96,31 @@ export default function JwtLoginView() {
 
   return (
     <>
-      {renderHead}
-      <FormProvider methods={methods} onSubmit={onSubmit}>
+      {renderHeader}
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2.5}>
-          <RHFTextField name="email" label="Email address" />
           <RHFTextField
-            name="password"
-            label="Password"
-            type={password.value ? 'text' : 'password'}
+            name="contact"
+            label="Contact"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={password.onToggle} edge="end">
-                    <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                  <IconButton edge="end" aria-label="send OTP" onClick={handleSendOTP}>
+                    <Iconify icon="eva:paper-plane-outline" />
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
+
+          <RHFTextField name="otp" label="OTP" />
+
           <Stack>
-            <Link component={RouterLink} href={paths.auth.jwt.forgotPassword} variant="subtitle2">
-              Forgot Password?
-            </Link>
+            {canResendOTP && (
+              <Link onClick={handleSendOTP} variant="subtitle2">
+                Resent OTP?
+              </Link>
+            )}
           </Stack>
 
           <LoadingButton
@@ -108,13 +134,13 @@ export default function JwtLoginView() {
             Login
           </LoadingButton>
 
-          <Stack sx={{ textAlign: 'center', mt: '10px' }}>
+          <Stack sx={{ textAlign: 'center', mt: 2 }}>
             <Typography variant="body2">Don't have an account?</Typography>
             <Link
               component={RouterLink}
               href={paths.auth.jwt.register}
               variant="subtitle2"
-              sx={{ mt: '8px' }}
+              sx={{ mt: 1 }}
             >
               Create an account
             </Link>

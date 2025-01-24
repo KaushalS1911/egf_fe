@@ -133,8 +133,7 @@ const useStyles = () =>
           paddingVertical: 8,
         },
         tableHeader: {
-          color: '#fff',
-          backgroundColor: '#232C4B',
+          backgroundColor: '#5B9BD4',
           fontWeight: 600,
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,

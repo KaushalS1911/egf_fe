@@ -103,10 +103,9 @@ const useStyles = () =>
         },
         headerDetailsParent: {
           // margin: '60px 30px',
-          color: '#fff',
+          // color: '#fff',
         },
         headerDetails: {
-          color: '#fff',
           fontSize: 11,
         },
         icon: {
@@ -128,7 +127,6 @@ const useStyles = () =>
         },
         separator: {
           marginHorizontal: 2,
-          color: '#fff',
           fontSize: '10px',
           fontWeight: '400',
         },
@@ -230,7 +228,7 @@ export default function InvoiceFooter({ configs }) {
               <Image style={styles.icon} src={website || 'default_website_icon'} />
               <Text style={styles.separator}>|</Text>
               <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>
-                <Link src={webUrl} style={{ textDecoration: 'none', color: '#fff' }}>
+                <Link src={webUrl} style={{ textDecoration: 'none', color: '#000' }}>
                   {webUrl}
                 </Link>
               </Text>

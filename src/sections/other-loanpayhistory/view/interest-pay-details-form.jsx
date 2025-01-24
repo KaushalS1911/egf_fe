@@ -43,6 +43,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   const { penalty } = useGetPenalty();
   const [paymentMode, setPaymentMode] = useState('');
   const [data, setData] = useState(null);
+  console.log(data, '000');
   const view = useBoolean();
   const { branch } = useGetBranch();
   const confirm = useBoolean();
@@ -144,13 +145,12 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
   useEffect(() => {
     const days = watch('days');
-
     const totalLoanAmount = (
       (((currentOtherLoan.loan.interestLoanAmount * currentOtherLoan.percentage) / 100) *
         (12 * days)) /
       365
     ).toFixed(2);
-    console.log(totalLoanAmount, '00000');
+    setValue('interestAmount', totalLoanAmount);
   }, [currentOtherLoan.loan.interestLoanAmount, currentOtherLoan.percentage, watch('days')]);
 
   useEffect(() => {

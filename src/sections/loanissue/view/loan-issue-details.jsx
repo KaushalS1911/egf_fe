@@ -49,15 +49,16 @@ const useStyles = () =>
           backgroundColor: '#FFFFFF',
           textTransform: 'capitalize',
           position: 'relative',
-          border: '1px solid #000',
+          border: '3px solid #000',
+          padding: '1px',
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '73.4%',
+          height: '75.8%',
         },
         pagePadding2: {
           padding: '0px 24px 24px 24px',
-          height: '87.6%',
+          height: '87.8%',
         },
         gridContainer: {
           flexDirection: 'row',
@@ -195,8 +196,7 @@ const useStyles = () =>
           paddingVertical: 8,
         },
         tableHeader: {
-          color: '#fff',
-          backgroundColor: '#232C4B',
+          backgroundColor: '#5B9BD4',
           fontWeight: 'bold',
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
@@ -300,222 +300,224 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
     <>
       <Document>
         <Page size="A4" style={styles.page}>
-          <View style={styles.watermarkContainer}>
-            <Image src={logo} style={styles.watermarkImage} />
-          </View>
-          <InvoiceHeader selectedRow={selectedRow} configs={configs} />
-          <View style={styles.pagePadding}>
-            <View style={{ ...styles.flexContainer, gap: 20 }}>
-              <View style={{ width: '48%' }}>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan No</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow?.loanNo}</Text>
+          <View style={{ border: '1px solid #000' }}>
+            <View style={styles.watermarkContainer}>
+              <Image src={logo} style={styles.watermarkImage} />
+            </View>
+            <InvoiceHeader selectedRow={selectedRow} configs={configs} />
+            <View style={styles.pagePadding}>
+              <View style={{ ...styles.flexContainer, gap: 20 }}>
+                <View style={{ width: '48%' }}>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Loan No</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow?.loanNo}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Loan Type</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loanType}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Name</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text
+                      style={styles.subText}
+                    >{`${selectedRow.customer.firstName} ${selectedRow.customer.middleName} ${selectedRow.customer.lastName}`}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Address</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text
+                      style={{
+                        ...styles.subText,
+                        textWrap: 'wrap',
+                        fontSize: 9,
+                      }}
+                    >{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Pan No</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.customer.panCard}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Aadhar Card No</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.customer.aadharCard}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Mobile No</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.customer.contact}</Text>
+                  </View>
                 </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan Type</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loanType}</Text>
+                <View style={{ width: '46%' }}>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Amount</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loanAmount}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Interest Rate</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>
+                      {selectedRow?.scheme.interestRate > 1.5
+                        ? 1.5
+                        : selectedRow?.scheme.interestRate}
+                      %
+                    </Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Consult Charge</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow?.consultingCharge}%</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Approval Charge</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow?.approvalCharge}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Int Pay Schedule</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.scheme.interestPeriod}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Issue Date</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{fDate(selectedRow.issueDate)}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Next Int Date</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={{ ...styles.subHeading, flex: 2 }}>Renew Date</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{renewDate()}</Text>
+                  </View>
                 </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Name</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text
-                    style={styles.subText}
-                  >{`${selectedRow.customer.firstName} ${selectedRow.customer.middleName} ${selectedRow.customer.lastName}`}</Text>
+                <View style={{ marginTop: -85, marginRight: '24px' }}>
+                  {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
+                  <View>
+                    <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
+                  </View>
+                  <View style={{ marginTop: 5 }}>
+                    <Image style={styles.propertyImage} src={selectedRow.propertyImage} />
+                  </View>
                 </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Address</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text
+              </View>
+              <View style={{ position: 'absolute', top: -85, right: 145 }}>
+                <View>
+                  <Image style={styles.img} src={Qr} />
+                </View>
+              </View>
+              <View style={styles.tableFlex}>
+                <View style={styles.table}>
+                  <View>
+                    <Text style={styles.heading}>Property Details</Text>
+                  </View>
+                  <View style={[styles.tableRow, styles.tableHeader]}>
+                    <Text style={styles.tableCell}>Property Name</Text>
+                    <Text style={styles.tableCell}>Qty</Text>
+                    <Text style={styles.tableCell}>carat</Text>
+                    <Text style={styles.tableCell}>Total Wt</Text>
+                    <Text style={styles.tableCell}>Net Wt</Text>
+                    <Text style={styles.tableCell}>Net Amt</Text>
+                    <Text style={styles.tableCell}>Part Close Date</Text>
+                    <Text style={styles.tableCell}>Sign</Text>
+                  </View>
+                  {selectedRow.propertyDetails.map((row, index) => (
+                    <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
+                      <Text style={styles.tableCell}>{row.type}</Text>
+                      <Text style={styles.tableCell}>{row.pcs}</Text>
+                      <Text style={styles.tableCell}>{row.carat}</Text>
+                      <Text style={styles.tableCell}>{Number(row.totalWeight).toFixed(2)}</Text>
+                      <Text style={styles.tableCell}>{Number(row.netWeight).toFixed(2)}</Text>
+                      <Text style={styles.tableCell}>{row.netAmount}</Text>
+                      <Text style={styles.tableCell}></Text>
+                      <Text style={styles.tableCell}></Text>
+                    </View>
+                  ))}
+                  <View
                     style={{
-                      ...styles.subText,
-                      textWrap: 'wrap',
-                      fontSize: 9,
+                      ...styles.tableRow,
+                      ...styles.tableFooter,
+                      borderTop: '3px solid #000',
                     }}
-                  >{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Pan No</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.customer.panCard}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Aadhar Card No</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.customer.aadharCard}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Mobile No</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.customer.contact}</Text>
-                </View>
-              </View>
-              <View style={{ width: '46%' }}>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Amount</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loanAmount}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Interest Rate</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>
-                    {selectedRow?.scheme.interestRate > 1.5
-                      ? 1.5
-                      : selectedRow?.scheme.interestRate}
-                    %
-                  </Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Consult Charge</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow?.consultingCharge}%</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Approval Charge</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow?.approvalCharge}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Int Pay Schedule</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.scheme.interestPeriod}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Issue Date</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{fDate(selectedRow.issueDate)}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Next Int Date</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={{ ...styles.subHeading, flex: 2 }}>Renew Date</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{renewDate()}</Text>
-                </View>
-              </View>
-              <View style={{ marginTop: -100 }}>
-                {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
-                <View>
-                  <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
-                </View>
-                <View style={{ marginTop: 5 }}>
-                  <Image style={styles.propertyImage} src={selectedRow.propertyImage} />
-                </View>
-              </View>
-            </View>
-            <View style={{ position: 'absolute', top: -100, right: 145 }}>
-              <View>
-                <Image style={styles.img} src={Qr} />
-              </View>
-            </View>
-            <View style={styles.tableFlex}>
-              <View style={styles.table}>
-                <View>
-                  <Text style={styles.heading}>Property Details</Text>
-                </View>
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                  <Text style={styles.tableCell}>Property Name</Text>
-                  <Text style={styles.tableCell}>Qty</Text>
-                  <Text style={styles.tableCell}>carat</Text>
-                  <Text style={styles.tableCell}>Total Wt</Text>
-                  <Text style={styles.tableCell}>Net Wt</Text>
-                  <Text style={styles.tableCell}>Net Amt</Text>
-                  <Text style={styles.tableCell}>Part Close Date</Text>
-                  <Text style={styles.tableCell}>Sign</Text>
-                </View>
-                {selectedRow.propertyDetails.map((row, index) => (
-                  <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
-                    <Text style={styles.tableCell}>{row.type}</Text>
-                    <Text style={styles.tableCell}>{row.pcs}</Text>
-                    <Text style={styles.tableCell}>{row.carat}</Text>
-                    <Text style={styles.tableCell}>{Number(row.totalWeight).toFixed(2)}</Text>
-                    <Text style={styles.tableCell}>{Number(row.netWeight).toFixed(2)}</Text>
-                    <Text style={styles.tableCell}>{row.netAmount}</Text>
+                  >
+                    <Text style={styles.tableCell}>Total</Text>
+                    <Text style={styles.tableCell}>
+                      {' '}
+                      {selectedRow.propertyDetails.reduce(
+                        (prev, next) => prev + (Number(next?.pcs) || 0),
+                        0
+                      )}
+                    </Text>{' '}
+                    <Text style={styles.tableCell}>
+                      {' '}
+                      {selectedRow.propertyDetails.reduce(
+                        (prev, next) => prev + (Number(next?.carat) || 0),
+                        0
+                      )}
+                    </Text>
+                    <Text style={styles.tableCell}>
+                      {' '}
+                      {selectedRow.propertyDetails
+                        .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
+                        .toFixed(2)}
+                    </Text>
+                    <Text style={styles.tableCell}>
+                      {' '}
+                      {selectedRow.propertyDetails
+                        .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
+                        .toFixed(2)}
+                    </Text>
+                    <Text style={styles.tableCell}>
+                      {' '}
+                      {selectedRow.propertyDetails
+                        .reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)
+                        .toFixed(2)}
+                    </Text>
                     <Text style={styles.tableCell}></Text>
                     <Text style={styles.tableCell}></Text>
                   </View>
-                ))}
-                <View style={[styles.tableRow, styles.tableFooter]}>
-                  <Text style={styles.tableCell}>Total</Text>
-                  <Text style={styles.tableCell}>
-                    {' '}
-                    {selectedRow.propertyDetails.reduce(
-                      (prev, next) => prev + (Number(next?.pcs) || 0),
-                      0
-                    )}
-                  </Text>{' '}
-                  <Text style={styles.tableCell}>
-                    {' '}
-                    {selectedRow.propertyDetails.reduce(
-                      (prev, next) => prev + (Number(next?.carat) || 0),
-                      0
-                    )}
-                  </Text>
-                  <Text style={styles.tableCell}>
-                    {' '}
-                    {selectedRow.propertyDetails
-                      .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
-                      .toFixed(2)}
-                  </Text>
-                  <Text style={styles.tableCell}>
-                    {' '}
-                    {selectedRow.propertyDetails
-                      .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
-                      .toFixed(2)}
-                  </Text>
-                  <Text style={styles.tableCell}>
-                    {' '}
-                    {selectedRow.propertyDetails
-                      .reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)
-                      .toFixed(2)}
-                  </Text>
-                  <Text style={styles.tableCell}></Text>
-                  <Text style={styles.tableCell}></Text>
                 </View>
               </View>
+            </View>{' '}
+            <View style={styles.d_flex}>
+              <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>{' '}
+              <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>
-          </View>{' '}
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>{' '}
-            <Text style={{ fontSize: 10, color: '#232C4B' }}>
-              Cash free Payment Service Provide
-            </Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+            <InvoiceFooter configs={configs} />
           </View>
-          <InvoiceFooter configs={configs} />
         </Page>
         <Page size="A4" style={styles.page}>
-          <View style={styles.pagePadding2}>
-            <view style={{ marginTop: 20 }}>
-              <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
-              <View style={{ marginTop: 10 }}>
-                {configs.exportPolicyConfig.map((item, index) => (
-                  <View
-                    key={index}
-                    style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}
-                  >
-                    <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text>{' '}
-                    {/* Bullet point */}
-                    <Text style={{ fontSize: 10, fontWeight: '500' }}>{item}</Text>{' '}
-                    {/* Condition text */}
-                  </View>
-                ))}
-              </View>
-            </view>
+          <View style={{ border: '1px solid #000' }}>
+            <View style={styles.pagePadding2}>
+              <view style={{ marginTop: 20 }}>
+                <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
+                <View style={{ marginTop: 10 }}>
+                  {configs.exportPolicyConfig.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}
+                    >
+                      <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text>{' '}
+                      <Text style={{ fontSize: 10, fontWeight: '500' }}>{item}</Text>{' '}
+                    </View>
+                  ))}
+                </View>
+              </view>
+            </View>
+            <View style={styles.d_flex}>
+              <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+              <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+            </View>
+            <InvoiceFooter configs={configs} />
           </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ fontSize: 10, color: '#232C4B' }}>
-              Cash free Payment Service Provide
-            </Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
-          </View>
-          <InvoiceFooter configs={configs} />
         </Page>
       </Document>
     </>

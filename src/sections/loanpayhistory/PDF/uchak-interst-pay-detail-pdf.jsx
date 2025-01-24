@@ -7,10 +7,7 @@ import logo from '../../../assets/logo/pdf-logo.png';
 
 Font.register({
   family: 'Roboto',
-  fonts: [
-    { src: '/fonts/Roboto-Regular.ttf' },
-    { src: '/fonts/Roboto-Bold.ttf' },
-  ],
+  fonts: [{ src: '/fonts/Roboto-Regular.ttf' }, { src: '/fonts/Roboto-Bold.ttf' }],
 });
 
 const useStyles = () =>
@@ -76,8 +73,7 @@ const useStyles = () =>
           borderRadius: 10,
         },
         tableHeader: {
-          color: '#fff',
-          backgroundColor: '#232C4B',
+          backgroundColor: '#5B9BD4',
           fontWeight: 'bold',
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
@@ -119,7 +115,7 @@ const useStyles = () =>
           fontWeight: 600,
         },
       }),
-    [],
+    []
   );
 
 export default function UchakInterstPayDetailPdf({ data, configs }) {
@@ -127,51 +123,56 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
 
   return (
     <Document>
-      <Page size='A4' style={styles.page}> <View style={styles.watermarkContainer}>
-        <Image src={logo} style={styles.watermarkImage} />
-      </View>
+      <Page size="A4" style={styles.page}>
+        {' '}
+        <View style={styles.watermarkContainer}>
+          <Image src={logo} style={styles.watermarkImage} />
+        </View>
         <InvoiceHeader selectedRow={data.loan} configs={configs} />
         <View style={styles.pagePadding}>
           <Text style={{ ...styles.headerText2, marginTop: 25 }}>Uchak Pay Slip</Text>
           <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
             <View style={{ width: '50%' }}>
               <View style={styles.row}>
-                <Text style={styles.subHeading}>Loan No{' '}</Text>
+                <Text style={styles.subHeading}>Loan No </Text>
                 <Text style={styles.colon}>:</Text>
                 <Text style={styles.subText}>{data.loan.loanNo} </Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subHeading}>Issue Date{' '}</Text>
+                <Text style={styles.subHeading}>Issue Date </Text>
                 <Text style={styles.colon}>:</Text>
                 <Text style={styles.subText}>{fDate(data.loan.issueDate)}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subHeading}>Next Interest Date{' '}</Text>
+                <Text style={styles.subHeading}>Next Interest Date </Text>
                 <Text style={styles.colon}>:</Text>
                 <Text style={styles.subText}>{fDate(data.loan.nextInstallmentDate)}</Text>
               </View>
             </View>
             <View style={{ width: '50%' }}>
               <View style={styles.row}>
-                <Text style={styles.subHeading2}>Customer Name{' '}</Text>
+                <Text style={styles.subHeading2}>Customer Name </Text>
                 <Text style={styles.colon}>:</Text>
                 <Text
-                  style={styles.subText}>{`${data.loan.customer.firstName} ${data.loan.customer.middleName} ${data.loan.customer.lastName}`}</Text>
+                  style={styles.subText}
+                >{`${data.loan.customer.firstName} ${data.loan.customer.middleName} ${data.loan.customer.lastName}`}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subHeading2}>Pan No{' '}</Text>
+                <Text style={styles.subHeading2}>Pan No </Text>
                 <Text style={styles.colon}>:</Text>
                 <Text style={styles.subText}>{data.loan.customer.panCard}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subHeading2}>Mobile No{' '}</Text>
+                <Text style={styles.subHeading2}>Mobile No </Text>
                 <Text style={styles.colon}>:</Text>
                 <Text style={styles.subText}>{data.loan.customer.contact}</Text>
               </View>
             </View>
           </View>
           <View>
-            <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>Uchak Pay Details</Text>
+            <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>
+              Uchak Pay Details
+            </Text>
             <View style={[styles.tableRow, styles.tableHeader]}>
               <Text style={styles.tableCell}>Uchak pay date</Text>
               <Text style={styles.tableCell}>Uchak int. amt</Text>
@@ -206,6 +207,6 @@ UchakInterstPayDetailPdf.propTypes = {
       column2: PropTypes.string,
       column3: PropTypes.string,
       column4: PropTypes.string,
-    }),
+    })
   ),
 };

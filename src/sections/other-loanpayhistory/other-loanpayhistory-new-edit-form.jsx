@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
-import FormProvider, { RHFTextField } from '../../components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField } from '../../components/hook-form';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import { useForm } from 'react-hook-form';
@@ -109,6 +109,27 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
       lastInterestPayDate: currentOtherLoan?.loan?.lastInstallmentDate
         ? new Date(currentOtherLoan?.loan?.lastInstallmentDate)
         : null,
+      totalLoanAmount: currentOtherLoan?.loan?.loanAmount || '',
+      partLoanAmount:
+        currentOtherLoan?.loan?.loanAmount - currentOtherLoan?.loan?.interestLoanAmount || '',
+      intLoanAmount: currentOtherLoan?.loan?.interestLoanAmount || '',
+      intRate:
+        currentOtherLoan?.loan?.scheme.interestRate >= 1.5
+          ? 1.5
+          : currentOtherLoan?.loan?.scheme.interestRate - 1.5 || '',
+      otherName: currentOtherLoan?.otherName || '',
+      otherNumber: currentOtherLoan?.otherNumber || '',
+      amount: currentOtherLoan?.amount || '',
+      percentage: currentOtherLoan?.percentage || '',
+      date: new Date(currentOtherLoan?.date) || '',
+      grossWt: currentOtherLoan?.grossWt || '',
+      netWt: currentOtherLoan?.netWt || '',
+      rate: currentOtherLoan?.rate || '',
+      month: currentOtherLoan?.month || '',
+      renewalDate: new Date(currentOtherLoan?.renewalDate) || '',
+      closeDate: new Date(currentOtherLoan?.closeDate) || '',
+      otherCharge: currentOtherLoan?.otherCharge || '',
+      remark: currentOtherLoan?.remark || '',
     }),
     [currentOtherLoan?.loan]
   );
@@ -141,130 +162,423 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Card sx={{ p: 2 }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={12}>
-                <Box
-                  rowGap={1.5}
-                  columnGap={1.5}
-                  display="grid"
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(3, 1fr)',
-                    md: 'repeat(6, 1fr)',
-                  }}
-                >
-                  <RHFTextField name="loanNo" label="Loan No." InputProps={{ readOnly: true }} />
-                  <RHFTextField
-                    name="customerName"
-                    label="Customer Name"
-                    InputProps={{ readOnly: true }}
-                  />
-                  <RHFTextField
-                    name="schemeName"
-                    label="Scheme Name"
-                    InputProps={{ readOnly: true }}
-                    inputProps={{ minLength: 10, maxLength: 10 }}
-                  />
-                  <RHFTextField
-                    name="IntPeriodTime"
-                    label="Interest Period Time"
-                    InputProps={{ readOnly: true }}
-                  />
-                  <RHFDatePicker
-                    name="nextInterestPayDate"
-                    control={control}
-                    label="Next Interest Pay Date"
-                  />
-                  <RHFTextField
-                    name="approvalCharge"
-                    label="Approval Charge"
-                    InputProps={{ readOnly: true }}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <RHFTextField
-                    name="loanAmount"
-                    label="Loan Amount"
-                    InputProps={{ readOnly: true }}
-                  />
-                  <RHFTextField name="address" label="Address" InputProps={{ readOnly: true }} />
-                  <RHFTextField
-                    name="interest"
-                    label="Interest %"
-                    InputProps={{ readOnly: true }}
-                    inputProps={{ maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' }}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault();
-                      }
+              {/*<Grid item xs={12} md={12}>*/}
+              {/*  <Box*/}
+              {/*    rowGap={1.5}*/}
+              {/*    columnGap={1.5}*/}
+              {/*    display="grid"*/}
+              {/*    gridTemplateColumns={{*/}
+              {/*      xs: 'repeat(1, 1fr)',*/}
+              {/*      sm: 'repeat(3, 1fr)',*/}
+              {/*      md: 'repeat(6, 1fr)',*/}
+              {/*    }}*/}
+              {/*  >*/}
+              {/*    <RHFTextField name="loanNo" label="Loan No." InputProps={{ readOnly: true }} />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="customerName"*/}
+              {/*      label="Customer Name"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="schemeName"*/}
+              {/*      label="Scheme Name"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*      inputProps={{ minLength: 10, maxLength: 10 }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="IntPeriodTime"*/}
+              {/*      label="Interest Period Time"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*    />*/}
+              {/*    <RHFDatePicker*/}
+              {/*      name="nextInterestPayDate"*/}
+              {/*      control={control}*/}
+              {/*      label="Next Interest Pay Date"*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="approvalCharge"*/}
+              {/*      label="Approval Charge"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*      InputLabelProps={{ shrink: true }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="loanAmount"*/}
+              {/*      label="Loan Amount"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField name="address" label="Address" InputProps={{ readOnly: true }} />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="interest"*/}
+              {/*      label="Interest %"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*      inputProps={{ maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' }}*/}
+              {/*      onKeyPress={(e) => {*/}
+              {/*        if (!/[0-9]/.test(e.key)) {*/}
+              {/*          e.preventDefault();*/}
+              {/*        }*/}
+              {/*      }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="loanPeriod"*/}
+              {/*      label="Loan Period (Month)"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*    />*/}
+              {/*    <RHFDatePicker*/}
+              {/*      name="lastInterestPayDate"*/}
+              {/*      control={control}*/}
+              {/*      label="Last Interest Pay Date"*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="createdBy"*/}
+              {/*      label="Created By"*/}
+              {/*      InputLabelProps={{ shrink: true }}*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="interestLoanAmount"*/}
+              {/*      label="Interest Loan Amount"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="contact"*/}
+              {/*      label="Mobile No."*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*      inputProps={{ maxLength: 16 }}*/}
+              {/*    />*/}
+              {/*    <RHFTextField*/}
+              {/*      name="consultCharge"*/}
+              {/*      label="Consult Charge %"*/}
+              {/*      InputProps={{ readOnly: true }}*/}
+              {/*      InputLabelProps={{ shrink: true }}*/}
+              {/*    />*/}
+              {/*    <RHFDatePicker name="issueDate" control={control} label="Issue Date" />*/}
+              {/*    <RHFDatePicker name="renewDate" control={control} label="Renew Date" />*/}
+              {/*    <Box pb={0}>*/}
+              {/*      <Box*/}
+              {/*        sx={{*/}
+              {/*          display: 'flex',*/}
+              {/*          justifyContent: 'space-between',*/}
+              {/*          alignItems: 'center',*/}
+              {/*          padding: 0,*/}
+              {/*          pb: 0,*/}
+              {/*        }}*/}
+              {/*      >*/}
+              {/*        <Box>*/}
+              {/*          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>*/}
+              {/*            Property Image*/}
+              {/*          </Typography>*/}
+              {/*        </Box>*/}
+              {/*        <Box>*/}
+              {/*          <Image*/}
+              {/*            key={file}*/}
+              {/*            src={file}*/}
+              {/*            alt={file}*/}
+              {/*            ratio="1/1"*/}
+              {/*            onClick={() => lightbox.onOpen(file)}*/}
+              {/*            sx={{*/}
+              {/*              cursor: 'zoom-in',*/}
+              {/*              height: '36px',*/}
+              {/*              width: '36px',*/}
+              {/*              borderRadius: '20%',*/}
+              {/*            }}*/}
+              {/*          />*/}
+              {/*        </Box>*/}
+              {/*      </Box>*/}
+              {/*    </Box>*/}
+              {/*  </Box>*/}
+              {/*</Grid>*/}
+              <Grid xs={12} md={12}>
+                <Card sx={{ p: 2 }}>
+                  <Box
+                    rowGap={1.5}
+                    columnGap={1.5}
+                    display="grid"
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(3, 1fr)',
+                      md: 'repeat(6, 1fr)',
                     }}
-                  />
-                  <RHFTextField
-                    name="loanPeriod"
-                    label="Loan Period (Month)"
-                    InputProps={{ readOnly: true }}
-                  />
-                  <RHFDatePicker
-                    name="lastInterestPayDate"
-                    control={control}
-                    label="Last Interest Pay Date"
-                  />
-                  <RHFTextField
-                    name="createdBy"
-                    label="Created By"
-                    InputLabelProps={{ shrink: true }}
-                    InputProps={{ readOnly: true }}
-                  />
-                  <RHFTextField
-                    name="interestLoanAmount"
-                    label="Interest Loan Amount"
-                    InputProps={{ readOnly: true }}
-                  />
-                  <RHFTextField
-                    name="contact"
-                    label="Mobile No."
-                    InputProps={{ readOnly: true }}
-                    inputProps={{ maxLength: 16 }}
-                  />
-                  <RHFTextField
-                    name="consultCharge"
-                    label="Consult Charge %"
-                    InputProps={{ readOnly: true }}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <RHFDatePicker name="issueDate" control={control} label="Issue Date" />
-                  <RHFDatePicker name="renewDate" control={control} label="Renew Date" />
-                  <Box pb={0}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: 0,
-                        pb: 0,
+                  >
+                    <RHFTextField
+                      name="loanNo"
+                      label="Loan No."
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFDatePicker name="issueDate" control={control} label="Issue Date" disabled />
+                    <RHFTextField
+                      name="totalLoanAmount"
+                      label="Total Loan Amount"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFTextField
+                      name="partLoanAmount"
+                      label="Part Loan Amount"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFTextField
+                      name="intLoanAmount"
+                      label="Int. Loan Amount"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFTextField
+                      name="intRate"
+                      label="Int. Rate"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFTextField
+                      name="consultingCharge"
+                      label="Consulting Charge"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFTextField name="approvalCharge" label="Approval Charge" disabled />
+                    {/*<RHFAutocomplete*/}
+                    {/*  name="scheme"*/}
+                    {/*  label="Scheme"*/}
+                    {/*  req="red"*/}
+                    {/*  disabled*/}
+                    {/*  fullWidth*/}
+                    {/*  options={scheme?.filter((item) => item.isActive)}*/}
+                    {/*  getOptionLabel={(option) => option?.name || ''}*/}
+                    {/*  renderOption={(props, option) => (*/}
+                    {/*    <li {...props} key={option?.id}>*/}
+                    {/*      {option?.name}*/}
+                    {/*    </li>*/}
+                    {/*  )}*/}
+                    {/*  onChange={(e, selectedScheme) => {*/}
+                    {/*    setValue('scheme', selectedScheme);*/}
+                    {/*    const schemedata = selectedScheme;*/}
+                    {/*    if (schemedata?.ratePerGram) {*/}
+                    {/*      fields.forEach((_, index) => {*/}
+                    {/*        const totalWeight =*/}
+                    {/*          parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;*/}
+                    {/*        const lossWeight =*/}
+                    {/*          parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;*/}
+                    {/*        const caratValue =*/}
+                    {/*          carat?.find(*/}
+                    {/*            (item) =>*/}
+                    {/*              item?.name ===*/}
+                    {/*              parseFloat(getValues(`propertyDetails[${index}].carat`))*/}
+                    {/*          ) || {};*/}
+                    {/*        const caratPercentage = caratValue?.caratPercentage || 100;*/}
+                    {/*        const grossWeight = totalWeight - lossWeight;*/}
+                    {/*        const netWeight = grossWeight * (caratPercentage / 100);*/}
+                    {/*        const grossAmount = grossWeight * schemedata?.ratePerGram;*/}
+                    {/*        const netAmount = netWeight * schemedata?.ratePerGram;*/}
+                    {/*        if (!isNaN(grossWeight))*/}
+                    {/*          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));*/}
+                    {/*        if (!isNaN(netWeight))*/}
+                    {/*          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));*/}
+                    {/*        if (!isNaN(grossAmount))*/}
+                    {/*          setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));*/}
+                    {/*        if (!isNaN(netAmount))*/}
+                    {/*          setValue(`propertyDetails[${index}].netAmount`, netAmount.toFixed(2));*/}
+                    {/*      });*/}
+                    {/*    }*/}
+                    {/*  }}*/}
+                    {/*/>*/}
+                    {/*<RHFTextField*/}
+                    {/*  name="interestRate"*/}
+                    {/*  label="InstrestRate"*/}
+                    {/*  InputProps={{ readOnly: true }}*/}
+                    {/*  disabled*/}
+                    {/*/>*/}
+                    {/*<Controller*/}
+                    {/*  name="consultingCharge"*/}
+                    {/*  control={control}*/}
+                    {/*  render={({ field }) => (*/}
+                    {/*    <RHFTextField*/}
+                    {/*      {...field}*/}
+                    {/*      disabled={true}*/}
+                    {/*      label="Consulting Charge"*/}
+                    {/*      req={'red'}*/}
+                    {/*    />*/}
+                    {/*  )}*/}
+                    {/*/>*/}
+
+                    {/*<RHFTextField*/}
+                    {/*  name="periodTime"*/}
+                    {/*  label="INT. Period Time"*/}
+                    {/*  InputProps={{ readOnly: true }}*/}
+                    {/*  disabled*/}
+                    {/*/>*/}
+                    {/*<RHFTextField*/}
+                    {/*  name="renewalTime"*/}
+                    {/*  label="Renewal Time"*/}
+                    {/*  InputProps={{ readOnly: true }}*/}
+                    {/*  disabled*/}
+                    {/*/>*/}
+                    {/*<RHFTextField*/}
+                    {/*  name="loanCloseTime"*/}
+                    {/*  label="Minimun Loan Close Time"*/}
+                    {/*  InputProps={{ readOnly: true }}*/}
+                    {/*  disabled*/}
+                    {/*/>*/}
+                    {/*{currentOtherLoanIssue && (*/}
+                    {/*  <RHFTextField*/}
+                    {/*    name="loanAmount"*/}
+                    {/*    label="Loan AMT."*/}
+                    {/*    req={'red'}*/}
+                    {/*    disabled*/}
+                    {/*    type="number"*/}
+                    {/*    inputProps={{ min: 0 }}*/}
+                    {/*  />*/}
+                    {/*)}*/}
+                    {/*{currentOtherLoanIssue && (*/}
+                    {/*  <RHFDatePicker*/}
+                    {/*    name="nextInstallmentDate"*/}
+                    {/*    control={control}*/}
+                    {/*    label="Next Installment Date"*/}
+                    {/*    req={'red'}*/}
+                    {/*    disabled*/}
+                    {/*  />*/}
+                    {/*)}*/}
+                    {/*<RHFTextField name="jewellerName" label="JewellerName" req={'red'} disabled />*/}
+                    {/*<RHFAutocomplete*/}
+                    {/*  disabled*/}
+                    {/*  name="loanType"*/}
+                    {/*  label="Loan Type"*/}
+                    {/*  req="red"*/}
+                    {/*  fullWidth*/}
+                    {/*  options={*/}
+                    {/*    configs?.loanTypes?.length > 0*/}
+                    {/*      ? configs.loanTypes.map((loan) => loan.loanType)*/}
+                    {/*      : []*/}
+                    {/*  }*/}
+                    {/*  getOptionLabel={(option) => option || ''}*/}
+                    {/*  onChange={(event, value) => setValue('loanType', value || '')}*/}
+                    {/*  renderOption={(props, option) => (*/}
+                    {/*    <li {...props} key={option}>*/}
+                    {/*      {option}*/}
+                    {/*    </li>*/}
+                    {/*  )}*/}
+                    {/*/>*/}
+                    <RHFTextField
+                      name="otherName"
+                      label="otherName"
+                      disabled
+                      onKeyPress={(e) => {
+                        if (
+                          !/[0-9.]/.test(e.key) ||
+                          (e.key === '.' && e.target.value.includes('.'))
+                        ) {
+                          e.preventDefault();
+                        }
                       }}
-                    >
-                      <Box>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                          Property Image
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Image
-                          key={file}
-                          src={file}
-                          alt={file}
-                          ratio="1/1"
-                          onClick={() => lightbox.onOpen(file)}
-                          sx={{
-                            cursor: 'zoom-in',
-                            height: '36px',
-                            width: '36px',
-                            borderRadius: '20%',
-                          }}
-                        />
+                    />
+                    <RHFTextField
+                      name="otherNumber"
+                      label="Other Number"
+                      disabled
+                      inputProps={{
+                        maxLength: 10,
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                      }}
+                      rules={{
+                        required: 'Contact number is required',
+                        pattern: {
+                          value: /^[0-9]{10}$/,
+                          message: 'Please enter a valid 10-digit contact number',
+                        },
+                      }}
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                    <RHFTextField
+                      name="amount"
+                      label="Amount"
+                      disabled
+                      onKeyPress={(e) => {
+                        if (
+                          !/[0-9.]/.test(e.key) ||
+                          (e.key === '.' && e.target.value.includes('.'))
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                    <RHFTextField
+                      name="percentage"
+                      label="Percentage"
+                      disabled
+                      onKeyPress={(e) => {
+                        if (
+                          !/[0-9.]/.test(e.key) ||
+                          (e.key === '.' && e.target.value.includes('.'))
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                    <RHFDatePicker name="date" control={control} label="Date" disabled />
+                    <RHFTextField
+                      name="grossWt"
+                      label="Gross Wt"
+                      disabled
+                      onKeyPress={(e) => {
+                        if (
+                          !/[0-9.]/.test(e.key) ||
+                          (e.key === '.' && e.target.value.includes('.'))
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                    <RHFTextField name="netWt" label="Net Wt" disabled />
+                    <RHFTextField name="rate" label="Rate" disabled />
+                    <RHFTextField name="month" label="Month" disabled />
+                    <RHFDatePicker
+                      name="renewalDate"
+                      control={control}
+                      label="Renewal Date"
+                      disabled
+                    />
+                    <RHFDatePicker name="closeDate" control={control} label="Close Date" disabled />
+                    <RHFTextField name="otherCharge" label="Other Charge" disabled />
+                    <RHFTextField name="remark" label="Remark" disabled />
+                    <Box pb={0}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: 0,
+                          pb: 0,
+                        }}
+                      >
+                        <Box>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                            Property Image
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Image
+                            key={file}
+                            src={file}
+                            alt={file}
+                            ratio="1/1"
+                            onClick={() => lightbox.onOpen(file)}
+                            sx={{
+                              cursor: 'zoom-in',
+                              height: '36px',
+                              width: '36px',
+                              borderRadius: '20%',
+                            }}
+                          />
+                        </Box>
                       </Box>
                     </Box>
                   </Box>
-                </Box>
+                </Card>
               </Grid>
             </Grid>
           </Card>

@@ -90,33 +90,36 @@ export function AuthProvider({ children }) {
     initialize();
   }, [initialize]);
   // LOGIN
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (contact, otp) => {
     const data = {
-      email,
-      password,
+      contact,
+      otp,
     };
 
     const URL = `${AUTH_API}/login`;
-    await axios.post(URL, data).then((res) => {
-      const user = res.data.data;
-      enqueueSnackbar('Login Successfully');
-      const { jwt, jwtRefresh } = user.tokens;
-      setSession(jwt, jwtRefresh);
+    await axios
+      .post(URL, data)
+      .then((res) => {
+        const user = res.data.data;
+        enqueueSnackbar('Login Successfully');
+        const { jwt, jwtRefresh } = user.tokens;
+        setSession(jwt, jwtRefresh);
 
-      dispatch({
-        type: 'LOGIN',
-        payload: {
-          user: {
-            ...user,
-            jwt,
-            jwtRefresh,
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            user: {
+              ...user,
+              jwt,
+              jwtRefresh,
+            },
           },
-        },
+        });
+      })
+      .catch((err) => {
+        enqueueSnackbar(`${err.message}`, { variant: 'error' });
+        console.log(err);
       });
-    }).catch((err) => {
-      enqueueSnackbar(`${err.message}`, { variant: 'error' });
-      console.log(err);
-    });
   }, []);
 
   // LOGOUT
@@ -142,7 +145,7 @@ export function AuthProvider({ children }) {
       logout,
       initialize,
     }),
-    [login, logout, state.user, status, initialize],
+    [login, logout, state.user, status, initialize]
   );
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
 }

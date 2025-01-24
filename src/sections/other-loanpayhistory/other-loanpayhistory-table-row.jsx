@@ -37,6 +37,7 @@ export default function OtherLoanpayhistoryTableRow({
     loan,
     otherName,
     otherNumber,
+    otherLoanNumber,
     rate,
     amount,
     srNo,
@@ -107,13 +108,14 @@ export default function OtherLoanpayhistoryTableRow({
                   color: 'inherit',
                 }}
               >
-                {otherName}
+                {otherLoanNumber}
               </Link>
             }
           </TableCell>
         ) : (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherName}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherLoanNumber}</TableCell>
         )}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherNumber}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{amount}</TableCell>

@@ -37,7 +37,7 @@ const useStyles = () =>
           right: 0,
           width: '80%',
           height: '100px',
-          backgroundColor: '#232C4B',
+          backgroundColor: '#5B9BD4',
           borderTopLeftRadius: '50%',
           borderBottomLeftRadius: '50%',
         },
@@ -119,13 +119,12 @@ const useStyles = () =>
         },
         separator: {
           marginHorizontal: 2,
-          color: '#fff',
           fontSize: '10px',
           fontWeight: '400',
         },
         header: {
           width: '100%',
-          height: '120px',
+          height: '100px',
           position: 'relative',
           overflow: 'hidden',
         },
@@ -148,14 +147,14 @@ const useStyles = () =>
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          paddingLeft: 10,
+          paddingLeft: 6,
         },
         logoParent: {
-          height: 75,
-          width: 75,
+          height: 64,
+          width: 64,
           borderRadius: '10px',
           overflow: 'hidden',
-          marginRight: 10,
+          marginRight: 5,
         },
         logo: {
           height: '100%',
@@ -200,7 +199,7 @@ export default function InvoiceHeader({ configs }) {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            marginTop: 11,
+            marginTop: 9,
           }}
         >
           <View style={styles.headerbox1}>
@@ -228,25 +227,24 @@ export default function InvoiceHeader({ configs }) {
                   marginLeft: 3,
                 }}
               >
-                {company?.name
-                  ? company.name.split(' ').pop() // Show only the last word
-                  : 'FINCORP'}
+                {company?.name ? company.name.split(' ').pop() : 'FINCORP'}
               </Text>
             </View>
           </View>
         </View>
         <View
           style={{
+            fontSize: '10px',
             flexDirection: 'row',
             textWrap: 'wrap',
             // paddingRight: 10,
-            marginTop: 16,
-            marginLeft: 5,
+            marginTop: 11,
+            marginLeft: 10,
           }}
         >
           <Image style={styles.icon} src={address} />
           <Text style={styles.separator}>|</Text>
-          <Text style={{ fontSize: 9, color: '#fff', fontWeight: 600 }}>{branchAddress}</Text>
+          <Text style={{ fontSize: 9, fontWeight: 600 }}>{branchAddress}</Text>
         </View>
       </View>
 

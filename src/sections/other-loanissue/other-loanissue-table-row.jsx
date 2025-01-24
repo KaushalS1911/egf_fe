@@ -22,7 +22,7 @@ export default function OtherLoanissueTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  const { loan, cashAmount, bankAmount } = row;
+  const { loan, cashAmount, bankAmount, otherLoanNumber } = row;
   const { loanNo, customer, scheme, loanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -35,6 +35,7 @@ export default function OtherLoanissueTableRow({
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherLoanNumber}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}

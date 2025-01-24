@@ -58,7 +58,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '72%',
+          height: '82%',
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
@@ -133,8 +133,7 @@ const useStyles = () =>
           paddingVertical: 8,
         },
         tableHeader: {
-          color: '#fff',
-          backgroundColor: '#232C4B',
+          backgroundColor: '#5B9BD4',
           fontWeight: 600,
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
@@ -193,20 +192,11 @@ const useStyles = () =>
           display: 'flex',
           width: '100%',
           flexDirection: 'row',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-        },
-        box: {
-          width: 60,
-          height: 60,
-          borderWidth: 1,
-          borderColor: '#232C4B',
-          display: 'flex',
-          justifyContent: 'center',
           alignItems: 'center',
-          marginLeft: 5,
+          justifyContent: 'space-between',
+          marginBottom: 16.9,
         },
-        box2: {
+        signText: {
           fontSize: 11,
           borderTop: '1px solid 232C4B',
           color: '#232C4B',
@@ -214,14 +204,6 @@ const useStyles = () =>
           textAlign: 'center',
           width: '100px',
           fontWeight: 600,
-        },
-        signText: {
-          fontSize: 11,
-          color: '#232C4B',
-          textAlign: 'center',
-          fontWeight: '600',
-          marginLeft: 2,
-          marginTop: 10,
         },
       }),
     []
@@ -628,11 +610,8 @@ export default function Sansaction11({ sansaction, configs }) {
             </View>
           </View>
           <View style={styles.d_flex}>
-            <Text style={{ ...styles.box2, marginLeft: 35 }}>Authority Sign</Text>
-            <View style={{ marginRight: 35 }}>
-              <View style={styles.box}></View>
-              <Text style={styles.signText}>Customer Sign</Text>
-            </View>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
           </View>
         </Page>
       </Document>

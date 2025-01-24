@@ -48,6 +48,7 @@ import { isBetween } from '../../../utils/format-time.js';
 
 const TABLE_HEAD = [
   { id: '', label: '#' },
+  { id: 'otherLoanNo', label: 'Other Loan No ' },
   { id: 'otherName', label: 'Other Name ' },
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'otherNo', label: 'Other No.' },
@@ -223,7 +224,7 @@ export default function LoanpayhistoryListView() {
               }
             />
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 1700 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
