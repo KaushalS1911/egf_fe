@@ -72,6 +72,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy) ? currentCustomer.referenceBy : 'Other';
   const [disabledField, setDisabledField] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
+
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
       setDisabledField(true);
@@ -79,12 +80,15 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     }
     setOpenPopup(false);
   };
+
   const handleClose = () => {
     setOpenPopup(false);
   };
 
   useEffect(() => {
-    setOpenPopup(true);
+    if (!currentCustomer) {
+      setOpenPopup(true);
+    }
   }, []);
 
   const NewCustomerSchema = Yup.object().shape({
@@ -447,11 +451,11 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
     if (!isAadhar) {
       try {
+        setOtpPopupOpen(true);
         const response = await axios.post(`https://egf-be.onrender.com/api/verification/send-otp`, { aadhaar: aadharNumber });
 
         if (response.status === 200) {
           enqueueSnackbar('OTP sent successfully for Aadhar verification.', { variant: 'success' });
-          setOtpPopupOpen(true);
           setIsAadhar(true);
           sessionStorage.setItem('aadharVerificationResponse', JSON.stringify(response.data.data));
         }
