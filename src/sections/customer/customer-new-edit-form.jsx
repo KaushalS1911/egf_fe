@@ -72,6 +72,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   const condition = INQUIRY_REFERENCE_BY.find((item) => item?.label == currentCustomer?.referenceBy) ? currentCustomer.referenceBy : 'Other';
   const [disabledField, setDisabledField] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
+  const [referanceByOther, setReferaceByOther] = useState('');
 
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
@@ -119,6 +120,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     tempZipcode: Yup.string().required('Pincode is required'),
     profile_pic: Yup.mixed().required('A profile picture is required'),
     referenceBy: Yup.string().required('Other detail is required'),
+
   });
 
   const defaultValues = useMemo(() => ({
@@ -126,7 +128,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     branchId: currentCustomer ? {
       label: currentCustomer?.branch?.name, value: currentCustomer?.branch?._id,
     } : null,
-    status: currentCustomer?.status || '',
+    status: currentCustomer?.status || 'Active',
     profile_pic: currentCustomer?.avatar_url || null,
     firstName: currentCustomer?.firstName || '',
     middleName: currentCustomer?.middleName || '',
@@ -165,11 +167,20 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   }), [currentCustomer, branch]);
 
   const methods = useForm({
-    resolver: yupResolver(NewCustomerSchema), defaultValues,
+    resolver: yupResolver(NewCustomerSchema),
+    defaultValues,
   });
 
   const { reset, watch, control, handleSubmit, setValue, formState: { isSubmitting } } = methods;
   const [aspectRatio, setAspectRatio] = useState(null);
+
+  useEffect(() => {
+    const referance = watch('referenceBy');
+    if (referance) {
+      setReferaceByOther(referance);
+
+    }
+  }, [watch('referenceBy')]);
 
   useEffect(() => {
     if (imageSrc) {
@@ -189,12 +200,18 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+
+      if (data?.referenceBy === 'Other' && data.otherReferenceBy === '') {
+        enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
+        return;
+      }
+
       const payload = {
         status: data.status,
         isAadharVerified: data.isAadharVerified,
-        firstName: data.firstName,
-        middleName: data.middleName,
-        lastName: data.lastName,
+        firstName: data.firstName.toUpperCase(),
+        middleName: data.middleName.toUpperCase(),
+        lastName: data.lastName.toUpperCase(),
         contact: data.contact,
         email: data.email,
         dob: data.dob,
@@ -489,7 +506,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           const fullName = apidata.name;
           const nameParts = fullName.split(' ');
 
-          setValue('profile_pic', 'data:image/jpeg;base64,' + apidata?.photo_link, { shouldValidate: true });
           setAadharImage('data:image/jpeg;base64,' + apidata?.photo_link);
           setValue('firstName', nameParts[0], { shouldValidate: true });
           setValue('middleName', nameParts[1] || '', { shouldValidate: true });
@@ -904,8 +920,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               name='tempState'
               label='State'
               placeholder='Choose a State'
-              options={watch('TemCountry') ? countrystatecity
-                .find((country) => country.name === watch('TemCountry'))
+              options={watch('tempCountry') ? countrystatecity
+                .find((country) => country.name === watch('tempCountry'))
                 ?.states.map((state) => state.name) || [] : []}
               defaultValue='Gujarat'
               isOptionEqualToValue={(option, value) => option === value}
@@ -916,13 +932,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               name='tempCity'
               label='City'
               placeholder='Choose a City'
-              options={watch('TemState') ? countrystatecity
-                .find((country) => country.name === watch('TemCountry'))
-                ?.states.find((state) => state.name === watch('TemState'))
+              options={watch('tempState') ? countrystatecity
+                .find((country) => country.name === watch('tempCountry'))
+                ?.states.find((state) => state.name === watch('tempState'))
                 ?.cities.map((city) => city.name) || [] : []}
               defaultValue='Surat'
               isOptionEqualToValue={(option, value) => option === value}
             />
+
           </Box>
         </Stack>
       </Card>
@@ -962,7 +979,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           }} justifyContent={'end'}>
             {watch('referenceBy') === 'Other' && (<Stack spacing={1}>
               <Typography variant='subtitle2'>Write other reference name</Typography>
-              <RHFTextField name='otherReferenceBy' label='Reference By' disabled={disabledField} />
+              <RHFTextField req={'red'} name='otherReferenceBy' label='Reference By' disabled={disabledField} />
             </Stack>)}
           </Stack>
         </Box>
