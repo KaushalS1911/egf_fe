@@ -167,6 +167,17 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    const { amountPaid } = data;
+    const netAmount = selectedTotals?.netAmount || 0;
+
+    if (amountPaid >= netAmount - 500) {
+      enqueueSnackbar(
+        `Amount Paid must be less than ${netAmount - 500}.`,
+        { variant: 'error' },
+      );
+      return;
+    }
+
     if (selectedRows.length === 0) {
       enqueueSnackbar('At least one property must be selected', { variant: 'error' });
       return;
@@ -255,10 +266,11 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       setPaymentMode(watch('paymentMode'));
       setValue('paymentMode', watch('paymentMode'));
     }
-    if (!watch('amountPaid')) {
-      setValue('amountPaid', selectedTotals.netAmount);
-    }
-  }, [watch('paymentMode'), selectedTotals.netAmount]);
+
+    const netAmount = selectedTotals?.netAmount || 0;
+    setValue('amountPaid', netAmount > 0 ? netAmount : 0);
+  }, [watch('paymentMode'), selectedTotals]);
+
 
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
@@ -310,9 +322,11 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
+
   const rotateImage = (angle) => {
     setRotation((prevRotation) => prevRotation + angle);
   };
+
   const showCroppedImage = async () => {
     try {
       const canvas = document.createElement('canvas');
@@ -326,35 +340,27 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
 
       const scaleX = image.naturalWidth / image.width;
       const scaleY = image.naturalHeight / image.height;
-
       const angleRadians = (rotation * Math.PI) / 180;
 
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        // No cropping, save the entire rotated image
         const rotatedCanvasWidth = Math.abs(image.naturalWidth * Math.cos(angleRadians)) + Math.abs(image.naturalHeight * Math.sin(angleRadians));
         const rotatedCanvasHeight = Math.abs(image.naturalWidth * Math.sin(angleRadians)) + Math.abs(image.naturalHeight * Math.cos(angleRadians));
-
         canvas.width = rotatedCanvasWidth;
         canvas.height = rotatedCanvasHeight;
-
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(angleRadians);
         ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2, image.naturalWidth, image.naturalHeight);
         ctx.restore();
       } else {
-        // Cropping is required
         const cropX = completedCrop.x * scaleX;
         const cropY = completedCrop.y * scaleY;
         const cropWidth = completedCrop.width * scaleX;
         const cropHeight = completedCrop.height * scaleY;
-
         const rotatedCanvasWidth = Math.abs(cropWidth * Math.cos(angleRadians)) + Math.abs(cropHeight * Math.sin(angleRadians));
         const rotatedCanvasHeight = Math.abs(cropWidth * Math.sin(angleRadians)) + Math.abs(cropHeight * Math.cos(angleRadians));
-
         canvas.width = rotatedCanvasWidth;
         canvas.height = rotatedCanvasHeight;
-
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(angleRadians);
@@ -372,7 +378,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         ctx.restore();
       }
 
-      // Convert canvas to Blob and handle it
       canvas.toBlob((blob) => {
         if (!blob) {
           console.error('Failed to create blob');
@@ -392,7 +397,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       console.error('Error handling image upload:', error);
     }
   };
-
 
   const handleDeleteImage = () => {
     setCroppedImage(null);
@@ -657,7 +661,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   {croppedImage ? (
                     <div>
                       <Upload
-                        file={croppedImage || (file && URL.createObjectURL(file))} // Show uploaded/cropped image
+                        file={croppedImage || (file && URL.createObjectURL(file))}
                         onDrop={handleDropSingleFile}
                         onDelete={handleDeleteImage}
                         sx={{
@@ -698,13 +702,13 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       </Button>
                       <Box sx={{ display: 'flex' }}>
                         <IconButton
-                          onClick={() => rotateImage(-90)} // Rotate left by 90 degrees
+                          onClick={() => rotateImage(-90)}
                           style={{ marginRight: '10px' }}
                         >
                           <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
 
                         </IconButton>
-                        <IconButton onClick={() => rotateImage(90)} // Rotate right by 90 degrees
+                        <IconButton onClick={() => rotateImage(90)}
                         >
                           <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
                         </IconButton>
@@ -723,9 +727,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
           <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
                   variant='outlined' onClick={() => reset()}>Reset</Button>
           {getResponsibilityValue('update_loanPayHistory', configs, user) &&
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-            Submit
-          </LoadingButton>}
+            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+              Submit
+            </LoadingButton>}
         </Box>
       </FormProvider>
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
@@ -742,20 +746,20 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{row.remark}</TableCell>
               {getResponsibilityValue('delete_part_release', configs, user) ?
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>{
-                <IconButton color='error' onClick={() => {
-                  if (index === 0) {
-                    confirm.onTrue();
-                    popover.onClose();
-                    setDeleteId(row?._id);
-                  }
-                }} sx={{
-                  cursor: index === 0 ? 'pointer' : 'default',
-                  opacity: index === 0 ? 1 : 0.5,
-                  pointerEvents: index === 0 ? 'auto' : 'none',
-                }}>
-                  <Iconify icon='eva:trash-2-outline' />
-                </IconButton>
-              }</TableCell> : <TableCell>-</TableCell>}
+                  <IconButton color='error' onClick={() => {
+                    if (index === 0) {
+                      confirm.onTrue();
+                      popover.onClose();
+                      setDeleteId(row?._id);
+                    }
+                  }} sx={{
+                    cursor: index === 0 ? 'pointer' : 'default',
+                    opacity: index === 0 ? 1 : 0.5,
+                    pointerEvents: index === 0 ? 'auto' : 'none',
+                  }}>
+                    <Iconify icon='eva:trash-2-outline' />
+                  </IconButton>
+                }</TableCell> : <TableCell>-</TableCell>}
               {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
                 <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1, height: 1 }}>{
                   <Typography onClick={() => {

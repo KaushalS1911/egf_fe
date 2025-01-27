@@ -494,7 +494,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           setValue('firstName', nameParts[0], { shouldValidate: true });
           setValue('middleName', nameParts[1] || '', { shouldValidate: true });
           setValue('lastName', nameParts.slice(2).join(' '), { shouldValidate: true });
-          setValue('dob', apidata.dob ? new Date(apidata.dob) : null, { shouldValidate: true });
+          setValue('dob', apidata?.dob ? new Date(apidata?.dob) : null, { shouldValidate: true });
           setValue('PerStreet', apidata.split_address.house + ' ' + apidata.split_address.street, { shouldValidate: true });
           setValue('PerLandmark', apidata.split_address.landmark, { shouldValidate: true });
           setValue('PerZipcode', apidata.split_address.pincode, { shouldValidate: true });

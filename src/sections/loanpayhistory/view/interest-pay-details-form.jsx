@@ -163,9 +163,22 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   }, [watch('paymentMode')]);
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log('sdjksdjskd');
+    const amountPaid = parseFloat(data.amountPaid) || 0;
+    const totalamount = parseFloat(watch('totalPay')) || 0;
+
+    if (amountPaid <= totalamount - 50) {
+      enqueueSnackbar(
+        `Amount Paid must be less than ${totalamount - 50}.`,
+        { variant: 'error' },
+      );
+      return;
+    }
+
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
+
     if (data.paymentMode === 'Cash') {
       paymentDetail = {
         ...paymentDetail,
@@ -393,9 +406,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             <Button color='inherit' sx={{ height: '36px' }}
                     variant='outlined' onClick={() => reset()}>Reset</Button>
             {getResponsibilityValue('update_loanPayHistory', configs, user) &&
-            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
-              Submit
-            </LoadingButton>}
+              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                Submit
+              </LoadingButton>}
           </Box>
         </Box>
       </FormProvider>
@@ -444,19 +457,19 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                   <TableCell sx={{ py: 0, px: 1 }}>{row.amountPaid}</TableCell>
                   {getResponsibilityValue('delete_interest', configs, user) ?
                     <TableCell sx={{ py: 0, px: 1 }}>{
-                    <IconButton color='error' onClick={() => {
-                      if (index === 0) {
-                        confirm.onTrue();
-                        setDeleteId(row?._id);
-                      }
-                    }} sx={{
-                      cursor: index === 0 ? 'pointer' : 'default',
-                      opacity: index === 0 ? 1 : 0.5,
-                      pointerEvents: index === 0 ? 'auto' : 'none',
-                    }}>
-                      <Iconify icon='eva:trash-2-outline' />
-                    </IconButton>
-                  }</TableCell> : <TableCell>-</TableCell>}
+                      <IconButton color='error' onClick={() => {
+                        if (index === 0) {
+                          confirm.onTrue();
+                          setDeleteId(row?._id);
+                        }
+                      }} sx={{
+                        cursor: index === 0 ? 'pointer' : 'default',
+                        opacity: index === 0 ? 1 : 0.5,
+                        pointerEvents: index === 0 ? 'auto' : 'none',
+                      }}>
+                        <Iconify icon='eva:trash-2-outline' />
+                      </IconButton>
+                    }</TableCell> : <TableCell>-</TableCell>}
                   {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ?
                     <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>{
                       <Typography
