@@ -192,6 +192,17 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    const { amountPaid } = data;
+    const netAmount = selectedTotals?.netAmount || 0;
+
+    if (amountPaid >= netAmount - 500) {
+      enqueueSnackbar(
+        `Amount Paid must be less than ${netAmount - 500}.`,
+        { variant: 'error' },
+      );
+      return;
+    }
+
     if (selectedRows.length === 0) {
       enqueueSnackbar('At least one property must be selected', { variant: 'error' });
       return;
@@ -280,10 +291,11 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       setPaymentMode(watch('paymentMode'));
       setValue('paymentMode', watch('paymentMode'));
     }
-    if (!watch('amountPaid')) {
-      setValue('amountPaid', selectedTotals.netAmount);
-    }
-  }, [watch('paymentMode'), selectedTotals.netAmount]);
+
+    const netAmount = selectedTotals?.netAmount || 0;
+    setValue('amountPaid', netAmount > 0 ? netAmount : 0);
+  }, [watch('paymentMode'), selectedTotals]);
+
 
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
@@ -337,9 +349,11 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     setCrop({ unit: '%', width: 50, aspect: 1 });
     setCompletedCrop(null);
   };
+
   const rotateImage = (angle) => {
     setRotation((prevRotation) => prevRotation + angle);
   };
+
   const showCroppedImage = async () => {
     try {
       const canvas = document.createElement('canvas');
@@ -353,7 +367,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
 
       const scaleX = image.naturalWidth / image.width;
       const scaleY = image.naturalHeight / image.height;
-
       const angleRadians = (rotation * Math.PI) / 180;
 
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
@@ -367,7 +380,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
 
         canvas.width = rotatedCanvasWidth;
         canvas.height = rotatedCanvasHeight;
-
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(angleRadians);
@@ -413,7 +425,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         ctx.restore();
       }
 
-      // Convert canvas to Blob and handle it
       canvas.toBlob((blob) => {
         if (!blob) {
           console.error('Failed to create blob');
@@ -766,7 +777,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   {croppedImage ? (
                     <div>
                       <Upload
-                        file={croppedImage || (file && URL.createObjectURL(file))} // Show uploaded/cropped image
+                        file={croppedImage || (file && URL.createObjectURL(file))}
                         onDrop={handleDropSingleFile}
                         onDelete={handleDeleteImage}
                         sx={{
@@ -809,7 +820,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       </Button>
                       <Box sx={{ display: 'flex' }}>
                         <IconButton
-                          onClick={() => rotateImage(-90)} // Rotate left by 90 degrees
+                          onClick={() => rotateImage(-90)}
                           style={{ marginRight: '10px' }}
                         >
                           <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />

@@ -919,7 +919,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 label='Loan Type'
                 req='red'
                 fullWidth
-                options={configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan.loanType) : []}
+                options={configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan) : []}
                 getOptionLabel={(option) => option || ''}
                 onChange={(event, value) => setValue('loanType', value || '')}
                 renderOption={(props, option) => (<li {...props} key={option}>

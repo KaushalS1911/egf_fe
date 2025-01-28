@@ -227,42 +227,53 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   }, [watch('paymentMode')]);
 
   const onSubmit = handleSubmit(async (data) => {
+    const amountPaid = parseFloat(data.amountPaid) || 0;
+    const totalAmount = parseFloat(watch('totalPay')) || 0;
+
+    if (amountPaid <= totalAmount - 50) {
+      enqueueSnackbar(
+        `Amount Paid must be at least ${totalAmount - 50}.`,
+        { variant: 'error' },
+      );
+      return;
+    }
+
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
+
     if (data.paymentMode === 'Cash') {
       paymentDetail = {
         ...paymentDetail,
-        cashAmount: data.cashAmount,
+        cashAmount: parseFloat(data.cashAmount) || 0,
       };
     } else if (data.paymentMode === 'Bank') {
       paymentDetail = {
         ...paymentDetail,
-        ...data.account,
-        bankAmount: data.bankAmount,
+        account: data.account,
+        bankAmount: parseFloat(data.bankAmount) || 0,
       };
     } else if (data.paymentMode === 'Both') {
       paymentDetail = {
         ...paymentDetail,
-        cashAmount: data.cashAmount,
-        ...data.account,
-        bankAmount: data.bankAmount,
+        cashAmount: parseFloat(data.cashAmount) || 0,
+        account: data.account,
+        bankAmount: parseFloat(data.bankAmount) || 0,
       };
     }
 
     const payload = {
       to: new Date(data.to),
-      adjustedPay: data.payAfterAdjusted1,
-      days: data.days,
-      uchakInterestAmount: data.uchakAmount,
-      interestAmount: data.interestAmount,
-      from:
-        currentLoan?.issueDate && loanInterest?.length === 0
-          ? new Date(watch('from'))
-          : new Date(Number(data.from)),
-      amountPaid: data.amountPaid,
-      penalty: data.penalty,
-      cr_dr: data.cr_dr,
+      adjustedPay: parseFloat(data.payAfterAdjusted1) || 0,
+      days: parseInt(data.days, 10) || 0,
+      uchakInterestAmount: parseFloat(data.uchakAmount) || 0,
+      interestAmount: parseFloat(data.interestAmount) || 0,
+      from: loanInterest?.length === 0
+        ? new Date(watch('from'))
+        : new Date(Number(data.from)),
+      amountPaid,
+      penalty: parseFloat(data.penalty) || 0,
+      cr_dr: parseFloat(data.cr_dr) || 0,
       paymentDetail,
     };
 
@@ -285,39 +296,38 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   });
 
   const handleCashAmountChange = (event) => {
-    const newCashAmount = parseFloat(event.target.value) || '';
-    const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
+    const newCashAmount = parseFloat(event.target.value) || 0;
+    const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
 
-    if (newCashAmount > currentLoanAmount) {
-      setValue('cashAmount', currentLoanAmount);
-      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
-        variant: 'warning',
-      });
+    if (newCashAmount > totalAmountPaid) {
+      enqueueSnackbar('Cash amount cannot exceed Total Pay Amount.', { variant: 'warning' });
+      setValue('cashAmount', totalAmountPaid);
+      setValue('bankAmount', 0);
     } else {
-      setValue('cashAmount', newCashAmount);
-    }
-    if (watch('paymentMode') === 'Both') {
-      const calculatedBankAmount = currentLoanAmount - newCashAmount;
-      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+      setValue('cashAmount', newCashAmount.toFixed(2));
+      setValue('bankAmount', (totalAmountPaid - newCashAmount).toFixed(2));
     }
   };
 
-  const handleLoanAmountChange = (event) => {
-    const newLoanAmount = parseFloat(event.target.value) || '';
-    setValue('loanAmount', newLoanAmount);
+  useEffect(() => {
+    const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
     const paymentMode = watch('paymentMode');
 
     if (paymentMode === 'Cash') {
-      setValue('cashAmount', newLoanAmount);
+      setValue('cashAmount', totalAmountPaid);
       setValue('bankAmount', 0);
     } else if (paymentMode === 'Bank') {
-      setValue('bankAmount', newLoanAmount);
+      setValue('bankAmount', totalAmountPaid);
       setValue('cashAmount', 0);
     } else if (paymentMode === 'Both') {
-      setValue('cashAmount', newLoanAmount);
-      setValue('bankAmount', 0);
+      const cashAmount = totalAmountPaid * 0.5;
+      const bankAmount = totalAmountPaid - cashAmount;
+
+      setValue('cashAmount', cashAmount.toFixed(2));
+      setValue('bankAmount', bankAmount.toFixed(2));
     }
-  };
+  }, [watch('amountPaid'), watch('paymentMode')]);
+
 
   const handleDeleteInterest = async (id) => {
     try {
@@ -464,20 +474,25 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               sx={{ mt: 1 }}
             >
               <RHFAutocomplete
-                name="paymentMode"
-                label="Payment Mode"
-                req="red"
+                name='paymentMode'
+                label='Payment Mode'
                 options={['Cash', 'Bank', 'Both']}
-                getOptionLabel={(option) => option}
                 onChange={(event, value) => {
                   setValue('paymentMode', value);
-                  handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+                  const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
+
+                  if (value === 'Cash') {
+                    setValue('cashAmount', totalAmountPaid);
+                    setValue('bankAmount', 0);
+                  } else if (value === 'Bank') {
+                    setValue('bankAmount', totalAmountPaid);
+                    setValue('cashAmount', 0);
+                  } else if (value === 'Both') {
+                    const splitCash = totalAmountPaid * 0.5;
+                    setValue('cashAmount', splitCash.toFixed(2));
+                    setValue('bankAmount', (totalAmountPaid - splitCash).toFixed(2));
+                  }
                 }}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
               />
               {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
                 <Controller
@@ -533,19 +548,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             </Box>
           </Box>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
-            <Button
-              color="inherit"
-              sx={{ height: '36px' }}
-              variant="outlined"
-              onClick={() => reset()}
-            >
-              Reset
-            </Button>
-            {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+            <Button color='inherit' sx={{ height: '36px' }}
+                    variant='outlined' onClick={() => reset()}>Reset</Button>
+            {getResponsibilityValue('update_loanPayHistory', configs, user) &&
+              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                 Submit
-              </LoadingButton>
-            )}
+              </LoadingButton>}
           </Box>
         </Box>
       </FormProvider>

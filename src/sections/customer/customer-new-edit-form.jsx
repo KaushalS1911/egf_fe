@@ -91,6 +91,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     : 'Other';
   const [disabledField, setDisabledField] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
+  const [referanceByOther, setReferaceByOther] = useState('');
+
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
       setDisabledField(true);
@@ -98,12 +100,15 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     }
     setOpenPopup(false);
   };
+
   const handleClose = () => {
     setOpenPopup(false);
   };
 
   useEffect(() => {
-    setOpenPopup(true);
+    if (!currentCustomer) {
+      setOpenPopup(true);
+    }
   }, []);
 
   const NewCustomerSchema = Yup.object().shape({
@@ -137,57 +142,51 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     tempZipcode: Yup.string().required('Pincode is required'),
     profile_pic: Yup.mixed().required('A profile picture is required'),
     referenceBy: Yup.string().required('Other detail is required'),
-    // referenceBy === 'Other' && otherReferenceBy: Yup.string().when('referenceBy'),
+
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      isAadharVerified: currentCustomer?.isAadharVerified || false,
-      branchId: currentCustomer
-        ? {
-            label: currentCustomer?.branch?.name,
-            value: currentCustomer?.branch?._id,
-          }
-        : null,
-      status: currentCustomer?.status || '',
-      profile_pic: currentCustomer?.avatar_url || null,
-      firstName: currentCustomer?.firstName || '',
-      middleName: currentCustomer?.middleName || '',
-      lastName: currentCustomer?.lastName || '',
-      contact: currentCustomer?.contact || '',
-      email: currentCustomer?.email || '',
-      dob: new Date(currentCustomer?.dob) || '',
-      panCard: (currentCustomer?.panCard || '').toUpperCase(),
-      aadharCard: currentCustomer?.aadharCard || '',
-      otpContact: currentCustomer?.otpContact || '',
-      remark: currentCustomer?.remark || '',
-      customerCode: currentCustomer?.customerCode || '',
-      drivingLicense: currentCustomer?.drivingLicense || '',
-      referenceBy: currentCustomer ? condition : '',
-      otherReferenceBy: currentCustomer ? currentCustomer?.referenceBy : '',
-      joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
-      businessType: currentCustomer?.businessType || '',
-      PerStreet: currentCustomer?.permanentAddress?.street || '',
-      PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
-      PerCountry: currentCustomer?.permanentAddress?.country || '',
-      PerState: currentCustomer?.permanentAddress?.state || '',
-      PerCity: currentCustomer?.permanentAddress?.city || '',
-      PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
-      tempStreet: currentCustomer?.temporaryAddress?.street || '',
-      tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
-      tempCountry: currentCustomer?.temporaryAddress?.country || '',
-      tempState: currentCustomer?.temporaryAddress?.state || '',
-      tempCity: currentCustomer?.temporaryAddress?.city || '',
-      tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
-      bankName: currentCustomer?.bankDetails?.bankName || '',
-      IFSC: currentCustomer?.bankDetails?.IFSC || '',
-      accountType: currentCustomer?.bankDetails?.accountType || '',
-      accountNumber: currentCustomer?.bankDetails?.accountNumber || '',
-      accountHolderName: currentCustomer?.bankDetails?.accountHolderName || '',
-      branchName: currentCustomer?.bankDetails?.branchName || '',
-    }),
-    [currentCustomer, branch]
-  );
+  const defaultValues = useMemo(() => ({
+    isAadharVerified: currentCustomer?.isAadharVerified || false,
+    branchId: currentCustomer ? {
+      label: currentCustomer?.branch?.name, value: currentCustomer?.branch?._id,
+    } : null,
+    status: currentCustomer?.status || 'Active',
+    profile_pic: currentCustomer?.avatar_url || null,
+    firstName: currentCustomer?.firstName || '',
+    middleName: currentCustomer?.middleName || '',
+    lastName: currentCustomer?.lastName || '',
+    contact: currentCustomer?.contact || '',
+    email: currentCustomer?.email || '',
+    dob: new Date(currentCustomer?.dob) || '',
+    panCard: (currentCustomer?.panCard || '').toUpperCase(),
+    aadharCard: currentCustomer?.aadharCard || '',
+    otpContact: currentCustomer?.otpContact || '',
+    remark: currentCustomer?.remark || '',
+    customerCode: currentCustomer?.customerCode || '',
+    drivingLicense: currentCustomer?.drivingLicense || '',
+    referenceBy: currentCustomer ? condition : '',
+    otherReferenceBy: currentCustomer ? currentCustomer?.referenceBy : '',
+    joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
+    businessType: currentCustomer?.businessType || '',
+    PerStreet: currentCustomer?.permanentAddress?.street || '',
+    PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
+    PerCountry: currentCustomer?.permanentAddress?.country || '',
+    PerState: currentCustomer?.permanentAddress?.state || '',
+    PerCity: currentCustomer?.permanentAddress?.city || '',
+    PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
+    tempStreet: currentCustomer?.temporaryAddress?.street || '',
+    tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
+    tempCountry: currentCustomer?.temporaryAddress?.country || '',
+    tempState: currentCustomer?.temporaryAddress?.state || '',
+    tempCity: currentCustomer?.temporaryAddress?.city || '',
+    tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
+    bankName: currentCustomer?.bankDetails?.bankName || '',
+    IFSC: currentCustomer?.bankDetails?.IFSC || '',
+    accountType: currentCustomer?.bankDetails?.accountType || '',
+    accountNumber: currentCustomer?.bankDetails?.accountNumber || '',
+    accountHolderName: currentCustomer?.bankDetails?.accountHolderName || '',
+    branchName: currentCustomer?.bankDetails?.branchName || '',
+  }), [currentCustomer, branch]);
 
   const methods = useForm({
     resolver: yupResolver(NewCustomerSchema),
@@ -203,6 +202,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     formState: { isSubmitting },
   } = methods;
   const [aspectRatio, setAspectRatio] = useState(null);
+
+  useEffect(() => {
+    const referance = watch('referenceBy');
+    if (referance) {
+      setReferaceByOther(referance);
+
+    }
+  }, [watch('referenceBy')]);
 
   useEffect(() => {
     if (imageSrc) {
@@ -222,12 +229,18 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+
+      if (data?.referenceBy === 'Other' && data.otherReferenceBy === '') {
+        enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
+        return;
+      }
+
       const payload = {
         status: data.status,
         isAadharVerified: data.isAadharVerified,
-        firstName: data.firstName,
-        middleName: data.middleName,
-        lastName: data.lastName,
+        firstName: data.firstName.toUpperCase(),
+        middleName: data.middleName.toUpperCase(),
+        lastName: data.lastName.toUpperCase(),
         contact: data.contact,
         email: data.email,
         dob: data.dob,
@@ -519,9 +532,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
     if (!isAadhar) {
       try {
-        const response = await axios.post(`https://egf-be.onrender.com/api/verification/send-otp`, {
-          aadhaar: aadharNumber,
-        });
+        setOtpPopupOpen(true);
+        const response = await axios.post(`https://egf-be.onrender.com/api/verification/send-otp`, { aadhaar: aadharNumber });
 
         if (response.status === 200) {
           enqueueSnackbar('OTP sent successfully for Aadhar verification.', { variant: 'success' });
@@ -566,17 +578,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           const fullName = apidata.name;
           const nameParts = fullName.split(' ');
 
-          setValue('profile_pic', 'data:image/jpeg;base64,' + apidata?.photo_link, {
-            shouldValidate: true,
-          });
           setAadharImage('data:image/jpeg;base64,' + apidata?.photo_link);
           setValue('firstName', nameParts[0], { shouldValidate: true });
           setValue('middleName', nameParts[1] || '', { shouldValidate: true });
           setValue('lastName', nameParts.slice(2).join(' '), { shouldValidate: true });
-          setValue('dob', apidata.dob ? new Date(apidata.dob) : null, { shouldValidate: true });
-          setValue('PerStreet', apidata.split_address.house + ' ' + apidata.split_address.street, {
-            shouldValidate: true,
-          });
+          setValue('dob', apidata?.dob ? new Date(apidata?.dob) : null, { shouldValidate: true });
+          setValue('PerStreet', apidata.split_address.house + ' ' + apidata.split_address.street, { shouldValidate: true });
           setValue('PerLandmark', apidata.split_address.landmark, { shouldValidate: true });
           setValue('PerZipcode', apidata.split_address.pincode, { shouldValidate: true });
           setValue('PerCountry', apidata.split_address.country, { shouldValidate: true });
@@ -895,205 +902,164 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     </>
   );
 
-  const addressDetails = (
-    <>
-      <Grid xs={12} md={12} pb={0.5}>
-        <Card>
-          {!mdUp && <CardHeader title="Properties" />}
-          <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: '600' }}>
-              Permanent Address
-            </Typography>
-            <Box
-              columnGap={1.5}
-              rowGap={1.5}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                md: 'repeat(6, 1fr)',
+  const addressDetails = (<>
+    <Grid xs={12} md={12} pb={0.5}>
+      <Card>
+        {!mdUp && <CardHeader title='Properties' />}
+        <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
+          <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
+            Permanent Address
+          </Typography>
+          <Box
+            columnGap={1.5}
+            rowGap={1.5}
+            display='grid'
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
+            }}
+          >
+            <RHFTextField disabled={disabledField} name='PerStreet' label='Street' req={'red'} />
+            <RHFTextField disabled={disabledField} name='PerLandmark' label='landmark' req={'red'} />
+            <RHFTextField
+              disabled={disabledField}
+              name='PerZipcode'
+              label={<span>Zipcode</span>}
+              req={'red'}
+              inputProps={{
+                inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6,
               }}
-            >
-              <RHFTextField disabled={disabledField} name="PerStreet" label="Street" req={'red'} />
-              <RHFTextField
-                disabled={disabledField}
-                name="PerLandmark"
-                label="landmark"
-                req={'red'}
-              />
-              <RHFTextField
-                disabled={disabledField}
-                name="PerZipcode"
-                label={<span>Zipcode</span>}
-                req={'red'}
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  maxLength: 6,
-                }}
-                rules={{
-                  required: 'Zipcode is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Zipcode must be exactly 6 digits',
-                  },
-                  maxLength: {
-                    value: 6,
-                    message: 'Zipcode cannot be more than 6 digits',
-                  },
-                }}
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-              <RHFAutocomplete
-                disabled={disabledField}
-                name="PerCountry"
-                req={'red'}
-                label="Country"
-                placeholder="Choose a country"
-                options={countrystatecity.map((country) => country.name)}
-                isOptionEqualToValue={(option, value) => option === value}
-                defaultValue="India"
-              />
-              <RHFAutocomplete
-                disabled={disabledField}
-                name="PerState"
-                req={'red'}
-                label="State"
-                placeholder="Choose a State"
-                options={
-                  watch('PerCountry')
-                    ? countrystatecity
-                        .find((country) => country.name === watch('PerCountry'))
-                        ?.states.map((state) => state.name) || []
-                    : []
-                }
-                defaultValue="Gujarat"
-                isOptionEqualToValue={(option, value) => option === value}
-              />
-              <RHFAutocomplete
-                disabled={disabledField}
-                name="PerCity"
-                label="City"
-                req={'red'}
-                placeholder="Choose a City"
-                options={
-                  watch('PerState')
-                    ? countrystatecity
-                        .find((country) => country.name === watch('PerCountry'))
-                        ?.states.find((state) => state.name === watch('PerState'))
-                        ?.cities.map((city) => city.name) || []
-                    : []
-                }
-                defaultValue="Surat"
-                isOptionEqualToValue={(option, value) => option === value}
-              />
-            </Box>
-          </Stack>
-          <Stack spacing={1} sx={{ p: 2, pt: 1 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: '600' }}>
-              Temporary Address
-            </Typography>
-            <Box
-              columnGap={1.5}
-              rowGap={1.5}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                md: 'repeat(6, 1fr)',
+              rules={{
+                required: 'Zipcode is required', minLength: {
+                  value: 6, message: 'Zipcode must be exactly 6 digits',
+                }, maxLength: {
+                  value: 6, message: 'Zipcode cannot be more than 6 digits',
+                },
               }}
-            >
-              <RHFTextField disabled={disabledField} name="tempStreet" label="Street" req={'red'} />
-              <RHFTextField
-                disabled={disabledField}
-                name="tempLandmark"
-                label="landmark"
-                req={'red'}
-              />
-              <RHFTextField
-                disabled={disabledField}
-                req={'red'}
-                name="tempZipcode"
-                label="Zipcode"
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  maxLength: 6,
-                }}
-                rules={{
-                  required: 'Zipcode is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Zipcode must be at least 6 digits',
-                  },
-                  maxLength: {
-                    value: 6,
-                    message: 'Zipcode cannot be more than 6 digits',
-                  },
-                }}
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-                onBlur={(event) => {
-                  const zip = event.target.value;
-                  if (zip.length === 6) {
-                    checkZipcode(zip, 'temporary');
-                  }
-                }}
-              />
-              <RHFAutocomplete
-                disabled={disabledField}
-                req={'red'}
-                name="tempCountry"
-                label="Country"
-                placeholder="Choose a country"
-                options={countrystatecity.map((country) => country.name)}
-                isOptionEqualToValue={(option, value) => option === value}
-                defaultValue="India"
-              />
-              <RHFAutocomplete
-                disabled={disabledField}
-                req={'red'}
-                name="tempState"
-                label="State"
-                placeholder="Choose a State"
-                options={
-                  watch('TemCountry')
-                    ? countrystatecity
-                        .find((country) => country.name === watch('TemCountry'))
-                        ?.states.map((state) => state.name) || []
-                    : []
+              onKeyPress={(event) => {
+                if (!/[0-9]/.test(event.key)) {
+                  event.preventDefault();
                 }
-                defaultValue="Gujarat"
-                isOptionEqualToValue={(option, value) => option === value}
-              />
-              <RHFAutocomplete
-                disabled={disabledField}
-                req={'red'}
-                name="tempCity"
-                label="City"
-                placeholder="Choose a City"
-                options={
-                  watch('TemState')
-                    ? countrystatecity
-                        .find((country) => country.name === watch('TemCountry'))
-                        ?.states.find((state) => state.name === watch('TemState'))
-                        ?.cities.map((city) => city.name) || []
-                    : []
+              }}
+            />
+            <RHFAutocomplete
+              disabled={disabledField}
+              name='PerCountry'
+              req={'red'}
+              label='Country'
+              placeholder='Choose a country'
+              options={countrystatecity.map((country) => country.name)}
+              isOptionEqualToValue={(option, value) => option === value}
+              defaultValue='India'
+            />
+            <RHFAutocomplete
+              disabled={disabledField}
+              name='PerState'
+              req={'red'}
+              label='State'
+              placeholder='Choose a State'
+              options={watch('PerCountry') ? countrystatecity
+                .find((country) => country.name === watch('PerCountry'))
+                ?.states.map((state) => state.name) || [] : []}
+              defaultValue='Gujarat'
+              isOptionEqualToValue={(option, value) => option === value}
+            />
+            <RHFAutocomplete
+              disabled={disabledField}
+              name='PerCity'
+              label='City'
+              req={'red'}
+              placeholder='Choose a City'
+              options={watch('PerState') ? countrystatecity
+                .find((country) => country.name === watch('PerCountry'))
+                ?.states.find((state) => state.name === watch('PerState'))
+                ?.cities.map((city) => city.name) || [] : []}
+              defaultValue='Surat'
+              isOptionEqualToValue={(option, value) => option === value}
+            />
+          </Box>
+        </Stack>
+        <Stack spacing={1} sx={{ p: 2, pt: 1 }}>
+          <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
+            Temporary Address
+          </Typography>
+          <Box
+            columnGap={1.5}
+            rowGap={1.5}
+            display='grid'
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
+            }}
+          >
+            <RHFTextField disabled={disabledField} name='tempStreet' label='Street' req={'red'} />
+            <RHFTextField disabled={disabledField} name='tempLandmark' label='landmark' req={'red'} />
+            <RHFTextField
+              disabled={disabledField}
+              req={'red'}
+              name='tempZipcode'
+              label='Zipcode'
+              inputProps={{
+                inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6,
+              }}
+              rules={{
+                required: 'Zipcode is required', minLength: {
+                  value: 6, message: 'Zipcode must be at least 6 digits',
+                }, maxLength: {
+                  value: 6, message: 'Zipcode cannot be more than 6 digits',
+                },
+              }}
+              onKeyPress={(event) => {
+                if (!/[0-9]/.test(event.key)) {
+                  event.preventDefault();
                 }
-                defaultValue="Surat"
-                isOptionEqualToValue={(option, value) => option === value}
-              />
-            </Box>
-          </Stack>
-        </Card>
-      </Grid>
-    </>
-  );
+              }}
+              onBlur={(event) => {
+                const zip = event.target.value;
+                if (zip.length === 6) {
+                  checkZipcode(zip, 'temporary');
+                }
+              }}
+            />
+            <RHFAutocomplete
+              disabled={disabledField}
+              req={'red'}
+              name='tempCountry'
+              label='Country'
+              placeholder='Choose a country'
+              options={countrystatecity.map((country) => country.name)}
+              isOptionEqualToValue={(option, value) => option === value}
+              defaultValue='India'
+            />
+            <RHFAutocomplete
+              disabled={disabledField}
+              req={'red'}
+              name='tempState'
+              label='State'
+              placeholder='Choose a State'
+              options={watch('tempCountry') ? countrystatecity
+                .find((country) => country.name === watch('tempCountry'))
+                ?.states.map((state) => state.name) || [] : []}
+              defaultValue='Gujarat'
+              isOptionEqualToValue={(option, value) => option === value}
+            />
+            <RHFAutocomplete
+              disabled={disabledField}
+              req={'red'}
+              name='tempCity'
+              label='City'
+              placeholder='Choose a City'
+              options={watch('tempState') ? countrystatecity
+                .find((country) => country.name === watch('tempCountry'))
+                ?.states.find((state) => state.name === watch('tempState'))
+                ?.cities.map((city) => city.name) || [] : []}
+              defaultValue='Surat'
+              isOptionEqualToValue={(option, value) => option === value}
+            />
+
+          </Box>
+        </Stack>
+      </Card>
+    </Grid>
+  </>);
 
   const referenceDetails = (
     <>
@@ -1132,30 +1098,18 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 ;
               </Stack>
             </Stack>
-            <Stack
-              spacing={2}
-              sx={{
-                p: watch('referenceBy') === 'Other' ? 2 : 0,
-                pt: watch('referenceBy') === 'Other' ? 0 : 0,
-              }}
-              justifyContent={'end'}
-            >
-              {watch('referenceBy') === 'Other' && (
-                <Stack spacing={1}>
-                  <Typography variant="subtitle2">Write other reference name</Typography>
-                  <RHFTextField
-                    name="otherReferenceBy"
-                    label="Reference By"
-                    disabled={disabledField}
-                  />
-                </Stack>
-              )}
-            </Stack>
-          </Box>
-        </Card>
-      </Grid>
-    </>
-  );
+          <Stack spacing={2} sx={{
+            p: watch('referenceBy') === 'Other' ? 2 : 0, pt: watch('referenceBy') === 'Other' ? 0 : 0,
+          }} justifyContent={'end'}>
+            {watch('referenceBy') === 'Other' && (<Stack spacing={1}>
+              <Typography variant='subtitle2'>Write other reference name</Typography>
+              <RHFTextField req={'red'} name='otherReferenceBy' label='Reference By' disabled={disabledField} />
+            </Stack>)}
+          </Stack>
+        </Box>
+      </Card>
+    </Grid>
+  </>);
 
   const BankDetails = (
     <>

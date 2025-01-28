@@ -10,18 +10,15 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
@@ -30,19 +27,9 @@ import {
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
-import { useGetLoanissue } from '../../../../api/loanissue';
-import { LoadingScreen } from '../../../../components/loading-screen';
-import { fDate, isBetween } from '../../../../utils/format-time';
-import { useGetConfigs } from '../../../../api/config';
-import AllBranchLoanSummaryTableRow from '../../all-branch-loan/all-branch-loan-summary-table-row';
-import AllBranchLoanSummaryTableToolbar from '../../all-branch-loan/all-branch-loan-summary-table-toolbar';
+import { isBetween } from '../../../../utils/format-time';
 import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Label from '../../../../components/label';
 import { TableCell, TableRow, Typography } from '@mui/material';
-import LoanInterestDetailsTableRow from '../loan-details-table/loan-interest-details-table-row';
 import LoanPartReleaseDetailsTableRow from '../loan-details-table/loan-part-release-details-table-row';
 
 // ----------------------------------------------------------------------
@@ -56,26 +43,21 @@ const TABLE_HEAD = [
   { id: 'payDate', label: 'Pay Date' },
   { id: 'remarks', label: 'Remarks' },
 ];
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
-  value: 'Issued',
-  label: 'Issued',
-}, { value: 'Disbursed', label: 'Disbursed' }];
+
 const defaultFilters = {
   username: '',
   status: 'All',
   startDate: null,
   endDate: null,
   branch: '',
-
 };
 
 // ----------------------------------------------------------------------
 
-export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
+export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -95,7 +77,6 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  // const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -124,12 +105,7 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
       enqueueSnackbar('Failed to delete Employee');
     }
   };
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters],
-  );
+
   const handleDeleteRow = useCallback(
     (id) => {
       if (id) {
@@ -198,7 +174,7 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{fontSize:22,fontWeight:600}}>Loan part Release Details</Typography>
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>Loan part Release Details</Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -209,7 +185,6 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -229,7 +204,6 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -239,9 +213,7 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -260,26 +232,22 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
                   {
-                    dataFiltered.length == 0&&
+                    dataFiltered.length == 0 &&
                     <TableRow>
-                      <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
+                      <TableCell colSpan={15} align='center' sx={{ p: 1, fontWeight: 500 }}>
                         No Data Available
                       </TableCell>
                     </TableRow>
                   }
-                  {/*<TableNoData notFound={notFound} />*/}
-
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -291,7 +259,6 @@ export default function LoanPartReleaseDetailsListView({partReleaseDetail}) {
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -338,12 +305,15 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.contact.toLowerCase().includes(username.toLowerCase()),
     );
   }
+
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) =>
       isBetween(new Date(loan.issueDate), startDate, endDate),
