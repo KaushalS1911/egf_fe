@@ -288,13 +288,15 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
-            <Button
-              color="inherit"
-              variant="contained"
-              onClick={() => sendPdfToWhatsApp('loanDetails')}
-            >
-              Share
-            </Button>
+            {dialogContent === 'loanDetails' && (
+              <Button
+                color="inherit"
+                variant="contained"
+                onClick={() => sendPdfToWhatsApp('loanDetails')}
+              >
+                Share
+              </Button>
+            )}
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
