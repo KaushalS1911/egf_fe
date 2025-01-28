@@ -3,14 +3,11 @@ import { useForm } from 'react-hook-form';
 import { Box, Stack, IconButton, Typography, InputAdornment, Link } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import axios from 'axios';
-
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 import { AUTH_API, PATH_AFTER_LOGIN } from 'src/config-global';
-
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import logo from 'src/assets/logo/logo.png';
@@ -68,7 +65,7 @@ export default function JwtLoginView() {
 
   const handleSendOTP = async () => {
     if (!contactValue || !/^\d{10}$/.test(contactValue)) {
-      alert('Please enter a valid 10-digit contact number.');
+      enqueueSnackbar('Please enter a valid 10-digit contact number.');
       return;
     }
 
@@ -76,8 +73,6 @@ export default function JwtLoginView() {
       const URL = `${AUTH_API}/send-otp`;
       await axios.post(URL, { contact: contactValue });
       enqueueSnackbar(`OTP sent successfully`);
-      alert(`OTP sent to ${contactValue}`);
-
       setCanResendOTP(false);
       setTimeout(() => setCanResendOTP(true), 5000);
     } catch (error) {
@@ -112,9 +107,7 @@ export default function JwtLoginView() {
               ),
             }}
           />
-
           <RHFTextField name="otp" label="OTP" />
-
           <Stack>
             {canResendOTP && (
               <Link onClick={handleSendOTP} variant="subtitle2">
@@ -122,7 +115,6 @@ export default function JwtLoginView() {
               </Link>
             )}
           </Stack>
-
           <LoadingButton
             fullWidth
             color="inherit"
@@ -133,7 +125,6 @@ export default function JwtLoginView() {
           >
             Login
           </LoadingButton>
-
           <Stack sx={{ textAlign: 'center', mt: 2 }}>
             <Typography variant="body2">Don't have an account?</Typography>
             <Link

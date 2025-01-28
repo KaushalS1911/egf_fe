@@ -1,31 +1,37 @@
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  IconButton,
+  MenuItem,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { PDFViewer, pdf } from '@react-pdf/renderer';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { useState } from 'react';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { paths } from '../../routes/paths';
-import { Link } from 'react-router-dom';
-import Label from '../../components/label';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
-import { Box, Dialog, DialogActions, Typography } from '@mui/material';
-import { PDFViewer } from '@react-pdf/renderer';
+import { fDate } from '../../utils/format-time';
 import Notice from '../reminder/view/notice';
 import Noc from './PDF/noc';
-import IconButton from '@mui/material/IconButton';
 import LetterOfAuthority from '../disburse/letter-of-authority';
 import Sansaction11 from '../disburse/sansaction-11.jsx';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details';
-import { fDate } from '../../utils/format-time';
 import Sansaction8 from '../disburse/sansaction-8.jsx';
-import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
-import axios from 'axios'; // Ensure this is properly imported
+import { paths } from '../../routes/paths';
+import { useRouter } from '../../routes/hooks/index.js';
+import { useGetAllUser } from '../../api/user.js';
 
 // ----------------------------------------------------------------------
 
@@ -42,140 +48,171 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
     srNo,
     issueDate,
     interestLoanAmount,
+    consultingCharge,
+    nextInstallmentDate,
+    company,
   } = row;
   const confirm = useBoolean();
   const popover = usePopover();
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const view = useBoolean();
-  const [dialogContent, setDialogContent] = useState(null);
+  const { user, initialize } = useAuthContext();
+  const { configs } = useGetConfigs();
+  const [dialogContent, setDialogContent] = useState('');
+  const router = useRouter();
+  const [file, setFile] = useState(null);
+  const [pdfAccessData, setPdfAccessData] = useState({
+    loanDetails: [...user?.attemptToDownload?.loanDetails],
+    sanction8: [...user?.attemptToDownload?.sanction8],
+    sanction11: [...user?.attemptToDownload?.sanction11],
+    authority: [...user?.attemptToDownload?.authority],
+    notice: [...user?.attemptToDownload?.notice],
+    noc: [...user?.attemptToDownload?.noc],
+  });
 
-  let color;
-  switch (status) {
-    case 'Closed': {
-      color = (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07');
-      break;
-    }
-    case 'Overdue': {
-      color = (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706');
-      break;
-    }
-    case 'Regular': {
-      color = (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403');
-      break;
-    }
-    default: {
-      color = '';
-    }
-  }
-
-  const sendPdfToWhatsApp = async () => {
+  const handleInvoicePermission = (content, loanId) => {
     try {
-      // Render PDF as Blob
-      const blob = await pdf(<LoanIssueDetails selectedRow={row} configs={configs} />).toBlob();
+      setPdfAccessData((prevState) => {
+        const updatedData = { ...prevState }; // Copy the existing state
 
-      // Convert Blob to File
-      const file = new File([blob], 'myDocument.pdf', { type: 'application/pdf' });
-      console.log(file, 'Generated PDF file');
-      // const payload = {
-      //   authToken:
-      //     'U2FsdGVkX1/A5yh36xRv8+RSCyChUwbiugqyv1HN6qGfe7PzwVW0tgW3wad4vwqvRjqqhjtqwncrksV3+oO7ECoB9P3HagZKrNMbJ9Bp2UjepZbeOpCoZIi5r/kA9nymUR9JHhkvbKpVCH2vUDiV0Hb1V4LSFd+uyIaHiP4VnU25o/8TXJ0YMBTZIQUJYIBP',
-      //   name: 'ugh8',
-      //   sendto: '919099257198',
-      //   originWebsite: 'https://engees.in',
-      //   templateName: 'issued_loan',
-      //   language: 'en',
-      //   myfile: file,
-      //   'data[0]': 'darshil thummar',
-      //   'data[1]': 'EGF00/21',
-      //   'data[2]': '100000',
-      //   'data[3]': '18',
-      //   'data[4]': '08/01/2025',
-      //   'data[5]': '08/02/2025',
-      //   'data[6]': 'EGF',
-      //   'data[7]': 'EGF',
-      // };
-      //
-      // const formData = new FormData();
-      //
-      // Object.entries(payload).forEach(([key, value]) => {
-      //   formData.append(key, value);
-      // });
-      //
-      // axios
-      //   .post('https://app.11za.in/apis/template/sendTemplate', formData)
-      //   .then((response) => {
-      //     console.log(response);
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
+        if (!updatedData[content].includes(loanId)) {
+          updatedData[content] = [...updatedData[content]];
+          const arr = updatedData[content].push(loanId);
+        }
+
+        return updatedData;
+      });
+
+      const payload = {
+        ...pdfAccessData,
+        [content]: [...pdfAccessData[content], loanId], // Include the updated content array
+      };
+      const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${user._id}`;
+      axios.put(URL, { ...user, attemptToDownload: payload }).then((res) => initialize());
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error(error);
     }
   };
 
+  const isButtonDisabled = (content, loanId) => {
+    return user.role === 'employee' || pdfAccessData[content].includes(loanId);
+  };
+
+  const statusColors = {
+    Closed: (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07'),
+    Overdue: (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706'),
+    Regular: (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403'),
+  };
+
+  const sendPdfToWhatsApp = async (content) => {
+    try {
+      let pdfContent;
+      let type;
+      let payload;
+
+      // Determine the PDF content dynamically based on the input
+      switch (content) {
+        case 'loanDetails':
+          pdfContent = <LoanIssueDetails selectedRow={row} configs={configs} />;
+          type = 'loan_detail';
+          payload = {
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            contact: customer.contact,
+            loanNo,
+            loanAmount,
+            interestRate: scheme.interestRate,
+            consultingCharge,
+            issueDate,
+            nextInstallmentDate,
+            companyName: company.name,
+            companyEmail: company.email,
+            companyContact: company.contact,
+            file,
+            type,
+          };
+          break;
+        // case 'sanction-8':
+        //   pdfContent = <Sansaction8 sansaction={row} configs={configs} />;
+        //   break;
+        // case 'sanction-11':
+        //   pdfContent = <Sansaction11 sansaction={row} configs={configs} />;
+        //   break;
+        // case 'authority':
+        //   pdfContent = <LetterOfAuthority loan={row} />;
+        //   break;
+        // case 'notice':
+        //   pdfContent = <Notice noticeData={row} configs={configs} />;
+        //   break;
+        // case 'noc':
+        //   pdfContent = <Noc nocData={row} configs={configs} />;
+        //   break;
+        default:
+          console.error('Unknown PDF content type:', content);
+          return;
+      }
+
+      const blob = await pdf(pdfContent).toBlob();
+      const file = new File([blob], `${content}.pdf`, { type: 'application/pdf' });
+      console.log(file, '00');
+
+      const formData = new FormData();
+
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_HOST_API}/api/whatsapp-notification`,
+        formData
+      );
+
+      console.log('WhatsApp notification response:', response.data);
+    } catch (error) {
+      console.error('Error generating or sending PDF:', error);
+    }
+  };
   const handleDialogOpen = async (content) => {
     setDialogContent(content);
-
-    if (content === 'loanDetails') {
-      await sendPdfToWhatsApp();
-    }
-
-    view.onTrue();
+    if (
+      ['loanDetails', 'sanction-8', 'sanction-11', 'authority', 'notice', 'noc'].includes(content)
+    )
+      // {
+      //   await sendPdfToWhatsApp(content);
+      // }
+      view.onTrue();
   };
 
   const renderDialogContent = () => {
-    if (dialogContent === 'loanDetails') {
-      return <LoanIssueDetails selectedRow={row} configs={configs} />;
-    }
-    if (dialogContent === 'sanction-8') {
-      return <Sansaction8 sansaction={row} configs={configs} />;
-    }
-    if (dialogContent === 'sanction-11') {
-      return <Sansaction11 sansaction={row} configs={configs} />;
-    }
-    if (dialogContent === 'authority') {
-      return <LetterOfAuthority loan={row} />;
-    }
-    if (dialogContent === 'notice') {
-      return <Notice noticeData={row} configs={configs} />;
-    }
-    if (dialogContent === 'noc') {
-      return <Noc nocData={row} configs={configs} />;
-    }
-    return null;
+    const contentMap = {
+      loanDetails: <LoanIssueDetails selectedRow={row} configs={configs} />,
+      'sanction-8': <Sansaction8 sansaction={row} configs={configs} />,
+      'sanction-11': <Sansaction11 sansaction={row} configs={configs} />,
+      authority: <LetterOfAuthority loan={row} />,
+      notice: <Notice noticeData={row} configs={configs} />,
+      noc: <Noc nocData={row} configs={configs} />,
+    };
+    return contentMap[dialogContent] || null;
   };
 
   return (
     <>
-      <TableRow
-        hover
-        selected={selected}
-        sx={{ backgroundColor: loanStatus === status ? color : color }}
-      >
+      <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' }}>
         <TableCell>{srNo}</TableCell>
-        {getResponsibilityValue('create_loanIssue', configs, user) ? (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {
-              <Link
-                to={paths.dashboard.loanPayHistory.edit(_id)}
-                style={{
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                  color: 'inherit',
-                }}
-              >
-                {loanNo}
-              </Link>
-            }
-          </TableCell>
-        ) : (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        )}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {getResponsibilityValue('create_loanIssue', configs, user) ? (
+            <Link
+              to={paths.dashboard.loanPayHistory.edit(_id)}
+              style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}
+            >
+              {loanNo}
+            </Link>
+          ) : (
+            loanNo
+          )}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}
+          {`${customer.firstName} ${customer.middleName} ${customer.lastName}`}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
@@ -210,63 +247,28 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('loanDetails');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="clarity:details-line" />
-          Loan Details
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('sanction-8');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="mdi:file-document-outline" />
-          Sanction-8{' '}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('sanction-11');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="mdi:file-document-outline" />
-          Sanction-11{' '}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen('authority');
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="material-symbols:verified-user-outline" />
-          Authority{' '}
-        </MenuItem>
-        {row.status === 'Closed' ? (
+        {[
+          { key: 'loanDetails', label: 'Loan Details', icon: 'clarity:details-line' },
+          { key: 'sanction8', label: 'Sanction-8', icon: 'mdi:file-document-outline' },
+          { key: 'sanction11', label: 'Sanction-11', icon: 'mdi:file-document-outline' },
+          { key: 'authority', label: 'Authority', icon: 'material-symbols:verified-user-outline' },
+          row.status === 'Closed'
+            ? { key: 'noc', label: 'NOC', icon: 'mdi:certificate-outline' }
+            : { key: 'notice', label: 'Notice', icon: 'gridicons:notice' },
+        ].map((item) => (
           <MenuItem
+            key={item.key}
+            disabled={isButtonDisabled(item.key, row.loanNo)}
             onClick={() => {
-              handleDialogOpen('noc');
+              handleInvoicePermission(item.key, row._id);
+              handleDialogOpen(item.key); // Open dialog for the selected content
               popover.onClose();
             }}
           >
-            <Iconify icon="mdi:certificate-outline" />
-            NOC
+            <Iconify icon={item.icon} />
+            {item.label}
           </MenuItem>
-        ) : (
-          <MenuItem
-            onClick={() => {
-              handleDialogOpen('notice');
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="gridicons:notice" />
-            Notice
-          </MenuItem>
-        )}
+        ))}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
@@ -279,11 +281,19 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
           </Button>
         }
       />
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
             <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
+            </Button>
+            <Button
+              color="inherit"
+              variant="contained"
+              onClick={() => sendPdfToWhatsApp('loanDetails')}
+            >
+              Share
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
@@ -299,8 +309,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
 
 LoanpayhistoryTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
-  onEditRow: PropTypes.func,
-  onSelectRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
+  loanStatus: PropTypes.string,
 };
