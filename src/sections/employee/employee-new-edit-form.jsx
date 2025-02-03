@@ -203,6 +203,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       zipcode: data.tempZipcode || '',
     };
 
+    const isAadharVerified = data.isAadharVerified !== undefined ? data.isAadharVerified : false;  // Default to false if not set
+
     if (currentEmployee) {
       payload = {
         ...data,
@@ -210,14 +212,14 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         permanentAddress,
         temporaryAddress,
         branch: data.branchId || parsedBranch,
-        isAadharVerified: data.isAadharVerified !== undefined ? data.isAadharVerified : false,  // Default to false
+        isAadharVerified,
       };
     } else {
       const formData = new FormData();
       const fields = [
         'firstName', 'middleName', 'lastName', 'drivingLicense', 'voterCard', 'panCard',
         'aadharCard', 'contact', 'dob', 'remark', 'role', 'reportingTo',
-        'email', 'password', 'joiningDate', 'leaveDate', 'isAadharVerified',
+        'email', 'password', 'joiningDate', 'leaveDate',
       ];
 
       fields.forEach(field => {
@@ -228,7 +230,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         }
       });
 
-      formData.append('isAadharVerified', data.isAadharVerified !== undefined ? data.isAadharVerified : false);
+      formData.append('isAadharVerified', isAadharVerified);
 
       if (croppedImage) {
         const croppedFile = file;
