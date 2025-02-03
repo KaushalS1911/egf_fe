@@ -210,6 +210,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         permanentAddress,
         temporaryAddress,
         branch: data.branchId || parsedBranch,
+        isAadharVerified: data.isAadharVerified !== undefined ? data.isAadharVerified : false,  // Default to false
       };
     } else {
       const formData = new FormData();
@@ -226,6 +227,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           formData.append(field, data[field] || '');
         }
       });
+
+      formData.append('isAadharVerified', data.isAadharVerified !== undefined ? data.isAadharVerified : false);
 
       if (croppedImage) {
         const croppedFile = file;
@@ -251,10 +254,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         formData.append(`permanentAddress[${field}]`, data[`permanent${capitalize(field)}`] || '');
         formData.append(`temporaryAddress[${field}]`, data[`temp${capitalize(field)}`] || '');
       });
+
       payload = formData;
     }
-    try {
 
+    try {
       const branchQuery = parsedBranch && parsedBranch === 'all'
         ? `branch=${mainbranchid?._id}`
         : `branch=${parsedBranch}`;
