@@ -61,12 +61,22 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
   const router = useRouter();
   const [file, setFile] = useState(null);
   const [pdfAccessData, setPdfAccessData] = useState({
-    loanDetails: [...user?.attemptToDownload?.loanDetails],
-    sanction8: [...user?.attemptToDownload?.sanction8],
-    sanction11: [...user?.attemptToDownload?.sanction11],
-    authority: [...user?.attemptToDownload?.authority],
-    notice: [...user?.attemptToDownload?.notice],
-    noc: [...user?.attemptToDownload?.noc],
+    loanDetails: Array.isArray(user?.attemptToDownload?.loanDetails)
+      ? [...user?.attemptToDownload?.loanDetails]
+      : [],
+    sanction8: Array.isArray(user?.attemptToDownload?.sanction8)
+      ? [...user?.attemptToDownload?.sanction8]
+      : [],
+    sanction11: Array.isArray(user?.attemptToDownload?.sanction11)
+      ? [...user?.attemptToDownload?.sanction11]
+      : [],
+    authority: Array.isArray(user?.attemptToDownload?.authority)
+      ? [...user?.attemptToDownload?.authority]
+      : [],
+    notice: Array.isArray(user?.attemptToDownload?.notice)
+      ? [...user?.attemptToDownload?.notice]
+      : [],
+    noc: Array.isArray(user?.attemptToDownload?.noc) ? [...user?.attemptToDownload?.noc] : [],
   });
 
   const handleInvoicePermission = (content, loanId) => {
@@ -257,16 +267,16 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             : { key: 'notice', label: 'Notice', icon: 'gridicons:notice' },
         ].map((item) => (
           <MenuItem
-            key={item.key}
-            disabled={isButtonDisabled(item.key, row.loanNo)}
+            key={item?.key}
+            disabled={isButtonDisabled(item?.key, row?.loanNo)}
             onClick={() => {
-              handleInvoicePermission(item.key, row._id);
+              handleInvoicePermission(item?.key, row?._id);
               handleDialogOpen(item.key); // Open dialog for the selected content
               popover.onClose();
             }}
           >
-            <Iconify icon={item.icon} />
-            {item.label}
+            <Iconify icon={item?.icon} />
+            {item?.label}
           </MenuItem>
         ))}
       </CustomPopover>
