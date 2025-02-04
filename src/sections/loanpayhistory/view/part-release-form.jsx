@@ -192,10 +192,10 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const { amountPaid } = data;
-    const netAmount = selectedTotals?.netAmount || 0;
+    const netAmount = Number(selectedTotals?.netAmount || 0);
+    const amountPaid = watch('amountPaid');
 
-    if (amountPaid >= netAmount - 500) {
+    if (amountPaid < netAmount - 500) {
       enqueueSnackbar(
         `Amount Paid must be less than ${netAmount - 500}.`,
         { variant: 'error' },
@@ -298,8 +298,8 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
 
 
   const handleCashAmountChange = (event) => {
-    const newCashAmount = parseFloat(event.target.value) || '';
-    const currentLoanAmount = parseFloat(watch('amountPaid')) || '';
+    const newCashAmount = parseFloat(event.target.value) || 0;
+    const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
 
     if (newCashAmount > currentLoanAmount) {
       setValue('cashAmount', currentLoanAmount);
@@ -307,13 +307,29 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         variant: 'warning',
       });
     } else {
-      setValue('cashAmount', newCashAmount);
-    }
-    if (watch('paymentMode') === 'Both') {
-      const calculatedBankAmount = currentLoanAmount - newCashAmount;
-      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+      setValue('cashAmount', newCashAmount.toFixed(2));
+      setValue('bankAmount', (totalAmountPaid - newCashAmount).toFixed(2));
     }
   };
+
+  useEffect(() => {
+    const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
+    const paymentMode = watch('paymentMode');
+
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', totalAmountPaid);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', totalAmountPaid);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      const cashAmount = totalAmountPaid * 0.5;
+      const bankAmount = totalAmountPaid - cashAmount;
+
+      setValue('cashAmount', cashAmount.toFixed(2));
+      setValue('bankAmount', bankAmount.toFixed(2));
+    }
+  }, [watch('amountPaid'), watch('paymentMode')]);
 
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
@@ -704,20 +720,25 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       }}
                     >
                       <RHFAutocomplete
-                        name="paymentMode"
-                        label="Payment Mode"
-                        req="red"
+                        name='paymentMode'
+                        label='Payment Mode'
                         options={['Cash', 'Bank', 'Both']}
-                        getOptionLabel={(option) => option}
                         onChange={(event, value) => {
                           setValue('paymentMode', value);
-                          handleLoanAmountChange({ target: { value: watch('amountPaid') } });
+                          const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
+
+                          if (value === 'Cash') {
+                            setValue('cashAmount', totalAmountPaid);
+                            setValue('bankAmount', 0);
+                          } else if (value === 'Bank') {
+                            setValue('bankAmount', totalAmountPaid);
+                            setValue('cashAmount', 0);
+                          } else if (value === 'Both') {
+                            const splitCash = totalAmountPaid * 0.5;
+                            setValue('cashAmount', splitCash.toFixed(2));
+                            setValue('bankAmount', (totalAmountPaid - splitCash).toFixed(2));
+                          }
                         }}
-                        renderOption={(props, option) => (
-                          <li {...props} key={option}>
-                            {option}
-                          </li>
-                        )}
                       />
                       {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
                         <Controller
