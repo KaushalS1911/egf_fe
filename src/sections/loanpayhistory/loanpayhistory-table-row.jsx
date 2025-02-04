@@ -64,10 +64,10 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
     loanDetails: Array.isArray(user?.attemptToDownload?.loanDetails)
       ? [...user?.attemptToDownload?.loanDetails]
       : [],
-    sanction8: Array.isArray(user?.attemptToDownload?.sanction8)
+    'sanction-8': Array.isArray(user?.attemptToDownload?.sanction8)
       ? [...user?.attemptToDownload?.sanction8]
       : [],
-    sanction11: Array.isArray(user?.attemptToDownload?.sanction11)
+    'sanction-11': Array.isArray(user?.attemptToDownload?.sanction11)
       ? [...user?.attemptToDownload?.sanction11]
       : [],
     authority: Array.isArray(user?.attemptToDownload?.authority)
@@ -104,7 +104,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
   };
 
   const isButtonDisabled = (content, loanId) => {
-    return user.role === 'employee' || pdfAccessData[content].includes(loanId);
+    return user?.role === 'employee' || pdfAccessData[content]?.includes(loanId);
   };
 
   const statusColors = {
@@ -259,8 +259,8 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       >
         {[
           { key: 'loanDetails', label: 'Loan Details', icon: 'clarity:details-line' },
-          { key: 'sanction8', label: 'Sanction-8', icon: 'mdi:file-document-outline' },
-          { key: 'sanction11', label: 'Sanction-11', icon: 'mdi:file-document-outline' },
+          { key: 'sanction-8', label: 'Sanction-8', icon: 'mdi:file-document-outline' },
+          { key: 'sanction-11', label: 'Sanction-11', icon: 'mdi:file-document-outline' },
           { key: 'authority', label: 'Authority', icon: 'material-symbols:verified-user-outline' },
           row.status === 'Closed'
             ? { key: 'noc', label: 'NOC', icon: 'mdi:certificate-outline' }
