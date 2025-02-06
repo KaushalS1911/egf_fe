@@ -331,9 +331,9 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Name</Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text
-                      style={styles.subText}
-                    >{`${selectedRow.customer.firstName} ${selectedRow.customer.middleName} ${selectedRow.customer.lastName}`}</Text>
+                    <Text style={{ ...styles.subText, wordWrap: 'break-word', textWrap: 'wrap' }}>
+                      {`${selectedRow.customer.firstName || ''} ${selectedRow.customer.middleName || ''} ${selectedRow.customer.lastName || ''}`.trim()}
+                    </Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Address</Text>

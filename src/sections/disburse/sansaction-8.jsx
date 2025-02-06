@@ -183,10 +183,11 @@ const useStyles = () =>
         termsAndConditionsHeaders: {
           color: '#232C4B',
           borderBottom: '1px solid #232C4B',
+          fontWeight: 'bold',
           textWrap: 'nowrap',
-          fontSize: 12,
+          fontSize: '12px',
           textAlign: 'center',
-          marginTop: 20,
+          paddingVertical: 5,
         },
         d_flex: {
           display: 'flex',
@@ -394,6 +395,16 @@ export default function Sansaction8({ sansaction, configs }) {
           </View>
           <InvoiceHeader selectedRow={sansaction} configs={configs} />
           <View style={styles.pagePadding}>
+            <View
+              style={{
+                textAlign: 'center',
+                fontSize: 18,
+                marginRight: 25,
+                marginBottom: 10,
+              }}
+            >
+              <Text style={styles.termsAndConditionsHeaders}>Sanction-8</Text>
+            </View>
             <View style={styles.flexContainer}>
               <View style={{ width: '50%' }}>
                 <View style={styles.row}>

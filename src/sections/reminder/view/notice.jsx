@@ -191,6 +191,14 @@ const useStyles = () =>
         tableCell_3: {
           width: '15%',
         },
+        termsAndConditionsHeaders: {
+          fontWeight: 'bold',
+          textWrap: 'nowrap',
+          fontSize: '12px',
+          textAlign: 'center',
+          paddingVertical: 5,
+          fontFamily: 'NotoSansGujarati',
+        },
       }),
     []
   );
@@ -210,7 +218,16 @@ export default function Notice({ noticeData, configs }) {
           <InvoiceHeader selectedRow={noticeData} configs={configs} />
           <View style={styles.pagePadding}>
             <View>
-              <Text style={styles.noticeTitle}>નોટીસ</Text>
+              <Text
+                style={{
+                  ...styles.noticeTitle,
+                  color: '#232C4B',
+                  borderBottom: '1px solid #232C4B',
+                  textDecoration: 'none',
+                }}
+              >
+                નોટીસ
+              </Text>
               <Text style={styles.date}>{fDate(new Date())}</Text>
             </View>
             <View>

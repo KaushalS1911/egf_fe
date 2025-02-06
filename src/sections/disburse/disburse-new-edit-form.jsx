@@ -187,7 +187,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
       });
     }
   };
-
+  console.log(currentDisburse, '000000000');
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -465,7 +465,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
               )}
             </Stack>
           </Card>
-          {currentDisburse.status === 'Disbursed' && currentDisburse.status === 'Closed' && (
+          {currentDisburse.status === 'Issued' && (
             <Stack alignItems={'end'} mt={3}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Submit

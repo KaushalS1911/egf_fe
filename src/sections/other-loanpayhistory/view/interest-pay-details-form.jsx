@@ -113,8 +113,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
             new Date(otherLoanInterest[0]?.to).getDate() + 1
           ),
     to:
-      new Date(currentOtherLoan?.loan?.nextInstallmentDate) > new Date()
-        ? new Date(currentOtherLoan?.loan?.nextInstallmentDate)
+      new Date(currentOtherLoan?.renewalDate) > new Date()
+        ? new Date(currentOtherLoan?.renewalDate)
         : new Date(),
     days: '',
     amountPaid: '',
@@ -142,16 +142,15 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
+  console.log(currentOtherLoan, '0000000');
   useEffect(() => {
     const days = watch('days');
     const totalLoanAmount = (
-      (((currentOtherLoan.loan.interestLoanAmount * currentOtherLoan.percentage) / 100) *
-        (12 * days)) /
+      (((currentOtherLoan.amount * currentOtherLoan.percentage) / 100) * (12 * days)) /
       365
     ).toFixed(2);
     setValue('interestAmount', totalLoanAmount);
-  }, [currentOtherLoan.loan.interestLoanAmount, currentOtherLoan.percentage, watch('days')]);
+  }, [currentOtherLoan.amount, currentOtherLoan.percentage, watch('days')]);
 
   useEffect(() => {
     const toDate = watch('to');
@@ -178,11 +177,11 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   }, [otherLoanInterest, currentOtherLoan?.loan, setValue]);
 
   useEffect(() => {
-    const loanAmount = currentOtherLoan?.loan?.loanAmount;
+    const loanAmount = currentOtherLoan?.amount;
     const interestAmount = watch('interestAmount');
     const totalAmount = Number(loanAmount) + Number(interestAmount);
     setValue('amountPaid', totalAmount);
-  }, [currentOtherLoan?.loan?.loanAmount, watch('interestAmount')]);
+  }, [currentOtherLoan?.amount, watch('interestAmount')]);
 
   // useEffect(() => {
   //   const endDate = new Date(to).setHours(0, 0, 0, 0);
