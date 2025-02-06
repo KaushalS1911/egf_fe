@@ -97,7 +97,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
   });
 
   const defaultValues = {
-    totalLoanAmount: currentOtherLoan.loan?.loanAmount || '',
+    totalLoanAmount: currentOtherLoan?.amount || '',
     paidLoanAmount:
       currentOtherLoan.loan?.loanAmount - currentOtherLoan.loan?.interestLoanAmount || '0',
     pendingLoanAmount: currentOtherLoan.loan?.interestLoanAmount || '',

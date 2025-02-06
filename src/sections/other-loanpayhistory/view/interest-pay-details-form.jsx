@@ -273,7 +273,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       days: data.days,
       amountPaid: data.amountPaid,
       interestAmount: data.interestAmount,
-      payAfterAdjusted: data.payAfterAdjusted,
+      payAfterAdjust: data.payAfterAdjusted,
       remark: data.remark,
       paymentDetail,
     };
@@ -527,7 +527,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                   <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.from)}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.to)}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
+                  <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>
                     {
                       <IconButton
