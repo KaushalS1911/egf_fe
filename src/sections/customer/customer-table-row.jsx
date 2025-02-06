@@ -22,7 +22,17 @@ import React from 'react';
 // ----------------------------------------------------------------------
 
 export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { firstName, lastName, middleName, contact, customerCode, email, avatar_url, status } = row;
+  const {
+    firstName,
+    lastName,
+    middleName,
+    contact,
+    customerCode,
+    email,
+    avatar_url,
+    status,
+    isAadharVerified,
+  } = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { configs } = useGetConfigs();
@@ -32,17 +42,17 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)}
-                  sx={{ mr: 2, cursor: 'pointer' }} />
-          <Lightbox
-            image={avatar_url}
-            open={lightbox.open}
-            close={lightbox.onClose}
+          <Avatar
+            alt={firstName}
+            src={avatar_url}
+            onClick={() => lightbox.onOpen(avatar_url)}
+            sx={{ mr: 2, cursor: 'pointer' }}
           />
+          <Lightbox image={avatar_url} open={lightbox.open} close={lightbox.onClose} />
           <ListItemText
             primary={firstName + ' ' + middleName + ' ' + lastName}
             secondary={email}
@@ -53,11 +63,23 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
             }}
           />
         </TableCell>
+        <TableCell>
+          <Label
+            variant="soft"
+            color={
+              (isAadharVerified === true && 'success') ||
+              (isAadharVerified === false && 'error') ||
+              'default'
+            }
+          >
+            {isAadharVerified ? 'Verified' : 'Unverified'}
+          </Label>
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerCode}</TableCell>
         <TableCell>
           <Label
-            variant='soft'
+            variant="soft"
             color={
               (status === 'Active' && 'success') ||
               (status === 'In Active' && 'warning') ||
@@ -68,46 +90,54 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
             {status}
           </Label>
         </TableCell>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('delete_customer', configs, user) || getResponsibilityValue('update_customer', configs, user) ?
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {getResponsibilityValue('delete_customer', configs, user) ||
+          getResponsibilityValue('update_customer', configs, user) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : ''}
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('delete_customer', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
-        {getResponsibilityValue('update_customer', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
+        {getResponsibilityValue('delete_customer', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
+        {getResponsibilityValue('update_customer', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

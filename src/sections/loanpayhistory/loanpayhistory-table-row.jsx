@@ -78,33 +78,41 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       : [],
     noc: Array.isArray(user?.attemptToDownload?.noc) ? [...user?.attemptToDownload?.noc] : [],
   });
-
   const handleInvoicePermission = (content, loanId) => {
     try {
       setPdfAccessData((prevState) => {
         const updatedData = { ...prevState }; // Copy the existing state
 
+        // Check if the loanId is already in the array for the given content
         if (!updatedData[content].includes(loanId)) {
-          updatedData[content] = [...updatedData[content]];
-          const arr = updatedData[content].push(loanId);
+          // If it's not, add it to the array
+          updatedData[content] = [...updatedData[content], loanId];
         }
 
         return updatedData;
       });
 
+      // Prepare the payload with the updated state
       const payload = {
         ...pdfAccessData,
-        [content]: [...pdfAccessData[content], loanId], // Include the updated content array
+        [content]: pdfAccessData[content].includes(loanId)
+          ? pdfAccessData[content] // If loanId already exists, keep the array as is
+          : [...pdfAccessData[content], loanId], // If loanId doesn't exist, add it
       };
+
+      // Send the updated payload to the server
       const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${user._id}`;
       axios.put(URL, { ...user, attemptToDownload: payload }).then((res) => initialize());
     } catch (error) {
       console.error(error);
     }
   };
-
   const isButtonDisabled = (content, loanId) => {
-    return user?.role === 'employee' || pdfAccessData[content]?.includes(loanId);
+    return (
+      user?.role === 'Employee' &&
+      Array.isArray(pdfAccessData[content]) &&
+      pdfAccessData[content]?.includes(loanId)
+    );
   };
 
   const statusColors = {
@@ -262,23 +270,30 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
           { key: 'sanction-8', label: 'Sanction-8', icon: 'mdi:file-document-outline' },
           { key: 'sanction-11', label: 'Sanction-11', icon: 'mdi:file-document-outline' },
           { key: 'authority', label: 'Authority', icon: 'material-symbols:verified-user-outline' },
-          row.status === 'Closed'
-            ? { key: 'noc', label: 'NOC', icon: 'mdi:certificate-outline' }
-            : { key: 'notice', label: 'Notice', icon: 'gridicons:notice' },
-        ].map((item) => (
-          <MenuItem
-            key={item?.key}
-            disabled={isButtonDisabled(item?.key, row?.loanNo)}
-            onClick={() => {
-              handleInvoicePermission(item?.key, row?._id);
-              handleDialogOpen(item.key); // Open dialog for the selected content
-              popover.onClose();
-            }}
-          >
-            <Iconify icon={item?.icon} />
-            {item?.label}
-          </MenuItem>
-        ))}
+          ...(row.status === 'Closed'
+            ? [{ key: 'noc', label: 'NOC', icon: 'mdi:certificate-outline' }]
+            : [{ key: 'notice', label: 'Notice', icon: 'gridicons:notice' }]),
+        ].map((item) => {
+          const isDisabled = isButtonDisabled(item?.key, row?._id);
+
+          return (
+            <MenuItem
+              key={item?.key}
+              disabled={isDisabled} // Properly disable the button
+              onClick={() => {
+                if (!isDisabled) {
+                  // Prevent click when disabled
+                  handleInvoicePermission(item?.key, row?._id);
+                  handleDialogOpen(item.key);
+                  popover.onClose();
+                }
+              }}
+            >
+              <Iconify icon={item?.icon} />
+              {item?.label}
+            </MenuItem>
+          );
+        })}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}

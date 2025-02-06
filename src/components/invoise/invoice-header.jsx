@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import address from 'src/assets/icon/icons8-location-50.png';
-import background from 'src/assets/icon/Frame 1.png';
+import background from 'src/assets/icon/Frame 1@2x (1).png';
 import { Page, View, Text, Image, Document, StyleSheet, Font, Link } from '@react-pdf/renderer';
 
 Font.register({
@@ -169,7 +169,7 @@ const useStyles = () =>
           // flex: 1,
         },
         letterSpacingText: {
-          letterSpacing: 18,
+          letterSpacing: 6,
         },
       }),
     []
@@ -191,7 +191,6 @@ export default function InvoiceHeader({ configs }) {
 
   return (
     <View style={styles.header}>
-      {/* Background Image */}
       <View style={styles.headerbox1Parent}>
         <Image style={styles.backgroundImage} src={background} />
         <View
@@ -213,21 +212,25 @@ export default function InvoiceHeader({ configs }) {
               <Text
                 style={{
                   ...styles.companyName,
-                  fontSize: '34px',
-                  width: 220,
+                  fontSize: '30px',
+                  // width: 220,
                 }}
               >
-                {company?.name ? company.name.split(' ').slice(0, -1).join(' ') : 'EASY GOLD'}
+                {/*{company?.name ? company.name.split(' ').slice(0, -1).join(' ') : 'EASY GOLD'}*/}
+                {company?.name}
               </Text>
               <Text
                 style={{
-                  ...styles.letterSpacingText,
-                  fontSize: company?.name?.length > 17 ? '12px' : '14px',
+                  // ...styles.letterSpacingText,
+                  fontSize: 12,
+                  // fontSize: company?.name?.length > 17 ? '12px' : '14px',
                   color: '#fff',
-                  marginLeft: 3,
+                  marginLeft: 60,
+                  marginTop: 2,
                 }}
               >
-                {company?.name ? company.name.split(' ').pop() : 'FINCORP'}
+                "LEASE YOUR GOLD WITH EASY"
+                {/*{company?.name ? company.name.split(' ').pop() : 'FINCORP'}*/}
               </Text>
             </View>
           </View>
@@ -238,7 +241,7 @@ export default function InvoiceHeader({ configs }) {
             flexDirection: 'row',
             textWrap: 'wrap',
             // paddingRight: 10,
-            marginTop: 11,
+            marginTop: 12,
             marginLeft: 10,
           }}
         >

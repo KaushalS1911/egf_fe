@@ -59,7 +59,7 @@ const TABLE_HEAD = [
   { id: 'grossWeight', label: 'Gross Wt' },
   { id: 'netWeight', label: 'Net Wt' },
   { id: 'month', label: 'Month' },
-  { id: 'closeDate', label: 'Close Date' },
+  // { id: 'closeDate', label: 'Close Date' },
   { id: 'closeAmount', label: 'Close Amt' },
   { id: 'renewDate', label: 'Renew Date' },
 ];
@@ -312,12 +312,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   inputData = stabilizedThis.map((el) => el[0]);
   if (username && username.trim()) {
     inputData = inputData.filter(
-      (item) =>
-        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+      (item) => item.otherName.toLowerCase().includes(username.toLowerCase())
+      // item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
+      // item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+      // item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+      // item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
 

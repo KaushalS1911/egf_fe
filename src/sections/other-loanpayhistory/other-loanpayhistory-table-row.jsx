@@ -125,7 +125,7 @@ export default function OtherLoanpayhistoryTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{grossWt}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{netWt}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{month}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(closeDate)}</TableCell>
+        {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(closeDate)}</TableCell>*/}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{closingCharge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(renewalDate)}</TableCell>
         {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>*/}

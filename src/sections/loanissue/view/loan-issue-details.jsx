@@ -71,7 +71,7 @@ const useStyles = () =>
         },
         flexContainer: {
           flexDirection: 'row',
-          marginTop: 5,
+          // marginTop: 5,
           justifyContent: 'space-between',
           alignItems: 'flex-start',
         },
@@ -306,6 +306,16 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
             </View>
             <InvoiceHeader selectedRow={selectedRow} configs={configs} />
             <View style={styles.pagePadding}>
+              <View
+                style={{
+                  textAlign: 'center',
+                  fontSize: 18,
+                  marginRight: 25,
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={styles.termsAndConditionsHeaders}>Sanction Letter</Text>
+              </View>
               <View style={{ ...styles.flexContainer, gap: 20 }}>
                 <View style={{ width: '48%' }}>
                   <View style={styles.row}>
@@ -399,7 +409,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                     <Text style={styles.subText}>{renewDate()}</Text>
                   </View>
                 </View>
-                <View style={{ marginTop: -85, marginRight: '24px' }}>
+                <View style={{ marginRight: '24px' }}>
                   {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                   <View>
                     <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
@@ -409,12 +419,12 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   </View>
                 </View>
               </View>
-              <View style={{ position: 'absolute', top: -85, right: 145 }}>
+              <View style={{ position: 'absolute', top: -78, right: 30 }}>
                 <View>
                   <Image style={styles.img} src={Qr} />
                 </View>
               </View>
-              <View style={styles.tableFlex}>
+              <View style={{ ...styles.tableFlex, marginTop: -15 }}>
                 <View style={styles.table}>
                   <View>
                     <Text style={styles.heading}>Property Details</Text>

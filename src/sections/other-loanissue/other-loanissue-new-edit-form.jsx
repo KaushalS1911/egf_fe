@@ -101,11 +101,9 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
   const lightbox = useLightBox(file);
   const [propertImg, setPropertImg] = useState(null);
 
-  useEffect;
-  () => {
+  useEffect(() => {
     setMultiSchema(scheme);
-  },
-    [scheme];
+  }, [scheme]);
 
   useEffect(() => {
     if (imageSrc) {
@@ -128,7 +126,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     netWt: Yup.string().required('NetWas wt'),
     month: Yup.string().required('Month is required'),
     renewalDate: Yup.date().required('Renewaldate is required'),
-    closeDate: Yup.string().required('Colse Date is required'),
+    // closeDate: Yup.string().required('Colse Date is required'),
     otherCharge: Yup.string().required('OtherCharge is required'),
     closingCharge: Yup.string().required('ClosingCgarge is required'),
     interestAmount: Yup.string().required('Interest Amount is required'),
@@ -310,7 +308,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       rate: data.rate,
       month: data.month,
       renewalDate: data.renewalDate,
-      closeDate: data.closeDate,
+      // closeDate: data.closeDate,
       otherCharge: data.otherCharge,
       remark: data.remark,
       paymentMode: data.paymentMode,
@@ -1606,13 +1604,15 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   md: 'repeat(7, 1fr)',
                 }}
               >
-                <RHFTextField
-                  name="otherLoanNumber"
-                  label="Other Loan No."
-                  req={'red'}
-                  InputProps={{ readOnly: true }}
-                  disabled
-                />
+                {currentOtherLoanIssue && (
+                  <RHFTextField
+                    name="otherLoanNumber"
+                    label="Other Loan No."
+                    req={'red'}
+                    InputProps={{ readOnly: true }}
+                    disabled
+                  />
+                )}
                 <RHFAutocomplete
                   disabled={!isFieldsEnabled}
                   name="otherName"
@@ -1716,13 +1716,13 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   req={'red'}
                   disabled={!isFieldsEnabled}
                 />
-                <RHFDatePicker
-                  name="closeDate"
-                  control={control}
-                  label="Close Date"
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
-                />
+                {/*<RHFDatePicker*/}
+                {/*  name="closeDate"*/}
+                {/*  control={control}*/}
+                {/*  label="Close Date"*/}
+                {/*  req={'red'}*/}
+                {/*  disabled={!isFieldsEnabled}*/}
+                {/*/>*/}
                 <RHFTextField
                   name="otherCharge"
                   label="Other Charge"

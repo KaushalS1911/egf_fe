@@ -76,7 +76,7 @@ export default function EmployeeListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -91,7 +91,7 @@ export default function EmployeeListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -121,9 +121,8 @@ export default function EmployeeListView() {
         handleDelete([id]);
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
-
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -142,52 +141,52 @@ export default function EmployeeListView() {
     (id) => {
       router.push(paths.dashboard.employee.edit(id));
     },
-    [router],
+    [router]
   );
 
-  const employees = employee.map((item) => ({
-    Name: `${item.user.firstName} ${item.user.middleName} ${item.user.lastName}`,
-    Email: item.user.email,
-    Contact: item.user.contact,
-    DOB: fDate(item.dob),
-    'Aadhar card': item.aadharCard,
-    'Pan card': item.panCard,
-    'Driving license': item.drivingLicense,
-    'Voter id': item.voterCard,
-    role: item.user.role,
-    'Joining Date:': fDate(item.joiningDate),
-    'Reporting to': `${item.reportingTo.firstName} ${item.reportingTo.middleName} ${item.reportingTo.lastName}`,
-    Branch: item.user.branch?.name,
-    'Permanent address': `${item.permanentAddress.street} ${item.permanentAddress.landmark} ${item.permanentAddress.city} , ${item.permanentAddress.state} ${item.permanentAddress.country} ${item.permanentAddress.zipcode}`,
-    Remark: item.remark,
-    Status: item.status,
+  const employees = employee?.map((item) => ({
+    Name: `${item?.user?.firstName} ${item?.user?.middleName} ${item?.user?.lastName}`,
+    Email: item?.user?.email,
+    Contact: item?.user?.contact,
+    DOB: fDate(item?.dob),
+    'Aadhar card': item?.aadharCard,
+    'Pan card': item?.panCard,
+    'Driving license': item?.drivingLicense,
+    'Voter id': item?.voterCard,
+    role: item?.user?.role,
+    'Joining Date:': fDate(item?.joiningDate),
+    'Reporting to': `${item?.reportingTo?.firstName} ${item?.reportingTo?.middleName} ${item?.reportingTo?.lastName}`,
+    Branch: item?.user?.branch?.name,
+    'Permanent address': `${item?.permanentAddress?.street} ${item?.permanentAddress?.landmark} ${item?.permanentAddress?.city} , ${item?.permanentAddress?.state} ${item?.permanentAddress?.country} ${item?.permanentAddress?.zipcode}`,
+    Remark: item?.remark,
+    Status: item?.status,
   }));
 
   if (employeeLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Employees'
+          heading="Employees"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Employee', href: paths.dashboard.employee.root },
             { name: 'List' },
           ]}
           action={
-            getResponsibilityValue('create_employee', configs, user) && (<Button
-              component={RouterLink}
-              href={paths.dashboard.employee.new}
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-            >
-              Add Employee
-            </Button>)
+            getResponsibilityValue('create_employee', configs, user) && (
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.employee.new}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                Add Employee
+              </Button>
+            )
           }
           sx={{
             mb: { xs: 3, md: 5 },
@@ -212,13 +211,13 @@ export default function EmployeeListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -235,7 +234,7 @@ export default function EmployeeListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row._id),
+                      dataFiltered.map((row) => row._id)
                     )
                   }
                 />
@@ -243,7 +242,7 @@ export default function EmployeeListView() {
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
                       <EmployeeTableRow
@@ -279,7 +278,7 @@ export default function EmployeeListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -287,8 +286,8 @@ export default function EmployeeListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -318,8 +317,8 @@ function applyFilter({ inputData, comparator, filters }) {
     inputData = inputData.filter(
       (item) =>
         item.user.firstName.toLowerCase().includes(name.toLowerCase()) ||
-        item.user.middleName  .toLowerCase().includes(name.toLowerCase()) ||
-        item.user.lastName.toLowerCase().includes(name.toLowerCase()),
+        item.user.middleName.toLowerCase().includes(name.toLowerCase()) ||
+        item.user.lastName.toLowerCase().includes(name.toLowerCase())
     );
   }
   return inputData;

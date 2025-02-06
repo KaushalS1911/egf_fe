@@ -56,6 +56,7 @@ const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'loanAmount', label: 'Loan Amount' },
   { id: 'payAmount', label: 'Pay Amount' },
+  { id: 'adjustAmount', label: 'Adjust Amount' },
   { id: 'pendingAmount', label: 'Pending Amount' },
   { id: 'payDate', label: 'Pay Date' },
   { id: 'remarks', label: 'Remarks' },
@@ -162,6 +163,10 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       .min(1, 'Pay amount must be greater than 0')
       .required('Pay amount is required')
       .typeError('Pay amount must be a number'),
+    adjustAmount: Yup.number()
+      .min(1, 'Adjust amount must be greater than 0')
+      .required('Adjust amount is required')
+      .typeError('Adjust amount must be a number'),
     paymentMode: Yup.string().required('Payment Mode is required'),
     ...paymentSchema,
   });
@@ -169,6 +174,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   const defaultValues = {
     date: new Date(),
     amountPaid: '',
+    adjustAmount: '',
     remark: '',
     paymentMode: '',
     cashAmount: '',
@@ -196,10 +202,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     const amountPaid = watch('amountPaid');
 
     if (amountPaid < netAmount - 500) {
-      enqueueSnackbar(
-        `Amount Paid must be less than ${netAmount - 500}.`,
-        { variant: 'error' },
-      );
+      enqueueSnackbar(`Amount Paid must be less than ${netAmount - 500}.`, { variant: 'error' });
       return;
     }
 
@@ -256,6 +259,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     formData.append('property-image', file);
     formData.append('date', data.date);
     formData.append('amountPaid', data.amountPaid);
+    formData.append('adjustedAmount', data.adjustAmount);
 
     for (const [key, value] of Object.entries(paymentDetail)) {
       formData.append(`paymentDetail[${key}]`, value);
@@ -296,24 +300,22 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     setValue('amountPaid', netAmount > 0 ? netAmount : 0);
   }, [watch('paymentMode'), selectedTotals]);
 
-
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || 0;
-    const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
-
-    if (newCashAmount > currentLoanAmount) {
-      setValue('cashAmount', currentLoanAmount);
+    const adjustAmount = parseFloat(watch('adjustAmount')) || 0;
+    if (newCashAmount > adjustAmount) {
+      setValue('cashAmount', adjustAmount);
       enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
         variant: 'warning',
       });
     } else {
-      setValue('cashAmount', newCashAmount.toFixed(2));
-      setValue('bankAmount', (totalAmountPaid - newCashAmount).toFixed(2));
+      // setValue('cashAmount', adjustAmount.toFixed(2));
+      setValue('bankAmount', (adjustAmount - newCashAmount).toFixed(2));
     }
   };
 
   useEffect(() => {
-    const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
+    const totalAmountPaid = parseFloat(watch('adjustAmount')) || 0;
     const paymentMode = watch('paymentMode');
 
     if (paymentMode === 'Cash') {
@@ -329,7 +331,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       setValue('cashAmount', cashAmount.toFixed(2));
       setValue('bankAmount', bankAmount.toFixed(2));
     }
-  }, [watch('amountPaid'), watch('paymentMode')]);
+  }, [watch('adjustAmount'), watch('paymentMode')]);
 
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
@@ -686,6 +688,21 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                           }
                         }}
                       />
+                    </Grid>{' '}
+                    <Grid item xs={12} sm={6} md={3}>
+                      <RHFTextField
+                        name="adjustAmount"
+                        label="Adjust amount"
+                        req="red"
+                        onKeyPress={(e) => {
+                          if (
+                            !/[0-9.]/.test(e.key) ||
+                            (e.key === '.' && e.target.value.includes('.'))
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField name="remark" label="Remark" />
@@ -720,12 +737,12 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       }}
                     >
                       <RHFAutocomplete
-                        name='paymentMode'
-                        label='Payment Mode'
+                        name="paymentMode"
+                        label="Payment Mode"
                         options={['Cash', 'Bank', 'Both']}
                         onChange={(event, value) => {
                           setValue('paymentMode', value);
-                          const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
+                          const totalAmountPaid = parseFloat(watch('adjustAmount')) || 0;
 
                           if (value === 'Cash') {
                             setValue('cashAmount', totalAmountPaid);
@@ -892,6 +909,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
                   {row.amountPaid}
+                </TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
+                  {row.adjustedAmount}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
                   {row.loan.interestLoanAmount}
