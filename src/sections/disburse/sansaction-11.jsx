@@ -384,6 +384,7 @@ export default function Sansaction11({ sansaction, configs }) {
                 નમૂનો-૧૧ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૪
               </Text>
             </View>
+
             <View
               style={{
                 flexDirection: 'row',
@@ -398,7 +399,12 @@ export default function Sansaction11({ sansaction, configs }) {
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
                     બિલ નં. :{' '}
                   </Text>{' '}
-                  <Text style={styles.subText}>{sansaction.loanNo}</Text>
+                  <Text style={styles.subText}>{sansaction.loanNo}</Text>{'             '}
+                  <View style={{textAlign:'center'}}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      લા નં. : GMLSUR2425000018
+                    </Text>
+                  </View>
                 </Text>
                 <Text style={styles.spacing}>
                   <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
