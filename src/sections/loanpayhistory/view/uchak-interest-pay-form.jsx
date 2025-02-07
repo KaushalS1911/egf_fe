@@ -262,7 +262,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       });
 
       axios
-        .post(`${import.meta.env.VITE_HOST_API}/api/whatsapp-notification`, formData)
+        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
         .then((response) => {
           console.log(response);
         })

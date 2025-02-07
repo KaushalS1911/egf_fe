@@ -187,7 +187,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
 
       // Send the data to the API
       const response = await axios.post(
-        `${import.meta.env.VITE_HOST_API}/api/whatsapp-notification`,
+        `https://egf-be.onrender.com/api/whatsapp-notification`,
         formData
       );
 
