@@ -171,21 +171,15 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       // Generate the PDF and create the file
       const blob = await pdf(pdfContent).toBlob();
       fileBlob = new File([blob], `${content}.pdf`, { type: 'application/pdf' });
-      setFile(fileBlob); // Set the file state
+      setFile(fileBlob);
 
-      // Add file to payload
       payload = { ...payload, file: fileBlob };
 
-      // Prepare form data
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => {
         formData.append(key, value);
       });
 
-      // // Append the file to form data
-      // formData.append('file', fileBlob);
-
-      // Send the data to the API
       const response = await axios.post(
         `https://egf-be.onrender.com/api/whatsapp-notification`,
         formData

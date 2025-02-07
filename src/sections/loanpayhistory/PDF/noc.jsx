@@ -62,6 +62,8 @@ const useStyles = () =>
         page: {
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
+          border: '3px solid #000',
+          padding: '1px',
         },
         pagePadding: {
           padding: '0px 24px 0px 24px',
@@ -208,104 +210,110 @@ function Noc({ nocData, configs }) {
     <>
       <Document>
         <Page size="A4" style={styles.page}>
-          <View style={styles.watermarkContainer}>
-            <Image src={logo} style={styles.watermarkImage} />
-          </View>
-          <InvoiceHeader selectedRow={nocData} configs={configs} />
-          <View style={{ ...styles.pagePadding, lineHeight: 1.6, fontSize: 9 }}>
-            <View
-              style={{
-                textAlign: 'center',
-                fontSize: 18,
-                marginRight: 25,
-                marginBottom: 10,
-                lineHeight: 1,
-              }}
-            >
-              <Text style={styles.termsAndConditionsHeaders}>NOC</Text>
+          <View style={{ border: '1px solid #000' }}>
+            <View style={styles.watermarkContainer}>
+              <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <View>
-              <Text style={[styles.date, styles.fw]}>{fDate(new Date())}</Text>
-            </View>
-            <View>
-              <Text style={[styles.topDetails, styles.fw]}>To,</Text>
-              <Text
-                style={styles.topDetails}
-              >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
-              <Text
-                style={styles.topDetails}
-              >{`${nocData.customer.permanentAddress.street} ${nocData.customer.permanentAddress.landmark} ,${nocData.customer.permanentAddress.city}-${nocData.customer.permanentAddress.zipcode} ,${nocData.customer.permanentAddress.state}`}</Text>
-              <Text style={styles.topDetails}>{nocData.customer.contact}</Text>
-            </View>
-            <View>
-              <Text style={styles.nocTitle}>
-                Subject: No Objection Certificate (NOC) for Closure of Gold Loan{' '}
-              </Text>
-            </View>
-            <View style={styles.bottomDetails}>
-              <Text style={styles.topDetails}>Dear,</Text>
-              <Text
-                style={styles.topDetails}
-              >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
-              <Text style={styles.mt8}>
-                <Text style={styles.bottomDetails}>
-                  This is to certify that the gold loan account bearing account number{' '}
-                </Text>
-                <Text style={[styles.fw, styles.bottomDetails]}>
-                  {nocData.customer.bankDetails.accountNumber}
-                </Text>
-                , held by{' '}
+            <InvoiceHeader selectedRow={nocData} configs={configs} />
+            <View style={{ ...styles.pagePadding, lineHeight: 1.6, fontSize: 9 }}>
+              <View
+                style={{
+                  textAlign: 'center',
+                  fontSize: 18,
+                  marginRight: 25,
+                  marginBottom: 10,
+                  lineHeight: 1,
+                }}
+              >
+                <Text style={styles.termsAndConditionsHeaders}>NOC</Text>
+              </View>
+              <View>
+                <Text style={[styles.date, styles.fw]}>{fDate(new Date())}</Text>
+              </View>
+              <View>
+                <Text style={[styles.topDetails, styles.fw]}>To,</Text>
                 <Text
-                  style={[styles.fw, styles.bottomDetails]}
-                >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>{' '}
-                with <Text style={[styles.fw, styles.bottomDetails]}>Easy Gold FinCorp</Text>, has
-                been successfully closed as of{' '}
-                <Text style={[styles.fw, styles.bottomDetails]}>{fDate(nocData.closingDate)}</Text>
-                <Text style={styles.bottomDetails}>
-                  {' '}
-                  All outstanding dues and obligations related to the aforementioned gold loan
-                  account have been duly settled.
+                  style={styles.topDetails}
+                >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
+                <Text
+                  style={styles.topDetails}
+                >{`${nocData.customer.permanentAddress.street} ${nocData.customer.permanentAddress.landmark} ,${nocData.customer.permanentAddress.city}-${nocData.customer.permanentAddress.zipcode} ,${nocData.customer.permanentAddress.state}`}</Text>
+                <Text style={styles.topDetails}>{nocData.customer.contact}</Text>
+              </View>
+              <View>
+                <Text style={styles.nocTitle}>
+                  Subject: No Objection Certificate (NOC) for Closure of Gold Loan{' '}
                 </Text>
-              </Text>
+              </View>
+              <View style={styles.bottomDetails}>
+                <Text style={styles.topDetails}>Dear,</Text>
+                <Text
+                  style={styles.topDetails}
+                >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
+                <Text style={styles.mt8}>
+                  <Text style={styles.bottomDetails}>
+                    This is to certify that the gold loan account bearing account number{' '}
+                  </Text>
+                  <Text style={[styles.fw, styles.bottomDetails]}>
+                    {nocData.customer.bankDetails.accountNumber}
+                  </Text>
+                  , held by{' '}
+                  <Text
+                    style={[styles.fw, styles.bottomDetails]}
+                  >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>{' '}
+                  with <Text style={[styles.fw, styles.bottomDetails]}>Easy Gold FinCorp</Text>, has
+                  been successfully closed as of{' '}
+                  <Text style={[styles.fw, styles.bottomDetails]}>
+                    {fDate(nocData.closingDate)}
+                  </Text>
+                  <Text style={styles.bottomDetails}>
+                    {' '}
+                    All outstanding dues and obligations related to the aforementioned gold loan
+                    account have been duly settled.
+                  </Text>
+                </Text>
+              </View>
+              <View style={styles.mt8}>
+                <Text style={[styles.fw, styles.bottomDetails, styles.my4]}>
+                  Details of the closed gold loan account:
+                </Text>
+                <Text style={styles.bottomDetails}>
+                  - Loan Account Number: {nocData.customer.bankDetails.accountNumber}
+                </Text>
+                <Text style={styles.bottomDetails}>
+                  - Customer Name:{' '}
+                  {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}
+                </Text>
+                <Text style={styles.bottomDetails}>- Loan Amount: {nocData.loanAmount}</Text>
+                <Text style={styles.bottomDetails}>- Closing Charge: {nocData.closingCharge}</Text>
+                <Text style={styles.bottomDetails}>
+                  - Date of Loan Disbursement: {fDate(nocData.issueDate)}
+                </Text>
+                <Text style={styles.bottomDetails}>
+                  - Closure Date: {fDate(nocData.closingDate)}
+                </Text>
+              </View>
+              <View style={styles.mt8}>
+                <Text style={styles.bottomDetails}>
+                  As a result, we hereby issue this No Objection Certificate (NOC), confirming that
+                  Easy Gold FinCorp has no objection or claims against{' '}
+                  {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}{' '}
+                  regarding the closed gold loan account.
+                </Text>
+                <Text style={styles.bottomDetails}>
+                  Please note that this NOC is issued in good faith and in accordance with our
+                  internal procedures. It is provided solely for your records and future reference.
+                </Text>
+                <Text style={styles.bottomDetails}>
+                  Thank you for choosing Easy Gold FinCorp for your financial needs. We appreciate
+                  your continued trust and patronage.
+                </Text>
+              </View>
             </View>
-            <View style={styles.mt8}>
-              <Text style={[styles.fw, styles.bottomDetails, styles.my4]}>
-                Details of the closed gold loan account:
-              </Text>
-              <Text style={styles.bottomDetails}>
-                - Loan Account Number: {nocData.customer.bankDetails.accountNumber}
-              </Text>
-              <Text style={styles.bottomDetails}>
-                - Customer Name:{' '}
-                {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}
-              </Text>
-              <Text style={styles.bottomDetails}>- Loan Amount: {nocData.loanAmount}</Text>
-              <Text style={styles.bottomDetails}>- Closing Charge: {nocData.closingCharge}</Text>
-              <Text style={styles.bottomDetails}>
-                - Date of Loan Disbursement: {fDate(nocData.issueDate)}
-              </Text>
-              <Text style={styles.bottomDetails}>- Closure Date: {fDate(nocData.closingDate)}</Text>
+            <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
+              <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+              <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>
-            <View style={styles.mt8}>
-              <Text style={styles.bottomDetails}>
-                As a result, we hereby issue this No Objection Certificate (NOC), confirming that
-                Easy Gold FinCorp has no objection or claims against{' '}
-                {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}{' '}
-                regarding the closed gold loan account.
-              </Text>
-              <Text style={styles.bottomDetails}>
-                Please note that this NOC is issued in good faith and in accordance with our
-                internal procedures. It is provided solely for your records and future reference.
-              </Text>
-              <Text style={styles.bottomDetails}>
-                Thank you for choosing Easy Gold FinCorp for your financial needs. We appreciate
-                your continued trust and patronage.
-              </Text>
-            </View>
-          </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
           </View>
         </Page>
       </Document>

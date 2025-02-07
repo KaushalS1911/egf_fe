@@ -17,6 +17,8 @@ const useStyles = () =>
         page: {
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
+          border: '3px solid #000',
+          padding: '1px',
         },
         pagePadding: {
           padding: '0px 24px 0px 24px',
@@ -123,79 +125,80 @@ export default function LoanCloseDetailsPdf({ data, configs }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {' '}
-        <View style={styles.watermarkContainer}>
-          <Image src={logo} style={styles.watermarkImage} />
-        </View>
-        <InvoiceHeader selectedRow={data.loan} configs={configs} />
-        <View style={styles.pagePadding}>
-          <Text style={{ ...styles.headerText2, marginTop: 25 }}>Loan Close Slip</Text>
-          <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
-            <View style={{ width: '50%' }}>
-              <View style={styles.row}>
-                <Text style={styles.subHeading}>Loan No </Text>
-                <Text style={styles.colon}>:</Text>
-                <Text style={styles.subText}>{data.loan.loanNo} </Text>
+        <View style={{ border: '1px solid #000' }}>
+          <View style={styles.watermarkContainer}>
+            <Image src={logo} style={styles.watermarkImage} />
+          </View>
+          <InvoiceHeader selectedRow={data.loan} configs={configs} />
+          <View style={styles.pagePadding}>
+            <Text style={{ ...styles.headerText2, marginTop: 25 }}>Loan Close Slip</Text>
+            <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+              <View style={{ width: '50%' }}>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan No </Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{data.loan.loanNo} </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Issue Date </Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{fDate(data.loan.issueDate)}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Next Interest Date </Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{fDate(data.loan.nextInstallmentDate)}</Text>
+                </View>
               </View>
-              <View style={styles.row}>
-                <Text style={styles.subHeading}>Issue Date </Text>
-                <Text style={styles.colon}>:</Text>
-                <Text style={styles.subText}>{fDate(data.loan.issueDate)}</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.subHeading}>Next Interest Date </Text>
-                <Text style={styles.colon}>:</Text>
-                <Text style={styles.subText}>{fDate(data.loan.nextInstallmentDate)}</Text>
+              <View style={{ width: '50%' }}>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading2}>Customer Name </Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text
+                    style={styles.subText}
+                  >{`${data.loan.customer.firstName} ${data.loan.customer.middleName} ${data.loan.customer.lastName}`}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading2}>Pan No </Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{data.loan.customer.panCard}</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading2}>Mobile No </Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{data.loan.customer.contact}</Text>
+                </View>
               </View>
             </View>
-            <View style={{ width: '50%' }}>
-              <View style={styles.row}>
-                <Text style={styles.subHeading2}>Customer Name </Text>
-                <Text style={styles.colon}>:</Text>
-                <Text
-                  style={styles.subText}
-                >{`${data.loan.customer.firstName} ${data.loan.customer.middleName} ${data.loan.customer.lastName}`}</Text>
+            <View>
+              <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>
+                Loan Close Details
+              </Text>
+              <View style={[styles.tableRow, styles.tableHeader]}>
+                <Text style={styles.tableCell}>Total loan amt</Text>
+                <Text style={styles.tableCell}>Paid loan amt</Text>
+                <Text style={styles.tableCell}>Pending loan amt</Text>
+                <Text style={styles.tableCell}>Closing charge</Text>
+                <Text style={styles.tableCell}>net Amt</Text>
+                <Text style={styles.tableCell}>Payment mode</Text>
+                <Text style={styles.tableCell}>Cash amt</Text>
+                <Text style={styles.tableCell}>Bank amt</Text>
               </View>
-              <View style={styles.row}>
-                <Text style={styles.subHeading2}>Pan No </Text>
-                <Text style={styles.colon}>:</Text>
-                <Text style={styles.subText}>{data.loan.customer.panCard}</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.subHeading2}>Mobile No </Text>
-                <Text style={styles.colon}>:</Text>
-                <Text style={styles.subText}>{data.loan.customer.contact}</Text>
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCell}>{data?.totalLoanAmount}</Text>
+                <Text style={styles.tableCell}>{data?.totalLoanAmount}</Text>
+                <Text style={styles.tableCell}>{data?.netAmount}</Text>
+                <Text style={styles.tableCell}>{data?.closingCharge}</Text>
+                <Text style={styles.tableCell}>{data?.netAmount}</Text>
+                <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>
+                <Text style={styles.tableCell}>{data?.paymentDetail?.cashAmount || 0}</Text>
+                <Text style={styles.tableCell}>{data?.paymentDetail?.bankAmount || 0}</Text>
               </View>
             </View>
           </View>
-          <View>
-            <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>
-              Loan Close Details
-            </Text>
-            <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={styles.tableCell}>Total loan amt</Text>
-              <Text style={styles.tableCell}>Paid loan amt</Text>
-              <Text style={styles.tableCell}>Pending loan amt</Text>
-              <Text style={styles.tableCell}>Closing charge</Text>
-              <Text style={styles.tableCell}>net Amt</Text>
-              <Text style={styles.tableCell}>Payment mode</Text>
-              <Text style={styles.tableCell}>Cash amt</Text>
-              <Text style={styles.tableCell}>Bank amt</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>{data?.totalLoanAmount}</Text>
-              <Text style={styles.tableCell}>{data?.totalLoanAmount}</Text>
-              <Text style={styles.tableCell}>{data?.netAmount}</Text>
-              <Text style={styles.tableCell}>{data?.closingCharge}</Text>
-              <Text style={styles.tableCell}>{data?.netAmount}</Text>
-              <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>
-              <Text style={styles.tableCell}>{data?.paymentDetail?.cashAmount || 0}</Text>
-              <Text style={styles.tableCell}>{data?.paymentDetail?.bankAmount || 0}</Text>
-            </View>
+          <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
+            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
           </View>
-        </View>
-        <View style={styles.d_flex}>
-          <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
         </View>
       </Page>
     </Document>

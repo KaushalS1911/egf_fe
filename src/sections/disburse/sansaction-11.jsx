@@ -41,6 +41,8 @@ const useStyles = () =>
         page: {
           fontFamily: 'Roboto',
           position: 'relative',
+          border: '3px solid #000',
+          padding: '1px',
         },
         watermarkContainer: {
           position: 'absolute',
@@ -373,245 +375,252 @@ export default function Sansaction11({ sansaction, configs }) {
     <>
       <Document>
         <Page size="A4" style={styles.page}>
-          <View style={styles.watermarkContainer}>
-            <Image src={logo} style={styles.watermarkImage} />
-          </View>
-          <InvoiceHeader selectedRow={sansaction} configs={configs} />
-          <View style={styles.pagePadding}>
-            <View>
-              {' '}
-              <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
-                નમૂનો-૧૧ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૪
-              </Text>
+          <View style={{ border: '1px solid #000' }}>
+            <View style={styles.watermarkContainer}>
+              <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginTop: 7,
-              }}
-            >
-              <View style={{ width: '60%' }}>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    બિલ નં. :{' '}
-                  </Text>{' '}
-                  <Text style={styles.subText}>{sansaction.loanNo}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૧. દેણદાર નું નામ :{' '}
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.gujaratiText,
-                      fontSize: 11,
-                      fontWeight: 900,
-                    }}
-                  >{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૨. દેણદાર નું સરનામું :{' '}
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.subText,
-                      textWrap: 'wrap',
-                    }}
-                  >{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૩. કરજ ની રકમ :{' '}
-                  </Text>
-                  <Text style={styles.subText}>{sansaction.loanAmount}/-</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૪. ધીયાં ની તારીખ :{' '}
-                  </Text>
-                  <Text style={styles.subText}>{fDate(sansaction.issueDate)}</Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૪-અ. કરજ ની પ્રકાર :{' '}
-                  </Text>
-                  <Text style={[styles.subText, styles.gujaratiText]}>
-                    ખેતી વિષયક,ઔદ્યોગિક વેપારી,અગત કે પ્રકીણ કરજ
-                  </Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૫. કરજ પાકવાની મુદત માસ ૮ ની છે .
-                  </Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૬. વાર્ષિક વ્યાજ દર {(sansaction.scheme.interestRate * 12).toFixed(2)} ટકા.
-                  </Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    ૭. તારણ નો પ્રકાર
-                  </Text>
-                </Text>
-                <Text style={styles.spacing}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                    સોનાના મુદ્દા
-                  </Text>
+            <InvoiceHeader selectedRow={sansaction} configs={configs} />
+            <View style={styles.pagePadding}>
+              <View>
+                {' '}
+                <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
+                  નમૂનો-૧૧ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૪
                 </Text>
               </View>
-              <View style={{ width: '40%' }}>
-                <View style={{ textAlign: 'center', marginBottom: 5 }}>
-                  <Text
-                    style={{
-                      fontWeight: '600',
-                      fontSize: 10,
-                    }}
-                  >
-                    <Text style={{ ...styles.gujaratiText, fontSize: 10 }}>તા.</Text>
-                    {fDate(new Date())}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Image style={styles.img} src={sansaction.propertyImage} />
-                </View>
-                <View style={{ textAlign: 'center', margin: '5px 0px 5px 0px', width: '100%' }}>
-                  <Text style={{ ...styles.gujaratiText, fontSize: 12 }}>
-                    વજન તરણની અદાજેલી કિંમતી વ.
-                  </Text>
-                </View>
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                  <Text style={[styles.tableCell, styles.gujaratiText]}>ટોટલ વજન ગ્રા.</Text>
-                  <Text style={styles.tableCell}>નેટ વજન ગ્રા.</Text>
-                  <Text style={styles.tableCell}>ટોટલ નંગ </Text>
-                </View>
-                <View
-                  style={[
-                    {
-                      ...styles.tableRow,
-                      paddingVertical: 5,
-                      ...styles.tableRowBorder,
-                    },
-                  ]}
-                >
-                  <Text style={styles.tableCell}>{totalWight}</Text>
-                  <Text style={styles.tableCell}>{netWight}</Text>
-                  <Text style={styles.tableCell}>{qty}</Text>
-                </View>
-              </View>
-            </View>
-            <View>
-              <Text
-                style={{ ...styles.gujaratiText, fontSize: 11, marginTop: 15, fontWeight: 'bold' }}
-              >
-                હું નીચે સહી કરનાર પ્રતિજ્ઞાપુર્વગ જાણવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની
-                માલિકીના છે.તેની સર્વ જવાબદારી મારી છે આ બિલની બધી જ શરતો મેં વાંચી છે,તે મને કબુલ
-                છે
-              </Text>
-            </View>
-            <View>
-              <Text
+              <View
                 style={{
-                  ...styles.gujaratiText,
-                  fontWight: 900,
-                  fontSize: 14,
-                  marginTop: 8,
-                  color: '#232C4B',
-                  textDecoration: 'underline',
-                  textDecorationColor: '#232C4B',
+                  flexDirection: 'row',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginTop: 7,
                 }}
               >
-                નિયમો :-
-              </Text>
-              <View style={{ marginTop: 8 }}>
-                {rules2.map((item, index) => (
-                  <View
-                    key={index}
-                    style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}
-                  >
-                    <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
+                <View style={{ width: '60%' }}>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      બિલ નં. :{' '}
+                    </Text>{' '}
+                    <Text style={styles.subText}>{sansaction.loanNo}</Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૧. દેણદાર નું નામ :{' '}
+                    </Text>
                     <Text
                       style={{
                         ...styles.gujaratiText,
                         fontSize: 11,
-                        color: [1, 3, 7].includes(index) ? 'black' : 'black',
+                        fontWeight: 900,
+                      }}
+                    >{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૨. દેણદાર નું સરનામું :{' '}
+                    </Text>
+                    <Text
+                      style={{
+                        ...styles.subText,
+                        textWrap: 'wrap',
+                      }}
+                    >{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૩. કરજ ની રકમ :{' '}
+                    </Text>
+                    <Text style={styles.subText}>{sansaction.loanAmount}/-</Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૪. ધીયાં ની તારીખ :{' '}
+                    </Text>
+                    <Text style={styles.subText}>{fDate(sansaction.issueDate)}</Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૪-અ. કરજ ની પ્રકાર :{' '}
+                    </Text>
+                    <Text style={[styles.subText, styles.gujaratiText]}>
+                      ખેતી વિષયક,ઔદ્યોગિક વેપારી,અગત કે પ્રકીણ કરજ
+                    </Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૫. કરજ પાકવાની મુદત માસ ૮ ની છે .
+                    </Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૬. વાર્ષિક વ્યાજ દર {(sansaction.scheme.interestRate * 12).toFixed(2)} ટકા.
+                    </Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      ૭. તારણ નો પ્રકાર
+                    </Text>
+                  </Text>
+                  <Text style={styles.spacing}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      સોનાના મુદ્દા
+                    </Text>
+                  </Text>
+                </View>
+                <View style={{ width: '40%' }}>
+                  <View style={{ textAlign: 'center', marginBottom: 5 }}>
+                    <Text
+                      style={{
+                        fontWeight: '600',
+                        fontSize: 10,
                       }}
                     >
-                      {item.rule}
-                    </Text>{' '}
-                    {/* Condition text */}
+                      <Text style={{ ...styles.gujaratiText, fontSize: 10 }}>તા.</Text>
+                      {fDate(new Date())}
+                    </Text>
                   </View>
-                ))}
-              </View>
-            </View>
-            <View>
-              <Text
-                style={{
-                  ...styles.gujaratiText,
-                  fontWeight: '900',
-                  fontSize: 14,
-                  marginTop: 8,
-                  color: '#232C4B',
-                  textDecoration: 'underline',
-                  textDecorationColor: '#232C4B',
-                }}
-              >
-                સ્પષ્ટીકરણ :-
-              </Text>
-              <View style={{ marginTop: 8 }}>
-                {specification.map((item, index) => (
                   <View
-                    key={index}
-                    style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}
+                    style={{
+                      flexDirection: 'row',
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
                   >
-                    <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>
-                    <View style={{ flexDirection: 'row', flex: 1 }}>
-                      <Text
-                        style={{
-                          ...styles.gujaratiText,
-                          fontSize: 12,
-                          fontWeight: '600',
-                          width: 80,
-                        }}
-                      >
-                        {item.heading}
-                      </Text>
-                      <Text
-                        style={{
-                          ...styles.gujaratiText,
-                          fontSize: 12,
-                        }}
-                      >
-                        :
-                      </Text>
+                    <Image style={styles.img} src={sansaction.propertyImage} />
+                  </View>
+                  <View style={{ textAlign: 'center', margin: '5px 0px 5px 0px', width: '100%' }}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 12 }}>
+                      વજન તરણની અદાજેલી કિંમતી વ.
+                    </Text>
+                  </View>
+                  <View style={[styles.tableRow, styles.tableHeader]}>
+                    <Text style={[styles.tableCell, styles.gujaratiText]}>ટોટલ વજન ગ્રા.</Text>
+                    <Text style={styles.tableCell}>નેટ વજન ગ્રા.</Text>
+                    <Text style={styles.tableCell}>ટોટલ નંગ </Text>
+                  </View>
+                  <View
+                    style={[
+                      {
+                        ...styles.tableRow,
+                        paddingVertical: 5,
+                        ...styles.tableRowBorder,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.tableCell}>{totalWight}</Text>
+                    <Text style={styles.tableCell}>{netWight}</Text>
+                    <Text style={styles.tableCell}>{qty}</Text>
+                  </View>
+                </View>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    ...styles.gujaratiText,
+                    fontSize: 11,
+                    marginTop: 15,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  હું નીચે સહી કરનાર પ્રતિજ્ઞાપુર્વગ જાણવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની
+                  માલિકીના છે.તેની સર્વ જવાબદારી મારી છે આ બિલની બધી જ શરતો મેં વાંચી છે,તે મને કબુલ
+                  છે
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    ...styles.gujaratiText,
+                    fontWight: 900,
+                    fontSize: 14,
+                    marginTop: 8,
+                    color: '#232C4B',
+                    textDecoration: 'underline',
+                    textDecorationColor: '#232C4B',
+                  }}
+                >
+                  નિયમો :-
+                </Text>
+                <View style={{ marginTop: 8 }}>
+                  {rules2.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}
+                    >
+                      <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
                       <Text
                         style={{
                           ...styles.gujaratiText,
                           fontSize: 11,
-                          marginLeft: 4,
+                          color: [1, 3, 7].includes(index) ? 'black' : 'black',
                         }}
                       >
-                        {item.specification}
-                      </Text>
+                        {item.rule}
+                      </Text>{' '}
+                      {/* Condition text */}
                     </View>
-                  </View>
-                ))}
+                  ))}
+                </View>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    ...styles.gujaratiText,
+                    fontWeight: '900',
+                    fontSize: 14,
+                    marginTop: 8,
+                    color: '#232C4B',
+                    textDecoration: 'underline',
+                    textDecorationColor: '#232C4B',
+                  }}
+                >
+                  સ્પષ્ટીકરણ :-
+                </Text>
+                <View style={{ marginTop: 8 }}>
+                  {specification.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}
+                    >
+                      <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>
+                      <View style={{ flexDirection: 'row', flex: 1 }}>
+                        <Text
+                          style={{
+                            ...styles.gujaratiText,
+                            fontSize: 12,
+                            fontWeight: '600',
+                            width: 80,
+                          }}
+                        >
+                          {item.heading}
+                        </Text>
+                        <Text
+                          style={{
+                            ...styles.gujaratiText,
+                            fontSize: 12,
+                          }}
+                        >
+                          :
+                        </Text>
+                        <Text
+                          style={{
+                            ...styles.gujaratiText,
+                            fontSize: 11,
+                            marginLeft: 4,
+                          }}
+                        >
+                          {item.specification}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
               </View>
             </View>
-          </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+            <View style={{ ...styles.d_flex, marginBottom: 30 }}>
+              <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+              <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+            </View>
           </View>
         </Page>
       </Document>

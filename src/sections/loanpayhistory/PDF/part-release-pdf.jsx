@@ -42,6 +42,8 @@ const useStyles = () =>
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
           textTransform: 'capitalize',
+          border: '3px solid #000',
+          padding: '1px',
         },
         pagePadding: {
           padding: '0px 24px 0px 24px',
@@ -207,14 +209,15 @@ const useStyles = () =>
         },
         signText: {
           fontSize: 11,
-          borderTop: '1px solid black',
+          borderTop: '1px solid #232C4B',
           paddingTop: 10,
           textAlign: 'center',
           width: '100px',
           fontWeight: 600,
+          color: '#232C4B',
         },
       }),
-    [],
+    []
   );
 
 // ----------------------------------------------------------------------
@@ -224,87 +227,93 @@ export default function PartReleasePdf({ selectedRow, configs }) {
   return (
     <>
       <Document>
-        <Page size='A4' style={styles.page}>
-          <View style={styles.watermarkContainer}>
-            <Image src={logo} style={styles.watermarkImage} />
-          </View>
-          <InvoiceHeader selectedRow={selectedRow.loan} configs={configs} />
-          <View style={styles.pagePadding}>
-            <View style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-              marginTop: 20,
-            }}>
-              <View style={{ width: '40%' }}>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan No{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loan.loanNo}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Issue Date{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{fDate(selectedRow.loan.issueDate)}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Close Date{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>27 Aug 2024</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan Amount{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loan.loanAmount}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Pay Amount{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Int. Loan Amount{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loan.interestLoanAmount}</Text>
-                </View>
-              </View>
-              <View style={{ width: '40%' }}>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Customer Name{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text
-                    style={styles.subText}>{`${selectedRow.loan.customer.firstName} ${selectedRow.loan.customer.middleName} ${selectedRow.loan.customer.lastName}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Pan No{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loan.customer.panCard}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Mobile No{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.loan.customer.contact}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Remark{' '}</Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{selectedRow.remark}</Text>
-                </View>
-              </View>
-              <View style={{ width: '20%' }}>
-                <Image src={selectedRow.propertyImage} style={styles.img} />
-              </View>
+        <Page size="A4" style={styles.page}>
+          {' '}
+          <View style={{ border: '1px solid #000' }}>
+            <View style={styles.watermarkContainer}>
+              <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <Text style={{ marginTop: 10 }}>
-              <Text style={styles.subHeading}>Accepted & Received Amount{' '}</Text>
-              <Text style={styles.colon}>:</Text>
-              <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
-            </Text>
-          </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-            <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+            <InvoiceHeader selectedRow={selectedRow.loan} configs={configs} />
+            <View style={styles.pagePadding}>
+              <View
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  marginTop: 20,
+                }}
+              >
+                <View style={{ width: '40%' }}>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Loan No </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loan.loanNo}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Issue Date </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{fDate(selectedRow.loan.issueDate)}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Close Date </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>27 Aug 2024</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Loan Amount </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loan.loanAmount}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Pay Amount </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Int. Loan Amount </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loan.interestLoanAmount}</Text>
+                  </View>
+                </View>
+                <View style={{ width: '40%' }}>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Customer Name </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text
+                      style={styles.subText}
+                    >{`${selectedRow.loan.customer.firstName} ${selectedRow.loan.customer.middleName} ${selectedRow.loan.customer.lastName}`}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Pan No </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loan.customer.panCard}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Mobile No </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.loan.customer.contact}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Remark </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.remark}</Text>
+                  </View>
+                </View>
+                <View style={{ width: '20%' }}>
+                  <Image src={selectedRow.propertyImage} style={styles.img} />
+                </View>
+              </View>
+              <Text style={{ marginTop: 10 }}>
+                <Text style={styles.subHeading}>Accepted & Received Amount </Text>
+                <Text style={styles.colon}>:</Text>
+                <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
+              </Text>
+            </View>
+            <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
+              <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
+              <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
+            </View>
           </View>
         </Page>
       </Document>

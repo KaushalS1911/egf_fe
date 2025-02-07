@@ -41,6 +41,8 @@ const useStyles = () =>
         page: {
           fontFamily: 'Roboto',
           position: 'relative',
+          border: '3px solid #000',
+          padding: '1px',
         },
         watermarkContainer: {
           position: 'absolute',
@@ -390,145 +392,152 @@ export default function Sansaction8({ sansaction, configs }) {
     <>
       <Document>
         <Page size="A4" style={styles.page}>
-          <View style={styles.watermarkContainer}>
-            <Image src={logo} style={styles.watermarkImage} />
-          </View>
-          <InvoiceHeader selectedRow={sansaction} configs={configs} />
-          <View style={styles.pagePadding}>
-            <View
-              style={{
-                textAlign: 'center',
-                fontSize: 18,
-                marginRight: 25,
-                marginBottom: 10,
-              }}
-            >
-              <Text style={styles.termsAndConditionsHeaders}>Sanction-8</Text>
+          <View style={{ border: '1px solid #000' }}>
+            <View style={styles.watermarkContainer}>
+              <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <View style={styles.flexContainer}>
-              <View style={{ width: '50%' }}>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan No </Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.loanNo}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Loan Type </Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.loanType}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Name </Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text
-                    style={styles.subText}
-                  >{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Address </Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text
-                    style={{
-                      ...styles.subText,
-                      textWrap: 'wrap',
-                    }}
-                  >{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Pan No </Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.customer.panCard}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Aadhar Card No </Text>{' '}
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.customer.aadharCard}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.subHeading}>Mobile No </Text>
-                  <Text style={styles.colon}>:</Text>
-                  <Text style={styles.subText}>{sansaction.customer.contact}</Text>
-                </View>
-              </View>
+            <InvoiceHeader selectedRow={sansaction} configs={configs} />
+            <View style={styles.pagePadding}>
               <View
-                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}
+                style={{
+                  textAlign: 'center',
+                  fontSize: 18,
+                  marginRight: 25,
+                  marginBottom: 10,
+                }}
               >
-                <Image style={styles.img} src={sansaction.customer.avatar_url} />
-                <Image style={styles.img} src={sansaction.propertyImage} />
+                <Text style={styles.termsAndConditionsHeaders}>Sanction-8</Text>
               </View>
-            </View>
-            <View style={styles.tableFlex}>
-              <View style={styles.table}>
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                  <Text style={{ ...styles.tableCell, fontWight: 900 }}>તારીખ</Text>
-                  <Text style={styles.tableCell}>અમોઉન્ટ</Text>
-                  <Text style={styles.tableCell}>દાગીના</Text>
-                  <Text style={styles.tableCell}>સહી</Text>
-                  <Text style={styles.tableCell}>કસ્ટમર ની સહી</Text>
-                  <Text style={styles.tableCell}>વિગત</Text>
+              <View style={styles.flexContainer}>
+                <View style={{ width: '50%' }}>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Loan No </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{sansaction.loanNo}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Loan Type </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{sansaction.loanType}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Name </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text
+                      style={styles.subText}
+                    >{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Address </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text
+                      style={{
+                        ...styles.subText,
+                        textWrap: 'wrap',
+                      }}
+                    >{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Pan No </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{sansaction.customer.panCard}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Aadhar Card No </Text>{' '}
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{sansaction.customer.aadharCard}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Mobile No </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{sansaction.customer.contact}</Text>
+                  </View>
                 </View>
-                <View>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
-                      {Array.from({ length: 6 }).map((_, cellIndex) => (
-                        <Text key={cellIndex}></Text>
-                      ))}
-                    </View>
-                  ))}
+                <View
+                  style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}
+                >
+                  <Image style={styles.img} src={sansaction.customer.avatar_url} />
+                  <Image style={styles.img} src={sansaction.propertyImage} />
                 </View>
-                <View>
-                  <Text
-                    style={{
-                      ...styles.gujaratiText,
-                      fontSize: 11,
-                      fontWight: 'bolder',
-                      marginTop: 20,
-                    }}
-                  >
-                    ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ
-                    મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી ગયેલ છે.જેની હું આપને લેખિત
-                    માં બાહેંધરી આપું છું.
-                  </Text>
-                </View>
-                {/*<View*/}
-                {/*  style={{*/}
-                {/*    width: '80%',*/}
-                {/*    flexDirection: 'row',*/}
-                {/*    display: 'flex',*/}
-                {/*    justifyContent: 'flex-end',*/}
-                {/*  }}*/}
-                {/*>*/}
-                {/*  <Text style={{ ...styles.gujaratiText, fontSize: 12, fontWight: 600 }}>*/}
-                {/*    તારીખ :-{' '}*/}
-                {/*  </Text>*/}
-                {/*</View>*/}
-                <view>
-                  <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
-                    નમૂનો-૮ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૬
-                  </Text>
-                  <View style={{ marginTop: 10 }}>
-                    {rules.map((item, index) => (
-                      <View
-                        key={index}
-                        style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}
-                      >
-                        <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
-                        <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
-                          {item.rule}
-                        </Text>{' '}
-                        {/* Condition text */}
+              </View>
+              <View style={styles.tableFlex}>
+                <View style={styles.table}>
+                  <View style={[styles.tableRow, styles.tableHeader]}>
+                    <Text style={{ ...styles.tableCell, fontWight: 900 }}>તારીખ</Text>
+                    <Text style={styles.tableCell}>અમોઉન્ટ</Text>
+                    <Text style={styles.tableCell}>દાગીના</Text>
+                    <Text style={styles.tableCell}>સહી</Text>
+                    <Text style={styles.tableCell}>કસ્ટમર ની સહી</Text>
+                    <Text style={styles.tableCell}>વિગત</Text>
+                  </View>
+                  <View>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
+                        {Array.from({ length: 6 }).map((_, cellIndex) => (
+                          <Text key={cellIndex}></Text>
+                        ))}
                       </View>
                     ))}
                   </View>
-                </view>
+                  <View>
+                    <Text
+                      style={{
+                        ...styles.gujaratiText,
+                        fontSize: 11,
+                        fontWight: 'bolder',
+                        marginTop: 20,
+                      }}
+                    >
+                      ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ
+                      મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી ગયેલ છે.જેની હું આપને
+                      લેખિત માં બાહેંધરી આપું છું.
+                    </Text>
+                  </View>
+                  {/*<View*/}
+                  {/*  style={{*/}
+                  {/*    width: '80%',*/}
+                  {/*    flexDirection: 'row',*/}
+                  {/*    display: 'flex',*/}
+                  {/*    justifyContent: 'flex-end',*/}
+                  {/*  }}*/}
+                  {/*>*/}
+                  {/*  <Text style={{ ...styles.gujaratiText, fontSize: 12, fontWight: 600 }}>*/}
+                  {/*    તારીખ :-{' '}*/}
+                  {/*  </Text>*/}
+                  {/*</View>*/}
+                  <view>
+                    <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
+                      નમૂનો-૮ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૬
+                    </Text>
+                    <View style={{ marginTop: 10 }}>
+                      {rules.map((item, index) => (
+                        <View
+                          key={index}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            marginBottom: 4,
+                          }}
+                        >
+                          <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>{' '}
+                          {/* Bullet point */}
+                          <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
+                            {item.rule}
+                          </Text>{' '}
+                          {/* Condition text */}
+                        </View>
+                      ))}
+                    </View>
+                  </view>
+                </View>
               </View>
             </View>
-          </View>
-          <View style={styles.d_flex}>
-            <Text style={{ ...styles.box2, marginLeft: 35 }}>Authority Sign</Text>
-            <View style={{ marginRight: 35 }}>
-              <View style={styles.box}></View>
-              <Text style={styles.signText}>Customer Sign</Text>
+            <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
+              <Text style={{ ...styles.box2, marginLeft: 35 }}>Authority Sign</Text>
+              <View style={{ marginRight: 35 }}>
+                <View style={styles.box}></View>
+                <Text style={styles.signText}>Customer Sign</Text>
+              </View>
             </View>
           </View>
         </Page>
