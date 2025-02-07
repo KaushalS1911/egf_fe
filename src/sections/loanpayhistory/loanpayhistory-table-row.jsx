@@ -126,8 +126,8 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       let pdfContent;
       let type;
       let payload;
+      let fileBlob; // Renamed to avoid reference issue
 
-      // Determine the PDF content dynamically based on the input
       switch (content) {
         case 'loanDetails':
           pdfContent = <LoanIssueDetails selectedRow={row} configs={configs} />;
@@ -145,40 +145,47 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             companyName: company.name,
             companyEmail: company.email,
             companyContact: company.contact,
-            file,
             type,
           };
           break;
-        // case 'sanction-8':
-        //   pdfContent = <Sansaction8 sansaction={row} configs={configs} />;
-        //   break;
-        // case 'sanction-11':
-        //   pdfContent = <Sansaction11 sansaction={row} configs={configs} />;
-        //   break;
-        // case 'authority':
-        //   pdfContent = <LetterOfAuthority loan={row} />;
-        //   break;
-        // case 'notice':
-        //   pdfContent = <Notice noticeData={row} configs={configs} />;
-        //   break;
-        // case 'noc':
-        //   pdfContent = <Noc nocData={row} configs={configs} />;
-        //   break;
+        case 'sanction-8':
+          pdfContent = <Sansaction8 sansaction={row} configs={configs} />;
+          break;
+        case 'sanction-11':
+          pdfContent = <Sansaction11 sansaction={row} configs={configs} />;
+          break;
+        case 'authority':
+          pdfContent = <LetterOfAuthority loan={row} />;
+          break;
+        case 'notice':
+          pdfContent = <Notice noticeData={row} configs={configs} />;
+          break;
+        case 'noc':
+          pdfContent = <Noc nocData={row} configs={configs} />;
+          break;
         default:
           console.error('Unknown PDF content type:', content);
           return;
       }
 
+      // Generate the PDF and create the file
       const blob = await pdf(pdfContent).toBlob();
-      const file = new File([blob], `${content}.pdf`, { type: 'application/pdf' });
-      console.log(file, '00');
+      fileBlob = new File([blob], `${content}.pdf`, { type: 'application/pdf' });
+      setFile(fileBlob); // Set the file state
 
+      // Add file to payload
+      payload = { ...payload, file: fileBlob };
+
+      // Prepare form data
       const formData = new FormData();
-
       Object.entries(payload).forEach(([key, value]) => {
         formData.append(key, value);
       });
 
+      // // Append the file to form data
+      // formData.append('file', fileBlob);
+
+      // Send the data to the API
       const response = await axios.post(
         `${import.meta.env.VITE_HOST_API}/api/whatsapp-notification`,
         formData
@@ -189,6 +196,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       console.error('Error generating or sending PDF:', error);
     }
   };
+
   const handleDialogOpen = async (content) => {
     setDialogContent(content);
     if (
