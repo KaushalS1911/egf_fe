@@ -231,10 +231,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     const totalAmount = parseFloat(watch('totalPay')) || 0;
 
     if (amountPaid <= totalAmount - 50) {
-      enqueueSnackbar(
-        `Amount Paid must be at least ${totalAmount - 50}.`,
-        { variant: 'error' },
-      );
+      enqueueSnackbar(`Amount Paid must be at least ${totalAmount - 50}.`, { variant: 'error' });
       return;
     }
 
@@ -268,9 +265,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       days: parseInt(data.days, 10) || 0,
       uchakInterestAmount: parseFloat(data.uchakAmount) || 0,
       interestAmount: parseFloat(data.interestAmount) || 0,
-      from: loanInterest?.length === 0
-        ? new Date(watch('from'))
-        : new Date(Number(data.from)),
+      from: loanInterest?.length === 0 ? new Date(watch('from')) : new Date(Number(data.from)),
       amountPaid,
       penalty: parseFloat(data.penalty) || 0,
       cr_dr: parseFloat(data.cr_dr) || 0,
@@ -328,7 +323,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
   }, [watch('amountPaid'), watch('paymentMode')]);
 
-
   const handleDeleteInterest = async (id) => {
     try {
       const response = await axios.delete(
@@ -348,8 +342,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     try {
       const blob = await pdf(<InterestPdf data={data} configs={configs} />).toBlob();
       const file = new File([blob], `interestPayment.pdf`, { type: 'application/pdf' });
-      console.log(file, '00');
-      alert('111');
       const payload = {
         firstName: data.loan.customer.firstName,
         middleName: data.loan.customer.middleName,
@@ -474,8 +466,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               sx={{ mt: 1 }}
             >
               <RHFAutocomplete
-                name='paymentMode'
-                label='Payment Mode'
+                name="paymentMode"
+                label="Payment Mode"
                 options={['Cash', 'Bank', 'Both']}
                 onChange={(event, value) => {
                   setValue('paymentMode', value);
@@ -548,12 +540,19 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             </Box>
           </Box>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
-            <Button color='inherit' sx={{ height: '36px' }}
-                    variant='outlined' onClick={() => reset()}>Reset</Button>
-            {getResponsibilityValue('update_loanPayHistory', configs, user) &&
-              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+            <Button
+              color="inherit"
+              sx={{ height: '36px' }}
+              variant="outlined"
+              onClick={() => reset()}
+            >
+              Reset
+            </Button>
+            {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Submit
-              </LoadingButton>}
+              </LoadingButton>
+            )}
           </Box>
         </Box>
       </FormProvider>
