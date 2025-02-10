@@ -27,7 +27,6 @@ function GoldLoanCalculator() {
   const [totalsNetGram, setTotalsNetGram] = useState([0]);
   const [totalsFinance, setTotalsFinance] = useState([0]);
 
-
   const deleteTable = (tableIndex) => {
     if (goldGramsTables.length > 1) {
       setGoldGramsTables((prevTables) => prevTables.filter((_, index) => index !== tableIndex));
@@ -120,23 +119,22 @@ function GoldLoanCalculator() {
 
   const renderTable = (rows, tableIndex, handleChange, dataTable, totals, type) => (
     <>
-      <Box key={tableIndex} mb={4}>
-        <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
+      <Box key={tableIndex} mb={1}>
+        <Box display='flex' justifyContent='space-between' alignItems='center'>
           <Typography variant='subtitle1'>
             {type === 'gold' ? `Gold Calculator ${tableIndex + 1}` : `Finance Calculator ${tableIndex + 1}`}
           </Typography>
           {type === 'gold' &&
-          <IconButton
-            color="error"
-            onClick={() => deleteTable(tableIndex)}
-            disabled={goldGramsTables.length <= 1} // Prevent deleting the last remaining table
-            sx={{
-              visibility: goldGramsTables.length > 1 ? 'visible' : 'hidden', // Hide the button if only one table remains
-            }}
-          >
-            <Iconify icon='oui:cross-in-circle-filled' />
-
-          </IconButton>}
+            <IconButton
+              color='error'
+              onClick={() => deleteTable(tableIndex)}
+              disabled={goldGramsTables.length <= 1}
+              sx={{
+                visibility: goldGramsTables.length > 1 ? 'visible' : 'hidden',
+              }}
+            >
+              <Iconify icon='oui:cross-in-circle-filled' />
+            </IconButton>}
         </Box>
       </Box>
       <TableContainer component={Paper} key={tableIndex}>
@@ -226,7 +224,7 @@ function GoldLoanCalculator() {
           </TableBody>
         </Table>
         {type === 'gold' && (
-          <Box mt={2} textAlign='left'>
+          <Box mt={1} textAlign='left'>
             <Typography variant='subtitle1'>Total Net Gram: {totals[tableIndex]}</Typography>
           </Box>
         )}
@@ -236,7 +234,7 @@ function GoldLoanCalculator() {
 
   return (
     <Box p={3}>
-      <Box display='flex' justifyContent='space-between' my={2} textAlign='center'>
+      <Box display='flex' justifyContent='space-between' textAlign='center'>
         <Typography variant='h6' gutterBottom>
           Gold Loan Calculator
         </Typography>
@@ -253,16 +251,14 @@ function GoldLoanCalculator() {
           </Button>
         </Box>
       </Box>
-
-      <Grid container spacing={3}>
+      <Grid container spacing={1}>
         {goldGramsTables.map((_, tableIndex) => (
           <Grid item xs={12} md={4} key={tableIndex}>
             {renderTable(activeCarat, tableIndex, handleGoldGramChange, goldGramsTables, totalsNetGram, 'gold')}
           </Grid>
         ))}
       </Grid>
-
-      <Grid container spacing={1} mt={4}>
+      <Grid container spacing={1} mt={1}>
         {financeTables.map((_, tableIndex) => (
           <Grid item xs={12} md={4} key={tableIndex}>
             {renderTable(activeScheme, tableIndex, handleNetGramChange2, financeTables, totalsFinance, 'finance')}
