@@ -106,9 +106,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   });
 
   const defaultValues = {
-    from: currentOtherLoan?.loan?.issueDate
-      ? new Date(currentOtherLoan?.loan?.issueDate)
-      : new Date(currentOtherLoan?.loan?.issueDate),
+    from: currentOtherLoan?.loan?.date ? new Date(currentOtherLoan?.date) : new Date(),
     to:
       new Date(currentOtherLoan?.renewalDate) > new Date()
         ? new Date(currentOtherLoan?.renewalDate)

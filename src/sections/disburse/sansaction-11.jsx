@@ -422,17 +422,20 @@ export default function Sansaction11({ sansaction, configs }) {
                       }}
                     >{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
                   </Text>
-                  <Text style={styles.spacing}>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૨. દેણદાર નું સરનામું :{' '}
+                      ૨. દેણદાર નું સરનામું :
                     </Text>
                     <Text
                       style={{
                         ...styles.subText,
-                        textWrap: 'wrap',
+                        flexShrink: 1,
                       }}
-                    >{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
-                  </Text>
+                    >
+                      {` ${sansaction.customer.permanentAddress.street}, ${sansaction.customer.permanentAddress.landmark}, ${sansaction.customer.permanentAddress.city}, ${sansaction.customer.permanentAddress.zipcode}`}
+                    </Text>
+                  </View>
+
                   <Text style={styles.spacing}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
                       ૩. કરજ ની રકમ :{' '}
@@ -514,8 +517,8 @@ export default function Sansaction11({ sansaction, configs }) {
                       },
                     ]}
                   >
-                    <Text style={styles.tableCell}>{totalWight}</Text>
-                    <Text style={styles.tableCell}>{netWight}</Text>
+                    <Text style={styles.tableCell}>{totalWight.toFixed(2)}</Text>
+                    <Text style={styles.tableCell}>{netWight.toFixed(2)}</Text>
                     <Text style={styles.tableCell}>{qty}</Text>
                   </View>
                 </View>
@@ -564,7 +567,6 @@ export default function Sansaction11({ sansaction, configs }) {
                       >
                         {item.rule}
                       </Text>{' '}
-                      {/* Condition text */}
                     </View>
                   ))}
                 </View>
