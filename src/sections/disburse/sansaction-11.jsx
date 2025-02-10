@@ -60,7 +60,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '82%',
+          height: '80%',
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
@@ -188,7 +188,7 @@ const useStyles = () =>
           textWrap: 'nowrap',
           fontSize: 12,
           textAlign: 'center',
-          marginTop: 10,
+          marginTop: 7,
         },
         d_flex: {
           display: 'flex',
