@@ -104,9 +104,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     payAfterAdjusted: Yup.string().required('pay After Adjusted is required'),
     ...paymentSchema,
   });
-
   const defaultValues = {
-    from: currentOtherLoan?.loan?.date ? new Date(currentOtherLoan?.date) : new Date(),
+    from: currentOtherLoan?.date ? new Date(currentOtherLoan?.date) : new Date(),
     to:
       new Date(currentOtherLoan?.renewalDate) > new Date()
         ? new Date(currentOtherLoan?.renewalDate)
@@ -137,7 +136,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-  console.log(currentOtherLoan, '0000000');
   useEffect(() => {
     const days = watch('days');
     const totalLoanAmount = (
