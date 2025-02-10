@@ -227,17 +227,24 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   //   );
   // }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
   const updateRenewalDate = () => {
-    const renewalDate = currentOtherLoan.date;
+    const date = currentOtherLoan.date;
+    const renewalDate = currentOtherLoan.renewalDate;
     const month = currentOtherLoan.month;
 
     const monthsToAdd =
       month === 'MONTHLY' ? 1 : month === 'YEARLY' ? 12 : parseInt(month.split(' ')[0], 10) || 0;
 
-    const calculatedDate = new Date(renewalDate);
+    const calculatedDate = new Date(date);
     calculatedDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
+    const calculatedDateRenewalDate = new Date(renewalDate);
+    calculatedDateRenewalDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
 
-    if (calculatedDate) {
-      const payload = { ...currentOtherLoan, date: calculatedDate };
+    if (calculatedDate && calculatedDateRenewalDate) {
+      const payload = {
+        ...currentOtherLoan,
+        date: calculatedDate,
+        renewalDate: calculatedDateRenewalDate,
+      };
       axios
         .put(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loans/${currentOtherLoan?._id}`,
@@ -245,6 +252,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
         )
         .then((response) => {
           console.log(response);
+          refetchOtherLoanInterest;
         })
         .catch((error) => {
           console.log(error);
