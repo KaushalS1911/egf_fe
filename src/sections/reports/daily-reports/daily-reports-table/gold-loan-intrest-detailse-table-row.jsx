@@ -32,23 +32,32 @@ export default function GoldLoanIntrestDetailseTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected} sx={{}}>
-        <TableCell sx={{ width: '1%' }}>{index + 1}</TableCell>
-        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{loanNo}</TableCell>
-        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>
+      <TableRow hover selected={selected}>
+        <TableCell sx={{ width: '1%', textAlign: 'start' }}>{index + 1}</TableCell>
+        <TableCell sx={{
+          width: '4%',
+          maxWidth: '4%',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          whiteSpace: 'normal',
+        }}>
+          {loanNo}
+        </TableCell>
+        <TableCell sx={{ width: '1%' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ width: '1%', padding: '6px 6px' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ width: '1%', padding: '6px 6px' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ width: '5%', padding: '6px 6px' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ width: '3%', padding: '6px 6px' }}>{(interestLoanAmount).toFixed(2)}</TableCell>
-        <TableCell sx={{ width: '5%', padding: '6px 6px' }}>{fDate(from)}</TableCell>
-        <TableCell sx={{ width: '5%', padding: '6px 6px' }}>{fDate(to)}</TableCell>
-        <TableCell sx={{ width: '1%', padding: '6px 6px' }}>{days}</TableCell>
-        <TableCell sx={{ width: '1%', padding: '6px 6px' }}>{'payment by'}</TableCell>
-        <TableCell sx={{ width: '1%', padding: '6px 6px' }}>{'int'}</TableCell>
-        <TableCell sx={{ width: '1%', padding: '6px 6px' }}>{penalty}</TableCell>
-        <TableCell sx={{ width: '1%', padding: '6px 6px' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ width: '5%' }}>{fDate(issueDate)}</TableCell>
+        <TableCell
+          sx={{ width: '3%' }}>{(interestLoanAmount).toFixed(2)}</TableCell>
+        <TableCell sx={{ width: '5%' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ width: '5%' }}>{fDate(to)}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{days}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{'payment by'}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{'int'}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{penalty}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{amountPaid}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
