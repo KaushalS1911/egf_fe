@@ -1,12 +1,8 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
-
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -14,51 +10,53 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../../../auth/hooks';
 import { useGetConfigs } from '../../../../api/config';
 import { getResponsibilityValue } from '../../../../permission/permission';
-import Label from '../../../../components/label';
 import { fDate } from '../../../../utils/format-time';
-
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanPartPaymateDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const {  scheme, cashAmount, bankAmount,statuslastInstallmentDate,nextInstallmentDate,consultingCharge,loan,amountPaid} = row;
-  const {loanNo, customer, loanAmount,issueDate,interestLoanAmount}=loan
+export default function GoldLoanPartPaymateDetailsTableRow({
+                                                             row,
+                                                             index,
+                                                             selected,
+                                                             onEditRow,
+                                                             onSelectRow,
+                                                             onDeleteRow,
+                                                             handleClick,
+                                                           }) {
+  const {
+    loan,
+    amountPaid,
+  } = row;
+  const { loanNo, customer, loanAmount, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  };
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ width: '8%' }}>{index + 1}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{loanNo}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{"rate"}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'TOTAL INT'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'closing charge'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'entry date'}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{'rate'}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{(interestLoanAmount).toFixed(2)}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{'TOTAL INT'}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{'closing charge'}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{'close date'}</TableCell>
+        <TableCell sx={{ width: '8%', padding: '6px 6px' }}>{'entry date'}</TableCell>
       </TableRow>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
-
         {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
@@ -90,7 +88,6 @@ export default function GoldLoanPartPaymateDetailsTableRow({ row,index, selected
           </Button>
         }
       />
-
     </>
   );
 };

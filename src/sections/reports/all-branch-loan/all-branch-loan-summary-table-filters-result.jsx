@@ -1,18 +1,22 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-
 import Iconify from 'src/components/iconify';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function AllBranchLoanSummaryTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
+export default function AllBranchLoanSummaryTableFiltersResult({
+                                                                 filters,
+                                                                 onFilters,
+                                                                 onResetFilters,
+                                                                 results,
+                                                                 ...other
+                                                               }) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
 
   const handleRemoveIssuedBy = useCallback(() => {
@@ -27,7 +31,6 @@ export default function AllBranchLoanSummaryTableFiltersResult({ filters, onFilt
     onFilters('startDate', null);
     onFilters('endDate', null);
   }, [onFilters]);
-
 
   const handleRemoveService = useCallback(
     (inputValue) => {

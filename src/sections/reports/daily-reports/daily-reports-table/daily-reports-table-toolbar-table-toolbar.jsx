@@ -1,19 +1,16 @@
 import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
-
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Dialog, DialogActions, FormControl, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../../components/custom-popover';
 import RHFExportExcel from '../../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../../auth/hooks';
-import { useGetConfigs } from '../../../../api/config';
 import { getResponsibilityValue } from '../../../../permission/permission';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import { useGetBranch } from '../../../../api/branch';
@@ -25,20 +22,22 @@ import AllBranchLoanSummaryPdf from '../../view/all-branch-loan-summary-pdf';
 
 // ----------------------------------------------------------------------
 
-export default function DailyReportsTableToolbarTableToolbar({ filters, onFilters, dateError,dataFilter ,configs }) {
+export default function DailyReportsTableToolbarTableToolbar({ filters, onFilters, dateError, dataFilter, configs }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { user } = useAuthContext();
-  const {branch}=useGetBranch()
-  const [selectedBranch,setSelectedBranch] = useState(null)
+  const { branch } = useGetBranch();
+  const [selectedBranch, setSelectedBranch] = useState(null);
   const view = useBoolean();
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
     },
     [onFilters],
   );
+
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -56,22 +55,6 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
     [onFilters],
   );
 
-  // const handleFilterEndDate = useCallback(
-  //   (newValue) => {
-  //     if (newValue === null || newValue === undefined) {
-  //       onFilters('endDate', null);
-  //       return;
-  //     }
-  //     const date = moment(newValue);
-  //     if (date.isValid()) {
-  //       onFilters('endDate', date.toDate());
-  //     } else {
-  //       console.warn('Invalid date selected');
-  //       onFilters('endDate', null);
-  //     }
-  //   },
-  //   [onFilters],
-  // );
   const customStyle = {
     maxWidth: { md: 200 },
     'label': {
@@ -83,19 +66,19 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
     },
     'input': { height: 7 },
   };
-  const sx2 = {
 
-  };
-  const handleFilterBranch =  useCallback(
+  const sx2 = {};
+  const handleFilterBranch = useCallback(
     (event) => {
-      setSelectedBranch(event.target.value)
+      setSelectedBranch(event.target.value);
       onFilters(
         'branch',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value,
       );
     },
     [onFilters],
-  )
+  );
+
   return (
     <>
       <Stack
@@ -140,39 +123,40 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
             <InputLabel sx={{
               mt: -0.8,
               '&.MuiInputLabel-shrink': {
-              mt: 0,
-            },
-            }}>Branch</InputLabel>
-
-            <Select
-            value={filters.branch}
-            onChange={handleFilterBranch}
-            input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240,
-                  '&::-webkit-scrollbar': {
-                    width: '5px',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#f1f1f1',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#888',
-                    borderRadius: '4px',
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    backgroundColor: '#555',
-                  },},
+                mt: 0,
               },
-            }}
-          >
-            {branch.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
+            }}>Branch</InputLabel>
+            <Select
+              value={filters.branch}
+              onChange={handleFilterBranch}
+              input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {branch.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
           <DatePicker
             label='Date'
@@ -186,10 +170,8 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
                 fullWidth: true,
               },
             }}
-            sx={{...customStyle}}
+            sx={{ ...customStyle }}
           />
-
-
           <IconButton onClick={popover.onOpen}>
             <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
@@ -202,7 +184,7 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
         >
           {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
             onClick={() => {
-              view.onTrue()
+              view.onTrue();
               popover.onClose();
             }}
           >
@@ -237,13 +219,13 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf loans={dataFilter} selectedBranch={selectedBranch} configs={configs}/>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+              <AllBranchLoanSummaryPdf loans={dataFilter} selectedBranch={selectedBranch} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>

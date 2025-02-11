@@ -125,7 +125,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       .required('Aadhar Card number is required')
       .matches(
         /^\d{12}$/,
-        'Aadhar Card must be exactly 12 digitsand should not contain alphabetic characters'
+        'Aadhar Card must be exactly 12 digitsand should not contain alphabetic characters',
       ),
     otpContact: Yup.string().required('OTP Contact number isrequired').max(10).min(10),
     PerStreet: Yup.string().required('Address Line 1 isrequired'),
@@ -142,7 +142,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     tempZipcode: Yup.string().required('Pincode is required'),
     profile_pic: Yup.mixed().required('A profile picture is required'),
     referenceBy: Yup.string().required('Other detail is required'),
-
   });
 
   const defaultValues = useMemo(() => ({
@@ -201,6 +200,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
+
   const [aspectRatio, setAspectRatio] = useState(null);
 
   useEffect(() => {
@@ -327,9 +327,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?${branchQuery}`;
       await (currentCustomer
         ? axios.put(
-            `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?${branchQuery}`,
-            payload
-          )
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?${branchQuery}`,
+          payload,
+        )
         : axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } }));
 
       enqueueSnackbar(currentCustomer ? 'Update success!' : 'Create success!');
@@ -417,7 +417,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         -cropWidth / 2,
         -cropHeight / 2,
         cropWidth,
-        cropHeight
+        cropHeight,
       );
       ctx.restore();
 
@@ -442,7 +442,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           try {
             const response = await axios.put(
               `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
-              formData
+              formData,
             );
             console.log('Profile updated successfully:', response.data);
           } catch (err) {
@@ -567,7 +567,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         const otpPayload = { otp: otpCode, refId: JSON.parse(reference) };
         const otpResponse = await axios.post(
           `https://egf-be.onrender.com/api/verification/aadhaar-details`,
-          otpPayload
+          otpPayload,
         );
 
         if (otpResponse.status === 200) {
@@ -608,7 +608,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       <Grid item md={3} xs={12}>
         <Box sx={{ pt: 2 }}>
           <RHFUploadAvatar
-            name="profile_pic"
+            name='profile_pic'
             camera={true}
             setOpen2={setOpen2}
             setOpen={setOpen}
@@ -616,7 +616,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
             setFile={setFile}
             file={croppedImage || imageSrc || capturedImage || currentCustomer?.avatar_url}
             maxSize={3145728}
-            accept="image/*"
+            accept='image/*'
             onDrop={handleDropSingleFile}
           />
           <Dialog open={Boolean(open)} onClose={handleCancel}>
@@ -627,26 +627,26 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               aspect={1}
             >
               <img
-                id="cropped-image"
+                id='cropped-image'
                 src={imageSrc || capturedImage}
-                alt="Crop preview"
+                alt='Crop preview'
                 onLoad={resetCrop}
                 style={{ transform: `rotate(${rotation}deg)` }}
               />
             </ReactCrop>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
-              <Button variant="outlined" onClick={handleCancel}>
+              <Button variant='outlined' onClick={handleCancel}>
                 Cancel
               </Button>
               <Box sx={{ display: 'flex' }}>
                 <IconButton onClick={() => rotateImage(-90)} style={{ marginRight: '10px' }}>
-                  <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />
+                  <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
                 </IconButton>
                 <IconButton onClick={() => rotateImage(90)}>
-                  <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />
+                  <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
                 </IconButton>
               </Box>
-              <Button variant="contained" color="primary" onClick={showCroppedImage}>
+              <Button variant='contained' color='primary' onClick={showCroppedImage}>
                 Save Image
               </Button>
             </div>
@@ -655,12 +655,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       </Grid>
       <Grid item xs={12} md={9}>
         <Card>
-          {!mdUp && <CardHeader title="Personal Details" />}
+          {!mdUp && <CardHeader title='Personal Details' />}
           <Stack spacing={3} sx={{ p: 2 }}>
             <Box
               columnGap={1.5}
               rowGap={1.5}
-              display="grid"
+              display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 md: 'repeat(5, 1fr)',
@@ -668,10 +668,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
             >
               {user?.role === 'Admin' && branch && storedBranch === 'all' && (
                 <RHFAutocomplete
-                  name="branchId"
+                  name='branchId'
                   req={'red'}
-                  label="Branch"
-                  placeholder="Choose a Branch"
+                  label='Branch'
+                  placeholder='Choose a Branch'
                   options={
                     branch?.map((branchItem) => ({
                       label: branchItem?.name,
@@ -682,22 +682,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 />
               )}
               <RHFTextField
-                name="customerCode"
-                label="Customer Code"
+                name='customerCode'
+                label='Customer Code'
                 InputProps={{
                   disabled: true,
                 }}
               />
               <RHFDatePicker
-                name="joiningDate"
+                name='joiningDate'
                 control={control}
-                label="Joining Date"
+                label='Joining Date'
                 disabled={disabledField}
                 req={'red'}
               />
               <RHFTextField
-                name="firstName"
-                label="First Name"
+                name='firstName'
+                label='First Name'
                 disabled={disabledField}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
@@ -708,8 +708,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name="middleName"
-                label="Middle Name"
+                name='middleName'
+                label='Middle Name'
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
@@ -719,8 +719,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name="lastName"
-                label="Last Name"
+                name='lastName'
+                label='Last Name'
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
@@ -730,8 +730,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name="contact"
-                label="Contact"
+                name='contact'
+                label='Contact'
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -753,8 +753,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name="otpContact"
-                label="OTP Mobile"
+                name='otpContact'
+                label='OTP Mobile'
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -776,8 +776,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name="drivingLicense"
-                label="Driving License"
+                name='drivingLicense'
+                label='Driving License'
                 onInput={(e) => {
                   e.target.value = e.target.value.toUpperCase();
                 }}
@@ -785,8 +785,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name="panCard"
-                label="PAN No."
+                name='panCard'
+                label='PAN No.'
                 req={'red'}
                 inputProps={{ minLength: 10, maxLength: 10 }}
                 onChange={(e) => {
@@ -796,9 +796,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name="aadharCard"
-                label="Aadhar Card"
-                req="red"
+                name='aadharCard'
+                label='Aadhar Card'
+                req='red'
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -826,10 +826,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               {configs?.businessTypes && (
                 <RHFAutocomplete
-                  name="businessType"
+                  name='businessType'
                   disabled={disabledField}
-                  label="Business Type"
-                  placeholder="Choose Business Type"
+                  label='Business Type'
+                  placeholder='Choose Business Type'
                   options={
                     configs?.businessTypes?.length > 0
                       ? configs.businessTypes.map((type) => type)
@@ -838,22 +838,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   isOptionEqualToValue={(option, value) => option === value}
                 />
               )}
-              <RHFTextField disabled={disabledField} name="email" label="Email" />
+              <RHFTextField disabled={disabledField} name='email' label='Email' />
               <RHFDatePicker
                 disabled={disabledField}
-                name="dob"
+                name='dob'
                 control={control}
-                label="Date of Birth"
+                label='Date of Birth'
                 req={'red'}
               />
-              <RHFTextField disabled={disabledField} name="remark" label="Remark" />
+              <RHFTextField disabled={disabledField} name='remark' label='Remark' />
               {currentCustomer && (
                 <RHFAutocomplete
-                  name="status"
+                  name='status'
                   disabled={disabledField}
                   req={'red'}
-                  label="Status"
-                  placeholder="Choose a Status"
+                  label='Status'
+                  placeholder='Choose a Status'
                   options={STATUS_OPTIONS.map((item) => item.value)}
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 />
@@ -870,7 +870,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                     }}
                   >
                     <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                      <Typography variant='subtitle2' sx={{ fontWeight: 600 }}>
                         Aadhaar Image
                       </Typography>
                     </Box>
@@ -887,7 +887,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                         key={aadharImage}
                         src={aadharImage}
                         alt={aadharImage}
-                        ratio="1/1"
+                        ratio='1/1'
                         onClick={() => lightbox.onOpen(aadharImage)}
                         sx={{ cursor: 'zoom-in', height: '100%', width: '100%' }}
                       />
@@ -1065,7 +1065,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     <>
       {mdUp && (
         <Box pl={2}>
-          <Typography variant="subtitle1">Other Details</Typography>
+          <Typography variant='subtitle1'>Other Details</Typography>
         </Box>
       )}
       <Grid xs={12} md={12} pt={0.5}>
@@ -1073,22 +1073,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <Box
             columnGap={1.5}
             rowGap={1.25}
-            display="grid"
+            display='grid'
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               md: 'repeat(1, 1fr)',
             }}
           >
-            {!mdUp && <CardHeader title="Properties" />}
+            {!mdUp && <CardHeader title='Properties' />}
             <Stack spacing={0.5} sx={{ p: 2, pb: 0 }}>
-              <Typography variant="subtitle2">How did you come to know about us?</Typography>
+              <Typography variant='subtitle2'>How did you come to know about us?</Typography>
               <Stack spacing={2}>
                 <RHFRadioGroup
                   row
                   disabled={disabledField}
                   spacing={4}
                   sx={{ display: 'flex' }}
-                  name="referenceBy"
+                  name='referenceBy'
                   options={INQUIRY_REFERENCE_BY}
                   onChange={(e) => {
                     setReferenceBy(e.target.value);
@@ -1098,70 +1098,70 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 ;
               </Stack>
             </Stack>
-          <Stack spacing={2} sx={{
-            p: watch('referenceBy') === 'Other' ? 2 : 0, pt: watch('referenceBy') === 'Other' ? 0 : 0,
-          }} justifyContent={'end'}>
-            {watch('referenceBy') === 'Other' && (<Stack spacing={1}>
-              <Typography variant='subtitle2'>Write other reference name</Typography>
-              <RHFTextField req={'red'} name='otherReferenceBy' label='Reference By' disabled={disabledField} />
-            </Stack>)}
-          </Stack>
-        </Box>
-      </Card>
-    </Grid>
-  </>);
+            <Stack spacing={2} sx={{
+              p: watch('referenceBy') === 'Other' ? 2 : 0, pt: watch('referenceBy') === 'Other' ? 0 : 0,
+            }} justifyContent={'end'}>
+              {watch('referenceBy') === 'Other' && (<Stack spacing={1}>
+                <Typography variant='subtitle2'>Write other reference name</Typography>
+                <RHFTextField req={'red'} name='otherReferenceBy' label='Reference By' disabled={disabledField} />
+              </Stack>)}
+            </Stack>
+          </Box>
+        </Card>
+      </Grid>
+    </>);
 
   const BankDetails = (
     <>
       <Grid xs={12} md={12}>
         <Card>
-          {!mdUp && <CardHeader title="Bank Accounts" />}
+          {!mdUp && <CardHeader title='Bank Accounts' />}
           <Stack spacing={3} sx={{ p: 2, pt: 0.5 }}>
             <Box>
-              <Typography variant="subtitle1" sx={{ my: 1, fontWeight: '600' }}>
+              <Typography variant='subtitle1' sx={{ my: 1, fontWeight: '600' }}>
                 Bank Account Details
               </Typography>
               <Box
                 columnGap={2}
                 rowGap={3}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   md: 'repeat(6, 1fr)',
                 }}
               >
                 <RHFTextField
-                  name="accountHolderName"
-                  label="Account Holder Name"
+                  name='accountHolderName'
+                  label='Account Holder Name'
                   disabled={disabledField}
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name="accountNumber"
-                  label="Account Number"
-                  type="number"
+                  name='accountNumber'
+                  label='Account Number'
+                  type='number'
                   inputProps={{ min: 0 }}
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name="accountType"
-                  label="Account Type"
-                  placeholder="Choose account type"
+                  name='accountType'
+                  label='Account Type'
+                  placeholder='Choose account type'
                   options={ACCOUNT_TYPE_OPTIONS}
                   isOptionEqualToValue={(option, value) => option === value}
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name="IFSC"
-                  label="IFSC Code"
+                  name='IFSC'
+                  label='IFSC Code'
                   inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
                   onBlur={(e) => checkIFSC(e.target.value)}
                 />
-                <RHFTextField disabled={disabledField} name="bankName" label="Bank Name" />
-                <RHFTextField disabled={disabledField} name="branchName" label="Branch Name" />
+                <RHFTextField disabled={disabledField} name='bankName' label='Bank Name' />
+                <RHFTextField disabled={disabledField} name='branchName' label='Branch Name' />
               </Box>
             </Box>
           </Stack>
@@ -1176,17 +1176,17 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' }}>
         <Button
           disabled={disabledField}
-          color="inherit"
+          color='inherit'
           sx={{ margin: '0px 10px', height: '36px' }}
-          variant="outlined"
+          variant='outlined'
           onClick={() => reset()}
         >
           Reset
         </Button>
         <LoadingButton
-          type="submit"
-          variant="contained"
-          size="large"
+          type='submit'
+          variant='contained'
+          size='large'
           loading={isSubmitting}
           disabled={disabledField}
           sx={{ height: '36px' }}
@@ -1211,11 +1211,11 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <DialogTitle>Enter OTP</DialogTitle>
           <DialogContent>
             <Box sx={{ m: 2 }}>
-              <RHFCode name="code" />
+              <RHFCode name='code' />
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleSubmitAction} variant="outlined">
+            <Button onClick={handleSubmitAction} variant='outlined'>
               Submit
             </Button>
           </DialogActions>
@@ -1225,8 +1225,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <DialogActions>
             <Box sx={{ width: '500px' }}>
               <RHFTextField
-                name="aadharCard"
-                label="Aadhar Number"
+                name='aadharCard'
+                label='Aadhar Number'
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -1267,17 +1267,17 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <Webcam
             audio={false}
             ref={webcamRef}
-            screenshotFormat="image/jpeg"
+            screenshotFormat='image/jpeg'
             width={'90%'}
             height={'100%'}
             videoConstraints={videoConstraints}
           />
         </Box>
         <DialogActions>
-          <Button variant="outlined" onClick={capture}>
+          <Button variant='outlined' onClick={capture}>
             Capture Photo
           </Button>
-          <Button variant="contained" onClick={() => setOpen2(false)}>
+          <Button variant='contained' onClick={() => setOpen2(false)}>
             Close Camera
           </Button>
         </DialogActions>

@@ -59,36 +59,34 @@ export default function MonthCreateView() {
     <Box sx={{ width: '100%', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+          <Typography variant='h5' sx={{ fontWeight: 600 }}>
             Add Month
           </Typography>
         </Grid>
-
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', padding: '10px' }}>
             <TextField
               fullWidth
-              variant="outlined"
-              label="Month"
+              variant='outlined'
+              label='Month'
               value={months}
               onChange={(e) => setMonths(e.target.value)}
               sx={{ fontSize: '16px' }}
             />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
-              <Button variant="contained" onClick={handleNonthsClick}>
+              <Button variant='contained' onClick={handleNonthsClick}>
                 Add Month
               </Button>
             </Box>
           </Box>
         </Grid>
-
         <Grid item xs={12} md={8}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
               <Box
                 columnGap={2}
                 rowGap={2}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(2, 1fr)',
@@ -118,7 +116,7 @@ export default function MonthCreateView() {
                           sx={{ color: 'error.main', cursor: 'pointer' }}
                           onClick={() => handleDeleteMonths(months)}
                         >
-                          <Iconify icon="solar:trash-bin-trash-bold" />
+                          <Iconify icon='solar:trash-bin-trash-bold' />
                         </Box>
                       </Grid>
                     </Grid>

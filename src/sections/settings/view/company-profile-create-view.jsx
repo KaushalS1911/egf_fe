@@ -46,8 +46,7 @@ export default function CompanyProfile() {
   const [loading2, setLoading2] = useState(false);
   const [editingBankDetail, setEditingBankDetail] = useState(null);
   const { branch } = useGetBranch();
-  const { configs,mutate} = useGetConfigs();
-
+  const { configs, mutate } = useGetConfigs();
 
   const personalDetailsMethods = useForm({
     defaultValues: {
@@ -75,6 +74,7 @@ export default function CompanyProfile() {
 
   const { reset: resetPersonalDetails, handleSubmit: handleSubmitPersonalDetails } = personalDetailsMethods;
   const { reset: resetBankDetails, handleSubmit: handleSubmitBankDetails } = bankDetailsMethods;
+
   useEffect(() => {
     if (companyDetail && configs?.headersConfig?.branch) {
       resetPersonalDetails({
@@ -95,7 +95,7 @@ export default function CompanyProfile() {
       email: data.email,
       contact: data.contact,
       branch: data.branch,
-      webUrl: data.webUrl
+      webUrl: data.webUrl,
     };
 
     const details = {
@@ -103,7 +103,7 @@ export default function CompanyProfile() {
         name: data.name,
         email: data.email,
         contact: data.contact,
-        webUrl:data.webUrl
+        webUrl: data.webUrl,
       },
       branch: data.branch,
     };
@@ -116,7 +116,7 @@ export default function CompanyProfile() {
       await axios.put(URL, payload);
       await axios.put(URL2, payload2);
       companyMutate();
-      mutate()
+      mutate();
       enqueueSnackbar('Personal details updated successfully', { variant: 'success' });
       setLoading(false);
     } catch (err) {
@@ -126,6 +126,7 @@ export default function CompanyProfile() {
       setLoading(false);
     }
   };
+
   const onSubmitBankDetails = async (data) => {
     setLoading2(true);
     const newBankAccount = {
@@ -200,13 +201,9 @@ export default function CompanyProfile() {
     try {
       const response = await axios.get(URL);
       const existingBankAccounts = response.data.data.bankAccounts || [];
-
       const updatedBankAccounts = existingBankAccounts.filter(account => account._id !== detail._id);
-
       await axios.put(URL, { bankAccounts: updatedBankAccounts });
-
       companyMutate();
-
       enqueueSnackbar('Bank details deleted successfully', { variant: 'success' });
     } catch (err) {
       console.error('Delete error:', err);
@@ -227,10 +224,8 @@ export default function CompanyProfile() {
               </Box>
             </Card>
           </Grid>
-
           <Grid item sx={{ my: 'auto' }} xs={12} md={8}>
             <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
-
               Company Details
             </Typography>
             <Card>
@@ -267,7 +262,6 @@ export default function CompanyProfile() {
                 </Box>
               </Stack>
             </Card>
-
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
               <LoadingButton onClick={handleSubmitPersonalDetails(onSubmitPersonalDetails)} variant='contained'
                              loading={loading}>
@@ -277,7 +271,6 @@ export default function CompanyProfile() {
           </Grid>
         </Grid>
       </FormProvider>
-
       <FormProvider methods={bankDetailsMethods}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
@@ -321,7 +314,6 @@ export default function CompanyProfile() {
                     style: { textTransform: 'uppercase' },
                   }}
                 />
-
                 <RHFTextField name='branchName' label='Branch Name' />
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'end' }}>
                   <LoadingButton onClick={handleSubmitBankDetails(onSubmitBankDetails)} variant='contained'
