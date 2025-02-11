@@ -84,7 +84,10 @@ const useStyles = () =>
 
 export default function LetterOfAuthority({ loan }) {
   const styles = useStyles();
-
+  const netWeight = loan.propertyDetails.reduce(
+    (prev, next) => prev + (Number(next?.netWeight) || 0),
+    0
+  );
   return (
     <>
       <Document>
@@ -112,17 +115,10 @@ export default function LetterOfAuthority({ loan }) {
             <Text>Dear Sir,</Text>
             <Text style={{ marginTop: 10 }}>
               This has reference to the gold ornaments/articles pledged by me to you having a gross
-              weight of{' '}
-              <Text style={styles.bold}>
-                {loan.propertyDetails.reduce(
-                  (prev, next) => prev + (Number(next?.netWeight) || 0),
-                  0
-                )}
-              </Text>{' '}
-              for availing an advance of{' '}
-              <Text style={styles.bold}>Rs {(loan?.loanAmount).toFixed(2)} /-</Text> from you. I/We
-              hereby declare that the said gold ornaments/articles exclusively belong to me, and I
-              have handed over possession to you as a pledgee of those ornaments.
+              weight of <Text style={styles.bold}>{netWeight.toFixed(2)}</Text> for availing an
+              advance of <Text style={styles.bold}>Rs {(loan?.loanAmount).toFixed(2)} /-</Text> from
+              you. I/We hereby declare that the said gold ornaments/articles exclusively belong to
+              me, and I have handed over possession to you as a pledgee of those ornaments.
             </Text>
             <Text style={{ marginTop: 10 }}>
               In the above respect, I/we agree and authorize you to apply for, obtain, and avail a

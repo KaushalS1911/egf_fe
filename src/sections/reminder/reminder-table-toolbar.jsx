@@ -24,46 +24,47 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   // const [filters.day, setDay] = useState('Next Week');
-  const days = ['Next Day', 'Next Week', 'Next Month'];
+  // const days = ['Next Day', 'Next Week', 'Next Month'];
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   useEffect(() => {
-    onFilters('day', 'Next Week');
+    onFilters('day', 'Next Month');
   }, []);
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
-  const dayManage = (day) => {
-    const currentDate = new Date();
-    const nextDay = new Date(new Date().setDate(new Date().getDate() + 1));
-    const nextWeek = new Date(new Date().setDate(new Date().getDate() + 7));
-    const nextMonth = new Date(new Date().setDate(new Date().getDate() + 31));
-
-    if (day === 'Next Day') {
-      onFilters('startDay', currentDate);
-      onFilters('endDay', nextDay);
-    }
-    if (day === 'Next Week') {
-      onFilters('startDay', currentDate);
-      onFilters('endDay', nextWeek);
-    }
-    if (day === 'Next Month') {
-      onFilters('startDay', currentDate);
-      onFilters('endDay', nextMonth);
-    }
-  };
-
   useEffect(() => {
-    if (filters.day !== '') {
-      dayManage(filters.day);
-    }
+    const lastDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+    onFilters('endDay', lastDate);
+  }, []);
+  // const dayManage = (day) => {
+  //   const currentDate = new Date();
+  //   const nextDay = new Date(new Date().setDate(new Date().getDate() + 1));
+  //   const nextWeek = new Date(new Date().setDate(new Date().getDate() + 7));
 
-  }, [filters.day]);
+  // if (day === 'Next Day') {
+  //   onFilters('startDay', currentDate);
+  //   onFilters('endDay', nextDay);
+  // }
+  // if (day === 'Next Week') {
+  //   onFilters('startDay', currentDate);
+  //   onFilters('endDay', nextWeek);
+  // }
+  // if (day === 'Next Month') {
+  // onFilters('startDay', currentDate);
+  // }
+  // };
+
+  // useEffect(() => {
+  //   if (filters.day !== '') {
+  //     dayManage(filters.day);
+  //   }
+  // }, [filters.day]);
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
@@ -79,7 +80,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
         onFilters('startDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterEndDate = useCallback(
@@ -96,14 +97,14 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
         onFilters('endDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterDays = useCallback(
     (event) => {
       onFilters('day', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   return (
@@ -121,71 +122,71 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
         }}
       >
         <Stack
-          direction='row'
-          alignItems='center'
+          direction="row"
+          alignItems="center"
           spacing={2}
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{ 'input': { height: 7 } }}
+            sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 200 },
-            }}
-          >
-            <InputLabel sx={{
-              mt: -1, '&.MuiInputLabel-shrink': {
-                mt: 0,
-              },
-            }}>Filter by Day</InputLabel>
-            <Select
-              value={filters.day}
-              onChange={handleFilterDays}
-              input={<OutlinedInput label='Filter by Day' sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {days.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {/*<FormControl*/}
+          {/*  sx={{*/}
+          {/*    flexShrink: 0,*/}
+          {/*    width: { xs: 1, sm: 200 },*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <InputLabel sx={{*/}
+          {/*    mt: -1, '&.MuiInputLabel-shrink': {*/}
+          {/*      mt: 0,*/}
+          {/*    },*/}
+          {/*  }}>Filter by Day</InputLabel>*/}
+          {/*  <Select*/}
+          {/*    value={filters.day}*/}
+          {/*    onChange={handleFilterDays}*/}
+          {/*    input={<OutlinedInput label='Filter by Day' sx={{ height: '40px' }} />}*/}
+          {/*    MenuProps={{*/}
+          {/*      PaperProps: {*/}
+          {/*        sx: {*/}
+          {/*          maxHeight: 240,*/}
+          {/*          '&::-webkit-scrollbar': {*/}
+          {/*            width: '5px',*/}
+          {/*          },*/}
+          {/*          '&::-webkit-scrollbar-track': {*/}
+          {/*            backgroundColor: '#f1f1f1',*/}
+          {/*          },*/}
+          {/*          '&::-webkit-scrollbar-thumb': {*/}
+          {/*            backgroundColor: '#888',*/}
+          {/*            borderRadius: '4px',*/}
+          {/*          },*/}
+          {/*          '&::-webkit-scrollbar-thumb:hover': {*/}
+          {/*            backgroundColor: '#555',*/}
+          {/*          },*/}
+          {/*        },*/}
+          {/*      },*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    {days.map((option) => (*/}
+          {/*      <MenuItem key={option} value={option}>*/}
+          {/*        {option}*/}
+          {/*      </MenuItem>*/}
+          {/*    ))}*/}
+          {/*  </Select>*/}
+          {/*</FormControl>*/}
           <DatePicker
-            label='Start date'
+            label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
@@ -198,18 +199,18 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
             }}
             sx={{
               maxWidth: { md: 200 },
-              'label': {
+              label: {
                 mt: -0.8,
                 fontSize: '14px',
               },
               '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              'input': { height: 7 },
+              input: { height: 7 },
             }}
           />
           <DatePicker
-            label='End date'
+            label="End date"
             value={filters.endDate}
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
@@ -228,40 +229,43 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
-              'label': {
+              label: {
                 mt: -0.8,
                 fontSize: '14px',
               },
               '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              'input': { height: 7 },
+              input: { height: 7 },
             }}
           />
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
-          arrow='right-top'
+          arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_reminder_detail', configs, user) && (<>    <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='solar:printer-minimalistic-bold' />
-              Print
-            </MenuItem>
+          {getResponsibilityValue('print_reminder_detail', configs, user) && (
+            <>
+              {' '}
               <MenuItem
                 onClick={() => {
                   popover.onClose();
                 }}
               >
-                <Iconify icon='ant-design:file-pdf-filled' />
+                <Iconify icon="solar:printer-minimalistic-bold" />
+                Print
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="ant-design:file-pdf-filled" />
                 PDF
               </MenuItem>
               <MenuItem
@@ -270,7 +274,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
                   exportToExcel();
                 }}
               >
-                <Iconify icon='icon-park-outline:excel' />
+                <Iconify icon="icon-park-outline:excel" />
                 Export To Excel
               </MenuItem>
             </>
@@ -280,7 +284,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
               popover.onClose();
             }}
           >
-            <Iconify icon='ic:round-whatsapp' />
+            <Iconify icon="ic:round-whatsapp" />
             whatsapp share
           </MenuItem>
         </CustomPopover>

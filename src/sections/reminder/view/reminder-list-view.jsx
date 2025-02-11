@@ -74,7 +74,7 @@ export default function ReminderListView() {
   const dateError = isAfter(filters.startDate, filters.endDate);
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -89,24 +89,22 @@ export default function ReminderListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
-    setFilters({ ...defaultFilters,day:'' });
+    setFilters({ ...defaultFilters, day: '' });
   }, []);
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.reminder_details.list(id));
     },
-    [router],
+    [router]
   );
 
   if (LoanissueLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   const exportToExcel = () => {
@@ -143,7 +141,7 @@ export default function ReminderListView() {
         };
 
         const relatedReminders = reminder.filter(
-          (r) => r?.loan?.customer?._id === loan?.customer?._id && r?.loan?._id === loan?._id,
+          (r) => r?.loan?.customer?._id === loan?.customer?._id && r?.loan?._id === loan?._id
         );
 
         const reminderRows = relatedReminders.map((reminderData, idx) => {
@@ -181,30 +179,31 @@ export default function ReminderListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Reminders'
+          heading="Reminders"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reminder', href: paths.dashboard.reminder.list },
             { name: 'List' },
           ]}
-
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
           <ReminderTableToolbar
-            filters={filters} onFilters={handleFilters} exportToExcel={exportToExcel}
+            filters={filters}
+            onFilters={handleFilters}
+            exportToExcel={exportToExcel}
           />
-          {canReset && (
-            <ReminderTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              onResetFilters={handleResetFilters}
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
+          {/*{canReset && (*/}
+          {/*  <ReminderTableFiltersResult*/}
+          {/*    filters={filters}*/}
+          {/*    onFilters={handleFilters}*/}
+          {/*    onResetFilters={handleResetFilters}*/}
+          {/*    results={dataFiltered.length}*/}
+          {/*    sx={{ p: 2.5, pt: 0 }}*/}
+          {/*  />*/}
+          {/*)}*/}
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -217,13 +216,13 @@ export default function ReminderListView() {
                   onSort={table.onSort}
                 />
                 <TableBody>
-                  {(filters.startDate && filters.endDate || filters.name || filters.startDay && filters.endDay) ? (
+                  {(filters.startDate && filters.endDate) || filters.name || filters.endDay ? (
                     dataFiltered.length > 0 ? (
                       <>
                         {dataFiltered
                           .slice(
                             table.page * table.rowsPerPage,
-                            table.page * table.rowsPerPage + table.rowsPerPage,
+                            table.page * table.rowsPerPage + table.rowsPerPage
                           )
                           .map((row, index) => (
                             <ReminderTableRow
@@ -262,7 +261,7 @@ export default function ReminderListView() {
       </Container>
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
@@ -278,20 +277,21 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>
-        rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) || rem.customer.lastName.toLowerCase().includes(name.toLowerCase()),
+        rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) ||
+        rem.customer.lastName.toLowerCase().includes(name.toLowerCase())
     );
   }
   if (nextInstallmentDay.length) {
     inputData = inputData.filter((rem) => nextInstallmentDay.includes(rem.nextInstallmentDate));
   }
   if (!dateError) {
-    if (startDay && endDay) {
-      inputData = inputData.filter((rem) => isBetween(rem.nextInstallmentDate, startDay, endDay));
+    if (endDay) {
+      inputData = inputData.filter((rem) => new Date(rem.nextInstallmentDate) <= new Date(endDay));
     }
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>
-      isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
+      isBetween(new Date(order.nextInstallmentDate), startDate, endDate)
     );
   }
   return inputData;
