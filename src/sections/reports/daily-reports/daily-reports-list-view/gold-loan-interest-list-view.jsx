@@ -36,12 +36,12 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.', width: '300px' },
+  { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'LoanAmount', label: 'loan amt' },
   { id: 'Rate', label: 'Rate' },
   { id: 'IssueDate', label: 'Issue date' },
-  { id: 'LoanIntAmt', label: 'Loan int. amt'},
+  { id: 'LoanIntAmt', label: 'Loan int. amt' },
   { id: 'From date', label: 'From date' },
   { id: 'To date', label: 'To date' },
   { id: 'Days', label: 'Days' },
