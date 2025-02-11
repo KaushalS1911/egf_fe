@@ -35,8 +35,8 @@ export default function GoldLoanIntrestDetailseTableRow({
       <TableRow hover selected={selected}>
         <TableCell sx={{ width: '1%', textAlign: 'start' }}>{index + 1}</TableCell>
         <TableCell sx={{
-          width: '4%',
-          maxWidth: '4%',
+          width: '7%',
+          maxWidth: '7%',
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
           whiteSpace: 'normal',

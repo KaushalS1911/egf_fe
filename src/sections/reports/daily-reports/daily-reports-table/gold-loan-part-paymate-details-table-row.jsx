@@ -38,11 +38,7 @@ export default function GoldLoanPartPaymateDetailsTableRow({
       <TableRow hover selected={selected}>
         <TableCell sx={{ width: '1%' }}>{index + 1}</TableCell>
         <TableCell sx={{
-          width: '8%',
-          maxWidth: '8%',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-          whiteSpace: 'normal',
+          width: '7%',
         }}>
           {loanNo}
         </TableCell>
