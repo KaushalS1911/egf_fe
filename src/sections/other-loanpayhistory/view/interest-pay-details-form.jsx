@@ -229,13 +229,12 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
     const calculatedDate = new Date(date);
     const calculatedDateRenewalDate = new Date(renewalDate);
-
     if (id) {
       calculatedDate.setMonth(calculatedDate.getMonth() - monthsToAdd);
-      calculatedDateRenewalDate.setMonth(calculatedDate.getMonth() - monthsToAdd);
+      calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() - monthsToAdd);
     } else {
       calculatedDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
-      calculatedDateRenewalDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
+      calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() + monthsToAdd);
     }
 
     if (calculatedDate && calculatedDateRenewalDate) {
@@ -251,7 +250,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
         )
         .then((response) => {
           console.log(response);
-          refetchOtherLoanInterest;
+          mutate();
+          refetchOtherLoanInterest();
         })
         .catch((error) => {
           console.log(error);
@@ -291,10 +291,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
     const payload = {
       to: new Date(data.to),
-      from:
-        currentOtherLoan?.loan?.issueDate && otherLoanInterest?.length === 0
-          ? new Date(watch('from'))
-          : new Date(Number(data.from)),
+      from: new Date(data.from),
       days: data.days,
       amountPaid: data.amountPaid,
       interestAmount: data.interestAmount,
