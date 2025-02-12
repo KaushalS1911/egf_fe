@@ -12,7 +12,6 @@ import { useGetConfigs } from '../../../api/config';
 import { getResponsibilityValue } from '../../../permission/permission';
 import Label from '../../../components/label';
 import { fDate } from '../../../utils/format-time';
-import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
@@ -21,9 +20,7 @@ export default function AllBranchLoanSummaryTableRow({
                                                        index,
                                                        selected,
                                                        onEditRow,
-                                                       onSelectRow,
                                                        onDeleteRow,
-                                                       handleClick,
                                                      }) {
   const {
     loanNo,
@@ -44,33 +41,32 @@ export default function AllBranchLoanSummaryTableRow({
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const calculateDateDifference = (date1, date2) => {
-    const diffDays = moment(date1).diff(moment(date2), 'days');
-    return Math.abs(diffDays);
-  };
 
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{index + 1}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{loanNo}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '2%' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{(scheme?.interestRate).toFixed(2)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge.toFixed(2)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalPaidInterest.toFixed(2)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{day > 0 ? day : 0}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate) || '-'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{customer?.contact}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{(scheme?.interestRate).toFixed(2)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{consultingCharge.toFixed(2)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{
+          fontSize: '12px',
+          width: '0%',
+        }}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{interestLoanAmount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{totalPaidInterest.toFixed(2)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{day > 0 ? day : 0}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(nextInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>
           <Label
             variant='soft'
             color={

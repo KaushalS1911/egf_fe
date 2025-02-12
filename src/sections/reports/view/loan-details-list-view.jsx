@@ -24,23 +24,19 @@ import LoanPartPaymentDetailsListView
   from '../loan-details/loan-details-list-view/loan-part-payment-details-list-view';
 import LoanCloseDetailsListView from '../loan-details/loan-details-list-view/loan-close-details-list-view';
 import { useGetSingleLoan } from '../../../api/single-loan-details';
-import LoanDetailTableToolbarTableToolbar from '../loan-details/loan-details-table/loan-detail-table-toolbar-table-toolbar';
+import LoanDetailTableToolbarTableToolbar
+  from '../loan-details/loan-details-table/loan-detail-table-toolbar-table-toolbar';
 import { LoadingScreen } from '../../../components/loading-screen/index.js';
 
 // ----------------------------------------------------------------------
 
-
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
-  value: 'Issued',
-  label: 'Issued',
-}, { value: 'Disbursed', label: 'Disbursed' }];
 const defaultFilters = {
   username: '',
   status: 'All',
   startDate: new Date(),
   endDate: null,
   branch: '',
-  loan:''
+  loan: '',
 };
 
 // ----------------------------------------------------------------------
@@ -54,8 +50,8 @@ export default function LoanDetailsListView() {
   const router = useRouter();
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
-  const loan = filters?.loan
-  const {loanDetail,loanDetailLoading} = useGetSingleLoan(loan)
+  const loan = filters?.loan;
+  const { loanDetail, loanDetailLoading } = useGetSingleLoan(loan);
   const params = new URLSearchParams();
   // if (filters.branch._id) params.append('branch', filters.branch._id);
   // if (filters.startDate) params.append('date', filters.startDate.toLocaleDateString());
@@ -119,7 +115,7 @@ export default function LoanDetailsListView() {
       <LoadingScreen />
     );
   }
-  console.log(loanDetail?.partReleaseDetail,"..3.3.3.33.3.3.3.3..33...33.3.3..33..3.3.3.3");
+  console.log(loanDetail?.partReleaseDetail, '..3.3.3.33.3.3.3.3..33...33.3.3..33..3.3.3.3');
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -138,21 +134,21 @@ export default function LoanDetailsListView() {
 
         <Card sx={{ pb: 3 }}>
           <LoanDetailTableToolbarTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
-                                                configs={configs} />
+                                              configs={configs} />
           <Box>
-            <LoanInterestDetailsListView interestDetail={loanDetail?.interestDetail || []}/>
+            <LoanInterestDetailsListView interestDetail={loanDetail?.interestDetail || []} />
           </Box>
           <Box mt={2}>
-            <LoanPartReleaseDetailsListView partReleaseDetail = {loanDetail?.partReleaseDetail || []}/>
+            <LoanPartReleaseDetailsListView partReleaseDetail={loanDetail?.partReleaseDetail || []} />
           </Box>
           <Box mt={2}>
-            <LoanUchakPayDetailsListView uchakInterestDetail={loanDetail?.uchakInterestDetail || []}/>
+            <LoanUchakPayDetailsListView uchakInterestDetail={loanDetail?.uchakInterestDetail || []} />
           </Box>
           <Box mt={2}>
-            <LoanPartPaymentDetailsListView partPaymentDetail={loanDetail?.partPaymentDetail || []}/>
+            <LoanPartPaymentDetailsListView partPaymentDetail={loanDetail?.partPaymentDetail || []} />
           </Box>
           <Box mt={2}>
-            <LoanCloseDetailsListView loanCloseDetail={loanDetail?.loanCloseDetail || []}/>
+            <LoanCloseDetailsListView loanCloseDetail={loanDetail?.loanCloseDetail || []} />
           </Box>
         </Card>
 

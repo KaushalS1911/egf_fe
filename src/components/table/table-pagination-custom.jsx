@@ -11,7 +11,7 @@ export default function TablePaginationCustom({
                                                 dense,
                                                 onChangeDense,
                                                 count,
-                                                rowsPerPageOptions = [5, 10, 25, { label: 'All', value: count }],
+                                                rowsPerPageOptions = [10, 30, 50, { label: 'All', value: count }],
                                                 rowsPerPage,
                                                 onChangePage,
                                                 onChangeRowsPerPage,
@@ -26,7 +26,7 @@ export default function TablePaginationCustom({
     <Box sx={{ position: 'relative', ...sx }}>
       <TablePagination
         rowsPerPageOptions={rowsPerPageOptions}
-        component="div"
+        component='div'
         count={count}
         rowsPerPage={rowsPerPage}
         onPageChange={onChangePage}
@@ -39,7 +39,7 @@ export default function TablePaginationCustom({
 
       {onChangeDense && (
         <FormControlLabel
-          label="Dense"
+          label='Dense'
           control={<Switch checked={dense} onChange={onChangeDense} />}
           sx={{
             pl: 2,
@@ -59,7 +59,7 @@ TablePaginationCustom.propTypes = {
   dense: PropTypes.bool,
   onChangeDense: PropTypes.func,
   rowsPerPageOptions: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.shape({ label: PropTypes.string, value: PropTypes.number })])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.shape({ label: PropTypes.string, value: PropTypes.number })]),
   ),
   count: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,

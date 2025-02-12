@@ -43,7 +43,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   const { penalty } = useGetPenalty();
   const [paymentMode, setPaymentMode] = useState('');
   const [data, setData] = useState(null);
-  console.log(data, '000');
   const view = useBoolean();
   const { branch } = useGetBranch();
   const confirm = useBoolean();

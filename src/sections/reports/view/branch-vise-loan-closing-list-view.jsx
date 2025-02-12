@@ -274,7 +274,7 @@ export default function BranchViseLoanClosingListView() {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 2000 }}>
+              <Table size={table.dense ? 'small' : 'medium'}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -282,9 +282,7 @@ export default function BranchViseLoanClosingListView() {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -303,31 +301,26 @@ export default function BranchViseLoanClosingListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -356,7 +349,7 @@ export default function BranchViseLoanClosingListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch,closedBy} = filters;
+  const { username, status, startDate, endDate, branch, closedBy } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -374,8 +367,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.contact.toLowerCase().includes(username.toLowerCase()),
     );
   }
-  if(closedBy){
-    inputData = inputData.filter((item) => item?.closedBy?._id === closedBy?.value)
+  if (closedBy) {
+    inputData = inputData.filter((item) => item?.closedBy?._id === closedBy?.value);
   }
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
