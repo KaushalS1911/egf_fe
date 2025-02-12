@@ -240,14 +240,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    const mainbranchid = branch?.find((e) => e?._id === customerData?.branch?._id);
+
     if (!data.property_image) {
       enqueueSnackbar('Please select property image.', {
         variant: 'error',
       });
       return;
     }
+
     const propertyDetails = watch('propertyDetails');
     const payload = new FormData();
+    payload.append('series', mainbranchid?.series);
     payload.append('company', user.company);
     payload.append('customer', data.customer.id);
     payload.append('scheme', data?.scheme?._id);
