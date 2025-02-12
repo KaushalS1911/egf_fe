@@ -292,10 +292,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
     const payload = {
       to: new Date(data.to),
-      from:
-        currentOtherLoan?.loan?.issueDate && otherLoanInterest?.length === 0
-          ? new Date(watch('from'))
-          : new Date(Number(data.from)),
+      from: new Date(data.from),
       days: data.days,
       amountPaid: data.amountPaid,
       interestAmount: data.interestAmount,
