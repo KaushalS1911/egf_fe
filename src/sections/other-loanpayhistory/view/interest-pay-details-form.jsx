@@ -106,10 +106,9 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   });
   const defaultValues = {
     from: currentOtherLoan?.date ? new Date(currentOtherLoan?.date) : new Date(),
-    to:
-      new Date(currentOtherLoan?.renewalDate) > new Date()
-        ? new Date(currentOtherLoan?.renewalDate)
-        : new Date(),
+    to: new Date(currentOtherLoan?.renewalDate)
+      ? new Date(currentOtherLoan?.renewalDate)
+      : new Date(),
     days: '',
     amountPaid: '',
     interest: currentOtherLoan?.percentage,
@@ -150,15 +149,10 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     const fromDate = watch('from');
 
     if (toDate && fromDate) {
-      // Calculate the difference in milliseconds
       const diffTime = new Date(toDate) - new Date(fromDate);
-
-      // Convert the difference to days
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
       setValue('days', diffDays);
     } else {
-      // Reset to 0 if one of the dates is missing
       setValue('days', 0);
     }
   }, [watch('to'), watch('from')]);
@@ -226,7 +220,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   //     (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2)
   //   );
   // }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
-  const updateRenewalDate = () => {
+  const updateRenewalDate = (id) => {
     const date = currentOtherLoan.date;
     const renewalDate = currentOtherLoan.renewalDate;
     const month = currentOtherLoan.month;
@@ -235,9 +229,15 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       month === 'MONTHLY' ? 1 : month === 'YEARLY' ? 12 : parseInt(month.split(' ')[0], 10) || 0;
 
     const calculatedDate = new Date(date);
-    calculatedDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
     const calculatedDateRenewalDate = new Date(renewalDate);
-    calculatedDateRenewalDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
+
+    if (id) {
+      calculatedDate.setMonth(calculatedDate.getMonth() - monthsToAdd);
+      calculatedDateRenewalDate.setMonth(calculatedDate.getMonth() - monthsToAdd);
+    } else {
+      calculatedDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
+      calculatedDateRenewalDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
+    }
 
     if (calculatedDate && calculatedDateRenewalDate) {
       const payload = {
@@ -365,6 +365,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       );
       setDeleteId(null);
       confirm.onFalse();
+      updateRenewalDate(id);
       refetchOtherLoanInterest();
       mutate();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
