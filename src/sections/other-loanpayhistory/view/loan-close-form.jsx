@@ -29,11 +29,13 @@ import { useGetCloseLoan } from '../../../api/loan-close';
 import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetOtherCloseLoan } from '../../../api/other-loan-close.js';
+import { fDate } from '../../../utils/format-time.js';
 
 const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
   { id: 'closingCharge', label: 'Closing Charge' },
+  { id: 'closinCharge', label: 'Closing charge' },
   { id: 'remark', label: 'Remark' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -397,6 +399,9 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.closingCharge || '-'}
+              </TableCell>{' '}
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {fDate(row.createdAt) || '-'}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.remark || '-'}

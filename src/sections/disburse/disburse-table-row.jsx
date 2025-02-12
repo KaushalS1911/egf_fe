@@ -27,44 +27,56 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-        {getResponsibilityValue('create_disburse', configs, user) ? <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            <Link
-              to={paths.dashboard.disburse.new(_id)}
-              style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}
-            >
-              {loanNo}
-            </Link>
-          </TableCell> :
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {loanNo}
-          </TableCell>}
-        <TableCell
-          sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
+        {/*{getResponsibilityValue('create_disburse', configs, user) ? <TableCell sx={{ whiteSpace: 'nowrap' }}>*/}
+        {/*    <Link*/}
+        {/*      to={paths.dashboard.disburse.new(_id)}*/}
+        {/*      style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}*/}
+        {/*    >*/}
+        {/*      {loanNo}*/}
+        {/*    </Link>*/}
+        {/*  </TableCell> :*/}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+        {/*}*/}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-        {getResponsibilityValue('create_disburse', configs, user) && <Button
-          onClick={() => router.push(paths.dashboard.disburse.new(row._id))}
-          sx={{ my: 2, textWrap: 'nowrap', fontSize: '11px' }}
-          variant='outlined'
-          disabled={row?.status !== 'Issued'}
-          startIcon={<Iconify sx={{ width: '15px' }} icon='mingcute:add-line' />}
-        >
-          Loan Disburse
-        </Button> || ''}
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('update_disburse', configs, user) || getResponsibilityValue('update_disburse', configs, user) ?
+        {(getResponsibilityValue('create_disburse', configs, user) && (
+          <Button
+            onClick={() => router.push(paths.dashboard.disburse.new(row._id))}
+            sx={{ my: 2, textWrap: 'nowrap', fontSize: '11px' }}
+            variant="outlined"
+            disabled={row?.status !== 'Issued'}
+            startIcon={<Iconify sx={{ width: '15px' }} icon="mingcute:add-line" />}
+          >
+            Loan Disburse
+          </Button>
+        )) ||
+          ''}
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {getResponsibilityValue('update_disburse', configs, user) ||
+          getResponsibilityValue('update_disburse', configs, user) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : '-'}
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            '-'
+          )}
         </TableCell>
       </TableRow>
-      <CustomPopover open={popover.open} onClose={popover.onClose} arrow='right-top' sx={{ width: 140 }}>
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 140 }}
+      >
         {getResponsibilityValue('delete_disburse', configs, user) && (
           <MenuItem
             onClick={() => {
@@ -73,7 +85,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
             }}
             sx={{ color: 'error.main' }}
           >
-            <Iconify icon='solar:trash-bin-trash-bold' />
+            <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
           </MenuItem>
         )}
@@ -84,7 +96,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
               popover.onClose();
             }}
           >
-            <Iconify icon='solar:pen-bold' />
+            <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>
         )}
@@ -92,10 +104,10 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

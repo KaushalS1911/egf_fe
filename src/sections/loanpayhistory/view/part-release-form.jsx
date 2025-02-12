@@ -202,12 +202,12 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     const amountPaid = watch('amountPaid');
     const adjustAmt = Number(watch('adjustAmount'));
 
-    if (adjustAmt > amountPaid + 500) {
-      enqueueSnackbar(`Amount Paid must be less than ${netAmount + 500}.`, {
-        variant: 'error',
-      });
-      return;
-    }
+    // if (adjustAmt > amountPaid + 500) {
+    //   enqueueSnackbar(`Amount Paid must be less than ${netAmount + 500}.`, {
+    //     variant: 'error',
+    //   });
+    //   return;
+    // }
     if (adjustAmt < amountPaid - 500) {
       enqueueSnackbar(`Amount Paid must be grater than ${netAmount - 500}.`, {
         variant: 'error',

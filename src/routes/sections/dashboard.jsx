@@ -41,36 +41,65 @@ const PropertyEditView = lazy(() => import('../../sections/property/view/propert
 const PropertyCreateView = lazy(() => import('../../sections/property/view/property-create-view'));
 const PropertyListView = lazy(() => import('../../sections/property/view/property-list-view'));
 //LOAN PAY HISTORY
-const LoanpayhistoryListView = lazy(() => import('../../sections/loanpayhistory/view/loanpayhistory-list-view'));
-const LoanpayhistoryCreateView = lazy(() => import('../../sections/loanpayhistory/view/loanpayhistory-create-view'));
-const BulkInterestPay = lazy(() => import('../../sections/loanpayhistory/bulk-interest-pay/bulk-interest-pay'));
+const LoanpayhistoryListView = lazy(
+  () => import('../../sections/loanpayhistory/view/loanpayhistory-list-view')
+);
+const LoanpayhistoryCreateView = lazy(
+  () => import('../../sections/loanpayhistory/view/loanpayhistory-create-view')
+);
+const BulkInterestPay = lazy(
+  () => import('../../sections/loanpayhistory/bulk-interest-pay/bulk-interest-pay')
+);
 //LOAN PAY HISTORY
-const OtherLoanpayhistoryListView = lazy(() => import('../../sections/other-loanpayhistory/view/other-loanpayhistory-list-view'));
-const OtherLoanpayhistoryCreateView = lazy(() => import('../../sections/other-loanpayhistory/view/other-loanpayhistory-create-view'));
-const OtherBulkInterestPay = lazy(() => import('../../sections/other-loanpayhistory/bulk-interest-pay/bulk-interest-pay'));
+const OtherLoanpayhistoryListView = lazy(
+  () => import('../../sections/other-loanpayhistory/view/other-loanpayhistory-list-view')
+);
+const OtherLoanpayhistoryCreateView = lazy(
+  () => import('../../sections/other-loanpayhistory/view/other-loanpayhistory-create-view')
+);
+const OtherBulkInterestPay = lazy(
+  () => import('../../sections/other-loanpayhistory/bulk-interest-pay/bulk-interest-pay')
+);
 // PENALTY
 const PenaltyListView = lazy(() => import('../../sections/penalty/view/penalty-list-view'));
 const PenaltyCreateview = lazy(() => import('../../sections/penalty/view/penalty-create-view'));
 const PenaltyEditView = lazy(() => import('../../sections/penalty/view/penalty-edit-view'));
 // DISBURSE
 const DisburseCreateView = lazy(() => import('../../sections/disburse/view/disburse-create-view'));
+const DisburseEditView = lazy(() => import('../../sections/disburse/view/disburse-edit-view.jsx'));
 const DisburseListView = lazy(() => import('../../sections/disburse/view/disburse-list-view'));
 // REMINDER
 const ReminderListView = lazy(() => import('../../sections/reminder/view/reminder-list-view'));
 // LOAN ISSUE
 const LoanissueEditView = lazy(() => import('../../sections/loanissue/view/loanissue-edit-view'));
-const LoanissueCreateView = lazy(() => import('../../sections/loanissue/view/loanissue-create-view'));
+const LoanissueCreateView = lazy(
+  () => import('../../sections/loanissue/view/loanissue-create-view')
+);
 const LoanissueListView = lazy(() => import('../../sections/loanissue/view/loanissue-list-view'));
 // OTHER LOAN ISSUE
-const OtherLoanissueEditView = lazy(() => import('../../sections/other-loanissue/view/other-loanissue-edit-view'));
-const OtherLoanissueCreateView = lazy(() => import('../../sections/other-loanissue/view/other-loanissue-create-view'));
-const OtherLoanissueListView = lazy(() => import('../../sections/other-loanissue/view/other-loanissue-list-view'));
+const OtherLoanissueEditView = lazy(
+  () => import('../../sections/other-loanissue/view/other-loanissue-edit-view')
+);
+const OtherLoanissueCreateView = lazy(
+  () => import('../../sections/other-loanissue/view/other-loanissue-create-view')
+);
+const OtherLoanissueListView = lazy(
+  () => import('../../sections/other-loanissue/view/other-loanissue-list-view')
+);
 // REMINDER-DETAILS
-const ReminderDetailsListView = lazy(() => import('../../sections/reminder/view/reminder-details-list-view'));
+const ReminderDetailsListView = lazy(
+  () => import('../../sections/reminder/view/reminder-details-list-view')
+);
 //REPORTS
-const AllBranchLoanSummaryListView = lazy(() => import('../../sections/reports/view/all-branch-loan-summary-list-view'));
-const BranchViseLoanClosingListView = lazy(() => import('../../sections/reports/view/branch-vise-loan-closing-list-view'));
-const DailyReportsListView = lazy(() => import(`../../sections/reports/view/daily-reports-list-view`));
+const AllBranchLoanSummaryListView = lazy(
+  () => import('../../sections/reports/view/all-branch-loan-summary-list-view')
+);
+const BranchViseLoanClosingListView = lazy(
+  () => import('../../sections/reports/view/branch-vise-loan-closing-list-view')
+);
+const DailyReportsListView = lazy(
+  () => import(`../../sections/reports/view/daily-reports-list-view`)
+);
 const LoanDetailListView = lazy(() => import('../../sections/reports/view/loan-details-list-view'));
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
@@ -149,6 +178,7 @@ export const dashboardRoutes = [
           { element: <DisburseListView />, index: true },
           { path: 'list', element: <DisburseListView /> },
           { path: ':id/new', element: <DisburseCreateView /> },
+          { path: ':id/edit', element: <DisburseEditView /> },
         ],
       },
       {

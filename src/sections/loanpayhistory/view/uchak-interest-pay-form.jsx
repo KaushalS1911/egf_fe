@@ -40,6 +40,10 @@ const TABLE_HEAD = [
     id: 'uchakIntAmt',
     label: 'Uchak Int Amt',
   },
+  {
+    id: 'entryDate',
+    label: 'Entry Date',
+  },
   { id: 'remark', label: 'Remarks' },
   { id: 'action', label: 'Action' },
   { id: 'PDF', label: 'PDF' },
@@ -408,6 +412,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
               <TableRow key={index}>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{fDate(row.date)}</TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.amountPaid}</TableCell>
+                <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.remark}</TableCell>
                 {getResponsibilityValue('delete_uchak_interest', configs, user) ? (
                   <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>

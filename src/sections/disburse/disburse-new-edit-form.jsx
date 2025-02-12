@@ -19,6 +19,7 @@ import axios from 'axios';
 import { paths } from '../../routes/paths';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import { TableHeadCustom, useTable } from '../../components/table';
+import { useAuthContext } from '../../auth/hooks/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -31,13 +32,14 @@ const TABLE_HEAD = [
   { id: 'loanApplicableAmount', label: 'Loan Applicable amount', width: 200 },
 ];
 
-export default function DisburseNewEditForm({ currentDisburse }) {
+export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   const router = useRouter();
   const table = useTable();
   const { enqueueSnackbar } = useSnackbar();
   const { branch } = useGetBranch();
   const [cashPendingAmt, setCashPendingAmt] = useState(0);
   const [bankPendingAmt, setBankPendingAmt] = useState(0);
+  const { user } = useAuthContext();
 
   const paymentSchema =
     currentDisburse.paymentMode === 'Bank'
@@ -139,7 +141,7 @@ export default function DisburseNewEditForm({ currentDisburse }) {
   useEffect(() => {
     setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
-
+  console.log(currentDisburse, '00000000');
   const onSubmit = handleSubmit(async (data) => {
     try {
       const payload = {
@@ -153,8 +155,17 @@ export default function DisburseNewEditForm({ currentDisburse }) {
         payingCashAmount: data.payingCashAmount,
         approvalCharge: data.approvalCharge,
       };
+      if (currentDisburse.status === 'Disbursed') {
+        alert('0000000');
+        const res = await axios.put(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`,
+          payload
+        );
+        mutate();
+      } else {
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
+      }
 
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
       router.push(paths.dashboard.disburse.list);
       enqueueSnackbar(res?.data.message);
       reset();
@@ -465,13 +476,13 @@ export default function DisburseNewEditForm({ currentDisburse }) {
               )}
             </Stack>
           </Card>
-          {currentDisburse.status === 'Issued' && (
+          {currentDisburse.status === 'Issued' || currentDisburse.status === 'Disbursed' ? (
             <Stack alignItems={'end'} mt={3}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                Submit
+                {currentDisburse.status === 'Disbursed' ? 'Save' : 'Submit'}
               </LoadingButton>
             </Stack>
-          )}
+          ) : null}
         </Grid>
       </Grid>
     </FormProvider>

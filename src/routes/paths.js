@@ -185,6 +185,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/disburse`,
       list: `${ROOTS.DASHBOARD}/disburse/list`,
       new: (id) => `${ROOTS.DASHBOARD}/disburse/${id}/new`,
+      edit: (id) => `${ROOTS.DASHBOARD}/disburse/${id}/edit`,
     },
     reminder: {
       list: `${ROOTS.DASHBOARD}/reminder/list`,

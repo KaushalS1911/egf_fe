@@ -35,6 +35,7 @@ const TABLE_HEAD = [
   { id: 'to', label: 'To Date' },
   { id: 'days', label: 'Days' },
   { id: 'amountPaid', label: 'amountPaid' },
+  { id: 'EntryDate', label: 'Entry Date' },
   { id: 'action', label: 'Action' },
   { id: 'pdf', label: 'PDF' },
 ];
@@ -552,6 +553,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                   <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.to)}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
+                  <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>
                     {
                       <IconButton
