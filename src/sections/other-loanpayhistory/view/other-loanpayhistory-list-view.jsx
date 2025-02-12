@@ -203,7 +203,11 @@ export default function LoanpayhistoryListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{
+            maxHeight: 500,
+            overflow: 'auto',
+            position: 'relative',
+          }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -222,42 +226,47 @@ export default function LoanpayhistoryListView() {
                 </Tooltip>
               }
             />
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 1700 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 1700 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white',
+                  zIndex: 1000,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                }}
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage,
+                  )
+                  .map((row, index) => (
+                    <OtherLoanpayhistoryTableRow
+                      key={row._id}
+                      index={index}
+                      row={row}
+                      loanStatus={filters.status}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
-                    )
-                    .map((row, index) => (
-                      <OtherLoanpayhistoryTableRow
-                        key={row._id}
-                        index={index}
-                        row={row}
-                        loanStatus={filters.status}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
           </TableContainer>
           <TablePaginationCustom
             count={dataFiltered.length}

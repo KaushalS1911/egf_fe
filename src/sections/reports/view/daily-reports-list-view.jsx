@@ -49,7 +49,8 @@ import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-vie
 import GoldLoanUchakPaymentTableRow from '../daily-reports/daily-reports-table/gold-loan-uchak-payment-table-row';
 import GoldLoanUchakPartListView from '../daily-reports/daily-reports-list-view/gold-loan-uchak-part-list-view';
 import { useGetAllInterest } from '../../../api/interest-pay';
-import DailyReportsTableToolbarTableToolbar from '../daily-reports/daily-reports-table/daily-reports-table-toolbar-table-toolbar';
+import DailyReportsTableToolbarTableToolbar
+  from '../daily-reports/daily-reports-table/daily-reports-table-toolbar-table-toolbar';
 import { useGetDailyReport } from '../../../api/daily-report';
 
 // ----------------------------------------------------------------------
@@ -79,15 +80,15 @@ export default function DailyReportsListView() {
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
   const params = new URLSearchParams();
-  if(filters.branch._id) params.append('branch',filters.branch._id)
-  if(filters.startDate) params.append('date',filters.startDate.toLocaleDateString())
+  if (filters.branch._id) params.append('branch', filters.branch._id);
+  if (filters.startDate) params.append('date', filters.startDate.toLocaleDateString());
   // if(filters.username) params.append('username',filters.username)
   const date = (filters.startDate).toLocaleDateString();
-  const{report,reportLoading} = useGetDailyReport(params)
+  const { report, reportLoading } = useGetDailyReport(params);
   const [tableData, setTableData] = useState(report);
 
   const dataFiltered = applyFilter({
-    inputData: report ,
+    inputData: report,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -111,8 +112,6 @@ export default function DailyReportsListView() {
     },
     [table],
   );
-
-
 
 
   // const loans = Loanissue.map((item) => ({
@@ -160,19 +159,19 @@ export default function DailyReportsListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card sx={{ pb: 3 }}>
-          <DailyReportsTableToolbarTableToolbar filters={filters} onFilters={handleFilters}  dataFilter={dataFiltered} configs={configs}/>
+          <DailyReportsTableToolbarTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
+                                                configs={configs} />
           <Box>
-             <NewGoldLonListView LoanIssue={dataFiltered?.loans} />
+            <NewGoldLonListView LoanIssue={dataFiltered?.loans} />
           </Box>
           <Box mt={2}>
-            <GoldLoanInterestListView  interestDetail={report?.interestDetail}/>
+            <GoldLoanInterestListView interestDetail={report?.interestDetail} />
           </Box>
           <Box mt={2}>
             <GoldLoanPartPaymentListView partPayment={report?.partReleaseDetail} />
           </Box> <Box mt={2}>
-          <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail}/>
+          <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
         </Box>
         </Card>
       </Container>
@@ -223,7 +222,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   //   );
   // }
   // if (status && status !== 'All') {
-    // inputData = inputData.filter((item) => item.status === status);
+  // inputData = inputData.filter((item) => item.status === status);
   // }
   // if (branch) {
   //   inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);

@@ -112,7 +112,7 @@ export default function LoanpayhistoryListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
+    table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -127,7 +127,7 @@ export default function LoanpayhistoryListView() {
         [name]: value,
       }));
     },
-    [table]
+    [table],
   );
 
   const handleResetFilters = useCallback(() => {
@@ -151,7 +151,7 @@ export default function LoanpayhistoryListView() {
     (event, newValue) => {
       handleFilters('status', newValue);
     },
-    [handleFilters]
+    [handleFilters],
   );
 
   const handleDeleteRow = useCallback(
@@ -161,7 +161,7 @@ export default function LoanpayhistoryListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage.length, enqueueSnackbar, table, tableData],
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -180,7 +180,7 @@ export default function LoanpayhistoryListView() {
     (id) => {
       router.push(paths.dashboard.loanPayHistory.edit(id));
     },
-    [router]
+    [router],
   );
 
   if (LoanissueLoading) {
@@ -191,7 +191,7 @@ export default function LoanpayhistoryListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Loan pay history"
+          heading='Loan pay history'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Loan Pay History', href: paths.dashboard.loanPayHistory.root },
@@ -202,7 +202,7 @@ export default function LoanpayhistoryListView() {
           }}
           action={
             getResponsibilityValue('bulk_interest_pay', configs, user) && (
-              <Button variant="contained" onClick={() => setOpen(true)}>
+              <Button variant='contained' onClick={() => setOpen(true)}>
                 Bulk Interest Pay
               </Button>
             )
@@ -220,7 +220,7 @@ export default function LoanpayhistoryListView() {
             {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
-                iconPosition="end"
+                iconPosition='end'
                 value={tab.value}
                 label={tab.label}
                 icon={
@@ -257,7 +257,11 @@ export default function LoanpayhistoryListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{
+            maxHeight: 500,
+            overflow: 'auto',
+            position: 'relative',
+          }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -265,53 +269,58 @@ export default function LoanpayhistoryListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row.id),
                 )
               }
               action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                <Tooltip title='Delete'>
+                  <IconButton color='primary' onClick={confirm.onTrue}>
+                    <Iconify icon='solar:trash-bin-trash-bold' />
                   </IconButton>
                 </Tooltip>
               }
             />
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white',
+                  zIndex: 1000,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                }}
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage,
+                  )
+                  .map((row, index) => (
+                    <LoanpayhistoryTableRow
+                      key={row?._id}
+                      index={index}
+                      row={row}
+                      loanStatus={filters?.status}
+                      selected={table.selected.includes(row?._id)}
+                      onSelectRow={() => table.onSelectRow(row?._id)}
+                      onDeleteRow={() => handleDeleteRow(row?._id)}
+                      onEditRow={() => handleEditRow(row?._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row, index) => (
-                      <LoanpayhistoryTableRow
-                        key={row?._id}
-                        index={index}
-                        row={row}
-                        loanStatus={filters?.status}
-                        selected={table.selected.includes(row?._id)}
-                        onSelectRow={() => table.onSelectRow(row?._id)}
-                        onDeleteRow={() => handleDeleteRow(row?._id)}
-                        onEditRow={() => handleEditRow(row?._id)}
-                      />
-                    ))}
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
           </TableContainer>
           <TablePaginationCustom
             count={dataFiltered.length}
@@ -328,7 +337,7 @@ export default function LoanpayhistoryListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title='Delete'
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -336,8 +345,8 @@ export default function LoanpayhistoryListView() {
         }
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -370,7 +379,7 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
     );
   }
 

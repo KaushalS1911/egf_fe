@@ -115,7 +115,7 @@ export default function LoanDetailsListView() {
       <LoadingScreen />
     );
   }
-  console.log(loanDetail?.partReleaseDetail, '..3.3.3.33.3.3.3.3..33...33.3.3..33..3.3.3.3');
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -131,7 +131,6 @@ export default function LoanDetailsListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card sx={{ pb: 3 }}>
           <LoanDetailTableToolbarTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
                                               configs={configs} />
@@ -151,9 +150,7 @@ export default function LoanDetailsListView() {
             <LoanCloseDetailsListView loanCloseDetail={loanDetail?.loanCloseDetail || []} />
           </Box>
         </Card>
-
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

@@ -83,7 +83,7 @@ export default function OtherLoanissueListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
+    table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -98,7 +98,7 @@ export default function OtherLoanissueListView() {
         [name]: value,
       }));
     },
-    [table]
+    [table],
   );
 
   const handleResetFilters = useCallback(() => {
@@ -115,7 +115,7 @@ export default function OtherLoanissueListView() {
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loans`,
         {
           data: { ids: id },
-        }
+        },
       );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
@@ -132,7 +132,7 @@ export default function OtherLoanissueListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage.length, enqueueSnackbar, table, tableData],
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -150,14 +150,14 @@ export default function OtherLoanissueListView() {
     (id) => {
       router.push(paths.dashboard.other_loanissue.edit(id));
     },
-    [router]
+    [router],
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router]
+    [router],
   );
 
   // const loans = otherLoanissue.map((item) => ({
@@ -192,7 +192,7 @@ export default function OtherLoanissueListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Other Issued Loans"
+          heading='Other Issued Loans'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Other Loan Issue', href: paths.dashboard.other_loanissue.root },
@@ -204,8 +204,8 @@ export default function OtherLoanissueListView() {
                 <Button
                   component={RouterLink}
                   href={paths.dashboard.other_loanissue.new}
-                  variant="contained"
-                  startIcon={<Iconify icon="mingcute:add-line" />}
+                  variant='contained'
+                  startIcon={<Iconify icon='mingcute:add-line' />}
                 >
                   Add Other Loan issue
                 </Button>
@@ -227,7 +227,11 @@ export default function OtherLoanissueListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{
+            maxHeight: 500,
+            overflow: 'auto',
+            position: 'relative',
+          }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -235,58 +239,63 @@ export default function OtherLoanissueListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id)
+                  dataFiltered.map((row) => row._id),
                 )
               }
               action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                <Tooltip title='Delete'>
+                  <IconButton color='primary' onClick={confirm.onTrue}>
+                    <Iconify icon='solar:trash-bin-trash-bold' />
                   </IconButton>
                 </Tooltip>
               }
             />
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row._id)
-                    )
-                  }
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id),
+                  )
+                }
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white',
+                  zIndex: 1000,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                }}
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage,
+                  )
+                  .map((row) => (
+                    <OtherLoanissueTableRow
+                      key={row._id}
+                      row={row}
+                      handleClick={() => handleClick(row._id)}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OtherLoanissueTableRow
-                        key={row._id}
-                        row={row}
-                        handleClick={() => handleClick(row._id)}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
           </TableContainer>
           <TablePaginationCustom
             count={dataFiltered.length}
@@ -302,7 +311,7 @@ export default function OtherLoanissueListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title='Delete'
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -310,8 +319,8 @@ export default function OtherLoanissueListView() {
         }
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -343,7 +352,7 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
     );
   }
   return inputData;

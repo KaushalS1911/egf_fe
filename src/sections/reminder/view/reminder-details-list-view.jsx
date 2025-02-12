@@ -174,7 +174,11 @@ export default function ReminderDetailsListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{
+            maxHeight: 500,
+            overflow: 'auto',
+            position: 'relative',
+          }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -193,7 +197,6 @@ export default function ReminderDetailsListView() {
                 </Tooltip>
               }
             />
-            <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
@@ -208,6 +211,13 @@ export default function ReminderDetailsListView() {
                       dataFiltered.map((row) => row._id),
                     )
                   }
+                  sx={{
+                    position: 'sticky',
+                    top: 0,
+                    backgroundColor: 'white',
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
                 />
                 <TableBody>
                   <>      {dataFiltered
@@ -235,7 +245,6 @@ export default function ReminderDetailsListView() {
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
-            </Scrollbar>
           </TableContainer>
           <TablePaginationCustom
             count={dataFiltered.length}

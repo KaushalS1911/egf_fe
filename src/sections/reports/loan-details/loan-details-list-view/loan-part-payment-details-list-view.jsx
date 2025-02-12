@@ -73,7 +73,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function LoanPartPaymentDetailsListView({partPaymentDetail}) {
+export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -200,7 +200,7 @@ export default function LoanPartPaymentDetailsListView({partPaymentDetail}) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{fontSize:22,fontWeight:600}}>Loan part Payment Details</Typography>
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>Loan part Payment Details</Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -212,7 +212,11 @@ export default function LoanPartPaymentDetailsListView({partPaymentDetail}) {
             />
           )}
 
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{
+            maxHeight: 500,
+            overflow: 'auto',
+            position: 'relative',
+          }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -232,54 +236,58 @@ export default function LoanPartPaymentDetailsListView({partPaymentDetail}) {
               }
             />
 
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white',
+                  zIndex: 1000,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                }}
+              />
 
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage,
+                  )
+                  .map((row, index) => (
+                    <LoanPartPaymentDetailsTableRow
+                      key={row._id}
+                      row={row}
+                      index={index}
+                      handleClick={() => handleClick(row._id)}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
+                {
+                  dataFiltered.length == 0 &&
+                  <TableRow>
+                    <TableCell colSpan={15} align='center' sx={{ p: 1, fontWeight: 500 }}>
+                      No Data Available
+                    </TableCell>
+                  </TableRow>
+                }
+                {/*<TableNoData notFound={notFound} />*/}
 
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
-                    )
-                    .map((row, index) => (
-                      <LoanPartPaymentDetailsTableRow
-                        key={row._id}
-                        row={row}
-                        index={index}
-                        handleClick={() => handleClick(row._id)}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-                  {
-                    dataFiltered.length == 0&&
-                    <TableRow>
-                      <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
-                        No Data Available
-                      </TableCell>
-                    </TableRow>
-                  }
-                  {/*<TableNoData notFound={notFound} />*/}
-
-                </TableBody>
-              </Table>
-            </Scrollbar>
+              </TableBody>
+            </Table>
           </TableContainer>
 
           <TablePaginationCustom
