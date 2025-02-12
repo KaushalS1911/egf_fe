@@ -54,18 +54,17 @@ import { useGetDailyReport } from '../../../api/daily-report';
 
 // ----------------------------------------------------------------------
 
-
 const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
   value: 'Issued',
   label: 'Issued',
 }, { value: 'Disbursed', label: 'Disbursed' }];
+
 const defaultFilters = {
   username: '',
   status: 'All',
   startDate: new Date(),
   endDate: null,
   branch: '',
-
 };
 
 // ----------------------------------------------------------------------
@@ -176,9 +175,7 @@ export default function DailyReportsListView() {
           <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail}/>
         </Box>
         </Card>
-
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

@@ -78,7 +78,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function LoanInterestDetailsListView({interestDetail}) {
+export default function LoanInterestDetailsListView({ interestDetail }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -205,7 +205,7 @@ export default function LoanInterestDetailsListView({interestDetail}) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{fontSize:22,fontWeight:600}}>Loan Interest Details</Typography>
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>Loan Interest Details</Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -238,7 +238,7 @@ export default function LoanInterestDetailsListView({interestDetail}) {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 2000 }}>
+              <Table size={table.dense ? 'small' : 'medium'}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -273,9 +273,9 @@ export default function LoanInterestDetailsListView({interestDetail}) {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
                   {
-                    dataFiltered.length == 0&&
+                    dataFiltered.length == 0 &&
                     <TableRow>
-                      <TableCell colSpan={15} align='center' sx={{p:1,fontWeight:500}}>
+                      <TableCell colSpan={15} align='center' sx={{ p: 1, fontWeight: 500 }}>
                         No Data Available
                       </TableCell>
                     </TableRow>

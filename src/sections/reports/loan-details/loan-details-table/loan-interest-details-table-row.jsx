@@ -20,10 +20,18 @@ import { fDate } from '../../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export default function LoanInterestDetailsTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const {from,to,penalty,days,loan,amountPaid,cr_dr,adjustedPay,createdAt,uchakInterestAmount} = row;
-  const {consultingCharge} = loan
-  const {loanNo,customer,loanAmount,  scheme, issueDate,interestLoanAmount,}=loan
+export default function LoanInterestDetailsTableRow({
+                                                      row,
+                                                      index,
+                                                      selected,
+                                                      onEditRow,
+                                                      onSelectRow,
+                                                      onDeleteRow,
+                                                      handleClick,
+                                                    }) {
+  const { from, to, penalty, days, loan, amountPaid, cr_dr, adjustedPay, createdAt, uchakInterestAmount } = row;
+  const { consultingCharge } = loan;
+  const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -36,20 +44,23 @@ export default function LoanInterestDetailsTableRow({ row,index, selected, onEdi
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(from)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(to)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate >=1.5 ?1.5:scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{penalty}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{cr_dr.toFixed(2)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{adjustedPay}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{uchakInterestAmount || 0}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{index + 1}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(to)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{loanAmount}</TableCell>
+        <TableCell sx={{
+          fontSize: '12px',
+          width: '0%',
+        }}>{scheme?.interestRate >= 1.5 ? 1.5 : scheme?.interestRate}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{consultingCharge}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{penalty}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{cr_dr.toFixed(2)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{adjustedPay}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(createdAt)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{days}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{uchakInterestAmount || 0}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{amountPaid}</TableCell>
       </TableRow>
 
       <CustomPopover

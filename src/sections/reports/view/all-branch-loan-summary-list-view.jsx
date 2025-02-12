@@ -64,10 +64,13 @@ const TABLE_HEAD = [
   { id: 'nextIntPayDate', label: 'Next int. pay date' },
   { id: 'Status', label: 'Status' },
 ];
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {value: 'Issued',label: 'Issued'},{ value: 'Disbursed', label: 'Disbursed' },{ value: 'Regular', label: 'Regular' }, {
+const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, { value: 'Issued', label: 'Issued' }, {
+  value: 'Disbursed',
+  label: 'Disbursed',
+}, { value: 'Regular', label: 'Regular' }, {
   value: 'Overdue',
   label: 'Overdue',
-},];
+}];
 const defaultFilters = {
   username: '',
   status: 'All',
@@ -270,7 +273,7 @@ export default function AllBranchLoanSummaryListView() {
                         'default'
                       }
                     >
-                      {['Issued','Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
+                      {['Issued', 'Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
                         ? LoanSummary.filter((item) => item.status === tab.value).length
                         : LoanSummary.length}
                     </Label>
@@ -314,7 +317,7 @@ export default function AllBranchLoanSummaryListView() {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 2000 }}>
+              <Table size={table.dense ? 'small' : 'medium'}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -396,7 +399,7 @@ export default function AllBranchLoanSummaryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch,issuedBy } = filters;
+  const { username, status, startDate, endDate, branch, issuedBy } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -420,8 +423,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
   }
-  if(issuedBy){
-    inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value)
+  if (issuedBy) {
+    inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) =>
