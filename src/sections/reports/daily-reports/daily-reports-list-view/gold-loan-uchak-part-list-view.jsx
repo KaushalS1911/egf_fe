@@ -159,7 +159,11 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{
+            maxHeight: 500,
+            overflow: 'auto',
+            position: 'relative',
+          }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -178,49 +182,54 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                 </Tooltip>
               }
             />
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 'auto' }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 'auto' }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white',
+                  zIndex: 1000,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                }}
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage,
+                  )
+                  .map((row, index) => (
+                    <GoldLoanUchakPaymentTableRow
+                      key={row._id}
+                      row={row}
+                      index={index}
+                      handleClick={() => handleClick(row._id)}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
-                    )
-                    .map((row, index) => (
-                      <GoldLoanUchakPaymentTableRow
-                        key={row._id}
-                        row={row}
-                        index={index}
-                        handleClick={() => handleClick(row._id)}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-                  {
-                    dataFiltered.length == 0 &&
-                    <TableRow>
-                      <TableCell colSpan={12} align='center' sx={{ p: 1, fontWeight: 500 }}>
-                        No Data Available
-                      </TableCell>
-                    </TableRow>
-                  }
-                </TableBody>
-              </Table>
-            </Scrollbar>
+                {
+                  dataFiltered.length == 0 &&
+                  <TableRow>
+                    <TableCell colSpan={12} align='center' sx={{ p: 1, fontWeight: 500 }}>
+                      No Data Available
+                    </TableCell>
+                  </TableRow>
+                }
+              </TableBody>
+            </Table>
           </TableContainer>
           <TablePaginationCustom
             count={dataFiltered.length}

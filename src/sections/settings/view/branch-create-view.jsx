@@ -37,7 +37,6 @@ const validationSchema = yup.object().shape({
   branchCode: yup.string().nullable(),
   series: yup
     .string()
-    .matches(/^[A-Z]{3}_[A-Z]{3}\/\d{2}_\d{6}$/, 'Series must be in format XXX_XXX/XX_XXXXXX')
     .required('Series is required'),
 });
 
