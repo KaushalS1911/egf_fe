@@ -71,7 +71,7 @@ const ReminderDetailsListView = lazy(() => import('../../sections/reminder/view/
 const AllBranchLoanSummaryListView = lazy(() => import('../../sections/reports/view/all-branch-loan-summary-list-view'));
 const BranchViseLoanClosingListView = lazy(() => import('../../sections/reports/view/branch-vise-loan-closing-list-view'));
 const DailyReportsListView = lazy(() => import(`../../sections/reports/view/daily-reports-list-view`));
-const LoanDetailListView = lazy(()=>import('../../sections/reports/view/loan-details-list-view'))
+const LoanDetailListView = lazy(() => import('../../sections/reports/view/loan-details-list-view'));
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
 
@@ -125,7 +125,6 @@ export const dashboardRoutes = [
           { path: ':id/edit', element: <CaratEditView /> },
         ],
       },
-
       {
         path: 'property',
         children: [
@@ -207,8 +206,8 @@ export const dashboardRoutes = [
         children: [
           { element: <OtherLoanpayhistoryListView />, index: true },
           { path: 'list', element: <OtherLoanpayhistoryListView /> },
-          { path: ':id/new', element: <OtherLoanpayhistoryCreateView/> },
-          { path: 'bulkInterest/new', element: <OtherBulkInterestPay/> },
+          { path: ':id/new', element: <OtherLoanpayhistoryCreateView /> },
+          { path: 'bulkInterest/new', element: <OtherBulkInterestPay /> },
         ],
       },
       {

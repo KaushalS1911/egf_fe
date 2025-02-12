@@ -173,14 +173,13 @@ export default function PermissionView() {
   const [moduleSwitchState, setModuleSwitchState] = useState({});
   const [permissionsState, setPermissionsState] = useState({});
   const [openPopup, setOpenPopup] = useState(false);
-  const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {
     if (configs?.roles && selectedRole === null) {
       const rolesWithoutPermissions = configs.roles.filter(
         (role) =>
           role !== 'Admin' &&
-          (!configs.permissions?.[role] || !configs.permissions[role]?.sections?.length)
+          (!configs.permissions?.[role] || !configs.permissions[role]?.sections?.length),
       );
 
       if (rolesWithoutPermissions.length > 0) {
@@ -268,8 +267,8 @@ export default function PermissionView() {
       modules
         .find((module) => module.value === moduleValue)
         .permissions.forEach((permission) => {
-          updatedPermissions[`${moduleValue}.${permission.key}`] = false;
-        });
+        updatedPermissions[`${moduleValue}.${permission.key}`] = false;
+      });
       setPermissionsState(updatedPermissions);
     }
   };
@@ -333,15 +332,15 @@ export default function PermissionView() {
     <FormProvider {...methods}>
       <Box sx={{ width: '100%', padding: '10px' }}>
         <Grid container spacing={3}>
-          <Grid item xs={12} display="flex" justifyContent="space-between">
+          <Grid item xs={12} display='flex' justifyContent='space-between'>
             <Box>
-              <CardHeader title="Permission" sx={{ padding: '0px' }} />
+              <CardHeader title='Permission' sx={{ padding: '0px' }} />
             </Box>
             <Box sx={{ width: '250px' }}>
               <RHFAutocomplete
-                name="course"
-                label="Roles"
-                placeholder="Choose a Role"
+                name='course'
+                label='Roles'
+                placeholder='Choose a Role'
                 options={configs?.roles?.filter((role) => role !== 'Admin') || []}
                 isOptionEqualToValue={(option, value) => option === value}
                 onChange={handleRoleChange}
@@ -352,7 +351,7 @@ export default function PermissionView() {
             <Card>
               <Stack spacing={3} sx={{ p: 3 }}>
                 <Box
-                  display="grid"
+                  display='grid'
                   gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)' }}
                   columnGap={2}
                   rowGap={2}
@@ -370,7 +369,7 @@ export default function PermissionView() {
                         m: 1,
                       }}
                     >
-                      <Grid item xs={12} display="flex" justifyContent="space-between">
+                      <Grid item xs={12} display='flex' justifyContent='space-between'>
                         <Typography sx={{ fontSize: '16px', fontWeight: '900' }}>
                           {module.label}
                         </Typography>
@@ -381,7 +380,7 @@ export default function PermissionView() {
                               onChange={(e) => handleSwitchChange(module.value, e.target.checked)}
                             />
                           }
-                          label=""
+                          label=''
                         />
                       </Grid>
                       {module.permissions.map((permission, idx) => (
@@ -403,7 +402,7 @@ export default function PermissionView() {
                                       handleCheckboxChange(
                                         module.value,
                                         permission.key,
-                                        e.target.checked
+                                        e.target.checked,
                                       );
                                     }}
                                   />
@@ -417,11 +416,11 @@ export default function PermissionView() {
                     </Grid>
                   ))}
                 </Box>
-                <Stack direction="row" spacing={2} justifyContent="flex-end">
-                  <Button variant="contained" onClick={handleReset}>
+                <Stack direction='row' spacing={2} justifyContent='flex-end'>
+                  <Button variant='contained' onClick={handleReset}>
                     Reset
                   </Button>
-                  <Button variant="contained" onClick={methods.handleSubmit(handleSave)}>
+                  <Button variant='contained' onClick={methods.handleSubmit(handleSave)}>
                     Save
                   </Button>
                 </Stack>
@@ -441,14 +440,14 @@ export default function PermissionView() {
             .filter(
               (role) =>
                 role !== 'Admin' &&
-                (!configs.permissions?.[role] || !configs.permissions[role]?.sections?.length)
+                (!configs.permissions?.[role] || !configs.permissions[role]?.sections?.length),
             )
             .map((role, index) => (
               <Typography key={index}>- {role}</Typography>
             ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClosePopup} variant="contained">
+          <Button onClick={handleClosePopup} variant='contained'>
             Close
           </Button>
         </DialogActions>

@@ -1,12 +1,8 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
-
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -14,24 +10,30 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../../../auth/hooks';
 import { useGetConfigs } from '../../../../api/config';
 import { getResponsibilityValue } from '../../../../permission/permission';
-import Label from '../../../../components/label';
 import { fDate } from '../../../../utils/format-time';
-
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const { cashAmount, bankAmount,status,lastInstallmentDate,nextInstallmentDate,consultingCharge,loan,amountPaid,createdAt} = row;
-  const {loanNo, customer, loanAmount, scheme,issueDate,interestLoanAmount}=loan
+export default function GoldLoanUchakPaymentTableRow({
+                                                       row,
+                                                       index,
+                                                       selected,
+                                                       onEditRow,
+                                                       onSelectRow,
+                                                       onDeleteRow,
+                                                       handleClick,
+                                                     }) {
+  const {
+    loan,
+    amountPaid,
+    createdAt,
+  } = row;
+  const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  };
   return (
     <>
       <TableRow hover selected={selected}>
@@ -48,7 +50,6 @@ export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEd
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
       </TableRow>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -86,7 +87,6 @@ export default function GoldLoanUchakPaymentTableRow({ row,index, selected, onEd
           </Button>
         }
       />
-
     </>
   );
 };

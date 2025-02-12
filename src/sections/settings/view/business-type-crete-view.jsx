@@ -59,7 +59,6 @@ export default function BusinessTypeCreteView({ setTab }) {
             Add Business Type
           </Typography>
         </Grid>
-
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
             <TextField
@@ -77,7 +76,6 @@ export default function BusinessTypeCreteView({ setTab }) {
             </Box>
           </Box>
         </Grid>
-
         <Grid item xs={12} md={8}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>

@@ -1,33 +1,33 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const updateConfigs = createAsyncThunk('configs/updateConfigs', async ( data) => {
-  try{
-    const {payload, companyId} = data
+export const updateConfigs = createAsyncThunk('configs/updateConfigs', async (data) => {
+  try {
+    const { payload, companyId } = data;
     const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/${companyId}/update-logo`, payload);
-    return response?.data?.data
-  }catch (e) {
+    return response?.data?.data;
+  } catch (e) {
     console.log(e);
   }
-})
+});
 
 export const ConfigSlice = createSlice({
-  name: "configs",
+  name: 'configs',
   initialState: {
-    configs: {}
+    configs: {},
   },
   reducers: {
     setCompanyDetails: (state, action) => {
-      state.company = action.payload
-    }
+      state.company = action.payload;
+    },
   },
   extraReducers: builder => {
-    builder.addCase(updateConfigs.fulfilled, (state,action) => {
-      state.configs = action.payload
-    })
-  }
-})
+    builder.addCase(updateConfigs.fulfilled, (state, action) => {
+      state.configs = action.payload;
+    });
+  },
+});
 
-export const { setCompanyDetails } = ConfigSlice.actions
+export const { setCompanyDetails } = ConfigSlice.actions;
 
-export default ConfigSlice.reducer
+export default ConfigSlice.reducer;

@@ -51,36 +51,34 @@ export default function RolesCreatePage({ setTab }) {
     <Box sx={{ width: '100%', marginBottom: '10px', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant='h5' sx={{fontWeight: 600 }}>
+          <Typography variant='h5' sx={{ fontWeight: 600 }}>
             Add Roles
           </Typography>
         </Grid>
-
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
             <TextField
               fullWidth
-              variant="outlined"
-              label="Role"
+              variant='outlined'
+              label='Role'
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               sx={{ fontSize: '16px' }}
             />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
-              <Button variant="contained" onClick={handleClick}>
+              <Button variant='contained' onClick={handleClick}>
                 Add
               </Button>
             </Box>
           </Box>
         </Grid>
-
         <Grid item xs={12} md={8}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
               <Box
                 columnGap={2}
                 rowGap={2}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(2, 1fr)',
@@ -108,7 +106,7 @@ export default function RolesCreatePage({ setTab }) {
                         sx={{ color: 'error.main', cursor: 'pointer' }}
                         onClick={() => handleDelete(role)}
                       >
-                        <Iconify icon="solar:trash-bin-trash-bold" />
+                        <Iconify icon='solar:trash-bin-trash-bold' />
                       </Box>
                     </Grid>
                   </Grid>

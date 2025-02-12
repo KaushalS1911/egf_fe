@@ -1,19 +1,14 @@
 import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
-
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
 import { getResponsibilityValue } from '../../../permission/permission';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 import { useGetBranch } from '../../../api/branch';
@@ -25,7 +20,14 @@ import AllBranchLoanSummaryPdf from '../view/all-branch-loan-summary-pdf';
 
 // ----------------------------------------------------------------------
 
-export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, dateError, dataFilter, configs,options }) {
+export default function AllBranchLoanSummaryTableToolbar({
+                                                           filters,
+                                                           onFilters,
+                                                           dateError,
+                                                           dataFilter,
+                                                           configs,
+                                                           options,
+                                                         }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -33,12 +35,14 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const view = useBoolean();
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
     },
     [onFilters],
   );
+
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -72,6 +76,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
     },
     [onFilters],
   );
+
   const customStyle = {
     maxWidth: { md: 350 },
     'label': {
@@ -83,6 +88,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
     },
     'input': { height: 7 },
   };
+
   const sx2 = {};
   const handleFilterBranch = useCallback(
     (event) => {
@@ -94,6 +100,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
     },
     [onFilters],
   );
+
   const handleFilterIssuedBy = useCallback(
     (event) => {
       onFilters(
@@ -103,6 +110,7 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
     },
     [onFilters],
   );
+
   return (
     <>
       <Stack
@@ -124,20 +132,6 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
           flexGrow={1}
           sx={{ width: '100%', pr: 1.5 }}
         >
-          {/*<TextField*/}
-          {/*  sx={{ 'input': { height: 7 } }}*/}
-          {/*  fullWidth*/}
-          {/*  value={filters.username}*/}
-          {/*  onChange={handleFilterName}*/}
-          {/*  placeholder='Search...'*/}
-          {/*  InputProps={{*/}
-          {/*    startAdornment: (*/}
-          {/*      <InputAdornment position='start'>*/}
-          {/*        <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />*/}
-          {/*      </InputAdornment>*/}
-          {/*    ),*/}
-          {/*  }}*/}
-          {/*/>*/}
           <FormControl
             sx={{
               flexShrink: 0,
@@ -150,7 +144,6 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
                 mt: 0,
               },
             }}>Issued By</InputLabel>
-
             <Select
               value={filters.issuedBy}
               onChange={handleFilterIssuedBy}
@@ -195,7 +188,6 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
                 mt: 0,
               },
             }}>Branch</InputLabel>
-
             <Select
               value={filters.branch}
               onChange={handleFilterBranch}
@@ -271,7 +263,6 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
         >
           {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
             onClick={() => {
-              // view.onTrue()
               popover.onClose();
             }}
           >
@@ -288,7 +279,6 @@ export default function AllBranchLoanSummaryTableToolbar({ filters, onFilters, d
             </MenuItem>
             <MenuItem>
               <RHFExportExcel
-                // data={loans}
                 fileName='LaonissueData'
                 sheetName='LoanissueDetails'
               />

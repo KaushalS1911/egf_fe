@@ -1,12 +1,8 @@
 import PropTypes from 'prop-types';
-
 import Button from '@mui/material/Button';
-
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -14,53 +10,61 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../../../auth/hooks';
 import { useGetConfigs } from '../../../../api/config';
 import { getResponsibilityValue } from '../../../../permission/permission';
-import Label from '../../../../components/label';
 import { fDate } from '../../../../utils/format-time';
-
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, onEditRow, onSelectRow, onDeleteRow, handleClick }) {
-  const {from,to,penalty,days,loan,amountPaid} = row;
-  const {loanNo,customer,loanAmount,  scheme, issueDate,interestLoanAmount,}=loan
+export default function GoldLoanIntrestDetailseTableRow({
+                                                          row,
+                                                          index,
+                                                          selected,
+                                                          onEditRow,
+                                                          onSelectRow,
+                                                          onDeleteRow,
+                                                          handleClick,
+                                                        }) {
+  const { from, to, penalty, days, loan, amountPaid } = row;
+  const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  };
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ width: '1%', textAlign: 'start' }}>{index + 1}</TableCell>
+        <TableCell sx={{
+          width: '7%',
+          maxWidth: '7%',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          whiteSpace: 'normal',
+        }}>
+          {loanNo}
+        </TableCell>
+        <TableCell sx={{ width: '1%' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(from)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(to)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{days}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'payment by'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'int'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{penalty}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ width: '5%' }}>{fDate(issueDate)}</TableCell>
+        <TableCell
+          sx={{ width: '3%' }}>{(interestLoanAmount).toFixed(2)}</TableCell>
+        <TableCell sx={{ width: '5%' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ width: '5%' }}>{fDate(to)}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{days}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{'payment by'}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{'int'}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{penalty}</TableCell>
+        <TableCell sx={{ width: '1%' }}>{amountPaid}</TableCell>
       </TableRow>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow='right-top'
         sx={{ width: 140 }}
       >
-
-
         {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
           onClick={() => {
             onEditRow();
@@ -92,7 +96,6 @@ export default function GoldLoanIntrestDetailseTableRow({ row,index, selected, o
           </Button>
         }
       />
-
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import {  Grid, Box, Card, Typography, Container } from '@mui/material';
+import { Grid, Box, Card, Typography, Container } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
@@ -182,7 +182,7 @@ export default function MyProfile() {
                   <RHFTextField label='Email' name='email' onClick={handleDisable} />
                   {
                     user?.role === 'Admin' &&
-                  <RHFTextField label='Contact' name='contact' onClick={handleDisable} />
+                    <RHFTextField label='Contact' name='contact' onClick={handleDisable} />
                   }
                 </Box>
                 <Stack direction='row' justifyContent='flex-end'>

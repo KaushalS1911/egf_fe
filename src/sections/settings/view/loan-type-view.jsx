@@ -10,11 +10,11 @@ import { Stack } from '@mui/system';
 export default function LoanTypeView() {
   const { user } = useAuthContext();
   const { configs, mutate } = useGetConfigs();
+  const { enqueueSnackbar } = useSnackbar();
   const [inputVal, setInputVal] = useState({
     loanType: '',
     approvalCharge: '',
   });
-  const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = () => {
     if (inputVal.loanType == '' || inputVal.approvalCharge == '') {
@@ -64,26 +64,24 @@ export default function LoanTypeView() {
     <Box sx={{ width: '100%', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+          <Typography variant='h5' sx={{ fontWeight: 600 }}>
             Add Loan Type
           </Typography>
         </Grid>
-
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', padding: '10px' }}>
             <TextField
               fullWidth
-              variant="outlined"
-              label="Loan Type"
+              variant='outlined'
+              label='Loan Type'
               value={inputVal.loanType}
               onChange={(e) => setInputVal({ ...inputVal, loanType: e.target.value.toUpperCase() })}
               sx={{ fontSize: '16px' }}
             />
-
             <TextField
               fullWidth
-              variant="outlined"
-              label="Approval Charge"
+              variant='outlined'
+              label='Approval Charge'
               value={inputVal.approvalCharge}
               onChange={(e) => {
                 const value = e.target.value;
@@ -93,22 +91,20 @@ export default function LoanTypeView() {
               }}
               sx={{ fontSize: '16px', mt: 2 }}
             />
-
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
-              <Button variant="contained" onClick={handleClick}>
+              <Button variant='contained' onClick={handleClick}>
                 Add
               </Button>
             </Box>
           </Box>
         </Grid>
-
         <Grid item xs={12} md={8}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
               <Box
                 columnGap={2}
                 rowGap={2}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(2, 1fr)',
@@ -138,13 +134,12 @@ export default function LoanTypeView() {
                           <strong>Approval Charge : </strong> {loan.approvalCharge}
                         </Typography>
                       </Grid>
-
                       <Grid item>
                         <Box
                           sx={{ color: 'error.main', cursor: 'pointer' }}
                           onClick={() => handleDelete(loan)}
                         >
-                          <Iconify icon="solar:trash-bin-trash-bold" />
+                          <Iconify icon='solar:trash-bin-trash-bold' />
                         </Box>
                       </Grid>
                     </Grid>

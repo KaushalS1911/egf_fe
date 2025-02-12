@@ -1,19 +1,15 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-
 import Iconify from 'src/components/iconify';
-import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
 export default function BranchWiseLoanClosingFilters({ filters, onFilters, onResetFilters, results, ...other }) {
-
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
   }, [onFilters]);
@@ -25,10 +21,6 @@ export default function BranchWiseLoanClosingFilters({ filters, onFilters, onRes
     },
     [filters.service, onFilters],
   );
-
-  const handleRemoveStatus = useCallback(() => {
-    onFilters('status', 'all');
-  }, [onFilters]);
 
   return (
     <Stack spacing={1.5} {...other}>

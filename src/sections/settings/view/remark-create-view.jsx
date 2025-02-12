@@ -61,7 +61,6 @@ export default function RemarkCreateView() {
             Add Remark
           </Typography>
         </Grid>
-
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', padding: '10px' }}>
             <TextField
@@ -79,7 +78,6 @@ export default function RemarkCreateView() {
             </Box>
           </Box>
         </Grid>
-
         <Grid item xs={12} md={8}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
