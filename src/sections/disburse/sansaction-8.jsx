@@ -190,6 +190,7 @@ const useStyles = () =>
           fontSize: '12px',
           textAlign: 'center',
           paddingVertical: 5,
+          fontFamily: 'NotoSansGujarati',
         },
         d_flex: {
           display: 'flex',
@@ -334,7 +335,7 @@ export default function Sansaction8({ sansaction, configs }) {
       rule: `આ ગોલ્ડ પર બીજી કોઈ વ્યકતિ નો હક કે હિસ્સો નથી છતાં પણ મેં ગોલ્ડ લોન લીધા પછી ગોલ્ડ બાબતે કોઈપણ વ્યક્તિ નો હક કે હિસ્સો જાહેર થાય અથવા કોઈ પણ જાત ની તકરાર આવે તો મને લોન પેટે મળેલ રકમ રૂ .${amount.toFixed(2)} શબ્દોમાં ${netAmountInWords} હું મારી કોઈ પણ જાત ની કફોડી હાલત માં પણ ભરપાઈ કરવા માટે રાજીખુશી થી બંધાયેલો છું.જો ભરપાઈ ન કરી શકું તો કંપની મારી મિલકત પર દાવો માંડીને કાયદેસરની કાર્યવાહી કરી શકે છે.જે મને મંજુર છે..`,
     },
     {
-      rule: `મેં કંપની ના બધા નિયમો પુરા હોશ માં વાંચી જાગૃત મતે સમજેલ છે. જે મને (કબુલ) મંજુર છે.જેની હું બાહેંધરી આપું છું.`,
+      rule: `મેં કંપની ના બધા નિયમો પુરા હોશ માં વાંચીવી જાગૃત મતે સમજેલ છે. જે મને (કબુલ) મંજુર છે.જેની હું બાહેંધરી આપું છું.`,
     },
   ];
 
@@ -406,7 +407,7 @@ export default function Sansaction8({ sansaction, configs }) {
                   marginBottom: 10,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>Sanction-8</Text>
+                <Text style={styles.termsAndConditionsHeaders}>બાયંધરી પત્રક</Text>
               </View>
               <View style={styles.flexContainer}>
                 <View style={{ width: '50%' }}>
@@ -507,7 +508,7 @@ export default function Sansaction8({ sansaction, configs }) {
                   {/*</View>*/}
                   <view>
                     <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
-                      નમૂનો-૮ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૬
+                      નમૂનો-૮ કરજ ની શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૬
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       {rules.map((item, index) => (

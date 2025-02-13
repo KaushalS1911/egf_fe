@@ -314,7 +314,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   marginBottom: 10,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>Sanction Letter</Text>
+                <Text style={styles.termsAndConditionsHeaders}>SANCTION LETTER</Text>
               </View>
               <View style={{ ...styles.flexContainer, gap: 20 }}>
                 <View style={{ width: '48%' }}>
@@ -432,7 +432,6 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <View style={[styles.tableRow, styles.tableHeader]}>
                     <Text style={[styles.tableCell, { minWidth: 100 }]}>Property Name</Text>
                     <Text style={[styles.tableCell, { flex: 1 }]}>Qty</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>Carat</Text>
                     <Text style={[styles.tableCell, { flex: 1 }]}>Total Wt</Text>
                     <Text style={[styles.tableCell, { flex: 1 }]}>Net Wt</Text>
                     <Text style={[styles.tableCell, { flex: 1 }]}>Net Amt</Text>
@@ -444,7 +443,6 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                     <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
                       <Text style={[styles.tableCell, { minWidth: 100 }]}>{row.type}</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>{row.pcs}</Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>{row.carat}</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>
                         {Number(row.totalWeight).toFixed(2)}
                       </Text>
@@ -470,12 +468,6 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                     <Text style={[styles.tableCell, { flex: 1 }]}>
                       {selectedRow.propertyDetails.reduce(
                         (prev, next) => prev + (Number(next?.pcs) || 0),
-                        0
-                      )}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
-                      {selectedRow.propertyDetails.reduce(
-                        (prev, next) => prev + (Number(next?.carat) || 0),
                         0
                       )}
                     </Text>
