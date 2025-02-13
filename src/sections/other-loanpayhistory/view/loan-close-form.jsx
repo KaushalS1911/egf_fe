@@ -35,7 +35,7 @@ const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
   { id: 'closingCharge', label: 'Closing Charge' },
-  { id: 'closinCharge', label: 'Closing charge' },
+  { id: 'closinCharge', label: 'Closing Date' },
   { id: 'remark', label: 'Remark' },
   { id: 'PDF', label: 'PDF' },
 ];
