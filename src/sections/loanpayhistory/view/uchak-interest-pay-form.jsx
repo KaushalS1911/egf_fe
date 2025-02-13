@@ -61,6 +61,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
 
+  const uchakAmt = uchak.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -410,12 +411,12 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
           {uchak &&
             uchak.map((row, index) => (
               <TableRow key={index}>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{fDate(row.date)}</TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.amountPaid}</TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                 <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.remark}</TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.remark}</TableCell>
                 {getResponsibilityValue('delete_uchak_interest', configs, user) ? (
-                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                     {
                       <IconButton
                         color="error"
@@ -454,7 +455,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                   <TableCell>-</TableCell>
                 )}
                 {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
-                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>
+                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                     {
                       <Typography
                         onClick={() => {
@@ -476,6 +477,17 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 )}
               </TableRow>
             ))}
+          <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
+            {/*<TableCell padding="checkbox" />*/}
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {uchakAmt}
+            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+          </TableRow>
         </TableBody>
       </Table>
       <ConfirmDialog

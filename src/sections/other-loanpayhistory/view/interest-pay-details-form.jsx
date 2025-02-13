@@ -53,6 +53,10 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   );
   const table = useTable();
   const { user } = useAuthContext();
+  const payAmt = otherLoanInterest.reduce(
+    (prev, next) => prev + (Number(next?.payAfterAdjust) || 0),
+    0
+  );
 
   const paymentSchema =
     paymentMode === 'Bank'
@@ -539,7 +543,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
             },
           }}
         >
-          <Table sx={{ borderRadius: '16px', mt: 2.5, minWidth: '1600px' }}>
+          <Table sx={{ borderRadius: '16px', my: 2.5, minWidth: '1500px' }}>
             <TableHeadCustom
               order={table.order}
               orderBy={table.orderBy}
@@ -597,6 +601,20 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                   )}
                 </TableRow>
               ))}
+              <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
+                {/*<TableCell padding="checkbox" />*/}
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  TOTAL
+                </TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  {payAmt}
+                </TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </Box>

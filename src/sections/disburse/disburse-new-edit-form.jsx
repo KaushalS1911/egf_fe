@@ -99,6 +99,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       payingCashAmount: currentDisburse?.payingCashAmount || '',
       cashPendingAmount: currentDisburse?.cashPendingAmount || 0,
       cashDate: currentDisburse?.date ? new Date(currentDisburse.issueDate) : new Date(),
+      issueDate: currentDisburse?.issueDate ? new Date(currentDisburse.issueDate) : new Date(),
       items:
         currentDisburse?.propertyDetails?.map((item) => ({
           propertyName: item.type || '',
@@ -141,7 +142,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   useEffect(() => {
     setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
-  console.log(currentDisburse, '00000000');
   const onSubmit = handleSubmit(async (data) => {
     try {
       const payload = {
@@ -156,7 +156,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         approvalCharge: data.approvalCharge,
       };
       if (currentDisburse.status === 'Disbursed') {
-        alert('0000000');
         const res = await axios.put(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`,
           payload
@@ -198,7 +197,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       });
     }
   };
-  console.log(currentDisburse, '000000000');
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -224,6 +222,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
               <RHFTextField name="address" label="Address" req={'red'} />
               <RHFTextField name="branch" label="Branch" req={'red'} />
               <RHFTextField name="approvalCharge" label="Approval Charge" req={'red'} />
+              <RHFDatePicker name="issueDate" control={control} label="issueDate" />
             </Box>
           </Card>
         </Grid>

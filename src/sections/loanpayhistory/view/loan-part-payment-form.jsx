@@ -57,6 +57,12 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
 
+  const payAmt = partPayment.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+  const intAmt = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.loan?.interestLoanAmount) || 0),
+    0
+  );
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -441,26 +447,26 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
         <TableBody>
           {partPayment.map((row, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {row.loan.loanAmount}
               </TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
               <TableCell
                 sx={{
                   whiteSpace: 'nowrap',
                   py: 0,
-                  px: 1,
+                  px: 2,
                 }}
               >
                 {intAmtCalculation(row.loan.loanAmount, row.loan.interestLoanAmount, index)}
               </TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{fDate(row.date)}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {fDate(row.createdAt)}
               </TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.remark}</TableCell>
               {getResponsibilityValue('delete_loan_part_payment', configs, user) ? (
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1 }}>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {
                     <IconButton
                       color="error"
@@ -500,6 +506,21 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               )}
             </TableRow>
           ))}
+          <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
+            {/*<TableCell padding="checkbox" />*/}
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {payAmt}
+            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {intAmt}
+            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+          </TableRow>
         </TableBody>
       </Table>
       <ConfirmDialog

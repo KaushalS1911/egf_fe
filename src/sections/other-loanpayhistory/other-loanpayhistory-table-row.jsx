@@ -27,12 +27,12 @@ import { fDate } from '../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function OtherLoanpayhistoryTableRow({
-                                                      row,
-                                                      selected,
-                                                      onDeleteRow,
-                                                      loanStatus,
-                                                      index,
-                                                    }) {
+  row,
+  selected,
+  onDeleteRow,
+  loanStatus,
+  index,
+}) {
   const {
     loan,
     otherName,
@@ -49,10 +49,7 @@ export default function OtherLoanpayhistoryTableRow({
     renewalDate,
     _id,
   } = row;
-  const {
-    loanNo,
-    customer,
-  } = loan;
+  const { loanNo, customer, status } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -64,7 +61,11 @@ export default function OtherLoanpayhistoryTableRow({
     setDialogContent(content);
     view.onTrue();
   };
-
+  const statusColors = {
+    Closed: (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07'),
+    Overdue: (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706'),
+    Regular: (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403'),
+  };
   const renderDialogContent = () => {
     if (dialogContent === 'loanDetails') {
       return <LoanIssueDetails selectedRow={row} configs={configs} />;
@@ -86,7 +87,7 @@ export default function OtherLoanpayhistoryTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' }}>
         <TableCell>{srNo}</TableCell>
         {getResponsibilityValue('create_loanIssue', configs, user) ? (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -106,8 +107,9 @@ export default function OtherLoanpayhistoryTableRow({
         ) : (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         )}
-        <TableCell
-          sx={{ whiteSpace: 'nowrap' }}>{customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherNumber}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{amount}</TableCell>
@@ -139,11 +141,25 @@ export default function OtherLoanpayhistoryTableRow({
         {/*    <Iconify icon="eva:more-vertical-fill" />*/}
         {/*  </IconButton>*/}
         {/*</TableCell>*/}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Label
+            variant="soft"
+            color={
+              (status === 'Disbursed' && 'info') ||
+              (status === 'Closed' && 'warning') ||
+              (status === 'Overdue' && 'error') ||
+              (status === 'Regular' && 'success') ||
+              'default'
+            }
+          >
+            {status}
+          </Label>
+        </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -152,7 +168,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='clarity:details-line' />
+          <Iconify icon="clarity:details-line" />
           Loan Details
         </MenuItem>
         <MenuItem
@@ -161,7 +177,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='mdi:file-document-outline' />
+          <Iconify icon="mdi:file-document-outline" />
           Sanction{' '}
         </MenuItem>
         <MenuItem
@@ -170,7 +186,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='material-symbols:verified-user-outline' />
+          <Iconify icon="material-symbols:verified-user-outline" />
           Authority{' '}
         </MenuItem>
         {row.status === 'Closed' ? (
@@ -180,7 +196,7 @@ export default function OtherLoanpayhistoryTableRow({
               popover.onClose();
             }}
           >
-            <Iconify icon='mdi:certificate-outline' />
+            <Iconify icon="mdi:certificate-outline" />
             NOC
           </MenuItem>
         ) : (
@@ -190,7 +206,7 @@ export default function OtherLoanpayhistoryTableRow({
               popover.onClose();
             }}
           >
-            <Iconify icon='gridicons:notice' />
+            <Iconify icon="gridicons:notice" />
             Notice
           </MenuItem>
         )}
@@ -198,10 +214,10 @@ export default function OtherLoanpayhistoryTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -209,12 +225,12 @@ export default function OtherLoanpayhistoryTableRow({
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               {renderDialogContent()}
             </PDFViewer>
           </Box>

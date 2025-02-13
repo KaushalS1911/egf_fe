@@ -83,7 +83,15 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   const confirm = useBoolean();
   const [deleteId, setDeleteId] = useState('');
   const [rotation, setRotation] = useState(0);
-
+  const adjustedAmount = partRelease.reduce(
+    (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
+    0
+  );
+  const totalPayAmt = partRelease.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+  const intAmt = partRelease.reduce(
+    (prev, next) => prev + (Number(next?.pendingLoanAmount) || 0),
+    0
+  );
   useEffect(() => {
     if (currentLoan.propertyDetails) {
       setProperties(currentLoan.propertyDetails);
@@ -181,6 +189,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     bankAmount: null,
     account: null,
     expectPaymentMode: null,
+    pendingLoanAmount: 0,
   };
 
   const methods = useForm({
@@ -197,6 +206,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    setValue('pendingLoanAmount', currentLoan.interestLoanAmount - watch('adjustAmount'));
+  }, [watch('adjustAmount')]);
   const onSubmit = handleSubmit(async (data) => {
     const netAmount = Number(selectedTotals?.netAmount || 0);
     const amountPaid = watch('amountPaid');
@@ -273,6 +285,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     formData.append('date', data.date);
     formData.append('amountPaid', data.amountPaid);
     formData.append('adjustedAmount', data.adjustAmount);
+    formData.append('pendingLoanAmount', data.pendingLoanAmount);
 
     for (const [key, value] of Object.entries(paymentDetail)) {
       formData.append(`paymentDetail[${key}]`, value);
@@ -718,6 +731,20 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
+                      <RHFTextField
+                        name="pendingLoanAmount"
+                        label="Pending Loan amount"
+                        onKeyPress={(e) => {
+                          if (
+                            !/[0-9.]/.test(e.key) ||
+                            (e.key === '.' && e.target.value.includes('.'))
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField name="remark" label="Remark" />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
@@ -914,29 +941,23 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
           {partRelease &&
             partRelease.map((row, index) => (
               <TableRow key={index}>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
-                  {row.loan.loanNo}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.loan.loanNo}</TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.loan.loanAmount}
                 </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
-                  {row.amountPaid}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.adjustedAmount}
                 </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
-                  {row.loan.interestLoanAmount}
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {row.pendingLoanAmount.toFixed(2)}
                 </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {fDate(row.createdAt)}
                 </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
-                  {row.remark}
-                </TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.remark}</TableCell>
                 {getResponsibilityValue('delete_part_release', configs, user) ? (
-                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 1, height: 1 }}>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                     {
                       <IconButton
                         color="error"
@@ -961,9 +982,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   <TableCell>-</TableCell>
                 )}
                 {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
-                  <TableCell
-                    sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1, height: 1 }}
-                  >
+                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                     {
                       <Typography
                         onClick={() => {
@@ -985,6 +1004,37 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 )}
               </TableRow>
             ))}
+          <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {totalPayAmt}
+            </TableCell>
+            <TableCell
+              sx={{
+                fontWeight: '600',
+                color: '#637381',
+                py: 1,
+                px: 2,
+              }}
+            >
+              {adjustedAmount}
+            </TableCell>
+            <TableCell
+              sx={{
+                fontWeight: '600',
+                color: '#637381',
+                py: 1,
+                px: 2,
+              }}
+            >
+              {intAmt}
+            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+          </TableRow>
         </TableBody>
       </Table>
       <ConfirmDialog

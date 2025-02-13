@@ -61,6 +61,7 @@ const TABLE_HEAD = [
   { id: 'month', label: 'Month' },
   { id: 'closeAmount', label: 'Close Amt' },
   { id: 'renewDate', label: 'Renew Date' },
+  { id: 'status', label: 'Status' },
 ];
 
 const STATUS_OPTIONS = [
@@ -76,6 +77,7 @@ const STATUS_OPTIONS = [
     label: 'Closed',
   },
 ];
+
 const defaultFilters = {
   username: '',
   status: 'All',
@@ -254,11 +256,13 @@ export default function LoanpayhistoryListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
