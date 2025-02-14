@@ -55,10 +55,11 @@ const tableHeaders = [
 const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan No.' },
   { id: 'loanAmount', label: 'Loan Amount' },
+  { id: 'interestLoanAmount', label: 'Int Loan Amt' },
   { id: 'payAmount', label: 'Pay Amount' },
   { id: 'adjustAmount', label: 'Adjust Amount' },
   { id: 'pendingAmount', label: 'Pending Amount' },
-  { id: 'payDate', label: 'Pay Date' },
+  { id: 'payDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
   { id: 'action', label: 'Action' },
   { id: 'pdf', label: 'PDF' },
@@ -286,7 +287,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     formData.append('amountPaid', data.amountPaid);
     formData.append('adjustedAmount', data.adjustAmount);
     formData.append('pendingLoanAmount', data.pendingLoanAmount);
-
+    formData.append('interestLoanAmount', currentLoan.interestLoanAmount);
     for (const [key, value] of Object.entries(paymentDetail)) {
       formData.append(`paymentDetail[${key}]`, value);
     }
@@ -547,7 +548,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         companyEmail: data.loan.company.email,
         companyContact: data.loan.company.contact,
         file,
-        type: 'part_release',
+        type: 'part_release'
       };
       const formData = new FormData();
 
@@ -944,6 +945,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.loan.loanNo}</TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.loan.loanAmount}
+                </TableCell>
+                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {row.interestLoanAmount}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>

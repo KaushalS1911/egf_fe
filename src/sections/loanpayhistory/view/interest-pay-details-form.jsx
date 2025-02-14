@@ -33,6 +33,7 @@ const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
   { id: 'to', label: 'To Date' },
   { id: 'loanAmount', label: 'Loan Amt' },
+  { id: 'interestLoanAmount', label: 'Int Loan Amt' },
   { id: 'interestRate', label: 'Int. Rate' },
   { id: 'consultantInterest', label: 'Consultant Int' },
   { id: 'totalInterest', label: 'Total Int' },
@@ -289,6 +290,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       penalty: parseFloat(data.penalty) || 0,
       cr_dr: parseFloat(data.cr_dr) || 0,
       paymentDetail,
+      interestLoanAmount:currentLoan.interestLoanAmount
     };
 
     try {
@@ -608,6 +610,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.from)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.to)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.loan.loanAmount}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{(row.interestLoanAmount)?.toFixed(2)}</TableCell>
                     <TableCell
                       sx={{
                         py: 0,

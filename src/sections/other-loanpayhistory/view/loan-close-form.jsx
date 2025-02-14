@@ -1,3 +1,4 @@
+import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
@@ -35,7 +36,8 @@ const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
   { id: 'closingCharge', label: 'Closing Charge' },
-  { id: 'closinCharge', label: 'Closing Date' },
+  { id: 'entryDate', label: 'Entry Date' },
+  { id: 'payDate', label: 'Pay Date' },
   { id: 'remark', label: 'Remark' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -107,6 +109,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
     cashAmount: '',
     account: null,
     bankAmount: null,
+    payDate:currentOtherLoan?.payDate || new Date(),
     closingCharge: '',
     remark: '',
   };
@@ -167,6 +170,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
       remark: data.remark,
       paymentDetail: paymentDetail,
       closingCharge: data.closingCharge,
+      payDate:data.payDate
     };
 
     try {
@@ -371,6 +375,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                     />
                   </>
                 )}
+              <RHFDatePicker name="payDate" control={control} label="Pay Date" req={'red'} />
               </Box>
               <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
                 <Button color="inherit" variant="outlined" onClick={() => reset()}>
@@ -402,6 +407,9 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               </TableCell>{' '}
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {fDate(row.createdAt) || '-'}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {fDate(row.payDate) || '-'}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.remark || '-'}
