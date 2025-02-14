@@ -950,7 +950,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   {row.adjustedAmount}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.pendingLoanAmount.toFixed(2)}
+                  {row.pendingLoanAmount && row.pendingLoanAmount.toFixed(2)}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {fDate(row.createdAt)}
