@@ -22,8 +22,8 @@ export default function OtherLoanissueTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  const { loan, cashAmount, bankAmount, otherLoanNumber } = row;
-  const { loanNo, customer, scheme, loanAmount } = loan;
+  const { loan, cashAmount, bankAmount } = row;
+  const { loanNo, customer, scheme, loanAmount, createdAt } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -35,11 +35,11 @@ export default function OtherLoanissueTableRow({
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherLoanNumber}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{new Date(createdAt).toLocaleDateString('en-GB')}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>

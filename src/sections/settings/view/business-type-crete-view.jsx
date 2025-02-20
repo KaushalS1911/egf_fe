@@ -11,7 +11,7 @@ export default function BusinessTypeCreteView({ setTab }) {
   const { user } = useAuthContext();
   const { configs, mutate } = useGetConfigs();
   const [inputVal, setInputVal] = useState('');
-  const [businessTypes, setBusinessTypes] = useState(configs?.businessTypes || []);
+  const [businessTypes, setBusinessTypes] = useState(configs?.businessType || []);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = () => {
@@ -20,9 +20,9 @@ export default function BusinessTypeCreteView({ setTab }) {
       return;
     }
 
-    const updatedBusinessTypes = [...businessTypes, inputVal];
+    const updatedBusinessTypes = [...businessTypes, inputVal.toUpperCase()];
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
-    const payload = { ...configs, businessTypes: updatedBusinessTypes };
+    const payload = { ...configs, businessType: updatedBusinessTypes };
 
     axios.put(URL, payload)
       .then((res) => {
@@ -63,9 +63,11 @@ export default function BusinessTypeCreteView({ setTab }) {
           <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
             <TextField
               fullWidth
+              name='businessType'
               variant='outlined'
               label='Business Type'
               value={inputVal}
+              inputProps={{ style: { textTransform: 'uppercase' } }}
               onChange={(e) => setInputVal(e.target.value)}
               sx={{ fontSize: '16px' }}
             />

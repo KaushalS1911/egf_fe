@@ -116,7 +116,7 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
       intRate:
         currentOtherLoan?.loan?.scheme.interestRate >= 1.5
           ? 1.5
-          : currentOtherLoan?.loan?.scheme.interestRate - 1.5 || '',
+          : currentOtherLoan?.loan?.scheme.interestRate || '',
       otherName: currentOtherLoan?.otherName || '',
       otherNumber: currentOtherLoan?.otherNumber || '',
       amount: currentOtherLoan?.amount || '',
@@ -130,6 +130,8 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
       closeDate: new Date(currentOtherLoan?.closeDate) || '',
       otherCharge: currentOtherLoan?.otherCharge || '',
       remark: currentOtherLoan?.remark || '',
+      ornamentDetail: currentOtherLoan?.ornamentDetail || '',
+      totalOrnament: currentOtherLoan?.totalOrnament || '',
     }),
     [currentOtherLoan?.loan]
   );
@@ -577,6 +579,18 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
                         </Box>
                       </Box>
                     </Box>
+                    <RHFTextField
+                      name="ornamentDetail"
+                      label="Ornament Detail"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFTextField
+                      name="totalOrnament"
+                      label="Total Ornament"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
                   </Box>
                 </Card>
               </Grid>

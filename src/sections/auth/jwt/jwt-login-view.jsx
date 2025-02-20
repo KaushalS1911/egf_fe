@@ -21,6 +21,7 @@ import { useState } from 'react';
 export default function JwtLoginView() {
   const { login } = useAuthContext();
   const router = useRouter();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const searchParams = useSearchParams();
   const [canResendOTP, setCanResendOTP] = useState(false);
   const returnTo = searchParams.get('returnTo');
@@ -73,6 +74,12 @@ export default function JwtLoginView() {
       const URL = `${AUTH_API}/send-otp`;
       await axios.post(URL, { contact: contactValue });
       enqueueSnackbar(`OTP sent successfully`);
+
+      setIsButtonDisabled(true);
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+      }, 30000);
+
       setCanResendOTP(false);
       setTimeout(() => setCanResendOTP(true), 5000);
     } catch (error) {
@@ -100,7 +107,12 @@ export default function JwtLoginView() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton edge="end" aria-label="send OTP" onClick={handleSendOTP}>
+                  <IconButton
+                    edge="end"
+                    aria-label="send OTP"
+                    onClick={handleSendOTP}
+                    disabled={isButtonDisabled}
+                  >
                     <Iconify icon="eva:paper-plane-outline" />
                   </IconButton>
                 </InputAdornment>

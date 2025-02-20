@@ -92,7 +92,7 @@ export default function BranchCreateView() {
         zipcode: data.address.zipcode,
       },
       isActive: data.isActive,
-      ...(editingBranch && { branchCode: data.branchCode || null }),
+      ...(editingBranch && { branchCode: data.branchCode }),
     };
 
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/branch`;
@@ -204,9 +204,6 @@ export default function BranchCreateView() {
                         label='Branch Code'
                         fullWidth
                         sx={{ mb: 2 }}
-                        InputProps={{
-                          readOnly: true,
-                        }}
                       />
                     </Grid>
                   )}
