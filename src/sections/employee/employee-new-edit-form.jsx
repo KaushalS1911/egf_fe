@@ -182,8 +182,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
     let payload;
     const permanentAddress = {
-      street: data.permanentStreet || '',
-      landmark: data.permanentLandmark || '',
+      street: data.permanentStreet.toUpperCase() || '',
+      landmark: data.permanentLandmark.toUpperCase() || '',
       country: data.permanentCountry || '',
       state: data.permanentState || '',
       city: data.permanentCity || '',
@@ -191,8 +191,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     };
 
     const temporaryAddress = {
-      street: data.tempStreet || '',
-      landmark: data.tempLandmark || '',
+      street: data.tempStreet.toUpperCase() || '',
+      landmark: data.tempLandmark.toUpperCase() || '',
       country: data.tempCountry || '',
       state: data.tempState || '',
       city: data.tempCity || '',
@@ -837,9 +837,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 }}
               >
                 <RHFTextField disabled={disabledField}
-                              name='permanentStreet' label='Address' req={'red'} />
+                              name='permanentStreet' label='Address' req={'red'} inputProps={{ style: { textTransform: 'uppercase' } }} />
                 <RHFTextField disabled={disabledField}
-                              name='permanentLandmark' label='Landmark' req={'red'} />
+                              name='permanentLandmark' label='Landmark' req={'red'} inputProps={{ style: { textTransform: 'uppercase' } }} />
                 <RHFTextField
                   disabled={disabledField}
                   name='permanentZipcode'
@@ -946,9 +946,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 }}
               >
                 <RHFTextField disabled={disabledField}
-                              name='tempStreet' label='Address' />
+                              name='tempStreet' label='Address' inputProps={{ style: { textTransform: 'uppercase' } }} />
                 <RHFTextField disabled={disabledField}
-                              name='tempLandmark' label='Landmark' />
+                              name='tempLandmark' label='Landmark' inputProps={{ style: { textTransform: 'uppercase' } }} />
                 <RHFTextField disabled={disabledField}
                               name='tempZipcode'
                               label='Zipcode'

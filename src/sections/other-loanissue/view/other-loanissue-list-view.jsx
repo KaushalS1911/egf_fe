@@ -46,9 +46,9 @@ import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'otherLoanNo', label: 'Other Loan No.' },
   { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer name' },
+  { id: 'EntryDate', label: 'Entry Date' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
   { id: 'InterestRate', label: 'Int. rate' },

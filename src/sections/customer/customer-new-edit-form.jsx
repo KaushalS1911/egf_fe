@@ -120,6 +120,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       .required('Date of Birth is required')
       .nullable()
       .typeError('Date of Birth is required'),
+    businessType : Yup.string().required('Business Type is required'),
     panCard: Yup.string().required('PAN Card number is required').max(10).min(10),
     aadharCard: Yup.string()
       .required('Aadhar Card number is required')
@@ -160,7 +161,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     panCard: (currentCustomer?.panCard || '').toUpperCase(),
     aadharCard: currentCustomer?.aadharCard || '',
     otpContact: currentCustomer?.otpContact || '',
-    remark: currentCustomer?.remark || '',
+    business: currentCustomer?.business || '',
     customerCode: currentCustomer?.customerCode || '',
     drivingLicense: currentCustomer?.drivingLicense || '',
     referenceBy: currentCustomer ? condition : '',
@@ -250,19 +251,19 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         aadharCard: data.aadharCard,
         otpContact: data.otpContact,
         businessType: data.businessType,
-        remark: data.remark,
+        business: data.business,
         referenceBy: watch('referenceBy') !== 'Other' ? data?.referenceBy : data?.otherReferenceBy,
         permanentAddress: {
-          street: data.PerStreet,
-          landmark: data.PerLandmark,
+          street: data.PerStreet.toUpperCase(),
+          landmark: data.PerLandmark.toUpperCase(),
           country: data.PerCountry,
           state: data.PerState,
           city: data.PerCity,
           zipcode: data.PerZipcode,
         },
         temporaryAddress: {
-          street: data.tempStreet,
-          landmark: data.tempLandmark,
+          street: data.tempStreet.toUpperCase(),
+          landmark: data.tempLandmark.toUpperCase(),
           country: data.tempCountry,
           state: data.tempState,
           city: data.tempCity,
@@ -824,20 +825,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   ),
                 }}
               />
-              {configs?.businessTypes && (
-                <RHFAutocomplete
-                  name='businessType'
-                  disabled={disabledField}
-                  label='Business Type'
-                  placeholder='Choose Business Type'
-                  options={
-                    configs?.businessTypes?.length > 0
-                      ? configs.businessTypes.map((type) => type)
-                      : []
-                  }
-                  isOptionEqualToValue={(option, value) => option === value}
-                />
-              )}
               <RHFTextField disabled={disabledField} name='email' label='Email' />
               <RHFDatePicker
                 disabled={disabledField}
@@ -846,7 +833,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 label='Date of Birth'
                 req={'red'}
               />
-              <RHFTextField disabled={disabledField} name='remark' label='Remark' />
+              {configs?.businessType && (
+                <RHFAutocomplete
+                  req={'red'}
+                  name='businessType'
+                  disabled={disabledField}
+                  label='Business Type'
+                  placeholder='Choose Business Type'
+                  options={
+                    configs?.businessType?.length > 0
+                      ? configs.businessType.map((type) => type)
+                      : []
+                  }
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                  isOptionEqualToValue={(option, value) => option === value}
+                />
+              )}
               {currentCustomer && (
                 <RHFAutocomplete
                   name='status'
@@ -918,8 +920,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
             }}
           >
-            <RHFTextField disabled={disabledField} name='PerStreet' label='Street' req={'red'} />
-            <RHFTextField disabled={disabledField} name='PerLandmark' label='landmark' req={'red'} />
+            <RHFTextField disabled={disabledField} name='PerStreet' label='Street' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
+            <RHFTextField disabled={disabledField} name='PerLandmark' label='landmark' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
             <RHFTextField
               disabled={disabledField}
               name='PerZipcode'
@@ -938,6 +940,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               onKeyPress={(event) => {
                 if (!/[0-9]/.test(event.key)) {
                   event.preventDefault();
+                }
+              }}
+              onBlur={(event) => {
+                const zip = event.target.value;
+                if (zip.length === 6) {
+                  checkZipcode(zip, 'temporary');
                 }
               }}
             />
@@ -990,8 +998,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
             }}
           >
-            <RHFTextField disabled={disabledField} name='tempStreet' label='Street' req={'red'} />
-            <RHFTextField disabled={disabledField} name='tempLandmark' label='landmark' req={'red'} />
+            <RHFTextField disabled={disabledField} name='tempStreet' label='Street' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
+            <RHFTextField disabled={disabledField} name='tempLandmark' label='landmark' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
             <RHFTextField
               disabled={disabledField}
               req={'red'}
@@ -1095,7 +1103,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                     setValue('referenceBy', e.target.value); // Manually update react-hook-form state
                   }}
                 />
-                ;
               </Stack>
             </Stack>
             <Stack spacing={2} sx={{

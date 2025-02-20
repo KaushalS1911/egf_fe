@@ -54,7 +54,7 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
       .required('Interest is required')
       .typeError('Interest must be a number')
       .max(100, 'Interest cannot exceed 100%'),
-    consultCharge: Yup.number().required('Consult Charge is required'),
+    consultingCharge: Yup.number().required('Consult Charge is required'),
     loanAmount: Yup.number().required('Loan Amount is required'),
     interestLoanAmount: Yup.number().required('Interest Loan Amount is required'),
     loanPeriod: Yup.number().required('Loan Period is required'),
@@ -95,7 +95,7 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
         currentOtherLoan?.loan?.scheme.interestRate > 1.5
           ? 1.5
           : currentOtherLoan?.loan?.scheme.interestRate,
-      consultCharge: currentOtherLoan?.loan?.consultingCharge || '',
+      consultingCharge: currentOtherLoan?.loan?.consultingCharge || 0,
       loanAmount: currentOtherLoan?.loan?.loanAmount || '',
       interestLoanAmount: currentOtherLoan?.loan?.interestLoanAmount || '',
       loanPeriod: currentOtherLoan?.loan?.scheme.renewalTime || '',
@@ -112,11 +112,11 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
       totalLoanAmount: currentOtherLoan?.loan?.loanAmount || '',
       partLoanAmount:
         currentOtherLoan?.loan?.loanAmount - currentOtherLoan?.loan?.interestLoanAmount || '',
-      intLoanAmount: currentOtherLoan?.loan?.interestLoanAmount || '',
+      intLoanAmount: currentOtherLoan?.loan?.interestLoanAmount || 0,
       intRate:
         currentOtherLoan?.loan?.scheme.interestRate >= 1.5
           ? 1.5
-          : currentOtherLoan?.loan?.scheme.interestRate - 1.5 || '',
+          : currentOtherLoan?.loan?.scheme.interestRate || '',
       otherName: currentOtherLoan?.otherName || '',
       otherNumber: currentOtherLoan?.otherNumber || '',
       amount: currentOtherLoan?.amount || '',
@@ -130,6 +130,8 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
       closeDate: new Date(currentOtherLoan?.closeDate) || '',
       otherCharge: currentOtherLoan?.otherCharge || '',
       remark: currentOtherLoan?.remark || '',
+      ornamentDetail: currentOtherLoan?.ornamentDetail || '',
+      totalOrnament: currentOtherLoan?.totalOrnament || '',
     }),
     [currentOtherLoan?.loan]
   );
@@ -246,7 +248,7 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
               {/*      inputProps={{ maxLength: 16 }}*/}
               {/*    />*/}
               {/*    <RHFTextField*/}
-              {/*      name="consultCharge"*/}
+              {/*      name="consultingCharge"*/}
               {/*      label="Consult Charge %"*/}
               {/*      InputProps={{ readOnly: true }}*/}
               {/*      InputLabelProps={{ shrink: true }}*/}
@@ -544,6 +546,18 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
                     />
                     <RHFDatePicker name="closeDate" control={control} label="Close Date" disabled />
                     <RHFTextField name="otherCharge" label="Other Charge" disabled />
+                    <RHFTextField
+                      name="ornamentDetail"
+                      label="Ornament Detail"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
+                    <RHFTextField
+                      name="totalOrnament"
+                      label="Total Ornament"
+                      InputProps={{ readOnly: true }}
+                      disabled
+                    />
                     <RHFTextField name="remark" label="Remark" disabled />
                     <Box pb={0}>
                       <Box

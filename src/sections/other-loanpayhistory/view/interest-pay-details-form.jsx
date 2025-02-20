@@ -34,7 +34,7 @@ const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
   { id: 'to', label: 'To Date' },
   { id: 'days', label: 'Days' },
-  { id: 'amountPaid', label: 'amountPaid' },
+  { id: 'amountPaid', label: 'Amount Paid' },
   { id: 'EntryDate', label: 'Entry Date' },
   { id: 'action', label: 'Action' },
   { id: 'pdf', label: 'PDF' },
