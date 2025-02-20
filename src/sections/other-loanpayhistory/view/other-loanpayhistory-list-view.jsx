@@ -66,12 +66,7 @@ const TABLE_HEAD = [
 
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
-  { value: 'Regular', label: 'Regular' },
-  {
-    value: 'Overdue',
-    label: 'Overdue',
-  },
-  { value: 'Disbursed', label: 'Disbursed' },
+  { value: 'Issued', label: 'Active' },
   {
     value: 'Closed',
     label: 'Closed',
@@ -230,15 +225,13 @@ export default function LoanpayhistoryListView() {
                         ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
                       }
                       color={
-                        (tab.value === 'Regular' && 'success') ||
-                        (tab.value === 'Overdue' && 'error') ||
-                        (tab.value === 'Disbursed' && 'info') ||
+                        (tab.value === 'Issued' && 'success') ||
                         (tab.value === 'Closed' && 'warning') ||
                         'default'
                       }
                     >
-                      {['Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
-                        ? otherLoanissue.filter((item) => item.loan.status === tab.value).length
+                      {['Issued', 'Closed'].includes(tab.value)
+                        ? otherLoanissue.filter((item) => item.status === tab.value).length
                         : otherLoanissue.length}
                     </Label>
                   </>
@@ -379,7 +372,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
 
   if (status && status !== 'All') {
-    inputData = inputData.filter((item) => item.loan.status === status);
+    inputData = inputData.filter((item) => item.status === status);
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>

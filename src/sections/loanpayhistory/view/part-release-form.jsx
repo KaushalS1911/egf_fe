@@ -59,7 +59,8 @@ const TABLE_HEAD = [
   { id: 'payAmount', label: 'Pay Amount' },
   { id: 'adjustAmount', label: 'Adjust Amount' },
   { id: 'pendingAmount', label: 'Pending Amount' },
-  { id: 'payDate', label: 'Entry Date' },
+  { id: 'payDate', label: 'Pay Date' },
+  { id: 'entryDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
   { id: 'action', label: 'Action' },
   { id: 'pdf', label: 'PDF' },
@@ -86,12 +87,12 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   const [rotation, setRotation] = useState(0);
   const adjustedAmount = partRelease.reduce(
     (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
-    0
+    0,
   );
   const totalPayAmt = partRelease.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
   const intAmt = partRelease.reduce(
     (prev, next) => prev + (Number(next?.pendingLoanAmount) || 0),
-    0
+    0,
   );
   useEffect(() => {
     if (currentLoan.propertyDetails) {
@@ -112,43 +113,43 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
-          account: Yup.object().required('Account is required').typeError('Account is required'),
+        account: Yup.object().required('Account is required').typeError('Account is required'),
+        bankAmount: Yup.string()
+          .required('Bank Amount is required')
+          .test(
+            'is-positive',
+            'Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+      }
+      : paymentMode === 'Cash'
+        ? {
+          cashAmount: Yup.string()
+            .required('Cash Amount is required')
+            .test(
+              'is-positive',
+              'Cash Amount must be a positive number',
+              (value) => parseFloat(value) >= 0,
+            ),
+        }
+        : {
+          cashAmount: Yup.string()
+            .required('Cash Amount is required')
+            .test(
+              'is-positive',
+              'Cash Amount must be a positive number',
+              (value) => parseFloat(value) >= 0,
+            ),
+
           bankAmount: Yup.string()
             .required('Bank Amount is required')
             .test(
               'is-positive',
               'Bank Amount must be a positive number',
-              (value) => parseFloat(value) >= 0
+              (value) => parseFloat(value) >= 0,
             ),
-        }
-      : paymentMode === 'Cash'
-        ? {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-          }
-        : {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-
-            bankAmount: Yup.string()
-              .required('Bank Amount is required')
-              .test(
-                'is-positive',
-                'Bank Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-            account: Yup.object().required('Account is required'),
-          };
+          account: Yup.object().required('Account is required'),
+        };
 
   const selectedTotals = useMemo(() => {
     return selectedRows.reduce(
@@ -161,7 +162,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         totals.netAmount += Number(row.netAmount) || 0;
         return totals;
       },
-      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 }
+      { pcs: 0, totalWeight: 0, netWeight: 0, grossAmount: 0, netAmount: 0 },
     );
   }, [selectedRows, currentLoan.propertyDetails]);
 
@@ -210,6 +211,44 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   useEffect(() => {
     setValue('pendingLoanAmount', currentLoan.interestLoanAmount - watch('adjustAmount'));
   }, [watch('adjustAmount')]);
+
+  const sendPdfToWhatsApp = async (item) => {
+    try {
+    const blob = await pdf(<PartReleasePdf selectedRow={item ? item : data} configs={configs} />).toBlob();
+    const file = new File([blob], `Loan-Part-Release.pdf`, { type: 'application/pdf' });
+    const payload = {
+      firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
+      middleName: item ? item.loan.customer.middleName : data.loan.customer.middleName,
+      lastName: item ? item.loan.customer.lastName : data.loan.customer.lastName,
+      loanNumber: item ? item.loan.loanNo : data.loan.loanNo,
+      contact: item ? item.loan.customer.contact : data.loan.customer.contact,
+      amountPaid: item ? item.amountPaid : data.amountPaid,
+      createdAt: item ? item.createdAt : data.createdAt,
+      interestLoanAmount: item ? item.loan.interestLoanAmount:  data.loan.interestLoanAmount,
+      nextInstallmentDate: item ? item.loan.nextInstallmentDate : data.loan.nextInstallmentDate,
+      companyName: item ? item.loan.company.name : data.loan.company.name,
+      companyEmail: item ? item.loan.company.email : data.loan.company.email,
+      companyContact: item ? item.loan.company.contact : data.loan.company.contact,
+      file,
+      type: 'part_release',
+    };
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    axios
+      .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     const netAmount = Number(selectedTotals?.netAmount || 0);
     const amountPaid = watch('amountPaid');
@@ -304,19 +343,20 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       };
 
       const response = await axios(config);
+      const responseData = response?.data?.data;
+      sendPdfToWhatsApp(responseData);
       mutate();
       refetchPartRelease();
       setSelectedRows([]);
-      setProperties(response.data.data.loan.propertyDetails);
+      setProperties(responseData?.loan?.propertyDetails || []);
       handleDeleteImage();
       reset();
-      enqueueSnackbar(response?.data.message, { variant: 'success' });
+      enqueueSnackbar(response?.data?.message || 'Success', { variant: 'success' });
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to part release', { variant: 'error' });
     }
   });
-
   useEffect(() => {
     if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
@@ -433,7 +473,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
           -image.naturalWidth / 2,
           -image.naturalHeight / 2,
           image.naturalWidth,
-          image.naturalHeight
+          image.naturalHeight,
         );
         ctx.restore();
       } else {
@@ -465,7 +505,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
           -cropWidth / 2,
           -cropHeight / 2,
           cropWidth,
-          cropHeight
+          cropHeight,
         );
         ctx.restore();
       }
@@ -504,7 +544,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(index)
         ? prevSelected.filter((selectedIndex) => selectedIndex !== index)
-        : [...prevSelected, index]
+        : [...prevSelected, index],
     );
   };
 
@@ -520,7 +560,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   const handleDeletePart = async (id) => {
     try {
       const response = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release/${id}`
+        `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-release/${id}`,
       );
       mutate();
       refetchPartRelease();
@@ -530,44 +570,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       enqueueSnackbar('Failed to pay interest');
     }
   };
-  const sendPdfToWhatsApp = async () => {
-    try {
-      const blob = await pdf(<PartReleasePdf selectedRow={data} configs={configs} />).toBlob();
-      const file = new File([blob], `Loan-Part-Release.pdf`, { type: 'application/pdf' });
-      const payload = {
-        firstName: data.loan.customer.firstName,
-        middleName: data.loan.customer.middleName,
-        lastName: data.loan.customer.lastName,
-        loanNumber: data.loan.loanNo,
-        contact: data.loan.customer.contact,
-        amountPaid: data.amountPaid,
-        createdAt: data.createdAt,
-        interestLoanAmount: data.loan.interestLoanAmount,
-        nextInstallmentDate: data.loan.nextInstallmentDate,
-        companyName: data.loan.company.name,
-        companyEmail: data.loan.company.email,
-        companyContact: data.loan.company.contact,
-        file,
-        type: 'part_release'
-      };
-      const formData = new FormData();
 
-      Object.entries(payload).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      axios
-        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
 
   return (
     <>
@@ -807,7 +810,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                               {...field}
                               label="Cash Amount"
                               req={'red'}
-                              type="number"
                               inputProps={{ min: 0 }}
                               onChange={(e) => {
                                 field.onChange(e);
@@ -842,7 +844,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                                 label="Bank Amount"
                                 req="red"
                                 disabled={watch('paymentMode') !== 'Bank'}
-                                type="number"
                                 inputProps={{ min: 0 }}
                               />
                             )}
@@ -946,7 +947,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.loan.loanAmount}
                 </TableCell>
-                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.interestLoanAmount}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
@@ -955,6 +956,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.pendingLoanAmount && row.pendingLoanAmount.toFixed(2)}
+                </TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {fDate(row.date)}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {fDate(row.createdAt)}
@@ -992,6 +996,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                         onClick={() => {
                           view.onTrue();
                           setData(row);
+                          console.log(row);
                         }}
                         sx={{
                           cursor: 'pointer',
@@ -1011,8 +1016,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
           <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-              {totalPayAmt}
+              {totalPayAmt ? totalPayAmt.toFixed(2) : '-'}
             </TableCell>
             <TableCell
               sx={{
@@ -1022,7 +1028,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 px: 2,
               }}
             >
-              {adjustedAmount}
+              {adjustedAmount ? adjustedAmount.toFixed(2) : '-'}
             </TableCell>
             <TableCell
               sx={{
@@ -1032,8 +1038,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 px: 2,
               }}
             >
-              {intAmt}
+              {intAmt ? intAmt.toFixed(2) : '-'}
             </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

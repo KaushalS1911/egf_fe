@@ -29,11 +29,13 @@ import { useGetCloseLoan } from '../../../api/loan-close';
 import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { fDate } from '../../../utils/format-time.js';
+import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker.jsx';
 
 const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
-  { id: 'pendingLoanAmt', label: 'pending loan Amt' },
+  { id: 'pendingLoanAmt', label: 'Pending loan Amt' },
+  { id: 'payDate', label: 'Pay Date' },
   { id: 'closinDate', label: 'Closing Date' },
   { id: 'closinCharge', label: 'Closing charge' },
   { id: 'netAmt', label: 'Net amt' },
@@ -94,6 +96,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       .min(1, 'Total Loan Amount must be greater than 0')
       .required('Total Loan Amount is required')
       .typeError('Total Loan Amount must be a number'),
+    date: Yup.date().nullable().required('Pay date is required'),
     pendingLoanAmount: Yup.number()
       .min(0, 'Pending Loan Amount must be 0 or greater')
       .required('Pending Loan Amount is required')
@@ -104,6 +107,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
   });
 
   const defaultValues = {
+    date: new Date(),
     totalLoanAmount: currentLoan?.loanAmount || '',
     netAmount: '',
     paidLoanAmount: currentLoan?.loanAmount - currentLoan?.interestLoanAmount || '0',
@@ -140,7 +144,44 @@ function LoanCloseForm({ currentLoan, mutate }) {
   useEffect(() => {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
+  const sendPdfToWhatsApp = async (item) => {
+    try {
+      const blob = await pdf(<LoanCloseDetailsPdf data={item ? item : data} configs={configs} />).toBlob();
+      const file = new File([blob], `Loan-Part-Release.pdf`, { type: 'application/pdf' });
+      const payload = {
+        firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
+        middleName: item ? item.loan.customer.middleName : data.loan.customer.middleName,
+        lastName: item ? item.loan.customer.lastName : data.loan.customer.lastName,
+        contact: item ? item.loan.customer.contact : data.loan.customer.contact,
+        loanNumber: item ? item.loan.loanNo : data.loan.loanNo,
+        loanAmount: item ? item.loan.loanAmount : data.loan.loanAmount,
+        date: item ? item.createdAt : data.createdAt,
+        closingCharge: item ? item.closingCharge : data.closingCharge,
+        amountPaid: item ? item.netAmount : data.netAmount,
+        companyName: item ? item.loan.company.name : data.loan.company.name,
+        companyEmail: item ? item.loan.company.email : data.loan.company.email,
+        companyContact: item ? item.loan.company.contact : data.loan.company.contact,
+        file,
+        type: 'loan_close',
+      };
+      const formData = new FormData();
 
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      axios
+        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -184,6 +225,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
       };
 
       const response = await axios(config);
+      const responseData = response?.data?.data;
+      sendPdfToWhatsApp(responseData)
       reset();
       refetchLoanClose();
       mutate();
@@ -228,44 +271,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       setValue('bankAmount', 0);
     }
   };
-  const sendPdfToWhatsApp = async () => {
-    try {
-      const blob = await pdf(<LoanCloseDetailsPdf data={data} configs={configs} />).toBlob();
-      const file = new File([blob], `Loan-Part-Release.pdf`, { type: 'application/pdf' });
-      const payload = {
-        firstName: data.loan.customer.firstName,
-        middleName: data.loan.customer.middleName,
-        lastName: data.loan.customer.lastName,
-        contact: data.loan.customer.contact,
-        loanNumber: data.loan.loanNo,
-        loanAmount: data.loan.loanAmount,
-        date: data.createdAt,
-        closingCharge: data.closingCharge,
-        amountPaid: data.netAmount,
-        companyName: data.loan.company.name,
-        companyEmail: data.loan.company.email,
-        companyContact: data.loan.company.contact,
-        file,
-        type: 'loan_close',
-      };
-      const formData = new FormData();
 
-      Object.entries(payload).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      axios
-        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
 
   return (
     <>
@@ -325,6 +331,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
               InputProps={{ readOnly: true }}
             />
             <RHFTextField name="closeRemarks" label="Close Remarks" />
+            <RHFDatePicker name="date" control={control} label="Pay Date" req={'red'} />
           </Box>
         </Grid>
         <Grid pb={2}>
@@ -368,7 +375,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
                         {...field}
                         label="Cash Amount"
                         req={'red'}
-                        type="number"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -403,7 +409,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
                           label="Bank Amount"
                           req={'red'}
                           disabled={watch('paymentMode') === 'Bank' ? false : true}
-                          type="number"
                           inputProps={{ min: 0 }}
                         />
                       )}
@@ -437,6 +442,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 {row.totalLoanAmount}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
+              <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.closingCharge}

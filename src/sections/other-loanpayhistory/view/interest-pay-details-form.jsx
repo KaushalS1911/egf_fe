@@ -463,7 +463,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                       {...field}
                       label="Cash Amount"
                       req={'red'}
-                      type="number"
                       inputProps={{ min: 0 }}
                       onChange={(e) => {
                         field.onChange(e);
@@ -498,7 +497,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                         label="Bank Amount"
                         req={'red'}
                         disabled={watch('paymentMode') === 'Bank' ? false : true}
-                        type="number"
                         inputProps={{ min: 0 }}
                       />
                     )}

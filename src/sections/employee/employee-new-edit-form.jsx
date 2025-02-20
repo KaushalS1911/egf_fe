@@ -95,9 +95,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     role: Yup.string().required('Role is required'),
     reportingTo: Yup.object().required('Reporting to is required'),
     email: Yup.string().email('Invalid email format').required('Email is required'),
-    password: currentEmployee
-      ? Yup.string()
-      : Yup.string().required('Password is required'),
     joiningDate: Yup.date()
       .required('Joining date is required')
       .nullable()
@@ -137,7 +134,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     role: currentEmployee?.user.role || '',
     reportingTo: currentEmployee?.reportingTo || null,
     email: currentEmployee?.user.email || '',
-    password: '',
     joiningDate: currentEmployee ? new Date(currentEmployee?.joiningDate) : new Date(),
     leaveDate: new Date(currentEmployee?.leaveDate) || '',
     permanentStreet: currentEmployee?.permanentAddress.street || '',
@@ -219,7 +215,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       const fields = [
         'firstName', 'middleName', 'lastName', 'drivingLicense', 'voterCard', 'panCard',
         'aadharCard', 'contact', 'dob', 'remark', 'role', 'reportingTo',
-        'email', 'password', 'joiningDate', 'leaveDate',
+        'email',  'joiningDate', 'leaveDate',
       ];
 
       fields.forEach(field => {
@@ -809,8 +805,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />}
                 <RHFTextField disabled={disabledField}
                               name='email' label='Email' req={'red'} />
-                {!currentEmployee && <RHFTextField disabled={disabledField}
-                                                   name='password' label='Password' req={'red'} />}
                 <RHFDatePicker
                   disabled={disabledField}
                   name='joiningDate'

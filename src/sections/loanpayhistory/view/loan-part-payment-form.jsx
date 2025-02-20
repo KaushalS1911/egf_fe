@@ -36,8 +36,9 @@ import { useAuthContext } from '../../../auth/hooks';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
-  { id: 'payAmount', label: 'Pay Amount' },
   { id: 'intLoanAmount', label: 'INT Loan Amt' },
+  { id: 'payAmount', label: 'Pay Amount' },
+  { id: 'pendingLoanAmount', label: 'Pending Loan Amount' },
   { id: 'payDate', label: 'Pay Date' },
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
@@ -139,7 +140,44 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
+  const sendPdfToWhatsApp = async (item) => {
+    try {
+      const blob = await pdf(<LoanPartPaymentDetailsPdf data={item ? item : data} configs={configs} />).toBlob();
+      const file = new File([blob], `LoanPartPaymentDetailsPdf.pdf`, { type: 'application/pdf' });
+      const payload = {
+        firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
+        middleName: item ? item.loan.customer.middleName : data.loan.customer.middleName,
+        lastName: item ? item.loan.customer.lastName : data.loan.customer.lastName,
+        loanNumber: item ? item.loan.loanNo : data.loan.loanNo,
+        contact: item ? item.loan.customer.contact : data.loan.customer.contact,
+        amountPaid: item ? item.amountPaid : data.amountPaid,
+        createdAt: item ? item.createdAt : data.createdAt,
+        interestLoanAmount: item ? item.loan.interestLoanAmount : data.loan.interestLoanAmount,
+        nextInstallmentDate: item ? item.loan.nextInstallmentDate : data.loan.nextInstallmentDate,
+        companyName: item ? item.loan.company.name : data.loan.company.name,
+        companyEmail: item ? item.loan.company.email : data.loan.company.email,
+        companyContact: item ? item.loan.company.contact : data.loan.company.contact,
+        file,
+        type: 'part_payment',
+      };
+      const formData = new FormData();
 
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      axios
+        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -165,10 +203,10 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
         ...data.account,
       };
     }
-
     const payload = {
       remark: data.remark,
       date: data.date,
+      interestLoanAmount: currentLoan.interestLoanAmount,
       amountPaid: data.amountPaid,
       paymentDetail: paymentDetail,
     };
@@ -183,6 +221,8 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       };
 
       const response = await axios(config);
+      const responseData = response?.data?.data;
+      sendPdfToWhatsApp(responseData);
       refetchPartPayment();
       mutate();
       reset();
@@ -248,51 +288,14 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     }
   };
 
-  function intAmtCalculation(loanAmt, IntAmt, index) {
-    const totalPartPay = partPayment.reduce((acc, curr, i) => {
-      return i <= index ? acc + curr.amountPaid : acc;
-    }, 0);
-    return loanAmt - totalPartPay;
-  }
+  // function intAmtCalculation(loanAmt, IntAmt, index) {
+  //   const totalPartPay = partPayment.reduce((acc, curr, i) => {
+  //     return i <= index ? acc + curr.amountPaid : acc;
+  //   }, 0);
+  //   return loanAmt - totalPartPay;
+  // }
 
-  const sendPdfToWhatsApp = async () => {
-    try {
-      const blob = await pdf(<LoanPartPaymentDetailsPdf data={data} configs={configs} />).toBlob();
-      const file = new File([blob], `LoanPartPaymentDetailsPdf.pdf`, { type: 'application/pdf' });
-      const payload = {
-        firstName: data.loan.customer.firstName,
-        middleName: data.loan.customer.middleName,
-        lastName: data.loan.customer.lastName,
-        loanNumber: data.loan.loanNo,
-        contact: data.loan.customer.contact,
-        amountPaid: data.amountPaid,
-        createdAt: data.createdAt,
-        interestLoanAmount: data.loan.interestLoanAmount,
-        nextInstallmentDate: data.loan.nextInstallmentDate,
-        companyName: data.loan.company.name,
-        companyEmail: data.loan.company.email,
-        companyContact: data.loan.company.contact,
-        file,
-        type: 'part_payment',
-      };
-      const formData = new FormData();
 
-      Object.entries(payload).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      axios
-        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -380,7 +383,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                         {...field}
                         label="Cash Amount"
                         req={'red'}
-                        type="number"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -415,7 +417,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                           label="Bank Amount"
                           req={'red'}
                           disabled={watch('paymentMode') === 'Bank' ? false : true}
-                          type="number"
                           inputProps={{ min: 0 }}
                         />
                       )}
@@ -450,7 +451,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {row.loan.loanAmount}
               </TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
               <TableCell
                 sx={{
                   whiteSpace: 'nowrap',
@@ -458,8 +458,10 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                   px: 2,
                 }}
               >
-                {intAmtCalculation(row.loan.loanAmount, row.loan.interestLoanAmount, index)}
+                {row.interestLoanAmount}
               </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{Number(row.loan.loanAmount) - Number(row.amountPaid)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {fDate(row.createdAt)}
@@ -515,6 +517,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
               {intAmt}
             </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

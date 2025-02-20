@@ -76,7 +76,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
       interest: currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate,
       consultCharge: currentLoan?.consultingCharge || '',
       loanAmount: currentLoan?.loanAmount || '',
-      interestLoanAmount: currentLoan?.interestLoanAmount || '',
+      interestLoanAmount: currentLoan?.interestLoanAmount || 0,
       loanPeriod: currentLoan?.scheme.renewalTime || '',
       IntPeriodTime: currentLoan?.scheme.interestPeriod || '',
       createdBy: (user?.firstName + ' ' + user?.lastName) || null,

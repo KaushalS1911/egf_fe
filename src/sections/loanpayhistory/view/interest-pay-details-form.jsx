@@ -61,20 +61,21 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const { user } = useAuthContext();
   const loanAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
+    0,
   );
   const penaltyAmt = loanInterest.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
+  const totalConsultantInt = loanInterest.reduce((prev, next) => prev + (Number(next?.consultingCharge) || 0), 0);
   const payAfterAdjustAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.adjustedPay) || 0),
-    0
+    0,
   );
   const uchakAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.uchakInterestAmount) || 0),
-    0
+    0,
   );
   const totalPayAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.amountPaid) || 0),
-    0
+    0,
   );
   const intAmt = loanInterest.reduce((prev, next) => prev + (Number(next?.interestAmount) || 0), 0);
   const crDr = loanInterest.reduce((prev, next) => prev + (Number(next?.cr_dr) || 0), 0);
@@ -82,43 +83,37 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
-          account: Yup.object().required('Account is required').typeError('Account is required'),
+        account: Yup.object().required('Account is required').typeError('Account is required'),
+        bankAmount: Yup.string()
+          .required('Bank Amount is required')
+          .test(
+            'is-positive',
+            'Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+      }
+      : paymentMode === 'Cash'
+        ? {
+          cashAmount: Yup.number()
+            .typeError('Cash Amount must be a valid number')
+            .required('Cash Amount is required')
+            .min(0, 'Cash Amount must be a positive number'),
+        }
+        : {
+          cashAmount: Yup.number()
+            .typeError('Cash Amount must be a valid number')
+            .required('Cash Amount is required')
+            .min(0, 'Cash Amount must be a positive number'),
+
           bankAmount: Yup.string()
             .required('Bank Amount is required')
             .test(
               'is-positive',
               'Bank Amount must be a positive number',
-              (value) => parseFloat(value) >= 0
+              (value) => parseFloat(value) >= 0,
             ),
-        }
-      : paymentMode === 'Cash'
-        ? {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-          }
-        : {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-
-            bankAmount: Yup.string()
-              .required('Bank Amount is required')
-              .test(
-                'is-positive',
-                'Bank Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-            account: Yup.object().required('Account is required'),
-          };
+          account: Yup.object().required('Account is required'),
+        };
 
   const NewInterestPayDetailsSchema = Yup.object().shape({
     from: Yup.string().required('From Date is required'),
@@ -211,7 +206,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
         penaltyPer = calculatePenalty(
           currentLoan.interestLoanAmount,
           penaltyItem.penaltyInterest,
-          differenceInDays
+          differenceInDays,
         );
       }
     });
@@ -221,22 +216,22 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
         (((currentLoan.interestLoanAmount * currentLoan?.scheme.interestRate) / 100) *
           (12 * differenceInDays)) /
         365
-      ).toFixed(2)
+      ).toFixed(2),
     );
     setValue('penalty', penaltyPer);
     setValue(
       'totalPay',
       (
         Number(watch('interestAmount')) + Number(watch('penalty') - Number(watch('uchakAmount')))
-      ).toFixed(2)
+      ).toFixed(2),
     );
     setValue(
       'payAfterAdjusted1',
-      (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2)
+      (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2),
     );
     setValue(
       'cr_dr',
-      (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2)
+      (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2),
     );
   }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
 
@@ -245,6 +240,43 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       setPaymentMode(watch('paymentMode'));
     }
   }, [watch('paymentMode')]);
+
+  const sendPdfToWhatsApp = async () => {
+    try {
+      const blob = await pdf(<InterestPdf data={data} configs={configs} />).toBlob();
+      const file = new File([blob], `interestPayment.pdf`, { type: 'application/pdf' });
+      const payload = {
+        firstName: data.loan.customer.firstName,
+        middleName: data.loan.customer.middleName,
+        lastName: data.loan.customer.lastName,
+        contact: data.loan.customer.contact,
+        loanNumber: data.loan.loanNo,
+        interestAmount: data.amountPaid,
+        nextInstallmentDate: data.loan.nextInstallmentDate,
+        companyName: data.loan.company.name,
+        companyEmail: data.loan.company.email,
+        companyContact: data.loan.company.contact,
+        file,
+        type: 'interest_payment',
+      };
+      const formData = new FormData();
+
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      axios
+        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     const amountPaid = parseFloat(data.amountPaid) || 0;
@@ -290,7 +322,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       penalty: parseFloat(data.penalty) || 0,
       cr_dr: parseFloat(data.cr_dr) || 0,
       paymentDetail,
-      interestLoanAmount:currentLoan.interestLoanAmount
+      interestLoanAmount: currentLoan.interestLoanAmount,
     };
 
     try {
@@ -301,6 +333,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
         data: payload,
       };
       const response = await axios(config);
+      sendPdfToWhatsApp()
       reset();
       mutate();
       refetchLoanInterest();
@@ -347,7 +380,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const handleDeleteInterest = async (id) => {
     try {
       const response = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment/${id}`
+        `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/interest-payment/${id}`,
       );
       setDeleteId(null);
       confirm.onFalse();
@@ -359,42 +392,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
   };
 
-  const sendPdfToWhatsApp = async () => {
-    try {
-      const blob = await pdf(<InterestPdf data={data} configs={configs} />).toBlob();
-      const file = new File([blob], `interestPayment.pdf`, { type: 'application/pdf' });
-      const payload = {
-        firstName: data.loan.customer.firstName,
-        middleName: data.loan.customer.middleName,
-        lastName: data.loan.customer.lastName,
-        contact: data.loan.customer.contact,
-        loanNumber: data.loan.loanNo,
-        interestAmount: data.interestAmount,
-        nextInstallmentDate: data.loan.nextInstallmentDate,
-        companyName: data.loan.company.name,
-        companyEmail: data.loan.company.email,
-        companyContact: data.loan.company.contact,
-        file,
-        type: 'interest_payment',
-      };
-      const formData = new FormData();
 
-      Object.entries(payload).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      axios
-        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
   return (
     <Box sx={{ py: 0 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -516,7 +514,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       {...field}
                       label="Cash Amount"
                       req={'red'}
-                      type="number"
                       inputProps={{ min: 0 }}
                       onChange={(e) => {
                         field.onChange(e);
@@ -551,7 +548,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                         label="Bank Amount"
                         req={'red'}
                         disabled={watch('paymentMode') === 'Bank' ? false : true}
-                        type="number"
                         inputProps={{ min: 0 }}
                       />
                     )}
@@ -620,7 +616,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       {row.loan.scheme.interestRate > 1.5 ? 1.5 : row.loan.scheme.interestRate}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.loan.consultingCharge}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.interestAmount}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.interestAmount ? row.interestAmount.toFixed(2) : 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.penalty}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.cr_dr}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
@@ -683,13 +679,14 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                   TOTAL
                 </TableCell>
                 <TableCell />
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {loanAmt}
-                </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>{totalConsultantInt ? totalConsultantInt.toFixed(2) : '-'}</TableCell>
+
+
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {intAmt}{' '}
+                  {intAmt ? intAmt.toFixed(2) : '-'}{' '}
                 </TableCell>
                 <TableCell
                   sx={{

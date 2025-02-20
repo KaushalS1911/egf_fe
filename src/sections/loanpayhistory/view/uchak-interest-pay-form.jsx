@@ -143,6 +143,42 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
     }
   }, [watch('paymentMode')]);
 
+  const sendPdfToWhatsApp = async (item) => {
+    try {
+      const blob = await pdf(<UchakInterstPayDetailPdf data={item ? item : data} configs={configs} />).toBlob();
+      const file = new File([blob], `Uchak-Interest-Paydetail.pdf`, { type: 'application/pdf' });
+      const payload = {
+        firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
+        middleName: item ? item.loan.customer.middleName : data.loan.customer.middleName,
+        lastName: item ? item.loan.customer.lastName : data.loan.customer.lastName,
+        loanNumber: item ? item.loan.loanNo : data.loan.loanNo,
+        contact:  item ? item.loan.customer.contact : data.loan.customer.contact,
+        amountPaid: item ? item.amountPaid : data.amountPaid,
+        companyName: item ? item.loan.company.name : data.loan.company.name,
+        companyEmail: item ? item.loan.company.email : data.loan.company.email,
+        companyContact: item ? item.loan.company.contact : data.loan.company.contact,
+        file,
+        type: 'uchak_interest_payment',
+      };
+      const formData = new FormData();
+
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      axios
+        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
       paymentMode: data.paymentMode,
@@ -184,6 +220,8 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       };
 
       const response = await axios(config);
+      const responseData = response?.data?.data;
+      sendPdfToWhatsApp(responseData)
       reset();
       refetchUchak();
       mutate();
@@ -243,41 +281,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       enqueueSnackbar('Failed to pay uchak interest', { variant: 'error' });
     }
   };
-  const sendPdfToWhatsApp = async () => {
-    try {
-      const blob = await pdf(<UchakInterstPayDetailPdf data={data} configs={configs} />).toBlob();
-      const file = new File([blob], `Uchak-Interest-Paydetail.pdf`, { type: 'application/pdf' });
-      const payload = {
-        firstName: data.loan.customer.firstName,
-        middleName: data.loan.customer.middleName,
-        lastName: data.loan.customer.lastName,
-        loanNumber: data.loan.loanNo,
-        contact: data.loan.customer.contact,
-        amountPaid: data.amountPaid,
-        companyName: data.loan.company.name,
-        companyEmail: data.loan.company.email,
-        companyContact: data.loan.company.contact,
-        file,
-        type: 'uchak_interest_payment',
-      };
-      const formData = new FormData();
 
-      Object.entries(payload).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      axios
-        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
 
   return (
     <>
@@ -348,7 +352,6 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                         {...field}
                         label="Cash Amount"
                         req={'red'}
-                        type="number"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -384,7 +387,6 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                         label="Bank Amount"
                         req={'red'}
                         disabled={watch('paymentMode') === 'Bank' ? false : true}
-                        type="number"
                         inputProps={{ min: 0 }}
                       />
                     )}

@@ -128,8 +128,10 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     renewalDate: Yup.date().required('Renewaldate is required'),
     // closeDate: Yup.string().required('Colse Date is required'),
     otherCharge: Yup.string().required('OtherCharge is required'),
-    closingCharge: Yup.string().required('ClosingCgarge is required'),
+    closingCharge: Yup.string().required('ClosingCharge is required'),
     interestAmount: Yup.string().required('Interest Amount is required'),
+    totalOrnament : Yup.string().required('Total Ornament is required'),
+    ornamentDetail : Yup.string().required('Ornament Detail is required'),
     // propertyDetails: Yup.array().of(
     //   Yup.object().shape({
     //     type: Yup.string().required('Type is required'),
@@ -142,7 +144,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     //   })
     // ),
   });
-
   const defaultValues = useMemo(() => {
     const baseValues = {
       customer_url: '',
@@ -155,6 +156,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       periodTime: '',
       renewalTime: '',
       loanCloseTime: '',
+      totalOrnament : currentOtherLoanIssue?.totalOrnament || null,
+      ornamentDetail : currentOtherLoanIssue?.ornamentDetail || null,
       property_image: currentOtherLoanIssue?.loan?.propertyImage || null,
       loan: currentOtherLoanIssue
         ? {
@@ -305,6 +308,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       date: data.date,
       grossWt: data.grossWt,
       netWt: data.netWt,
+      ornamentDetail : data.ornamentDetail,
+      totalOrnament : data.totalOrnament,
       rate: data.rate,
       month: data.month,
       renewalDate: data.renewalDate,
@@ -1728,6 +1733,23 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   label="Other Charge"
                   req={'red'}
                   disabled={!isFieldsEnabled}
+                />
+                <RHFTextField
+                  name="ornamentDetail"
+                  label="Ornament Detail"
+                  req={'red'}
+                  disabled={!isFieldsEnabled}
+                />
+                <RHFTextField
+                  name="totalOrnament"
+                  label="Total Ornament"
+                  req={'red'}
+                  disabled={!isFieldsEnabled}
+                  onKeyPress={(e) => {
+                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <RHFTextField
                   name="remark"

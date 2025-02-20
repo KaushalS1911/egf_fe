@@ -12,7 +12,7 @@ export default function OtherLoanissueCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create Loan Issue"
+        heading="Create Other Loan Issue"
         links={[
           {
             name: 'Dashboard',

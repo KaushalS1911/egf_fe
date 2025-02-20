@@ -48,8 +48,9 @@ export default function OtherLoanpayhistoryTableRow({
     closingCharge,
     renewalDate,
     _id,
+    status
   } = row;
-  const { loanNo, customer, status } = loan;
+  const { loanNo, customer } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -64,7 +65,7 @@ export default function OtherLoanpayhistoryTableRow({
   const statusColors = {
     Closed: (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07'),
     Overdue: (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706'),
-    Regular: (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403'),
+    Issued: (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403'),
   };
   const renderDialogContent = () => {
     if (dialogContent === 'loanDetails') {
