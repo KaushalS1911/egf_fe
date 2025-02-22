@@ -30,6 +30,8 @@ import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { fDate } from '../../../utils/format-time.js';
 import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker.jsx';
+import { useGetAllInterest } from '../../../api/interest-pay.js';
+import { ConfirmDialog } from '../../../components/custom-dialog/index.js';
 
 const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
@@ -45,51 +47,56 @@ const TABLE_HEAD = [
 function LoanCloseForm({ currentLoan, mutate }) {
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
+  const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
   const [paymentMode, setPaymentMode] = useState('');
   const { loanClose, refetchLoanClose } = useGetCloseLoan(currentLoan._id);
   const view = useBoolean();
+  const confirm = useBoolean();
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
-
+  const totalDays = loanInterest.reduce(
+    (prev, next) => prev + (Number(next?.days) || 0),
+    0,
+  );
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
-          account: Yup.object().required('Account is required'),
+        account: Yup.object().required('Account is required'),
+        bankAmount: Yup.string()
+          .required('Bank Amount is required')
+          .test(
+            'is-positive',
+            'Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+      }
+      : paymentMode === 'Cash'
+        ? {
+          cashAmount: Yup.string()
+            .required('Cash Amount is required')
+            .test(
+              'is-positive',
+              'Cash Amount must be a positive number',
+              (value) => parseFloat(value) >= 0,
+            ),
+        }
+        : {
+          cashAmount: Yup.string()
+            .required('Cash Amount is required')
+            .test(
+              'is-positive',
+              'Cash Amount must be a positive number',
+              (value) => parseFloat(value) >= 0,
+            ),
           bankAmount: Yup.string()
             .required('Bank Amount is required')
             .test(
               'is-positive',
               'Bank Amount must be a positive number',
-              (value) => parseFloat(value) >= 0
+              (value) => parseFloat(value) >= 0,
             ),
-        }
-      : paymentMode === 'Cash'
-        ? {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-          }
-        : {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-            bankAmount: Yup.string()
-              .required('Bank Amount is required')
-              .test(
-                'is-positive',
-                'Bank Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-            account: Yup.object().required('Account is required'),
-          };
+          account: Yup.object().required('Account is required'),
+        };
 
   const NewLoanCloseSchema = Yup.object().shape({
     totalLoanAmount: Yup.number()
@@ -182,7 +189,19 @@ function LoanCloseForm({ currentLoan, mutate }) {
       console.error('Error generating PDF:', error);
     }
   };
+
+
   const onSubmit = handleSubmit(async (data) => {
+    const loanToDate = loanInterest[0]?.to;
+    const selectedDate = watch('date');
+
+    const date1 = loanToDate ? new Date(loanToDate).toISOString().split('T')[0] : null;
+    const date2 = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : null;
+
+    if (date1 && date2 && date1 !== date2) {
+      return enqueueSnackbar('Complete Your Interest First', { variant: 'info' });
+    }
+
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
@@ -211,6 +230,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       totalLoanAmount: data.totalLoanAmount,
       netAmount: data.netAmount,
       closingCharge: data.closingCharge,
+      date: data.date,
       remark: data.remark,
       paymentDetail: paymentDetail,
       closedBy: user._id,
@@ -226,8 +246,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
       const response = await axios(config);
       const responseData = response?.data?.data;
-      sendPdfToWhatsApp(responseData)
+      sendPdfToWhatsApp(responseData);
       reset();
+      confirm.onFalse();
       refetchLoanClose();
       mutate();
       enqueueSnackbar(response?.data.message, { variant: 'success' });
@@ -275,7 +296,14 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
   return (
     <>
-      <FormProvider methods={methods} onSubmit={onSubmit}>
+      <FormProvider methods={methods} onSubmit={(e) => {
+        e.preventDefault();
+        if (totalDays <= currentLoan.scheme.minLoanTime) {
+          confirm.onTrue();
+        } else {
+          onSubmit();
+        }
+      }}>
         <Grid rowSpacing={3} columnSpacing={2}>
           <Box
             rowGap={3}
@@ -473,6 +501,17 @@ function LoanCloseForm({ currentLoan, mutate }) {
           ))}
         </TableBody>
       </Table>
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Confirmation"
+        content="You must pay interest at least scheme days"
+        action={
+          <Button variant="contained" color="info" onClick={onSubmit}>
+            Confirm
+          </Button>
+        }
+      />
       <Dialog fullScreen open={view.value}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions
