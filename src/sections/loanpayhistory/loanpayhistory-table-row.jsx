@@ -135,6 +135,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
           payload = {
             firstName: customer.firstName,
             lastName: customer.lastName,
+            middleName: customer.middleName,
             contact: customer.contact,
             loanNo,
             loanAmount,

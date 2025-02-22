@@ -60,7 +60,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
 
   const payAmt = partPayment.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
   const intAmt = partPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan?.interestLoanAmount) || 0),
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
 
@@ -512,11 +512,12 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             {/*<TableCell padding="checkbox" />*/}
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-              {payAmt}
-            </TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
               {intAmt}
             </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {payAmt}
+            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

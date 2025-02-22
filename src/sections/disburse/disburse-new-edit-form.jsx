@@ -20,6 +20,12 @@ import { paths } from '../../routes/paths';
 import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
 import { TableHeadCustom, useTable } from '../../components/table';
 import { useAuthContext } from '../../auth/hooks/index.js';
+import { pdf } from '@react-pdf/renderer';
+import LoanPartPaymentDetailsPdf from '../loanpayhistory/PDF/loan-part-payment-details-pdf.jsx';
+import LoanIssueDetails from '../loanissue/view/loan-issue-details.jsx';
+import Sansaction11 from './sansaction-11.jsx';
+import { value } from 'lodash/seq.js';
+import { useGetConfigs } from '../../api/config.js';
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +43,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   const table = useTable();
   const { enqueueSnackbar } = useSnackbar();
   const { branch } = useGetBranch();
+  const { configs } = useGetConfigs();
   const [cashPendingAmt, setCashPendingAmt] = useState(0);
   const [bankPendingAmt, setBankPendingAmt] = useState(0);
   const { user } = useAuthContext();
@@ -44,30 +51,30 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   const paymentSchema =
     currentDisburse.paymentMode === 'Bank'
       ? {
+        bankNetAmount: Yup.number().required('Bank Net Amount is required'),
+        payingBankAmount: Yup.string().required('Bank Paying Amount is required'),
+        bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
+        companyBankDetail: Yup.object().shape({
+          account: Yup.object().required('Account is required'),
+        }),
+      }
+      : currentDisburse.paymentMode === 'Cash'
+        ? {
+          cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+          payingCashAmount: Yup.string().required('Cash Paying Amount is required'),
+          cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
+        }
+        : {
+          cashNetAmount: Yup.number().required('Cash Net Amount is required'),
+          payingCashAmount: Yup.string().required('Cash Paying Amount is required'),
+          cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
           bankNetAmount: Yup.number().required('Bank Net Amount is required'),
           payingBankAmount: Yup.string().required('Bank Paying Amount is required'),
           bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
           companyBankDetail: Yup.object().shape({
             account: Yup.object().required('Account is required'),
           }),
-        }
-      : currentDisburse.paymentMode === 'Cash'
-        ? {
-            cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-            payingCashAmount: Yup.string().required('Cash Paying Amount is required'),
-            cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
-          }
-        : {
-            cashNetAmount: Yup.number().required('Cash Net Amount is required'),
-            payingCashAmount: Yup.string().required('Cash Paying Amount is required'),
-            cashPendingAmount: Yup.number().required('Cash Pending Amount is required'),
-            bankNetAmount: Yup.number().required('Bank Net Amount is required'),
-            payingBankAmount: Yup.string().required('Bank Paying Amount is required'),
-            bankPendingAmount: Yup.number().required('Bank Pending Amount is required'),
-            companyBankDetail: Yup.object().shape({
-              account: Yup.object().required('Account is required'),
-            }),
-          };
+        };
 
   const NewDisburse = Yup.object().shape({
     loanNo: Yup.string().required('Loan No is required'),
@@ -113,7 +120,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         account: currentDisburse?.companyBankDetail?.account || null,
       },
     }),
-    [currentDisburse]
+    [currentDisburse],
   );
 
   const methods = useForm({
@@ -142,6 +149,60 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   useEffect(() => {
     setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
+
+  const sendPdfToWhatsApp = async (item) => {
+    console.log('item : ', item);
+    try {
+      // Generate the first PDF
+      const blob1 = await pdf(<LoanIssueDetails selectedRow={item} configs={configs} />).toBlob();
+      const file1 = new File([blob1], `LoanIssueDetailsPdf.pdf`, { type: 'application/pdf' });
+
+      const payload = {
+        firstName: item.customer.firstName,
+        middleName: item.customer.middleName,
+        lastName: item.customer.lastName,
+        contact: item.customer.contact,
+        loanNo: item.loanNo,
+        loanAmount: item.loanAmount,
+        interestRate: item.scheme.interestRate,
+        consultingCharge: item.consultingCharge,
+        issueDate: item.issueDate,
+        nextInstallmentDate: item.nextInstallmentDate,
+        companyName: item.company.name,
+        companyEmail: item.company.email,
+        companyContact: item.company.contact,
+        file: file1,
+        type: 'loan_detail',
+      };
+
+      const formData1 = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        formData1.append(key, value);
+      });
+
+      // Send the first PDF
+      await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData1);
+      console.log('First PDF sent successfully');
+
+      // Generate the second PDF
+      const blob2 = await pdf(<Sansaction11 sansaction={item} configs={configs} />).toBlob();
+      const file2 = new File([blob2], `Sansaction11.pdf`, { type: 'application/pdf' });
+
+      const formData2 = new FormData();
+      formData2.append('type', 'sanction_letter_11');
+      formData2.append('file', file2);
+      formData2.append('contact', item.customer.contact);
+
+      // Send the second PDF
+      await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData2);
+      console.log('Second PDF sent successfully');
+
+    } catch (error) {
+      console.error('Error generating or sending PDFs:', error);
+    }
+  };
+
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       const payload = {
@@ -155,18 +216,19 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         payingCashAmount: data.payingCashAmount,
         approvalCharge: data.approvalCharge,
       };
+      let res;
       if (currentDisburse.status === 'Disbursed') {
-        const res = await axios.put(
+        res = await axios.put(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`,
-          payload
+          payload,
         );
         mutate();
       } else {
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload);
+        res = axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload).then((res) => sendPdfToWhatsApp(res.data.data)).catch((err) => console.log(err));
       }
 
       router.push(paths.dashboard.disburse.list);
-      enqueueSnackbar(res?.data.message);
+      enqueueSnackbar(res?.data?.message);
       reset();
     } catch (error) {
       enqueueSnackbar(currentDisburse ? 'Failed To update scheme' : 'Failed to create Scheme');
@@ -342,7 +404,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                           {...field}
                           label="Paying Amount"
                           req={'red'}
-                          type="number"
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
                             field.onChange(e);
@@ -365,8 +426,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       req={'red'}
                       value={
                         watch('bankNetAmount') -
-                          watch('approvalCharge') -
-                          watch('payingBankAmount') || 0
+                        watch('approvalCharge') -
+                        watch('payingBankAmount') || 0
                       }
                       InputLabelProps={{ shrink: true }}
                     />
@@ -433,7 +494,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                           {...field}
                           label="Paying Amount"
                           req={'red'}
-                          type="number"
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
                             field.onChange(e);
@@ -456,8 +516,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       req={'red'}
                       value={parseFloat(
                         watch('cashNetAmount') -
-                          watch('approvalCharge') -
-                          watch('payingCashAmount') || 0
+                        watch('approvalCharge') -
+                        watch('payingCashAmount') || 0,
                       )}
                       InputLabelProps={{ shrink: true }}
                       onKeyPress={(e) => {

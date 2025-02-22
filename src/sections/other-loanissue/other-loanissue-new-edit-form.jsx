@@ -1791,7 +1791,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                       req={'red'}
                       value={watch('amount')}
                       disabled={!isFieldsEnabled}
-                      type="number"
                       inputProps={{ min: 0 }}
                       onChange={(e) => {
                         field.onChange(e);
@@ -1833,7 +1832,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                         label="Cash Amount"
                         req={'red'}
                         disabled={!isFieldsEnabled}
-                        type="number"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -1853,7 +1851,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                         label="Bank Amount"
                         req={'red'}
                         disabled={!isFieldsEnabled}
-                        type="number"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -1874,7 +1871,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                           label="Cash Amount"
                           req={'red'}
                           disabled={!isFieldsEnabled}
-                          type="number"
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
                             field.onChange(e);
@@ -1892,7 +1888,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                           label="Bank Amount"
                           req={'red'}
                           disabled
-                          type="number"
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
                             field.onChange(e);
