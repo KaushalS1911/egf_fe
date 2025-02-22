@@ -36,24 +36,24 @@ export default function GoldLoanPartPaymateDetailsTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ width: '1%' }}>{index + 1}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{index + 1}</TableCell>
         <TableCell sx={{
-          width: '7%',
+          padding: '6px'
         }}>
           {loanNo}
         </TableCell>
-        <TableCell sx={{ width: '8%' }}>
+        <TableCell sx={{ padding: '6px'}}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ width: '8%' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{'rate'}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{(interestLoanAmount).toFixed(2)}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{'TOTAL INT'}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{'closing charge'}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{'close date'}</TableCell>
-        <TableCell sx={{ width: '8%' }}>{'entry date'}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{loanAmount}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{'rate'}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{(interestLoanAmount).toFixed(2)}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{'TOTAL INT'}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{amountPaid}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{'closing charge'}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{'close date'}</TableCell>
+        <TableCell sx={{ padding: '6px'}}>{'entry date'}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}

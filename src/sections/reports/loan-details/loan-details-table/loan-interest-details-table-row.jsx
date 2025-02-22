@@ -44,29 +44,26 @@ export default function LoanInterestDetailsTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{index + 1}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(from)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(to)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{loanAmount}</TableCell>
-        <TableCell sx={{
-          fontSize: '12px',
-          width: '0%',
-        }}>{scheme?.interestRate >= 1.5 ? 1.5 : scheme?.interestRate}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{consultingCharge}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{penalty}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{cr_dr.toFixed(2)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{adjustedPay}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(createdAt)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{days}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{uchakInterestAmount || 0}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{index + 1}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(to)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{scheme?.interestRate >= 1.5 ? 1.5 : scheme?.interestRate}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{consultingCharge}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{penalty}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{cr_dr.toFixed(2)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{adjustedPay}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(createdAt)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{uchakInterestAmount || 0}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
       </TableRow>
 
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
 
@@ -77,7 +74,7 @@ export default function LoanInterestDetailsTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:pen-bold' />
+          <Iconify icon="solar:pen-bold" />
           Edit
         </MenuItem>}
         {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
@@ -87,17 +84,17 @@ export default function LoanInterestDetailsTableRow({
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon='solar:trash-bin-trash-bold' />
+          <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
         </MenuItem>}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

@@ -51,13 +51,13 @@ const TABLE_HEAD = [
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'int%', label: 'int (%)' },
-  { id: 'OtherInt%', label: 'Other int (%)' },
+  { id: 'OtherInt%', label: 'Other int (%)'},
   { id: 'int%', label: 'Issue date' },
   { id: 'LoanAmount', label: 'loan amt' },
   { id: 'LastAmtPayDate', label: 'Last amt. pay date' },
   { id: 'LoanAmountPay', label: 'loan amt pay' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'LastIntPayDate', label: 'Last int. pay date' },
+  { id: 'LastIntPayDate', label: 'Last int. pay date'},
   { id: 'TotalIntPay', label: 'Total int. pay ' },
   { id: 'Day', label: ' Day ' },
   { id: 'pendingAmt', label: ' Pending int. ' },
@@ -300,6 +300,15 @@ export default function AllBranchLoanSummaryListView() {
             maxHeight: 500,
             overflow: 'auto',
             position: 'relative',
+            ' .css-131g1ae-MuiTableCell-root' : {
+              padding: '6px'
+            },
+            ' .css-1613c04-MuiTableCell-root' : {
+              padding: '8px'
+            },
+            ' .css-1ms7e38-MuiTableCell-root' : {
+              padding: '6px'
+            }
           }}>
             <TableSelectedAction
               dense={table.dense}

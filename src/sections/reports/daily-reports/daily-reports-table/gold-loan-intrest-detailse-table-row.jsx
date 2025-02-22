@@ -33,31 +33,25 @@ export default function GoldLoanIntrestDetailseTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ width: '1%', textAlign: 'start' }}>{index + 1}</TableCell>
-        <TableCell sx={{
-          width: '7%',
-          maxWidth: '7%',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-          whiteSpace: 'normal',
-        }}>
+        <TableCell sx={{padding: '6px'}}>{index + 1}</TableCell>
+        <TableCell sx={{padding: '6px'}}>
           {loanNo}
         </TableCell>
-        <TableCell sx={{ width: '1%' }}>
+        <TableCell sx={{ padding: '6px' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ width: '1%' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ width: '1%' }}>{scheme?.interestRate}</TableCell>
-        <TableCell sx={{ width: '5%' }}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(issueDate)}</TableCell>
         <TableCell
-          sx={{ width: '3%' }}>{(interestLoanAmount).toFixed(2)}</TableCell>
-        <TableCell sx={{ width: '5%' }}>{fDate(from)}</TableCell>
-        <TableCell sx={{ width: '5%' }}>{fDate(to)}</TableCell>
-        <TableCell sx={{ width: '1%' }}>{days}</TableCell>
-        <TableCell sx={{ width: '1%' }}>{'payment by'}</TableCell>
-        <TableCell sx={{ width: '1%' }}>{'int'}</TableCell>
-        <TableCell sx={{ width: '1%' }}>{penalty}</TableCell>
-        <TableCell sx={{ width: '1%' }}>{amountPaid}</TableCell>
+          sx={{ padding: '6px' }}>{(interestLoanAmount).toFixed(2)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(to)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{'payment by'}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{'int'}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{penalty}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}

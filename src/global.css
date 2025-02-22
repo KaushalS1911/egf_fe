@@ -31,7 +31,7 @@
 ::-webkit-scrollbar {
   height: 5px;
   transition: opacity 0.3s ease;
-  width: 10px;
+  width: 6px;
 }
 
 :hover::-webkit-scrollbar-thumb {

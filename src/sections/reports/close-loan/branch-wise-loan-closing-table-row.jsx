@@ -48,37 +48,35 @@ export default function BranchWiseLoanClosingTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{index + 1}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{loanNo}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{index + 1}</TableCell>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{loanNo}</TableCell>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{customer?.contact}</TableCell>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{customer?.contact}</TableCell>
         <TableCell
-          sx={{ fontSize: '12px', width: '0%' }}>{(scheme?.interestRate).toFixed(2)}</TableCell>
+          sx={{ fontSize: '12px' ,padding: '6px'}}>{(scheme?.interestRate).toFixed(2)}</TableCell>
         <TableCell
-          sx={{ fontSize: '12px', width: '0%' }}>{consultingCharge.toFixed(2)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '1%' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{loanAmount}</TableCell>
+          sx={{ fontSize: '12px' ,padding: '6px'}}>{consultingCharge.toFixed(2)}</TableCell>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{loanAmount}</TableCell>
         <TableCell
-          sx={{ fontSize: '12px', width: '1%' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+          sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
         <TableCell sx={{
           fontSize: '12px',
-          width: '0%',
-        }}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{interestLoanAmount}</TableCell>
+         padding: '6px'}}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{interestLoanAmount}</TableCell>
         <TableCell
-          sx={{ fontSize: '12px', width: '1%' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
+          sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
         <TableCell
-          sx={{ fontSize: '12px', width: '0%' }}>{totalPaidInterest.toFixed(2)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '0%' }}>{day > 0 ? day : 0}</TableCell>
+          sx={{ fontSize: '12px' ,padding: '6px'}}>{totalPaidInterest.toFixed(2)}</TableCell>
+        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{
           fontSize: '12px',
-          width: '0%',
-        }}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
+         padding: '6px'}}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
         <TableCell
-          sx={{ fontSize: '12px', width: '1%' }}>{fDate(nextInstallmentDate) || '-'}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '0%' }}>
+          sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(nextInstallmentDate) || '-'}</TableCell>
+        <TableCell sx={{ fontSize: '12px', width: '0%' ,padding: '6px'}}>
           <Label
             variant='soft'
             color={

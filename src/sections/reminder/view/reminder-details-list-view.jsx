@@ -151,11 +151,11 @@ export default function ReminderDetailsListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Reminder-Details'
+          heading='Reminder Details'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reminder Details', href: paths.dashboard.reminder.list },
-            { name: 'List' },
+            { name: 'Reminder', href: paths.dashboard.reminder.list },
+            { name: 'Reminder Details' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },

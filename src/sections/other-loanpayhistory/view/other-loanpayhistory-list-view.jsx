@@ -275,7 +275,7 @@ export default function LoanpayhistoryListView() {
               }
             />
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 1700 }}>
+              <Table size={table.dense ? 'small' : 'medium'}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -283,6 +283,7 @@ export default function LoanpayhistoryListView() {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
+                  sx={{' th': {padding : '8px'}}}
                 />
                 <TableBody>
                   {dataFiltered

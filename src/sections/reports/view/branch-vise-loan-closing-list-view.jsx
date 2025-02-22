@@ -64,7 +64,7 @@ const TABLE_HEAD = [
   { id: 'TotalIntPay', label: 'Total int. pay ' },
   { id: 'Day', label: ' Day ' },
   { id: 'pendingAmt', label: ' Pending int. ' },
-  { id: 'nextIntPayDate', label: 'Next int. pay date' },
+  { id: 'nextIntPayDate', label: 'Next int. pay date', width: '100px' },
   { id: 'Status', label: 'Status' },
 ];
 
@@ -257,6 +257,15 @@ export default function BranchViseLoanClosingListView() {
             maxHeight: 500,
             overflow: 'auto',
             position: 'relative',
+            ' .css-h9g863-MuiTableCell-root' : {
+              padding: '6px'
+            },
+            ' .css-1613c04-MuiTableCell-root' : {
+              padding: '8px'
+            },
+            ' .css-1ms7e38-MuiTableCell-root' : {
+              padding: '6px'
+            }
           }}>
             <TableSelectedAction
               dense={table.dense}

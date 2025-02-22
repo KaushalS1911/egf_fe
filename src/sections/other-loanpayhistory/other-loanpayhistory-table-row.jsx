@@ -88,10 +88,10 @@ export default function OtherLoanpayhistoryTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' }}>
+      <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' , ' td': {padding : '6px'} }}>
         <TableCell>{srNo}</TableCell>
         {getResponsibilityValue('create_loanIssue', configs, user) ? (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <TableCell>
             {
               <Link
                 to={paths.dashboard.other_loanPayHistory.edit(_id)}
@@ -106,24 +106,24 @@ export default function OtherLoanpayhistoryTableRow({
             }
           </TableCell>
         ) : (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+          <TableCell>{loanNo}</TableCell>
         )}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell>
           {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherNumber}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{percentage}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{rate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{grossWt}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{netWt}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{month}</TableCell>
-        {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(closeDate)}</TableCell>*/}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{closingCharge}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(renewalDate)}</TableCell>
-        {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>*/}
+        <TableCell>{otherName}</TableCell>
+        <TableCell>{otherNumber}</TableCell>
+        <TableCell>{amount}</TableCell>
+        <TableCell>{percentage}</TableCell>
+        <TableCell>{fDate(date)}</TableCell>
+        <TableCell>{rate}</TableCell>
+        <TableCell>{grossWt}</TableCell>
+        <TableCell>{netWt}</TableCell>
+        <TableCell>{month}</TableCell>
+        {/*<TableCell>{fDate(closeDate)}</TableCell>*/}
+        <TableCell>{closingCharge}</TableCell>
+        <TableCell>{fDate(renewalDate)}</TableCell>
+        {/*<TableCell>*/}
         {/*  <Label*/}
         {/*    variant="soft"*/}
         {/*    color={*/}
@@ -137,12 +137,12 @@ export default function OtherLoanpayhistoryTableRow({
         {/*    {status}*/}
         {/*  </Label>*/}
         {/*</TableCell>*/}
-        {/*<TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>*/}
+        {/*<TableCell sx={{  cursor: 'pointer' }}>*/}
         {/*  <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>*/}
         {/*    <Iconify icon="eva:more-vertical-fill" />*/}
         {/*  </IconButton>*/}
         {/*</TableCell>*/}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell>
           <Label
             variant="soft"
             color={

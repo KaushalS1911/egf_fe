@@ -56,10 +56,8 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function ReminderListView() {
-  const loanPayHistory = false;
-  const Reminder = true;
   const { reminder, mutate } = useGetReminder();
-  const { Loanissue, LoanissueLoading } = useGetLoanissue(loanPayHistory, Reminder);
+  const { Loanissue, LoanissueLoading } = useGetLoanissue(false, true);
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
@@ -174,12 +172,11 @@ export default function ReminderListView() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reminders');
     XLSX.writeFile(workbook, 'Reminders.xlsx');
   };
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Reminders'
+          heading="Reminders"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reminder', href: paths.dashboard.reminder.list },
@@ -293,11 +290,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (nextInstallmentDay.length) {
     inputData = inputData.filter((rem) => nextInstallmentDay.includes(rem.nextInstallmentDate));
   }
-  if (!dateError) {
-    if (endDay) {
-      inputData = inputData.filter((rem) => new Date(rem.nextInstallmentDate) <= new Date(endDay));
-    }
-  }
+  
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>
       isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
