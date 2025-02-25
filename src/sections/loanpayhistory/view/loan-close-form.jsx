@@ -190,7 +190,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
     }
   };
 
-
   const onSubmit = handleSubmit(async (data) => {
     const loanToDate = loanInterest[0]?.to;
     const selectedDate = watch('date');
@@ -198,8 +197,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
     const date1 = loanToDate ? new Date(loanToDate).toISOString().split('T')[0] : null;
     const date2 = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : null;
 
-    if (date1 && date2 && date1 !== date2) {
-      return enqueueSnackbar('Complete Your Interest First', { variant: 'info' });
+    if (!date1 || !date2 || date1 !== date2) {
+      return enqueueSnackbar('Please pay interest till today before close the loan.', { variant: 'info' });
     }
 
     let paymentDetail = {
@@ -505,10 +504,10 @@ function LoanCloseForm({ currentLoan, mutate }) {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Confirmation"
-        content="You must pay interest at least scheme days"
+        content={`You are trying to close the loan before (${currentLoan.scheme.minLoanTime}) days. Are you want to continue?`}
         action={
           <Button variant="contained" color="info" onClick={onSubmit}>
-            Confirm
+            OK
           </Button>
         }
       />

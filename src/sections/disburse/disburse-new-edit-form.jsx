@@ -151,7 +151,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
 
   const sendPdfToWhatsApp = async (item) => {
-    console.log('item : ', item);
     try {
       // Generate the first PDF
       const blob1 = await pdf(<LoanIssueDetails selectedRow={item} configs={configs} />).toBlob();
@@ -218,22 +217,27 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       };
       let res;
       if (currentDisburse.status === 'Disbursed') {
-        res = await axios.put(
+         axios.put(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`,
           payload,
-        );
+        ).then((res) => {
+          router.push(paths.dashboard.disburse.list);
+          enqueueSnackbar(res?.data?.message);
+        }).catch((err) => console.log(err));
         mutate();
       } else {
-        res = axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload).then((res) => sendPdfToWhatsApp(res.data.data)).catch((err) => console.log(err));
+         axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload).then((res) => {
+          router.push(paths.dashboard.disburse.list);
+          enqueueSnackbar(res?.data?.message);
+          sendPdfToWhatsApp(res.data.data);
+        }).catch((err) => console.log(err));
       }
-
-      router.push(paths.dashboard.disburse.list);
-      enqueueSnackbar(res?.data?.message);
       reset();
     } catch (error) {
       enqueueSnackbar(currentDisburse ? 'Failed To update scheme' : 'Failed to create Scheme');
       console.error(error, 'ree');
     }
+
   });
 
   const handleCashAmountChange = (event) => {
