@@ -104,6 +104,7 @@ export default function OtherLoanpayhistoryTableToolbar({ filters, onFilters, da
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
             onChange={handleFilterStartDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
@@ -128,6 +129,7 @@ export default function OtherLoanpayhistoryTableToolbar({ filters, onFilters, da
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
             onChange={handleFilterEndDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),

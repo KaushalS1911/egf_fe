@@ -20,7 +20,14 @@ import RHFDatePicker from '../../components/hook-form/rhf-.date-picker.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function InquiryTableToolbar({ filters, onFilters,options, roleOptions, dateError, inquiries }) {
+export default function InquiryTableToolbar({
+  filters,
+  onFilters,
+  options,
+  roleOptions,
+  dateError,
+  inquiries,
+}) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -31,7 +38,7 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterStartDate = useCallback(
@@ -48,7 +55,7 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
         onFilters('startDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterEndDate = useCallback(
@@ -65,17 +72,14 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
         onFilters('endDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterAssignTo = useCallback(
     (event) => {
-      onFilters(
-        'assignTo',
-        typeof event.target.value === 'object' && event.target.value,
-      );
+      onFilters('assignTo', typeof event.target.value === 'object' && event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
   return (
     <>
@@ -92,22 +96,22 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
         }}
       >
         <Stack
-          direction='row'
-          alignItems='center'
+          direction="row"
+          alignItems="center"
           spacing={2}
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{ 'input': { height: 7 } }}
+            sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
@@ -118,17 +122,21 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
               width: { xs: 1, sm: 200 },
             }}
           >
-            <InputLabel sx={{
-              mt: -0.8,
-              '&.MuiInputLabel-shrink': {
-                mt: 0,
-              },
-            }}>Assign To</InputLabel>
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Assign To
+            </InputLabel>
 
             <Select
               value={filters.assignTo}
               onChange={handleFilterAssignTo}
-              input={<OutlinedInput label='Assign To' sx={{ height: '40px' }} />}
+              input={<OutlinedInput label="Assign To" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -158,11 +166,12 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
             </Select>
           </FormControl>
           <DatePicker
-            label='Start date'
+            label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
             onChange={handleFilterStartDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
@@ -171,22 +180,23 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
             }}
             sx={{
               maxWidth: { md: 200 },
-              'label': {
+              label: {
                 mt: -0.8,
                 fontSize: '14px',
               },
               '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              'input': { height: 7 },
+              input: { height: 7 },
             }}
           />
           <DatePicker
-            label='End date'
+            label="End date"
             value={filters.endDate}
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
             onChange={handleFilterEndDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
@@ -201,60 +211,61 @@ export default function InquiryTableToolbar({ filters, onFilters,options, roleOp
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
-              'label': {
+              label: {
                 mt: -0.8,
                 fontSize: '14px',
               },
               '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              'input': { height: 7 },
+              input: { height: 7 },
             }}
           />
+
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
 
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
-          arrow='right-top'
+          arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_inquiry_detail', configs, user)
-          && <>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='solar:printer-minimalistic-bold' />
-              Print
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem>
-            <MenuItem
-            >
-              <RHFExportExcel
-                data={inquiries}
-                fileName='InquiryData'
-                sheetName='InquiryDetails'
-              />
-            </MenuItem>
-          </>}
+          {getResponsibilityValue('print_inquiry_detail', configs, user) && (
+            <>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="solar:printer-minimalistic-bold" />
+                Print
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="ant-design:file-pdf-filled" />
+                PDF
+              </MenuItem>
+              <MenuItem>
+                <RHFExportExcel
+                  data={inquiries}
+                  fileName="InquiryData"
+                  sheetName="InquiryDetails"
+                />
+              </MenuItem>
+            </>
+          )}
           <MenuItem
             onClick={() => {
               popover.onClose();
             }}
           >
-            <Iconify icon='ic:round-whatsapp' />
+            <Iconify icon="ic:round-whatsapp" />
             whatsapp share
           </MenuItem>
         </CustomPopover>
