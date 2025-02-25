@@ -49,16 +49,19 @@ import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-vie
 import GoldLoanUchakPaymentTableRow from '../daily-reports/daily-reports-table/gold-loan-uchak-payment-table-row';
 import GoldLoanUchakPartListView from '../daily-reports/daily-reports-list-view/gold-loan-uchak-part-list-view';
 import { useGetAllInterest } from '../../../api/interest-pay';
-import DailyReportsTableToolbarTableToolbar
-  from '../daily-reports/daily-reports-table/daily-reports-table-toolbar-table-toolbar';
+import DailyReportsTableToolbar from '../daily-reports/daily-reports-table/daily-reports-table-toolbar.jsx';
 import { useGetDailyReport } from '../../../api/daily-report';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
-  value: 'Issued',
-  label: 'Issued',
-}, { value: 'Disbursed', label: 'Disbursed' }];
+const STATUS_OPTIONS = [
+  { value: 'All', label: 'All' },
+  {
+    value: 'Issued',
+    label: 'Issued',
+  },
+  { value: 'Disbursed', label: 'Disbursed' },
+];
 
 const defaultFilters = {
   username: '',
@@ -83,7 +86,7 @@ export default function DailyReportsListView() {
   if (filters.branch._id) params.append('branch', filters.branch._id);
   if (filters.startDate) params.append('date', filters.startDate.toLocaleDateString());
   // if(filters.username) params.append('username',filters.username)
-  const date = (filters.startDate).toLocaleDateString();
+  const date = filters.startDate.toLocaleDateString();
   const { report, reportLoading } = useGetDailyReport(params);
   const [tableData, setTableData] = useState(report);
 
@@ -110,9 +113,8 @@ export default function DailyReportsListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
-
 
   // const loans = Loanissue.map((item) => ({
   //   'Loan No': item.loanNo,
@@ -139,16 +141,14 @@ export default function DailyReportsListView() {
   // }));
 
   if (reportLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Daily Reports'
+          heading="Daily Reports"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reports', href: paths.dashboard.reports.root },
@@ -160,8 +160,12 @@ export default function DailyReportsListView() {
           }}
         />
         <Card sx={{ pb: 3 }}>
-          <DailyReportsTableToolbarTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
-                                                configs={configs} />
+          <DailyReportsTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            dataFilter={dataFiltered}
+            configs={configs}
+          />
           <Box>
             <NewGoldLonListView LoanIssue={dataFiltered?.loans} />
           </Box>
@@ -170,15 +174,16 @@ export default function DailyReportsListView() {
           </Box>
           <Box mt={2}>
             <GoldLoanPartPaymentListView partPayment={report?.partReleaseDetail} />
-          </Box> <Box mt={2}>
-          <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
-        </Box>
+          </Box>{' '}
+          <Box mt={2}>
+            <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
+          </Box>
         </Card>
       </Container>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -186,8 +191,8 @@ export default function DailyReportsListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();

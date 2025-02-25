@@ -21,13 +21,13 @@ import AllBranchLoanSummaryPdf from '../view/all-branch-loan-summary-pdf';
 // ----------------------------------------------------------------------
 
 export default function AllBranchLoanSummaryTableToolbar({
-                                                           filters,
-                                                           onFilters,
-                                                           dateError,
-                                                           dataFilter,
-                                                           configs,
-                                                           options,
-                                                         }) {
+  filters,
+  onFilters,
+  dateError,
+  dataFilter,
+  configs,
+  options,
+}) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -40,7 +40,7 @@ export default function AllBranchLoanSummaryTableToolbar({
     (event) => {
       onFilters('username', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterStartDate = useCallback(
@@ -57,7 +57,7 @@ export default function AllBranchLoanSummaryTableToolbar({
         onFilters('startDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterEndDate = useCallback(
@@ -74,19 +74,19 @@ export default function AllBranchLoanSummaryTableToolbar({
         onFilters('endDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const customStyle = {
     maxWidth: { md: 350 },
-    'label': {
+    label: {
       mt: -0.8,
       fontSize: '14px',
     },
     '& .MuiInputLabel-shrink': {
       mt: 0,
     },
-    'input': { height: 7 },
+    input: { height: 7 },
   };
 
   const sx2 = {};
@@ -95,20 +95,17 @@ export default function AllBranchLoanSummaryTableToolbar({
       setSelectedBranch(event.target.value);
       onFilters(
         'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value,
+        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterIssuedBy = useCallback(
     (event) => {
-      onFilters(
-        'issuedBy',
-        typeof event.target.value === 'object' && event.target.value,
-      );
+      onFilters('issuedBy', typeof event.target.value === 'object' && event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   return (
@@ -126,8 +123,8 @@ export default function AllBranchLoanSummaryTableToolbar({
         }}
       >
         <Stack
-          direction='row'
-          alignItems='center'
+          direction="row"
+          alignItems="center"
           spacing={2}
           flexGrow={1}
           sx={{ width: '100%', pr: 1.5 }}
@@ -138,16 +135,20 @@ export default function AllBranchLoanSummaryTableToolbar({
               width: { xs: 1, sm: 350 },
             }}
           >
-            <InputLabel sx={{
-              mt: -0.8,
-              '&.MuiInputLabel-shrink': {
-                mt: 0,
-              },
-            }}>Issued By</InputLabel>
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Issued By
+            </InputLabel>
             <Select
               value={filters.issuedBy}
               onChange={handleFilterIssuedBy}
-              input={<OutlinedInput label='Issued By' sx={{ height: '40px' }} />}
+              input={<OutlinedInput label="Issued By" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -182,16 +183,20 @@ export default function AllBranchLoanSummaryTableToolbar({
               width: { xs: 1, sm: 350 },
             }}
           >
-            <InputLabel sx={{
-              mt: -0.8,
-              '&.MuiInputLabel-shrink': {
-                mt: 0,
-              },
-            }}>Branch</InputLabel>
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Branch
+            </InputLabel>
             <Select
               value={filters.branch}
               onChange={handleFilterBranch}
-              input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
+              input={<OutlinedInput label="Branch" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -221,11 +226,12 @@ export default function AllBranchLoanSummaryTableToolbar({
             </Select>
           </FormControl>
           <DatePicker
-            label='Start date'
+            label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
             onChange={handleFilterStartDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
@@ -235,11 +241,12 @@ export default function AllBranchLoanSummaryTableToolbar({
             sx={{ ...customStyle }}
           />
           <DatePicker
-            label='End date'
+            label="End date"
             value={filters.endDate}
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
             onChange={handleFilterEndDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
@@ -252,43 +259,45 @@ export default function AllBranchLoanSummaryTableToolbar({
           />
 
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
-          arrow='right-top'
+          arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel
-                fileName='LaonissueData'
-                sheetName='LoanissueDetails'
-              />
-            </MenuItem></>)}
+          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
+            <>
+              {' '}
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="solar:printer-minimalistic-bold" />
+                Print
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="ant-design:file-pdf-filled" />
+                PDF
+              </MenuItem>
+              <MenuItem>
+                <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />
+              </MenuItem>
+            </>
+          )}
           <MenuItem
             onClick={() => {
               popover.onClose();
             }}
           >
-            <Iconify icon='ic:round-whatsapp' />
+            <Iconify icon="ic:round-whatsapp" />
             whatsapp share
           </MenuItem>
         </CustomPopover>
@@ -296,12 +305,12 @@ export default function AllBranchLoanSummaryTableToolbar({
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <AllBranchLoanSummaryPdf loans={dataFilter} configs={configs} />
             </PDFViewer>
           </Box>

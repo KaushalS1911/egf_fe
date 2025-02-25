@@ -10,7 +10,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // ----------------------------------------------------------------------
 
-export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOptions, dateError }) {
+export default function ReminderDetailsTableToolbar({
+  filters,
+  onFilters,
+  roleOptions,
+  dateError,
+}) {
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
 
@@ -18,7 +23,7 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterStartDate = useCallback(
@@ -35,7 +40,7 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
         onFilters('startDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterEndDate = useCallback(
@@ -52,7 +57,7 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
         onFilters('endDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   return (
@@ -70,32 +75,33 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
         }}
       >
         <Stack
-          direction='row'
-          alignItems='center'
+          direction="row"
+          alignItems="center"
           spacing={2}
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{ 'input': { height: 7 } }}
+            sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
           />
           <DatePicker
-            label='Start date'
+            label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
             onChange={handleFilterStartDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
@@ -104,22 +110,23 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
             }}
             sx={{
               maxWidth: { md: 200 },
-              'label': {
+              label: {
                 mt: -0.8,
                 fontSize: '14px',
               },
               '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              'input': { height: 7 },
+              input: { height: 7 },
             }}
           />
           <DatePicker
-            label='End date'
+            label="End date"
             value={filters.endDate}
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
             onChange={handleFilterEndDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
@@ -134,14 +141,14 @@ export default function ReminderDetailsTableToolbar({ filters, onFilters, roleOp
                 position: { md: 'absolute' },
                 bottom: { md: -40 },
               },
-              'label': {
+              label: {
                 mt: -0.8,
                 fontSize: '14px',
               },
               '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              'input': { height: 7 },
+              input: { height: 7 },
             }}
           />
         </Stack>

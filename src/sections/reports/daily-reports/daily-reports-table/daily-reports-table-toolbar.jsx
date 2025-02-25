@@ -22,7 +22,13 @@ import AllBranchLoanSummaryPdf from '../../view/all-branch-loan-summary-pdf';
 
 // ----------------------------------------------------------------------
 
-export default function DailyReportsTableToolbarTableToolbar({ filters, onFilters, dateError, dataFilter, configs }) {
+export default function DailyReportsTableToolbar({
+  filters,
+  onFilters,
+  dateError,
+  dataFilter,
+  configs,
+}) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -35,7 +41,7 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
     (event) => {
       onFilters('username', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterStartDate = useCallback(
@@ -52,19 +58,19 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
         onFilters('startDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const customStyle = {
     maxWidth: { md: 200 },
-    'label': {
+    label: {
       mt: -0.8,
       fontSize: '14px',
     },
     '& .MuiInputLabel-shrink': {
       mt: 0,
     },
-    'input': { height: 7 },
+    input: { height: 7 },
   };
 
   const sx2 = {};
@@ -73,10 +79,10 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
       setSelectedBranch(event.target.value);
       onFilters(
         'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value,
+        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
     },
-    [onFilters],
+    [onFilters]
   );
 
   return (
@@ -94,22 +100,22 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
         }}
       >
         <Stack
-          direction='row'
-          alignItems='center'
+          direction="row"
+          alignItems="center"
           spacing={2}
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{ 'input': { height: 7 } }}
+            sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.username}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
@@ -120,16 +126,20 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
               width: { xs: 1, sm: 200 },
             }}
           >
-            <InputLabel sx={{
-              mt: -0.8,
-              '&.MuiInputLabel-shrink': {
-                mt: 0,
-              },
-            }}>Branch</InputLabel>
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Branch
+            </InputLabel>
             <Select
               value={filters.branch}
               onChange={handleFilterBranch}
-              input={<OutlinedInput label='Branch' sx={{ height: '40px' }} />}
+              input={<OutlinedInput label="Branch" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -159,11 +169,12 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
             </Select>
           </FormControl>
           <DatePicker
-            label='Date'
+            label="Date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
             onChange={handleFilterStartDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
@@ -173,45 +184,50 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
             sx={{ ...customStyle }}
           />
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
-          arrow='right-top'
+          arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
-            onClick={() => {
-              view.onTrue();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel
-                // data={loans}
-                fileName='LaonissueData'
-                sheetName='LoanissueDetails'
-              />
-            </MenuItem></>)}
+          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
+            <>
+              {' '}
+              <MenuItem
+                onClick={() => {
+                  view.onTrue();
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="solar:printer-minimalistic-bold" />
+                Print
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="ant-design:file-pdf-filled" />
+                PDF
+              </MenuItem>
+              <MenuItem>
+                <RHFExportExcel
+                  // data={loans}
+                  fileName="LaonissueData"
+                  sheetName="LoanissueDetails"
+                />
+              </MenuItem>
+            </>
+          )}
           <MenuItem
             onClick={() => {
               popover.onClose();
             }}
           >
-            <Iconify icon='ic:round-whatsapp' />
+            <Iconify icon="ic:round-whatsapp" />
             whatsapp share
           </MenuItem>
         </CustomPopover>
@@ -219,13 +235,17 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf loans={dataFilter} selectedBranch={selectedBranch} configs={configs} />
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <AllBranchLoanSummaryPdf
+                loans={dataFilter}
+                selectedBranch={selectedBranch}
+                configs={configs}
+              />
             </PDFViewer>
           </Box>
         </Box>
@@ -234,7 +254,7 @@ export default function DailyReportsTableToolbarTableToolbar({ filters, onFilter
   );
 }
 
-DailyReportsTableToolbarTableToolbar.propTypes = {
+DailyReportsTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

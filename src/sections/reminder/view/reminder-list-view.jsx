@@ -72,7 +72,7 @@ export default function ReminderListView() {
   const dateError = isAfter(filters.startDate, filters.endDate);
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -87,7 +87,7 @@ export default function ReminderListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -98,7 +98,7 @@ export default function ReminderListView() {
     (id) => {
       router.push(paths.dashboard.reminder_details.list(id));
     },
-    [router],
+    [router]
   );
 
   if (LoanissueLoading) {
@@ -139,7 +139,7 @@ export default function ReminderListView() {
         };
 
         const relatedReminders = reminder.filter(
-          (r) => r?.loan?.customer?._id === loan?.customer?._id && r?.loan?._id === loan?._id,
+          (r) => r?.loan?.customer?._id === loan?.customer?._id && r?.loan?._id === loan?._id
         );
 
         const reminderRows = relatedReminders.map((reminderData, idx) => {
@@ -201,11 +201,13 @@ export default function ReminderListView() {
           {/*    sx={{ p: 2.5, pt: 0 }}*/}
           {/*  />*/}
           {/*)}*/}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
               <TableHeadCustom
                 order={table.order}
@@ -229,7 +231,7 @@ export default function ReminderListView() {
                       {dataFiltered
                         .slice(
                           table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
                         )
                         .map((row, index) => (
                           <ReminderTableRow
@@ -284,16 +286,16 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter(
       (rem) =>
         rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) ||
-        rem.customer.lastName.toLowerCase().includes(name.toLowerCase()),
+        rem.customer.lastName.toLowerCase().includes(name.toLowerCase())
     );
   }
   if (nextInstallmentDay.length) {
     inputData = inputData.filter((rem) => nextInstallmentDay.includes(rem.nextInstallmentDate));
   }
-  
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>
-      isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
+      isBetween(new Date(order.nextInstallmentDate), startDate, endDate)
     );
   }
   return inputData;

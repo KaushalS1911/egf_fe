@@ -191,6 +191,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
             onChange={handleFilterStartDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
@@ -215,6 +216,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
             onChange={handleFilterEndDate}
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
