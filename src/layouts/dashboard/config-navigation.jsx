@@ -168,6 +168,10 @@ export function useNavData() {
                 title: t('loan details'),
                 path: paths.dashboard.reports['loan-details'],
               },
+              {
+                title: t('Interest Reports'),
+                path: paths.dashboard.reports['interest-reports'],
+              },
             ],
           },
         ],
