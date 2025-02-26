@@ -42,6 +42,7 @@ const TABLE_HEAD = [
   { id: 'payDate', label: 'Pay Date' },
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
+  { id: 'entryBy', label: 'Entry By' },
   { id: 'action', label: 'Action' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -204,6 +205,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       };
     }
     const payload = {
+      entryBy: user.firstName + ' ' + user.middleName + ' ' + user.lastName,
       remark: data.remark,
       date: data.date,
       interestLoanAmount: currentLoan.interestLoanAmount,
@@ -470,6 +472,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 {fDate(row.createdAt)}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.remark}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.entryBy || '-'}</TableCell>
               {getResponsibilityValue('delete_loan_part_payment', configs, user) ? (
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {
@@ -519,6 +522,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
               {payAmt}
             </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

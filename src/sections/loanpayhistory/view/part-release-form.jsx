@@ -62,6 +62,7 @@ const TABLE_HEAD = [
   { id: 'payDate', label: 'Pay Date' },
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'remarks', label: 'Remarks' },
+  { id: 'entryBy', label: 'Entry By' },
   { id: 'action', label: 'Action' },
   { id: 'pdf', label: 'PDF' },
 ];
@@ -214,36 +215,36 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
 
   const sendPdfToWhatsApp = async (item) => {
     try {
-    const blob = await pdf(<PartReleasePdf selectedRow={item ? item : data} configs={configs} />).toBlob();
-    const file = new File([blob], `Loan-Part-Release.pdf`, { type: 'application/pdf' });
-    const payload = {
-      firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
-      middleName: item ? item.loan.customer.middleName : data.loan.customer.middleName,
-      lastName: item ? item.loan.customer.lastName : data.loan.customer.lastName,
-      loanNumber: item ? item.loan.loanNo : data.loan.loanNo,
-      contact: item ? item.loan.customer.contact : data.loan.customer.contact,
-      amountPaid: item ? item.amountPaid : data.amountPaid,
-      createdAt: item ? item.createdAt : data.createdAt,
-      interestLoanAmount: item ? item.loan.interestLoanAmount:  data.loan.interestLoanAmount,
-      nextInstallmentDate: item ? item.loan.nextInstallmentDate : data.loan.nextInstallmentDate,
-      companyName: item ? item.loan.company.name : data.loan.company.name,
-      companyEmail: item ? item.loan.company.email : data.loan.company.email,
-      companyContact: item ? item.loan.company.contact : data.loan.company.contact,
-      file,
-      type: 'part_release',
-    };
-    const formData = new FormData();
-    Object.entries(payload).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    axios
-      .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
+      const blob = await pdf(<PartReleasePdf selectedRow={item ? item : data} configs={configs} />).toBlob();
+      const file = new File([blob], `Loan-Part-Release.pdf`, { type: 'application/pdf' });
+      const payload = {
+        firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
+        middleName: item ? item.loan.customer.middleName : data.loan.customer.middleName,
+        lastName: item ? item.loan.customer.lastName : data.loan.customer.lastName,
+        loanNumber: item ? item.loan.loanNo : data.loan.loanNo,
+        contact: item ? item.loan.customer.contact : data.loan.customer.contact,
+        amountPaid: item ? item.adjustedAmount : data.adjustedAmount,
+        createdAt: item ? item.createdAt : data.createdAt,
+        interestLoanAmount: item ? item.loan.interestLoanAmount : data.loan.interestLoanAmount,
+        nextInstallmentDate: item ? item.loan.nextInstallmentDate : data.loan.nextInstallmentDate,
+        companyName: item ? item.loan.company.name : data.loan.company.name,
+        companyEmail: item ? item.loan.company.email : data.loan.company.email,
+        companyContact: item ? item.loan.company.contact : data.loan.company.contact,
+        file,
+        type: 'part_release',
+      };
+      const formData = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
       });
+      axios
+        .post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
@@ -319,7 +320,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       formData.append(`property[${index}][grossAmount]`, row.grossAmount);
       formData.append(`property[${index}][netAmount]`, row.netAmount);
     });
-
+    formData.append('entryBy', user.firstName + ' ' + user.middleName + ' ' + user.lastName);
     formData.append('remark', data.remark);
     formData.append('property-image', file);
     formData.append('date', data.date);
@@ -576,10 +577,10 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box sx={{ display: 'flex', gap: 4, pl: 0.5 }}>
-          <Typography variant="body1" gutterBottom sx={{ fontWeight: '700' }}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
-          <Typography variant="body1" gutterBottom sx={{ fontWeight: '700' }}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
@@ -590,7 +591,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell padding="checkbox">
+                      <TableCell padding='checkbox'>
                         <Checkbox
                           checked={selectedRows.length === currentLoan.propertyDetails.length}
                           onChange={handleSelectAllClick}
@@ -607,7 +608,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                     {properties && properties.length > 0 ? (
                       properties.map((row, index) => (
                         <TableRow key={row._id} selected={isRowSelected(index)}>
-                          <TableCell padding="checkbox" sx={{ py: 0, px: 1, height: 1 }}>
+                          <TableCell padding='checkbox' sx={{ py: 0, px: 1, height: 1 }}>
                             <Checkbox
                               checked={isRowSelected(index)}
                               onChange={() => handleCheckboxClick(index)}
@@ -635,13 +636,13 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={9} align="center" sx={{ py: 0, px: 1, height: 1 }}>
+                        <TableCell colSpan={9} align='center' sx={{ py: 0, px: 1, height: 1 }}>
                           No Property Available
                         </TableCell>
                       </TableRow>
                     )}
                     <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
-                      <TableCell padding="checkbox" />
+                      <TableCell padding='checkbox' />
                       <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                         TOTAL AMOUNT
                       </TableCell>
@@ -702,13 +703,13 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 <Grid item xs={9}>
                   <Grid container rowSpacing={3} columnSpacing={2}>
                     <Grid item xs={3}>
-                      <RHFDatePicker name="date" control={control} label="Pay Date" req={'red'} />
+                      <RHFDatePicker name='date' control={control} label='Pay Date' req={'red'} />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField
-                        name="amountPaid"
-                        label="Pay amount"
-                        req="red"
+                        name='amountPaid'
+                        label='Pay amount'
+                        req='red'
                         onKeyPress={(e) => {
                           if (
                             !/[0-9.]/.test(e.key) ||
@@ -721,9 +722,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                     </Grid>{' '}
                     <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField
-                        name="adjustAmount"
-                        label="Adjust amount"
-                        req="red"
+                        name='adjustAmount'
+                        label='Adjust amount'
+                        req='red'
                         onKeyPress={(e) => {
                           if (
                             !/[0-9.]/.test(e.key) ||
@@ -736,8 +737,8 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField
-                        name="pendingLoanAmount"
-                        label="Pending Loan amount"
+                        name='pendingLoanAmount'
+                        label='Pending Loan amount'
                         onKeyPress={(e) => {
                           if (
                             !/[0-9.]/.test(e.key) ||
@@ -749,13 +750,13 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
-                      <RHFTextField name="remark" label="Remark" />
+                      <RHFTextField name='remark' label='Remark' />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <RHFAutocomplete
-                        name="expectPaymentMode"
-                        label="Expected Payment Mode"
-                        req="red"
+                        name='expectPaymentMode'
+                        label='Expected Payment Mode'
+                        req='red'
                         options={['Cash', 'Bank', 'Both']}
                         getOptionLabel={(option) => option}
                         renderOption={(props, option) => (
@@ -767,13 +768,13 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                     </Grid>
                   </Grid>
                   <Grid>
-                    <Typography variant="subtitle1" my={1}>
+                    <Typography variant='subtitle1' my={1}>
                       Payment Details
                     </Typography>
                     <Box
                       rowGap={2}
                       columnGap={2}
-                      display="grid"
+                      display='grid'
                       gridTemplateColumns={{
                         xs: 'repeat(1, 1fr)',
                         sm: 'repeat(2, 1fr)',
@@ -781,8 +782,8 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       }}
                     >
                       <RHFAutocomplete
-                        name="paymentMode"
-                        label="Payment Mode"
+                        name='paymentMode'
+                        label='Payment Mode'
                         options={['Cash', 'Bank', 'Both']}
                         onChange={(event, value) => {
                           setValue('paymentMode', value);
@@ -803,12 +804,12 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       />
                       {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
                         <Controller
-                          name="cashAmount"
+                          name='cashAmount'
                           control={control}
                           render={({ field }) => (
                             <RHFTextField
                               {...field}
-                              label="Cash Amount"
+                              label='Cash Amount'
                               req={'red'}
                               inputProps={{ min: 0 }}
                               onChange={(e) => {
@@ -822,9 +823,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                       {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
                         <>
                           <RHFAutocomplete
-                            name="account"
-                            label="Account"
-                            req="red"
+                            name='account'
+                            label='Account'
+                            req='red'
                             fullWidth
                             options={branch.flatMap((item) => item.company.bankAccounts)}
                             getOptionLabel={(option) => option.bankName || ''}
@@ -836,13 +837,13 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                           />
                           <Controller
-                            name="bankAmount"
+                            name='bankAmount'
                             control={control}
                             render={({ field }) => (
                               <RHFTextField
                                 {...field}
-                                label="Bank Amount"
-                                req="red"
+                                label='Bank Amount'
+                                req='red'
                                 disabled={watch('paymentMode') !== 'Bank'}
                                 inputProps={{ min: 0 }}
                               />
@@ -884,9 +885,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                         aspect={1}
                       >
                         <img
-                          id="cropped-image"
+                          id='cropped-image'
                           src={imageSrc}
-                          alt="Crop preview"
+                          alt='Crop preview'
                           onLoad={resetCrop}
                           style={{ transform: `rotate(${rotation}deg)` }}
                         />
@@ -895,7 +896,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                     <div
                       style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}
                     >
-                      <Button variant="outlined" onClick={handleCancel}>
+                      <Button variant='outlined' onClick={handleCancel}>
                         Cancel
                       </Button>
                       <Box sx={{ display: 'flex' }}>
@@ -903,15 +904,15 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                           onClick={() => rotateImage(-90)}
                           style={{ marginRight: '10px' }}
                         >
-                          <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />
+                          <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
                         </IconButton>
                         <IconButton
                           onClick={() => rotateImage(90)} // Rotate right by 90 degrees
                         >
-                          <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />
+                          <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
                         </IconButton>
                       </Box>
-                      <Button variant="contained" color="primary" onClick={showCroppedImage}>
+                      <Button variant='contained' color='primary' onClick={showCroppedImage}>
                         Save Image
                       </Button>
                     </div>
@@ -923,15 +924,15 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         </Box>
         <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
           <Button
-            color="inherit"
+            color='inherit'
             sx={{ margin: '0px 10px', height: '36px' }}
-            variant="outlined"
+            variant='outlined'
             onClick={() => reset()}
           >
             Reset
           </Button>
           {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
               Submit
             </LoadingButton>
           )}
@@ -964,11 +965,12 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   {fDate(row.createdAt)}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.remark}</TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.entryBy || '-'}</TableCell>
                 {getResponsibilityValue('delete_part_release', configs, user) ? (
                   <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                     {
                       <IconButton
-                        color="error"
+                        color='error'
                         onClick={() => {
                           if (index === 0) {
                             confirm.onTrue();
@@ -982,7 +984,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                           pointerEvents: index === 0 ? 'auto' : 'none',
                         }}
                       >
-                        <Iconify icon="eva:trash-2-outline" />
+                        <Iconify icon='eva:trash-2-outline' />
                       </IconButton>
                     }
                   </TableCell>
@@ -1004,7 +1006,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                           pointerEvents: 'auto',
                         }}
                       >
-                        <Iconify icon="basil:document-solid" />
+                        <Iconify icon='basil:document-solid' />
                       </Typography>
                     }
                   </TableCell>
@@ -1045,16 +1047,17 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
           </TableRow>
         </TableBody>
       </Table>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={() => handleDeletePart(deleteId)}>
+          <Button variant='contained' color='error' onClick={() => handleDeletePart(deleteId)}>
             Delete
           </Button>
         }
@@ -1066,15 +1069,15 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
               p: 1.5,
             }}
           >
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
-            <Button color="inherit" variant="contained" onClick={() => sendPdfToWhatsApp()}>
+            <Button color='inherit' variant='contained' onClick={() => sendPdfToWhatsApp()}>
               Share
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               <PartReleasePdf selectedRow={data} configs={configs} />
             </PDFViewer>
           </Box>

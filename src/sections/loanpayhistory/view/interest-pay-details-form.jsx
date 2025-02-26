@@ -44,6 +44,7 @@ const TABLE_HEAD = [
   { id: 'days', label: 'Days' },
   { id: 'uchakAmt', label: 'Uchak Amt' },
   { id: 'totalPay', label: 'Total Pay Amt' },
+  { id: 'entryBy', label: 'Entry By' },
   { id: 'pdf', label: 'PDF' },
   { id: 'action', label: 'Action' },
 ];
@@ -312,6 +313,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
 
     const payload = {
+      entryBy: user.firstName + ' ' + user.middleName + ' ' + user.lastName,
       to: new Date(data.to),
       adjustedPay: parseFloat(data.payAfterAdjusted1) || 0,
       days: parseInt(data.days, 10) || 0,
@@ -623,7 +625,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
-
+                    <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.entryBy || '-'}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                         {
@@ -730,6 +732,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {totalPayAmt}
                 </TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
               </TableRow>
