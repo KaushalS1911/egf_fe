@@ -13,12 +13,11 @@ import Label from '../../components/label';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
-import { Box, Dialog, DialogActions, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import Notice from '../reminder/view/notice';
 import Noc from './PDF/noc';
 import { useState } from 'react';
-import IconButton from '@mui/material/IconButton';
 import LetterOfAuthority from '../disburse/letter-of-authority';
 import Sansaction11 from '../disburse/sansaction-11.jsx';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details';
@@ -27,12 +26,12 @@ import { fDate } from '../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function OtherLoanpayhistoryTableRow({
-  row,
-  selected,
-  onDeleteRow,
-  loanStatus,
-  index,
-}) {
+                                                      row,
+                                                      selected,
+                                                      onDeleteRow,
+                                                      loanStatus,
+                                                      index,
+                                                    }) {
   const {
     loan,
     otherName,
@@ -48,7 +47,7 @@ export default function OtherLoanpayhistoryTableRow({
     closingCharge,
     renewalDate,
     _id,
-    status
+    status,
   } = row;
   const { loanNo, customer } = loan;
   const confirm = useBoolean();
@@ -62,11 +61,13 @@ export default function OtherLoanpayhistoryTableRow({
     setDialogContent(content);
     view.onTrue();
   };
+
   const statusColors = {
     Closed: (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07'),
     Overdue: (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706'),
     Issued: (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403'),
   };
+
   const renderDialogContent = () => {
     if (dialogContent === 'loanDetails') {
       return <LoanIssueDetails selectedRow={row} configs={configs} />;
@@ -88,7 +89,8 @@ export default function OtherLoanpayhistoryTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' , ' td': {padding : '6px'} }}>
+      <TableRow hover selected={selected}
+                sx={{ backgroundColor: statusColors[status] || '', ' td': { padding: '6px' } }}>
         <TableCell>{srNo}</TableCell>
         {getResponsibilityValue('create_loanIssue', configs, user) ? (
           <TableCell>
@@ -144,7 +146,7 @@ export default function OtherLoanpayhistoryTableRow({
         {/*</TableCell>*/}
         <TableCell>
           <Label
-            variant="soft"
+            variant='soft'
             color={
               (status === 'Disbursed' && 'info') ||
               (status === 'Closed' && 'warning') ||
@@ -160,7 +162,7 @@ export default function OtherLoanpayhistoryTableRow({
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -169,7 +171,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon="clarity:details-line" />
+          <Iconify icon='clarity:details-line' />
           Loan Details
         </MenuItem>
         <MenuItem
@@ -178,7 +180,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon="mdi:file-document-outline" />
+          <Iconify icon='mdi:file-document-outline' />
           Sanction{' '}
         </MenuItem>
         <MenuItem
@@ -187,7 +189,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon="material-symbols:verified-user-outline" />
+          <Iconify icon='material-symbols:verified-user-outline' />
           Authority{' '}
         </MenuItem>
         {row.status === 'Closed' ? (
@@ -197,7 +199,7 @@ export default function OtherLoanpayhistoryTableRow({
               popover.onClose();
             }}
           >
-            <Iconify icon="mdi:certificate-outline" />
+            <Iconify icon='mdi:certificate-outline' />
             NOC
           </MenuItem>
         ) : (
@@ -207,7 +209,7 @@ export default function OtherLoanpayhistoryTableRow({
               popover.onClose();
             }}
           >
-            <Iconify icon="gridicons:notice" />
+            <Iconify icon='gridicons:notice' />
             Notice
           </MenuItem>
         )}
@@ -215,10 +217,10 @@ export default function OtherLoanpayhistoryTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -226,12 +228,12 @@ export default function OtherLoanpayhistoryTableRow({
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               {renderDialogContent()}
             </PDFViewer>
           </Box>

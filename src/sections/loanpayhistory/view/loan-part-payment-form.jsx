@@ -57,53 +57,53 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   const view = useBoolean();
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
-
   const payAmt = partPayment.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+
   const intAmt = partPayment.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
-    0
+    0,
   );
 
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
-          account: Yup.object().required('Account is required'),
+        account: Yup.object().required('Account is required'),
+        bankAmount: Yup.string()
+          .required('Bank Amount is required')
+          .test(
+            'is-positive',
+            'Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+      }
+      : paymentMode === 'Cash'
+        ? {
+          cashAmount: Yup.string()
+            .required('Cash Amount is required')
+            .test(
+              'is-positive',
+              'Cash Amount must be a positive number',
+              (value) => parseFloat(value) >= 0,
+            ),
+        }
+        : {
+          cashAmount: Yup.string()
+            .required('Cash Amount is required')
+            .test(
+              'is-positive',
+              'Cash Amount must be a positive number',
+              (value) => parseFloat(value) >= 0,
+            ),
+
           bankAmount: Yup.string()
             .required('Bank Amount is required')
             .test(
               'is-positive',
               'Bank Amount must be a positive number',
-              (value) => parseFloat(value) >= 0
+              (value) => parseFloat(value) >= 0,
             ),
-        }
-      : paymentMode === 'Cash'
-        ? {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-          }
-        : {
-            cashAmount: Yup.string()
-              .required('Cash Amount is required')
-              .test(
-                'is-positive',
-                'Cash Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-
-            bankAmount: Yup.string()
-              .required('Bank Amount is required')
-              .test(
-                'is-positive',
-                'Bank Amount must be a positive number',
-                (value) => parseFloat(value) >= 0
-              ),
-            account: Yup.object().required('Account is required'),
-          };
+          account: Yup.object().required('Account is required'),
+        };
 
   const NewPartPaymentSchema = Yup.object().shape({
     date: Yup.date().nullable().required('Uchak Pay date is required'),
@@ -242,7 +242,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   const handleDeletePartPayment = async (id) => {
     try {
       const response = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`
+        `${import.meta.env.VITE_BASE_URL}/loans/${currentLoan._id}/part-payment/${id}`,
       );
       refetchPartPayment();
       mutate();
@@ -295,27 +295,26 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   //   return loanAmt - totalPartPay;
   // }
 
-
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box sx={{ display: 'flex', gap: 4, mb: 1.5 }}>
-          <Typography variant="body1" gutterBottom sx={{ fontWeight: '700' }}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Cash Amount : {currentLoan.cashAmount || 0}
           </Typography>
-          <Typography variant="body1" gutterBottom sx={{ fontWeight: '700' }}>
+          <Typography variant='body1' gutterBottom sx={{ fontWeight: '700' }}>
             Bank Amount : {currentLoan.bankAmount || 0}
           </Typography>
         </Box>
         <Grid container rowSpacing={3} columnSpacing={2}>
           <Grid item xs={3}>
-            <RHFDatePicker name="date" control={control} label="Pay date" req={'red'} />
+            <RHFDatePicker name='date' control={control} label='Pay date' req={'red'} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <RHFTextField
-              name="amountPaid"
-              label="Pay Amount"
-              req="red"
+              name='amountPaid'
+              label='Pay Amount'
+              req='red'
               fullWidth
               onKeyPress={(e) => {
                 if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -325,13 +324,13 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <RHFTextField name="remark" label="Remark" fullWidth />
+            <RHFTextField name='remark' label='Remark' fullWidth />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <RHFAutocomplete
-              name="expectPaymentMode"
-              label="Expected Payment Mode"
-              req="red"
+              name='expectPaymentMode'
+              label='Expected Payment Mode'
+              req='red'
               options={['Cash', 'Bank', 'Both']}
               getOptionLabel={(option) => option}
               renderOption={(props, option) => (
@@ -344,7 +343,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
         </Grid>
         <Grid spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" my={1}>
+            <Typography variant='subtitle1' my={1}>
               Payment Details
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -352,16 +351,16 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 width={'100%'}
                 rowGap={3}
                 columnGap={2}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   md: 'repeat(5, 1fr)',
                 }}
               >
                 <RHFAutocomplete
-                  name="paymentMode"
-                  label="Payment Mode"
-                  req="red"
+                  name='paymentMode'
+                  label='Payment Mode'
+                  req='red'
                   options={['Cash', 'Bank', 'Both']}
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
@@ -376,12 +375,12 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 />
                 {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
                   <Controller
-                    name="cashAmount"
+                    name='cashAmount'
                     control={control}
                     render={({ field }) => (
                       <RHFTextField
                         {...field}
-                        label="Cash Amount"
+                        label='Cash Amount'
                         req={'red'}
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
@@ -395,9 +394,9 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
                   <>
                     <RHFAutocomplete
-                      name="account"
-                      label="Account"
-                      req="red"
+                      name='account'
+                      label='Account'
+                      req='red'
                       fullWidth
                       options={branch.flatMap((item) => item.company.bankAccounts)}
                       getOptionLabel={(option) => option.bankName || ''}
@@ -409,12 +408,12 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                     <Controller
-                      name="bankAmount"
+                      name='bankAmount'
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
-                          label="Bank Amount"
+                          label='Bank Amount'
                           req={'red'}
                           disabled={watch('paymentMode') === 'Bank' ? false : true}
                           inputProps={{ min: 0 }}
@@ -426,15 +425,15 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
-                  color="inherit"
+                  color='inherit'
                   sx={{ margin: '0px 10px', height: '36px' }}
-                  variant="outlined"
+                  variant='outlined'
                   onClick={() => reset()}
                 >
                   Reset
                 </Button>
                 {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                     Submit
                   </LoadingButton>
                 )}
@@ -461,7 +460,11 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 {row.interestLoanAmount}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{Number(row.loan.loanAmount) - Number(row.amountPaid)}</TableCell>
+              <TableCell sx={{
+                whiteSpace: 'nowrap',
+                py: 0,
+                px: 2,
+              }}>{Number(row.interestLoanAmount) - Number(row.amountPaid)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {fDate(row.createdAt)}
@@ -471,14 +474,14 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {
                     <IconButton
-                      color="error"
+                      color='error'
                       onClick={() => {
                         confirm.onTrue();
                         popover.onClose();
                         setDeleteId(row?._id);
                       }}
                     >
-                      <Iconify icon="eva:trash-2-outline" />
+                      <Iconify icon='eva:trash-2-outline' />
                     </IconButton>
                   }
                 </TableCell>
@@ -499,7 +502,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                         pointerEvents: 'auto',
                       }}
                     >
-                      <Iconify icon="basil:document-solid" />
+                      <Iconify icon='basil:document-solid' />
                     </Typography>
                   }
                 </TableCell>
@@ -509,7 +512,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             </TableRow>
           ))}
           <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
-            {/*<TableCell padding="checkbox" />*/}
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
               {intAmt}
@@ -523,19 +525,18 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
           </TableRow>
         </TableBody>
       </Table>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => handleDeletePartPayment(deleteId)}
           >
             Delete
@@ -549,15 +550,15 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               p: 1.5,
             }}
           >
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
-            <Button color="inherit" variant="contained" onClick={() => sendPdfToWhatsApp()}>
+            <Button color='inherit' variant='contained' onClick={() => sendPdfToWhatsApp()}>
               Share
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               <LoanPartPaymentDetailsPdf data={data} configs={configs} />
             </PDFViewer>
           </Box>
