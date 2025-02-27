@@ -12,8 +12,8 @@ Font.register({
 });
 
 Font.register({
-  family: 'NotoSansGujarati',
-  src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
+  family: 'Mukta Vaani',
+  src: '/fonts/MuktaVaani-Regular.ttf',
 });
 
 Font.register({
@@ -63,7 +63,7 @@ const useStyles = () =>
           height: '80%',
         },
         gujaratiText: {
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
         },
         flexContainer: {
           flexDirection: 'row',
@@ -85,14 +85,14 @@ const useStyles = () =>
           width: '100%',
           textAlign: 'right',
           marginTop: 10,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
         },
         write: {
           fontSize: 14,
           textAlign: 'left',
           marginTop: 3,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
         },
         date: {
@@ -158,7 +158,7 @@ const useStyles = () =>
           paddingHorizontal: 4,
           textAlign: 'center',
           fontWeight: 600,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
         },
         heading: {
           fontSize: '13px',
@@ -362,14 +362,15 @@ export default function Sansaction11({ sansaction, configs }) {
       specification: `વેપાર, મિલકત ખરીદ અને વેચાણ માટે ધીરેલુ કરજ .`,
     },
     {
-      heading: `અગત કરજ`,
-      specification: ` લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અને અગત જરૂરિયાતો માટે ધીરેલુ કરજ .`,
+      heading: `અંગત કરજ`,
+      specification: ` લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અને અંગત જરૂરિયાતો માટે ધીરેલુ કરજ .`,
     },
     {
       heading: `પ્રકીર્ણ  કરજ `,
       specification: `૧ થી ૪ માં સમાવેશ ન થયેલ હેતુઓ માટે ધીરેલુ કરજ.`,
     },
   ];
+console.log('દેવા ભરપાઈ કરવા અને અંગત જરૂરિયાતો માટે ધીરેલુ કરજ')
 
   return (
     <>
@@ -452,9 +453,11 @@ export default function Sansaction11({ sansaction, configs }) {
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
                       ૪-અ. કરજ ની પ્રકાર :{' '}
                     </Text>
+                    <View>
                     <Text style={[styles.subText, styles.gujaratiText]}>
-                      ખેતી વિષયક,ઔદ્યોગિક વેપારી,અગત કે પ્રકીણ કરજ
+                      ખેતી વિષયક,ઔદ્યોગિક વેપારી,અંગત કે પ્રકીણ કરજ
                     </Text>
+                      </View>
                   </Text>
                   <Text style={styles.spacing}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
@@ -529,7 +532,7 @@ export default function Sansaction11({ sansaction, configs }) {
                     ...styles.gujaratiText,
                     fontSize: 11,
                     marginTop: 15,
-                    fontWeight: 'bold',
+                    fontWeight: 900,
                   }}
                 >
                   હું નીચે સહી કરનાર પ્રતિજ્ઞાપુર્વગ જાણવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની

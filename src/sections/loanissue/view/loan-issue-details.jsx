@@ -332,7 +332,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                     <Text style={styles.subHeading}>Name</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={{ ...styles.subText, wordWrap: 'break-word', textWrap: 'wrap' }}>
-                      {`${selectedRow.customer.firstName || ''} ${selectedRow.customer.middleName || ''} ${selectedRow.customer.lastName || ''}`.trim()}
+                      {`${selectedRow.customer.firstName || ''} ${selectedRow.customer.middleName || ''} \n${selectedRow.customer.lastName || ''}`.trim()}
                     </Text>
                   </View>
                   <View style={styles.row}>
@@ -364,12 +364,12 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                 </View>
                 <View style={{ width: '46%' }}>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Amount</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Loan Amount</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow.loanAmount}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Interest Rate</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Interest Rate</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>
                       {selectedRow?.scheme.interestRate > 1.5
@@ -379,32 +379,32 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                     </Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Consult Charge</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Consult Charge</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow?.consultingCharge}%</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Approval Charge</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Approval Charge</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow?.approvalCharge}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Loan Int Pay Schedule</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Loan Int Pay Schedule</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow.scheme.interestPeriod}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Issue Date</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Issue Date</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{fDate(selectedRow.issueDate)}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Next Int Date</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Next Int Date</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{fDate(selectedRow.nextInstallmentDate)}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={{ ...styles.subHeading, flex: 2 }}>Renew Date</Text>
+                    <Text style={{ ...styles.subHeading, flex: 2.5 }}>Renew Date</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{renewDate()}</Text>
                   </View>
