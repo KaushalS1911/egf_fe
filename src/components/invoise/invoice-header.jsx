@@ -124,7 +124,6 @@ const useStyles = () =>
         },
         header: {
           width: '100%',
-          height: '100px',
           position: 'relative',
           overflow: 'hidden',
         },
@@ -150,8 +149,6 @@ const useStyles = () =>
           paddingLeft: 6,
         },
         logoParent: {
-          height: 64,
-          width: 64,
           borderRadius: '10px',
           overflow: 'hidden',
           marginRight: 5,
@@ -175,7 +172,7 @@ const useStyles = () =>
     []
   );
 
-export default function InvoiceHeader({ configs }) {
+export default function InvoiceHeader({ configs, landscape }) {
   const styles = useStyles();
   const logo = configs?.company?.logo_url;
   const branch = configs?.headersConfig?.branch;
@@ -190,7 +187,7 @@ export default function InvoiceHeader({ configs }) {
   const branchContact = branch?.contact || 'Contact Not Available';
 
   return (
-    <View style={styles.header}>
+    <View style={{ ...styles.header, height: landscape ? 120 : 100 }}>
       <View style={styles.headerbox1Parent}>
         <Image style={styles.backgroundImage} src={background} />
         <View
@@ -203,7 +200,13 @@ export default function InvoiceHeader({ configs }) {
         >
           <View style={styles.headerbox1}>
             {/* Left: Logo */}
-            <View style={styles.logoParent}>
+            <View
+              style={{
+                ...styles.logoParent,
+                height: landscape ? 82 : 64,
+                width: landscape ? 82 : 64,
+              }}
+            >
               <Image style={styles.logo} src={logo} />
             </View>
 
@@ -212,7 +215,7 @@ export default function InvoiceHeader({ configs }) {
               <Text
                 style={{
                   ...styles.companyName,
-                  fontSize: '30px',
+                  fontSize: landscape ? '38px' : '30px',
                   // width: 220,
                 }}
               >
@@ -222,7 +225,7 @@ export default function InvoiceHeader({ configs }) {
               <Text
                 style={{
                   // ...styles.letterSpacingText,
-                  fontSize: 12,
+                  fontSize: landscape ? 15 : 12,
                   // fontSize: company?.name?.length > 17 ? '12px' : '14px',
                   color: '#fff',
                   marginLeft: 60,
@@ -241,7 +244,7 @@ export default function InvoiceHeader({ configs }) {
             flexDirection: 'row',
             textWrap: 'wrap',
             // paddingRight: 10,
-            marginTop: 12,
+            marginTop: landscape ? 14 : 12,
             marginLeft: 10,
           }}
         >

@@ -106,11 +106,11 @@ const useStyles = () =>
           // color: '#fff',
         },
         headerDetails: {
-          fontSize: 11,
+          fontSize: 9,
         },
         icon: {
-          height: '12px',
-          width: '12px',
+          height: '10px',
+          width: '10px',
         },
         rowContainer: {
           flexDirection: 'row',
@@ -120,6 +120,7 @@ const useStyles = () =>
         },
         flexContainer: {
           flexDirection: 'row',
+          display: 'flex',
           justifyContent: 'space-between',
           width: '60%',
           marginTop: 10,

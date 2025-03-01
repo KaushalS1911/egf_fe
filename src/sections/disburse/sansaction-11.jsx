@@ -60,7 +60,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '80%',
+          height: '90%',
         },
         gujaratiText: {
           fontFamily: 'NotoSansGujarati',
@@ -226,6 +226,13 @@ export default function Sansaction11({ sansaction, configs }) {
   );
   const amount = sansaction.loanAmount;
 
+  const month =
+    sansaction.scheme.renewalTime === 'Monthly'
+      ? 1
+      : sansaction.scheme.renewalTime === 'yearly'
+        ? 12
+        : parseInt(sansaction.scheme.renewalTime.split(' ')[0], 10) || 0;
+
   function numberToWords(num) {
     if (num === 0) return 'Zero Rupees Only';
 
@@ -323,28 +330,28 @@ export default function Sansaction11({ sansaction, configs }) {
 
   const rules2 = [
     {
-      rule: `બેંક બંધના દિવસે દાગીના પરત મળશે નહિ`,
+      rule: `બેંક બંધના દિવસે દાગીના પરત મળશે નહિ.`,
     },
     {
-      rule: `દર મહિને વ્યાજ ભરી જવું`,
+      rule: `દર મહિને વ્યાજ ભરી જવું.`,
     },
     {
-      rule: `આપેલ બિલ સાથે લેતા આવું`,
+      rule: `આપેલ બિલ સાથે લેતા આવવું.`,
     },
     {
-      rule: `સરનામું બદલે ત્યારે ફેરફાર કરાવી જવું`,
+      rule: `સરનામું બદલે ત્યારે ફેરફાર કરાવી જવું.`,
     },
     {
-      rule: `દર રવિવારે ઓફિસ બંધ રહેશે`,
+      rule: `દર રવિવારે ઓફિસ બંધ રહેશે.`,
     },
     {
-      rule: `કરજ ની રકમ ભર્યા પછી જે વ્યકતિના નામનું બિલ હશે તે વ્યક્તિને જ દાગીના પરત મળશે `,
+      rule: `કરજ ની રકમ ભર્યા પછી જે વ્યકતિના નામનું બિલ હશે તે વ્યક્તિને જ દાગીના પરત મળશે.`,
     },
     {
-      rule: `નક્કી કરેલી મુદત પુરી થયા બાદ નાણાં વસુલ આપનાર પાસે ચક્રવૃદ્ધિ વ્યાજ વસુલ કરવામાં આવશે `,
+      rule: `નક્કી કરેલી મુદત પુરી થયા બાદ નાણાં વસુલ આપનાર પાસે ચક્રવૃદ્ધિ વ્યાજ વસુલ કરવામાં આવશે.`,
     },
     {
-      rule: `દાગીના સુરક્ષિત સ્થળે મુકેલા હોવાથી કરજ ની રકમ ભર્યા પછી બીજા દિવસે દાગીના પરત મળશે`,
+      rule: `(દાગીના સુરક્ષિત સ્થળે મુકેલા હોવાથી કરજ ની રકમ ભર્યા પછી બીજા દિવસે દાગીના પરત મળશે)`,
     },
   ];
 
@@ -398,7 +405,7 @@ export default function Sansaction11({ sansaction, configs }) {
                 }}
               >
                 <View style={{ width: '60%' }}>
-                  <Text style={styles.spacing}>
+                  <Text style={{ ...styles.spacing, marginTop: -8 }}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
                       બિલ નં. :{' '}
                     </Text>{' '}
@@ -432,7 +439,7 @@ export default function Sansaction11({ sansaction, configs }) {
                         flexShrink: 1,
                       }}
                     >
-                      {` ${sansaction.customer.permanentAddress.street}, ${sansaction.customer.permanentAddress.landmark}, ${sansaction.customer.permanentAddress.city}, ${sansaction.customer.permanentAddress.zipcode}`}
+                      {` ${sansaction.customer.permanentAddress.street}, ${sansaction.customer.permanentAddress.landmark}, ${sansaction.customer.permanentAddress.city}, ${sansaction.customer.permanentAddress.zipcode}`.toUpperCase()}
                     </Text>
                   </View>
 
@@ -444,7 +451,7 @@ export default function Sansaction11({ sansaction, configs }) {
                   </Text>
                   <Text style={styles.spacing}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૪. ધીયાં ની તારીખ :{' '}
+                      ૪. ધીર્યા ની તારીખ :{' '}
                     </Text>
                     <Text style={styles.subText}>{fDate(sansaction.issueDate)}</Text>
                   </Text>
@@ -458,7 +465,7 @@ export default function Sansaction11({ sansaction, configs }) {
                   </Text>
                   <Text style={styles.spacing}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૫. કરજ પાકવાની મુદત માસ ૮ ની છે .
+                      {`૫. કરજ પાકવાની મુદત માસ ${month} ની છે .`}
                     </Text>
                   </Text>
                   <Text style={styles.spacing}>
@@ -500,7 +507,7 @@ export default function Sansaction11({ sansaction, configs }) {
                   </View>
                   <View style={{ textAlign: 'center', margin: '5px 0px 5px 0px', width: '100%' }}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 12 }}>
-                      વજન તરણની અદાજેલી કિંમતી વ.
+                      (વજન તારણની અદાજેલી કિંમત વિ.)
                     </Text>
                   </View>
                   <View style={[styles.tableRow, styles.tableHeader]}>
@@ -532,7 +539,7 @@ export default function Sansaction11({ sansaction, configs }) {
                     fontWeight: 'bold',
                   }}
                 >
-                  હું નીચે સહી કરનાર પ્રતિજ્ઞાપુર્વગ જાણવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની
+                  હું નીચે સહી કરનાર પ્રતિજ્ઞાપુર્વક જણાવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની
                   માલિકીના છે.તેની સર્વ જવાબદારી મારી છે આ બિલની બધી જ શરતો મેં વાંચી છે,તે મને કબુલ
                   છે
                 </Text>
@@ -626,7 +633,7 @@ export default function Sansaction11({ sansaction, configs }) {
                 </View>
               </View>
             </View>
-            <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
+            <View style={{ ...styles.d_flex, marginBottom: 32.5 }}>
               <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
               <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>

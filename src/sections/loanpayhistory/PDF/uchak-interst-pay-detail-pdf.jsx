@@ -50,7 +50,7 @@ const useStyles = () =>
         subHeading: {
           fontWeight: '600',
           fontSize: 10,
-          flex: 0.9,
+          flex: 1,
         },
         subHeading2: {
           fontWeight: '600',
@@ -116,6 +116,15 @@ const useStyles = () =>
           width: '100px',
           fontWeight: 600,
         },
+        termsAndConditionsHeaders: {
+          color: '#232C4B',
+          borderBottom: '1px solid #232C4B',
+          fontWeight: 'bold',
+          textWrap: 'nowrap',
+          fontSize: '12px',
+          textAlign: 'center',
+          paddingVertical: 5,
+        },
       }),
     []
   );
@@ -132,8 +141,23 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
           </View>
           <InvoiceHeader selectedRow={data.loan} configs={configs} />
           <View style={styles.pagePadding}>
-            <Text style={{ ...styles.headerText2, marginTop: 25 }}>Uchak Pay Slip</Text>
-            <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+            <View
+              style={{
+                textAlign: 'center',
+                fontSize: 18,
+                marginRight: 25,
+                marginBottom: 10,
+              }}
+            >
+              <Text style={styles.termsAndConditionsHeaders}>UCHAK INTEREST PAY INVOICE</Text>
+            </View>{' '}
+            <View
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                flexDirection: 'row',
+              }}
+            >
               <View style={{ width: '50%' }}>
                 <View style={styles.row}>
                   <Text style={styles.subHeading}>Loan No </Text>
@@ -192,6 +216,10 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{data.remark}</Text>
               </View>
             </View>
+            <Text style={{ marginTop: 10 }}>
+              <Text style={styles.subHeading2}>Accepted & Received Amount : </Text>
+              <Text style={styles.subText}>{data.amountPaid}</Text>
+            </Text>
           </View>
           <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
             <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>

@@ -344,7 +344,9 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                         textWrap: 'wrap',
                         fontSize: 9,
                       }}
-                    >{`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`}</Text>
+                    >
+                      {`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`.toUpperCase()}
+                    </Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Pan No</Text>

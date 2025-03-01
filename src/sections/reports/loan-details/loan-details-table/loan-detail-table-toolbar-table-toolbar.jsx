@@ -21,12 +21,21 @@ import InputLabel from '@mui/material/InputLabel';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../../view/all-branch-loan-summary-pdf';
+import AllBranchLoanSummaryPdf from '../../pdf/all-branch-loan-summary-pdf.jsx';
 import { useGetLoanissue } from '../../../../api/loanissue';
+import LoanDetailsPdf from '../../pdf/loan-details-pdf.jsx';
+import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function LoanDetailTableToolbarTableToolbar({ filters, onFilters, dateError, dataFilter, configs }) {
+export default function LoanDetailTableToolbarTableToolbar({
+  filters,
+  onFilters,
+  dateError,
+  dataFilter,
+  configs,
+  data,
+}) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -38,7 +47,7 @@ export default function LoanDetailTableToolbarTableToolbar({ filters, onFilters,
     (event) => {
       onFilters('username', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
   const handleFilterStartDate = useCallback(
     (newValue) => {
@@ -54,7 +63,7 @@ export default function LoanDetailTableToolbarTableToolbar({ filters, onFilters,
         onFilters('startDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   // const handleFilterEndDate = useCallback(
@@ -75,14 +84,14 @@ export default function LoanDetailTableToolbarTableToolbar({ filters, onFilters,
   // );
   const customStyle = {
     maxWidth: { md: 200 },
-    'label': {
+    label: {
       mt: -0.8,
       fontSize: '14px',
     },
     '& .MuiInputLabel-shrink': {
       mt: 0,
     },
-    'input': { height: 7 },
+    input: { height: 7 },
   };
   const handleFilterLoan = useCallback(
     (event) => {
@@ -106,8 +115,8 @@ export default function LoanDetailTableToolbarTableToolbar({ filters, onFilters,
         }}
       >
         <Stack
-          direction='row'
-          alignItems='center'
+          direction="row"
+          alignItems="center"
           spacing={2}
           flexGrow={1}
           sx={{ width: 1, pr: 1.5, display: 'flex', justifyContent: 'space-between' }}
@@ -132,17 +141,21 @@ export default function LoanDetailTableToolbarTableToolbar({ filters, onFilters,
               width: { xs: 1, sm: 200 },
             }}
           >
-            <InputLabel sx={{
-              mt: -0.8,
-              '&.MuiInputLabel-shrink': {
-                mt: 0,
-              },
-            }}>Loan</InputLabel>
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Loan
+            </InputLabel>
 
             <Select
               value={filters.loan}
               onChange={handleFilterLoan}
-              input={<OutlinedInput label='Loan' sx={{ height: '40px' }} />}
+              input={<OutlinedInput label="Loan" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -186,65 +199,69 @@ export default function LoanDetailTableToolbarTableToolbar({ filters, onFilters,
           {/*  sx={{...customStyle}}*/}
           {/*/>*/}
 
-
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
-          arrow='right-top'
+          arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
-            onClick={() => {
-              view.onTrue();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel
-                // data={loans}
-                fileName='LaonissueData'
-                sheetName='LoanissueDetails'
-              />
-            </MenuItem></>)}
+          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
+            <>
+              {' '}
+              <MenuItem
+                onClick={() => {
+                  view.onTrue();
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="solar:printer-minimalistic-bold" />
+                Print
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="ant-design:file-pdf-filled" />
+                PDF
+              </MenuItem>
+              <MenuItem>
+                <RHFExportExcel
+                  // data={loans}
+                  fileName="LaonissueData"
+                  sheetName="LoanissueDetails"
+                />
+              </MenuItem>
+            </>
+          )}
           <MenuItem
             onClick={() => {
               popover.onClose();
             }}
           >
-            <Iconify icon='ic:round-whatsapp' />
+            <Iconify icon="ic:round-whatsapp" />
             whatsapp share
           </MenuItem>
         </CustomPopover>
       </Stack>
-      {/*<Dialog fullScreen open={view.value} onClose={view.onFalse}>*/}
-      {/*  <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>*/}
-      {/*    <DialogActions sx={{ p: 1.5 }}>*/}
-      {/*      <Button color="inherit" variant="contained" onClick={view.onFalse}>*/}
-      {/*        Close*/}
-      {/*      </Button>*/}
-      {/*    </DialogActions>*/}
-      {/*    <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>*/}
-      {/*      <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>*/}
-      {/*        <AllBranchLoanSummaryPdf loans={dataFilter} selectedBranch={selectedBranch} configs={configs}/>*/}
-      {/*      </PDFViewer>*/}
-      {/*    </Box>*/}
-      {/*  </Box>*/}
-      {/*</Dialog>*/}
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <LoanDetailsPdf data={data} configs={configs} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

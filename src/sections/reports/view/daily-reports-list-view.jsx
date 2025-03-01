@@ -144,6 +144,12 @@ export default function DailyReportsListView() {
     return <LoadingScreen />;
   }
 
+  const data = {
+    loanDetails: report?.loans,
+    loanIntDetails: report?.interestDetail,
+    partReleaseDetails: report?.partReleaseDetail,
+    uchakIntDetails: report?.uchakInterestDetail,
+  };
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -165,9 +171,10 @@ export default function DailyReportsListView() {
             onFilters={handleFilters}
             dataFilter={dataFiltered}
             configs={configs}
+            data={data}
           />
           <Box>
-            <NewGoldLonListView LoanIssue={dataFiltered?.loans} />
+            <NewGoldLonListView LoanIssue={report?.loans} />
           </Box>
           <Box mt={2}>
             <GoldLoanInterestListView interestDetail={report?.interestDetail} />

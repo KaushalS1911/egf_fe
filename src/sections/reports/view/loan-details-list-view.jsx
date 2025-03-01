@@ -10,22 +10,17 @@ import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import {
-  useTable,
-  getComparator,
-} from 'src/components/table';
+import { useTable, getComparator } from 'src/components/table';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import { Box } from '@mui/system';
 import LoanInterestDetailsListView from '../loan-details/loan-details-list-view/loan-interest-details-list-view';
 import LoanPartReleaseDetailsListView from '../loan-details/loan-details-list-view/loan-part-release-details-list-view';
 import LoanUchakPayDetailsListView from '../loan-details/loan-details-list-view/loan-uchakPay-details-list-view';
-import LoanPartPaymentDetailsListView
-  from '../loan-details/loan-details-list-view/loan-part-payment-details-list-view';
+import LoanPartPaymentDetailsListView from '../loan-details/loan-details-list-view/loan-part-payment-details-list-view';
 import LoanCloseDetailsListView from '../loan-details/loan-details-list-view/loan-close-details-list-view';
 import { useGetSingleLoan } from '../../../api/single-loan-details';
-import LoanDetailTableToolbarTableToolbar
-  from '../loan-details/loan-details-table/loan-detail-table-toolbar-table-toolbar';
+import LoanDetailTableToolbarTableToolbar from '../loan-details/loan-details-table/loan-detail-table-toolbar-table-toolbar';
 import { LoadingScreen } from '../../../components/loading-screen/index.js';
 
 // ----------------------------------------------------------------------
@@ -56,7 +51,7 @@ export default function LoanDetailsListView() {
   // if (filters.branch._id) params.append('branch', filters.branch._id);
   // if (filters.startDate) params.append('date', filters.startDate.toLocaleDateString());
   // if(filters.username) params.append('username',filters.username)
-  const date = (filters.startDate).toLocaleDateString();
+  const date = filters.startDate.toLocaleDateString();
   // const { report, reportLoading } = useGetDailyReport(params);
   const [tableData, setTableData] = useState(loanDetail);
 
@@ -82,9 +77,8 @@ export default function LoanDetailsListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
-
 
   // const loans = Loanissue.map((item) => ({
   //   'Loan No': item.loanNo,
@@ -111,16 +105,21 @@ export default function LoanDetailsListView() {
   // }));
 
   if (loanDetailLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
+  const data = {
+    intDetails: loanDetail?.interestDetail,
+    partReleaseDetails: loanDetail?.partReleaseDetail,
+    uchakPayDetails: loanDetail?.uchakInterestDetail,
+    partPaymentDetails: loanDetail?.partPaymentDetail,
+    loanCloseDetails: loanDetail?.loanCloseDetail,
+  };
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Loan Details'
+          heading="Loan Details"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reports', href: paths.dashboard.reports.root },
@@ -132,19 +131,30 @@ export default function LoanDetailsListView() {
           }}
         />
         <Card sx={{ pb: 3 }}>
-          <LoanDetailTableToolbarTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
-                                              configs={configs} />
+          <LoanDetailTableToolbarTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            dataFilter={dataFiltered}
+            configs={configs}
+            data={data}
+          />
           <Box>
             <LoanInterestDetailsListView interestDetail={loanDetail?.interestDetail || []} />
           </Box>
           <Box mt={2}>
-            <LoanPartReleaseDetailsListView partReleaseDetail={loanDetail?.partReleaseDetail || []} />
+            <LoanPartReleaseDetailsListView
+              partReleaseDetail={loanDetail?.partReleaseDetail || []}
+            />
           </Box>
           <Box mt={2}>
-            <LoanUchakPayDetailsListView uchakInterestDetail={loanDetail?.uchakInterestDetail || []} />
+            <LoanUchakPayDetailsListView
+              uchakInterestDetail={loanDetail?.uchakInterestDetail || []}
+            />
           </Box>
           <Box mt={2}>
-            <LoanPartPaymentDetailsListView partPaymentDetail={loanDetail?.partPaymentDetail || []} />
+            <LoanPartPaymentDetailsListView
+              partPaymentDetail={loanDetail?.partPaymentDetail || []}
+            />
           </Box>
           <Box mt={2}>
             <LoanCloseDetailsListView loanCloseDetail={loanDetail?.loanCloseDetail || []} />
@@ -154,7 +164,7 @@ export default function LoanDetailsListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -162,8 +172,8 @@ export default function LoanDetailsListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();

@@ -16,7 +16,7 @@ import InputLabel from '@mui/material/InputLabel';
 import { useBoolean } from '../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../view/all-branch-loan-summary-pdf';
+import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +35,12 @@ export default function AllBranchLoanSummaryTableToolbar({
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const view = useBoolean();
-
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    issuedBy: filters.issuedBy,
+    branch: filters.branch,
+  };
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -274,6 +279,7 @@ export default function AllBranchLoanSummaryTableToolbar({
               <MenuItem
                 onClick={() => {
                   popover.onClose();
+                  view.onTrue();
                 }}
               >
                 <Iconify icon="solar:printer-minimalistic-bold" />
@@ -311,7 +317,11 @@ export default function AllBranchLoanSummaryTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf loans={dataFilter} configs={configs} />
+              <AllBranchLoanSummaryPdf
+                loans={dataFilter}
+                configs={configs}
+                filterData={filterData}
+              />
             </PDFViewer>
           </Box>
         </Box>

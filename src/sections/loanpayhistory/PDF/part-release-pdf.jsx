@@ -216,6 +216,15 @@ const useStyles = () =>
           fontWeight: 600,
           color: '#232C4B',
         },
+        termsAndConditionsHeaders: {
+          color: '#232C4B',
+          borderBottom: '1px solid #232C4B',
+          fontWeight: 600,
+          textWrap: 'nowrap',
+          fontSize: '12px',
+          textAlign: 'center',
+          paddingVertical: 5,
+        },
       }),
     []
   );
@@ -224,6 +233,7 @@ const useStyles = () =>
 
 export default function PartReleasePdf({ selectedRow, configs }) {
   const styles = useStyles();
+  console.log(selectedRow, '111');
   return (
     <>
       <Document>
@@ -235,6 +245,16 @@ export default function PartReleasePdf({ selectedRow, configs }) {
             </View>
             <InvoiceHeader selectedRow={selectedRow.loan} configs={configs} />
             <View style={styles.pagePadding}>
+              <View
+                style={{
+                  textAlign: 'center',
+                  fontSize: 18,
+                  marginRight: 25,
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={styles.termsAndConditionsHeaders}>PART RELEASE INVOICE</Text>
+              </View>
               <View
                 style={{
                   width: '100%',
@@ -268,7 +288,7 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Pay Amount </Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
+                    <Text style={styles.subText}>{selectedRow.amountPaid}</Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Int. Loan Amount </Text>
@@ -307,7 +327,7 @@ export default function PartReleasePdf({ selectedRow, configs }) {
               <Text style={{ marginTop: 10 }}>
                 <Text style={styles.subHeading}>Accepted & Received Amount </Text>
                 <Text style={styles.colon}>:</Text>
-                <Text style={styles.subText}>{selectedRow.loan.amountPaid}</Text>
+                <Text style={styles.subText}>{selectedRow.adjustedAmount}</Text>
               </Text>
             </View>
             <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>

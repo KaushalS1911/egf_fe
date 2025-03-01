@@ -17,19 +17,19 @@ import { getResponsibilityValue } from '../../../../permission/permission';
 import Label from '../../../../components/label';
 import { fDate } from '../../../../utils/format-time';
 
-
 // ----------------------------------------------------------------------
 
 export default function LoanCloseDetailsTableRow({
-                                                   row,
-                                                   index,
-                                                   selected,
-                                                   onEditRow,
-                                                   onSelectRow,
-                                                   onDeleteRow,
-                                                   handleClick,
-                                                 }) {
-  const { from, to, penalty, days, loan, amountPaid, totalLoanAmount, closingCharge, netAmount } = row;
+  row,
+  index,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  handleClick,
+}) {
+  const { from, to, penalty, days, loan, amountPaid, totalLoanAmount, closingCharge, netAmount } =
+    row;
   const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -38,15 +38,14 @@ export default function LoanCloseDetailsTableRow({
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
   };
   return (
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{netAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalLoanAmount - netAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{closingCharge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{netAmount}</TableCell>
       </TableRow>
@@ -57,27 +56,29 @@ export default function LoanCloseDetailsTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-
-
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
@@ -90,7 +91,6 @@ export default function LoanCloseDetailsTableRow({
           </Button>
         }
       />
-
     </>
   );
 }

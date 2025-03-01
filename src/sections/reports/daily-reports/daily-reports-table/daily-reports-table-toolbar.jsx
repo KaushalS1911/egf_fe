@@ -18,7 +18,8 @@ import InputLabel from '@mui/material/InputLabel';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../../view/all-branch-loan-summary-pdf';
+import AllBranchLoanSummaryPdf from '../../pdf/all-branch-loan-summary-pdf.jsx';
+import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ export default function DailyReportsTableToolbar({
   dateError,
   dataFilter,
   configs,
+  data,
 }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -241,11 +243,7 @@ export default function DailyReportsTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf
-                loans={dataFilter}
-                selectedBranch={selectedBranch}
-                configs={configs}
-              />
+              <DailyReportPdf data={data} selectedBranch={selectedBranch} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>

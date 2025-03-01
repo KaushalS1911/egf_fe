@@ -142,7 +142,9 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   } = methods;
   const sendPdfToWhatsApp = async (item) => {
     try {
-      const blob = await pdf(<LoanPartPaymentDetailsPdf data={item ? item : data} configs={configs} />).toBlob();
+      const blob = await pdf(
+        <LoanPartPaymentDetailsPdf data={item ? item : data} configs={configs} />
+      ).toBlob();
       const file = new File([blob], `LoanPartPaymentDetailsPdf.pdf`, { type: 'application/pdf' });
       const payload = {
         firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
@@ -294,7 +296,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   //   }, 0);
   //   return loanAmt - totalPartPay;
   // }
-
 
   return (
     <>
@@ -461,7 +462,9 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                 {row.interestLoanAmount}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{Number(row.loan.loanAmount) - Number(row.amountPaid)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                {Number(row.loan.loanAmount) - Number(row.amountPaid)}
+              </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {fDate(row.createdAt)}
@@ -517,7 +520,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
               {payAmt}
             </TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

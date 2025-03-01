@@ -20,7 +20,8 @@ import InputLabel from '@mui/material/InputLabel';
 import { useBoolean } from '../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../view/all-branch-loan-summary-pdf';
+import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
+import BranchWiseLoanClosingPdf from '../pdf/branch-wise-loan-closing-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,13 @@ export default function BranchWiseLoanClosingTableToolbar({
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const view = useBoolean();
-
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    closedBy: filters.closedBy,
+    branch: filters.branch,
+  };
+  console.log(filters);
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -277,7 +284,7 @@ export default function BranchWiseLoanClosingTableToolbar({
               {' '}
               <MenuItem
                 onClick={() => {
-                  // view.onTrue()
+                  view.onTrue();
                   popover.onClose();
                 }}
               >
@@ -316,7 +323,11 @@ export default function BranchWiseLoanClosingTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchLoanSummaryPdf loans={dataFilter} configs={configs} />
+              <BranchWiseLoanClosingPdf
+                loans={dataFilter}
+                configs={configs}
+                filterData={filterData}
+              />
             </PDFViewer>
           </Box>
         </Box>
