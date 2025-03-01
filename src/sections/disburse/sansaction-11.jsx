@@ -12,15 +12,18 @@ Font.register({
 });
 
 Font.register({
-  family: 'Mukta Vaani',
-  src: '/fonts/MuktaVaani-Regular.ttf',
+  family: 'NotoSansGujarati',
+  src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
 });
 
 Font.register({
   family: 'Poppins',
   src: '/fonts/Overpass-VariableFont_wght.ttf',
 });
-
+Font.register({
+  family: 'Mukta Vaani',
+  src: '/fonts/MuktaVaani-Regular.ttf',
+});
 const useStyles = () =>
   useMemo(
     () =>
@@ -60,7 +63,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '90%',
+          height: '83%',
         },
         gujaratiText: {
           fontFamily: 'Mukta Vaani',
@@ -102,7 +105,7 @@ const useStyles = () =>
         },
         row: {
           flexDirection: 'row',
-          marginVertical: 2,
+          // marginVertical: 2,
         },
         subHeading: {
           fontWeight: '600',
@@ -119,7 +122,7 @@ const useStyles = () =>
           flex: 2,
         },
         spacing: {
-          marginTop: 5,
+          marginTop: 3,
         },
 
         table: {
@@ -369,15 +372,14 @@ export default function Sansaction11({ sansaction, configs }) {
       specification: `વેપાર, મિલકત ખરીદ અને વેચાણ માટે ધીરેલુ કરજ .`,
     },
     {
-      heading: `અંગત કરજ`,
-      specification: ` લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અને અંગત જરૂરિયાતો માટે ધીરેલુ કરજ .`,
+      heading: `અગત કરજ`,
+      specification: ` લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અને અગત જરૂરિયાતો માટે ધીરેલુ કરજ .`,
     },
     {
       heading: `પ્રકીર્ણ  કરજ `,
       specification: `૧ થી ૪ માં સમાવેશ ન થયેલ હેતુઓ માટે ધીરેલુ કરજ.`,
     },
   ];
-console.log('દેવા ભરપાઈ કરવા અને અંગત જરૂરિયાતો માટે ધીરેલુ કરજ')
 
   return (
     <>
@@ -418,54 +420,84 @@ console.log('દેવા ભરપાઈ કરવા અને અંગત �
                       </Text>
                     </View>
                   </Text>
-                  <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૧. દેણદાર નું નામ :{' '}
-                    </Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
                     <Text
                       style={{
                         ...styles.gujaratiText,
                         fontSize: 11,
                         fontWeight: 900,
+                        flex: 0.7,
                       }}
-                    >{`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}</Text>
-                  </Text>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૨. દેણદાર નું સરનામું :
+                    >
+                      ૧. દેણદાર નું નામ
                     </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text
+                      style={{
+                        flex: 2,
+                        fontSize: 10,
+                        marginBottom: 5,
+                        // fontWeight: 900,
+                      }}
+                    >
+                      {`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
+                    <Text
+                      style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900, flex: 0.7 }}
+                    >
+                      ૨. દેણદાર નું સરનામું
+                    </Text>
+                    <Text style={styles.colon}>:</Text>
                     <Text
                       style={{
                         ...styles.subText,
-                        flexShrink: 1,
+                        flex: 2,
                       }}
                     >
-                      {` ${sansaction.customer.permanentAddress.street}, ${sansaction.customer.permanentAddress.landmark}, ${sansaction.customer.permanentAddress.city}, ${sansaction.customer.permanentAddress.zipcode}`.toUpperCase()}
+                      {`${sansaction.customer.permanentAddress.street}, ${sansaction.customer.permanentAddress.landmark}, ${sansaction.customer.permanentAddress.city}, ${sansaction.customer.permanentAddress.zipcode}`.toUpperCase()}
                     </Text>
                   </View>
 
-                  <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૩. કરજ ની રકમ :{' '}
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
+                    <Text
+                      style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900, flex: 0.7 }}
+                    >
+                      ૩. કરજ ની રકમ
                     </Text>
-                    <Text style={styles.subText}>{sansaction.loanAmount}/-</Text>
-                  </Text>
-                  <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૪. ધીર્યા ની તારીખ :{' '}
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={{ ...styles.subText, flex: 2 }}>{sansaction.loanAmount}/-</Text>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
+                    <Text
+                      style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900, flex: 0.7 }}
+                    >
+                      ૪. ધીર્યા ની તારીખ
                     </Text>
-                    <Text style={styles.subText}>{fDate(sansaction.issueDate)}</Text>
-                  </Text>
-                  <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૪-અ. કરજ ની પ્રકાર :{' '}
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={{ ...styles.subText, flex: 2 }}>
+                      {fDate(sansaction.issueDate)}
                     </Text>
-                    <View>
-                    <Text style={[styles.subText, styles.gujaratiText]}>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
+                    <Text
+                      style={{
+                        ...styles.gujaratiText,
+                        fontSize: 11,
+                        fontWeight: 900,
+                        flex: 0.7,
+                      }}
+                    >
+                      ૪-અ. કરજ ની પ્રકાર
+                    </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={{ ...styles.subText, flex: 2, ...styles.gujaratiText }}>
                       ખેતી વિષયક,ઔદ્યોગિક વેપારી,અંગત કે પ્રકીણ કરજ
                     </Text>
-                      </View>
-                  </Text>
+                  </View>
                   <Text style={styles.spacing}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
                       {`૫. કરજ પાકવાની મુદત માસ ${month} ની છે .`}
@@ -510,7 +542,7 @@ console.log('દેવા ભરપાઈ કરવા અને અંગત �
                   </View>
                   <View style={{ textAlign: 'center', margin: '5px 0px 5px 0px', width: '100%' }}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 12 }}>
-                      (વજન તારણની અદાજેલી કિંમત વિ.)
+                      (વજન તારણની અંદાજેલી કિંમત વિ.)
                     </Text>
                   </View>
                   <View style={[styles.tableRow, styles.tableHeader]}>
@@ -539,7 +571,7 @@ console.log('દેવા ભરપાઈ કરવા અને અંગત �
                     ...styles.gujaratiText,
                     fontSize: 11,
                     marginTop: 15,
-                    fontWeight: 900,
+                    fontWeight: 'bold',
                   }}
                 >
                   હું નીચે સહી કરનાર પ્રતિજ્ઞાપુર્વક જણાવું છુકે આ દાગીના ચોરીના નથી મારી પોતાની
@@ -561,12 +593,9 @@ console.log('દેવા ભરપાઈ કરવા અને અંગત �
                 >
                   નિયમો :-
                 </Text>
-                <View style={{ marginTop: 8 }}>
+                <View style={{ marginTop: 5 }}>
                   {rules2.map((item, index) => (
-                    <View
-                      key={index}
-                      style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}
-                    >
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
                       <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
                       <Text
                         style={{
@@ -595,12 +624,9 @@ console.log('દેવા ભરપાઈ કરવા અને અંગત �
                 >
                   સ્પષ્ટીકરણ :-
                 </Text>
-                <View style={{ marginTop: 8 }}>
+                <View style={{ marginTop: 5 }}>
                   {specification.map((item, index) => (
-                    <View
-                      key={index}
-                      style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 3 }}
-                    >
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
                       <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>
                       <View style={{ flexDirection: 'row', flex: 1 }}>
                         <Text
