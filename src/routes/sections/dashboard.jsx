@@ -100,6 +100,9 @@ const BranchViseLoanClosingListView = lazy(
 const DailyReportsListView = lazy(
   () => import(`../../sections/reports/view/daily-reports-list-view`)
 );
+const InterestReportsListView = lazy(
+  () => import(`../../sections/reports/view/interest-reports-list-view.jsx`)
+);
 const LoanDetailListView = lazy(() => import('../../sections/reports/view/loan-details-list-view'));
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
@@ -258,6 +261,7 @@ export const dashboardRoutes = [
           { path: 'closed-loanList', element: <BranchViseLoanClosingListView /> },
           { path: 'daily-reports', element: <DailyReportsListView /> },
           { path: 'loan-details', element: <LoanDetailListView /> },
+          { path: 'interest-reports', element: <InterestReportsListView /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },

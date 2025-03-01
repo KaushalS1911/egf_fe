@@ -201,7 +201,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     }
   };
 
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       const payload = {
@@ -215,29 +214,32 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         payingCashAmount: data.payingCashAmount,
         approvalCharge: data.approvalCharge,
       };
-      let res;
+
+      const url = currentDisburse.status === 'Disbursed'
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`
+        : `${import.meta.env.VITE_BASE_URL}/disburse-loan`;
+
+      const requestMethod = currentDisburse.status === 'Disbursed' ? axios.put : axios.post;
+
+      requestMethod(url, payload)
+        .then((res) => {
+          router.push(paths.dashboard.disburse.list);
+          enqueueSnackbar(res?.data?.message);
+          if (currentDisburse.status !== 'Disbursed') {
+            sendPdfToWhatsApp(res.data.data);
+          }
+        })
+        .catch((err) => console.error('Error:', err));
+
       if (currentDisburse.status === 'Disbursed') {
-         axios.put(
-          `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`,
-          payload,
-        ).then((res) => {
-          router.push(paths.dashboard.disburse.list);
-          enqueueSnackbar(res?.data?.message);
-        }).catch((err) => console.log(err));
         mutate();
-      } else {
-         axios.post(`${import.meta.env.VITE_BASE_URL}/disburse-loan`, payload).then((res) => {
-          router.push(paths.dashboard.disburse.list);
-          enqueueSnackbar(res?.data?.message);
-          sendPdfToWhatsApp(res.data.data);
-        }).catch((err) => console.log(err));
       }
+
       reset();
     } catch (error) {
-      enqueueSnackbar(currentDisburse ? 'Failed To update scheme' : 'Failed to create Scheme');
-      console.error(error, 'ree');
+      enqueueSnackbar(currentDisburse ? 'Failed to update scheme' : 'Failed to create scheme');
+      console.error('Error:', error);
     }
-
   });
 
   const handleCashAmountChange = (event) => {
@@ -268,34 +270,34 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       <Grid container spacing={3}>
         <Grid xs={12} md={12}>
           <Card sx={{ p: 3 }}>
-            <Typography variant="subtitle1" sx={{ mb: 3, fontWeight: '600' }}>
+            <Typography variant='subtitle1' sx={{ mb: 3, fontWeight: '600' }}>
               Loan Disburse
             </Typography>
             <Box
               rowGap={3}
               columnGap={2}
-              display="grid"
+              display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(4, 1fr)',
               }}
             >
-              <RHFTextField name="loanNo" label="Loan No" req={'red'} />
-              <RHFTextField name="customerName" label="Customer Name" req={'red'} />
-              <RHFTextField name="loanAmount" label="Loan Amount" req={'red'} />
-              <RHFTextField name="interest" label="Interest" req={'red'} />
-              <RHFTextField name="scheme" label="Scheme Name" req={'red'} />
-              <RHFTextField name="address" label="Address" req={'red'} />
-              <RHFTextField name="branch" label="Branch" req={'red'} />
-              <RHFTextField name="approvalCharge" label="Approval Charge" req={'red'} />
-              <RHFDatePicker name="issueDate" control={control} label="issueDate" />
+              <RHFTextField name='loanNo' label='Loan No' req={'red'} />
+              <RHFTextField name='customerName' label='Customer Name' req={'red'} />
+              <RHFTextField name='loanAmount' label='Loan Amount' req={'red'} />
+              <RHFTextField name='interest' label='Interest' req={'red'} />
+              <RHFTextField name='scheme' label='Scheme Name' req={'red'} />
+              <RHFTextField name='address' label='Address' req={'red'} />
+              <RHFTextField name='branch' label='Branch' req={'red'} />
+              <RHFTextField name='approvalCharge' label='Approval Charge' req={'red'} />
+              <RHFDatePicker name='issueDate' control={control} label='issueDate' />
             </Box>
           </Card>
         </Grid>
         <Grid item xs={12} md={12}>
           <Card>
             <CardContent>
-              <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: '600' }}>
+              <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: '600' }}>
                 Property Details
               </Typography>
               <TableContainer>
@@ -312,7 +314,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.propertyName`}
-                            label="Property Name"
+                            label='Property Name'
                             defaultValue={row.propertyName || ''}
                             disabled={true}
                           />
@@ -320,7 +322,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.totalWeight`}
-                            label="Total Weight"
+                            label='Total Weight'
                             defaultValue={(parseFloat(row.totalWeight) || 0.0).toFixed(2)}
                             disabled={true}
                           />
@@ -328,7 +330,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.loseWeight`}
-                            label="Lose Weight"
+                            label='Lose Weight'
                             defaultValue={(parseFloat(row.loseWeight) || 0.0).toFixed(2)}
                             disabled={true}
                           />
@@ -336,7 +338,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.grossWeight`}
-                            label="Gross Weight"
+                            label='Gross Weight'
                             defaultValue={(parseFloat(row.grossWeight) || 0.0).toFixed(2)}
                             disabled={true}
                           />
@@ -344,7 +346,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.netWeight`}
-                            label="Net Weight"
+                            label='Net Weight'
                             defaultValue={(parseFloat(row.netWeight) || 0.0).toFixed(2)}
                             disabled={true}
                           />
@@ -352,7 +354,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         <TableCell>
                           <RHFTextField
                             name={`propertyDetails.${index}.loanApplicableAmount`}
-                            label="Loan Applicable Amount"
+                            label='Loan Applicable Amount'
                             defaultValue={(parseFloat(row.loanApplicableAmount) || 0.0).toFixed(2)}
                             disabled={true}
                           />
@@ -368,27 +370,27 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         <Grid xs={12} md={12}>
           <Card>
             <Stack spacing={3} sx={{ p: 3 }}>
-              <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: '600' }}>
+              <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
                 Transaction Type
               </Typography>
               {(currentDisburse.paymentMode === 'Bank' ||
                 currentDisburse.paymentMode === 'Both') && (
                 <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: '600' }}>
+                  <Typography variant='subtitle2' sx={{ mb: 0.5, fontWeight: '600' }}>
                     Bank Amount
                   </Typography>
                   <Box
                     rowGap={3}
                     columnGap={2}
-                    display="grid"
+                    display='grid'
                     gridTemplateColumns={{
                       xs: 'repeat(1, 1fr)',
                       sm: 'repeat(4, 1fr)',
                     }}
                   >
                     <RHFTextField
-                      name="bankNetAmount"
-                      label="Net Amount"
+                      name='bankNetAmount'
+                      label='Net Amount'
                       req={'red'}
                       value={watch('bankNetAmount') - watch('approvalCharge') || 0}
                       onKeyPress={(e) => {
@@ -401,12 +403,12 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       }}
                     />
                     <Controller
-                      name="payingBankAmount"
+                      name='payingBankAmount'
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
-                          label="Paying Amount"
+                          label='Paying Amount'
                           req={'red'}
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
@@ -425,8 +427,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       )}
                     />
                     <RHFTextField
-                      name="bankPendingAmount"
-                      label="Pending Amount"
+                      name='bankPendingAmount'
+                      label='Pending Amount'
                       req={'red'}
                       value={
                         watch('bankNetAmount') -
@@ -436,8 +438,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       InputLabelProps={{ shrink: true }}
                     />
                     <RHFAutocomplete
-                      name="companyBankDetail.account"
-                      label="Account"
+                      name='companyBankDetail.account'
+                      label='Account'
                       req={'red'}
                       fullWidth
                       options={branch.flatMap((item) => item.company.bankAccounts)}
@@ -453,9 +455,9 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       }}
                     />
                     <RHFDatePicker
-                      name="bankDate"
+                      name='bankDate'
                       control={control}
-                      label="Bank Date"
+                      label='Bank Date'
                       req={'red'}
                     />
                   </Box>
@@ -464,21 +466,21 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
               {(currentDisburse.paymentMode === 'Cash' ||
                 currentDisburse.paymentMode === 'Both') && (
                 <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: '600' }}>
+                  <Typography variant='subtitle2' sx={{ mb: 0.5, fontWeight: '600' }}>
                     Cash Amount
                   </Typography>
                   <Box
                     rowGap={3}
                     columnGap={2}
-                    display="grid"
+                    display='grid'
                     gridTemplateColumns={{
                       xs: 'repeat(1, 1fr)',
                       sm: 'repeat(4, 1fr)',
                     }}
                   >
                     <RHFTextField
-                      name="cashNetAmount"
-                      label="Net Amount"
+                      name='cashNetAmount'
+                      label='Net Amount'
                       req={'red'}
                       value={watch('cashNetAmount') - watch('approvalCharge') || 0}
                       onKeyPress={(e) => {
@@ -491,12 +493,12 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       }}
                     />
                     <Controller
-                      name="payingCashAmount"
+                      name='payingCashAmount'
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
-                          label="Paying Amount"
+                          label='Paying Amount'
                           req={'red'}
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
@@ -515,8 +517,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       )}
                     />
                     <RHFTextField
-                      name="cashPendingAmount"
-                      label="Pending Amount"
+                      name='cashPendingAmount'
+                      label='Pending Amount'
                       req={'red'}
                       value={parseFloat(
                         watch('cashNetAmount') -
@@ -533,7 +535,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         }
                       }}
                     />
-                    <RHFDatePicker name="cashDate" control={control} label="Date" />
+                    <RHFDatePicker name='cashDate' control={control} label='Date' />
                   </Box>
                 </>
               )}
@@ -541,7 +543,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
           </Card>
           {currentDisburse.status === 'Issued' || currentDisburse.status === 'Disbursed' ? (
             <Stack alignItems={'end'} mt={3}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                 {currentDisburse.status === 'Disbursed' ? 'Save' : 'Submit'}
               </LoadingButton>
             </Stack>

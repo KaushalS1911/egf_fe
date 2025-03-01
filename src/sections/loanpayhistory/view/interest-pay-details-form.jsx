@@ -44,6 +44,7 @@ const TABLE_HEAD = [
   { id: 'days', label: 'Days' },
   { id: 'uchakAmt', label: 'Uchak Amt' },
   { id: 'totalPay', label: 'Total Pay Amt' },
+  { id: 'entryBy', label: 'Entry By' },
   { id: 'pdf', label: 'PDF' },
   { id: 'action', label: 'Action' },
 ];
@@ -59,24 +60,24 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
   const table = useTable();
   const { user } = useAuthContext();
-  const loanAmt = loanInterest.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0,
-  );
   const penaltyAmt = loanInterest.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
   const totalConsultantInt = loanInterest.reduce((prev, next) => prev + (Number(next?.consultingCharge) || 0), 0);
+
   const payAfterAdjustAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.adjustedPay) || 0),
     0,
   );
+
   const uchakAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.uchakInterestAmount) || 0),
     0,
   );
+
   const totalPayAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.amountPaid) || 0),
     0,
   );
+
   const intAmt = loanInterest.reduce((prev, next) => prev + (Number(next?.interestAmount) || 0), 0);
   const crDr = loanInterest.reduce((prev, next) => prev + (Number(next?.cr_dr) || 0), 0);
 
@@ -280,10 +281,10 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
 
   const onSubmit = handleSubmit(async (data) => {
     const amountPaid = parseFloat(data.amountPaid) || 0;
-    const totalAmount = parseFloat(watch('totalPay')) || 0;
+    const payAfterAdjusted = parseFloat(data.payAfterAdjusted1) || 0;
 
-    if (amountPaid <= totalAmount - 50) {
-      enqueueSnackbar(`Amount Paid must be at least ${totalAmount - 50}.`, { variant: 'error' });
+    if (amountPaid < payAfterAdjusted - 50) {
+      enqueueSnackbar(`Amount Paid must be at least ${payAfterAdjusted - 50}.`, { variant: 'error' });
       return;
     }
 
@@ -312,6 +313,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
 
     const payload = {
+      entryBy: user.firstName + ' ' + user.middleName + ' ' + user.lastName,
       to: new Date(data.to),
       adjustedPay: parseFloat(data.payAfterAdjusted1) || 0,
       days: parseInt(data.days, 10) || 0,
@@ -333,7 +335,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
         data: payload,
       };
       const response = await axios(config);
-      sendPdfToWhatsApp()
+      sendPdfToWhatsApp();
       reset();
       mutate();
       refetchLoanInterest();
@@ -371,7 +373,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     } else if (paymentMode === 'Both') {
       const cashAmount = totalAmountPaid * 0.5;
       const bankAmount = totalAmountPaid - cashAmount;
-
       setValue('cashAmount', cashAmount.toFixed(2));
       setValue('bankAmount', bankAmount.toFixed(2));
     }
@@ -392,74 +393,73 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
   };
 
-
   return (
     <Box sx={{ py: 0 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Box
           rowGap={1.5}
           columnGap={1.5}
-          display="grid"
+          display='grid'
           gridTemplateColumns={{
             xs: 'repeat(1, 1fr)',
             sm: 'repeat(3, 1fr)',
             md: 'repeat(6, 1fr)',
           }}
         >
-          <RHFDatePicker name="from" control={control} label="From Date" req={'red'} />
-          <RHFDatePicker name="to" control={control} label="To Date" req={'red'} />
-          <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
+          <RHFDatePicker name='from' control={control} label='From Date' req={'red'} />
+          <RHFDatePicker name='to' control={control} label='To Date' req={'red'} />
+          <RHFTextField name='days' label='Days' req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField
-            name="interestAmount"
-            label="Interest"
+            name='interestAmount'
+            label='Interest'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="consultingCharge"
-            label="Consult Charge"
+            name='consultingCharge'
+            label='Consult Charge'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="uchakAmount"
-            label="Uchak Amount"
+            name='penalty'
+            label='Penalty'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="penalty"
-            label="Penalty"
+            name='totalPay'
+            label='Total Pay'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="totalPay"
-            label="Total Pay"
+            name='uchakAmount'
+            label='Uchak Amount'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="oldCrDr"
-            label="Old CR/DR"
+            name='oldCrDr'
+            label='Old CR/DR'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="payAfterAdjusted1"
-            label="Pay After Adjusted 1"
+            name='payAfterAdjusted1'
+            label='Pay After Adjusted 1'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="cr_dr"
-            label="New CR/DR"
+            name='cr_dr'
+            label='New CR/DR'
             req={'red'}
             InputProps={{ readOnly: true }}
           />
           <RHFTextField
-            name="amountPaid"
-            label="Total Pay Amount"
+            name='amountPaid'
+            label='Total Pay Amount'
             req={'red'}
             onKeyPress={(e) => {
               if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -468,7 +468,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             }}
           />
         </Box>
-        <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 600 }}>
+        <Typography variant='subtitle1' sx={{ mt: 1, fontWeight: 600 }}>
           Payment Details
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -476,7 +476,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             <Box
               rowGap={3}
               columnGap={2}
-              display="grid"
+              display='grid'
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(3, 1fr)',
@@ -485,8 +485,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               sx={{ mt: 1 }}
             >
               <RHFAutocomplete
-                name="paymentMode"
-                label="Payment Mode"
+                name='paymentMode'
+                label='Payment Mode'
                 options={['Cash', 'Bank', 'Both']}
                 onChange={(event, value) => {
                   setValue('paymentMode', value);
@@ -507,12 +507,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               />
               {watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both' ? (
                 <Controller
-                  name="cashAmount"
+                  name='cashAmount'
                   control={control}
                   render={({ field }) => (
                     <RHFTextField
                       {...field}
-                      label="Cash Amount"
+                      label='Cash Amount'
                       req={'red'}
                       inputProps={{ min: 0 }}
                       onChange={(e) => {
@@ -526,8 +526,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
                 <>
                   <RHFAutocomplete
-                    name="account"
-                    label="Account"
+                    name='account'
+                    label='Account'
                     req={'red'}
                     fullWidth
                     options={branch.flatMap((item) => item.company.bankAccounts)}
@@ -540,12 +540,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                   />
                   <Controller
-                    name="bankAmount"
+                    name='bankAmount'
                     control={control}
                     render={({ field }) => (
                       <RHFTextField
                         {...field}
-                        label="Bank Amount"
+                        label='Bank Amount'
                         req={'red'}
                         disabled={watch('paymentMode') === 'Bank' ? false : true}
                         inputProps={{ min: 0 }}
@@ -558,15 +558,15 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
           </Box>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
             <Button
-              color="inherit"
+              color='inherit'
               sx={{ height: '36px' }}
-              variant="outlined"
+              variant='outlined'
               onClick={() => reset()}
             >
               Reset
             </Button>
             {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
                 Submit
               </LoadingButton>
             )}
@@ -616,7 +616,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       {row.loan.scheme.interestRate > 1.5 ? 1.5 : row.loan.scheme.interestRate}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.loan.consultingCharge}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.interestAmount ? row.interestAmount.toFixed(2) : 0}</TableCell>
+                    <TableCell
+                      sx={{ py: 0, px: 2 }}>{row.interestAmount ? row.interestAmount.toFixed(2) : 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.penalty}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.cr_dr}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
@@ -624,7 +625,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
-
+                    <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.entryBy || '-'}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                         {
@@ -639,7 +640,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                               pointerEvents: 'auto',
                             }}
                           >
-                            <Iconify icon="basil:document-solid" />
+                            <Iconify icon='basil:document-solid' />
                           </Typography>
                         }
                       </TableCell>
@@ -650,7 +651,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       <TableCell sx={{ py: 0, px: 2 }}>
                         {
                           <IconButton
-                            color="error"
+                            color='error'
                             onClick={() => {
                               if (index === 0) {
                                 confirm.onTrue();
@@ -663,7 +664,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                               pointerEvents: index === 0 ? 'auto' : 'none',
                             }}
                           >
-                            <Iconify icon="eva:trash-2-outline" />
+                            <Iconify icon='eva:trash-2-outline' />
                           </IconButton>
                         }
                       </TableCell>
@@ -682,7 +683,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>{totalConsultantInt ? totalConsultantInt.toFixed(2) : '-'}</TableCell>
+                <TableCell sx={{
+                  fontWeight: '600',
+                  color: '#637381',
+                  py: 1,
+                  px: 2,
+                }}>{totalConsultantInt ? totalConsultantInt.toFixed(2) : '-'}</TableCell>
 
 
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
@@ -728,6 +734,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -736,10 +743,10 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={() => handleDeleteInterest(deleteId)}>
+          <Button variant='contained' color='error' onClick={() => handleDeleteInterest(deleteId)}>
             Delete
           </Button>
         }
@@ -751,16 +758,16 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               p: 1.5,
             }}
           >
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
-            <Button color="inherit" variant="contained" onClick={() => sendPdfToWhatsApp()}>
+            <Button color='inherit' variant='contained' onClick={() => sendPdfToWhatsApp()}>
               Share
             </Button>
           </DialogActions>
 
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               <InterestPdf data={data} configs={configs} />
             </PDFViewer>
           </Box>

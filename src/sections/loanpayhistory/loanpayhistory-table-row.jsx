@@ -8,7 +8,6 @@ import {
   MenuItem,
   TableCell,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 import { Link } from 'react-router-dom';
@@ -30,8 +29,6 @@ import Sansaction11 from '../disburse/sansaction-11.jsx';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details';
 import Sansaction8 from '../disburse/sansaction-8.jsx';
 import { paths } from '../../routes/paths';
-import { useRouter } from '../../routes/hooks/index.js';
-import { useGetAllUser } from '../../api/user.js';
 
 // ----------------------------------------------------------------------
 
@@ -58,8 +55,8 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
   const { user, initialize } = useAuthContext();
   const { configs } = useGetConfigs();
   const [dialogContent, setDialogContent] = useState('');
-  const router = useRouter();
   const [file, setFile] = useState(null);
+
   const [pdfAccessData, setPdfAccessData] = useState({
     loanDetails: Array.isArray(user?.attemptToDownload?.loanDetails)
       ? [...user?.attemptToDownload?.loanDetails]
@@ -78,35 +75,33 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       : [],
     noc: Array.isArray(user?.attemptToDownload?.noc) ? [...user?.attemptToDownload?.noc] : [],
   });
+
   const handleInvoicePermission = (content, loanId) => {
     try {
       setPdfAccessData((prevState) => {
-        const updatedData = { ...prevState }; // Copy the existing state
+        const updatedData = { ...prevState };
 
-        // Check if the loanId is already in the array for the given content
         if (!updatedData[content].includes(loanId)) {
-          // If it's not, add it to the array
           updatedData[content] = [...updatedData[content], loanId];
         }
 
         return updatedData;
       });
 
-      // Prepare the payload with the updated state
       const payload = {
         ...pdfAccessData,
         [content]: pdfAccessData[content].includes(loanId)
-          ? pdfAccessData[content] // If loanId already exists, keep the array as is
-          : [...pdfAccessData[content], loanId], // If loanId doesn't exist, add it
+          ? pdfAccessData[content]
+          : [...pdfAccessData[content], loanId],
       };
 
-      // Send the updated payload to the server
       const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${user._id}`;
       axios.put(URL, { ...user, attemptToDownload: payload }).then((res) => initialize());
     } catch (error) {
       console.error(error);
     }
   };
+
   const isButtonDisabled = (content, loanId) => {
     return (
       user?.role === 'Employee' &&
@@ -126,7 +121,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       let pdfContent;
       let type;
       let payload;
-      let fileBlob; // Renamed to avoid reference issue
+      let fileBlob;
 
       switch (content) {
         case 'loanDetails':
@@ -169,7 +164,6 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
           return;
       }
 
-      // Generate the PDF and create the file
       const blob = await pdf(pdfContent).toBlob();
       fileBlob = new File([blob], `${content}.pdf`, { type: 'application/pdf' });
       setFile(fileBlob);
@@ -183,7 +177,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
 
       const response = await axios.post(
         `https://egf-be.onrender.com/api/whatsapp-notification`,
-        formData
+        formData,
       );
 
       console.log('WhatsApp notification response:', response.data);
@@ -244,7 +238,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label
-            variant="soft"
+            variant='soft'
             color={
               (status === 'Disbursed' && 'info') ||
               (status === 'Closed' && 'warning') ||
@@ -258,14 +252,14 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon='eva:more-vertical-fill' />
           </IconButton>
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         {[
@@ -282,10 +276,9 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
           return (
             <MenuItem
               key={item?.key}
-              disabled={isDisabled} // Properly disable the button
+              disabled={isDisabled}
               onClick={() => {
                 if (!isDisabled) {
-                  // Prevent click when disabled
                   handleInvoicePermission(item?.key, row?._id);
                   handleDialogOpen(item.key);
                   popover.onClose();
@@ -301,25 +294,24 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title='Delete'
+        content='Are you sure want to delete?'
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant='contained' color='error' onClick={onDeleteRow}>
             Delete
           </Button>
         }
       />
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+            <Button color='inherit' variant='contained' onClick={view.onFalse}>
               Close
             </Button>
             {dialogContent === 'loanDetails' && (
               <Button
-                color="inherit"
-                variant="contained"
+                color='inherit'
+                variant='contained'
                 onClick={() => sendPdfToWhatsApp('loanDetails')}
               >
                 Share
@@ -327,7 +319,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             )}
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
               {renderDialogContent()}
             </PDFViewer>
           </Box>
