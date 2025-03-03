@@ -198,7 +198,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
     const date1 = loanToDate ? new Date(loanToDate).toISOString().split('T')[0] : null;
     const date2 = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : null;
 
-    if (!date1 || !date2 || date1 !== date2) {
+    if (!date1 || !date2 || date1 < date2) {
       return enqueueSnackbar('Please pay interest till today before close the loan.', { variant: 'info' });
     }
 

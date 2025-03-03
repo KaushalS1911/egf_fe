@@ -101,17 +101,17 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       .typeError('Joining date is required'),
     leaveDate: Yup.string().typeError('Enter a valid date').nullable(),
     permanentStreet: Yup.string().required('Permanent Address is required'),
-    permanentLandmark: Yup.string(),
+    permanentLandmark: Yup.string().required('Landmark is required'),
     permanentCountry: Yup.string().required('Country is required'),
     permanentState: Yup.string().required('State is required'),
     permanentCity: Yup.string().required('City is required'),
     permanentZipcode: Yup.string().required('Zipcode is required'),
-    tempStreet: Yup.string(),
-    tempLandmark: Yup.string(),
-    tempCountry: Yup.string(),
-    tempState: Yup.string(),
-    tempCity: Yup.string(),
-    tempZipcode: Yup.string(),
+    tempStreet: Yup.string().required('Permanent Address is required'),
+    tempLandmark: Yup.string().required('Landmark is required'),
+    tempCountry: Yup.string().required('Country is required'),
+    tempState: Yup.string().required('State is required'),
+    tempCity: Yup.string().required('City is required'),
+    tempZipcode: Yup.string().required('Zipcode is required'),
   });
 
   const defaultValues = useMemo(() => ({
@@ -946,10 +946,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 }}
               >
                 <RHFTextField disabled={disabledField}
-                              name='tempStreet' label='Address' inputProps={{ style: { textTransform: 'uppercase' } }} />
+                              name='tempStreet' label='Address' inputProps={{ style: { textTransform: 'uppercase' } }} req={'red'}/>
                 <RHFTextField disabled={disabledField}
-                              name='tempLandmark' label='Landmark' inputProps={{ style: { textTransform: 'uppercase' } }} />
+                              name='tempLandmark' label='Landmark' inputProps={{ style: { textTransform: 'uppercase' } }} req={'red'}/>
                 <RHFTextField disabled={disabledField}
+                              req={'red'}
                               name='tempZipcode'
                               label='Zipcode'
                               inputProps={{
@@ -980,76 +981,59 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                                 }
                               }}
                 />
-                <Controller
+                <RHFAutocomplete
                   disabled={disabledField}
                   name='tempCountry'
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      {...field}
-                      options={countrystatecity.map((country) => country.name)}
-                      onChange={(event, value) => field.onChange(value)}
-                      isOptionEqualToValue={(option, value) => option === value}
-                      renderInput={(params) => (
-                        <TextField {...params} label='Country' variant='outlined'
-                                   sx={{
-                                     ' label': { mt: -0.8, fontSize: '14px' },
-                                     ' input': { height: 7 },
-                                   }}
-                        />
-                      )}
-                    />
+                  label='Country'
+                  req={'red'}
+                  fullWidth
+                  options={countrystatecity.map((country) => country.name)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
                   )}
                 />
-                <Controller
+                <RHFAutocomplete
                   disabled={disabledField}
                   name='tempState'
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      {...field}
-                      options={
-                        watch('tempCountry')
-                          ? countrystatecity
-                          .find((country) => country.name === watch('tempCountry'))
-                          ?.states.map((state) => state.name) || []
-                          : []
-                      }
-                      onChange={(event, value) => field.onChange(value)}
-                      isOptionEqualToValue={(option, value) => option === value}
-                      renderInput={(params) => (
-                        <TextField {...params} label='State' variant='outlined' sx={{
-                          ' label': { mt: -0.8, fontSize: '14px' },
-                          ' input': { height: 7 },
-                        }} />
-                      )}
-                    />
+                  label='State'
+                  req={'red'}
+                  fullWidth
+                  options={
+                    watch('tempCountry')
+                      ? countrystatecity
+                      .find((country) => country.name === watch('tempCountry'))
+                      ?.states.map((state) => state.name) || []
+                      : []
+                  }
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
                   )}
                 />
-                <Controller
+                <RHFAutocomplete
                   disabled={disabledField}
                   name='tempCity'
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      {...field}
-                      options={
-                        watch('tempState')
-                          ? countrystatecity
-                          .find((country) => country.name === watch('tempCountry'))
-                          ?.states.find((state) => state.name === watch('tempState'))
-                          ?.cities.map((city) => city.name) || []
-                          : []
-                      }
-                      onChange={(event, value) => field.onChange(value)}
-                      isOptionEqualToValue={(option, value) => option === value}
-                      renderInput={(params) => (
-                        <TextField {...params} label='City' variant='outlined' sx={{
-                          ' label': { mt: -0.8, fontSize: '14px' },
-                          ' input': { height: 7 },
-                        }} />
-                      )}
-                    />
+                  label='City'
+                  req={'red'}
+                  fullWidth
+                  options={
+                    watch('tempState')
+                      ? countrystatecity
+                      .find((country) => country.name === watch('tempCountry'))
+                      ?.states.find((state) => state.name === watch('tempState'))
+                      ?.cities.map((city) => city.name) || []
+                      : []
+                  }
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
                   )}
                 />
               </Box>

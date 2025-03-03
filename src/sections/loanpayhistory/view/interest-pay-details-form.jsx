@@ -147,7 +147,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     days: '',
     amountPaid: '',
     interestAmount: currentLoan?.scheme.interestRate || '',
-    consultingCharge: currentLoan?.consultingCharge || 0,
+    consultingCharge: (currentLoan.interestLoanAmount * currentLoan?.consultingCharge / 100) || 0,
     penalty: '',
     uchakAmount: currentLoan?.uchakInterestAmount || 0,
     cr_dr: '',
@@ -214,7 +214,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     setValue(
       'interestAmount',
       (
-        (((currentLoan.interestLoanAmount * currentLoan?.scheme.interestRate) / 100) *
+        (((currentLoan.interestLoanAmount * (currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate)) / 100) *
           (12 * differenceInDays)) /
         365
       ).toFixed(2),
@@ -223,12 +223,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     setValue(
       'totalPay',
       (
-        Number(watch('interestAmount')) + Number(watch('penalty') - Number(watch('uchakAmount')))
+        Number(watch('interestAmount')) + Number(watch('penalty') + Number(watch('consultingCharge')))
       ).toFixed(2),
     );
     setValue(
       'payAfterAdjusted1',
-      (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2),
+      (Number(watch('totalPay')) - Number(watch('uchakAmount')) + Number(watch('oldCrDr'))).toFixed(2),
     );
     setValue(
       'cr_dr',

@@ -491,7 +491,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               ) : (
                 <TableCell>-</TableCell>
               )}
-              {getResponsibilityValue('update_disburse', configs, user) ? (
+              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                 <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>
                   {
                     <Typography
@@ -522,6 +522,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
               {payAmt}
             </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
