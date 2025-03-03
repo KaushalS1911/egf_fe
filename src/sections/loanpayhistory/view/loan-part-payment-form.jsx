@@ -499,7 +499,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               ) : (
                 <TableCell>-</TableCell>
               )}
-              {getResponsibilityValue('update_disburse', configs, user) ? (
+              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                 <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>
                   {
                     <Typography

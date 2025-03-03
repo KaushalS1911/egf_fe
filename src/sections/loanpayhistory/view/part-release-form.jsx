@@ -1032,16 +1032,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
             >
               {adjustedAmount ? adjustedAmount.toFixed(2) : '-'}
             </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: '600',
-                color: '#637381',
-                py: 1,
-                px: 2,
-              }}
-            >
-              {intAmt ? intAmt.toFixed(2) : '-'}
-            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
