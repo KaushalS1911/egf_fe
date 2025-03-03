@@ -178,7 +178,7 @@ const useStyles = () =>
         subHeading: {
           fontWeight: '600',
           fontSize: 10,
-          flex: 1.2,
+          flex: 0.85,
         },
         subHeading2: {
           fontWeight: '600',
@@ -259,12 +259,14 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                 style={{
                   width: '100%',
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
                   flexDirection: 'row',
                   marginTop: 20,
+                  // gap: 10,
                 }}
               >
-                <View style={{ width: '40%' }}>
+                <View style={{ width: '50%' }}>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Loan No </Text>
                     <Text style={styles.colon}>:</Text>
@@ -278,7 +280,7 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Close Date </Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>27 Aug 2024</Text>
+                    <Text style={styles.subText}>{fDate(selectedRow.date)}</Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Loan Amount </Text>
@@ -288,47 +290,69 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Pay Amount </Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{selectedRow.amountPaid}</Text>
+                    <Text style={styles.subText}>{selectedRow.adjustedAmount}</Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Int. Loan Amount </Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{selectedRow.loan.interestLoanAmount}</Text>
+                    <Text style={styles.subText}>{selectedRow.interestLoanAmount}</Text>
                   </View>
                 </View>
-                <View style={{ width: '40%' }}>
+                <View style={{ width: '50%' }}>
                   <View style={styles.row}>
-                    <Text style={styles.subHeading}>Customer Name </Text>
+                    <Text style={styles.subHeading2}>Customer Name </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text
                       style={styles.subText}
                     >{`${selectedRow.loan.customer.firstName} ${selectedRow.loan.customer.middleName} ${selectedRow.loan.customer.lastName}`}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={styles.subHeading}>Pan No </Text>
+                    <Text style={styles.subHeading2}>Pan No </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow.loan.customer.panCard}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={styles.subHeading}>Mobile No </Text>
+                    <Text style={styles.subHeading2}>Mobile No </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow.loan.customer.contact}</Text>
                   </View>
-                  <View style={styles.row}>
-                    <Text style={styles.subHeading}>Remark </Text>
-                    <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{selectedRow.remark}</Text>
-                  </View>
+                  {/*<View style={styles.row}>*/}
+                  {/*  <Text style={styles.subHeading}>Remark </Text>*/}
+                  {/*  <Text style={styles.colon}>:</Text>*/}
+                  {/*  <Text style={styles.subText}>{selectedRow.remark}</Text>*/}
+                  {/*</View>*/}
                 </View>
-                <View style={{ width: '20%' }}>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <View>
+                  <Text style={{ marginTop: 10 }}>
+                    <Text style={styles.subHeading}>Remark </Text>
+                    <Text style={styles.colon}> : </Text>
+                    <Text style={styles.subText}>{selectedRow.remark}</Text>
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 10,
+                      border: '0.5px solid #000',
+                      padding: '6px 10px 5px 10px',
+                      backgroundColor: '#5B9BD4',
+                    }}
+                  >
+                    <Text style={styles.subHeading}>Accepted & Received Amount</Text>
+                    <Text style={styles.colon}> : </Text>
+                    <Text style={styles.subText}>{selectedRow.adjustedAmount}</Text>
+                  </Text>
+                </View>
+                <View>
                   <Image src={selectedRow.propertyImage} style={styles.img} />
                 </View>
               </View>
-              <Text style={{ marginTop: 10 }}>
-                <Text style={styles.subHeading}>Accepted & Received Amount </Text>
-                <Text style={styles.colon}>:</Text>
-                <Text style={styles.subText}>{selectedRow.adjustedAmount}</Text>
-              </Text>
             </View>
             <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
               <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>

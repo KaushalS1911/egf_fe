@@ -106,11 +106,11 @@ const useStyles = () =>
           // color: '#fff',
         },
         headerDetails: {
-          fontSize: 9,
+          fontSize: 11,
         },
         icon: {
-          height: '10px',
-          width: '10px',
+          height: '12px',
+          width: '12px',
         },
         rowContainer: {
           flexDirection: 'row',
@@ -193,11 +193,11 @@ export default function InvoiceFooter({ configs }) {
   const branchAddress = branch
     ? `${branch.address.street}, ${branch.address.landmark}, ${branch.address.city}`
     : '';
-  const branchName = branch?.name || 'Branch Name Not Available';
-  const branchCode = branch?.branchCode || 'Branch Code Not Available';
-  const branchEmail = branch?.email || 'Email Not Available';
-  const branchContact = branch?.contact || 'Contact Not Available';
-
+  const branchName = branch?.name || '-';
+  const branchCode = branch?.branchCode || '-';
+  const branchEmail = branch?.email || '-';
+  const branchContact = branch?.contact || '-';
+  console.log(branch, '000000000000000');
   return (
     <View style={styles.headerbox2}>
       <Image style={styles.backgroundImage} src={footer} />
@@ -245,7 +245,7 @@ export default function InvoiceFooter({ configs }) {
             <View style={{ ...styles.rowContainer, marginTop: 10 }}>
               <Image style={styles.icon} src={contact || 'default_contact_icon'} />
               <Text style={styles.separator}>|</Text>
-              <Text style={styles.headerDetails}>{company?.contact || 'Company Contact'}</Text>
+              <Text style={styles.headerDetails}>{company?.contact || '-'}</Text>
             </View>
           </View>
         </View>

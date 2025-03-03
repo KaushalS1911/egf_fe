@@ -20,6 +20,13 @@ Font.register({
   family: 'Poppins',
   src: '/fonts/Overpass-VariableFont_wght.ttf',
 });
+Font.register({
+  family: 'Mukta Vaani',
+  fonts: [
+    { src: '/fonts/MuktaVaani-Regular.ttf' },
+    { src: '/fonts/MuktaVaani-Bold.ttf', fontWeight: 'bold' },
+  ],
+});
 
 const useStyles = () =>
   useMemo(
@@ -63,7 +70,7 @@ const useStyles = () =>
           height: '72%',
         },
         gujaratiText: {
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
         },
         flexContainer: {
           flexDirection: 'row',
@@ -85,14 +92,14 @@ const useStyles = () =>
           width: '100%',
           textAlign: 'right',
           marginTop: 10,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
         },
         write: {
           fontSize: 14,
           textAlign: 'left',
           marginTop: 3,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
         },
         date: {
@@ -158,7 +165,7 @@ const useStyles = () =>
           paddingHorizontal: 4,
           textAlign: 'center',
           fontWeight: 600,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
         },
         heading: {
           fontSize: '13px',
@@ -185,12 +192,12 @@ const useStyles = () =>
         termsAndConditionsHeaders: {
           color: '#232C4B',
           borderBottom: '1px solid #232C4B',
-          fontWeight: 'bold',
+          // fontWeight: 'bold',
           textWrap: 'nowrap',
           fontSize: '12px',
           textAlign: 'center',
           paddingVertical: 5,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
         },
         d_flex: {
           display: 'flex',
@@ -407,7 +414,14 @@ export default function Sansaction8({ sansaction, configs }) {
                   marginBottom: 10,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>બાયંધરી પત્રક</Text>
+                <Text
+                  style={[
+                    styles.termsAndConditionsHeaders,
+                    { fontSize: 14, marginTop: 5, fontWeight: 'bold', paddingVertical: 0 },
+                  ]}
+                >
+                  બાયંધરી પત્રક
+                </Text>
               </View>
               <View style={styles.flexContainer}>
                 <View style={{ width: '50%' }}>
@@ -436,7 +450,9 @@ export default function Sansaction8({ sansaction, configs }) {
                         ...styles.subText,
                         textWrap: 'wrap',
                       }}
-                    >{`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`}</Text>
+                    >
+                      {`${sansaction.customer.permanentAddress.street} , ${sansaction.customer.permanentAddress.landmark} , ${sansaction.customer.permanentAddress.city} , ${sansaction.customer.permanentAddress.zipcode}`.toUpperCase()}
+                    </Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Pan No </Text>
@@ -484,7 +500,7 @@ export default function Sansaction8({ sansaction, configs }) {
                     <Text
                       style={{
                         ...styles.gujaratiText,
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWight: 'bolder',
                         marginTop: 20,
                       }}
@@ -507,7 +523,13 @@ export default function Sansaction8({ sansaction, configs }) {
                   {/*  </Text>*/}
                   {/*</View>*/}
                   <view>
-                    <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
+                    <Text
+                      style={[
+                        styles.termsAndConditionsHeaders,
+                        styles.gujaratiText,
+                        { fontWeight: 600 },
+                      ]}
+                    >
                       નમૂનો-૮ કરજ ની શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૬
                     </Text>
                     <View style={{ marginTop: 10 }}>
@@ -522,7 +544,7 @@ export default function Sansaction8({ sansaction, configs }) {
                         >
                           <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>{' '}
                           {/* Bullet point */}
-                          <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
+                          <Text style={{ ...styles.gujaratiText, fontSize: 10 }}>
                             {item.rule}
                           </Text>{' '}
                           {/* Condition text */}
