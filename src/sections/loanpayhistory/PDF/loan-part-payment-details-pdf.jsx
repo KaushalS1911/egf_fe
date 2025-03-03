@@ -202,7 +202,16 @@ export default function LoanPartPaymentDetailsPdf({ data, configs }) {
               </View>
             </View>
             <View>
-              <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>
+              <Text
+                style={{
+                  ...styles.headerText2,
+                  marginTop: 30,
+                  marginBottom: 25,
+                  borderBottom: '1px solid black',
+                  paddingVertical: 5,
+                  width: '170px',
+                }}
+              >
                 Loan part Payment Details
               </Text>
               <View style={[styles.tableRow, styles.tableHeader]}>
@@ -214,7 +223,6 @@ export default function LoanPartPaymentDetailsPdf({ data, configs }) {
                 <Text style={styles.tableCell}>Payment mode</Text>
                 <Text style={styles.tableCell}>Cash amt</Text>
                 <Text style={styles.tableCell}>Bank amt</Text>
-                <Text style={styles.tableCell}>Remarks</Text>
               </View>
               <View style={styles.tableRow}>
                 <Text style={styles.tableCell}>{data?.loan?.loanAmount}</Text>
@@ -225,11 +233,25 @@ export default function LoanPartPaymentDetailsPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.cashAmount || 0}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.bankAmount || 0}</Text>
-                <Text style={styles.tableCell}>{data.remark || '-'}</Text>
               </View>
             </View>{' '}
-            <Text style={{ marginTop: 10 }}>
-              <Text style={styles.subHeading2}>Accepted & Received Amount : </Text>
+            <Text style={{ marginTop: 20 }}>
+              <Text style={styles.subHeading2}>Remark : </Text>
+              <Text style={styles.subText}>{data.remark}</Text>
+            </Text>{' '}
+            <Text
+              style={{
+                marginTop: 10,
+                borderWidth: 0.5,
+                borderColor: '#000',
+                padding: 6,
+                backgroundColor: '#5B9BD4',
+                alignSelf: 'flex-start',
+                border: '0.5px solid #000',
+              }}
+            >
+              <Text style={styles.subHeading}>Accepted & Received Amount</Text>
+              <Text style={styles.colon}> : </Text>
               <Text style={styles.subText}>{data.amountPaid}</Text>
             </Text>
           </View>

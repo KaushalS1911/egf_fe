@@ -149,7 +149,7 @@ export default function InterestPdf({ data, configs }) {
               }}
             >
               <Text style={styles.termsAndConditionsHeaders}>INTEREST INVOICE</Text>
-            </View>{' '}
+            </View>
             <View style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'row' }}>
               <View style={{ width: '50%' }}>
                 <View style={styles.row}>
@@ -190,7 +190,16 @@ export default function InterestPdf({ data, configs }) {
               </View>
             </View>
             <View>
-              <Text style={{ ...styles.headerText2, marginTop: 30, marginBottom: 25 }}>
+              <Text
+                style={{
+                  ...styles.headerText2,
+                  marginTop: 30,
+                  marginBottom: 15,
+                  borderBottom: '1px solid black',
+                  paddingVertical: 5,
+                  width: '99px',
+                }}
+              >
                 Interest Details
               </Text>
               <View style={[styles.tableRow, styles.tableHeader]}>
@@ -212,8 +221,19 @@ export default function InterestPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{data.amountPaid}</Text>
               </View>
             </View>
-            <Text style={{ marginTop: 10 }}>
-              <Text style={styles.subHeading2}>Accepted & Received Amount : </Text>
+            <Text
+              style={{
+                marginTop: 20,
+                borderWidth: 0.5,
+                borderColor: '#000',
+                padding: 6,
+                backgroundColor: '#5B9BD4',
+                alignSelf: 'flex-start',
+                border: '0.5px solid #000',
+              }}
+            >
+              <Text style={styles.subHeading}>Accepted & Received Amount</Text>
+              <Text style={styles.colon}> : </Text>
               <Text style={styles.subText}>{data.amountPaid}</Text>
             </Text>
           </View>

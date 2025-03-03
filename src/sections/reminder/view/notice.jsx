@@ -18,6 +18,10 @@ Font.register({
   family: 'NotoSansGujarati',
   src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
 });
+Font.register({
+  family: 'Mukta Vaani',
+  src: '/fonts/MuktaVaani-Regular.ttf',
+});
 
 const useStyles = () =>
   useMemo(
@@ -46,7 +50,7 @@ const useStyles = () =>
           padding: '0px 24px 24px 24px',
         },
         gujaratiText: {
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           fontSize: 12,
         },
         footer: {
@@ -113,20 +117,20 @@ const useStyles = () =>
           marginBottom: 30,
           textDecoration: 'underline',
           fontSize: 20,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           textAlign: 'center',
         },
         topDetails: {
           fontSize: 11,
           textAlign: 'left',
           marginTop: 3,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
         },
         bottomDetails: {
           fontSize: 12,
           marginTop: 3,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
         },
         mainText: {
@@ -146,7 +150,7 @@ const useStyles = () =>
           // width: '100%',
           // textAlign: 'right',
           // marginTop: 10,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
           // fontSize: 11,
           borderTop: '1px solid 232C4B',
@@ -159,7 +163,7 @@ const useStyles = () =>
           fontSize: 14,
           textAlign: 'left',
           marginTop: 3,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
         },
         date: {
@@ -197,7 +201,7 @@ const useStyles = () =>
           fontSize: '12px',
           textAlign: 'center',
           paddingVertical: 5,
-          fontFamily: 'NotoSansGujarati',
+          fontFamily: 'Mukta Vaani',
         },
       }),
     []
@@ -249,18 +253,18 @@ export default function Notice({ noticeData, configs }) {
               <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
               <Text style={styles.bottomDetails}>
                 {' '}
-                {
-                  '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-                }
-                આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ {fDate(noticeData?.issueDate)}{' '}
-                ના રોજ લીધેલી ગોલ્ડ લોન અકે રૂપિયા {(noticeData?.loanAmount).toFixed(2)}/- નું વ્યાજ
-                કંપનીના નિયમ પ્રમાણે નિયત મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે છે કે
-                તારીખ {fDate(date)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી.અગર કંપનીએ આપેલી
-                મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા ગોલ્ડની હરાજી કરશે
-                અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની લેવડ-દેવડ
-                કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત મુદત
-                સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ એના
-                માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.
+                <Text>{'                     '}</Text>
+                આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ {fDate(
+                  noticeData?.issueDate
+                )}{' '}
+                ના રોજ લીધેલી ગોલ્ડ લોન અંકે રૂપિયા {(noticeData?.loanAmount).toFixed(2)}/- નું
+                વ્યાજ કંપનીના નિયમ પ્રમાણે નિયત મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે
+                છે કે તારીખ {fDate(date)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી.અગર કંપનીએ
+                આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા ગોલ્ડની હરાજી
+                કરશે અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની
+                લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત
+                મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ
+                એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.
               </Text>
               <View style={styles.d_flex}>
                 <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>

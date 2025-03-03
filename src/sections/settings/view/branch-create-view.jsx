@@ -1,14 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  Card,
-  CardHeader,
-  Grid,
-  Typography,
-  IconButton,
-  Divider,
-  Stack,
-} from '@mui/material';
+import { Box, Card, CardHeader, Grid, Typography, IconButton, Divider, Stack } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
@@ -21,6 +12,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Iconify from 'src/components/iconify';
 import countrystatecity from '../../../_mock/map/csc.json';
 import { useGetBranch } from '../../../api/branch';
+import { useGetConfigs } from '../../../api/config.js';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required('Branch Name is required'),
@@ -35,9 +27,7 @@ const validationSchema = yup.object().shape({
   }),
   isActive: yup.boolean(),
   branchCode: yup.string().nullable(),
-  series: yup
-    .string()
-    .required('Series is required'),
+  series: yup.string().required('Series is required'),
 });
 
 export default function BranchCreateView() {
@@ -46,6 +36,7 @@ export default function BranchCreateView() {
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [editingBranch, setEditingBranch] = useState(null);
+  const { configs, mutate: configMutate } = useGetConfigs();
 
   const defaultValues = useMemo(
     () => ({
@@ -64,7 +55,7 @@ export default function BranchCreateView() {
       isActive: false,
       branchCode: '',
     }),
-    [],
+    []
   );
 
   const methods = useForm({
@@ -83,6 +74,7 @@ export default function BranchCreateView() {
       email: data.email || null,
       series: data.series || null,
       contact: data.contact || null,
+      branchCode: data.branchCode || null,
       address: {
         street: data.address.street,
         landmark: data.address.landmark,
@@ -107,7 +99,17 @@ export default function BranchCreateView() {
         mutate();
         enqueueSnackbar('Branch added successfully', { variant: 'success' });
       }
-
+      await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`, {
+        ...configs,
+        headersConfig: {
+          ...configs.headersConfig,
+          branch: {
+            ...configs.headersConfig.branch,
+            branchCode: '001',
+          },
+        },
+      });
+      configMutate();
       reset(defaultValues);
       setEditingBranch(null);
       setLoading(false);
@@ -130,7 +132,7 @@ export default function BranchCreateView() {
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/branch`,
         {
           data: { ids: ids },
-        },
+        }
       );
       enqueueSnackbar(response.data.message);
       mutate();
@@ -170,7 +172,7 @@ export default function BranchCreateView() {
   return (
     <FormProvider methods={methods}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant='h5' sx={{ fontWeight: 600 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Manage Branches
         </Typography>
       </Box>
@@ -179,17 +181,18 @@ export default function BranchCreateView() {
           <Grid item xs={12} md={6}>
             <Card>
               <Box sx={{ p: 3 }}>
-                <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
                   Branch Details
                 </Typography>
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
-                    <RHFTextField name='name' label='Branch Name' fullWidth />
+                    <RHFTextField name="name" label="Branch Name" fullWidth />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFTextField
-                      name='series'
-                      label='Series' fullWidth
+                      name="series"
+                      label="Series"
+                      fullWidth
                       inputProps={{ style: { textTransform: 'uppercase' } }}
                       onChange={(e) => {
                         const value = e.target.value.toUpperCase();
@@ -197,23 +200,16 @@ export default function BranchCreateView() {
                       }}
                     />
                   </Grid>
-                  {editingBranch && (
-                    <Grid item xs={12} sm={6}>
-                      <RHFTextField
-                        name='branchCode'
-                        label='Branch Code'
-                        fullWidth
-                        sx={{ mb: 2 }}
-                      />
-                    </Grid>
-                  )}
                   <Grid item xs={12} sm={6}>
-                    <RHFTextField name='email' label='Email' fullWidth />
+                    <RHFTextField name="branchCode" label="Branch Code" fullWidth />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <RHFTextField name="email" label="Email" fullWidth />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFTextField
-                      name='contact'
-                      label='Phone Number'
+                      name="contact"
+                      label="Phone Number"
                       fullWidth
                       inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                       onInput={(e) => {
@@ -223,8 +219,8 @@ export default function BranchCreateView() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFTextField
-                      name='address.zipcode'
-                      label='Zipcode'
+                      name="address.zipcode"
+                      label="Zipcode"
                       inputProps={{
                         inputMode: 'numeric',
                         pattern: '[0-9]*',
@@ -256,23 +252,23 @@ export default function BranchCreateView() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFAutocomplete
-                      name='address.country'
-                      label='Country'
-                      placeholder='Choose a country'
+                      name="address.country"
+                      label="Country"
+                      placeholder="Choose a country"
                       options={countrystatecity.map((country) => country.name)}
                       isOptionEqualToValue={(option, value) => option === value}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFAutocomplete
-                      name='address.state'
-                      label='State'
-                      placeholder='Choose a state'
+                      name="address.state"
+                      label="State"
+                      placeholder="Choose a state"
                       options={
                         watch('address.country')
                           ? countrystatecity
-                          .find((country) => country.name === watch('address.country'))
-                          ?.states.map((state) => state.name) || []
+                              .find((country) => country.name === watch('address.country'))
+                              ?.states.map((state) => state.name) || []
                           : []
                       }
                       isOptionEqualToValue={(option, value) => option === value}
@@ -280,35 +276,35 @@ export default function BranchCreateView() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFAutocomplete
-                      name='address.city'
-                      label='City'
-                      placeholder='Choose a city'
+                      name="address.city"
+                      label="City"
+                      placeholder="Choose a city"
                       options={
                         watch('address.state')
                           ? countrystatecity
-                          .find((country) => country.name === watch('address.country'))
-                          ?.states.find((state) => state.name === watch('address.state'))
-                          ?.cities.map((city) => city.name) || []
+                              .find((country) => country.name === watch('address.country'))
+                              ?.states.find((state) => state.name === watch('address.state'))
+                              ?.cities.map((city) => city.name) || []
                           : []
                       }
                       isOptionEqualToValue={(option, value) => option === value}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <RHFTextField name='address.street' label='Street' fullWidth />
+                    <RHFTextField name="address.street" label="Street" fullWidth />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <RHFTextField name='address.landmark' label='Landmark' />
+                    <RHFTextField name="address.landmark" label="Landmark" />
                   </Grid>
                   {editingBranch && (
                     <Grid item xs={12}>
-                      <RHFSwitch name='isActive' label='Is Active' />
+                      <RHFSwitch name="isActive" label="Is Active" />
                     </Grid>
                   )}
-                  <Grid item xs={12} display='flex' justifyContent='end'>
+                  <Grid item xs={12} display="flex" justifyContent="end">
                     <LoadingButton
                       sx={{ mx: 1 }}
-                      variant='contained'
+                      variant="contained"
                       onClick={() => {
                         reset(defaultValues);
                         setEditingBranch(null);
@@ -317,8 +313,8 @@ export default function BranchCreateView() {
                       Reset
                     </LoadingButton>
                     <LoadingButton
-                      variant='contained'
-                      type='submit'
+                      variant="contained"
+                      type="submit"
                       onClick={handleSubmit(onSubmitBranchDetails)}
                       loading={loading}
                     >
@@ -346,14 +342,14 @@ export default function BranchCreateView() {
                     <>
                       {user?.role === 'Admin' && (
                         <>
-                          <IconButton color='primary' onClick={() => handleEditBranch(branch)}>
-                            <Iconify icon='eva:edit-fill' />
+                          <IconButton color="primary" onClick={() => handleEditBranch(branch)}>
+                            <Iconify icon="eva:edit-fill" />
                           </IconButton>
                           <IconButton
-                            color='error'
+                            color="error"
                             onClick={() => handleDeleteBranches([branch._id])}
                           >
-                            <Iconify icon='eva:trash-2-outline' />
+                            <Iconify icon="eva:trash-2-outline" />
                           </IconButton>
                         </>
                       )}
@@ -363,36 +359,36 @@ export default function BranchCreateView() {
                 <Divider />
                 <Box sx={{ p: 3 }}>
                   <Stack spacing={1.5} sx={{ typography: 'body2' }}>
-                    <Stack direction='row' alignItems='center'>
+                    <Stack direction="row" alignItems="center">
                       <Box
-                        component='span'
+                        component="span"
                         sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}
                       >
                         Series
                       </Box>
                       {branch.series || '-'}
                     </Stack>
-                    <Stack direction='row' alignItems='center'>
+                    <Stack direction="row" alignItems="center">
                       <Box
-                        component='span'
+                        component="span"
                         sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}
                       >
                         Email
                       </Box>
                       {branch.email}
                     </Stack>
-                    <Stack direction='row' alignItems='center'>
+                    <Stack direction="row" alignItems="center">
                       <Box
-                        component='span'
+                        component="span"
                         sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}
                       >
                         Contact
                       </Box>
                       {branch.contact}
                     </Stack>
-                    <Stack direction='row' alignItems='center'>
+                    <Stack direction="row" alignItems="center">
                       <Box
-                        component='span'
+                        component="span"
                         sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}
                       >
                         Address

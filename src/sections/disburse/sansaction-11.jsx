@@ -22,7 +22,10 @@ Font.register({
 });
 Font.register({
   family: 'Mukta Vaani',
-  src: '/fonts/MuktaVaani-Regular.ttf',
+  fonts: [
+    { src: '/fonts/MuktaVaani-Regular.ttf' },
+    { src: '/fonts/MuktaVaani-Bold.ttf', fontWeight: 'bold' },
+  ],
 });
 const useStyles = () =>
   useMemo(
@@ -336,10 +339,10 @@ export default function Sansaction11({ sansaction, configs }) {
       rule: `બેંક બંધના દિવસે દાગીના પરત મળશે નહિ.`,
     },
     {
-      rule: `દર મહિને વ્યાજ ભરી જવું.`,
+      rule: `દર મહિને વ્યાજ ભરી જંવું.`,
     },
     {
-      rule: `આપેલ બિલ સાથે લેતા આવવું.`,
+      rule: `આપેલ બિલ સાથે લેતા આવંવું.`,
     },
     {
       rule: `સરનામું બદલે ત્યારે ફેરફાર કરાવી જવું.`,
@@ -372,8 +375,9 @@ export default function Sansaction11({ sansaction, configs }) {
       specification: `વેપાર, મિલકત ખરીદ અને વેચાણ માટે ધીરેલુ કરજ .`,
     },
     {
-      heading: `અગત કરજ`,
-      specification: ` લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અને અગત જરૂરિયાતો માટે ધીરેલુ કરજ .`,
+      heading: 'અંગત કરજ',
+      specification:
+        'લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અંને અંગત જરૂરિયાતો માટે ધીરેલુ કરજ .',
     },
     {
       heading: `પ્રકીર્ણ  કરજ `,
@@ -393,7 +397,13 @@ export default function Sansaction11({ sansaction, configs }) {
             <View style={styles.pagePadding}>
               <View>
                 {' '}
-                <Text style={[styles.termsAndConditionsHeaders, styles.gujaratiText]}>
+                <Text
+                  style={[
+                    styles.termsAndConditionsHeaders,
+                    styles.gujaratiText,
+                    { fontWeight: 'bold' },
+                  ]}
+                >
                   નમૂનો-૧૧ કરજ શરતોની વિગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૪
                 </Text>
               </View>
@@ -408,14 +418,12 @@ export default function Sansaction11({ sansaction, configs }) {
                 }}
               >
                 <View style={{ width: '60%' }}>
-                  <Text style={{ ...styles.spacing, marginTop: -8 }}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      બિલ નં. :{' '}
-                    </Text>{' '}
+                  <Text style={{ ...styles.spacing, marginTop: -6 }}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>બિલ નં. : </Text>{' '}
                     <Text style={styles.subText}>{sansaction.loanNo}</Text>
                     {'             '}
                     <View style={{ textAlign: 'center' }}>
-                      <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                      <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
                         લા નં. : GMLSUR2425000018
                       </Text>
                     </View>
@@ -425,7 +433,7 @@ export default function Sansaction11({ sansaction, configs }) {
                       style={{
                         ...styles.gujaratiText,
                         fontSize: 11,
-                        fontWeight: 900,
+
                         flex: 0.7,
                       }}
                     >
@@ -437,16 +445,14 @@ export default function Sansaction11({ sansaction, configs }) {
                         flex: 2,
                         fontSize: 10,
                         marginBottom: 5,
-                        // fontWeight: 900,
+                        //
                       }}
                     >
                       {`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}
                     </Text>
                   </View>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
-                    <Text
-                      style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900, flex: 0.7 }}
-                    >
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, flex: 0.7 }}>
                       ૨. દેણદાર નું સરનામું
                     </Text>
                     <Text style={styles.colon}>:</Text>
@@ -461,9 +467,7 @@ export default function Sansaction11({ sansaction, configs }) {
                   </View>
 
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
-                    <Text
-                      style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900, flex: 0.7 }}
-                    >
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, flex: 0.7 }}>
                       ૩. કરજ ની રકમ
                     </Text>
                     <Text style={styles.colon}>:</Text>
@@ -471,14 +475,18 @@ export default function Sansaction11({ sansaction, configs }) {
                   </View>
 
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
-                    <Text
-                      style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900, flex: 0.7 }}
-                    >
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11, flex: 0.7 }}>
                       ૪. ધીર્યા ની તારીખ
                     </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={{ ...styles.subText, flex: 2 }}>
                       {fDate(sansaction.issueDate)}
+                      {'             '}
+                      {/*<View style={{ textAlign: 'center' }}>*/}
+                      <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
+                        સવંત : {new Date().getFullYear()}
+                      </Text>
+                      {/*</View>*/}
                     </Text>
                   </View>
 
@@ -487,7 +495,7 @@ export default function Sansaction11({ sansaction, configs }) {
                       style={{
                         ...styles.gujaratiText,
                         fontSize: 11,
-                        fontWeight: 900,
+
                         flex: 0.7,
                       }}
                     >
@@ -495,35 +503,31 @@ export default function Sansaction11({ sansaction, configs }) {
                     </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={{ ...styles.subText, flex: 2, ...styles.gujaratiText }}>
-                      ખેતી વિષયક,ઔદ્યોગિક વેપારી,અંગત કે પ્રકીણ કરજ
+                      ખેતી વિષયક,ઔદ્યોગિક વેપારી, <Text style={{ fontSize: 11 }}>અં</Text>
+                      ગત કે પ્રકીણ કરજ
                     </Text>
                   </View>
                   <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
                       {`૫. કરજ પાકવાની મુદત માસ ${month} ની છે .`}
                     </Text>
                   </Text>
                   <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
                       ૬. વાર્ષિક વ્યાજ દર {(sansaction.scheme.interestRate * 12).toFixed(2)} ટકા.
                     </Text>
                   </Text>
                   <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      ૭. તારણ નો પ્રકાર
-                    </Text>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>૭. તારણ નો પ્રકાર</Text>
                   </Text>
                   <Text style={styles.spacing}>
-                    <Text style={{ ...styles.gujaratiText, fontSize: 11, fontWeight: 900 }}>
-                      સોનાના મુદ્દા
-                    </Text>
+                    <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>સોનાના મુદ્દા</Text>
                   </Text>
                 </View>
                 <View style={{ width: '40%' }}>
                   <View style={{ textAlign: 'center', marginBottom: 5 }}>
                     <Text
                       style={{
-                        fontWeight: '600',
                         fontSize: 10,
                       }}
                     >
@@ -570,7 +574,7 @@ export default function Sansaction11({ sansaction, configs }) {
                   style={{
                     ...styles.gujaratiText,
                     fontSize: 11,
-                    marginTop: 15,
+                    marginTop: 10,
                     fontWeight: 'bold',
                   }}
                 >
@@ -614,7 +618,6 @@ export default function Sansaction11({ sansaction, configs }) {
                 <Text
                   style={{
                     ...styles.gujaratiText,
-                    fontWeight: '900',
                     fontSize: 14,
                     marginTop: 8,
                     color: '#232C4B',
@@ -633,7 +636,7 @@ export default function Sansaction11({ sansaction, configs }) {
                           style={{
                             ...styles.gujaratiText,
                             fontSize: 12,
-                            fontWeight: '600',
+                            // fontWeight: '600',
                             width: 80,
                           }}
                         >
