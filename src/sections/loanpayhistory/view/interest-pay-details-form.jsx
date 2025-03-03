@@ -228,7 +228,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     );
     setValue(
       'payAfterAdjusted1',
-      (Number(watch('totalPay')) - Number(watch('uchakAmount')) + Number(watch('oldCrDr'))).toFixed(2),
+      (Number(watch('totalPay')) - Number(watch('uchakAmount')) - Number(watch('oldCrDr'))).toFixed(2),
     );
     setValue(
       'cr_dr',
