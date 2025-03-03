@@ -148,7 +148,7 @@ export default function InterestPdf({ data, configs }) {
                 marginBottom: 10,
               }}
             >
-              <Text style={styles.termsAndConditionsHeaders}>INTEREST INVOICE</Text>
+              <Text style={styles.termsAndConditionsHeaders}>INTEREST PAY INVOICE</Text>
             </View>
             <View style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'row' }}>
               <View style={{ width: '50%' }}>

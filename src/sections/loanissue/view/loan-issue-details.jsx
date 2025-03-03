@@ -159,7 +159,7 @@ const useStyles = () =>
         subHeading: {
           fontWeight: '600',
           fontSize: 10,
-          flex: 1,
+          flex: 1.2,
         },
         colon: {
           fontSize: 10,
@@ -429,7 +429,19 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
               <View style={{ ...styles.tableFlex, marginTop: -15 }}>
                 <View style={styles.table}>
                   <View>
-                    <Text style={styles.heading}>Property Details</Text>
+                    <Text
+                      style={[
+                        styles.heading,
+                        {
+                          borderBottom: '1px solid black',
+                          paddingVertical: 5,
+                          width: '99px',
+                          marginBottom: 10,
+                        },
+                      ]}
+                    >
+                      Property Details
+                    </Text>
                   </View>
                   <View style={[styles.tableRow, styles.tableHeader]}>
                     <Text style={[styles.tableCell, { minWidth: 100 }]}>Property Name</Text>
