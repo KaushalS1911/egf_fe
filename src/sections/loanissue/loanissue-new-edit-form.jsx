@@ -843,6 +843,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 control={control}
                 label='Issue Date'
                 req={'red'}
+                disabled={currentLoanIssue ? true : false}
               />
               <RHFAutocomplete
                 name='scheme'
