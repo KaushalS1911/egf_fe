@@ -479,7 +479,7 @@ export default function Sansaction11({ sansaction, configs }) {
                       ૪. ધીર્યા ની તારીખ
                     </Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={{ ...styles.subText, flex: 2 }}>
+                    <Text style={{ ...styles.subText, flex: 2, marginTop: -3 }}>
                       {fDate(sansaction.issueDate)}
                       {'             '}
                       {/*<View style={{ textAlign: 'center' }}>*/}
@@ -500,7 +500,15 @@ export default function Sansaction11({ sansaction, configs }) {
                       ૪-અ. કરજ ની પ્રકાર
                     </Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={{ ...styles.subText, flex: 2, ...styles.gujaratiText }}>
+                    <Text
+                      style={{
+                        ...styles.subText,
+                        flex: 2,
+                        marginBottom: 5,
+                        ...styles.gujaratiText,
+                        marginTop: -3,
+                      }}
+                    >
                       ખેતી વિષયક,ઔદ્યોગિક વેપારી, <Text style={{ fontSize: 11 }}>અં</Text>ગત કે
                       પ્રકીર્ણ કરજ
                     </Text>
