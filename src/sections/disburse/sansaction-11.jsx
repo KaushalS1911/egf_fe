@@ -483,9 +483,7 @@ export default function Sansaction11({ sansaction, configs }) {
                       {fDate(sansaction.issueDate)}
                       {'             '}
                       {/*<View style={{ textAlign: 'center' }}>*/}
-                      <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
-                        સવંત : {new Date().getFullYear()}
-                      </Text>
+                      <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>સવંત : 2081</Text>
                       {/*</View>*/}
                     </Text>
                   </View>
@@ -503,8 +501,8 @@ export default function Sansaction11({ sansaction, configs }) {
                     </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={{ ...styles.subText, flex: 2, ...styles.gujaratiText }}>
-                      ખેતી વિષયક,ઔદ્યોગિક વેપારી, <Text style={{ fontSize: 11 }}>અં</Text>
-                      ગત કે પ્રકીણ કરજ
+                      ખેતી વિષયક,ઔદ્યોગિક વેપારી, <Text style={{ fontSize: 11 }}>અં</Text>ગત કે
+                      પ્રકીર્ણ કરજ
                     </Text>
                   </View>
                   <Text style={styles.spacing}>
