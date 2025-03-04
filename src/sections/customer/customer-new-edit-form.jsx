@@ -120,13 +120,13 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       .required('Date of Birth is required')
       .nullable()
       .typeError('Date of Birth is required'),
-    businessType : Yup.string().required('Business Type is required'),
+    businessType: Yup.string().required('Business Type is required'),
     panCard: Yup.string().required('PAN Card number is required').max(10).min(10),
     aadharCard: Yup.string()
       .required('Aadhar Card number is required')
       .matches(
         /^\d{12}$/,
-        'Aadhar Card must be exactly 12 digitsand should not contain alphabetic characters',
+        'Aadhar Card must be exactly 12 digitsand should not contain alphabetic characters'
       ),
     otpContact: Yup.string().required('OTP Contact number isrequired').max(10).min(10),
     PerStreet: Yup.string().required('Address Line 1 isrequired'),
@@ -145,48 +145,54 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     referenceBy: Yup.string().required('Other detail is required'),
   });
 
-  const defaultValues = useMemo(() => ({
-    isAadharVerified: currentCustomer?.isAadharVerified || false,
-    branchId: currentCustomer ? {
-      label: currentCustomer?.branch?.name, value: currentCustomer?.branch?._id,
-    } : null,
-    status: currentCustomer?.status || 'Active',
-    profile_pic: currentCustomer?.avatar_url || null,
-    firstName: currentCustomer?.firstName || '',
-    middleName: currentCustomer?.middleName || '',
-    lastName: currentCustomer?.lastName || '',
-    contact: currentCustomer?.contact || '',
-    email: currentCustomer?.email || '',
-    dob: new Date(currentCustomer?.dob) || '',
-    panCard: (currentCustomer?.panCard || '').toUpperCase(),
-    aadharCard: currentCustomer?.aadharCard || '',
-    otpContact: currentCustomer?.otpContact || '',
-    business: currentCustomer?.business || '',
-    customerCode: currentCustomer?.customerCode || '',
-    drivingLicense: currentCustomer?.drivingLicense || '',
-    referenceBy: currentCustomer ? condition : '',
-    otherReferenceBy: currentCustomer ? currentCustomer?.referenceBy : '',
-    joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
-    businessType: currentCustomer?.businessType || '',
-    PerStreet: currentCustomer?.permanentAddress?.street || '',
-    PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
-    PerCountry: currentCustomer?.permanentAddress?.country || '',
-    PerState: currentCustomer?.permanentAddress?.state || '',
-    PerCity: currentCustomer?.permanentAddress?.city || '',
-    PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
-    tempStreet: currentCustomer?.temporaryAddress?.street || '',
-    tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
-    tempCountry: currentCustomer?.temporaryAddress?.country || '',
-    tempState: currentCustomer?.temporaryAddress?.state || '',
-    tempCity: currentCustomer?.temporaryAddress?.city || '',
-    tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
-    bankName: currentCustomer?.bankDetails?.bankName || '',
-    IFSC: currentCustomer?.bankDetails?.IFSC || '',
-    accountType: currentCustomer?.bankDetails?.accountType || '',
-    accountNumber: currentCustomer?.bankDetails?.accountNumber || '',
-    accountHolderName: currentCustomer?.bankDetails?.accountHolderName || '',
-    branchName: currentCustomer?.bankDetails?.branchName || '',
-  }), [currentCustomer, branch]);
+  const defaultValues = useMemo(
+    () => ({
+      isAadharVerified: currentCustomer?.isAadharVerified || false,
+      branchId: currentCustomer
+        ? {
+            label: currentCustomer?.branch?.name,
+            value: currentCustomer?.branch?._id,
+          }
+        : null,
+      status: currentCustomer?.status || 'Active',
+      profile_pic: currentCustomer?.avatar_url || null,
+      firstName: currentCustomer?.firstName || '',
+      middleName: currentCustomer?.middleName || '',
+      lastName: currentCustomer?.lastName || '',
+      contact: currentCustomer?.contact || '',
+      email: currentCustomer?.email || '',
+      dob: new Date(currentCustomer?.dob) || '',
+      panCard: (currentCustomer?.panCard || '').toUpperCase(),
+      aadharCard: currentCustomer?.aadharCard || '',
+      otpContact: currentCustomer?.otpContact || '',
+      business: currentCustomer?.business || '',
+      customerCode: currentCustomer?.customerCode || '',
+      drivingLicense: currentCustomer?.drivingLicense || '',
+      referenceBy: currentCustomer ? condition : '',
+      otherReferenceBy: currentCustomer ? currentCustomer?.referenceBy : '',
+      joiningDate: currentCustomer ? new Date(currentCustomer?.joiningDate) : new Date(),
+      businessType: currentCustomer?.businessType || '',
+      PerStreet: currentCustomer?.permanentAddress?.street || '',
+      PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
+      PerCountry: currentCustomer?.permanentAddress?.country || '',
+      PerState: currentCustomer?.permanentAddress?.state || '',
+      PerCity: currentCustomer?.permanentAddress?.city || '',
+      PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
+      tempStreet: currentCustomer?.temporaryAddress?.street || '',
+      tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
+      tempCountry: currentCustomer?.temporaryAddress?.country || '',
+      tempState: currentCustomer?.temporaryAddress?.state || '',
+      tempCity: currentCustomer?.temporaryAddress?.city || '',
+      tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
+      bankName: currentCustomer?.bankDetails?.bankName || '',
+      IFSC: currentCustomer?.bankDetails?.IFSC || '',
+      accountType: currentCustomer?.bankDetails?.accountType || '',
+      accountNumber: currentCustomer?.bankDetails?.accountNumber || '',
+      accountHolderName: currentCustomer?.bankDetails?.accountHolderName || '',
+      branchName: currentCustomer?.bankDetails?.branchName || '',
+    }),
+    [currentCustomer, branch]
+  );
 
   const methods = useForm({
     resolver: yupResolver(NewCustomerSchema),
@@ -208,7 +214,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     const referance = watch('referenceBy');
     if (referance) {
       setReferaceByOther(referance);
-
     }
   }, [watch('referenceBy')]);
 
@@ -230,7 +235,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-
       if (data?.referenceBy === 'Other' && data.otherReferenceBy === '') {
         enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
         return;
@@ -328,9 +332,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer?${branchQuery}`;
       await (currentCustomer
         ? axios.put(
-          `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?${branchQuery}`,
-          payload,
-        )
+            `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}?${branchQuery}`,
+            payload
+          )
         : axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } }));
 
       enqueueSnackbar(currentCustomer ? 'Update success!' : 'Create success!');
@@ -418,7 +422,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         -cropWidth / 2,
         -cropHeight / 2,
         cropWidth,
-        cropHeight,
+        cropHeight
       );
       ctx.restore();
 
@@ -443,7 +447,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           try {
             const response = await axios.put(
               `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${currentCustomer?._id}/profile`,
-              formData,
+              formData
             );
             console.log('Profile updated successfully:', response.data);
           } catch (err) {
@@ -463,6 +467,11 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       const response = await axios.get(`https://api.postalpincode.in/pincode/${zipcode}`);
       const data = response.data[0];
       if (data.Status === 'Success') {
+        if (type === 'permanent') {
+          setValue('PerCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
+          setValue('PerState', data.PostOffice[0]?.Circle, { shouldValidate: true });
+          setValue('PerCity', data.PostOffice[0]?.District, { shouldValidate: true });
+        }
         if (type === 'temporary') {
           setValue('tempCountry', data.PostOffice[0]?.Country, { shouldValidate: true });
           setValue('tempState', data.PostOffice[0]?.Circle, { shouldValidate: true });
@@ -534,7 +543,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     if (!isAadhar) {
       try {
         setOtpPopupOpen(true);
-        const response = await axios.post(`https://egf-be.onrender.com/api/verification/send-otp`, { aadhaar: aadharNumber });
+        const response = await axios.post(`https://egf-be.onrender.com/api/verification/send-otp`, {
+          aadhaar: aadharNumber,
+        });
 
         if (response.status === 200) {
           enqueueSnackbar('OTP sent successfully for Aadhar verification.', { variant: 'success' });
@@ -568,7 +579,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         const otpPayload = { otp: otpCode, refId: JSON.parse(reference) };
         const otpResponse = await axios.post(
           `https://egf-be.onrender.com/api/verification/aadhaar-details`,
-          otpPayload,
+          otpPayload
         );
 
         if (otpResponse.status === 200) {
@@ -584,7 +595,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           setValue('middleName', nameParts[1] || '', { shouldValidate: true });
           setValue('lastName', nameParts.slice(2).join(' '), { shouldValidate: true });
           setValue('dob', apidata?.dob ? new Date(apidata?.dob) : null, { shouldValidate: true });
-          setValue('PerStreet', apidata.split_address.house + ' ' + apidata.split_address.street, { shouldValidate: true });
+          setValue('PerStreet', apidata.split_address.house + ' ' + apidata.split_address.street, {
+            shouldValidate: true,
+          });
           setValue('PerLandmark', apidata.split_address.landmark, { shouldValidate: true });
           setValue('PerZipcode', apidata.split_address.pincode, { shouldValidate: true });
           setValue('PerCountry', apidata.split_address.country, { shouldValidate: true });
@@ -609,7 +622,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       <Grid item md={3} xs={12}>
         <Box sx={{ pt: 2 }}>
           <RHFUploadAvatar
-            name='profile_pic'
+            name="profile_pic"
             camera={true}
             setOpen2={setOpen2}
             setOpen={setOpen}
@@ -617,7 +630,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
             setFile={setFile}
             file={croppedImage || imageSrc || capturedImage || currentCustomer?.avatar_url}
             maxSize={3145728}
-            accept='image/*'
+            accept="image/*"
             onDrop={handleDropSingleFile}
           />
           <Dialog open={Boolean(open)} onClose={handleCancel}>
@@ -628,26 +641,26 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               aspect={1}
             >
               <img
-                id='cropped-image'
+                id="cropped-image"
                 src={imageSrc || capturedImage}
-                alt='Crop preview'
+                alt="Crop preview"
                 onLoad={resetCrop}
                 style={{ transform: `rotate(${rotation}deg)` }}
               />
             </ReactCrop>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
-              <Button variant='outlined' onClick={handleCancel}>
+              <Button variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>
               <Box sx={{ display: 'flex' }}>
                 <IconButton onClick={() => rotateImage(-90)} style={{ marginRight: '10px' }}>
-                  <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
+                  <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />
                 </IconButton>
                 <IconButton onClick={() => rotateImage(90)}>
-                  <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
+                  <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />
                 </IconButton>
               </Box>
-              <Button variant='contained' color='primary' onClick={showCroppedImage}>
+              <Button variant="contained" color="primary" onClick={showCroppedImage}>
                 Save Image
               </Button>
             </div>
@@ -656,12 +669,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       </Grid>
       <Grid item xs={12} md={9}>
         <Card>
-          {!mdUp && <CardHeader title='Personal Details' />}
+          {!mdUp && <CardHeader title="Personal Details" />}
           <Stack spacing={3} sx={{ p: 2 }}>
             <Box
               columnGap={1.5}
               rowGap={1.5}
-              display='grid'
+              display="grid"
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 md: 'repeat(5, 1fr)',
@@ -669,10 +682,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
             >
               {user?.role === 'Admin' && branch && storedBranch === 'all' && (
                 <RHFAutocomplete
-                  name='branchId'
+                  name="branchId"
                   req={'red'}
-                  label='Branch'
-                  placeholder='Choose a Branch'
+                  label="Branch"
+                  placeholder="Choose a Branch"
                   options={
                     branch?.map((branchItem) => ({
                       label: branchItem?.name,
@@ -683,22 +696,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 />
               )}
               <RHFTextField
-                name='customerCode'
-                label='Customer Code'
+                name="customerCode"
+                label="Customer Code"
                 InputProps={{
                   disabled: true,
                 }}
               />
               <RHFDatePicker
-                name='joiningDate'
+                name="joiningDate"
                 control={control}
-                label='Joining Date'
+                label="Joining Date"
                 disabled={disabledField}
                 req={'red'}
               />
               <RHFTextField
-                name='firstName'
-                label='First Name'
+                name="firstName"
+                label="First Name"
                 disabled={disabledField}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
@@ -709,8 +722,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name='middleName'
-                label='Middle Name'
+                name="middleName"
+                label="Middle Name"
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
@@ -720,8 +733,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name='lastName'
-                label='Last Name'
+                name="lastName"
+                label="Last Name"
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   const value = e.target.value.toUpperCase();
@@ -731,8 +744,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name='contact'
-                label='Contact'
+                name="contact"
+                label="Contact"
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -754,8 +767,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name='otpContact'
-                label='OTP Mobile'
+                name="otpContact"
+                label="OTP Mobile"
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -777,8 +790,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name='drivingLicense'
-                label='Driving License'
+                name="drivingLicense"
+                label="Driving License"
                 onInput={(e) => {
                   e.target.value = e.target.value.toUpperCase();
                 }}
@@ -786,8 +799,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name='panCard'
-                label='PAN No.'
+                name="panCard"
+                label="PAN No."
                 req={'red'}
                 inputProps={{ minLength: 10, maxLength: 10 }}
                 onChange={(e) => {
@@ -797,9 +810,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               />
               <RHFTextField
                 disabled={disabledField}
-                name='aadharCard'
-                label='Aadhar Card'
-                req='red'
+                name="aadharCard"
+                label="Aadhar Card"
+                req="red"
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -825,21 +838,21 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   ),
                 }}
               />
-              <RHFTextField disabled={disabledField} name='email' label='Email' />
+              <RHFTextField disabled={disabledField} name="email" label="Email" />
               <RHFDatePicker
                 disabled={disabledField}
-                name='dob'
+                name="dob"
                 control={control}
-                label='Date of Birth'
+                label="Date of Birth"
                 req={'red'}
               />
               {configs?.businessType && (
                 <RHFAutocomplete
                   req={'red'}
-                  name='businessType'
+                  name="businessType"
                   disabled={disabledField}
-                  label='Business Type'
-                  placeholder='Choose Business Type'
+                  label="Business Type"
+                  placeholder="Choose Business Type"
                   options={
                     configs?.businessType?.length > 0
                       ? configs.businessType.map((type) => type)
@@ -851,11 +864,11 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               )}
               {currentCustomer && (
                 <RHFAutocomplete
-                  name='status'
+                  name="status"
                   disabled={disabledField}
                   req={'red'}
-                  label='Status'
-                  placeholder='Choose a Status'
+                  label="Status"
+                  placeholder="Choose a Status"
                   options={STATUS_OPTIONS.map((item) => item.value)}
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 />
@@ -872,7 +885,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                     }}
                   >
                     <Box>
-                      <Typography variant='subtitle2' sx={{ fontWeight: 600 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                         Aadhaar Image
                       </Typography>
                     </Box>
@@ -889,7 +902,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                         key={aadharImage}
                         src={aadharImage}
                         alt={aadharImage}
-                        ratio='1/1'
+                        ratio="1/1"
                         onClick={() => lightbox.onOpen(aadharImage)}
                         sx={{ cursor: 'zoom-in', height: '100%', width: '100%' }}
                       />
@@ -904,176 +917,231 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     </>
   );
 
-  const addressDetails = (<>
-    <Grid xs={12} md={12} pb={0.5}>
-      <Card>
-        {!mdUp && <CardHeader title='Properties' />}
-        <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
-          <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
-            Permanent Address
-          </Typography>
-          <Box
-            columnGap={1.5}
-            rowGap={1.5}
-            display='grid'
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
-            }}
-          >
-            <RHFTextField disabled={disabledField} name='PerStreet' label='Street' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
-            <RHFTextField disabled={disabledField} name='PerLandmark' label='landmark' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
-            <RHFTextField
-              disabled={disabledField}
-              name='PerZipcode'
-              label={<span>Zipcode</span>}
-              req={'red'}
-              inputProps={{
-                inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6,
+  const addressDetails = (
+    <>
+      <Grid xs={12} md={12} pb={0.5}>
+        <Card>
+          {!mdUp && <CardHeader title="Properties" />}
+          <Stack spacing={1} sx={{ p: 2, pb: 0, pt: 1.5 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: '600' }}>
+              Permanent Address
+            </Typography>
+            <Box
+              columnGap={1.5}
+              rowGap={1.5}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                md: 'repeat(6, 1fr)',
               }}
-              rules={{
-                required: 'Zipcode is required', minLength: {
-                  value: 6, message: 'Zipcode must be exactly 6 digits',
-                }, maxLength: {
-                  value: 6, message: 'Zipcode cannot be more than 6 digits',
-                },
-              }}
-              onKeyPress={(event) => {
-                if (!/[0-9]/.test(event.key)) {
-                  event.preventDefault();
+            >
+              <RHFTextField
+                disabled={disabledField}
+                name="PerStreet"
+                label="Street"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+              />
+              <RHFTextField
+                disabled={disabledField}
+                name="PerLandmark"
+                label="landmark"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+              />
+              <RHFTextField
+                disabled={disabledField}
+                name="PerZipcode"
+                label={<span>Zipcode</span>}
+                req={'red'}
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  maxLength: 6,
+                }}
+                rules={{
+                  required: 'Zipcode is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Zipcode must be exactly 6 digits',
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: 'Zipcode cannot be more than 6 digits',
+                  },
+                }}
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onBlur={(event) => {
+                  const zip = event.target.value;
+                  if (zip.length === 6) {
+                    checkZipcode(zip, 'permanent');
+                  }
+                }}
+              />
+              <RHFAutocomplete
+                disabled={disabledField}
+                name="PerCountry"
+                req={'red'}
+                label="Country"
+                placeholder="Choose a country"
+                options={countrystatecity.map((country) => country.name)}
+                isOptionEqualToValue={(option, value) => option === value}
+                defaultValue="India"
+              />
+              <RHFAutocomplete
+                disabled={disabledField}
+                name="PerState"
+                req={'red'}
+                label="State"
+                placeholder="Choose a State"
+                options={
+                  watch('PerCountry')
+                    ? countrystatecity
+                        .find((country) => country.name === watch('PerCountry'))
+                        ?.states.map((state) => state.name) || []
+                    : []
                 }
-              }}
-              onBlur={(event) => {
-                const zip = event.target.value;
-                if (zip.length === 6) {
-                  checkZipcode(zip, 'temporary');
+                defaultValue="Gujarat"
+                isOptionEqualToValue={(option, value) => option === value}
+              />
+              <RHFAutocomplete
+                disabled={disabledField}
+                name="PerCity"
+                label="City"
+                req={'red'}
+                placeholder="Choose a City"
+                options={
+                  watch('PerState')
+                    ? countrystatecity
+                        .find((country) => country.name === watch('PerCountry'))
+                        ?.states.find((state) => state.name === watch('PerState'))
+                        ?.cities.map((city) => city.name) || []
+                    : []
                 }
+                defaultValue="Surat"
+                isOptionEqualToValue={(option, value) => option === value}
+              />
+            </Box>
+          </Stack>
+          <Stack spacing={1} sx={{ p: 2, pt: 1 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: '600' }}>
+              Temporary Address
+            </Typography>
+            <Box
+              columnGap={1.5}
+              rowGap={1.5}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                md: 'repeat(6, 1fr)',
               }}
-            />
-            <RHFAutocomplete
-              disabled={disabledField}
-              name='PerCountry'
-              req={'red'}
-              label='Country'
-              placeholder='Choose a country'
-              options={countrystatecity.map((country) => country.name)}
-              isOptionEqualToValue={(option, value) => option === value}
-              defaultValue='India'
-            />
-            <RHFAutocomplete
-              disabled={disabledField}
-              name='PerState'
-              req={'red'}
-              label='State'
-              placeholder='Choose a State'
-              options={watch('PerCountry') ? countrystatecity
-                .find((country) => country.name === watch('PerCountry'))
-                ?.states.map((state) => state.name) || [] : []}
-              defaultValue='Gujarat'
-              isOptionEqualToValue={(option, value) => option === value}
-            />
-            <RHFAutocomplete
-              disabled={disabledField}
-              name='PerCity'
-              label='City'
-              req={'red'}
-              placeholder='Choose a City'
-              options={watch('PerState') ? countrystatecity
-                .find((country) => country.name === watch('PerCountry'))
-                ?.states.find((state) => state.name === watch('PerState'))
-                ?.cities.map((city) => city.name) || [] : []}
-              defaultValue='Surat'
-              isOptionEqualToValue={(option, value) => option === value}
-            />
-          </Box>
-        </Stack>
-        <Stack spacing={1} sx={{ p: 2, pt: 1 }}>
-          <Typography variant='subtitle1' sx={{ fontWeight: '600' }}>
-            Temporary Address
-          </Typography>
-          <Box
-            columnGap={1.5}
-            rowGap={1.5}
-            display='grid'
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)',
-            }}
-          >
-            <RHFTextField disabled={disabledField} name='tempStreet' label='Street' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
-            <RHFTextField disabled={disabledField} name='tempLandmark' label='landmark' req={'red'}  inputProps={{ style: { textTransform: 'uppercase' } }} />
-            <RHFTextField
-              disabled={disabledField}
-              req={'red'}
-              name='tempZipcode'
-              label='Zipcode'
-              inputProps={{
-                inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6,
-              }}
-              rules={{
-                required: 'Zipcode is required', minLength: {
-                  value: 6, message: 'Zipcode must be at least 6 digits',
-                }, maxLength: {
-                  value: 6, message: 'Zipcode cannot be more than 6 digits',
-                },
-              }}
-              onKeyPress={(event) => {
-                if (!/[0-9]/.test(event.key)) {
-                  event.preventDefault();
+            >
+              <RHFTextField
+                disabled={disabledField}
+                name="tempStreet"
+                label="Street"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+              />
+              <RHFTextField
+                disabled={disabledField}
+                name="tempLandmark"
+                label="landmark"
+                req={'red'}
+                inputProps={{ style: { textTransform: 'uppercase' } }}
+              />
+              <RHFTextField
+                disabled={disabledField}
+                req={'red'}
+                name="tempZipcode"
+                label="Zipcode"
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  maxLength: 6,
+                }}
+                rules={{
+                  required: 'Zipcode is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Zipcode must be at least 6 digits',
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: 'Zipcode cannot be more than 6 digits',
+                  },
+                }}
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onBlur={(event) => {
+                  const zip = event.target.value;
+                  if (zip.length === 6) {
+                    checkZipcode(zip, 'temporary');
+                  }
+                }}
+              />
+              <RHFAutocomplete
+                disabled={disabledField}
+                req={'red'}
+                name="tempCountry"
+                label="Country"
+                placeholder="Choose a country"
+                options={countrystatecity.map((country) => country.name)}
+                isOptionEqualToValue={(option, value) => option === value}
+                defaultValue="India"
+              />
+              <RHFAutocomplete
+                disabled={disabledField}
+                req={'red'}
+                name="tempState"
+                label="State"
+                placeholder="Choose a State"
+                options={
+                  watch('tempCountry')
+                    ? countrystatecity
+                        .find((country) => country.name === watch('tempCountry'))
+                        ?.states.map((state) => state.name) || []
+                    : []
                 }
-              }}
-              onBlur={(event) => {
-                const zip = event.target.value;
-                if (zip.length === 6) {
-                  checkZipcode(zip, 'temporary');
+                defaultValue="Gujarat"
+                isOptionEqualToValue={(option, value) => option === value}
+              />
+              <RHFAutocomplete
+                disabled={disabledField}
+                req={'red'}
+                name="tempCity"
+                label="City"
+                placeholder="Choose a City"
+                options={
+                  watch('tempState')
+                    ? countrystatecity
+                        .find((country) => country.name === watch('tempCountry'))
+                        ?.states.find((state) => state.name === watch('tempState'))
+                        ?.cities.map((city) => city.name) || []
+                    : []
                 }
-              }}
-            />
-            <RHFAutocomplete
-              disabled={disabledField}
-              req={'red'}
-              name='tempCountry'
-              label='Country'
-              placeholder='Choose a country'
-              options={countrystatecity.map((country) => country.name)}
-              isOptionEqualToValue={(option, value) => option === value}
-              defaultValue='India'
-            />
-            <RHFAutocomplete
-              disabled={disabledField}
-              req={'red'}
-              name='tempState'
-              label='State'
-              placeholder='Choose a State'
-              options={watch('tempCountry') ? countrystatecity
-                .find((country) => country.name === watch('tempCountry'))
-                ?.states.map((state) => state.name) || [] : []}
-              defaultValue='Gujarat'
-              isOptionEqualToValue={(option, value) => option === value}
-            />
-            <RHFAutocomplete
-              disabled={disabledField}
-              req={'red'}
-              name='tempCity'
-              label='City'
-              placeholder='Choose a City'
-              options={watch('tempState') ? countrystatecity
-                .find((country) => country.name === watch('tempCountry'))
-                ?.states.find((state) => state.name === watch('tempState'))
-                ?.cities.map((city) => city.name) || [] : []}
-              defaultValue='Surat'
-              isOptionEqualToValue={(option, value) => option === value}
-            />
-
-          </Box>
-        </Stack>
-      </Card>
-    </Grid>
-  </>);
+                defaultValue="Surat"
+                isOptionEqualToValue={(option, value) => option === value}
+              />
+            </Box>
+          </Stack>
+        </Card>
+      </Grid>
+    </>
+  );
 
   const referenceDetails = (
     <>
       {mdUp && (
         <Box pl={2}>
-          <Typography variant='subtitle1'>Other Details</Typography>
+          <Typography variant="subtitle1">Other Details</Typography>
         </Box>
       )}
       <Grid xs={12} md={12} pt={0.5}>
@@ -1081,22 +1149,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <Box
             columnGap={1.5}
             rowGap={1.25}
-            display='grid'
+            display="grid"
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               md: 'repeat(1, 1fr)',
             }}
           >
-            {!mdUp && <CardHeader title='Properties' />}
+            {!mdUp && <CardHeader title="Properties" />}
             <Stack spacing={0.5} sx={{ p: 2, pb: 0 }}>
-              <Typography variant='subtitle2'>How did you come to know about us?</Typography>
+              <Typography variant="subtitle2">How did you come to know about us?</Typography>
               <Stack spacing={2}>
                 <RHFRadioGroup
                   row
                   disabled={disabledField}
                   spacing={4}
                   sx={{ display: 'flex' }}
-                  name='referenceBy'
+                  name="referenceBy"
                   options={INQUIRY_REFERENCE_BY}
                   onChange={(e) => {
                     setReferenceBy(e.target.value);
@@ -1105,70 +1173,83 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 />
               </Stack>
             </Stack>
-            <Stack spacing={2} sx={{
-              p: watch('referenceBy') === 'Other' ? 2 : 0, pt: watch('referenceBy') === 'Other' ? 0 : 0,
-            }} justifyContent={'end'}>
-              {watch('referenceBy') === 'Other' && (<Stack spacing={1}>
-                <Typography variant='subtitle2'>Write other reference name</Typography>
-                <RHFTextField req={'red'} name='otherReferenceBy' label='Reference By' disabled={disabledField} />
-              </Stack>)}
+            <Stack
+              spacing={2}
+              sx={{
+                p: watch('referenceBy') === 'Other' ? 2 : 0,
+                pt: watch('referenceBy') === 'Other' ? 0 : 0,
+              }}
+              justifyContent={'end'}
+            >
+              {watch('referenceBy') === 'Other' && (
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2">Write other reference name</Typography>
+                  <RHFTextField
+                    req={'red'}
+                    name="otherReferenceBy"
+                    label="Reference By"
+                    disabled={disabledField}
+                  />
+                </Stack>
+              )}
             </Stack>
           </Box>
         </Card>
       </Grid>
-    </>);
+    </>
+  );
 
   const BankDetails = (
     <>
       <Grid xs={12} md={12}>
         <Card>
-          {!mdUp && <CardHeader title='Bank Accounts' />}
+          {!mdUp && <CardHeader title="Bank Accounts" />}
           <Stack spacing={3} sx={{ p: 2, pt: 0.5 }}>
             <Box>
-              <Typography variant='subtitle1' sx={{ my: 1, fontWeight: '600' }}>
+              <Typography variant="subtitle1" sx={{ my: 1, fontWeight: '600' }}>
                 Bank Account Details
               </Typography>
               <Box
                 columnGap={2}
                 rowGap={3}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   md: 'repeat(6, 1fr)',
                 }}
               >
                 <RHFTextField
-                  name='accountHolderName'
-                  label='Account Holder Name'
+                  name="accountHolderName"
+                  label="Account Holder Name"
                   disabled={disabledField}
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name='accountNumber'
-                  label='Account Number'
-                  type='number'
+                  name="accountNumber"
+                  label="Account Number"
+                  type="number"
                   inputProps={{ min: 0 }}
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name='accountType'
-                  label='Account Type'
-                  placeholder='Choose account type'
+                  name="accountType"
+                  label="Account Type"
+                  placeholder="Choose account type"
                   options={ACCOUNT_TYPE_OPTIONS}
                   isOptionEqualToValue={(option, value) => option === value}
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name='IFSC'
-                  label='IFSC Code'
+                  name="IFSC"
+                  label="IFSC Code"
                   inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                   }}
                   onBlur={(e) => checkIFSC(e.target.value)}
                 />
-                <RHFTextField disabled={disabledField} name='bankName' label='Bank Name' />
-                <RHFTextField disabled={disabledField} name='branchName' label='Branch Name' />
+                <RHFTextField disabled={disabledField} name="bankName" label="Bank Name" />
+                <RHFTextField disabled={disabledField} name="branchName" label="Branch Name" />
               </Box>
             </Box>
           </Stack>
@@ -1183,17 +1264,17 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end' }}>
         <Button
           disabled={disabledField}
-          color='inherit'
+          color="inherit"
           sx={{ margin: '0px 10px', height: '36px' }}
-          variant='outlined'
+          variant="outlined"
           onClick={() => reset()}
         >
           Reset
         </Button>
         <LoadingButton
-          type='submit'
-          variant='contained'
-          size='large'
+          type="submit"
+          variant="contained"
+          size="large"
           loading={isSubmitting}
           disabled={disabledField}
           sx={{ height: '36px' }}
@@ -1218,11 +1299,11 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <DialogTitle>Enter OTP</DialogTitle>
           <DialogContent>
             <Box sx={{ m: 2 }}>
-              <RHFCode name='code' />
+              <RHFCode name="code" />
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleSubmitAction} variant='outlined'>
+            <Button onClick={handleSubmitAction} variant="outlined">
               Submit
             </Button>
           </DialogActions>
@@ -1232,8 +1313,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <DialogActions>
             <Box sx={{ width: '500px' }}>
               <RHFTextField
-                name='aadharCard'
-                label='Aadhar Number'
+                name="aadharCard"
+                label="Aadhar Number"
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -1274,17 +1355,17 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           <Webcam
             audio={false}
             ref={webcamRef}
-            screenshotFormat='image/jpeg'
+            screenshotFormat="image/jpeg"
             width={'90%'}
             height={'100%'}
             videoConstraints={videoConstraints}
           />
         </Box>
         <DialogActions>
-          <Button variant='outlined' onClick={capture}>
+          <Button variant="outlined" onClick={capture}>
             Capture Photo
           </Button>
-          <Button variant='contained' onClick={() => setOpen2(false)}>
+          <Button variant="contained" onClick={() => setOpen2(false)}>
             Close Camera
           </Button>
         </DialogActions>
