@@ -149,7 +149,13 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     days: '',
     amountPaid: '',
     interestAmount: currentLoan?.scheme.interestRate || '',
-    consultingCharge: (currentLoan.interestLoanAmount * currentLoan?.consultingCharge) / 100 || 0,
+    consultingCharge:  (
+      (((currentLoan.interestLoanAmount *
+            (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
+          100) *
+        (12 * differenceInDays)) /
+      365
+    ).toFixed(2) || 0,
     penalty: '',
     uchakAmount: currentLoan?.uchakInterestAmount || 0,
     cr_dr: '',
