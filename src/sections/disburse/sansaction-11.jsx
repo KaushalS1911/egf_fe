@@ -483,7 +483,9 @@ export default function Sansaction11({ sansaction, configs }) {
                       {fDate(sansaction.issueDate)}
                       {'             '}
                       {/*<View style={{ textAlign: 'center' }}>*/}
-                      <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>સવંત : 2081</Text>
+                      <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
+                        સવંત : {sansaction.savant}
+                      </Text>
                       {/*</View>*/}
                     </Text>
                   </View>
@@ -520,7 +522,12 @@ export default function Sansaction11({ sansaction, configs }) {
                   </Text>
                   <Text style={styles.spacing}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
-                      ૬. વાર્ષિક વ્યાજ દર {(sansaction.scheme.interestRate * 12).toFixed(2)} ટકા.
+                      ૬. વાર્ષિક વ્યાજ દર{' '}
+                      {(
+                        sansaction.scheme.interestRate * 12 -
+                        sansaction.consultingCharge * 12
+                      ).toFixed(2)}{' '}
+                      ટકા.
                     </Text>
                   </Text>
                   <Text style={styles.spacing}>
@@ -538,7 +545,7 @@ export default function Sansaction11({ sansaction, configs }) {
                       }}
                     >
                       <Text style={{ ...styles.gujaratiText, fontSize: 10 }}>તા.</Text>
-                      {fDate(new Date())}
+                      {fDate(sansaction.issueDate)}
                     </Text>
                   </View>
                   <View
@@ -605,13 +612,17 @@ export default function Sansaction11({ sansaction, configs }) {
                 </Text>
                 <View style={{ marginTop: 5 }}>
                   {rules2.map((item, index) => (
-                    <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                    <View
+                      key={index}
+                      style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 2 }}
+                    >
                       <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text> {/* Bullet point */}
                       <Text
                         style={{
                           ...styles.gujaratiText,
                           fontSize: 11,
-                          color: [1, 3, 7].includes(index) ? 'black' : 'black',
+                          fontWeight: [1, 3, 7].includes(index) ? 'bold' : 'normal',
+                          marginTop: -3,
                         }}
                       >
                         {item.rule}
@@ -637,12 +648,13 @@ export default function Sansaction11({ sansaction, configs }) {
                   {specification.map((item, index) => (
                     <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
                       <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>
-                      <View style={{ flexDirection: 'row', flex: 1 }}>
+                      <View
+                        style={{ flexDirection: 'row', flex: 1, marginTop: -3, marginBottom: 2 }}
+                      >
                         <Text
                           style={{
                             ...styles.gujaratiText,
                             fontSize: 12,
-                            // fontWeight: '600',
                             width: 80,
                           }}
                         >
@@ -661,6 +673,7 @@ export default function Sansaction11({ sansaction, configs }) {
                             ...styles.gujaratiText,
                             fontSize: 11,
                             marginLeft: 4,
+                            marginTop: 2,
                           }}
                         >
                           {item.specification}

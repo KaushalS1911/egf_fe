@@ -33,6 +33,7 @@ import { useGetConfigs } from '../../../api/config';
 import LoanPartPaymentDetailsPdf from '../PDF/loan-part-payment-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
+import { useGetAllInterest } from '../../../api/interest-pay.js';
 
 const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amount' },
@@ -51,6 +52,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
   const { partPayment, refetchPartPayment } = useGetAllPartPayment(currentLoan._id);
+  const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
   const confirm = useBoolean();
   const popover = usePopover();
   const [deleteId, setDeleteId] = useState('');
@@ -182,6 +184,18 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     }
   };
   const onSubmit = handleSubmit(async (data) => {
+    const loanToDate = loanInterest[0]?.to;
+    const selectedDate = watch('date');
+
+    const date1 = loanToDate ? new Date(loanToDate).toISOString().split('T')[0] : null;
+    const date2 = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : null;
+
+    if (!date1 || !date2 || date1 < date2) {
+      return enqueueSnackbar('Please pay interest up to today after making a  loan part payment.', {
+        variant: 'info',
+      });
+    }
+
     let paymentDetail = {
       paymentMode: data.paymentMode,
       expectPaymentMode: data.expectPaymentMode,
