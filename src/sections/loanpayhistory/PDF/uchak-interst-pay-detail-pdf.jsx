@@ -229,18 +229,14 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
             </Text>{' '}
             <Text
               style={{
-                marginTop: 10,
-                borderWidth: 0.5,
-                borderColor: '#000',
-                padding: 6,
-                backgroundColor: '#5B9BD4',
-                alignSelf: 'flex-start',
-                border: '0.5px solid #000',
+                marginTop: 20,
               }}
             >
-              <Text style={styles.subHeading}>Accepted & Received Amount</Text>
-              <Text style={styles.colon}> : </Text>
-              <Text style={styles.subText}>{data.amountPaid}</Text>
+              <Text style={[styles.subHeading, { fontSize: 12 }]}>Accepted & Received Amount</Text>
+              <Text style={[styles.colon, { fontSize: 12 }]}> : </Text>
+              <Text style={[styles.subText, { fontSize: 12, fontWeight: 'bold' }]}>
+                {data.amountPaid}
+              </Text>
             </Text>
           </View>
           <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>

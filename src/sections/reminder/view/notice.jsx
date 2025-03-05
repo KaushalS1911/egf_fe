@@ -20,9 +20,11 @@ Font.register({
 });
 Font.register({
   family: 'Mukta Vaani',
-  src: '/fonts/MuktaVaani-Regular.ttf',
+  fonts: [
+    { src: '/fonts/MuktaVaani-Regular.ttf' },
+    { src: '/fonts/MuktaVaani-Bold.ttf', fontWeight: 'bold' },
+  ],
 });
-
 const useStyles = () =>
   useMemo(
     () =>
@@ -228,6 +230,7 @@ export default function Notice({ noticeData, configs }) {
                   color: '#232C4B',
                   borderBottom: '1px solid #232C4B',
                   textDecoration: 'none',
+                  fontWeight: 'bold',
                 }}
               >
                 નોટીસ

@@ -338,15 +338,16 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                   </Text>
                   <Text
                     style={{
-                      marginTop: 10,
-                      border: '0.5px solid #000',
-                      padding: '6px 10px 5px 10px',
-                      backgroundColor: '#5B9BD4',
+                      marginTop: 20,
                     }}
                   >
-                    <Text style={styles.subHeading}>Accepted & Received Amount</Text>
-                    <Text style={styles.colon}> : </Text>
-                    <Text style={styles.subText}>{selectedRow.adjustedAmount}</Text>
+                    <Text style={[styles.subHeading, { fontSize: 12 }]}>
+                      Accepted & Received Amount
+                    </Text>
+                    <Text style={[styles.colon, { fontSize: 12 }]}> : </Text>
+                    <Text style={[styles.subText, { fontSize: 12, fontWeight: 'bold' }]}>
+                      {selectedRow.adjustedAmount}
+                    </Text>
                   </Text>
                 </View>
                 <View>

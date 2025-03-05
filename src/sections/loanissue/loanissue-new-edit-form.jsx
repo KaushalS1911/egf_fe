@@ -1,7 +1,5 @@
 import * as Yup from 'yup';
-import React, {
-  useEffect, useMemo, useState, useRef, useCallback,
-} from 'react';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Webcam from 'react-webcam';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
@@ -12,11 +10,21 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormProvider, {
-  RHFAutocomplete, RHFTextField, RHFUploadAvatar,
+  RHFAutocomplete,
+  RHFTextField,
+  RHFUploadAvatar,
 } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
-  Alert, CardActions, Dialog, IconButton, Table, TableBody, TableCell, TableContainer, TableRow,
+  Alert,
+  CardActions,
+  Dialog,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
 } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
@@ -43,13 +51,27 @@ import { useGetConfigs } from '../../api/config';
 
 //----------------------------------------------------------------------
 
-const TABLE_HEAD = [{ id: 'type', label: 'Type' }, { id: 'carat', label: 'Carat' }, {
-  id: 'Pcs', label: 'Pcs',
-}, { id: 'totalWt', label: 'Total wt' }, { id: 'lossWt', label: 'Loss Wt' }, {
-  id: 'grossWt', label: 'Gross Wt',
-}, { id: 'netWt', label: 'Net Wt' }, { id: 'grossAmt', label: 'Gross Amt' }, {
-  id: 'netAmt', label: 'Net Amt',
-}, { id: 'actions', label: 'Actions' }];
+const TABLE_HEAD = [
+  { id: 'type', label: 'Type' },
+  { id: 'carat', label: 'Carat' },
+  {
+    id: 'Pcs',
+    label: 'Pcs',
+  },
+  { id: 'totalWt', label: 'Total wt' },
+  { id: 'lossWt', label: 'Loss Wt' },
+  {
+    id: 'grossWt',
+    label: 'Gross Wt',
+  },
+  { id: 'netWt', label: 'Net Wt' },
+  { id: 'grossAmt', label: 'Gross Amt' },
+  {
+    id: 'netAmt',
+    label: 'Net Amt',
+  },
+  { id: 'actions', label: 'Actions' },
+];
 
 export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const router = useRouter();
@@ -106,15 +128,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     cashAmount: Yup.string().required('Cash Amount is required'),
     approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
     loanType: Yup.string().required('Loan Type is required'),
-    propertyDetails: Yup.array().of(Yup.object().shape({
-      type: Yup.string().required('Type is required'),
-      carat: Yup.string().required('Carat is required'),
-      pcs: Yup.string().required('Pieces are required'),
-      grossWeight: Yup.string().required('Gross Weight is required'),
-      netWeight: Yup.string().required('Net Weight is required'),
-      grossAmount: Yup.string().required('Gross Amount is required'),
-      netAmount: Yup.string().required('Net Amount is required'),
-    })),
+    propertyDetails: Yup.array().of(
+      Yup.object().shape({
+        type: Yup.string().required('Type is required'),
+        carat: Yup.string().required('Carat is required'),
+        pcs: Yup.string().required('Pieces are required'),
+        grossWeight: Yup.string().required('Gross Weight is required'),
+        netWeight: Yup.string().required('Net Weight is required'),
+        grossAmount: Yup.string().required('Gross Amount is required'),
+        netAmount: Yup.string().required('Net Amount is required'),
+      })
+    ),
   });
 
   const defaultValues = useMemo(() => {
@@ -130,16 +154,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       renewalTime: '',
       loanCloseTime: '',
       property_image: currentLoanIssue?.propertyImage || null,
-      customer: currentLoanIssue ? {
-        id: currentLoanIssue?.customer?._id,
-        name: currentLoanIssue?.customer?.firstName + ' ' + currentLoanIssue?.customer?.lastName,
-      } : null,
+      customer: currentLoanIssue
+        ? {
+            id: currentLoanIssue?.customer?._id,
+            name:
+              currentLoanIssue?.customer?.firstName + ' ' + currentLoanIssue?.customer?.lastName,
+          }
+        : null,
       scheme: currentLoanIssue ? currentLoanIssue?.scheme : null,
       loanNo: currentLoanIssue?.loanNo || '',
       issueDate: currentLoanIssue ? new Date(currentLoanIssue?.issueDate) : new Date(),
       consultingCharge: currentLoanIssue?.consultingCharge || '',
       approvalCharge: currentLoanIssue?.approvalCharge || 0,
-      nextInstallmentDate: currentLoanIssue ? new Date(currentLoanIssue?.nextInstallmentDate) : null,
+      nextInstallmentDate: currentLoanIssue
+        ? new Date(currentLoanIssue?.nextInstallmentDate)
+        : null,
       jewellerName: currentLoanIssue?.jewellerName || '',
       loanType: currentLoanIssue?.loanType || 'GOLD LOAN',
       loanAmount: currentLoanIssue?.loanAmount || '',
@@ -152,32 +181,42 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       IFSC: currentLoanIssue?.customerBankDetail?.IFSC || '',
       bankName: currentLoanIssue?.customerBankDetail?.bankName || '',
       branchName: currentLoanIssue?.customerBankDetail?.branchName || null,
-      propertyDetails: currentLoanIssue?.propertyDetails || [{
-        type: '',
-        carat: '',
-        pcs: '',
-        totalWeight: '',
-        lossWeight: '',
-        grossWeight: '',
-        netWeight: '',
-        grossAmount: '',
-        netAmount: '',
-        id: uuid,
-      }],
+      propertyDetails: currentLoanIssue?.propertyDetails || [
+        {
+          type: '',
+          carat: '',
+          pcs: '',
+          totalWeight: '',
+          lossWeight: '',
+          grossWeight: '',
+          netWeight: '',
+          grossAmount: '',
+          netAmount: '',
+          id: uuid,
+        },
+      ],
     };
     return baseValues;
   }, [currentLoanIssue]);
 
   const methods = useForm({
-    resolver: yupResolver(NewLoanissueSchema), defaultValues,
+    resolver: yupResolver(NewLoanissueSchema),
+    defaultValues,
   });
 
   const {
-    reset, watch, control, setValue, handleSubmit, formState: { isSubmitting }, getValues,
+    reset,
+    watch,
+    control,
+    setValue,
+    handleSubmit,
+    formState: { isSubmitting },
+    getValues,
   } = methods;
 
   const { fields, append, remove } = useFieldArray({
-    control, name: 'propertyDetails',
+    control,
+    name: 'propertyDetails',
   });
 
   useEffect(() => {
@@ -218,7 +257,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const videoConstraints = {
-    width: 640, height: 360, facingMode: 'user',
+    width: 640,
+    height: 360,
+    facingMode: 'user',
   };
 
   const capture = useCallback(() => {
@@ -262,6 +303,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('approvalCharge', data.approvalCharge);
     payload.append('jewellerName', data.jewellerName);
     payload.append('loanType', data.loanType);
+    payload.append('savant', configs.savant);
     propertyDetails.forEach((field, index) => {
       payload.append(`propertyDetails[${index}][type]`, field.type);
       payload.append(`propertyDetails[${index}][carat]`, field.carat);
@@ -309,16 +351,20 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
 
     try {
-      const url = currentLoanIssue ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentLoanIssue?._id}` : `${import.meta.env.VITE_BASE_URL}/${user?.company}/issue-loan`;
-      const response = currentLoanIssue ? await axios.put(url, payload, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }) : await axios.post(url, payload, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const url = currentLoanIssue
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentLoanIssue?._id}`
+        : `${import.meta.env.VITE_BASE_URL}/${user?.company}/issue-loan`;
+      const response = currentLoanIssue
+        ? await axios.put(url, payload, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+        : await axios.post(url, payload, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
 
       enqueueSnackbar('Loan processed successfully!', {
         variant: 'success',
@@ -329,7 +375,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       reset();
     } catch (error) {
       console.error(error);
-      enqueueSnackbar(currentLoanIssue ? 'Failed to update loan.' : error.response.data.message, { variant: 'error' });
+      enqueueSnackbar(currentLoanIssue ? 'Failed to update loan.' : error.response.data.message, {
+        variant: 'error',
+      });
     }
   });
 
@@ -362,8 +410,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     setCustomerData(findedCus);
     if (findedCus) {
       setValue('customerCode', findedCus?.customerCode);
-      setValue('customerName', `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `);
-      setValue('customerAddress', `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`);
+      setValue(
+        'customerName',
+        `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `
+      );
+      setValue(
+        'customerAddress',
+        `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`
+      );
       setValue('contact', findedCus?.contact);
       setValue('contactOtp', findedCus?.otpContact);
       setValue('customer_url', findedCus?.avatar_url);
@@ -421,7 +475,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   const calculateTotal = (field) => {
     const propertyDetails = useWatch({
-      name: 'propertyDetails', control: methods.control,
+      name: 'propertyDetails',
+      control: methods.control,
     });
     if (!propertyDetails || propertyDetails.length === 0) return;
     0;
@@ -453,7 +508,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
     if (newCashAmount > currentLoanAmount) {
       setValue('cashAmount', currentLoanAmount);
-      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', { variant: 'warning' });
+      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
+        variant: 'warning',
+      });
     } else {
       setValue('cashAmount', newCashAmount);
     }
@@ -464,7 +521,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   };
 
   const handleAmountChange = () => {
-    const newCashAmount = watch('propertyDetails').reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0) || '';
+    const newCashAmount =
+      watch('propertyDetails').reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0) ||
+      '';
     const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
     if (currentLoanAmount > newCashAmount) {
       setValue('loanAmount', newCashAmount);
@@ -497,7 +556,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       }
     }
 
-    const branchQuery = parsedBranch && parsedBranch === 'all' ? `&branch=${mainbranchid?._id}` : `&branch=${parsedBranch}`;
+    const branchQuery =
+      parsedBranch && parsedBranch === 'all'
+        ? `&branch=${mainbranchid?._id}`
+        : `&branch=${parsedBranch}`;
 
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?._id}?${branchQuery}`;
@@ -523,7 +585,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         }
       } catch (error) {
         setValue('branchName', '', { shouldValidate: true });
-        enqueueSnackbar('Invalid IFSC code. Please check and enter a valid IFSC code.', { variant: 'error' });
+        enqueueSnackbar('Invalid IFSC code. Please check and enter a valid IFSC code.', {
+          variant: 'error',
+        });
       }
     } else {
       enqueueSnackbar('IFSC code must be exactly 11 characters.', { variant: 'warning' });
@@ -568,28 +632,52 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       const angleRadians = (rotation * Math.PI) / 180;
 
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        const rotatedCanvasWidth = Math.abs(image.naturalWidth * Math.cos(angleRadians)) + Math.abs(image.naturalHeight * Math.sin(angleRadians));
-        const rotatedCanvasHeight = Math.abs(image.naturalWidth * Math.sin(angleRadians)) + Math.abs(image.naturalHeight * Math.cos(angleRadians));
+        const rotatedCanvasWidth =
+          Math.abs(image.naturalWidth * Math.cos(angleRadians)) +
+          Math.abs(image.naturalHeight * Math.sin(angleRadians));
+        const rotatedCanvasHeight =
+          Math.abs(image.naturalWidth * Math.sin(angleRadians)) +
+          Math.abs(image.naturalHeight * Math.cos(angleRadians));
         canvas.width = rotatedCanvasWidth;
         canvas.height = rotatedCanvasHeight;
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(angleRadians);
-        ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2, image.naturalWidth, image.naturalHeight);
+        ctx.drawImage(
+          image,
+          -image.naturalWidth / 2,
+          -image.naturalHeight / 2,
+          image.naturalWidth,
+          image.naturalHeight
+        );
         ctx.restore();
       } else {
         const cropX = completedCrop.x * scaleX;
         const cropY = completedCrop.y * scaleY;
         const cropWidth = completedCrop.width * scaleX;
         const cropHeight = completedCrop.height * scaleY;
-        const rotatedCanvasWidth = Math.abs(cropWidth * Math.cos(angleRadians)) + Math.abs(cropHeight * Math.sin(angleRadians));
-        const rotatedCanvasHeight = Math.abs(cropWidth * Math.sin(angleRadians)) + Math.abs(cropHeight * Math.cos(angleRadians));
+        const rotatedCanvasWidth =
+          Math.abs(cropWidth * Math.cos(angleRadians)) +
+          Math.abs(cropHeight * Math.sin(angleRadians));
+        const rotatedCanvasHeight =
+          Math.abs(cropWidth * Math.sin(angleRadians)) +
+          Math.abs(cropHeight * Math.cos(angleRadians));
         canvas.width = rotatedCanvasWidth;
         canvas.height = rotatedCanvasHeight;
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(angleRadians);
-        ctx.drawImage(image, cropX, cropY, cropWidth, cropHeight, -cropWidth / 2, -cropHeight / 2, cropWidth, cropHeight);
+        ctx.drawImage(
+          image,
+          cropX,
+          cropY,
+          cropWidth,
+          cropHeight,
+          -cropWidth / 2,
+          -cropHeight / 2,
+          cropWidth,
+          cropHeight
+        );
         ctx.restore();
       }
 
@@ -627,7 +715,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
     const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
     const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
-    const caratValue = carat?.find((item) => item?.name == parseFloat(getValues(`propertyDetails[${index}].carat`))) || {};
+    const caratValue =
+      carat?.find(
+        (item) => item?.name == parseFloat(getValues(`propertyDetails[${index}].carat`))
+      ) || {};
     const typeValue = property?.find((item) => item?.propertyType === value) || {};
     const grossWeight = totalWeight - lossWeight;
     const netWeight = grossWeight * (caratValue?.caratPercentage / 100 || 1);
@@ -639,13 +730,20 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         } else if (!/^-?\d*\.?\d*$/.test(value)) {
           updatedErrors[`propertyDetails[${index}].totalWeight`] = 'Please enter a valid number.';
         } else if (lossWeight > parseFloat(value)) {
-          updatedErrors[`propertyDetails[${index}].totalWeight`] = 'Loss weight cannot exceed total weight.';
+          updatedErrors[`propertyDetails[${index}].totalWeight`] =
+            'Loss weight cannot exceed total weight.';
         } else {
           delete updatedErrors[`propertyDetails[${index}].totalWeight`];
           setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
           setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-          setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
-          setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+          setValue(
+            `propertyDetails[${index}].grossAmount`,
+            (grossWeight * schemedata?.ratePerGram).toFixed(2)
+          );
+          setValue(
+            `propertyDetails[${index}].netAmount`,
+            (netWeight * schemedata?.ratePerGram).toFixed(2)
+          );
         }
         break;
       case 'lossWeight':
@@ -654,13 +752,20 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         } else if (!/^-?\d*\.?\d*$/.test(value)) {
           updatedErrors[`propertyDetails[${index}].lossWeight`] = 'Please enter a valid number.';
         } else if (parseFloat(value) > totalWeight) {
-          updatedErrors[`propertyDetails[${index}].lossWeight`] = 'Loss weight cannot exceed total weight.';
+          updatedErrors[`propertyDetails[${index}].lossWeight`] =
+            'Loss weight cannot exceed total weight.';
         } else {
           delete updatedErrors[`propertyDetails[${index}].lossWeight`];
           setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
           setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-          setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
-          setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+          setValue(
+            `propertyDetails[${index}].grossAmount`,
+            (grossWeight * schemedata?.ratePerGram).toFixed(2)
+          );
+          setValue(
+            `propertyDetails[${index}].netAmount`,
+            (netWeight * schemedata?.ratePerGram).toFixed(2)
+          );
         }
         break;
       case 'type':
@@ -673,7 +778,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             setValue(`propertyDetails[${index}].pcs`, quantity || 0);
             setValue(`propertyDetails[${index}].isPcsEditable`, isQtyEdit);
             if (!isQtyEdit && (!quantity || quantity <= 0)) {
-              updatedErrors[`propertyDetails[${index}].pcs`] = 'Invalid quantity for selected type.';
+              updatedErrors[`propertyDetails[${index}].pcs`] =
+                'Invalid quantity for selected type.';
             }
           } else {
             updatedErrors[`propertyDetails[${index}].type`] = 'Invalid type selected.';
@@ -686,8 +792,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         } else {
           delete updatedErrors[`propertyDetails[${index}].carat`];
           setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-          setValue(`propertyDetails[${index}].grossAmount`, (grossWeight * schemedata?.ratePerGram).toFixed(2));
-          setValue(`propertyDetails[${index}].netAmount`, (netWeight * schemedata?.ratePerGram).toFixed(2));
+          setValue(
+            `propertyDetails[${index}].grossAmount`,
+            (grossWeight * schemedata?.ratePerGram).toFixed(2)
+          );
+          setValue(
+            `propertyDetails[${index}].netAmount`,
+            (netWeight * schemedata?.ratePerGram).toFixed(2)
+          );
         }
         break;
       case 'pcs':
@@ -709,752 +821,985 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   const sx = {
     label: {
-      mt: -1.4, fontSize: '14px',
-    }, '& .MuiInputLabel-shrink': {
+      mt: -1.4,
+      fontSize: '14px',
+    },
+    '& .MuiInputLabel-shrink': {
       mt: 0,
-    }, input: {
+    },
+    input: {
       height: 0,
     },
   };
 
-  return (<>
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={2}>
-        {!isFieldsEnabled && <>
-          {/*<Grid item xs={12} md={4}>*/}
-          {/*  <Typography variant='h6' sx={{ mb: 3 }}>*/}
-          {/*  </Typography>*/}
-          {/*</Grid>*/}
-          {/*<Grid item xs={12} md={8}>*/}
-          {/*  <Alert severity='warning'>Please select acustomer to proceed with the loan issuance.</Alert>*/}
-          {/*</Grid>*/}
-        </>}
-        <Grid item xs={12} md={4}>
-          <Box>
-            <RHFUploadAvatar
-              disabled={true}
-              name='customer_url'
-              maxSize={3145728}
-            />
-          </Box>
-        </Grid>
-        <Grid xs={12} md={8}>
-          <Box>
+  return (
+    <>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={2}>
+          {!isFieldsEnabled && (
+            <>
+              {/*<Grid item xs={12} md={4}>*/}
+              {/*  <Typography variant='h6' sx={{ mb: 3 }}>*/}
+              {/*  </Typography>*/}
+              {/*</Grid>*/}
+              {/*<Grid item xs={12} md={8}>*/}
+              {/*  <Alert severity='warning'>Please select acustomer to proceed with the loan issuance.</Alert>*/}
+              {/*</Grid>*/}
+            </>
+          )}
+          <Grid item xs={12} md={4}>
+            <Box>
+              <RHFUploadAvatar disabled={true} name="customer_url" maxSize={3145728} />
+            </Box>
+          </Grid>
+          <Grid xs={12} md={8}>
+            <Box>
+              <Card sx={{ p: 2 }}>
+                {!isFieldsEnabled && (
+                  <Box sx={{ mb: 1.5 }}>
+                    <Alert severity="warning">
+                      Please select a customer to proceed with the loan issuance.
+                    </Alert>
+                  </Box>
+                )}
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                  }}
+                >
+                  <RHFAutocomplete
+                    name="customer"
+                    label="Select Customer"
+                    req={'red'}
+                    fullWidth
+                    options={customer
+                      ?.filter((e) => e.status === 'Active')
+                      ?.map((item) => ({
+                        id: item._id,
+                        name: item.firstName + ' ' + item.middleName + ' ' + item.lastName,
+                      }))}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    )}
+                  />
+                  <Box display="flex" justifyContent="end">
+                    <Link
+                      to={paths.dashboard.customer.new}
+                      onClick={handleAdd}
+                      style={{
+                        fontWeight: 'bold',
+                        textDecoration: 'none',
+                        color: 'inherit',
+                      }}
+                    >
+                      + Add Customer
+                    </Link>
+                  </Box>
+                </Box>
+              </Card>
+            </Box>
+          </Grid>
+          <Grid xs={12}>
             <Card sx={{ p: 2 }}>
-              {!isFieldsEnabled && <Box sx={{ mb: 1.5 }}>
-                <Alert severity='warning'>Please select a
-                  customer to proceed with the loan issuance.</Alert>
-              </Box>}
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display='grid'
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)',
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  mb: 2,
+                  fontWeight: '600',
                 }}
               >
-                <RHFAutocomplete
-                  name='customer'
-                  label='Select Customer'
-                  req={'red'}
-                  fullWidth
-                  options={customer?.filter((e) => e.status === 'Active')?.map((item) => ({
-                    id: item._id, name: item.firstName + ' ' + item.middleName + ' ' + item.lastName,
-                  }))}
-                  getOptionLabel={(option) => option.name}
-                  renderOption={(props, option) => (<li {...props} key={option.id}>
-                    {option.name}
-                  </li>)}
+                Customer Details
+              </Typography>
+              <Box
+                rowGap={1.5}
+                columnGap={1.5}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(3, 1fr)',
+                  md: 'repeat(5, 1fr)',
+                }}
+              >
+                <RHFTextField
+                  name="customerCode"
+                  InputProps={{ readOnly: true }}
+                  InputLabelProps={{ shrink: true }}
+                  label={'Customer Code'}
                 />
-                <Box display='flex' justifyContent='end'>
-                  <Link
-                    to={paths.dashboard.customer.new}
-                    onClick={handleAdd}
-                    style={{
-                      fontWeight: 'bold', textDecoration: 'none', color: 'inherit',
-                    }}
-                  >
-                    + Add Customer
-                  </Link>
-                </Box>
+                <RHFTextField
+                  name="customerName"
+                  InputProps={{ readOnly: true }}
+                  InputLabelProps={{ shrink: true }}
+                  label={'Customer Name'}
+                />
+                <RHFTextField
+                  name="customerAddress"
+                  InputProps={{ readOnly: true }}
+                  label={'Customer Address'}
+                  InputLabelProps={{ shrink: true }}
+                />
+                <RHFTextField
+                  name="contact"
+                  InputProps={{ readOnly: true }}
+                  label={'Mobile No.'}
+                  InputLabelProps={{ shrink: true }}
+                />
+                <RHFTextField
+                  name="contactOtp"
+                  InputProps={{ readOnly: true }}
+                  label={'OTP Mobile No.'}
+                  InputLabelProps={{ shrink: true }}
+                />
               </Box>
             </Card>
-          </Box>
-        </Grid>
-        <Grid xs={12}>
-          <Card sx={{ p: 2 }}>
-            <Typography variant='subtitle1' sx={{
-              mb: 2, fontWeight: '600',
-            }}>
-              Customer Details
-            </Typography>
-            <Box
-              rowGap={1.5}
-              columnGap={1.5}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(5, 1fr)',
-              }}
-            >
-              <RHFTextField name='customerCode'
-                            InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }}
-                            label={'Customer Code'} />
-              <RHFTextField name='customerName'
-                            InputProps={{ readOnly: true }}
-                            InputLabelProps={{ shrink: true }}
-                            label={'Customer Name'} />
-              <RHFTextField name='customerAddress'
-                            InputProps={{ readOnly: true }}
-                            label={'Customer Address'}
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='contact'
-                            InputProps={{ readOnly: true }} label={'Mobile No.'}
-                            InputLabelProps={{ shrink: true }} />
-              <RHFTextField name='contactOtp'
-                            InputProps={{ readOnly: true }} label={'OTP Mobile No.'}
-                            InputLabelProps={{ shrink: true }} />
-            </Box>
-          </Card>
-        </Grid>
-        <Grid xs={12} md={10}>
-          <Card sx={{ p: 2 }}>
-            <Typography variant='subtitle1' sx={{
-              mb: 1, fontWeight: 600,
-            }}>
-              Loan Scheme Details
-            </Typography>
-            <Box
-              rowGap={1.5}
-              columnGap={1.5}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(6, 1fr)',
-              }}
-            >
-              <RHFTextField
-                name='loanNo'
-                label='Loan No.'
-                req={'red'}
-                InputProps={{ readOnly: true }}
-                disabled
-              />
-              <RHFDatePicker
-                name='issueDate'
-                control={control}
-                label='Issue Date'
-                req={'red'}
-                disabled={currentLoanIssue ? true : false}
-              />
-              <RHFAutocomplete
-                name='scheme'
-                label='Scheme'
-                req='red'
-                disabled={!isFieldsEnabled}
-                fullWidth
-                options={scheme?.filter((item) => item.isActive)}
-                getOptionLabel={(option) => option?.name || ''}
-                renderOption={(props, option) => (<li {...props} key={option?.id}>
-                  {option?.name}
-                </li>)}
-                onChange={(e, selectedScheme) => {
-                  setValue('scheme', selectedScheme);
-                  const schemedata = selectedScheme;
-                  if (schemedata?.ratePerGram) {
-                    fields.forEach((_, index) => {
-                      const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
-                      const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
-                      const caratValue = carat?.find((item) => item?.name === parseFloat(getValues(`propertyDetails[${index}].carat`))) || {};
-                      const caratPercentage = caratValue?.caratPercentage || 100;
-                      const grossWeight = totalWeight - lossWeight;
-                      const netWeight = grossWeight * (caratPercentage / 100);
-                      const grossAmount = grossWeight * schemedata?.ratePerGram;
-                      const netAmount = netWeight * schemedata?.ratePerGram;
-                      if (!isNaN(grossWeight)) setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
-                      if (!isNaN(netWeight)) setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-                      if (!isNaN(grossAmount)) setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));
-                      if (!isNaN(netAmount)) setValue(`propertyDetails[${index}].netAmount`, netAmount.toFixed(2));
-                    });
-                  }
+          </Grid>
+          <Grid xs={12} md={10}>
+            <Card sx={{ p: 2 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  mb: 1,
+                  fontWeight: 600,
                 }}
-              />
-              <RHFTextField name='interestRate' label='InstrestRate' InputProps={{ readOnly: true }} />
-              <Controller
-                name='consultingCharge'
-                control={control}
-                render={({ field }) => (<RHFTextField
-                  {...field}
-                  disabled={true}
-                  label='Consulting Charge'
-                  req={'red'}
-                />)}
-              />
-              <RHFTextField
-                name='approvalCharge'
-                label='Approval Charge'
-                disabled={!isFieldsEnabled}
-                req={'red'}
-                inputProps={{
-                  inputMode: 'numeric', pattern: '[0-9]*', onInput: (e) => {
-                    e.target.value = e.target.value.replace(/ [^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');
-                  },
-                }}
-              />
-              <RHFTextField name='periodTime' label='INT. Period Time' InputProps={{ readOnly: true }} />
-              <RHFTextField name='renewalTime' label='Renewal Time' InputProps={{ readOnly: true }} />
-              <RHFTextField name='loanCloseTime' label='Minimun Loan Close Time' InputProps={{ readOnly: true }} />
-              {currentLoanIssue && <RHFTextField
-                name='loanAmount'
-                label='Loan AMT.'
-                req={'red'}
-                disabled={!isFieldsEnabled}
-                type='number'
-                inputProps={{ min: 0 }}
-              />}
-              {currentLoanIssue && <RHFDatePicker
-                name='nextInstallmentDate'
-                control={control}
-                label='Next Installment Date'
-                req={'red'}
-                readOnly={true}
-              />}
-              <RHFTextField name='jewellerName' label='JewellerName' req={'red'} disabled={!isFieldsEnabled} />
-              <RHFAutocomplete
-                disabled={!isFieldsEnabled}
-                name='loanType'
-                label='Loan Type'
-                req='red'
-                fullWidth
-                options={configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan) : []}
-                getOptionLabel={(option) => option || ''}
-                onChange={(event, value) => setValue('loanType', value || '')}
-                renderOption={(props, option) => (<li {...props} key={option}>
-                  {option}
-                </li>)}
-              />
-            </Box>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={2}>
-          <Box sx={{ textAlign: 'center', mb: 1 }}>
-            <Typography variant='subtitle1'
-                        component={'span'} sx={{ fontWeight: 600 }}>
-              Property Image
-            </Typography>
-          </Box>
-          <Card>
-            <CardContent sx={{ height: '156px', p: 1.5 }}>
-              <Box sx={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              }}>
-                <Typography variant='subtitle1' sx={{
-                  display: 'inline-block', fontWeight: 600,
-                }}>
-                </Typography>
-              </Box>
-              <Box mt={0.2}>
-                <RHFUploadAvatar
-                  radius={true}
-                  name='property_image'
-                  camera={true}
-                  setOpen2={setOpen2}
-                  setOpen={setOpen}
-                  setImageSrc={setImageSrc}
-                  setFile={setFile}
-                  file={croppedImage || capturedImage || imageSrc || currentLoanIssue?.propertyImage}
-                  maxSize={3145728}
-                  accept='image/*'
-                  onDrop={handleDropSingleFile}
-                />
-              </Box>
-              <Dialog open={Boolean(open)}
-                      onClose={handleCancel}>
-                <ReactCrop
-                  crop={crop}
-                  onChange={(newCrop) => setCrop(newCrop)}
-                  onComplete={(newCrop) => setCompletedCrop(newCrop)}
-                  aspect={1}
-                >
-                  <img
-                    id='cropped-image'
-                    src={imageSrc || capturedImage}
-                    alt='Crop preview'
-                    onLoad={resetCrop}
-                    style={{ transform: `rotate(${rotation}deg)` }}
-
-                  />
-                </ReactCrop>
-                <Box style={{
-                  display: 'flex', justifyContent: 'space-between', padding: '1rem',
-                }}>
-                  <Button variant='outlined'
-                          onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                  <Box sx={{ display: 'flex' }}>
-                    <IconButton
-                      onClick={() => rotateImage(-90)}
-                      style={{ marginRight: '10px' }}
-                    >
-                      <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
-
-                    </IconButton>
-                    <IconButton onClick={() => rotateImage(90)}
-                    >
-                      <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
-                    </IconButton>
-                  </Box>
-                  <Button variant='contained' color='primary'
-                          onClick={showCroppedImage}>
-                    Save Image
-                  </Button>
-                </Box>
-              </Dialog>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <Card>
-            <CardContent sx={{ p: 2 }}>
-              <Typography variant='subtitle1' sx={{
-                mb: 1, fontWeight: '600',
-              }}>
-                Property Details
-              </Typography>
-              <TableContainer>
-                <Table>
-                  <TableHeadCustom
-                    order={table.order}
-                    orderBy={table.orderBy}
-                    headLabel={TABLE_HEAD}
-                    onSort={table.onSort}
-                  />
-                  <TableBody>
-                    {fields.map((row, index) => (<TableRow key={row.id} sx={{
-                      '&:hover': { backgroundColor: 'inherit' }, height: '10px',
-                    }}>
-                      <TableCell sx={{
-                        width: '200px', padding: '0px 8px',
-                      }}>
-                        <RHFAutocomplete
-                          sx={sx}
-                          name={`propertyDetails[${index}].type`}
-                          label='Type'
-                          disabled={!isFieldsEnabled}
-                          options={property?.filter((e) => e.isActive === true)?.map((item) => ({
-                            label: item.propertyType, value: item.propertyType,
-                          }))}
-                          onChange={(e, value) => {
-                            setValue(`propertyDetails[${index}].type`, value?.value || '');
-                            validateField('type', index, value?.value);
-                          }}
-
-                          helperText={errors[`propertyDetails[${index}].type`] || ''}
-                          error={!!errors[`propertyDetails[${index}].type`]}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '40px', padding: '0px 8px',
-                      }}>
-                        <RHFAutocomplete
-                          sx={{
-                            'label': {
-                              mt: -1.4, fontSize: '14px',
-                            }, '& .MuiInputLabel-shrink': {
-                              mt: 0,
-                            }, 'input': { height: 0 },
-                          }}
-                          name={`propertyDetails[${index}].carat`}
-                          label='Carat'
-                          disabled={!isFieldsEnabled}
-                          options={carat?.filter((e) => e.isActive === true)?.map((e) => e?.name)}
-                          onChange={(e, value) => {
-                            setValue(`propertyDetails[${index}].carat`, value);
-                            validateField('carat', index, value);
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '80px', padding: '0px 8px',
-                      }}>
-                        <RHFTextField
-                          sx={sx}
-                          name={`propertyDetails[${index}].pcs`}
-                          label='PCS'
-                          type='number'
-                          disabled={!watch(`propertyDetails[${index}].isPcsEditable`) && !isFieldsEnabled}
-                          helperText={errors[`propertyDetails[${index}].pcs`] || ''}
-                          error={!!errors[`propertyDetails[${index}].pcs`]}
-                          onChange={(e) => {
-                            setValue(`propertyDetails[${index}].pcs`, e.target.value);
-                            validateField('pcs', index, e.target.value);
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '100px', padding: '0px 8px',
-                      }}>
-                        <RHFTextField
-                          sx={sx}
-                          name={`propertyDetails[${index}].totalWeight`}
-                          label='Total Weight'
-                          type='number'
-                          disabled={!isFieldsEnabled}
-
-                          helperText={errors[`propertyDetails[${index}].totalWeight`] || ''}
-                          error={!!errors[`propertyDetails[${index}].totalWeight`]}
-                          onChange={(e) => {
-                            setValue(`propertyDetails[${index}].totalWeight`, e.target.value);
-                            validateField('totalWeight', index, e.target.value);
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '100px', padding: '0px 8px',
-                      }}>
-                        <RHFTextField
-                          sx={sx}
-                          name={`propertyDetails[${index}].lossWeight`}
-                          label='Loss Weight'
-                          disabled={!isFieldsEnabled}
-                          type='number'
-
-                          helperText={errors[`propertyDetails[${index}].lossWeight`] || ''}
-                          error={!!errors[`propertyDetails[${index}].lossWeight`]}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            setValue(`propertyDetails[${index}].lossWeight`, value);
-                            validateField('lossWeight', index, value);
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '120px', padding: '0px 8px',
-                      }}>
-                        <RHFTextField
-                          sx={sx}
-                          name={`propertyDetails[${index}].grossWeight`}
-                          label='GW'
-                          disabled={true}
-                          value={getValues(`propertyDetails[${index}].grossWeight`) || ''}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '120px', padding: '0px 8px',
-                      }}>
-                        <RHFTextField
-                          sx={sx}
-                          name={`propertyDetails[${index}].netWeight`}
-                          label='NW'
-                          disabled={true}
-                          value={getValues(`propertyDetails[${index}].netWeight`) || ''}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '120px', padding: '06px 8px',
-                      }}>
-                        <RHFTextField
-                          sx={sx}
-                          name={`propertyDetails[${index}].grossAmount`}
-                          label='GA'
-                          disabled={true}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '120px', padding: '0px 8px',
-                      }}>
-                        <RHFTextField
-                          sx={sx}
-                          name={`propertyDetails[${index}].netAmount`}
-                          label='NA'
-                          disabled={true}
-                        />
-                      </TableCell>
-                      <TableCell sx={{
-                        width: '100px', padding: '0px 8px',
-                      }}>
-                        <IconButton onClick={() => handleReset(index)} disabled={!isFieldsEnabled}>
-                          <Iconify icon='ic:baseline-refresh' />
-                        </IconButton>
-                        <IconButton
-                          color='error'
-                          onClick={() => handleRemove(index)}
-                          disabled={!isFieldsEnabled || fields.length === 1}
-                        >
-                          <Iconify icon='solar:trash-bin-trash-bold' />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>))}
-                    <TableRow
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.mode === 'light' ? '#e0f7fa' : '#2f3944',
-                      }}>
-                      <TableCell colSpan={2} sx={{
-                        padding: '8px',
-                      }}><strong>Total:</strong></TableCell>
-                      <TableCell sx={{ padding: '8px' }}
-                      >{calculateTotal('pcs')}</TableCell>
-                      <TableCell sx={{ padding: '8px' }}
-                      >{calculateTotal('totalWeight')}</TableCell>
-                      <TableCell sx={{ padding: '8px' }}
-                      >{calculateTotal('lossWeight')}</TableCell>
-                      <TableCell sx={{ padding: '8px' }}
-                      >{calculateTotal('grossWeight')}</TableCell>
-                      <TableCell sx={{ padding: '8px' }}
-                      >{calculateTotal('netWeight')}</TableCell>
-                      <TableCell sx={{ padding: '8px' }}
-                      >{calculateTotal('grossAmount')}</TableCell>
-                      <TableCell sx={{ padding: '8px' }}
-                      >{calculateTotal('netAmount')}</TableCell>
-                      <TableCell sx={{ padding: '8px' }}></TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-            <CardActions sx={{
-              margin: '0px 16px 10px 16px', justifyContent: 'flex-end', p: 0,
-            }}>
-              <Button
-                size='small'
-                disabled={!isFieldsEnabled}
-                variant='contained'
-                color='primary'
-                startIcon={<Iconify icon='mingcute:add-line' />}
-                onClick={handleAdd}
               >
-                Add Property
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <Card sx={{ p: 2 }}>
-            <Typography variant='subtitle1' sx={{
-              mb: 1, fontWeight: '600',
-            }}>
-              Payment Details
-            </Typography>
-            <Box
-              rowGap={1.5}
-              columnGap={1.5}
-              display='grid'
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)',
-              }}
-            >
-              <Controller
-                name='loanAmount'
-                control={control}
-                render={({ field }) => (<RHFTextField
-                  {...field}
-                  label='Loan Amount'
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
-                  type='number'
-                  inputProps={{ min: 0 }}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    handleLoanAmountChange(e);
-                    handleAmountChange();
-                  }}
-                />)}
-              />
-              <RHFAutocomplete
-                name='paymentMode'
-                label='Payment Mode'
-                req={'red'}
-                disabled={!isFieldsEnabled}
-                fullWidth
-                options={['Cash', 'Bank', 'Both']}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (<li {...props} key={option}>
-                  {option}
-                </li>)}
-                onChange={(event, value) => {
-                  setValue('paymentMode', value);
-                  handleLoanAmountChange({
-                    target: {
-                      value: getValues('loanAmount'),
-                    },
-                  });
+                Loan Scheme Details
+              </Typography>
+              <Box
+                rowGap={1.5}
+                columnGap={1.5}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(3, 1fr)',
+                  md: 'repeat(6, 1fr)',
                 }}
-              />
-              {watch('paymentMode') === 'Cash' && (<Controller
-                name='cashAmount'
-                control={control}
-                render={({ field }) => (<RHFTextField
-                  {...field}
-                  label='Cash Amount'
+              >
+                <RHFTextField
+                  name="loanNo"
+                  label="Loan No."
                   req={'red'}
-                  disabled={!isFieldsEnabled}
-                  type='number'
-                  inputProps={{ min: 0 }}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    handleCashAmountChange(e);
-                  }}
-                />)}
-              />)}
-              {watch('paymentMode') === 'Bank' && (<Controller
-                name='bankAmount'
-                control={control}
-                render={({ field }) => (<RHFTextField
-                  {...field}
-                  label='Bank Amount'
-                  req={'red'}
-                  disabled={!isFieldsEnabled}
-                  type='number'
-                  inputProps={{ min: 0 }}
-                />)}
-              />)}
-              {watch('paymentMode') === 'Both' && (<>
-                <Controller
-                  name='cashAmount'
+                  InputProps={{ readOnly: true }}
+                  disabled
+                />
+                <RHFDatePicker
+                  name="issueDate"
                   control={control}
-                  render={({ field }) => (<RHFTextField
-                    {...field}
-                    label='Cash Amount'
+                  label="Issue Date"
+                  req={'red'}
+                  disabled={currentLoanIssue ? true : false}
+                />
+                <RHFAutocomplete
+                  name="scheme"
+                  label="Scheme"
+                  req="red"
+                  disabled={!isFieldsEnabled}
+                  fullWidth
+                  options={scheme?.filter((item) => item.isActive)}
+                  getOptionLabel={(option) => option?.name || ''}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option?.id}>
+                      {option?.name}
+                    </li>
+                  )}
+                  onChange={(e, selectedScheme) => {
+                    setValue('scheme', selectedScheme);
+                    const schemedata = selectedScheme;
+                    if (schemedata?.ratePerGram) {
+                      fields.forEach((_, index) => {
+                        const totalWeight =
+                          parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
+                        const lossWeight =
+                          parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
+                        const caratValue =
+                          carat?.find(
+                            (item) =>
+                              item?.name ===
+                              parseFloat(getValues(`propertyDetails[${index}].carat`))
+                          ) || {};
+                        const caratPercentage = caratValue?.caratPercentage || 100;
+                        const grossWeight = totalWeight - lossWeight;
+                        const netWeight = grossWeight * (caratPercentage / 100);
+                        const grossAmount = grossWeight * schemedata?.ratePerGram;
+                        const netAmount = netWeight * schemedata?.ratePerGram;
+                        if (!isNaN(grossWeight))
+                          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
+                        if (!isNaN(netWeight))
+                          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
+                        if (!isNaN(grossAmount))
+                          setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));
+                        if (!isNaN(netAmount))
+                          setValue(`propertyDetails[${index}].netAmount`, netAmount.toFixed(2));
+                      });
+                    }
+                  }}
+                />
+                <RHFTextField
+                  name="interestRate"
+                  label="InstrestRate"
+                  InputProps={{ readOnly: true }}
+                />
+                <Controller
+                  name="consultingCharge"
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      disabled={true}
+                      label="Consulting Charge"
+                      req={'red'}
+                    />
+                  )}
+                />
+                <RHFTextField
+                  name="approvalCharge"
+                  label="Approval Charge"
+                  disabled={!isFieldsEnabled}
+                  req={'red'}
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    onInput: (e) => {
+                      e.target.value = e.target.value
+                        .replace(/ [^0-9.]/g, '')
+                        .replace(/(\..*?)\..*/g, '$1');
+                    },
+                  }}
+                />
+                <RHFTextField
+                  name="periodTime"
+                  label="INT. Period Time"
+                  InputProps={{ readOnly: true }}
+                />
+                <RHFTextField
+                  name="renewalTime"
+                  label="Renewal Time"
+                  InputProps={{ readOnly: true }}
+                />
+                <RHFTextField
+                  name="loanCloseTime"
+                  label="Minimun Loan Close Time"
+                  InputProps={{ readOnly: true }}
+                />
+                {currentLoanIssue && (
+                  <RHFTextField
+                    name="loanAmount"
+                    label="Loan AMT."
                     req={'red'}
                     disabled={!isFieldsEnabled}
-                    type='number'
+                    type="number"
                     inputProps={{ min: 0 }}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      handleCashAmountChange(e);
-                    }}
-                  />)}
-                />
-                <Controller
-                  name='bankAmount'
-                  control={control}
-                  render={({ field }) => (<RHFTextField
-                    {...field}
-                    label='Bank Amount'
+                  />
+                )}
+                {currentLoanIssue && (
+                  <RHFDatePicker
+                    name="nextInstallmentDate"
+                    control={control}
+                    label="Next Installment Date"
                     req={'red'}
-                    disabled
-                    type='number'
-                    inputProps={{ min: 0 }}
-                  />)}
+                    readOnly={true}
+                  />
+                )}
+                <RHFTextField
+                  name="jewellerName"
+                  label="JewellerName"
+                  req={'red'}
+                  disabled={!isFieldsEnabled}
                 />
-              </>)}
+                <RHFAutocomplete
+                  disabled={!isFieldsEnabled}
+                  name="loanType"
+                  label="Loan Type"
+                  req="red"
+                  fullWidth
+                  options={
+                    configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan) : []
+                  }
+                  getOptionLabel={(option) => option || ''}
+                  onChange={(event, value) => setValue('loanType', value || '')}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+              </Box>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <Box sx={{ textAlign: 'center', mb: 1 }}>
+              <Typography variant="subtitle1" component={'span'} sx={{ fontWeight: 600 }}>
+                Property Image
+              </Typography>
             </Box>
-          </Card>
-        </Grid>
-        {['Bank', 'Both'].includes(watch('paymentMode')) && <>
+            <Card>
+              <CardContent sx={{ height: '156px', p: 1.5 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      display: 'inline-block',
+                      fontWeight: 600,
+                    }}
+                  ></Typography>
+                </Box>
+                <Box mt={0.2}>
+                  <RHFUploadAvatar
+                    radius={true}
+                    name="property_image"
+                    camera={true}
+                    setOpen2={setOpen2}
+                    setOpen={setOpen}
+                    setImageSrc={setImageSrc}
+                    setFile={setFile}
+                    file={
+                      croppedImage || capturedImage || imageSrc || currentLoanIssue?.propertyImage
+                    }
+                    maxSize={3145728}
+                    accept="image/*"
+                    onDrop={handleDropSingleFile}
+                  />
+                </Box>
+                <Dialog open={Boolean(open)} onClose={handleCancel}>
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(newCrop) => setCrop(newCrop)}
+                    onComplete={(newCrop) => setCompletedCrop(newCrop)}
+                    aspect={1}
+                  >
+                    <img
+                      id="cropped-image"
+                      src={imageSrc || capturedImage}
+                      alt="Crop preview"
+                      onLoad={resetCrop}
+                      style={{ transform: `rotate(${rotation}deg)` }}
+                    />
+                  </ReactCrop>
+                  <Box
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      padding: '1rem',
+                    }}
+                  >
+                    <Button variant="outlined" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                    <Box sx={{ display: 'flex' }}>
+                      <IconButton onClick={() => rotateImage(-90)} style={{ marginRight: '10px' }}>
+                        <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />
+                      </IconButton>
+                      <IconButton onClick={() => rotateImage(90)}>
+                        <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />
+                      </IconButton>
+                    </Box>
+                    <Button variant="contained" color="primary" onClick={showCroppedImage}>
+                      Save Image
+                    </Button>
+                  </Box>
+                </Dialog>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Card>
+              <CardContent sx={{ p: 2 }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    mb: 1,
+                    fontWeight: '600',
+                  }}
+                >
+                  Property Details
+                </Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHeadCustom
+                      order={table.order}
+                      orderBy={table.orderBy}
+                      headLabel={TABLE_HEAD}
+                      onSort={table.onSort}
+                    />
+                    <TableBody>
+                      {fields.map((row, index) => (
+                        <TableRow
+                          key={row.id}
+                          sx={{
+                            '&:hover': { backgroundColor: 'inherit' },
+                            height: '10px',
+                          }}
+                        >
+                          <TableCell
+                            sx={{
+                              width: '200px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFAutocomplete
+                              sx={sx}
+                              name={`propertyDetails[${index}].type`}
+                              label="Type"
+                              disabled={!isFieldsEnabled}
+                              options={property
+                                ?.filter((e) => e.isActive === true)
+                                ?.map((item) => ({
+                                  label: item.propertyType,
+                                  value: item.propertyType,
+                                }))}
+                              onChange={(e, value) => {
+                                setValue(`propertyDetails[${index}].type`, value?.value || '');
+                                validateField('type', index, value?.value);
+                              }}
+                              helperText={errors[`propertyDetails[${index}].type`] || ''}
+                              error={!!errors[`propertyDetails[${index}].type`]}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '40px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFAutocomplete
+                              sx={{
+                                label: {
+                                  mt: -1.4,
+                                  fontSize: '14px',
+                                },
+                                '& .MuiInputLabel-shrink': {
+                                  mt: 0,
+                                },
+                                input: { height: 0 },
+                              }}
+                              name={`propertyDetails[${index}].carat`}
+                              label="Carat"
+                              disabled={!isFieldsEnabled}
+                              options={carat
+                                ?.filter((e) => e.isActive === true)
+                                ?.map((e) => e?.name)}
+                              onChange={(e, value) => {
+                                setValue(`propertyDetails[${index}].carat`, value);
+                                validateField('carat', index, value);
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '80px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFTextField
+                              sx={sx}
+                              name={`propertyDetails[${index}].pcs`}
+                              label="PCS"
+                              type="number"
+                              disabled={
+                                !watch(`propertyDetails[${index}].isPcsEditable`) &&
+                                !isFieldsEnabled
+                              }
+                              helperText={errors[`propertyDetails[${index}].pcs`] || ''}
+                              error={!!errors[`propertyDetails[${index}].pcs`]}
+                              onChange={(e) => {
+                                setValue(`propertyDetails[${index}].pcs`, e.target.value);
+                                validateField('pcs', index, e.target.value);
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '100px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFTextField
+                              sx={sx}
+                              name={`propertyDetails[${index}].totalWeight`}
+                              label="Total Weight"
+                              type="number"
+                              disabled={!isFieldsEnabled}
+                              helperText={errors[`propertyDetails[${index}].totalWeight`] || ''}
+                              error={!!errors[`propertyDetails[${index}].totalWeight`]}
+                              onChange={(e) => {
+                                setValue(`propertyDetails[${index}].totalWeight`, e.target.value);
+                                validateField('totalWeight', index, e.target.value);
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '100px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFTextField
+                              sx={sx}
+                              name={`propertyDetails[${index}].lossWeight`}
+                              label="Loss Weight"
+                              disabled={!isFieldsEnabled}
+                              type="number"
+                              helperText={errors[`propertyDetails[${index}].lossWeight`] || ''}
+                              error={!!errors[`propertyDetails[${index}].lossWeight`]}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setValue(`propertyDetails[${index}].lossWeight`, value);
+                                validateField('lossWeight', index, value);
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '120px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFTextField
+                              sx={sx}
+                              name={`propertyDetails[${index}].grossWeight`}
+                              label="GW"
+                              disabled={true}
+                              value={getValues(`propertyDetails[${index}].grossWeight`) || ''}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '120px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFTextField
+                              sx={sx}
+                              name={`propertyDetails[${index}].netWeight`}
+                              label="NW"
+                              disabled={true}
+                              value={getValues(`propertyDetails[${index}].netWeight`) || ''}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '120px',
+                              padding: '06px 8px',
+                            }}
+                          >
+                            <RHFTextField
+                              sx={sx}
+                              name={`propertyDetails[${index}].grossAmount`}
+                              label="GA"
+                              disabled={true}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '120px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <RHFTextField
+                              sx={sx}
+                              name={`propertyDetails[${index}].netAmount`}
+                              label="NA"
+                              disabled={true}
+                            />
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              width: '100px',
+                              padding: '0px 8px',
+                            }}
+                          >
+                            <IconButton
+                              onClick={() => handleReset(index)}
+                              disabled={!isFieldsEnabled}
+                            >
+                              <Iconify icon="ic:baseline-refresh" />
+                            </IconButton>
+                            <IconButton
+                              color="error"
+                              onClick={() => handleRemove(index)}
+                              disabled={!isFieldsEnabled || fields.length === 1}
+                            >
+                              <Iconify icon="solar:trash-bin-trash-bold" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow
+                        sx={{
+                          backgroundColor: (theme) =>
+                            theme.palette.mode === 'light' ? '#e0f7fa' : '#2f3944',
+                        }}
+                      >
+                        <TableCell
+                          colSpan={2}
+                          sx={{
+                            padding: '8px',
+                          }}
+                        >
+                          <strong>Total:</strong>
+                        </TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('pcs')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>
+                          {calculateTotal('totalWeight')}
+                        </TableCell>
+                        <TableCell sx={{ padding: '8px' }}>
+                          {calculateTotal('lossWeight')}
+                        </TableCell>
+                        <TableCell sx={{ padding: '8px' }}>
+                          {calculateTotal('grossWeight')}
+                        </TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('netWeight')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}>
+                          {calculateTotal('grossAmount')}
+                        </TableCell>
+                        <TableCell sx={{ padding: '8px' }}>{calculateTotal('netAmount')}</TableCell>
+                        <TableCell sx={{ padding: '8px' }}></TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </CardContent>
+              <CardActions
+                sx={{
+                  margin: '0px 16px 10px 16px',
+                  justifyContent: 'flex-end',
+                  p: 0,
+                }}
+              >
+                <Button
+                  size="small"
+                  disabled={!isFieldsEnabled}
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                  onClick={handleAdd}
+                >
+                  Add Property
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
           <Grid item xs={12} md={12}>
             <Card sx={{ p: 2 }}>
-              <Box sx={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-              }}>
-                <Typography variant='subtitle1' sx={{
-                  mb: 0.5, fontWeight: '600',
-                }}>
-                  Account Details
-                </Typography>
-                <Box sx={{
-                  display: 'flex', justifyContent: 'center', pb: 1.5,
-                }}>
-                  <Button
-                    variant={'outlined'}
-                    disabled={!isFieldsEnabled}
-                    onClick={() => saveCustomerBankDetails()}
-                    style={{
-                      fontWeight: 'bold', textDecoration: 'none', color: 'inherit',
-                    }}
-                  >
-                    Add beneficiary
-                  </Button>
-                </Box>
-              </Box>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display='grid'
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)', sm: 'repeat(6, 1fr)',
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  mb: 1,
+                  fontWeight: '600',
                 }}
               >
-                <RHFTextField name='accountNumber'
-                              label='Account No.' req={'red'} disabled={!isFieldsEnabled}
-                              type='number'
-                              inputProps={{ min: 0 }} />
+                Payment Details
+              </Typography>
+              <Box
+                rowGap={1.5}
+                columnGap={1.5}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(3, 1fr)',
+                  md: 'repeat(4, 1fr)',
+                }}
+              >
+                <Controller
+                  name="loanAmount"
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label="Loan Amount"
+                      req={'red'}
+                      disabled={!isFieldsEnabled}
+                      type="number"
+                      inputProps={{ min: 0 }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleLoanAmountChange(e);
+                        handleAmountChange();
+                      }}
+                    />
+                  )}
+                />
                 <RHFAutocomplete
-                  name='accountType'
-                  label='Account Type'
+                  name="paymentMode"
+                  label="Payment Mode"
                   req={'red'}
                   disabled={!isFieldsEnabled}
                   fullWidth
-                  options={ACCOUNT_TYPE_OPTIONS?.map((item) => item)}
+                  options={['Cash', 'Bank', 'Both']}
                   getOptionLabel={(option) => option}
-                  renderOption={(props, option) => (<li {...props} key={option}>
-                    {option}
-                  </li>)}
-                />
-                <RHFTextField name='accountHolderName'
-                              label='Account Holder Name' disabled={!isFieldsEnabled}
-                              req={'red'} />
-                <RHFTextField
-                  name='IFSC'
-                  label='IFSC Code'
-                  inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
-                  onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                  onChange={(event, value) => {
+                    setValue('paymentMode', value);
+                    handleLoanAmountChange({
+                      target: {
+                        value: getValues('loanAmount'),
+                      },
+                    });
                   }}
-                  onBlur={(e) => checkIFSC(e.target.value)}
                 />
-                <RHFTextField name='bankName' label='Bank Name'
-                              req={'red'} disabled={!isFieldsEnabled} />
-                <RHFTextField name='branchName' label='Branch Name' req={'red'} disabled={!isFieldsEnabled} />
+                {watch('paymentMode') === 'Cash' && (
+                  <Controller
+                    name="cashAmount"
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label="Cash Amount"
+                        req={'red'}
+                        disabled={!isFieldsEnabled}
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleCashAmountChange(e);
+                        }}
+                      />
+                    )}
+                  />
+                )}
+                {watch('paymentMode') === 'Bank' && (
+                  <Controller
+                    name="bankAmount"
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label="Bank Amount"
+                        req={'red'}
+                        disabled={!isFieldsEnabled}
+                        type="number"
+                        inputProps={{ min: 0 }}
+                      />
+                    )}
+                  />
+                )}
+                {watch('paymentMode') === 'Both' && (
+                  <>
+                    <Controller
+                      name="cashAmount"
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          {...field}
+                          label="Cash Amount"
+                          req={'red'}
+                          disabled={!isFieldsEnabled}
+                          type="number"
+                          inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleCashAmountChange(e);
+                          }}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="bankAmount"
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          {...field}
+                          label="Bank Amount"
+                          req={'red'}
+                          disabled
+                          type="number"
+                          inputProps={{ min: 0 }}
+                        />
+                      )}
+                    />
+                  </>
+                )}
               </Box>
             </Card>
-          </Grid></>}
-      </Grid>
-      <Box xs={12} md={8} sx={{
-        display: 'flex', justifyContent: 'end', mt: 3,
-      }}>
-        <Button color='inherit' sx={{
-          margin: '0px 10px', height: '36px',
+          </Grid>
+          {['Bank', 'Both'].includes(watch('paymentMode')) && (
+            <>
+              <Grid item xs={12} md={12}>
+                <Card sx={{ p: 2 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        mb: 0.5,
+                        fontWeight: '600',
+                      }}
+                    >
+                      Account Details
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        pb: 1.5,
+                      }}
+                    >
+                      <Button
+                        variant={'outlined'}
+                        disabled={!isFieldsEnabled}
+                        onClick={() => saveCustomerBankDetails()}
+                        style={{
+                          fontWeight: 'bold',
+                          textDecoration: 'none',
+                          color: 'inherit',
+                        }}
+                      >
+                        Add beneficiary
+                      </Button>
+                    </Box>
+                  </Box>
+                  <Box
+                    rowGap={3}
+                    columnGap={2}
+                    display="grid"
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(6, 1fr)',
+                    }}
+                  >
+                    <RHFTextField
+                      name="accountNumber"
+                      label="Account No."
+                      req={'red'}
+                      disabled={!isFieldsEnabled}
+                      type="number"
+                      inputProps={{ min: 0 }}
+                    />
+                    <RHFAutocomplete
+                      name="accountType"
+                      label="Account Type"
+                      req={'red'}
+                      disabled={!isFieldsEnabled}
+                      fullWidth
+                      options={ACCOUNT_TYPE_OPTIONS?.map((item) => item)}
+                      getOptionLabel={(option) => option}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option}>
+                          {option}
+                        </li>
+                      )}
+                    />
+                    <RHFTextField
+                      name="accountHolderName"
+                      label="Account Holder Name"
+                      disabled={!isFieldsEnabled}
+                      req={'red'}
+                    />
+                    <RHFTextField
+                      name="IFSC"
+                      label="IFSC Code"
+                      inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                      }}
+                      onBlur={(e) => checkIFSC(e.target.value)}
+                    />
+                    <RHFTextField
+                      name="bankName"
+                      label="Bank Name"
+                      req={'red'}
+                      disabled={!isFieldsEnabled}
+                    />
+                    <RHFTextField
+                      name="branchName"
+                      label="Branch Name"
+                      req={'red'}
+                      disabled={!isFieldsEnabled}
+                    />
+                  </Box>
+                </Card>
+              </Grid>
+            </>
+          )}
+        </Grid>
+        <Box
+          xs={12}
+          md={8}
+          sx={{
+            display: 'flex',
+            justifyContent: 'end',
+            mt: 3,
+          }}
+        >
+          <Button
+            color="inherit"
+            sx={{
+              margin: '0px 10px',
+              height: '36px',
+            }}
+            disabled={!isFieldsEnabled}
+            variant="outlined"
+            onClick={() => reset()}
+          >
+            Reset
+          </Button>
+          <LoadingButton
+            disabled={!isFieldsEnabled}
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            {!currentLoanIssue ? 'Submit' : 'Save'}
+          </LoadingButton>
+        </Box>
+      </FormProvider>
+      <Dialog
+        fullWidth
+        maxWidth={false}
+        open={open2}
+        onClose={() => setOpen2(false)}
+        PaperProps={{
+          sx: { maxWidth: 720 },
         }}
-                disabled={!isFieldsEnabled}
-                variant='outlined' onClick={() => reset()}
-        >Reset</Button>
-        <LoadingButton disabled={!isFieldsEnabled} type='submit'
-                       variant='contained' loading={isSubmitting}>
-          {!currentLoanIssue ? 'Submit' : 'Save'}
-        </LoadingButton>
-      </Box>
-    </FormProvider>
-    <Dialog
-      fullWidth
-      maxWidth={false}
-      open={open2}
-      onClose={() => setOpen2(false)}
-      PaperProps={{
-        sx: { maxWidth: 720 },
-      }}
-    >
-      <DialogTitle>Camera</DialogTitle>
-      <Box sx={{
-        display: 'flex', justifyContent: 'center', alignItems: 'center',
-      }}>
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat='image/jpeg'
-          width={'90%'}
-          height={'100%'}
-          videoConstraints={videoConstraints}
-        />
-      </Box>
-      <DialogActions>
-        <Button variant='outlined' onClick={capture}>
-          Capture Photo
-        </Button>
-        <Button variant='contained' onClick={() => setOpen2(false)}>
-          Close Camera
-        </Button>
-      </DialogActions>
-    </Dialog>
-  </>);
+      >
+        <DialogTitle>Camera</DialogTitle>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={'90%'}
+            height={'100%'}
+            videoConstraints={videoConstraints}
+          />
+        </Box>
+        <DialogActions>
+          <Button variant="outlined" onClick={capture}>
+            Capture Photo
+          </Button>
+          <Button variant="contained" onClick={() => setOpen2(false)}>
+            Close Camera
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 }
 LoanissueNewEditForm.propTypes = { currentLoanIssue: PropTypes.object };

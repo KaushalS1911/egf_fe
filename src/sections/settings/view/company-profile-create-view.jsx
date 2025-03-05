@@ -54,6 +54,7 @@ export default function CompanyProfile() {
       name: companyDetail?.name || '',
       email: companyDetail?.email || '',
       contact: companyDetail?.contact || '',
+      savant: configs?.savant || '',
       branch: configs?.headersConfig?.branch || null,
       webUrl: configs?.headersConfig?.companyDetail.webUrl || '',
     },
@@ -72,7 +73,8 @@ export default function CompanyProfile() {
     resolver: yupResolver(bankDetailsSchema),
   });
 
-  const { reset: resetPersonalDetails, handleSubmit: handleSubmitPersonalDetails } = personalDetailsMethods;
+  const { reset: resetPersonalDetails, handleSubmit: handleSubmitPersonalDetails } =
+    personalDetailsMethods;
   const { reset: resetBankDetails, handleSubmit: handleSubmitBankDetails } = bankDetailsMethods;
 
   useEffect(() => {
@@ -107,7 +109,11 @@ export default function CompanyProfile() {
       },
       branch: data.branch,
     };
-    const payload2 = { ...configs, headersConfig: details };
+    const payload2 = {
+      ...configs,
+      headersConfig: details,
+      savant: data.savant,
+    };
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}`;
     const URL2 = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
     setLoading(true);
@@ -145,8 +151,8 @@ export default function CompanyProfile() {
       const existingBankAccounts = response.data.data.bankAccounts || [];
 
       if (editingBankDetail) {
-        const updatedBankAccounts = existingBankAccounts.map(account =>
-          account._id === editingBankDetail._id ? newBankAccount : account,
+        const updatedBankAccounts = existingBankAccounts.map((account) =>
+          account._id === editingBankDetail._id ? newBankAccount : account
         );
         await axios.put(URL, { bankAccounts: updatedBankAccounts });
       } else {
@@ -154,7 +160,10 @@ export default function CompanyProfile() {
         await axios.put(URL, { bankAccounts: updatedBankAccounts });
       }
       companyMutate();
-      enqueueSnackbar(editingBankDetail ? 'Bank details updated successfully' : 'Bank details added successfully', { variant: 'success' });
+      enqueueSnackbar(
+        editingBankDetail ? 'Bank details updated successfully' : 'Bank details added successfully',
+        { variant: 'success' }
+      );
       resetBankDetails();
       setEditingBankDetail(null);
     } catch (err) {
@@ -182,7 +191,7 @@ export default function CompanyProfile() {
         }
       }
     },
-    [personalDetailsMethods],
+    [personalDetailsMethods]
   );
 
   const handleEditBankDetail = (detail) => {
@@ -201,7 +210,9 @@ export default function CompanyProfile() {
     try {
       const response = await axios.get(URL);
       const existingBankAccounts = response.data.data.bankAccounts || [];
-      const updatedBankAccounts = existingBankAccounts.filter(account => account._id !== detail._id);
+      const updatedBankAccounts = existingBankAccounts.filter(
+        (account) => account._id !== detail._id
+      );
       await axios.put(URL, { bankAccounts: updatedBankAccounts });
       companyMutate();
       enqueueSnackbar('Bank details deleted successfully', { variant: 'success' });
@@ -220,12 +231,12 @@ export default function CompanyProfile() {
           <Grid item md={4} xs={12}>
             <Card sx={{ pt: 5, px: 3 }}>
               <Box sx={{ mb: 5 }}>
-                <RHFUploadAvatar name='logo_url' onDrop={handleDrop} />
+                <RHFUploadAvatar name="logo_url" onDrop={handleDrop} />
               </Box>
             </Card>
           </Grid>
           <Grid item sx={{ my: 'auto' }} xs={12} md={8}>
-            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
               Company Details
             </Typography>
             <Card>
@@ -233,22 +244,33 @@ export default function CompanyProfile() {
                 <Box
                   columnGap={2}
                   rowGap={3}
-                  display='grid'
+                  display="grid"
                   gridTemplateColumns={{
                     xs: 'repeat(1, 1fr)',
                     md: 'repeat(2, 1fr)',
                   }}
                 >
-                  <RHFTextField name='name' label='Company Name' />
-                  <RHFTextField name='email' label='Email Address' />
-                  <RHFTextField name='contact' label='Phone Number'
-                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                onInput={(e) => {
-                                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                                }} />
+                  <RHFTextField name="name" label="Company Name" />
+                  <RHFTextField name="email" label="Email Address" />
+                  <RHFTextField
+                    name="contact"
+                    label="Phone Number"
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                    onInput={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    }}
+                  />
+                  <RHFTextField
+                    name="savant"
+                    label="Savant"
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                    onInput={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    }}
+                  />
                   <RHFAutocomplete
-                    name='branch'
-                    label='Branch'
+                    name="branch"
+                    label="Branch"
                     fullWidth
                     options={branch?.map((item) => item)}
                     getOptionLabel={(option) => option.name}
@@ -258,13 +280,16 @@ export default function CompanyProfile() {
                       </li>
                     )}
                   />
-                  <RHFTextField name='webUrl' label='Website url' />
+                  <RHFTextField name="webUrl" label="Website url" />
                 </Box>
               </Stack>
             </Card>
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-              <LoadingButton onClick={handleSubmitPersonalDetails(onSubmitPersonalDetails)} variant='contained'
-                             loading={loading}>
+              <LoadingButton
+                onClick={handleSubmitPersonalDetails(onSubmitPersonalDetails)}
+                variant="contained"
+                loading={loading}
+              >
                 Save Personal Details
               </LoadingButton>
             </Box>
@@ -274,19 +299,19 @@ export default function CompanyProfile() {
       <FormProvider methods={bankDetailsMethods}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Typography variant='subtitle1' sx={{ mb: 2, fontWeight: 600, px: 3 }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, px: 3 }}>
               Bank Details
             </Typography>
-            <Typography variant='body2' sx={{ color: 'text.secondary', px: 3 }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', px: 3 }}>
               Bank info...
             </Typography>
           </Grid>
           <Grid item md={4} xs={12}>
             <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
-              <Box display='flex' flexDirection='column' gap={2}>
+              <Box display="flex" flexDirection="column" gap={2}>
                 <RHFTextField
-                  name='accountNumber'
-                  label='Account Number'
+                  name="accountNumber"
+                  label="Account Number"
                   inputProps={{ inputMode: 'numeric' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -300,29 +325,32 @@ export default function CompanyProfile() {
                   }}
                 />
                 <RHFAutocomplete
-                  name='accountType'
-                  label='Account Type'
+                  name="accountType"
+                  label="Account Type"
                   options={ACCOUNT_TYPE_OPTIONS}
                   isOptionEqualToValue={(option, value) => option === value}
                 />
-                <RHFTextField name='accountHolderName' label='Account Holder Name' />
-                <RHFTextField name='bankName' label='Bank Name' />
+                <RHFTextField name="accountHolderName" label="Account Holder Name" />
+                <RHFTextField name="bankName" label="Bank Name" />
                 <RHFTextField
-                  name='IFSC'
-                  label='IFSC Code'
+                  name="IFSC"
+                  label="IFSC Code"
                   inputProps={{
                     style: { textTransform: 'uppercase' },
                   }}
                 />
-                <RHFTextField name='branchName' label='Branch Name' />
+                <RHFTextField name="branchName" label="Branch Name" />
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'end' }}>
-                  <LoadingButton onClick={handleSubmitBankDetails(onSubmitBankDetails)} variant='contained'
-                                 loading={loading2}>
+                  <LoadingButton
+                    onClick={handleSubmitBankDetails(onSubmitBankDetails)}
+                    variant="contained"
+                    loading={loading2}
+                  >
                     {editingBankDetail ? 'Update Bank Details' : 'Add Bank Details'}
                   </LoadingButton>
                   <LoadingButton
                     sx={{ margin: '0px 5px' }}
-                    variant='contained'
+                    variant="contained"
                     onClick={() => resetBankDetails()}
                     disabled={loading2}
                   >
@@ -336,8 +364,10 @@ export default function CompanyProfile() {
             {companyDetail?.bankAccounts?.map((account) => (
               <Card sx={{ margin: '10px 0px' }} key={account._id}>
                 <Stack sx={{ p: 3 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
+                  <Box
+                    sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                       {account.bankName} ({account.accountType})
                     </Typography>
                     <Box>
@@ -350,7 +380,7 @@ export default function CompanyProfile() {
                     </Box>
                   </Box>
                   <Box>
-                    <Typography variant='body2'>{account.IFSC}</Typography>
+                    <Typography variant="body2">{account.IFSC}</Typography>
                   </Box>
                 </Stack>
               </Card>
