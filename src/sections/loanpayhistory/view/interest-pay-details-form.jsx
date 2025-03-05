@@ -45,9 +45,9 @@ const TABLE_HEAD = [
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'totalPay', label: 'Total Pay Amt' },
   { id: 'pdf', label: 'PDF' },
-  { id: 'entryBy', label: 'Entry By' },
   // { id: 'crDrAmt', label: 'CR/DR Amt' },
   { id: 'action', label: 'Action' },
+  { id: 'entryBy', label: 'Entry By' },
 ];
 
 function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
@@ -678,9 +678,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     ) : (
                       <TableCell>-</TableCell>
                     )}
-                    <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                      {row.entryBy || '-'}
-                    </TableCell>
+
                     {getResponsibilityValue('delete_interest', configs, user) ? (
                       <TableCell sx={{ py: 0, px: 2 }}>
                         {
@@ -705,6 +703,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     ) : (
                       <TableCell>-</TableCell>
                     )}
+                    <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                      {row.entryBy || '-'}
+                    </TableCell>
                   </TableRow>
                 </>
               ))}{' '}
