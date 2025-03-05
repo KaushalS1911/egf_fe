@@ -223,6 +223,16 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
         365
       ).toFixed(2)
     );
+    setValue(
+      'consultingCharge',
+      (
+        (((currentLoan.interestLoanAmount *
+              (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
+            100) *
+          (12 * differenceInDays)) /
+        365
+      ).toFixed(2)
+    );
     setValue('penalty', penaltyPer);
     setValue(
       'totalPay',
