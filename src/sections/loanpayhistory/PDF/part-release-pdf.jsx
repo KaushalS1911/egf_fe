@@ -249,7 +249,7 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                 style={{
                   textAlign: 'center',
                   fontSize: 18,
-                  marginRight: 25,
+                  // marginRight: 25,
                   marginBottom: 10,
                 }}
               >
@@ -329,10 +329,19 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
                   marginTop: 10,
+                  gap: 10,
                 }}
               >
-                <View>
-                  <Text style={{ marginTop: 10 }}>
+                <View
+                  style={{
+                    border: '1px solid black',
+                    borderRadius: 5,
+                    padding: 5,
+                    height: '100%',
+                    width: '100%',
+                  }}
+                >
+                  <Text>
                     <Text style={styles.subHeading}>Remark </Text>
                     <Text style={styles.colon}> : </Text>
                     <Text style={styles.subText}>{selectedRow.remark}</Text>

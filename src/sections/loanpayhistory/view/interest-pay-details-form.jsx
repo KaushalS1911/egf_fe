@@ -644,7 +644,10 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>
                       {(row?.interestAmount).toFixed(2) || 0}
                     </TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row?.consultingCharge.toFixed(2)}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
+                      {(Number(row?.consultingCharge) || 0).toFixed(2)}
+                    </TableCell>
+
                     <TableCell sx={{ py: 0, px: 2 }}>{row.penalty}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
                       {row.interestAmount + row.penalty + row.consultingCharge}
