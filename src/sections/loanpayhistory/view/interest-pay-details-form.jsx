@@ -145,17 +145,11 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       currentLoan?.issueDate && loanInterest?.length === 0
         ? new Date(currentLoan.issueDate)
         : new Date(loanInterest[0]?.to).setDate(new Date(loanInterest[0]?.to).getDate() + 1),
-    to:new Date(currentLoan.nextInstallmentDate),
+    to: new Date(currentLoan.nextInstallmentDate),
     days: '',
     amountPaid: '',
     interestAmount: currentLoan?.scheme.interestRate || '',
-    consultingCharge:  (
-      (((currentLoan.interestLoanAmount *
-            (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
-          100) *
-        (12 * differenceInDays)) /
-      365
-    ).toFixed(2) || 0,
+    consultingCharge: '',
     penalty: '',
     uchakAmount: currentLoan?.uchakInterestAmount || 0,
     cr_dr: '',
@@ -233,8 +227,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       'consultingCharge',
       (
         (((currentLoan.interestLoanAmount *
-              (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
-            100) *
+          (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
+          100) *
           (12 * differenceInDays)) /
         365
       ).toFixed(2)
