@@ -327,7 +327,8 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
+                  alignItems: 'flex-start',
+                  marginTop: 10,
                 }}
               >
                 <View>
@@ -336,24 +337,24 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                     <Text style={styles.colon}> : </Text>
                     <Text style={styles.subText}>{selectedRow.remark}</Text>
                   </Text>
-                  <Text
-                    style={{
-                      marginTop: 20,
-                    }}
-                  >
-                    <Text style={[styles.subHeading, { fontSize: 12 }]}>
-                      Accepted & Received Amount
-                    </Text>
-                    <Text style={[styles.colon, { fontSize: 12 }]}> : </Text>
-                    <Text style={[styles.subText, { fontSize: 12, fontWeight: 'bold' }]}>
-                      {selectedRow.adjustedAmount}
-                    </Text>
-                  </Text>
                 </View>
                 <View>
                   <Image src={selectedRow.propertyImage} style={styles.img} />
                 </View>
               </View>
+              <Text
+                style={{
+                  marginTop: 20,
+                }}
+              >
+                <Text style={[styles.subHeading, { fontSize: 12 }]}>
+                  Accepted & Received Amount
+                </Text>
+                <Text style={[styles.colon, { fontSize: 12 }]}> : </Text>
+                <Text style={[styles.subText, { fontSize: 12, fontWeight: 'bold' }]}>
+                  {selectedRow.adjustedAmount}
+                </Text>
+              </Text>
             </View>
             <View style={{ ...styles.d_flex, marginBottom: 52.5 }}>
               <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>

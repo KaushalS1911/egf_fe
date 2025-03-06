@@ -35,7 +35,8 @@ const TABLE_HEAD = [
   { id: 'loanAmount', label: 'Loan Amt' },
   { id: 'interestLoanAmount', label: 'Int Loan Amt' },
   { id: 'interestRate', label: 'Int. + con. Rate' },
-  { id: 'int+concharge', label: 'Int. + con.charge ' },
+  { id: 'int+concharge', label: 'Int. amt' },
+  { id: 'concharge', label: 'con. charge ' },
   { id: 'penaltyAmount', label: 'Penalty Amt' },
   { id: 'totalpay', label: 'Total pay' },
   { id: 'uchakAmt', label: 'Uchak Amt' },
@@ -46,8 +47,8 @@ const TABLE_HEAD = [
   { id: 'totalPay', label: 'Total Pay Amt' },
   { id: 'pdf', label: 'PDF' },
   // { id: 'crDrAmt', label: 'CR/DR Amt' },
-  { id: 'action', label: 'Action' },
   { id: 'entryBy', label: 'Entry By' },
+  { id: 'action', label: 'Action' },
 ];
 
 function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
@@ -641,8 +642,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       {row.loan.scheme.interestRate}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {(row?.interestAmount + row?.consultingCharge).toFixed(2) || 0}
+                      {(row?.interestAmount).toFixed(2) || 0}
                     </TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row?.consultingCharge.toFixed(2)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.penalty}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
                       {row.interestAmount + row.penalty + row.consultingCharge}
@@ -674,7 +676,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     ) : (
                       <TableCell>-</TableCell>
                     )}
-
+                    <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                      {row.entryBy || '-'}
+                    </TableCell>
                     {getResponsibilityValue('delete_interest', configs, user) ? (
                       <TableCell sx={{ py: 0, px: 2 }}>
                         {
@@ -699,9 +703,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     ) : (
                       <TableCell>-</TableCell>
                     )}
-                    <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                      {row.entryBy || '-'}
-                    </TableCell>
                   </TableRow>
                 </>
               ))}{' '}
@@ -723,6 +724,16 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                   }}
                 >
                   {intAmt + conCharge}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: '600',
+                    color: '#637381',
+                    py: 1,
+                    px: 2,
+                  }}
+                >
+                  {conCharge}
                 </TableCell>
                 <TableCell
                   sx={{
