@@ -237,10 +237,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     setValue(
       'totalPay',
       (
-        Number(watch('interestAmount')) +
-        Number(watch('penalty') + Number(watch('consultingCharge')))
+        Number(watch('interestAmount') || 0) +
+        Number(watch('penalty') || 0) +
+        Number(watch('consultingCharge') || 0)
       ).toFixed(2)
     );
+
     setValue(
       'payAfterAdjusted1',
       (Number(watch('totalPay')) - Number(watch('uchakAmount')) - Number(watch('oldCrDr'))).toFixed(
