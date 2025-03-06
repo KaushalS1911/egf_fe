@@ -329,7 +329,6 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
                   marginTop: 10,
-                  gap: 10,
                 }}
               >
                 <View
@@ -338,7 +337,7 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                     borderRadius: 5,
                     padding: 5,
                     height: '100%',
-                    width: '100%',
+                    width: '80%',
                   }}
                 >
                   <Text>
