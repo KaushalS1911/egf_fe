@@ -6,7 +6,7 @@ import { useAuthContext } from '../auth/hooks/index.js';
 export function useGetOtherLoanInterestPay(otherLoanId) {
   const { user } = useAuthContext();
 
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user._id}/other-loans/${otherLoanId}/interest`;
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loans/${otherLoanId}/interest`;
   const {
     data,
     isLoading,

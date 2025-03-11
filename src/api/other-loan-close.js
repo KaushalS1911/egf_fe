@@ -5,7 +5,7 @@ import { useAuthContext } from '../auth/hooks/index.js';
 
 export function useGetOtherCloseLoan(otherLoanId) {
   const { user } = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user._id}/other-loans/${otherLoanId}/loan-close`;
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user.company}/other-loans/${otherLoanId}/loan-close`;
   const {
     data,
     isLoading,

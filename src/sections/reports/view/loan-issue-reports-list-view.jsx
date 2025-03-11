@@ -9,10 +9,8 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -26,19 +24,11 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import axios from 'axios';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Label from '../../../components/label';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { useGetLoanissue } from '../../../api/loanissue';
-import { useGetConfigs } from '../../../api/config';
-import InterestReportsTableRow from '../interest-reports/interest-reports-table-row.jsx';
-import InterestReportsTableFiltersResult from '../interest-reports/interest-reports-table-filters-result.jsx';
-import InterestReportsTableToolbar from '../interest-reports/interest-reports-table-toolbar.jsx';
-import { useAuthContext } from '../../../auth/hooks/index.js';
-import { useGetInterestReports } from '../../../api/interest-reports.js';
+import { useGetLoanIssueReport } from '../../../api/loan-issue-reports.js';
+import LoanIssueReportsTableToolbar from '../loan-issue-report/loan-issue-reports-table-toolbar.jsx';
+import LoanIssueReportsTableFiltersResult from '../loan-issue-report/loan-issue-reports-table-filters-result.jsx';
+import LoanIssueReportsTableRow from '../loan-issue-report/loan-issue-reports-table-row.jsx';
 import { isBetween } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
@@ -46,45 +36,43 @@ import { isBetween } from '../../../utils/format-time.js';
 const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
+  { id: 'issueDate', label: 'Issue date' },
   { id: 'customerName', label: 'Customer name' },
-  { id: 'loanAmt', label: 'Loan amt' },
-  { id: 'partLoanAmt', label: 'Part loan amt' },
+  { id: 'ContactNo', label: 'Contact' },
+  { id: 'loanAmt', label: 'Total loan amt' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'InterestRate', label: 'Rate' },
-  { id: 'consultingCharge', label: 'Consulting Charge' },
-  { id: 'intamt', label: 'int. amt' },
-  { id: 'conamt', label: 'Con. amt' },
-  { id: 'penalty', label: 'Penalty' },
-  { id: 'totalPayIntAmt', label: 'Total Int. amt' },
-  { id: 'lastInterestPayDate', label: 'Last Int. pay date' },
-  { id: 'pendingDay', label: 'Pending day' },
-  { id: 'pendingIntAmt', label: 'Pending Int. amt' },
+  { id: 'PartLoanAmount', label: 'Part loan amt' },
+  { id: 'InterestRate', label: 'Int. rate' },
+  { id: 'CashAmount', label: 'Cash amt' },
+  { id: 'BankAmount', label: 'Bank amt' },
+  { id: 'status', label: 'Status' },
+  { id: 'reports', label: 'Reports' },
 ];
 
 const defaultFilters = {
   username: '',
-  branch: '',
   startDate: null,
   endDate: null,
+  branch: '',
 };
 
 // ----------------------------------------------------------------------
 
-export default function InterestReportsListView() {
+export default function LoanIssueReportsListView() {
   const table = useTable();
-  const { Loanissue, LoanissueLoading } = useGetInterestReports();
+  const { loanIssueReports, loanIssueReportsLoading } = useGetLoanIssueReport();
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
 
   useEffect(() => {
-    const updatedData = Loanissue.map((item, index) => ({
+    const updatedData = loanIssueReports.map((item, index) => ({
       ...item,
       srNo: index + 1,
     }));
     setSrData(updatedData);
-  }, [Loanissue]);
+  }, [loanIssueReports]);
 
   const dataFiltered = applyFilter({
     inputData: srData,
@@ -111,7 +99,7 @@ export default function InterestReportsListView() {
     setFilters(defaultFilters);
   }, []);
 
-  if (LoanissueLoading) {
+  if (loanIssueReportsLoading) {
     return <LoadingScreen />;
   }
 
@@ -126,13 +114,9 @@ export default function InterestReportsListView() {
           }}
         />
         <Card>
-          <InterestReportsTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            data={Loanissue}
-          />
+          <LoanIssueReportsTableToolbar filters={filters} onFilters={handleFilters} />
           {canReset && (
-            <InterestReportsTableFiltersResult
+            <LoanIssueReportsTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -188,7 +172,7 @@ export default function InterestReportsListView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
-                    <InterestReportsTableRow key={row?._id} index={index} row={row} />
+                    <LoanIssueReportsTableRow key={row?._id} index={index} row={row} />
                   ))}
                 <TableEmptyRows
                   height={denseHeight}
@@ -250,21 +234,18 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        item.loanDetails.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (branch) {
-    inputData = inputData.filter((item) => item.loanDetails.customer.branch._id === branch._id);
+    inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
   }
-
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((item) =>
-      isBetween(new Date(item?.loanDetails?.lastInstallmentDate), startDate, endDate)
-    );
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
   }
 
   return inputData;

@@ -1,55 +1,49 @@
 import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
-
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
-import CustomPopover, { usePopover } from '../../../../components/custom-popover';
-import RHFExportExcel from '../../../../components/hook-form/rhf-export-excel';
-import { useAuthContext } from '../../../../auth/hooks';
-import { useGetConfigs } from '../../../../api/config';
-import { getResponsibilityValue } from '../../../../permission/permission';
-import moment from 'moment';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { formHelperTextClasses } from '@mui/material/FormHelperText';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import { useGetBranch } from '../../../../api/branch';
+import { Box, Dialog, DialogActions, FormControl, IconButton, MenuItem } from '@mui/material';
+import CustomPopover, { usePopover } from '../../../components/custom-popover';
+import { getResponsibilityValue } from '../../../permission/permission';
+import { useAuthContext } from '../../../auth/hooks';
+import { useGetConfigs } from '../../../api/config';
 import InputLabel from '@mui/material/InputLabel';
-import { useBoolean } from '../../../../hooks/use-boolean';
+import Select from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import { useGetCustomer } from '../../../api/customer.js';
+import { useBoolean } from '../../../hooks/use-boolean.js';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../../pdf/all-branch-loan-summary-pdf.jsx';
-import { useGetLoanissue } from '../../../../api/loanissue';
-import LoanDetailsPdf from '../../pdf/loan-details-pdf.jsx';
-import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
+import LoanDetailsPdf from '../pdf/loan-details-pdf.jsx';
+import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import moment from 'moment/moment.js';
 
 // ----------------------------------------------------------------------
 
-export default function LoanDetailTableToolbarTableToolbar({
-  filters,
-  onFilters,
-  dateError,
-  dataFilter,
-  configs,
-  data,
-}) {
+export default function CustomerStatementTableToolbar({ data, filters, onFilters, dateError }) {
   const popover = usePopover();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
+  const { customer } = useGetCustomer();
+  const view = useBoolean();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  const { user } = useAuthContext();
-  const { Loanissue } = useGetLoanissue();
-  const { branch } = useGetBranch();
-
-  const view = useBoolean();
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
     },
     [onFilters]
   );
+  const handleFilterCustomer = useCallback(
+    (event) => {
+      onFilters('customer', event.target.value);
+    },
+    [onFilters]
+  );
+
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -83,17 +77,9 @@ export default function LoanDetailTableToolbarTableToolbar({
     },
     [onFilters]
   );
-  const handleFilterBranch = useCallback(
-    (event) => {
-      onFilters(
-        'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
-    },
-    [onFilters]
-  );
+
   const customStyle = {
-    maxWidth: { md: 355 },
+    maxWidth: { md: 500 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -103,13 +89,7 @@ export default function LoanDetailTableToolbarTableToolbar({
     },
     input: { height: 7 },
   };
-  const handleFilterLoan = useCallback(
-    (event) => {
-      // Set the value as a string directly
-      onFilters('loan', event.target.value);
-    },
-    [onFilters]
-  );
+
   return (
     <>
       <Stack
@@ -132,15 +112,15 @@ export default function LoanDetailTableToolbarTableToolbar({
           sx={{ width: 1, pr: 1.5 }}
         >
           {/*<TextField*/}
-          {/*  sx={{ 'input': { height: 7 } }}*/}
+          {/*  sx={{ input: { height: 7 } }}*/}
           {/*  fullWidth*/}
           {/*  value={filters.username}*/}
           {/*  onChange={handleFilterName}*/}
-          {/*  placeholder='Search...'*/}
+          {/*  placeholder="Search..."*/}
           {/*  InputProps={{*/}
           {/*    startAdornment: (*/}
-          {/*      <InputAdornment position='start'>*/}
-          {/*        <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />*/}
+          {/*      <InputAdornment position="start">*/}
+          {/*        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />*/}
           {/*      </InputAdornment>*/}
           {/*    ),*/}
           {/*  }}*/}
@@ -148,7 +128,7 @@ export default function LoanDetailTableToolbarTableToolbar({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 355 },
+              width: { xs: 1, sm: 500 },
             }}
           >
             <InputLabel
@@ -159,13 +139,13 @@ export default function LoanDetailTableToolbarTableToolbar({
                 },
               }}
             >
-              Loan
+              Choose Customer
             </InputLabel>
 
             <Select
-              value={filters.loan}
-              onChange={handleFilterLoan}
-              input={<OutlinedInput label="Loan" sx={{ height: '40px' }} />}
+              value={filters.customer}
+              onChange={handleFilterCustomer}
+              input={<OutlinedInput label="Choose Customer" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -187,75 +167,13 @@ export default function LoanDetailTableToolbarTableToolbar({
                 },
               }}
             >
-              {Loanissue.map((option) => (
+              {customer.map((option) => (
                 <MenuItem key={option._id} value={option._id}>
-                  {option?.loanNo}
+                  {`${option?.firstName} ${option?.middleName} ${option?.lastName}`}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>{' '}
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 350 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Branch
-            </InputLabel>
-            <Select
-              value={filters.branch}
-              onChange={handleFilterBranch}
-              input={<OutlinedInput label="Branch" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {branch.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {/*<DatePicker*/}
-          {/*  label='Date'*/}
-          {/*  value={filters.startDate ? moment(filters.startDate).toDate() : null}*/}
-          {/*  open={startDateOpen}*/}
-          {/*  onClose={() => setStartDateOpen(false)}*/}
-          {/*  onChange={handleFilterStartDate}*/}
-          {/*  slotProps={{*/}
-          {/*    textField: {*/}
-          {/*      onClick: () => setStartDateOpen(true),*/}
-          {/*      fullWidth: true,*/}
-          {/*    },*/}
-          {/*  }}*/}
-          {/*  sx={{...customStyle}}*/}
-          {/*/>*/}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -298,7 +216,7 @@ export default function LoanDetailTableToolbarTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
+          {getResponsibilityValue('print_loanPayHistory_detail', configs, user) && (
             <>
               {' '}
               <MenuItem
@@ -317,13 +235,6 @@ export default function LoanDetailTableToolbarTableToolbar({
               >
                 <Iconify icon="ant-design:file-pdf-filled" />
                 PDF
-              </MenuItem>
-              <MenuItem>
-                <RHFExportExcel
-                  // data={loans}
-                  fileName="LaonissueData"
-                  sheetName="LoanissueDetails"
-                />
               </MenuItem>
             </>
           )}
@@ -346,7 +257,7 @@ export default function LoanDetailTableToolbarTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <LoanDetailsPdf data={data} configs={configs} />
+              <CustomerStatementPdf data={data} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>
@@ -355,7 +266,7 @@ export default function LoanDetailTableToolbarTableToolbar({
   );
 }
 
-LoanDetailTableToolbarTableToolbar.propTypes = {
+CustomerStatementTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

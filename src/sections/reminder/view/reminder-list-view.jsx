@@ -36,6 +36,7 @@ const TABLE_HEAD = [
   { id: 'customerName', label: 'Customer name' },
   { id: 'otpNo.', label: 'OTP no.' },
   { id: 'loanAmount', label: 'Loan amt' },
+  { id: 'intloanAmount', label: 'Int. loan amt' },
   { id: 'days', label: 'Days' },
   { id: 'nextInterestPaydate', label: 'Next int. pay date' },
   { id: 'issueDate', label: 'Issue date' },
@@ -286,7 +287,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter(
       (rem) =>
         rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) ||
-        rem.customer.lastName.toLowerCase().includes(name.toLowerCase())
+        rem.customer.middleName.toLowerCase().includes(name.toLowerCase()) ||
+        rem.customer.lastName.toLowerCase().includes(name.toLowerCase()) ||
+        rem.loanNo.includes(name.toLowerCase())
     );
   }
   if (nextInstallmentDay.length) {

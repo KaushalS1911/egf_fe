@@ -9,10 +9,8 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -26,19 +24,13 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import axios from 'axios';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Label from '../../../components/label';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { useGetLoanissue } from '../../../api/loanissue';
-import { useGetConfigs } from '../../../api/config';
-import InterestReportsTableRow from '../interest-reports/interest-reports-table-row.jsx';
 import InterestReportsTableFiltersResult from '../interest-reports/interest-reports-table-filters-result.jsx';
-import InterestReportsTableToolbar from '../interest-reports/interest-reports-table-toolbar.jsx';
-import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetInterestReports } from '../../../api/interest-reports.js';
+import CustomerStatementTableToolbar from '../customer-statement/customer-statement-table-toolbar.jsx';
+import CustomerStatementTableRow from '../customer-statement/customer-statement-table-row.jsx';
+import axios from 'axios';
+import { useAuthContext } from '../../../auth/hooks/index.js';
 import { isBetween } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
@@ -50,42 +42,61 @@ const TABLE_HEAD = [
   { id: 'loanAmt', label: 'Loan amt' },
   { id: 'partLoanAmt', label: 'Part loan amt' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'InterestRate', label: 'Rate' },
-  { id: 'consultingCharge', label: 'Consulting Charge' },
-  { id: 'intamt', label: 'int. amt' },
-  { id: 'conamt', label: 'Con. amt' },
-  { id: 'penalty', label: 'Penalty' },
-  { id: 'totalPayIntAmt', label: 'Total Int. amt' },
-  { id: 'lastInterestPayDate', label: 'Last Int. pay date' },
-  { id: 'pendingDay', label: 'Pending day' },
-  { id: 'pendingIntAmt', label: 'Pending Int. amt' },
+  { id: 'amount', label: 'amount' },
+  { id: 'entry', label: 'Entry date' },
 ];
 
 const defaultFilters = {
   username: '',
-  branch: '',
+  customer: '',
   startDate: null,
   endDate: null,
 };
 
 // ----------------------------------------------------------------------
 
-export default function InterestReportsListView() {
+export default function CustomerStatementListView() {
   const table = useTable();
-  const { Loanissue, LoanissueLoading } = useGetInterestReports();
+  const { user } = useAuthContext();
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
+  const [customerStatement, setCustomerStatement] = useState([]);
+  const [customerStatementLoading, setCustomerStatementLoading] = useState(false);
+  const fetchCustomerStatement = async () => {
+    if (!filters.customer) return;
+
+    try {
+      setCustomerStatementLoading(true);
+
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer-statement/${filters.customer}`
+      );
+
+      const statementData = res.data.data || [];
+
+      console.log(statementData); // Debugging API response
+
+      const updatedData = statementData.map((item, index) => ({
+        ...item,
+        srNo: index + 1,
+      }));
+
+      console.log(updatedData, '111111111111');
+
+      setCustomerStatement(statementData);
+      setSrData(updatedData);
+    } catch (error) {
+      console.error('Error fetching customer statement:', error);
+    } finally {
+      setCustomerStatementLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const updatedData = Loanissue.map((item, index) => ({
-      ...item,
-      srNo: index + 1,
-    }));
-    setSrData(updatedData);
-  }, [Loanissue]);
-
+    fetchCustomerStatement();
+  }, [filters.customer]);
   const dataFiltered = applyFilter({
     inputData: srData,
     comparator: getComparator(table.order, table.orderBy),
@@ -111,25 +122,28 @@ export default function InterestReportsListView() {
     setFilters(defaultFilters);
   }, []);
 
-  if (LoanissueLoading) {
+  if (customerStatementLoading) {
     return <LoadingScreen />;
   }
-
+  console.log(user, '0000000');
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Interest Reports"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Interest Reports' }]}
+          heading="Customer Statement"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Customer Statement' },
+          ]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
-          <InterestReportsTableToolbar
+          <CustomerStatementTableToolbar
             filters={filters}
             onFilters={handleFilters}
-            data={Loanissue}
+            data={customerStatement}
           />
           {canReset && (
             <InterestReportsTableFiltersResult
@@ -188,7 +202,7 @@ export default function InterestReportsListView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
-                    <InterestReportsTableRow key={row?._id} index={index} row={row} />
+                    <CustomerStatementTableRow key={row?._id} index={index} row={row} />
                   ))}
                 <TableEmptyRows
                   height={denseHeight}
@@ -237,7 +251,7 @@ export default function InterestReportsListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, startDate, endDate, branch } = filters;
+  const { username, startDate, endDate } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -257,14 +271,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.loanDetails.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
-  if (branch) {
-    inputData = inputData.filter((item) => item.loanDetails.customer.branch._id === branch._id);
-  }
-
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((item) =>
-      isBetween(new Date(item?.loanDetails?.lastInstallmentDate), startDate, endDate)
-    );
+    inputData = inputData.filter((item) => isBetween(new Date(item.createdAt), startDate, endDate));
   }
 
   return inputData;

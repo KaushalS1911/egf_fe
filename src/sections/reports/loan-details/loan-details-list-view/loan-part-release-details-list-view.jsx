@@ -54,7 +54,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
+export default function LoanPartReleaseDetailsListView({ partReleaseDetail, dataFilters }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -68,11 +68,12 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
     inputData: partReleaseDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
+    dataFilters,
   });
 
   const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -86,7 +87,7 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -113,7 +114,7 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -131,14 +132,14 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
   // const loans = Loanissue.map((item) => ({
@@ -185,11 +186,13 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -197,13 +200,13 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -228,7 +231,7 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
                     <LoanPartReleaseDetailsTableRow
@@ -246,14 +249,13 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                {
-                  dataFiltered.length == 0 &&
+                {dataFiltered.length == 0 && (
                   <TableRow>
-                    <TableCell colSpan={15} align='center' sx={{ p: 1, fontWeight: 500 }}>
+                    <TableCell colSpan={15} align="center" sx={{ p: 1, fontWeight: 500 }}>
                       No Data Available
                     </TableCell>
                   </TableRow>
-                }
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -271,7 +273,7 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -279,8 +281,8 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -295,8 +297,8 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail }) {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch } = filters;
+function applyFilter({ inputData, comparator, filters, dateError, dataFilters }) {
+  const { username, status, startDate, endDate, branch } = dataFilters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -311,7 +313,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
 
@@ -320,13 +322,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
 
   if (branch) {
-    inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
+    inputData = inputData.filter((item) => item.loan.customer.branch.name == branch.name);
   }
 
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((loan) =>
-      isBetween(new Date(loan.issueDate), startDate, endDate),
-    );
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.date), startDate, endDate));
   }
 
   return inputData;

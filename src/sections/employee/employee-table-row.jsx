@@ -16,12 +16,19 @@ import { getResponsibilityValue } from '../../permission/permission';
 import { useGetConfigs } from '../../api/config';
 import Lightbox, { useLightBox } from '../../components/lightbox';
 import React from 'react';
-
+import Label from '../../components/label/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow, loginuser, onDeleteRow }) {
-  const { user, joiningDate } = row;
+export default function EmployeeTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  loginuser,
+  onDeleteRow,
+}) {
+  const { user, joiningDate, status } = row;
   const { avatar_url, contact, firstName, lastName, middleName, role, email } = user;
   const { configs } = useGetConfigs();
   const confirm = useBoolean();
@@ -31,17 +38,17 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={firstName} src={avatar_url} onClick={() => lightbox.onOpen(avatar_url)}
-                  sx={{ mr: 2, cursor: 'pointer' }} />
-          <Lightbox
-            image={avatar_url}
-            open={lightbox.open}
-            close={lightbox.onClose}
+          <Avatar
+            alt={firstName}
+            src={avatar_url}
+            onClick={() => lightbox.onOpen(avatar_url)}
+            sx={{ mr: 2, cursor: 'pointer' }}
           />
+          <Lightbox image={avatar_url} open={lightbox.open} close={lightbox.onClose} />
           <ListItemText
             primary={firstName + ' ' + middleName + ' ' + lastName}
             secondary={email}
@@ -56,46 +63,68 @@ export default function EmployeeTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('delete_employee', configs, loginuser) || getResponsibilityValue('update_employee', configs, loginuser) ?
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Label
+            variant="soft"
+            color={
+              (status === 'Disbursed' && 'info') ||
+              (status === 'InActive' && 'warning') ||
+              (status === 'Block' && 'error') ||
+              (status === 'Active' && 'success') ||
+              'default'
+            }
+          >
+            {status}
+          </Label>
+        </TableCell>
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {getResponsibilityValue('delete_employee', configs, loginuser) ||
+          getResponsibilityValue('update_employee', configs, loginuser) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : ''}
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('delete_employee', configs, loginuser) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
-        {getResponsibilityValue('update_employee', configs, loginuser) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
+        {getResponsibilityValue('delete_employee', configs, loginuser) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
+        {getResponsibilityValue('update_employee', configs, loginuser) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -22,13 +22,21 @@ import LoanCloseDetailsListView from '../loan-details/loan-details-list-view/loa
 import { useGetSingleLoan } from '../../../api/single-loan-details';
 import LoanDetailTableToolbarTableToolbar from '../loan-details/loan-details-table/loan-detail-table-toolbar-table-toolbar';
 import { LoadingScreen } from '../../../components/loading-screen/index.js';
+import Grid from '@mui/material/Unstable_Grid2';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import NewGoldLonListView from '../daily-reports/daily-reports-list-view/new-gold-lon-list-view.jsx';
+import GoldLoanInterestListView from '../daily-reports/daily-reports-list-view/gold-loan-interest-list-view.jsx';
+import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-view/gold-loan-part-payment-list-view.jsx';
+import GoldLoanUchakPartListView from '../daily-reports/daily-reports-list-view/gold-loan-uchak-part-list-view.jsx';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
   username: '',
   status: 'All',
-  startDate: new Date(),
+  startDate: null,
   endDate: null,
   branch: '',
   loan: '',
@@ -46,14 +54,38 @@ export default function LoanDetailsListView() {
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
   const loan = filters?.loan;
-  const { loanDetail, loanDetailLoading } = useGetSingleLoan(loan);
   const params = new URLSearchParams();
   // if (filters.branch._id) params.append('branch', filters.branch._id);
   // if (filters.startDate) params.append('date', filters.startDate.toLocaleDateString());
   // if(filters.username) params.append('username',filters.username)
-  const date = filters.startDate.toLocaleDateString();
   // const { report, reportLoading } = useGetDailyReport(params);
-  const [tableData, setTableData] = useState(loanDetail);
+  const [activeTab, setActiveTab] = useState(0);
+  const [loanDetail, setLoanDetail] = useState({});
+  const [loanDetailLoading, setLoanDetailLoading] = useState(false);
+  const handleChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+  const fetchReports = async () => {
+    if (!filters.loan) return;
+
+    try {
+      setLoanDetailLoading(true);
+
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/loan-detail/${loan}`
+      );
+
+      setLoanDetail(res?.data?.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoanDetailLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, [filters.loan]);
 
   const dataFiltered = applyFilter({
     inputData: loanDetail,
@@ -138,27 +170,58 @@ export default function LoanDetailsListView() {
             configs={configs}
             data={data}
           />
-          <Box>
-            <LoanInterestDetailsListView interestDetail={loanDetail?.interestDetail || []} />
-          </Box>
-          <Box mt={2}>
-            <LoanPartReleaseDetailsListView
-              partReleaseDetail={loanDetail?.partReleaseDetail || []}
-            />
-          </Box>
-          <Box mt={2}>
-            <LoanUchakPayDetailsListView
-              uchakInterestDetail={loanDetail?.uchakInterestDetail || []}
-            />
-          </Box>
-          <Box mt={2}>
-            <LoanPartPaymentDetailsListView
-              partPaymentDetail={loanDetail?.partPaymentDetail || []}
-            />
-          </Box>
-          <Box mt={2}>
-            <LoanCloseDetailsListView loanCloseDetail={loanDetail?.loanCloseDetail || []} />
-          </Box>
+          <Box></Box>
+          <Box mt={2}></Box>
+          <Box mt={2}></Box>
+          <Box mt={2}></Box>
+          <Box mt={2}></Box>
+          <Grid container spacing={3} sx={{ mt: 1.5 }}>
+            <Grid item xs={12} P={0}>
+              <Tabs
+                value={activeTab}
+                onChange={handleChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{ px: 3, mb: 1.5, '.css-1obiyde-MuiTabs-indicator': { bottom: 8 } }}
+              >
+                <Tab label="Loan Interest Details" />
+                <Tab label="Loan part Release Details" />
+                <Tab label="Loan Uchak Pay Details" />
+                <Tab label="Loan part Payment Details" />
+                <Tab label="Loan Close Details" />
+              </Tabs>
+              {activeTab === 0 && (
+                <LoanInterestDetailsListView
+                  interestDetail={loanDetail?.interestDetail || []}
+                  dataFilters={filters}
+                />
+              )}
+              {activeTab === 1 && (
+                <LoanPartReleaseDetailsListView
+                  partReleaseDetail={loanDetail?.partReleaseDetail || []}
+                  dataFilters={filters}
+                />
+              )}
+              {activeTab === 2 && (
+                <LoanUchakPayDetailsListView
+                  uchakInterestDetail={loanDetail?.uchakInterestDetail || []}
+                  dataFilters={filters}
+                />
+              )}
+              {activeTab === 3 && (
+                <LoanPartPaymentDetailsListView
+                  partPaymentDetail={loanDetail?.partPaymentDetail || []}
+                  dataFilters={filters}
+                />
+              )}{' '}
+              {activeTab === 4 && (
+                <LoanCloseDetailsListView
+                  loanCloseDetail={loanDetail?.loanCloseDetail || []}
+                  dataFilters={filters}
+                />
+              )}
+            </Grid>
+          </Grid>
         </Card>
       </Container>
       <ConfirmDialog

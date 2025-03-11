@@ -197,7 +197,6 @@ export default function InvoiceFooter({ configs }) {
   const branchCode = branch?.branchCode || '-';
   const branchEmail = branch?.email || '-';
   const branchContact = branch?.contact || '-';
-  console.log(branch, '000000000000000');
   return (
     <View style={styles.headerbox2}>
       <Image style={styles.backgroundImage} src={footer} />

@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, Controller, useFieldArray, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -31,6 +31,7 @@ import { useGetConfigs } from '../../api/config.js';
 
 const TABLE_HEAD = [
   { id: 'propertyName', label: 'Property Name' },
+  { id: 'ornaments', label: 'Ornament' },
   { id: 'totalWeight', label: 'Total Weight' },
   { id: 'loseWeight', label: 'Lose Weight' },
   { id: 'grossWeight', label: 'Gross Weight' },
@@ -47,7 +48,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   const [cashPendingAmt, setCashPendingAmt] = useState(0);
   const [bankPendingAmt, setBankPendingAmt] = useState(0);
   const { user } = useAuthContext();
-
   const paymentSchema =
     currentDisburse.paymentMode === 'Bank'
       ? {
@@ -110,6 +110,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       items:
         currentDisburse?.propertyDetails?.map((item) => ({
           propertyName: item.type || '',
+          pcs: item.pcs || '',
           totalWeight: item.totalWeight || '',
           loseWeight: item.lossWeight || '',
           grossWeight: item.grossWeight || '',
@@ -266,6 +267,16 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       });
     }
   };
+
+  const calculateTotal = (field) => {
+    if (!currentDisburse?.propertyDetails || currentDisburse.propertyDetails.length === 0) return 0;
+
+    return currentDisburse.propertyDetails.reduce(
+      (prev, next) => prev + (Number(next?.[field]) || 0),
+      0
+    );
+  };
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -312,7 +323,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                   <TableBody>
                     {fields.map((row, index) => (
                       <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: 'inherit' } }}>
-                        <TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
                           <RHFTextField
                             name={`propertyDetails.${index}.propertyName`}
                             label="Property Name"
@@ -320,7 +331,15 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                             disabled={true}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.pcs`}
+                            label="Ornament"
+                            defaultValue={row.pcs || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
                           <RHFTextField
                             name={`propertyDetails.${index}.totalWeight`}
                             label="Total Weight"
@@ -328,7 +347,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                             disabled={true}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
                           <RHFTextField
                             name={`propertyDetails.${index}.loseWeight`}
                             label="Lose Weight"
@@ -336,7 +355,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                             disabled={true}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
                           <RHFTextField
                             name={`propertyDetails.${index}.grossWeight`}
                             label="Gross Weight"
@@ -344,7 +363,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                             disabled={true}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
                           <RHFTextField
                             name={`propertyDetails.${index}.netWeight`}
                             label="Net Weight"
@@ -352,7 +371,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                             disabled={true}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
                           <RHFTextField
                             name={`propertyDetails.${index}.loanApplicableAmount`}
                             label="Loan Applicable Amount"
@@ -362,6 +381,37 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         </TableCell>
                       </TableRow>
                     ))}
+                    <TableRow
+                      sx={{
+                        backgroundColor: (theme) =>
+                          theme.palette.mode === 'light' ? '#e0f7fa' : '#2f3944',
+                      }}
+                    >
+                      <TableCell
+                        sx={{
+                          padding: '8px',
+                        }}
+                      >
+                        <strong>Total:</strong>
+                      </TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}>{calculateTotal('pcs')}</TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}>
+                        {calculateTotal('totalWeight')}
+                      </TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}>
+                        {calculateTotal('lossWeight')}
+                      </TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}>
+                        {calculateTotal('grossWeight')}
+                      </TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}>
+                        {calculateTotal('netWeight')}
+                      </TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}>
+                        {calculateTotal('netAmount')}
+                      </TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}></TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>

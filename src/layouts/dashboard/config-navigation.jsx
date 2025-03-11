@@ -37,20 +37,20 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
-  inquiry: <Iconify icon='heroicons-solid:newspaper' sx={{ width: 1, height: 1 }} />,
+  inquiry: <Iconify icon="heroicons-solid:newspaper" sx={{ width: 1, height: 1 }} />,
   customer: icon('ic_user'),
-  employee: <Iconify icon='clarity:employee-solid' sx={{ width: 1, height: 1 }} />,
-  scheme: <Iconify icon='bxs:offer' sx={{ width: 1, height: 1 }} />,
-  carat: <Iconify icon='mdi:gold' sx={{ width: 1, height: 1 }} />,
-  loanType: <Iconify icon='mdi:currency-usd-outline' sx={{ width: 1, height: 1 }} />,
-  property: <Iconify icon='clarity:building-solid' sx={{ width: 1, height: 1 }} />,
-  penalty: <Iconify icon='icon-park-outline:gavel' sx={{ width: 1, height: 1 }} />,
-  loanissue: <Iconify icon='streamline:bank-solid' />,
-  disburse: <Iconify icon='mdi:bank-transfer-out' sx={{ width: '30px', height: '30px' }} />,
-  reminder: <Iconify icon='carbon:reminder' sx={{ width: 1, height: 1 }} />,
-  setting: <Iconify icon='solar:settings-bold-duotone' width={24} />,
-  goldLoanCalculator: <Iconify icon='icon-park-solid:calculator' width={24} />,
-  loanPayHistory: <Iconify icon='cuida:history-outline' width={24} />,
+  employee: <Iconify icon="clarity:employee-solid" sx={{ width: 1, height: 1 }} />,
+  scheme: <Iconify icon="bxs:offer" sx={{ width: 1, height: 1 }} />,
+  carat: <Iconify icon="mdi:gold" sx={{ width: 1, height: 1 }} />,
+  loanType: <Iconify icon="mdi:currency-usd-outline" sx={{ width: 1, height: 1 }} />,
+  property: <Iconify icon="clarity:building-solid" sx={{ width: 1, height: 1 }} />,
+  penalty: <Iconify icon="icon-park-outline:gavel" sx={{ width: 1, height: 1 }} />,
+  loanissue: <Iconify icon="streamline:bank-solid" />,
+  disburse: <Iconify icon="mdi:bank-transfer-out" sx={{ width: '30px', height: '30px' }} />,
+  reminder: <Iconify icon="carbon:reminder" sx={{ width: 1, height: 1 }} />,
+  setting: <Iconify icon="solar:settings-bold-duotone" width={24} />,
+  goldLoanCalculator: <Iconify icon="icon-park-solid:calculator" width={24} />,
+  loanPayHistory: <Iconify icon="cuida:history-outline" width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -172,6 +172,14 @@ export function useNavData() {
                 title: t('Interest Reports'),
                 path: paths.dashboard.reports['interest-reports'],
               },
+              {
+                title: t('customer statement'),
+                path: paths.dashboard.reports['customer-statement'],
+              },
+              {
+                title: t('loan issue reports'),
+                path: paths.dashboard.reports['loan-issue-reports'],
+              },
             ],
           },
         ],
@@ -187,7 +195,7 @@ export function useNavData() {
         ],
       },
     ],
-    [t],
+    [t]
   );
 
   const module =

@@ -38,12 +38,11 @@ export default function InterestReportsTableRow({ row }) {
     _id,
     interestLoanAmount,
     consultingCharge,
-    lastInstallmentDate
+    lastInstallmentDate,
   } = row.loanDetails;
 
   const { user, initialize } = useAuthContext();
   const { configs } = useGetConfigs();
-
 
   return (
     <>
@@ -65,19 +64,36 @@ export default function InterestReportsTableRow({ row }) {
           {`${customer.firstName} ${customer.middleName} ${customer.lastName}`}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{(loanAmount && interestLoanAmount) ? loanAmount - interestLoanAmount : '0'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount ? interestLoanAmount : '0'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme ? scheme.interestRate : '0'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.totalPenalty ? row.totalPenalty : '0'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{lastInstallmentDate ? fDate(lastInstallmentDate) : '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {lastInstallmentDate ? Math.max(0, differenceInDays(new Date(), new Date(lastInstallmentDate))) : '-'}
+          {loanAmount && interestLoanAmount ? loanAmount - interestLoanAmount : '0'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount ? interestLoanAmount : '0'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.totalInterestAmount ? row.totalInterestAmount.toFixed(2) : '0'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {interestLoanAmount ? interestLoanAmount : '0'}
+        </TableCell>
+        <TableCell sx b={{ whiteSpace: 'nowrap' }}>
+          {scheme.interestRate <= 1.5 ? scheme.interestRate : 1.5}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.totalInterestAmount ? row.totalInterestAmount.toFixed(2) : '0'}
+        </TableCell>{' '}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>Con. amt</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.totalPenalty ? row.totalPenalty : '0'}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.totalInterestAmount ? row.totalInterestAmount.toFixed(2) : '0'}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {lastInstallmentDate ? fDate(lastInstallmentDate) : '-'}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {lastInstallmentDate
+            ? Math.max(0, differenceInDays(new Date(), new Date(lastInstallmentDate)))
+            : '-'}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>Pen int amt</TableCell>
       </TableRow>
-
     </>
   );
 }

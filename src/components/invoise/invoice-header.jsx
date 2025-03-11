@@ -244,7 +244,7 @@ export default function InvoiceHeader({ configs, landscape }) {
             flexDirection: 'row',
             textWrap: 'wrap',
             // paddingRight: 10,
-            marginTop: landscape ? 14 : 12,
+            marginTop: landscape ? 14 : 13,
             marginLeft: 10,
           }}
         >

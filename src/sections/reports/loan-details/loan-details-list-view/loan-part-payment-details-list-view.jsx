@@ -57,23 +57,25 @@ const TABLE_HEAD = [
   { id: 'remarks', label: 'Remarks' },
 ];
 
-
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, {
-  value: 'Issued',
-  label: 'Issued',
-}, { value: 'Disbursed', label: 'Disbursed' }];
+const STATUS_OPTIONS = [
+  { value: 'All', label: 'All' },
+  {
+    value: 'Issued',
+    label: 'Issued',
+  },
+  { value: 'Disbursed', label: 'Disbursed' },
+];
 const defaultFilters = {
   username: '',
   status: 'All',
   startDate: null,
   endDate: null,
   branch: '',
-
 };
 
 // ----------------------------------------------------------------------
 
-export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
+export default function LoanPartPaymentDetailsListView({ partPaymentDetail, dataFilters }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -88,11 +90,12 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
     inputData: partPaymentDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
+    dataFilters,
   });
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -107,7 +110,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -130,7 +133,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
     (event, newValue) => {
       handleFilters('status', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
   const handleDeleteRow = useCallback(
     (id) => {
@@ -139,7 +142,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -157,14 +160,14 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
   // const loans = Loanissue.map((item) => ({
@@ -212,11 +215,13 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
             />
           )}
 
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -224,13 +229,13 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -257,7 +262,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
                     <LoanPartPaymentDetailsTableRow
@@ -276,16 +281,14 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                {
-                  dataFiltered.length == 0 &&
+                {dataFiltered.length == 0 && (
                   <TableRow>
-                    <TableCell colSpan={15} align='center' sx={{ p: 1, fontWeight: 500 }}>
+                    <TableCell colSpan={15} align="center" sx={{ p: 1, fontWeight: 500 }}>
                       No Data Available
                     </TableCell>
                   </TableRow>
-                }
+                )}
                 {/*<TableNoData notFound={notFound} />*/}
-
               </TableBody>
             </Table>
           </TableContainer>
@@ -305,7 +308,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -313,8 +316,8 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -329,8 +332,8 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail }) {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch } = filters;
+function applyFilter({ inputData, comparator, filters, dateError, dataFilters }) {
+  const { username, status, startDate, endDate, branch } = dataFilters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -345,19 +348,17 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
   if (branch) {
-    inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
+    inputData = inputData.filter((item) => item.loan.customer.branch._id === branch._id);
   }
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((loan) =>
-      isBetween(new Date(loan.issueDate), startDate, endDate),
-    );
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.createdAt), startDate, endDate));
   }
 
   return inputData;

@@ -40,7 +40,7 @@ const TABLE_HEAD = [
   { id: 'penaltyAmount', label: 'Penalty Amt' },
   { id: 'totalpay', label: 'Total pay' },
   { id: 'uchakAmt', label: 'Uchak Amt' },
-  { id: 'oldint', label: 'Old int.' },
+  { id: 'oldcr/dr', label: 'Old cr/dr' },
   { id: 'payAfterAdjust', label: 'Pay After Adjust' },
   { id: 'days', label: 'Days' },
   { id: 'entryDate', label: 'Entry Date' },
@@ -539,10 +539,10 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       label="Cash Amount"
                       req={'red'}
                       inputProps={{ min: 0 }}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        handleCashAmountChange(e);
-                      }}
+                      // onChange={(e) => {
+                      //   field.onChange(e);
+                      //   handleCashAmountChange(`e);
+                      // }}
                     />
                   )}
                 />
@@ -645,12 +645,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       {(row?.interestAmount).toFixed(2) || 0}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {(Number(row?.consultingCharge) || 0).toFixed(2)}
+                      {Number(row?.consultingCharge).toFixed(2)}
                     </TableCell>
 
                     <TableCell sx={{ py: 0, px: 2 }}>{row.penalty}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {row.interestAmount + row.penalty + row.consultingCharge}
+                      {(row.interestAmount + row.penalty + row.consultingCharge).toFixed(2)}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.old_cr_dr}</TableCell>
@@ -726,7 +726,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {intAmt + conCharge}
+                  {intAmt.toFixed(2)}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -736,7 +736,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {conCharge}
+                  {conCharge.toFixed(2)}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -746,11 +746,11 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {penaltyAmt}
+                  {penaltyAmt.toFixed(2)}
                 </TableCell>
 
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {intAmt + penaltyAmt + conCharge}{' '}
+                  {(intAmt + penaltyAmt + conCharge).toFixed(2)}{' '}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {uchakAmt}

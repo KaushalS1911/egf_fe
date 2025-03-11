@@ -55,6 +55,7 @@ const STATUS_OPTIONS = [
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
+  { id: 'branch', label: 'Branch' },
   { id: 'aadharVerified', label: 'Aadhar verified', width: 180 },
   { id: 'contact', label: 'Contact', width: 180 },
   { id: 'CustomerCode', label: 'Customer code', width: 220 },
@@ -90,7 +91,7 @@ export default function CustomerListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -105,7 +106,7 @@ export default function CustomerListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -122,7 +123,7 @@ export default function CustomerListView() {
         `${import.meta.env.VITE_BASE_URL}/${user.data?.company}/customer`,
         {
           data: { ids: id },
-        },
+        }
       );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
@@ -137,7 +138,7 @@ export default function CustomerListView() {
       handleDelete([id]);
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -155,14 +156,14 @@ export default function CustomerListView() {
     (id) => {
       router.push(paths.dashboard.customer.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
 
   const customers = customer.map((item) => ({
@@ -191,7 +192,7 @@ export default function CustomerListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Customers'
+          heading="Customers"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Customer', href: paths.dashboard.customer.root },
@@ -202,8 +203,8 @@ export default function CustomerListView() {
               <Button
                 component={RouterLink}
                 href={paths.dashboard.customer.new}
-                variant='contained'
-                startIcon={<Iconify icon='mingcute:add-line' />}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
               >
                 Add Customer
               </Button>
@@ -225,7 +226,7 @@ export default function CustomerListView() {
             {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
-                iconPosition='end'
+                iconPosition="end"
                 value={tab.value}
                 label={tab.label}
                 icon={
@@ -263,11 +264,13 @@ export default function CustomerListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -275,13 +278,13 @@ export default function CustomerListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -297,7 +300,7 @@ export default function CustomerListView() {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    dataFiltered.map((row) => row._id),
+                    dataFiltered.map((row) => row._id)
                   )
                 }
                 sx={{
@@ -312,7 +315,7 @@ export default function CustomerListView() {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
                     <CustomerTableRow
@@ -346,7 +349,7 @@ export default function CustomerListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -354,8 +357,8 @@ export default function CustomerListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -387,7 +390,7 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (user) =>
-        (user.firstName + ' ' + user.lastName).toLowerCase().indexOf(name.toLowerCase()) !== -1,
+        (user.firstName + ' ' + user.lastName).toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

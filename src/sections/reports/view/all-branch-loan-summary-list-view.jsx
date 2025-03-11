@@ -51,26 +51,32 @@ const TABLE_HEAD = [
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'int%', label: 'int (%)' },
-  { id: 'OtherInt%', label: 'Other int (%)'},
+  { id: 'OtherInt%', label: 'Other int (%)' },
   { id: 'int%', label: 'Issue date' },
   { id: 'LoanAmount', label: 'loan amt' },
   { id: 'LastAmtPayDate', label: 'Last amt. pay date' },
   { id: 'LoanAmountPay', label: 'loan amt pay' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'LastIntPayDate', label: 'Last int. pay date'},
+  { id: 'LastIntPayDate', label: 'Last int. pay date' },
   { id: 'TotalIntPay', label: 'Total int. pay ' },
   { id: 'Day', label: ' Day ' },
   { id: 'pendingAmt', label: ' Pending int. ' },
   { id: 'nextIntPayDate', label: 'Next int. pay date' },
   { id: 'Status', label: 'Status' },
 ];
-const STATUS_OPTIONS = [{ value: 'All', label: 'All' }, { value: 'Issued', label: 'Issued' }, {
-  value: 'Disbursed',
-  label: 'Disbursed',
-}, { value: 'Regular', label: 'Regular' }, {
-  value: 'Overdue',
-  label: 'Overdue',
-}];
+const STATUS_OPTIONS = [
+  { value: 'All', label: 'All' },
+  { value: 'Issued', label: 'Issued' },
+  {
+    value: 'Disbursed',
+    label: 'Disbursed',
+  },
+  { value: 'Regular', label: 'Regular' },
+  {
+    value: 'Overdue',
+    label: 'Overdue',
+  },
+];
 const defaultFilters = {
   username: '',
   status: 'All',
@@ -95,7 +101,6 @@ export default function AllBranchLoanSummaryListView() {
   const [tableData, setTableData] = useState(LoanSummary);
   const [filters, setFilters] = useState(defaultFilters);
 
-
   useEffect(() => {
     fetchStates();
   }, [LoanSummary]);
@@ -107,7 +112,7 @@ export default function AllBranchLoanSummaryListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -122,7 +127,7 @@ export default function AllBranchLoanSummaryListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -145,7 +150,7 @@ export default function AllBranchLoanSummaryListView() {
     (event, newValue) => {
       handleFilters('status', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
   const handleDeleteRow = useCallback(
     (id) => {
@@ -154,7 +159,7 @@ export default function AllBranchLoanSummaryListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -172,14 +177,14 @@ export default function AllBranchLoanSummaryListView() {
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
   // const loans = Loanissue.map((item) => ({
@@ -207,19 +212,20 @@ export default function AllBranchLoanSummaryListView() {
   // }));
 
   if (LoanSummaryLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   function fetchStates() {
     dataFiltered?.map((data) => {
       setOptions((item) => {
         if (!item.find((option) => option.value === data.issuedBy._id)) {
-          return [...item, {
-            name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
-            value: data.issuedBy._id,
-          }];
+          return [
+            ...item,
+            {
+              name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
+              value: data.issuedBy._id,
+            },
+          ];
         } else {
           return item;
         }
@@ -231,7 +237,7 @@ export default function AllBranchLoanSummaryListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='All Branch Loan Summary'
+          heading="All Branch Loan Summary"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reports', href: paths.dashboard.reports.root },
@@ -255,7 +261,7 @@ export default function AllBranchLoanSummaryListView() {
             {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
-                iconPosition='end'
+                iconPosition="end"
                 value={tab.value}
                 label={tab.label}
                 icon={
@@ -283,8 +289,13 @@ export default function AllBranchLoanSummaryListView() {
             ))}
           </Tabs>
 
-          <AllBranchLoanSummaryTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
-                                            configs={configs} options={options} />
+          <AllBranchLoanSummaryTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            dataFilter={dataFiltered}
+            configs={configs}
+            options={options}
+          />
 
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -296,20 +307,22 @@ export default function AllBranchLoanSummaryListView() {
             />
           )}
 
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-            ' .css-131g1ae-MuiTableCell-root' : {
-              padding: '6px'
-            },
-            ' .css-1613c04-MuiTableCell-root' : {
-              padding: '8px'
-            },
-            ' .css-1ms7e38-MuiTableCell-root' : {
-              padding: '6px'
-            }
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+              ' .css-131g1ae-MuiTableCell-root': {
+                padding: '6px',
+              },
+              ' .css-1613c04-MuiTableCell-root': {
+                padding: '8px',
+              },
+              ' .css-1ms7e38-MuiTableCell-root': {
+                padding: '6px',
+              },
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -317,13 +330,13 @@ export default function AllBranchLoanSummaryListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -350,7 +363,7 @@ export default function AllBranchLoanSummaryListView() {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
                     <AllBranchLoanSummaryTableRow
@@ -391,7 +404,7 @@ export default function AllBranchLoanSummaryListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -399,8 +412,8 @@ export default function AllBranchLoanSummaryListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -431,22 +444,20 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
   if (branch) {
-    inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
+    inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
   }
   if (issuedBy) {
     inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
   }
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((loan) =>
-      isBetween(new Date(loan.issueDate), startDate, endDate),
-    );
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
   }
 
   return inputData;

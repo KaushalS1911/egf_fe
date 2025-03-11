@@ -15,8 +15,24 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
-export default function ReminderTableRow({ row, selected, onDeleteRow, handleClick, index, mutate }) {
-  const { loanNo, customer, loanAmount, nextInstallmentDate, issueDate, lastInstallmentDate } = row;
+export default function ReminderTableRow({
+  row,
+  selected,
+  onDeleteRow,
+  handleClick,
+  index,
+  mutate,
+}) {
+  const {
+    loanNo,
+    customer,
+    loanAmount,
+    nextInstallmentDate,
+    issueDate,
+    lastInstallmentDate,
+    interestLoanAmount,
+    status,
+  } = row;
   const [open, setOpen] = useState(false);
   const confirm = useBoolean();
   const popover = usePopover();
@@ -28,66 +44,80 @@ export default function ReminderTableRow({ row, selected, onDeleteRow, handleCli
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
-
+  const statusColors = {
+    // Closed: (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07'),
+    Overdue: (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706'),
+    // Regular: (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403'),
+  };
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' }}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell
-          sx={{ whiteSpace: 'nowrap' }}>{customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {customer.firstName + ' ' + customer.middleName + ' ' + customer.lastName}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{calculateDateDifference(new Date(), nextInstallmentDate)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {calculateDateDifference(new Date(), nextInstallmentDate)}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+          {fDate(lastInstallmentDate) || '-'}
+        </TableCell>
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('create_reminder', configs, user) &&
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            recallingPopover.onOpen(ReminderRecallingForm);
-            setOpen(true);
-          }}
-        >
-          <Iconify icon='eva:clock-outline' />
-          Recalling
-        </MenuItem>}
-        <MenuItem
-          onClick={handleClick}
-        >
-          <Iconify icon='carbon:view-filled' />
+        {getResponsibilityValue('create_reminder', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              recallingPopover.onOpen(ReminderRecallingForm);
+              setOpen(true);
+            }}
+          >
+            <Iconify icon="eva:clock-outline" />
+            Recalling
+          </MenuItem>
+        )}
+        <MenuItem onClick={handleClick}>
+          <Iconify icon="carbon:view-filled" />
           Details
         </MenuItem>
       </CustomPopover>
       <CustomPopover
         open={recallingPopover.open}
         onClose={recallingPopover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 400 }}
       >
         <ReminderRecallingForm onClose={recallingPopover.onClose} />
       </CustomPopover>
-      <ReminderRecallingForm currentReminder={row} open={open} setOpen={() => setOpen(false)} mutate={mutate} />
+      <ReminderRecallingForm
+        currentReminder={row}
+        open={open}
+        setOpen={() => setOpen(false)}
+        mutate={mutate}
+      />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

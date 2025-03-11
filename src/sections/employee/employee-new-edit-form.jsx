@@ -12,7 +12,8 @@ import countrystatecity from '../../_mock/map/csc.json';
 import FormProvider, {
   RHFTextField,
   RHFUploadAvatar,
-  RHFAutocomplete, RHFCode,
+  RHFAutocomplete,
+  RHFCode,
 } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -114,41 +115,47 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     tempZipcode: Yup.string().required('Zipcode is required'),
   });
 
-  const defaultValues = useMemo(() => ({
-    isAadharVerified: currentEmployee?.isAadharVerified || false,
-    branchId: currentEmployee ? {
-      label: currentEmployee?.user?.branch?.name,
-      value: currentEmployee?.user?.branch?._id,
-    } : null,
-    profile_pic: currentEmployee?.user.avatar_url || null,
-    firstName: currentEmployee?.user.firstName || '',
-    middleName: currentEmployee?.user.middleName || '',
-    lastName: currentEmployee?.user.lastName || '',
-    drivingLicense: currentEmployee?.drivingLicense || '',
-    voterCard: currentEmployee?.voterCard || '',
-    panCard: currentEmployee?.panCard || '',
-    aadharCard: currentEmployee?.aadharCard || '',
-    contact: currentEmployee?.user.contact || '',
-    dob: new Date(currentEmployee?.dob) || '',
-    remark: currentEmployee?.remark || '',
-    role: currentEmployee?.user.role || '',
-    reportingTo: currentEmployee?.reportingTo || null,
-    email: currentEmployee?.user.email || '',
-    joiningDate: currentEmployee ? new Date(currentEmployee?.joiningDate) : new Date(),
-    leaveDate: new Date(currentEmployee?.leaveDate) || '',
-    permanentStreet: currentEmployee?.permanentAddress.street || '',
-    permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
-    permanentCountry: currentEmployee?.permanentAddress.country || '',
-    permanentState: currentEmployee?.permanentAddress.state || '',
-    permanentCity: currentEmployee?.permanentAddress.city || '',
-    permanentZipcode: currentEmployee?.permanentAddress.zipcode || '',
-    tempStreet: currentEmployee?.temporaryAddress.street || '',
-    tempLandmark: currentEmployee?.temporaryAddress.landmark || '',
-    tempCountry: currentEmployee?.temporaryAddress.country || '',
-    tempState: currentEmployee?.temporaryAddress.state || '',
-    tempCity: currentEmployee?.temporaryAddress.city || '',
-    tempZipcode: currentEmployee?.temporaryAddress.zipcode || '',
-  }), [currentEmployee]);
+  const defaultValues = useMemo(
+    () => ({
+      isAadharVerified: currentEmployee?.isAadharVerified || false,
+      branchId: currentEmployee
+        ? {
+            label: currentEmployee?.user?.branch?.name,
+            value: currentEmployee?.user?.branch?._id,
+          }
+        : null,
+      profile_pic: currentEmployee?.user.avatar_url || null,
+      firstName: currentEmployee?.user.firstName || '',
+      middleName: currentEmployee?.user.middleName || '',
+      lastName: currentEmployee?.user.lastName || '',
+      drivingLicense: currentEmployee?.drivingLicense || '',
+      voterCard: currentEmployee?.voterCard || '',
+      panCard: currentEmployee?.panCard || '',
+      aadharCard: currentEmployee?.aadharCard || '',
+      contact: currentEmployee?.user.contact || '',
+      dob: new Date(currentEmployee?.dob) || '',
+      remark: currentEmployee?.remark || '',
+      role: currentEmployee?.user.role || '',
+      reportingTo: currentEmployee?.reportingTo || null,
+      email: currentEmployee?.user.email || '',
+      joiningDate: currentEmployee ? new Date(currentEmployee?.joiningDate) : new Date(),
+      leaveDate: new Date(currentEmployee?.leaveDate) || null,
+      permanentStreet: currentEmployee?.permanentAddress.street || '',
+      permanentLandmark: currentEmployee?.permanentAddress.landmark || '',
+      permanentCountry: currentEmployee?.permanentAddress.country || '',
+      permanentState: currentEmployee?.permanentAddress.state || '',
+      permanentCity: currentEmployee?.permanentAddress.city || '',
+      permanentZipcode: currentEmployee?.permanentAddress.zipcode || '',
+      tempStreet: currentEmployee?.temporaryAddress.street || '',
+      tempLandmark: currentEmployee?.temporaryAddress.landmark || '',
+      tempCountry: currentEmployee?.temporaryAddress.country || '',
+      tempState: currentEmployee?.temporaryAddress.state || '',
+      tempCity: currentEmployee?.temporaryAddress.city || '',
+      tempZipcode: currentEmployee?.temporaryAddress.zipcode || '',
+      status: currentEmployee?.status || 'Active',
+    }),
+    [currentEmployee]
+  );
 
   const methods = useForm({
     resolver: yupResolver(NewEmployeeSchema),
@@ -199,7 +206,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       zipcode: data.tempZipcode || '',
     };
 
-    const isAadharVerified = data.isAadharVerified !== undefined ? data.isAadharVerified : false;  // Default to false if not set
+    const isAadharVerified = data.isAadharVerified !== undefined ? data.isAadharVerified : false; // Default to false if not set
 
     if (currentEmployee) {
       payload = {
@@ -209,16 +216,29 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         temporaryAddress,
         branch: data.branchId || parsedBranch,
         isAadharVerified,
+        status: data.status,
       };
     } else {
       const formData = new FormData();
       const fields = [
-        'firstName', 'middleName', 'lastName', 'drivingLicense', 'voterCard', 'panCard',
-        'aadharCard', 'contact', 'dob', 'remark', 'role', 'reportingTo',
-        'email',  'joiningDate', 'leaveDate',
+        'firstName',
+        'middleName',
+        'lastName',
+        'drivingLicense',
+        'voterCard',
+        'panCard',
+        'aadharCard',
+        'contact',
+        'dob',
+        'remark',
+        'role',
+        'reportingTo',
+        'email',
+        'joiningDate',
+        'leaveDate',
       ];
 
-      fields.forEach(field => {
+      fields.forEach((field) => {
         if (field === 'reportingTo') {
           formData.append(field, data[field]?._id || '');
         } else {
@@ -248,7 +268,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       formData.append('branch', data.branchId || parsedBranch);
       const addressFields = ['street', 'landmark', 'country', 'state', 'city', 'zipcode'];
 
-      addressFields.forEach(field => {
+      addressFields.forEach((field) => {
         formData.append(`permanentAddress[${field}]`, data[`permanent${capitalize(field)}`] || '');
         formData.append(`temporaryAddress[${field}]`, data[`temp${capitalize(field)}`] || '');
       });
@@ -257,9 +277,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     }
 
     try {
-      const branchQuery = parsedBranch && parsedBranch === 'all'
-        ? `branch=${mainbranchid?._id}`
-        : `branch=${parsedBranch}`;
+      const branchQuery =
+        parsedBranch && parsedBranch === 'all'
+          ? `branch=${mainbranchid?._id}`
+          : `branch=${parsedBranch}`;
 
       const url = currentEmployee
         ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/employee/${currentEmployee._id}?${branchQuery}`
@@ -282,7 +303,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
       router.push(paths.dashboard.employee.list);
       reset();
     } catch (error) {
-      enqueueSnackbar(currentEmployee ? 'Failed To update employee' : error.response.data.message, { variant: 'error' });
+      enqueueSnackbar(currentEmployee ? 'Failed To update employee' : error.response.data.message, {
+        variant: 'error',
+      });
       console.error(error);
     }
   });
@@ -312,7 +335,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           setValue('tempState', '', { shouldValidate: true });
           setValue('tempCity', '', { shouldValidate: true });
         }
-        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', { variant: 'error' });
+        enqueueSnackbar('Invalid Zipcode. Please enter a valid Indian Zipcode.', {
+          variant: 'error',
+        });
       }
     } catch (error) {
       console.error('Error fetching country and state:', error);
@@ -404,7 +429,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         -cropWidth / 2,
         -cropHeight / 2,
         cropWidth,
-        cropHeight,
+        cropHeight
       );
       ctx.restore();
 
@@ -428,7 +453,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
           try {
             const response = await axios.put(
-              `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`, formData,
+              `${import.meta.env.VITE_BASE_URL}/${user?.company}/user/${currentEmployee.user._id}/profile`,
+              formData
             );
           } catch (err) {
             console.error('Error uploading rotated image:', err);
@@ -460,14 +486,18 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
     const isValidAadhar = /^\d{12}$/.test(aadharNumber);
 
     if (!isValidAadhar) {
-      enqueueSnackbar('Invalid Aadhar number. Please enter a 12-digit number.', { variant: 'error' });
+      enqueueSnackbar('Invalid Aadhar number. Please enter a 12-digit number.', {
+        variant: 'error',
+      });
       return;
     }
 
     if (!isAadhar) {
       try {
         setOtpPopupOpen(true);
-        const response = await axios.post(`https://egf-be.onrender.com/api/verification/send-otp`, { aadhaar: aadharNumber });
+        const response = await axios.post(`https://egf-be.onrender.com/api/verification/send-otp`, {
+          aadhaar: aadharNumber,
+        });
 
         if (response.status === 200) {
           enqueueSnackbar('OTP sent successfully for Aadhar verification.', { variant: 'success' });
@@ -475,11 +505,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           sessionStorage.setItem('aadharVerificationResponse', JSON.stringify(response.data.data));
         }
       } catch (error) {
-        enqueueSnackbar('Failed to send OTP for Aadhar verification. Please try again.', { variant: 'error' });
+        enqueueSnackbar('Failed to send OTP for Aadhar verification. Please try again.', {
+          variant: 'error',
+        });
 
         if (userRole.toLowerCase() === 'employee') {
           setDisabledField(true);
-          enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
+          enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
+            variant: 'error',
+          });
           return;
         }
         console.error('Error in Aadhar verification:', error);
@@ -494,7 +528,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
         const reference = sessionStorage.getItem('aadharVerificationResponse');
         const otpPayload = { otp: otpCode, refId: JSON.parse(reference) };
-        const otpResponse = await axios.post(`https://egf-be.onrender.com/api/verification/aadhaar-details`, otpPayload);
+        const otpResponse = await axios.post(
+          `https://egf-be.onrender.com/api/verification/aadhaar-details`,
+          otpPayload
+        );
 
         if (otpResponse.status === 200) {
           enqueueSnackbar('Aadhar verification successful.', { variant: 'success' });
@@ -505,13 +542,19 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           const fullName = apidata.name;
           const nameParts = fullName.split(' ');
 
-          setValue('profile_pic', 'data:image/jpeg;base64,' + apidata?.photo_link, { shouldValidate: true });
+          setValue('profile_pic', 'data:image/jpeg;base64,' + apidata?.photo_link, {
+            shouldValidate: true,
+          });
           setAadharImage('data:image/jpeg;base64,' + apidata?.photo_link);
           setValue('firstName', nameParts[0], { shouldValidate: true });
           setValue('middleName', nameParts[1] || '', { shouldValidate: true });
           setValue('lastName', nameParts.slice(2).join(' '), { shouldValidate: true });
           setValue('dob', apidata.dob ? new Date(apidata.dob) : null, { shouldValidate: true });
-          setValue('permanentStreet', apidata.split_address.house + ' ' + apidata.split_address.street, { shouldValidate: true });
+          setValue(
+            'permanentStreet',
+            apidata.split_address.house + ' ' + apidata.split_address.street,
+            { shouldValidate: true }
+          );
           setValue('permanentLandmark', apidata.split_address.landmark, { shouldValidate: true });
           setValue('permanentZipcode', apidata.split_address.pincode, { shouldValidate: true });
           setValue('permanentCountry', apidata.split_address.country, { shouldValidate: true });
@@ -524,7 +567,9 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         enqueueSnackbar('Error in OTP verification. Please try again.', { variant: 'error' });
         if (userRole.toLowerCase() === 'employee') {
           setDisabledField(true);
-          enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
+          enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
+            variant: 'error',
+          });
         }
         console.error('Error in OTP verification:', error);
       }
@@ -538,56 +583,53 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           <Grid item xs={12} md={3} p={0}>
             <Box sx={{ pt: 2, px: 3 }}>
               <RHFUploadAvatar
-                name='profile_pic'
+                name="profile_pic"
                 camera={true}
                 setOpen2={setOpen2}
                 setOpen={setOpen}
                 setImageSrc={setImageSrc}
                 setFile={setFile}
-                file={croppedImage || imageSrc || capturedImage || currentEmployee?.user?.avatar_url}
+                file={
+                  croppedImage || imageSrc || capturedImage || currentEmployee?.user?.avatar_url
+                }
                 maxSize={3145728}
-                accept='image/*'
+                accept="image/*"
                 onDrop={handleDropSingleFile}
               />
               <Dialog open={Boolean(open)} onClose={handleCancel}>
                 <ReactCrop
                   crop={crop}
                   onChange={(newCrop) => setCrop(newCrop)}
-                  onComplete={(newCrop) =>
-                    setCompletedCrop(newCrop)}
+                  onComplete={(newCrop) => setCompletedCrop(newCrop)}
                   aspect={1}
                 >
                   <img
-                    id='cropped-image'
+                    id="cropped-image"
                     src={imageSrc || capturedImage}
-                    alt='Crop preview'
+                    alt="Crop preview"
                     onLoad={resetCrop}
                     style={{ transform: `rotate(${rotation}deg)` }}
                   />
                 </ReactCrop>
                 <Box
                   sx={{
-                    display: 'flex', justifyContent:
-                      'space-between', padding: '1rem',
-                  }}>
-                  <Button variant='outlined' onClick={handleCancel}>
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '1rem',
+                  }}
+                >
+                  <Button variant="outlined" onClick={handleCancel}>
                     Cancel
                   </Button>
                   <Box sx={{ display: 'flex' }}>
-                    <IconButton
-                      onClick={() => rotateImage(-90)}
-                      style={{ marginRight: '10px' }}
-                    >
-                      <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
-
+                    <IconButton onClick={() => rotateImage(-90)} style={{ marginRight: '10px' }}>
+                      <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />
                     </IconButton>
-                    <IconButton onClick={() => rotateImage(90)}
-                    >
-                      <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
+                    <IconButton onClick={() => rotateImage(90)}>
+                      <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />
                     </IconButton>
                   </Box>
-                  <Button variant='contained' color='primary'
-                          onClick={showCroppedImage}>
+                  <Button variant="contained" color="primary" onClick={showCroppedImage}>
                     Save Image
                   </Button>
                 </Box>
@@ -599,7 +641,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               <Box
                 rowGap={1.5}
                 columnGap={1.5}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(4, 1fr)',
@@ -607,21 +649,23 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               >
                 {user?.role === 'Admin' && branch && storedBranch === 'all' && (
                   <RHFAutocomplete
-                    name='branchId'
+                    name="branchId"
                     req={'red'}
-                    label='Branch'
-                    placeholder='Choose a Branch'
-                    options={branch?.map((branchItem) => ({
-                      label: branchItem?.name,
-                      value: branchItem?._id,
-                    })) || []}
+                    label="Branch"
+                    placeholder="Choose a Branch"
+                    options={
+                      branch?.map((branchItem) => ({
+                        label: branchItem?.name,
+                        value: branchItem?._id,
+                      })) || []
+                    }
                     isOptionEqualToValue={(option, value) => option?.value === value?.value}
                   />
                 )}
                 <RHFTextField
                   disabled={disabledField}
-                  name='firstName'
-                  label='First Name'
+                  name="firstName"
+                  label="First Name"
                   req={'red'}
                   inputProps={{ style: { textTransform: 'uppercase' } }}
                   onChange={(e) => {
@@ -631,8 +675,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name='middleName'
-                  label='Middle Name'
+                  name="middleName"
+                  label="Middle Name"
                   req={'red'}
                   inputProps={{ style: { textTransform: 'uppercase' } }}
                   onChange={(e) => {
@@ -642,8 +686,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name='lastName'
-                  label='Last Name'
+                  name="lastName"
+                  label="Last Name"
                   req={'red'}
                   inputProps={{ style: { textTransform: 'uppercase' } }}
                   onChange={(e) => {
@@ -653,8 +697,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name='drivingLicense'
-                  label='Driving License'
+                  name="drivingLicense"
+                  label="Driving License"
                   onInput={(e) => {
                     e.target.value = e.target.value.toUpperCase();
                   }}
@@ -662,47 +706,59 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name='panCard'
-                  label='Pan No.'
+                  name="panCard"
+                  label="Pan No."
                   req={'red'}
                   inputProps={{ minLength: 10, maxLength: 10 }}
                   onChange={(e) => {
                     const value = e.target.value.toUpperCase();
                     methods.setValue('panCard', value, { shouldValidate: true });
-                  }} />
-                <RHFTextField disabled={disabledField}
-                              name='voterCard' label='Voter ID'
-                              onInput={(e) => {
-                                e.target.value = e.target.value.toUpperCase();
-                              }} />
+                  }}
+                />
                 <RHFTextField
                   disabled={disabledField}
-                  name='aadharCard'
-                  label='Aadhar Card'
-                  req='red'
+                  name="voterCard"
+                  label="Voter ID"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                  }}
+                />
+                <RHFTextField
+                  disabled={disabledField}
+                  name="aadharCard"
+                  label="Aadhar Card"
+                  req="red"
                   inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
                   }}
                   InputProps={{
-                    endAdornment: (<IconButton onClick={() => handleSubmitAction()} sx={{ padding: 0 }}
-                                               disabled={isAadhar || watch('isAadharVerified')}
-                    >
-                      <Iconify
-                        icon={watch('isAadharVerified') ? 'ic:round-check-circle' : 'ic:round-verified'}
-                        width={20}
-                        height={20}
-                        sx={{
-                          color: watch('isAadharVerified') ? 'green' : 'default',
-                        }}
-                      />
-                    </IconButton>),
+                    endAdornment: (
+                      <IconButton
+                        onClick={() => handleSubmitAction()}
+                        sx={{ padding: 0 }}
+                        disabled={isAadhar || watch('isAadharVerified')}
+                      >
+                        <Iconify
+                          icon={
+                            watch('isAadharVerified')
+                              ? 'ic:round-check-circle'
+                              : 'ic:round-verified'
+                          }
+                          width={20}
+                          height={20}
+                          sx={{
+                            color: watch('isAadharVerified') ? 'green' : 'default',
+                          }}
+                        />
+                      </IconButton>
+                    ),
                   }}
                 />
                 <RHFTextField
                   disabled={disabledField}
-                  name='contact'
-                  label='Mobile'
+                  name="contact"
+                  label="Mobile"
                   req={'red'}
                   inputProps={{
                     maxLength: 10,
@@ -720,134 +776,163 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     if (!/[0-9]/.test(e.key)) {
                       e.preventDefault();
                     }
-                  }} />
+                  }}
+                />
                 <RHFDatePicker
                   disabled={disabledField}
-                  name='dob'
+                  name="dob"
                   control={control}
-                  label='Date of Birth'
+                  label="Date of Birth"
                   req={'red'}
                 />
-                <RHFTextField disabled={disabledField}
-                              name='remark' label='Remark' />
-                {aadharImage && <Box pb={0}>
-                  <Box sx={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 0, pb: 0,
-                  }}>
-                    <Box>
-                      <Typography variant='subtitle2' sx={{ fontWeight: 600 }}>
-                        Aadhaar Image
-                      </Typography>
-                    </Box>
+                <RHFTextField disabled={disabledField} name="remark" label="Remark" />
+                {aadharImage && (
+                  <Box pb={0}>
                     <Box
                       sx={{
-                        height: '40px',
-                        width: '40px',
-                        borderRadius: '10px',
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                      }}>
-                      <img
-                        key={aadharImage}
-                        src={aadharImage}
-                        alt={aadharImage}
-                        ratio='1/1'
-                        onClick={() => lightbox.onOpen(aadharImage)}
-                        sx={{ cursor: 'zoom-in', height: '100%', width: '100%' }}
-                      />
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: 0,
+                        pb: 0,
+                      }}
+                    >
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                          Aadhaar Image
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          height: '40px',
+                          width: '40px',
+                          borderRadius: '10px',
+                          overflow: 'hidden',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <img
+                          key={aadharImage}
+                          src={aadharImage}
+                          alt={aadharImage}
+                          ratio="1/1"
+                          onClick={() => lightbox.onOpen(aadharImage)}
+                          sx={{ cursor: 'zoom-in', height: '100%', width: '100%' }}
+                        />
+                      </Box>
                     </Box>
                   </Box>
-                </Box>}
+                )}
               </Box>
             </Card>
           </Grid>
           <Grid item xs={12} md={12}>
             <Card sx={{ p: 2 }}>
-              <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>
                 Official Info
               </Typography>
               <Box
                 rowGap={1.5}
                 columnGap={1.5}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(6, 1fr)',
                 }}
               >
-                {configs.roles && <RHFAutocomplete
+                {configs.roles && (
+                  <RHFAutocomplete
+                    disabled={disabledField}
+                    name="role"
+                    label="Role"
+                    req={'red'}
+                    fullWidth
+                    options={configs?.roles?.map((item) => item)}
+                    getOptionLabel={(option) => option}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option}>
+                        {option}
+                      </li>
+                    )}
+                  />
+                )}
+                {allUser?.user && (
+                  <RHFAutocomplete
+                    name="reportingTo"
+                    disabled={disabledField}
+                    label="Reporting to"
+                    req={'red'}
+                    fullWidth
+                    options={allUser?.user?.map((item) => item)}
+                    getOptionLabel={(option) => option.firstName + ' ' + option.lastName}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option} value={option._id}>
+                        {option.firstName + ' ' + option.lastName}
+                      </li>
+                    )}
+                  />
+                )}
+                <RHFTextField disabled={disabledField} name="email" label="Email" req={'red'} />
+                <RHFDatePicker
                   disabled={disabledField}
-                  name='role'
-                  label='Role'
+                  name="joiningDate"
+                  control={control}
+                  label="Join Date"
                   req={'red'}
+                />
+                <RHFDatePicker
+                  disabled={disabledField}
+                  name="leaveDate"
+                  control={control}
+                  label="Leave Date"
+                />
+                <RHFAutocomplete
+                  name="status"
+                  label="Status"
                   fullWidth
-                  options={configs?.roles?.map((item) => item)}
+                  options={['Active', 'InActive', 'Block']}
                   getOptionLabel={(option) => option}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
                       {option}
                     </li>
                   )}
-                />}
-                {allUser?.user && <RHFAutocomplete
-                  name='reportingTo'
-                  disabled={disabledField}
-                  label='Reporting to'
-                  req={'red'}
-                  fullWidth
-                  options={allUser?.user?.map((item) => item)}
-                  getOptionLabel={(option) => option.firstName + ' ' + option.lastName}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option} value={option._id}>
-                      {option.firstName + ' ' + option.lastName}
-                    </li>
-                  )}
-                />}
-                <RHFTextField disabled={disabledField}
-                              name='email' label='Email' req={'red'} />
-                <RHFDatePicker
-                  disabled={disabledField}
-                  name='joiningDate'
-                  control={control}
-                  label='Join Date'
-                  req={'red'}
-                />
-                <RHFDatePicker
-                  disabled={disabledField}
-                  name='leaveDate'
-                  control={control}
-                  label='Leave Date'
-                  req={'red'}
                 />
               </Box>
             </Card>
           </Grid>
           <Grid item xs={12} md={12}>
             <Card sx={{ p: 2 }}>
-              <Typography variant='subtitle1' sx={{ mb: 1.5, fontWeight: 600 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>
                 Permanent Address
               </Typography>
               <Box
                 rowGap={1.5}
                 columnGap={1.5}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(6, 1fr)',
                 }}
               >
-                <RHFTextField disabled={disabledField}
-                              name='permanentStreet' label='Address' req={'red'} inputProps={{ style: { textTransform: 'uppercase' } }} />
-                <RHFTextField disabled={disabledField}
-                              name='permanentLandmark' label='Landmark' req={'red'} inputProps={{ style: { textTransform: 'uppercase' } }} />
                 <RHFTextField
                   disabled={disabledField}
-                  name='permanentZipcode'
-                  label={
-                    <span>
-      Zipcode
-    </span>
-                  }
+                  name="permanentStreet"
+                  label="Address"
+                  req={'red'}
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                />
+                <RHFTextField
+                  disabled={disabledField}
+                  name="permanentLandmark"
+                  label="Landmark"
+                  req={'red'}
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                />
+                <RHFTextField
+                  disabled={disabledField}
+                  name="permanentZipcode"
+                  label={<span>Zipcode</span>}
                   req={'red'}
                   inputProps={{
                     inputMode: 'numeric',
@@ -879,8 +964,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name='permanentCountry'
-                  label='Country'
+                  name="permanentCountry"
+                  label="Country"
                   req={'red'}
                   fullWidth
                   options={countrystatecity.map((country) => country.name)}
@@ -893,15 +978,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name='permanentState'
-                  label='State'
+                  name="permanentState"
+                  label="State"
                   req={'red'}
                   fullWidth
                   options={
                     watch('permanentCountry')
                       ? countrystatecity
-                      .find((country) => country.name === watch('permanentCountry'))
-                      ?.states.map((state) => state.name) || []
+                          .find((country) => country.name === watch('permanentCountry'))
+                          ?.states.map((state) => state.name) || []
                       : []
                   }
                   getOptionLabel={(option) => option}
@@ -913,16 +998,16 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name='permanentCity'
-                  label='City'
+                  name="permanentCity"
+                  label="City"
                   req={'red'}
                   fullWidth
                   options={
                     watch('permanentState')
                       ? countrystatecity
-                      .find((country) => country.name === watch('permanentCountry'))
-                      ?.states.find((state) => state.name === watch('permanentState'))
-                      ?.cities.map((city) => city.name) || []
+                          .find((country) => country.name === watch('permanentCountry'))
+                          ?.states.find((state) => state.name === watch('permanentState'))
+                          ?.cities.map((city) => city.name) || []
                       : []
                   }
                   getOptionLabel={(option) => option}
@@ -933,58 +1018,69 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   )}
                 />
               </Box>
-              <Typography variant='subtitle1' sx={{ my: 1.5, fontWeight: '600' }}>
+              <Typography variant="subtitle1" sx={{ my: 1.5, fontWeight: '600' }}>
                 Temporary Address
               </Typography>
               <Box
                 rowGap={1.5}
                 columnGap={1.5}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(6, 1fr)',
                 }}
               >
-                <RHFTextField disabled={disabledField}
-                              name='tempStreet' label='Address' inputProps={{ style: { textTransform: 'uppercase' } }} req={'red'}/>
-                <RHFTextField disabled={disabledField}
-                              name='tempLandmark' label='Landmark' inputProps={{ style: { textTransform: 'uppercase' } }} req={'red'}/>
-                <RHFTextField disabled={disabledField}
-                              req={'red'}
-                              name='tempZipcode'
-                              label='Zipcode'
-                              inputProps={{
-                                inputMode: 'numeric',
-                                pattern: '[0-9]*',
-                                maxLength: 6,
-                              }}
-                              rules={{
-                                required: 'Zipcode is required',
-                                minLength: {
-                                  value: 6,
-                                  message: 'Zipcode must be at least 6 digits',
-                                },
-                                maxLength: {
-                                  value: 6,
-                                  message: 'Zipcode cannot be more than 6 digits',
-                                },
-                              }}
-                              onKeyPress={(event) => {
-                                if (!/[0-9]/.test(event.key)) {
-                                  event.preventDefault();
-                                }
-                              }}
-                              onBlur={(event) => {
-                                const zip = event.target.value;
-                                if (zip.length === 6) {
-                                  checkZipcode(zip, 'temporary');
-                                }
-                              }}
+                <RHFTextField
+                  disabled={disabledField}
+                  name="tempStreet"
+                  label="Address"
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                  req={'red'}
+                />
+                <RHFTextField
+                  disabled={disabledField}
+                  name="tempLandmark"
+                  label="Landmark"
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                  req={'red'}
+                />
+                <RHFTextField
+                  disabled={disabledField}
+                  req={'red'}
+                  name="tempZipcode"
+                  label="Zipcode"
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    maxLength: 6,
+                  }}
+                  rules={{
+                    required: 'Zipcode is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Zipcode must be at least 6 digits',
+                    },
+                    maxLength: {
+                      value: 6,
+                      message: 'Zipcode cannot be more than 6 digits',
+                    },
+                  }}
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                  onBlur={(event) => {
+                    const zip = event.target.value;
+                    if (zip.length === 6) {
+                      checkZipcode(zip, 'temporary');
+                    }
+                  }}
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name='tempCountry'
-                  label='Country'
+                  name="tempCountry"
+                  label="Country"
                   req={'red'}
                   fullWidth
                   options={countrystatecity.map((country) => country.name)}
@@ -997,15 +1093,15 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name='tempState'
-                  label='State'
+                  name="tempState"
+                  label="State"
                   req={'red'}
                   fullWidth
                   options={
                     watch('tempCountry')
                       ? countrystatecity
-                      .find((country) => country.name === watch('tempCountry'))
-                      ?.states.map((state) => state.name) || []
+                          .find((country) => country.name === watch('tempCountry'))
+                          ?.states.map((state) => state.name) || []
                       : []
                   }
                   getOptionLabel={(option) => option}
@@ -1017,16 +1113,16 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                 />
                 <RHFAutocomplete
                   disabled={disabledField}
-                  name='tempCity'
-                  label='City'
+                  name="tempCity"
+                  label="City"
                   req={'red'}
                   fullWidth
                   options={
                     watch('tempState')
                       ? countrystatecity
-                      .find((country) => country.name === watch('tempCountry'))
-                      ?.states.find((state) => state.name === watch('tempState'))
-                      ?.cities.map((city) => city.name) || []
+                          .find((country) => country.name === watch('tempCountry'))
+                          ?.states.find((state) => state.name === watch('tempState'))
+                          ?.cities.map((city) => city.name) || []
                       : []
                   }
                   getOptionLabel={(option) => option}
@@ -1041,11 +1137,21 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           </Grid>
         </Grid>
         <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-          <Button disabled={disabledField}
-                  color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                  variant='outlined' onClick={() => reset()}>Reset</Button>
-          <LoadingButton disabled={disabledField}
-                         type='submit' variant='contained' loading={isSubmitting}>
+          <Button
+            disabled={disabledField}
+            color="inherit"
+            sx={{ margin: '0px 10px', height: '36px' }}
+            variant="outlined"
+            onClick={() => reset()}
+          >
+            Reset
+          </Button>
+          <LoadingButton
+            disabled={disabledField}
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
             {!currentEmployee ? 'Submit' : 'Save'}
           </LoadingButton>
         </Box>
@@ -1053,11 +1159,11 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           <DialogTitle>Enter OTP</DialogTitle>
           <DialogContent>
             <Box sx={{ m: 2 }}>
-              <RHFCode name='code' />
+              <RHFCode name="code" />
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleSubmitAction} variant='outlined'>
+            <Button onClick={handleSubmitAction} variant="outlined">
               Submit
             </Button>
           </DialogActions>
@@ -1067,8 +1173,8 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           <DialogActions>
             <Box sx={{ width: '500px' }}>
               <RHFTextField
-                name='aadharCard'
-                label='Aadhar Number'
+                name="aadharCard"
+                label="Aadhar Number"
                 inputProps={{ maxLength: 12, pattern: '[0-9]*' }}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -1076,11 +1182,16 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
               />
               <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', mt: 2 }}>
                 <Box>
-                  <Button onClick={handleClosePopup} variant={'contained'} sx={{ mx: 1 }}>Cancel</Button>
-                  <Button variant={'contained'} onClick={() => {
-                    handleSubmitAction();
-                    handleClose();
-                  }}>
+                  <Button onClick={handleClosePopup} variant={'contained'} sx={{ mx: 1 }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant={'contained'}
+                    onClick={() => {
+                      handleSubmitAction();
+                      handleClose();
+                    }}
+                  >
                     Confirm
                   </Button>
                 </Box>
@@ -1089,11 +1200,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           </DialogActions>
         </Dialog>
       </FormProvider>
-      <Lightbox
-        image={aadharImage}
-        open={lightbox.open}
-        close={lightbox.onClose}
-      />
+      <Lightbox image={aadharImage} open={lightbox.open} close={lightbox.onClose} />
       <Dialog
         fullWidth
         maxWidth={false}
@@ -1108,18 +1215,17 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
           <Webcam
             audio={false}
             ref={webcamRef}
-            screenshotFormat='image/jpeg'
+            screenshotFormat="image/jpeg"
             width={'90%'}
             height={'100%'}
             videoConstraints={videoConstraints}
           />
         </Box>
         <DialogActions>
-          <Button variant='outlined' onClick={capture} disabled={disabledField}
-          >
+          <Button variant="outlined" onClick={capture} disabled={disabledField}>
             Capture Photo
           </Button>
-          <Button variant='contained' onClick={() => setOpen2(false)}>
+          <Button variant="contained" onClick={() => setOpen2(false)}>
             Close Camera
           </Button>
         </DialogActions>

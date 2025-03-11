@@ -66,7 +66,7 @@ const useStyles = () =>
         },
         pagePadding: {
           padding: '0px 24px 24px 24px',
-          height: '83%',
+          height: '81.5%',
         },
         gujaratiText: {
           fontFamily: 'Mukta Vaani',
@@ -339,7 +339,7 @@ export default function Sansaction11({ sansaction, configs }) {
       rule: `બેંક બંધના દિવસે દાગીના પરત મળશે નહિ.`,
     },
     {
-      rule: `દર મહીને વ્યાજ ભરી જંવું.`,
+      rule: `દર મહીને વ્યાજ ભરી જવું.`,
     },
     {
       rule: `આપેલ બિલ સાથે લેતા આવંવું.`,
@@ -377,7 +377,7 @@ export default function Sansaction11({ sansaction, configs }) {
     {
       heading: 'અંગત કરજ',
       specification:
-        'લગ્નની વૃત્તિઓ , ધાર્મિક ક્રિયા , દેવા ભરપાઈ કરવા અંને અંગત જરૂરિયાતો માટે ધીરેલુ કરજ .',
+        'લગ્નની વૃત્તિઓ , ધાર્મિક   ક્\u200Dરિ\u200Dયા , દેવા ભરપાઈ કરવા અંને અંગત જરૂરિયાતો માટે ધીરેલુ કરજ .',
     },
     {
       heading: `પ્રકીર્ણ  કરજ `,
@@ -517,7 +517,7 @@ export default function Sansaction11({ sansaction, configs }) {
                   </View>
                   <Text style={styles.spacing}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
-                      {`૫. કરજ પાકવાની મુદત માસ ${month} ની છે .`}
+                      {`૫. કરજ પાકવાની મુદ્ત માસ ${month} ની છે .`}
                     </Text>
                   </Text>
                   <Text style={styles.spacing}>

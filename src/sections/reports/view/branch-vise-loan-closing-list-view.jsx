@@ -54,17 +54,21 @@ const TABLE_HEAD = [
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'int%', label: 'int (%)' },
-  { id: 'OtherInt%', label: 'Other int (%)' },
+  { id: 'concharge', label: 'Con. charge' },
   { id: 'int%', label: 'Issue date' },
   { id: 'LoanAmount', label: 'loan amt' },
-  { id: 'LastAmtPayDate', label: 'Last amt. pay date' },
-  { id: 'LoanAmountPay', label: 'loan amt pay' },
+  { id: 'partamt', label: 'part loan amt' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'LastIntPayDate', label: 'Last int. pay date' },
+  { id: 'LastAmtPayDate', label: 'Last int. pay date' },
   { id: 'TotalIntPay', label: 'Total int. pay ' },
   { id: 'Day', label: ' Day ' },
-  { id: 'pendingAmt', label: ' Pending int. ' },
-  { id: 'nextIntPayDate', label: 'Next int. pay date', width: '100px' },
+  { id: 'closedtae', label: 'Close date' },
+  { id: 'closeamt', label: 'Close amt' },
+  { id: 'pendingAmt', label: 'Pending int.' },
+  { id: 'closeby', label: 'Close By' },
+  // { id: 'LoanAmountPay', label: 'loan amt pay' },
+  // { id: 'LastIntPayDate', label: 'Last int. pay date' },
+  // { id: 'nextIntPayDate', label: 'Next int. pay date', width: '100px' },
   { id: 'Status', label: 'Status' },
 ];
 
@@ -92,7 +96,6 @@ export default function BranchViseLoanClosingListView() {
   const [tableData, setTableData] = useState(LoanSummary);
   const [filters, setFilters] = useState(defaultFilters);
 
-
   useEffect(() => {
     fetchStates();
   }, [LoanSummary]);
@@ -104,7 +107,7 @@ export default function BranchViseLoanClosingListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -119,7 +122,7 @@ export default function BranchViseLoanClosingListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -142,7 +145,7 @@ export default function BranchViseLoanClosingListView() {
     (event, newValue) => {
       handleFilters('status', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
   const handleDeleteRow = useCallback(
     (id) => {
@@ -151,7 +154,7 @@ export default function BranchViseLoanClosingListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -169,14 +172,14 @@ export default function BranchViseLoanClosingListView() {
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
   // const loans = Loanissue.map((item) => ({
@@ -204,19 +207,20 @@ export default function BranchViseLoanClosingListView() {
   // }));
 
   if (LoanSummaryLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   function fetchStates() {
     dataFiltered?.map((data) => {
       setOptions((item) => {
         if (!item.find((option) => option.value === data.closedBy._id)) {
-          return [...item, {
-            name: `${data.closedBy.firstName} ${data.closedBy.middleName} ${data.closedBy.lastName}`,
-            value: data.closedBy._id,
-          }];
+          return [
+            ...item,
+            {
+              name: `${data.closedBy.firstName} ${data.closedBy.middleName} ${data.closedBy.lastName}`,
+              value: data.closedBy._id,
+            },
+          ];
         } else {
           return item;
         }
@@ -228,11 +232,14 @@ export default function BranchViseLoanClosingListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Branch Wise Loan Closing Report'
+          heading="Branch Wise Loan Closing Report"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reports', href: paths.dashboard.reports.root },
-            { name: 'Branch Wise Loan Closing Report', href: paths.dashboard.reports['closed-loanList'] },
+            {
+              name: 'Branch Wise Loan Closing Report',
+              href: paths.dashboard.reports['closed-loanList'],
+            },
             { name: ' List' },
           ]}
           sx={{
@@ -241,8 +248,13 @@ export default function BranchViseLoanClosingListView() {
         />
 
         <Card>
-          <BranchWiseLoanClosingTableToolbar filters={filters} onFilters={handleFilters} dataFilter={dataFiltered}
-                                             configs={configs} options={options} />
+          <BranchWiseLoanClosingTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            dataFilter={dataFiltered}
+            configs={configs}
+            options={options}
+          />
           {canReset && (
             <BranchWiseLoanClosingFiltersResult
               filters={filters}
@@ -253,20 +265,22 @@ export default function BranchViseLoanClosingListView() {
             />
           )}
 
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-            ' .css-h9g863-MuiTableCell-root' : {
-              padding: '6px'
-            },
-            ' .css-1613c04-MuiTableCell-root' : {
-              padding: '8px'
-            },
-            ' .css-1ms7e38-MuiTableCell-root' : {
-              padding: '6px'
-            }
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+              ' .css-h9g863-MuiTableCell-root': {
+                padding: '6px',
+              },
+              ' .css-1613c04-MuiTableCell-root': {
+                padding: '8px',
+              },
+              ' .css-1ms7e38-MuiTableCell-root': {
+                padding: '6px',
+              },
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -274,13 +288,13 @@ export default function BranchViseLoanClosingListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -305,7 +319,7 @@ export default function BranchViseLoanClosingListView() {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
                     <BranchWiseLoanClosingTableRow
@@ -341,7 +355,7 @@ export default function BranchViseLoanClosingListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -349,8 +363,8 @@ export default function BranchViseLoanClosingListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -381,7 +395,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (closedBy) {
@@ -391,12 +405,10 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item.status === status);
   }
   if (branch) {
-    inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
+    inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
   }
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((loan) =>
-      isBetween(new Date(loan.issueDate), startDate, endDate),
-    );
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
   }
 
   return inputData;

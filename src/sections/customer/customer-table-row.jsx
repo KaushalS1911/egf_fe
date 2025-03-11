@@ -32,6 +32,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
     avatar_url,
     status,
     isAadharVerified,
+    branch,
   } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -63,6 +64,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
             }}
           />
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{branch.name}</TableCell>
         <TableCell>
           <Label
             variant="soft"

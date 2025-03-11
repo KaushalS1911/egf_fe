@@ -104,6 +104,12 @@ const InterestReportsListView = lazy(
   () => import(`../../sections/reports/view/interest-reports-list-view.jsx`)
 );
 const LoanDetailListView = lazy(() => import('../../sections/reports/view/loan-details-list-view'));
+const CustomerStatement = lazy(
+  () => import('../../sections/reports/view/customer-statement-list-view.jsx')
+);
+const LoanIssueReports = lazy(
+  () => import('../../sections/reports/view/loan-issue-reports-list-view.jsx')
+);
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
 
@@ -262,6 +268,8 @@ export const dashboardRoutes = [
           { path: 'daily-reports', element: <DailyReportsListView /> },
           { path: 'loan-details', element: <LoanDetailListView /> },
           { path: 'interest-reports', element: <InterestReportsListView /> },
+          { path: 'customer-statement', element: <CustomerStatement /> },
+          { path: 'loan-issue-reports', element: <LoanIssueReports /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },

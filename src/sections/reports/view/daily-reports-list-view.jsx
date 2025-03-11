@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -51,6 +51,13 @@ import GoldLoanUchakPartListView from '../daily-reports/daily-reports-list-view/
 import { useGetAllInterest } from '../../../api/interest-pay';
 import DailyReportsTableToolbar from '../daily-reports/daily-reports-table/daily-reports-table-toolbar.jsx';
 import { useGetDailyReport } from '../../../api/daily-report';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
+import InterestPayDetailsForm from '../../loanpayhistory/view/interest-pay-details-form.jsx';
+import PartReleaseForm from '../../loanpayhistory/view/part-release-form.jsx';
+import UchakInterestPayForm from '../../loanpayhistory/view/uchak-interest-pay-form.jsx';
+import LoanPartPaymentForm from '../../loanpayhistory/view/loan-part-payment-form.jsx';
+import LoanCloseForm from '../../loanpayhistory/view/loan-close-form.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -89,13 +96,16 @@ export default function DailyReportsListView() {
   const date = filters.startDate.toLocaleDateString();
   const { report, reportLoading } = useGetDailyReport(params);
   const [tableData, setTableData] = useState(report);
+  const [activeTab, setActiveTab] = useState(0);
+  const handleChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   const dataFiltered = applyFilter({
     inputData: report,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
   // const dataInPage = dataFiltered.slice(
   //   table.page * table.rowsPerPage,
   //   table.page * table.rowsPerPage + table.rowsPerPage,
@@ -173,18 +183,37 @@ export default function DailyReportsListView() {
             configs={configs}
             data={data}
           />
-          <Box>
-            <NewGoldLonListView LoanIssue={report?.loans} />
-          </Box>
-          <Box mt={2}>
-            <GoldLoanInterestListView interestDetail={report?.interestDetail} />
-          </Box>
-          <Box mt={2}>
-            <GoldLoanPartPaymentListView partPayment={report?.partReleaseDetail} />
-          </Box>{' '}
-          <Box mt={2}>
-            <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
-          </Box>
+          <Grid container spacing={3} sx={{ mt: 1.5 }}>
+            <Grid item xs={12} P={0}>
+              <Tabs
+                value={activeTab}
+                onChange={handleChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{ px: 3, mb: 1.5, '.css-1obiyde-MuiTabs-indicator': { bottom: 8 } }}
+              >
+                <Tab label="New Gold Loan Details" />
+                <Tab label="Gold Loan Interest Details" />
+                <Tab
+                  label="Gold Loan part Close/Payment Details
+
+"
+                />
+                <Tab label="Gold Loan uchak part Details" />
+              </Tabs>
+
+              {activeTab === 0 && <NewGoldLonListView LoanIssue={report?.loans} />}
+              {activeTab === 1 && (
+                <GoldLoanInterestListView interestDetail={report?.interestDetail} />
+              )}
+              {activeTab === 2 && (
+                <GoldLoanPartPaymentListView partPayment={report?.partReleaseDetail} />
+              )}
+              {activeTab === 3 && (
+                <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
+              )}
+            </Grid>
+          </Grid>
         </Card>
       </Container>
       <ConfirmDialog

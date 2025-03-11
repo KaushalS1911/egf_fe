@@ -16,15 +16,14 @@ import { fDate } from '../../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function BranchWiseLoanClosingTableRow({
-                                                        row,
-                                                        index,
-                                                        selected,
-                                                        onEditRow,
-                                                        onSelectRow,
-                                                        onDeleteRow,
-                                                        handleClick,
-                                                      }) {
-
+  row,
+  index,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  handleClick,
+}) {
   const {
     loanNo,
     customer,
@@ -48,42 +47,53 @@ export default function BranchWiseLoanClosingTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{index + 1}</TableCell>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{loanNo}</TableCell>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{index + 1}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanNo}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{customer?.contact}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{customer?.contact}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {(scheme?.interestRate).toFixed(2)}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {consultingCharge.toFixed(2)}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanAmount}</TableCell>{' '}
         <TableCell
-          sx={{ fontSize: '12px' ,padding: '6px'}}>{(scheme?.interestRate).toFixed(2)}</TableCell>
+          sx={{
+            fontSize: '12px',
+            padding: '6px',
+          }}
+        >
+          {parseFloat((loanAmount - interestLoanAmount).toFixed(2))}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{interestLoanAmount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {fDate(lastInstallmentDate) || '-'}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {totalPaidInterest.toFixed(2)}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{'-'}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{'-'}</TableCell>
         <TableCell
-          sx={{ fontSize: '12px' ,padding: '6px'}}>{consultingCharge.toFixed(2)}</TableCell>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{loanAmount}</TableCell>
-        <TableCell
-          sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-        <TableCell sx={{
-          fontSize: '12px',
-         padding: '6px'}}>{parseFloat((loanAmount - interestLoanAmount).toFixed(2))}</TableCell>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{interestLoanAmount}</TableCell>
-        <TableCell
-          sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>
-        <TableCell
-          sx={{ fontSize: '12px' ,padding: '6px'}}>{totalPaidInterest.toFixed(2)}</TableCell>
-        <TableCell sx={{ fontSize: '12px' ,padding: '6px'}}>{day > 0 ? day : 0}</TableCell>
-        <TableCell sx={{
-          fontSize: '12px',
-         padding: '6px'}}>{Number(pendingInterest).toFixed(2) || 0}</TableCell>
-        <TableCell
-          sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(nextInstallmentDate) || '-'}</TableCell>
-        <TableCell sx={{ fontSize: '12px', width: '0%' ,padding: '6px'}}>
-          <Label
-            variant='soft'
-            color={
-              (status === 'Closed' && 'warning') ||
-              'default'
-            }
-          >
+          sx={{
+            fontSize: '12px',
+            padding: '6px',
+          }}
+        >
+          {Number(pendingInterest).toFixed(2) || 0}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{'-'}</TableCell>
+        {/*<TableCell*/}
+        {/*  sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>*/}
+        {/*<TableCell*/}
+        {/*  sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(nextInstallmentDate) || '-'}</TableCell>*/}
+        <TableCell sx={{ fontSize: '12px', width: '0%', padding: '6px' }}>
+          <Label variant="soft" color={(status === 'Closed' && 'warning') || 'default'}>
             {status}
           </Label>
         </TableCell>
@@ -91,43 +101,47 @@ export default function BranchWiseLoanClosingTableRow({
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
       />
     </>
   );
-};
+}
 
 BranchWiseLoanClosingTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
