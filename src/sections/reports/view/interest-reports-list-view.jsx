@@ -250,20 +250,20 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        item.loanDetails.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanDetails.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (branch) {
-    inputData = inputData.filter((item) => item.loanDetails.customer.branch._id === branch._id);
+    inputData = inputData.filter((item) => item.customer.branch._id === branch._id);
   }
 
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) =>
-      isBetween(new Date(item?.loanDetails?.lastInstallmentDate), startDate, endDate)
+      isBetween(new Date(item?.lastInstallmentDate), startDate, endDate)
     );
   }
 
