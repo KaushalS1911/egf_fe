@@ -38,6 +38,7 @@ export default function BranchWiseLoanClosingTableRow({
     totalPaidInterest,
     day,
     pendingInterest,
+    closedBy,
   } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -77,7 +78,7 @@ export default function BranchWiseLoanClosingTableRow({
           {totalPaidInterest.toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{'-'}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(closedBy.createdAt)}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{'-'}</TableCell>
         <TableCell
           sx={{
@@ -87,7 +88,9 @@ export default function BranchWiseLoanClosingTableRow({
         >
           {Number(pendingInterest).toFixed(2) || 0}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{'-'}</TableCell>
+        <TableCell
+          sx={{ fontSize: '12px', padding: '6px' }}
+        >{`${closedBy.firstName} ${closedBy.middleName} ${closedBy.lastName} `}</TableCell>
         {/*<TableCell*/}
         {/*  sx={{ fontSize: '12px' ,padding: '6px'}}>{fDate(lastInstallmentDate) || '-'}</TableCell>*/}
         {/*<TableCell*/}
