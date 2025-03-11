@@ -77,7 +77,7 @@ export default function EmployeeListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
+    table.page * table.rowsPerPage + table.rowsPerPage,
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -92,7 +92,7 @@ export default function EmployeeListView() {
         [name]: value,
       }));
     },
-    [table]
+    [table],
   );
 
   const handleResetFilters = useCallback(() => {
@@ -123,7 +123,7 @@ export default function EmployeeListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage.length, enqueueSnackbar, table, tableData],
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -142,7 +142,7 @@ export default function EmployeeListView() {
     (id) => {
       router.push(paths.dashboard.employee.edit(id));
     },
-    [router]
+    [router],
   );
 
   const employees = employee?.map((item) => ({
@@ -171,7 +171,7 @@ export default function EmployeeListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Employees"
+          heading='Employees'
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Employee', href: paths.dashboard.employee.root },
@@ -182,8 +182,8 @@ export default function EmployeeListView() {
               <Button
                 component={RouterLink}
                 href={paths.dashboard.employee.new}
-                variant="contained"
-                startIcon={<Iconify icon="mingcute:add-line" />}
+                variant='contained'
+                startIcon={<Iconify icon='mingcute:add-line' />}
               >
                 Add Employee
               </Button>
@@ -218,13 +218,13 @@ export default function EmployeeListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row.id),
                 )
               }
               action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                <Tooltip title='Delete'>
+                  <IconButton color='primary' onClick={confirm.onTrue}>
+                    <Iconify icon='solar:trash-bin-trash-bold' />
                   </IconButton>
                 </Tooltip>
               }
@@ -240,7 +240,7 @@ export default function EmployeeListView() {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    dataFiltered.map((row) => row._id)
+                    dataFiltered.map((row) => row._id),
                   )
                 }
                 sx={{
@@ -255,7 +255,7 @@ export default function EmployeeListView() {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
+                    table.page * table.rowsPerPage + table.rowsPerPage,
                   )
                   .map((row) => (
                     <EmployeeTableRow
@@ -290,7 +290,7 @@ export default function EmployeeListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title='Delete'
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -298,8 +298,8 @@ export default function EmployeeListView() {
         }
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -328,9 +328,10 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (item) =>
+        (item.user.firstName && item.user.firstName + ' ' + item.user.middleName + ' ' + item.user.lastName).toLowerCase().includes(name.toLowerCase()) ||
         item.user.firstName.toLowerCase().includes(name.toLowerCase()) ||
         item.user.middleName.toLowerCase().includes(name.toLowerCase()) ||
-        item.user.lastName.toLowerCase().includes(name.toLowerCase())
+        item.user.lastName.toLowerCase().includes(name.toLowerCase()),
     );
   }
   return inputData;
