@@ -60,13 +60,13 @@ export default function LoanIssueReportsTableRow({ row }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {`${customer.firstName} ${customer.middleName} ${customer.lastName}`}
+          {`${customer?.firstName} ${customer?.middleName} ${customer?.lastName}`}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer.contact}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount - interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

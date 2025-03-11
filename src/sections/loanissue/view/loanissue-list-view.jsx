@@ -78,7 +78,7 @@ export default function LoanissueListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -93,7 +93,7 @@ export default function LoanissueListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -106,14 +106,14 @@ export default function LoanissueListView() {
       return;
     }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`, {
-        data: { ids: id },
-      });
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${id}`
+      );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
     } catch (err) {
-      enqueueSnackbar('Failed to delete Employee');
+      enqueueSnackbar('Loan cannot be deleted because it is not latest one.', { variant: 'error' });
     }
   };
 
@@ -124,7 +124,7 @@ export default function LoanissueListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -142,25 +142,25 @@ export default function LoanissueListView() {
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
   const loans = Loanissue.map((item) => ({
     'Loan No': item.loanNo,
     'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-    'Contact': item.customer.contact,
+    Contact: item.customer.contact,
     'OTP Contact': item.customer.otpContact,
     Email: item.customer.email,
     'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
     'Issue date': item.issueDate,
-    'Scheme': item.scheme.name,
+    Scheme: item.scheme.name,
     'Rate per gram': item.scheme.ratePerGram,
     'Interest rate': item.scheme.interestRate,
     valuation: item.scheme.valuation,
@@ -177,30 +177,32 @@ export default function LoanissueListView() {
   }));
 
   if (LoanissueLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Issued Loans'
+          heading="Issued Loans"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Loan Issue', href: paths.dashboard.loanissue.root },
             { name: ' List' },
           ]}
           action={
-            getResponsibilityValue('create_loanIssue', configs, user) && (<><Button
-              component={RouterLink}
-              href={paths.dashboard.loanissue.new}
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
-            >
-              Add Loan issue
-            </Button></>)
+            getResponsibilityValue('create_loanIssue', configs, user) && (
+              <>
+                <Button
+                  component={RouterLink}
+                  href={paths.dashboard.loanissue.new}
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                >
+                  Add Loan issue
+                </Button>
+              </>
+            )
           }
           sx={{
             mb: { xs: 3, md: 5 },
@@ -231,21 +233,18 @@ export default function LoanissueListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
             />
-            <Table
-              size={table.dense ? 'small' : 'medium'}
-              sx={{ minWidth: 960 }}
-            >
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
@@ -253,12 +252,6 @@ export default function LoanissueListView() {
                 rowCount={dataFiltered.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id),
-                  )
-                }
                 sx={{
                   position: 'sticky',
                   top: 0,
@@ -271,7 +264,7 @@ export default function LoanissueListView() {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
                     <LoanissueTableRow
@@ -301,7 +294,7 @@ export default function LoanissueListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -309,8 +302,8 @@ export default function LoanissueListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -343,7 +336,7 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   return inputData;
