@@ -39,7 +39,9 @@ export default function InterestReportsTableRow({ row }) {
     interestLoanAmount,
     consultingCharge,
     lastInstallmentDate,
-  } = row.loanDetails;
+    interestAmount,
+    consultingAmount,
+  } = row;
 
   const { user, initialize } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -74,25 +76,19 @@ export default function InterestReportsTableRow({ row }) {
           {scheme.interestRate <= 1.5 ? scheme.interestRate : 1.5}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{consultingCharge}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{(interestAmount || 0).toFixed(2)}</TableCell>{' '}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{(consultingAmount || 0).toFixed(2)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row.totalInterestAmount ? row.totalInterestAmount.toFixed(2) : '0'}
-        </TableCell>{' '}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>Con. amt</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row.totalPenalty ? row.totalPenalty : '0'}
+          {row.penaltyAmount ? row.penaltyAmount : '0'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row.totalInterestAmount ? row.totalInterestAmount.toFixed(2) : '0'}
+          {row.totalPaidInterest ? row.totalPaidInterest.toFixed(2) : '0'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {lastInstallmentDate ? fDate(lastInstallmentDate) : '-'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {lastInstallmentDate
-            ? Math.max(0, differenceInDays(new Date(), new Date(lastInstallmentDate)))
-            : '-'}
-        </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>Pen int amt</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.day > 0 ? row.day : '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{(row.pendingInterest || 0).toFixed(2)}</TableCell>
       </TableRow>
     </>
   );

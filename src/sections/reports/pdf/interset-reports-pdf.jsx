@@ -108,13 +108,13 @@ export default function IntersetReportsPdf({ selectedBranch, configs, data, filt
     { label: 'Part Loan Amt ', flex: 1.2 },
     { label: 'Int. Loan Amt', flex: 1.2 },
     { label: 'Rate', flex: 0.5 },
-    { label: 'con. Charge', flex: 0.5 },
+    { label: 'con.', flex: 0.5 },
     { label: 'Int. Amt', flex: 1.2 },
     { label: 'Con. Amt', flex: 1 },
     { label: 'Penalty', flex: 1.1 },
     { label: 'Total Int. Amt', flex: 1.2 },
     { label: 'Last Int. Pay Date', flex: 1.2 },
-    { label: 'Pending Day', flex: 0.6 },
+    { label: 'Pen. Day', flex: 0.5 },
     { label: 'pending Int. Amt', flex: 1.2 },
   ];
 
@@ -136,38 +136,46 @@ export default function IntersetReportsPdf({ selectedBranch, configs, data, filt
         wrap={false}
       >
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.loanDetails.loanNo}</Text>
+
+        <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.loanNo}</Text>
+
         <Text
           style={[styles.tableCell, { flex: 5, fontSize: 7 }]}
-        >{`${row.loanDetails.customer.firstName} ${row.loanDetails.customer.middleName} ${row.loanDetails.customer.lastName} `}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loanDetails.loanAmount}</Text>
+        >{`${row.customer.firstName} ${row.customer.middleName} ${row.customer.lastName} `}</Text>
+
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loanAmount}</Text>
+
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {(row.loanDetails.loanAmount - row.loanDetails.interestLoanAmount).toFixed(2)}
+          {(row.loanAmount - row.interestLoanAmount).toFixed(2)}
         </Text>
+
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {row.loanDetails.interestLoanAmount.toFixed(2)}
+          {(row.interestLoanAmount || 0).toFixed(2)}
         </Text>
+
         <Text style={[styles.tableCell, { flex: 0.5 }]}>
-          {row.loanDetails.scheme.interestRate > 1.5 ? 1.5 : row.loanDetails.scheme.interestRate}
+          {row.scheme.interestRate > 1.5 ? 1.5 : row.scheme.interestRate}
         </Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.loanDetails.consultingCharge}</Text>
+
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>
+          {(row.consultingCharge || 0).toFixed(2)}
+        </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {row.totalConsultingCharge.toFixed(2)}
+          {(row.interestAmount || 0).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1.1 }]}>{row.totalPenalty.toFixed(2)}</Text>
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row.totalInterestAmount.toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>
+          {(row.consultingAmount || 0).toFixed(2)}
+        </Text>
+
+        <Text style={[styles.tableCell, { flex: 1.1 }]}>{(row.penaltyAmount || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {fDate(row.loanDetails.lastInstallmentDate)}
+          {(row.totalPaidInterest || 0).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 0.6 }]}>
-          {row.loanDetails.lastInstallmentDate
-            ? Math.max(
-                0,
-                differenceInDays(new Date(), new Date(row.loanDetails.lastInstallmentDate))
-              )
-            : '-'}
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.lastInstallmentDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>
+          {(row.pendingInterest || 0).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>Pen int am</Text>
       </View>
     );
 
@@ -185,7 +193,7 @@ export default function IntersetReportsPdf({ selectedBranch, configs, data, filt
                   marginHorizontal: 15,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>STATEMENT </Text>
+                <Text style={styles.termsAndConditionsHeaders}>INTEREST REPORTS </Text>
               </View>{' '}
             </>
           )}
