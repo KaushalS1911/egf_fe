@@ -348,6 +348,7 @@ function applyFilter({ inputData, comparator, filters }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||

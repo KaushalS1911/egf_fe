@@ -620,7 +620,7 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter((user) =>
-      user.firstName.toLowerCase().includes(name.toLowerCase()),
+      (user.firstName && user.firstName + ' ' + user.lastName).toLowerCase().includes(name.toLowerCase()),
     );
   }
   if (assignTo) {

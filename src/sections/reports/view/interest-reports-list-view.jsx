@@ -9,10 +9,8 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -26,18 +24,10 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import axios from 'axios';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Label from '../../../components/label';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { useGetLoanissue } from '../../../api/loanissue';
-import { useGetConfigs } from '../../../api/config';
 import InterestReportsTableRow from '../interest-reports/interest-reports-table-row.jsx';
 import InterestReportsTableFiltersResult from '../interest-reports/interest-reports-table-filters-result.jsx';
 import InterestReportsTableToolbar from '../interest-reports/interest-reports-table-toolbar.jsx';
-import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetInterestReports } from '../../../api/interest-reports.js';
 import { isBetween } from '../../../utils/format-time.js';
 
@@ -104,7 +94,7 @@ export default function InterestReportsListView() {
         [name]: value,
       }));
     },
-    [table]
+    [table],
   );
 
   const handleResetFilters = useCallback(() => {
@@ -119,7 +109,7 @@ export default function InterestReportsListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Interest Reports"
+          heading='Interest Reports'
           links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Interest Reports' }]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -154,13 +144,13 @@ export default function InterestReportsListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row.id),
                 )
               }
               action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
+                <Tooltip title='Delete'>
+                  <IconButton color='primary' onClick={confirm.onTrue}>
+                    <Iconify icon='solar:trash-bin-trash-bold' />
                   </IconButton>
                 </Tooltip>
               }
@@ -185,7 +175,7 @@ export default function InterestReportsListView() {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
+                    table.page * table.rowsPerPage + table.rowsPerPage,
                   )
                   .map((row, index) => (
                     <InterestReportsTableRow key={row?._id} index={index} row={row} />
@@ -212,7 +202,7 @@ export default function InterestReportsListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title='Delete'
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -220,8 +210,8 @@ export default function InterestReportsListView() {
         }
         action={
           <Button
-            variant="contained"
-            color="error"
+            variant='contained'
+            color='error'
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -250,11 +240,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        (item?.customer?.firstName && item?.customer?.firstName + ' ' + item?.customer?.middleName + ' ' + item?.customer?.lastName).toLowerCase().includes(username.toLowerCase()) ||
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
     );
   }
   if (branch) {
@@ -263,7 +253,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) =>
-      isBetween(new Date(item?.lastInstallmentDate), startDate, endDate)
+      isBetween(new Date(item?.lastInstallmentDate), startDate, endDate),
     );
   }
 
