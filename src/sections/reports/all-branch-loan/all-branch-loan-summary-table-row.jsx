@@ -29,6 +29,7 @@ export default function AllBranchLoanSummaryTableRow({
     scheme,
     status,
     issueDate,
+
     lastInstallmentDate,
     nextInstallmentDate,
     interestLoanAmount,
@@ -53,7 +54,7 @@ export default function AllBranchLoanSummaryTableRow({
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {(scheme?.interestRate).toFixed(2)}
+          {Number(scheme?.interestRate).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {consultingCharge.toFixed(2)}
