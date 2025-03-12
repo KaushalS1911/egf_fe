@@ -12,7 +12,7 @@ import {
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
@@ -177,7 +177,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
 
       const response = await axios.post(
         `https://egf-be.onrender.com/api/whatsapp-notification`,
-        formData,
+        formData
       );
 
       console.log('WhatsApp notification response:', response.data);
@@ -238,7 +238,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label
-            variant='soft'
+            variant="soft"
             color={
               (status === 'Disbursed' && 'info') ||
               (status === 'Closed' && 'warning') ||
@@ -252,14 +252,25 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
+          <IconButton
+            color="error"
+            onClick={() => {
+              confirm.onTrue();
+              setDeleteId(row?._id);
+            }}
+          >
+            <Iconify icon="eva:trash-2-outline" />
           </IconButton>
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
         {[
@@ -294,10 +305,10 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -305,13 +316,13 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
             {dialogContent === 'loanDetails' && (
               <Button
-                color='inherit'
-                variant='contained'
+                color="inherit"
+                variant="contained"
                 onClick={() => sendPdfToWhatsApp('loanDetails')}
               >
                 Share
@@ -319,7 +330,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             )}
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               {renderDialogContent()}
             </PDFViewer>
           </Box>
