@@ -137,8 +137,47 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         netWeight: Yup.string().required('Net Weight is required'),
         grossAmount: Yup.string().required('Gross Amount is required'),
         netAmount: Yup.string().required('Net Amount is required'),
-      })
+      }),
     ),
+    accountNumber: Yup.string()
+      .when('paymentMode', {
+        is: (val) => val === 'Bank' || val === 'Both',
+        then: (schema) => schema.required('Account Number is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    accountType: Yup.string()
+      .when('paymentMode', {
+        is: (val) => val === 'Bank' || val === 'Both',
+        then: (schema) => schema.required('Account Type is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    accountHolderName: Yup.string()
+      .when('paymentMode', {
+        is: (val) => val === 'Bank' || val === 'Both',
+        then: (schema) => schema.required('Account Holder Name is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    IFSC: Yup.string()
+      .when('paymentMode', {
+        is: (val) => val === 'Bank' || val === 'Both',
+        then: (schema) =>
+          schema
+            .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC Code')
+            .required('IFSC Code is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    bankName: Yup.string()
+      .when('paymentMode', {
+        is: (val) => val === 'Bank' || val === 'Both',
+        then: (schema) => schema.required('Bank Name is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    branchName: Yup.string()
+      .when('paymentMode', {
+        is: (val) => val === 'Bank' || val === 'Both',
+        then: (schema) => schema.required('Branch Name is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
   });
 
   const defaultValues = useMemo(() => {
@@ -156,10 +195,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       property_image: currentLoanIssue?.propertyImage || null,
       customer: currentLoanIssue
         ? {
-            id: currentLoanIssue?.customer?._id,
-            name:
-              currentLoanIssue?.customer?.firstName + ' ' + currentLoanIssue?.customer?.lastName,
-          }
+          id: currentLoanIssue?.customer?._id,
+          name:
+            currentLoanIssue?.customer?.firstName + ' ' + currentLoanIssue?.customer?.lastName,
+        }
         : null,
       scheme: currentLoanIssue ? currentLoanIssue?.scheme : null,
       loanNo: currentLoanIssue?.loanNo || '',
@@ -356,15 +395,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         : `${import.meta.env.VITE_BASE_URL}/${user?.company}/issue-loan`;
       const response = currentLoanIssue
         ? await axios.put(url, payload, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          })
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
         : await axios.post(url, payload, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
       enqueueSnackbar('Loan processed successfully!', {
         variant: 'success',
@@ -412,11 +451,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       setValue('customerCode', findedCus?.customerCode);
       setValue(
         'customerName',
-        `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `
+        `${findedCus?.firstName} ${findedCus?.middleName} ${findedCus?.lastName} `,
       );
       setValue(
         'customerAddress',
-        `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`
+        `${findedCus?.permanentAddress?.street} ${findedCus?.permanentAddress?.landmark} ${findedCus.permanentAddress?.city}`,
       );
       setValue('contact', findedCus?.contact);
       setValue('contactOtp', findedCus?.otpContact);
@@ -648,7 +687,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           -image.naturalWidth / 2,
           -image.naturalHeight / 2,
           image.naturalWidth,
-          image.naturalHeight
+          image.naturalHeight,
         );
         ctx.restore();
       } else {
@@ -676,7 +715,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           -cropWidth / 2,
           -cropHeight / 2,
           cropWidth,
-          cropHeight
+          cropHeight,
         );
         ctx.restore();
       }
@@ -717,7 +756,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
     const caratValue =
       carat?.find(
-        (item) => item?.name == parseFloat(getValues(`propertyDetails[${index}].carat`))
+        (item) => item?.name == parseFloat(getValues(`propertyDetails[${index}].carat`)),
       ) || {};
     const typeValue = property?.find((item) => item?.propertyType === value) || {};
     const grossWeight = totalWeight - lossWeight;
@@ -738,11 +777,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
           setValue(
             `propertyDetails[${index}].grossAmount`,
-            (grossWeight * schemedata?.ratePerGram).toFixed(2)
+            (grossWeight * schemedata?.ratePerGram).toFixed(2),
           );
           setValue(
             `propertyDetails[${index}].netAmount`,
-            (netWeight * schemedata?.ratePerGram).toFixed(2)
+            (netWeight * schemedata?.ratePerGram).toFixed(2),
           );
         }
         break;
@@ -760,11 +799,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
           setValue(
             `propertyDetails[${index}].grossAmount`,
-            (grossWeight * schemedata?.ratePerGram).toFixed(2)
+            (grossWeight * schemedata?.ratePerGram).toFixed(2),
           );
           setValue(
             `propertyDetails[${index}].netAmount`,
-            (netWeight * schemedata?.ratePerGram).toFixed(2)
+            (netWeight * schemedata?.ratePerGram).toFixed(2),
           );
         }
         break;
@@ -794,11 +833,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
           setValue(
             `propertyDetails[${index}].grossAmount`,
-            (grossWeight * schemedata?.ratePerGram).toFixed(2)
+            (grossWeight * schemedata?.ratePerGram).toFixed(2),
           );
           setValue(
             `propertyDetails[${index}].netAmount`,
-            (netWeight * schemedata?.ratePerGram).toFixed(2)
+            (netWeight * schemedata?.ratePerGram).toFixed(2),
           );
         }
         break;
@@ -849,7 +888,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           )}
           <Grid item xs={12} md={4}>
             <Box>
-              <RHFUploadAvatar disabled={true} name="customer_url" maxSize={3145728} />
+              <RHFUploadAvatar disabled={true} name='customer_url' maxSize={3145728} />
             </Box>
           </Grid>
           <Grid xs={12} md={8}>
@@ -857,7 +896,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               <Card sx={{ p: 2 }}>
                 {!isFieldsEnabled && (
                   <Box sx={{ mb: 1.5 }}>
-                    <Alert severity="warning">
+                    <Alert severity='warning'>
                       Please select a customer to proceed with the loan issuance.
                     </Alert>
                   </Box>
@@ -865,15 +904,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 <Box
                   rowGap={3}
                   columnGap={2}
-                  display="grid"
+                  display='grid'
                   gridTemplateColumns={{
                     xs: 'repeat(1, 1fr)',
                     sm: 'repeat(2, 1fr)',
                   }}
                 >
                   <RHFAutocomplete
-                    name="customer"
-                    label="Select Customer"
+                    name='customer'
+                    label='Select Customer'
                     req={'red'}
                     fullWidth
                     options={customer
@@ -889,7 +928,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       </li>
                     )}
                   />
-                  <Box display="flex" justifyContent="end">
+                  <Box display='flex' justifyContent='end'>
                     <Link
                       to={paths.dashboard.customer.new}
                       onClick={handleAdd}
@@ -909,7 +948,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           <Grid xs={12}>
             <Card sx={{ p: 2 }}>
               <Typography
-                variant="subtitle1"
+                variant='subtitle1'
                 sx={{
                   mb: 2,
                   fontWeight: '600',
@@ -920,7 +959,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               <Box
                 rowGap={1.5}
                 columnGap={1.5}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
@@ -928,31 +967,31 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 }}
               >
                 <RHFTextField
-                  name="customerCode"
+                  name='customerCode'
                   InputProps={{ readOnly: true }}
                   InputLabelProps={{ shrink: true }}
                   label={'Customer Code'}
                 />
                 <RHFTextField
-                  name="customerName"
+                  name='customerName'
                   InputProps={{ readOnly: true }}
                   InputLabelProps={{ shrink: true }}
                   label={'Customer Name'}
                 />
                 <RHFTextField
-                  name="customerAddress"
+                  name='customerAddress'
                   InputProps={{ readOnly: true }}
                   label={'Customer Address'}
                   InputLabelProps={{ shrink: true }}
                 />
                 <RHFTextField
-                  name="contact"
+                  name='contact'
                   InputProps={{ readOnly: true }}
                   label={'Mobile No.'}
                   InputLabelProps={{ shrink: true }}
                 />
                 <RHFTextField
-                  name="contactOtp"
+                  name='contactOtp'
                   InputProps={{ readOnly: true }}
                   label={'OTP Mobile No.'}
                   InputLabelProps={{ shrink: true }}
@@ -963,7 +1002,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           <Grid xs={12} md={10}>
             <Card sx={{ p: 2 }}>
               <Typography
-                variant="subtitle1"
+                variant='subtitle1'
                 sx={{
                   mb: 1,
                   fontWeight: 600,
@@ -974,7 +1013,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               <Box
                 rowGap={1.5}
                 columnGap={1.5}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
@@ -982,23 +1021,23 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 }}
               >
                 <RHFTextField
-                  name="loanNo"
-                  label="Loan No."
+                  name='loanNo'
+                  label='Loan No.'
                   req={'red'}
                   InputProps={{ readOnly: true }}
                   disabled
                 />
                 <RHFDatePicker
-                  name="issueDate"
+                  name='issueDate'
                   control={control}
-                  label="Issue Date"
+                  label='Issue Date'
                   req={'red'}
                   disabled={currentLoanIssue ? true : false}
                 />
                 <RHFAutocomplete
-                  name="scheme"
-                  label="Scheme"
-                  req="red"
+                  name='scheme'
+                  label='Scheme'
+                  req='red'
                   disabled={!isFieldsEnabled}
                   fullWidth
                   options={scheme?.filter((item) => item.isActive)}
@@ -1021,7 +1060,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                           carat?.find(
                             (item) =>
                               item?.name ===
-                              parseFloat(getValues(`propertyDetails[${index}].carat`))
+                              parseFloat(getValues(`propertyDetails[${index}].carat`)),
                           ) || {};
                         const caratPercentage = caratValue?.caratPercentage || 100;
                         const grossWeight = totalWeight - lossWeight;
@@ -1041,25 +1080,25 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   }}
                 />
                 <RHFTextField
-                  name="interestRate"
-                  label="InstrestRate"
+                  name='interestRate'
+                  label='InstrestRate'
                   InputProps={{ readOnly: true }}
                 />
                 <Controller
-                  name="consultingCharge"
+                  name='consultingCharge'
                   control={control}
                   render={({ field }) => (
                     <RHFTextField
                       {...field}
                       disabled={true}
-                      label="Consulting Charge"
+                      label='Consulting Charge'
                       req={'red'}
                     />
                   )}
                 />
                 <RHFTextField
-                  name="approvalCharge"
-                  label="Approval Charge"
+                  name='approvalCharge'
+                  label='Approval Charge'
                   disabled={!isFieldsEnabled}
                   req={'red'}
                   inputProps={{
@@ -1073,50 +1112,50 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   }}
                 />
                 <RHFTextField
-                  name="periodTime"
-                  label="INT. Period Time"
+                  name='periodTime'
+                  label='INT. Period Time'
                   InputProps={{ readOnly: true }}
                 />
                 <RHFTextField
-                  name="renewalTime"
-                  label="Renewal Time"
+                  name='renewalTime'
+                  label='Renewal Time'
                   InputProps={{ readOnly: true }}
                 />
                 <RHFTextField
-                  name="loanCloseTime"
-                  label="Minimun Loan Close Time"
+                  name='loanCloseTime'
+                  label='Minimun Loan Close Time'
                   InputProps={{ readOnly: true }}
                 />
                 {currentLoanIssue && (
                   <RHFTextField
-                    name="loanAmount"
-                    label="Loan AMT."
+                    name='loanAmount'
+                    label='Loan AMT.'
                     req={'red'}
                     disabled={!isFieldsEnabled}
-                    type="number"
+                    type='number'
                     inputProps={{ min: 0 }}
                   />
                 )}
                 {currentLoanIssue && (
                   <RHFDatePicker
-                    name="nextInstallmentDate"
+                    name='nextInstallmentDate'
                     control={control}
-                    label="Next Installment Date"
+                    label='Next Installment Date'
                     req={'red'}
                     readOnly={true}
                   />
                 )}
                 <RHFTextField
-                  name="jewellerName"
-                  label="JewellerName"
+                  name='jewellerName'
+                  label='JewellerName'
                   req={'red'}
                   disabled={!isFieldsEnabled}
                 />
                 <RHFAutocomplete
                   disabled={!isFieldsEnabled}
-                  name="loanType"
-                  label="Loan Type"
-                  req="red"
+                  name='loanType'
+                  label='Loan Type'
+                  req='red'
                   fullWidth
                   options={
                     configs?.loanTypes?.length > 0 ? configs.loanTypes.map((loan) => loan) : []
@@ -1134,7 +1173,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           </Grid>
           <Grid item xs={12} md={2}>
             <Box sx={{ textAlign: 'center', mb: 1 }}>
-              <Typography variant="subtitle1" component={'span'} sx={{ fontWeight: 600 }}>
+              <Typography variant='subtitle1' component={'span'} sx={{ fontWeight: 600 }}>
                 Property Image
               </Typography>
             </Box>
@@ -1148,7 +1187,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   }}
                 >
                   <Typography
-                    variant="subtitle1"
+                    variant='subtitle1'
                     sx={{
                       display: 'inline-block',
                       fontWeight: 600,
@@ -1158,7 +1197,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 <Box mt={0.2}>
                   <RHFUploadAvatar
                     radius={true}
-                    name="property_image"
+                    name='property_image'
                     camera={true}
                     setOpen2={setOpen2}
                     setOpen={setOpen}
@@ -1168,7 +1207,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       croppedImage || capturedImage || imageSrc || currentLoanIssue?.propertyImage
                     }
                     maxSize={3145728}
-                    accept="image/*"
+                    accept='image/*'
                     onDrop={handleDropSingleFile}
                   />
                 </Box>
@@ -1180,9 +1219,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     aspect={1}
                   >
                     <img
-                      id="cropped-image"
+                      id='cropped-image'
                       src={imageSrc || capturedImage}
-                      alt="Crop preview"
+                      alt='Crop preview'
                       onLoad={resetCrop}
                       style={{ transform: `rotate(${rotation}deg)` }}
                     />
@@ -1194,18 +1233,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       padding: '1rem',
                     }}
                   >
-                    <Button variant="outlined" onClick={handleCancel}>
+                    <Button variant='outlined' onClick={handleCancel}>
                       Cancel
                     </Button>
                     <Box sx={{ display: 'flex' }}>
                       <IconButton onClick={() => rotateImage(-90)} style={{ marginRight: '10px' }}>
-                        <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />
+                        <Iconify icon='material-symbols:rotate-90-degrees-cw-rounded' />
                       </IconButton>
                       <IconButton onClick={() => rotateImage(90)}>
-                        <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />
+                        <Iconify icon='material-symbols:rotate-90-degrees-ccw-rounded' />
                       </IconButton>
                     </Box>
-                    <Button variant="contained" color="primary" onClick={showCroppedImage}>
+                    <Button variant='contained' color='primary' onClick={showCroppedImage}>
                       Save Image
                     </Button>
                   </Box>
@@ -1217,7 +1256,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             <Card>
               <CardContent sx={{ p: 2 }}>
                 <Typography
-                  variant="subtitle1"
+                  variant='subtitle1'
                   sx={{
                     mb: 1,
                     fontWeight: '600',
@@ -1251,7 +1290,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFAutocomplete
                               sx={sx}
                               name={`propertyDetails[${index}].type`}
-                              label="Type"
+                              label='Type'
                               disabled={!isFieldsEnabled}
                               options={property
                                 ?.filter((e) => e.isActive === true)
@@ -1285,7 +1324,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                                 input: { height: 0 },
                               }}
                               name={`propertyDetails[${index}].carat`}
-                              label="Carat"
+                              label='Carat'
                               disabled={!isFieldsEnabled}
                               options={carat
                                 ?.filter((e) => e.isActive === true)
@@ -1305,8 +1344,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFTextField
                               sx={sx}
                               name={`propertyDetails[${index}].pcs`}
-                              label="PCS"
-                              type="number"
+                              label='PCS'
+                              type='number'
                               disabled={
                                 !watch(`propertyDetails[${index}].isPcsEditable`) &&
                                 !isFieldsEnabled
@@ -1328,8 +1367,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFTextField
                               sx={sx}
                               name={`propertyDetails[${index}].totalWeight`}
-                              label="Total Weight"
-                              type="number"
+                              label='Total Weight'
+                              type='number'
                               disabled={!isFieldsEnabled}
                               helperText={errors[`propertyDetails[${index}].totalWeight`] || ''}
                               error={!!errors[`propertyDetails[${index}].totalWeight`]}
@@ -1348,9 +1387,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFTextField
                               sx={sx}
                               name={`propertyDetails[${index}].lossWeight`}
-                              label="Loss Weight"
+                              label='Loss Weight'
                               disabled={!isFieldsEnabled}
-                              type="number"
+                              type='number'
                               helperText={errors[`propertyDetails[${index}].lossWeight`] || ''}
                               error={!!errors[`propertyDetails[${index}].lossWeight`]}
                               onChange={(e) => {
@@ -1369,7 +1408,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFTextField
                               sx={sx}
                               name={`propertyDetails[${index}].grossWeight`}
-                              label="GW"
+                              label='GW'
                               disabled={true}
                               value={getValues(`propertyDetails[${index}].grossWeight`) || ''}
                             />
@@ -1383,7 +1422,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFTextField
                               sx={sx}
                               name={`propertyDetails[${index}].netWeight`}
-                              label="NW"
+                              label='NW'
                               disabled={true}
                               value={getValues(`propertyDetails[${index}].netWeight`) || ''}
                             />
@@ -1397,7 +1436,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFTextField
                               sx={sx}
                               name={`propertyDetails[${index}].grossAmount`}
-                              label="GA"
+                              label='GA'
                               disabled={true}
                             />
                           </TableCell>
@@ -1410,7 +1449,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             <RHFTextField
                               sx={sx}
                               name={`propertyDetails[${index}].netAmount`}
-                              label="NA"
+                              label='NA'
                               disabled={true}
                             />
                           </TableCell>
@@ -1424,14 +1463,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                               onClick={() => handleReset(index)}
                               disabled={!isFieldsEnabled}
                             >
-                              <Iconify icon="ic:baseline-refresh" />
+                              <Iconify icon='ic:baseline-refresh' />
                             </IconButton>
                             <IconButton
-                              color="error"
+                              color='error'
                               onClick={() => handleRemove(index)}
                               disabled={!isFieldsEnabled || fields.length === 1}
                             >
-                              <Iconify icon="solar:trash-bin-trash-bold" />
+                              <Iconify icon='solar:trash-bin-trash-bold' />
                             </IconButton>
                           </TableCell>
                         </TableRow>
@@ -1479,11 +1518,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 }}
               >
                 <Button
-                  size="small"
+                  size='small'
                   disabled={!isFieldsEnabled}
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Iconify icon="mingcute:add-line" />}
+                  variant='contained'
+                  color='primary'
+                  startIcon={<Iconify icon='mingcute:add-line' />}
                   onClick={handleAdd}
                 >
                   Add Property
@@ -1494,7 +1533,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           <Grid item xs={12} md={12}>
             <Card sx={{ p: 2 }}>
               <Typography
-                variant="subtitle1"
+                variant='subtitle1'
                 sx={{
                   mb: 1,
                   fontWeight: '600',
@@ -1505,7 +1544,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               <Box
                 rowGap={1.5}
                 columnGap={1.5}
-                display="grid"
+                display='grid'
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
@@ -1513,15 +1552,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 }}
               >
                 <Controller
-                  name="loanAmount"
+                  name='loanAmount'
                   control={control}
                   render={({ field }) => (
                     <RHFTextField
                       {...field}
-                      label="Loan Amount"
+                      label='Loan Amount'
                       req={'red'}
                       disabled={!isFieldsEnabled}
-                      type="number"
+                      type='number'
                       inputProps={{ min: 0 }}
                       onChange={(e) => {
                         field.onChange(e);
@@ -1532,8 +1571,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   )}
                 />
                 <RHFAutocomplete
-                  name="paymentMode"
-                  label="Payment Mode"
+                  name='paymentMode'
+                  label='Payment Mode'
                   req={'red'}
                   disabled={!isFieldsEnabled}
                   fullWidth
@@ -1555,15 +1594,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 />
                 {watch('paymentMode') === 'Cash' && (
                   <Controller
-                    name="cashAmount"
+                    name='cashAmount'
                     control={control}
                     render={({ field }) => (
                       <RHFTextField
                         {...field}
-                        label="Cash Amount"
+                        label='Cash Amount'
                         req={'red'}
                         disabled={!isFieldsEnabled}
-                        type="number"
+                        type='number'
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -1575,15 +1614,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 )}
                 {watch('paymentMode') === 'Bank' && (
                   <Controller
-                    name="bankAmount"
+                    name='bankAmount'
                     control={control}
                     render={({ field }) => (
                       <RHFTextField
                         {...field}
-                        label="Bank Amount"
+                        label='Bank Amount'
                         req={'red'}
                         disabled={!isFieldsEnabled}
-                        type="number"
+                        type='number'
                         inputProps={{ min: 0 }}
                       />
                     )}
@@ -1592,15 +1631,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 {watch('paymentMode') === 'Both' && (
                   <>
                     <Controller
-                      name="cashAmount"
+                      name='cashAmount'
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
-                          label="Cash Amount"
+                          label='Cash Amount'
                           req={'red'}
                           disabled={!isFieldsEnabled}
-                          type="number"
+                          type='number'
                           inputProps={{ min: 0 }}
                           onChange={(e) => {
                             field.onChange(e);
@@ -1610,15 +1649,15 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       )}
                     />
                     <Controller
-                      name="bankAmount"
+                      name='bankAmount'
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
-                          label="Bank Amount"
+                          label='Bank Amount'
                           req={'red'}
                           disabled
-                          type="number"
+                          type='number'
                           inputProps={{ min: 0 }}
                         />
                       )}
@@ -1640,7 +1679,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     }}
                   >
                     <Typography
-                      variant="subtitle1"
+                      variant='subtitle1'
                       sx={{
                         mb: 0.5,
                         fontWeight: '600',
@@ -1672,23 +1711,23 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   <Box
                     rowGap={3}
                     columnGap={2}
-                    display="grid"
+                    display='grid'
                     gridTemplateColumns={{
                       xs: 'repeat(1, 1fr)',
                       sm: 'repeat(6, 1fr)',
                     }}
                   >
                     <RHFTextField
-                      name="accountNumber"
-                      label="Account No."
+                      name='accountNumber'
+                      label='Account No.'
                       req={'red'}
                       disabled={!isFieldsEnabled}
-                      type="number"
+                      type='number'
                       inputProps={{ min: 0 }}
                     />
                     <RHFAutocomplete
-                      name="accountType"
-                      label="Account Type"
+                      name='accountType'
+                      label='Account Type'
                       req={'red'}
                       disabled={!isFieldsEnabled}
                       fullWidth
@@ -1701,14 +1740,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       )}
                     />
                     <RHFTextField
-                      name="accountHolderName"
-                      label="Account Holder Name"
+                      name='accountHolderName'
+                      label='Account Holder Name'
                       disabled={!isFieldsEnabled}
                       req={'red'}
                     />
                     <RHFTextField
-                      name="IFSC"
-                      label="IFSC Code"
+                      name='IFSC'
+                      label='IFSC Code'
                       inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
                       onInput={(e) => {
                         e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -1716,14 +1755,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       onBlur={(e) => checkIFSC(e.target.value)}
                     />
                     <RHFTextField
-                      name="bankName"
-                      label="Bank Name"
+                      name='bankName'
+                      label='Bank Name'
                       req={'red'}
                       disabled={!isFieldsEnabled}
                     />
                     <RHFTextField
-                      name="branchName"
-                      label="Branch Name"
+                      name='branchName'
+                      label='Branch Name'
                       req={'red'}
                       disabled={!isFieldsEnabled}
                     />
@@ -1743,21 +1782,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           }}
         >
           <Button
-            color="inherit"
+            color='inherit'
             sx={{
               margin: '0px 10px',
               height: '36px',
             }}
             disabled={!isFieldsEnabled}
-            variant="outlined"
+            variant='outlined'
             onClick={() => reset()}
           >
             Reset
           </Button>
           <LoadingButton
             disabled={!isFieldsEnabled}
-            type="submit"
-            variant="contained"
+            type='submit'
+            variant='contained'
             loading={isSubmitting}
           >
             {!currentLoanIssue ? 'Submit' : 'Save'}
@@ -1784,17 +1823,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           <Webcam
             audio={false}
             ref={webcamRef}
-            screenshotFormat="image/jpeg"
+            screenshotFormat='image/jpeg'
             width={'90%'}
             height={'100%'}
             videoConstraints={videoConstraints}
           />
         </Box>
         <DialogActions>
-          <Button variant="outlined" onClick={capture}>
+          <Button variant='outlined' onClick={capture}>
             Capture Photo
           </Button>
-          <Button variant="contained" onClick={() => setOpen2(false)}>
+          <Button variant='contained' onClick={() => setOpen2(false)}>
             Close Camera
           </Button>
         </DialogActions>
