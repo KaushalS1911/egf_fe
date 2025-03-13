@@ -214,6 +214,9 @@ export const paths = {
       'interest-reports': `${ROOTS.DASHBOARD}/reports/interest-reports`,
       'customer-statement': `${ROOTS.DASHBOARD}/reports/customer-statement`,
       'loan-issue-reports': `${ROOTS.DASHBOARD}/reports/loan-issue-reports`,
+      'other-loan-all-branch-reports': `${ROOTS.DASHBOARD}/reports/other-loan-all-branch-reports`,
+      'other-loan-close-reports': `${ROOTS.DASHBOARD}/reports/other-loan-close-reports`,
+      'other-loan-interest-reports': `${ROOTS.DASHBOARD}/reports/other-loan-interest-reports`,
     },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,

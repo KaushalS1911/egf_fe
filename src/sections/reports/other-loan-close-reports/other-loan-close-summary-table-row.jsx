@@ -15,7 +15,7 @@ import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export default function AllBranchLoanSummaryTableRow({
+export default function OtherLoanCloseSummaryTableRow({
   row,
   index,
   selected,
@@ -23,22 +23,19 @@ export default function AllBranchLoanSummaryTableRow({
   onDeleteRow,
 }) {
   const {
-    loanNo,
-    customer,
-    loanAmount,
-    scheme,
-    status,
-    issueDate,
-
-    lastInstallmentDate,
-    nextInstallmentDate,
-    interestLoanAmount,
-    consultingCharge,
-    totalPaidInterest,
+    loan,
     day,
     pendingInterest,
-    lastAmtPayDate,
+    otherNumber,
+    otherName,
+    rate,
+    renewalDate,
+    status,
+    totalInterestAmt,
+    closingAmount,
   } = row;
+  const { loanNo, customer, loanAmount, scheme, issueDate } = loan;
+
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -52,39 +49,34 @@ export default function AllBranchLoanSummaryTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{customer?.contact}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherName}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherNumber}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(scheme?.interestRate).toFixed(2)}
+          {Number(scheme?.interestRate).toFixed(2) || 0}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(consultingCharge).toFixed(2) || 0}
+          {Number(rate).toFixed(2) || 0}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanAmount}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {fDate(lastAmtPayDate) || '-'}
-        </TableCell>
-        <TableCell
-          sx={{
-            fontSize: '12px',
-            padding: '6px',
-          }}
-        >
-          {parseFloat((loanAmount - interestLoanAmount).toFixed(2))}
-        </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {fDate(lastInstallmentDate) || '-'}
-        </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {totalPaidInterest.toFixed(2)}
+          {totalInterestAmt.toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(pendingInterest).toFixed(2) || 0}
+          {Number(closingAmount || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {fDate(nextInstallmentDate) || '-'}
+          {Number(row.amount - closingAmount || 0).toFixed(2)}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {fDate(row.closeDate) || '-'}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {(row.closingCharge || 0).toFixed(2)}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {(totalInterestAmt + closingAmount + row.closingCharge || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px', textAlign: 'center' }}>
           <Label
@@ -147,7 +139,7 @@ export default function AllBranchLoanSummaryTableRow({
   );
 }
 
-AllBranchLoanSummaryTableRow.propTypes = {
+OtherLoanCloseSummaryTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

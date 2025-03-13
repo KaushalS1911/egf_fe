@@ -180,6 +180,18 @@ export function useNavData() {
                 title: t('loan issue reports'),
                 path: paths.dashboard.reports['loan-issue-reports'],
               },
+              {
+                title: t('other loan all branch reports'),
+                path: paths.dashboard.reports['other-loan-all-branch-reports'],
+              },
+              {
+                title: t('other loan close reports'),
+                path: paths.dashboard.reports['other-loan-close-reports'],
+              },
+              {
+                title: t('other loan interest'),
+                path: paths.dashboard.reports['other-loan-interest-reports'],
+              },
             ],
           },
         ],

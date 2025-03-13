@@ -36,11 +36,11 @@ import LoanPartReleaseDetailsTableRow from '../loan-details-table/loan-part-rele
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'loanNo', label: 'Loan No.' },
-  { id: 'loanAmount', label: 'Loan Amount' },
-  { id: 'payAmount', label: 'Pay Amount' },
-  { id: 'pendingAmount', label: 'Pending Amount' },
-  { id: 'payDate', label: 'Pay Date' },
+  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'loanAmount', label: 'Loan amount' },
+  { id: 'payAmount', label: 'Pay amount' },
+  { id: 'pendingAmount', label: 'Pending amount' },
+  { id: 'payDate', label: 'Pay date' },
   { id: 'remarks', label: 'Remarks' },
 ];
 
@@ -310,7 +310,9 @@ function applyFilter({ inputData, comparator, filters, dateError, dataFilters })
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||

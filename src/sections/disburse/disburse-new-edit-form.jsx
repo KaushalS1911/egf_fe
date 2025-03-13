@@ -185,17 +185,17 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       console.log('First PDF sent successfully');
 
       // Generate the second PDF
-      const blob2 = await pdf(<Sansaction11 sansaction={item} configs={configs} />).toBlob();
-      const file2 = new File([blob2], `Sansaction11.pdf`, { type: 'application/pdf' });
-
-      const formData2 = new FormData();
-      formData2.append('type', 'sanction_letter_11');
-      formData2.append('file', file2);
-      formData2.append('contact', item.customer.contact);
-
-      // Send the second PDF
-      await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData2);
-      console.log('Second PDF sent successfully');
+      // const blob2 = await pdf(<Sansaction11 sansaction={item} configs={configs} />).toBlob();
+      // const file2 = new File([blob2], `Sansaction11.pdf`, { type: 'application/pdf' });
+      //
+      // const formData2 = new FormData();
+      // formData2.append('type', 'sanction_letter_11');
+      // formData2.append('file', file2);
+      // formData2.append('contact', item.customer.contact);
+      //
+      // // Send the second PDF
+      // await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData2);
+      // console.log('Second PDF sent successfully');
     } catch (error) {
       console.error('Error generating or sending PDFs:', error);
     }

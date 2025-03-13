@@ -36,7 +36,7 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.' },
+  { id: 'LoanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'LoanAmount', label: 'loan amt' },
   { id: 'Rate', label: 'Rate' },
@@ -75,7 +75,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -90,7 +90,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -117,7 +117,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -135,20 +135,23 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{ fontSize: 22, fontWeight: 600 }}> Gold Loan uchak part Details</Typography>
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>
+          {' '}
+          Gold Loan uchak part Details
+        </Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -159,11 +162,13 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -171,13 +176,13 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -202,7 +207,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
                     <GoldLoanUchakPaymentTableRow
@@ -220,14 +225,13 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                {
-                  dataFiltered.length == 0 &&
+                {dataFiltered.length == 0 && (
                   <TableRow>
-                    <TableCell colSpan={12} align='center' sx={{ p: 1, fontWeight: 500 }}>
+                    <TableCell colSpan={12} align="center" sx={{ p: 1, fontWeight: 500 }}>
                       No Data Available
                     </TableCell>
                   </TableRow>
-                }
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -245,7 +249,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -253,8 +257,8 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -283,11 +287,13 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
 
@@ -300,9 +306,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
 
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((loan) =>
-      isBetween(new Date(loan.issueDate), startDate, endDate),
-    );
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
   }
 
   return inputData;

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -29,41 +29,58 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 import axios from 'axios';
-import { useAuthContext } from '../../../../auth/hooks';
-import { useGetLoanissue } from '../../../../api/loanissue';
-import { LoadingScreen } from '../../../../components/loading-screen';
-import { fDate, isBetween } from '../../../../utils/format-time';
-import { useGetConfigs } from '../../../../api/config';
-import AllBranchLoanSummaryTableRow from '../../all-branch-loan/all-branch-loan-summary-table-row';
-import AllBranchLoanSummaryTableToolbar from '../../all-branch-loan/all-branch-loan-summary-table-toolbar';
-import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
+import { useAuthContext } from '../../../auth/hooks';
+import { useGetLoanissue } from '../../../api/loanissue';
+import { LoadingScreen } from '../../../components/loading-screen';
+import { fDate, isBetween } from '../../../utils/format-time';
+import { useGetConfigs } from '../../../api/config';
+import AllBranchLoanSummaryTableRow from '../all-branch-loan/all-branch-loan-summary-table-row';
+import AllBranchLoanSummaryTableToolbar from '../all-branch-loan/all-branch-loan-summary-table-toolbar';
+import AllBranchLoanSummaryTableFiltersResult from '../all-branch-loan/all-branch-loan-summary-table-filters-result';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
-import Label from '../../../../components/label';
-import { TableCell, TableRow, Typography } from '@mui/material';
-import LoanInterestDetailsTableRow from '../loan-details-table/loan-interest-details-table-row';
-import LoanPartPaymentDetailsTableRow from '../loan-details-table/loan-part-payment-details-table-row';
+import Label from '../../../components/label';
+import { useGetAllLoanSummary } from '../../../api/all-branch-loan-summary';
+import { useGetOtherLoanReports } from '../../../api/all-branch-other-loan-report.js';
+import AllBranchOtherLoanSummaryTableToolbar from '../all-branch-other-loan/all-branch-other-loan-summary-table-toolbar.jsx';
+import AllBranchOtherLoanSummaryTableFiltersResult from '../all-branch-other-loan/all-branch-other-loan-summary-table-filters-result.jsx';
+import AllBranchOtherLoanSummaryTableRow from '../all-branch-other-loan/all-branch-other-loan-summary-table-row.jsx';
+import OtherLonaInterestTableToolbar from '../other-loan-interest-reports/other-lona-interest-table-toolbar.jsx';
+import OtherLonaInterestTableFiltersResult from '../other-loan-interest-reports/other-lona-interest-table-filters-result.jsx';
+import OtherLonaInterestTableRow from '../other-loan-interest-reports/other-lona-interest-table-row.jsx';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'loanAmount', label: 'Loan amount' },
-  { id: 'payAmount', label: 'Pay amount' },
-  { id: 'intLoanAmount', label: 'Int. loan amt' },
-  { id: 'payDate', label: 'Pay date' },
-  { id: 'entryDate', label: 'Entry date' },
-  { id: 'remarks', label: 'Remarks' },
+  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'CustomerName', label: 'Customer name' },
+  { id: 'othername', label: 'Other name' },
+  { id: 'otherno', label: 'Other no.' },
+  { id: 'int%', label: 'int rate (%)' },
+  { id: 'opendate', label: 'Open date' },
+  { id: 'otherLoanAmount', label: 'Other loan amt' },
+  { id: 'charge', label: 'Charge' },
+  { id: 'int', label: 'Int.' },
+  { id: 'lastintpaydate', label: 'Last oint. pay date' },
+  { id: 'Day', label: ' Day' },
+  { id: 'pendingAmt', label: 'Pending int.' },
+  { id: 'nextointpaydayte', label: 'Next int. pay date' },
+  { id: 'Status', label: 'Status' },
 ];
-
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
+  { value: 'Issued', label: 'Issued' },
   {
-    value: 'Issued',
-    label: 'Issued',
+    value: 'Disbursed',
+    label: 'Disbursed',
   },
-  { value: 'Disbursed', label: 'Disbursed' },
+  { value: 'Regular', label: 'Regular' },
+  {
+    value: 'Overdue',
+    label: 'Overdue',
+  },
 ];
 const defaultFilters = {
   username: '',
@@ -71,26 +88,30 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   branch: '',
+  issuedBy: '',
 };
 
 // ----------------------------------------------------------------------
 
-export default function LoanPartPaymentDetailsListView({ partPaymentDetail, dataFilters }) {
+export default function OtherLonaInterestListView() {
+  const [options, setOptions] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
+  const { otherLoanReports, otherLoanReportsLoading } = useGetOtherLoanReports();
   const table = useTable();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(partPaymentDetail);
+  const [tableData, setTableData] = useState(otherLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
-
+  // useEffect(() => {
+  //   fetchStates();
+  // }, [otherLoanReports]);
   const dataFiltered = applyFilter({
-    inputData: partPaymentDetail,
+    inputData: otherLoanReports,
     comparator: getComparator(table.order, table.orderBy),
     filters,
-    dataFilters,
   });
 
   const dataInPage = dataFiltered.slice(
@@ -146,7 +167,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = otherLoanReports.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -190,23 +211,101 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
   //   'Payment mode': item.paymentMode,
   //   'Paying cashAmount': item.payingCashAmount,
   //   'Pending cashAmount': item.pendingCashAmount,
-  //   'Paying bankAmount': item.payingBankAmount,
+  //   'Paying bankAmount': item.payingBankAmount,nasm
   //   'Pending bankAmount': item.pendingBankAmount,
   // }));
 
-  // if (LoanissueLoading) {
-  //   return (
-  //     <LoadingScreen />
-  //   );
+  if (otherLoanReportsLoading) {
+    return <LoadingScreen />;
+  }
+  //
+  // function fetchStates() {
+  //   dataFiltered?.map((data) => {
+  //     setOptions((item) => {
+  //       if (!item.find((option) => option.value === data.issuedBy._id)) {
+  //         return [
+  //           ...item,
+  //           {
+  //             name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
+  //             value: data.issuedBy._id,
+  //           },
+  //         ];
+  //       } else {
+  //         return item;
+  //       }
+  //     });
+  //   });
   // }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>Loan part Payment Details</Typography>
+        <CustomBreadcrumbs
+          heading="Other Loan All Branch Reports"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Reports', href: paths.dashboard.reports.root },
+            {
+              name: 'Other Loan All Branch Reports',
+              href: paths.dashboard.reports['other-loan-all-branch-reports'],
+            },
+            { name: ' List' },
+          ]}
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        />
+
         <Card>
+          <Tabs
+            value={filters.status}
+            onChange={handleFilterStatus}
+            sx={{
+              px: 2.5,
+              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+            }}
+          >
+            {STATUS_OPTIONS.map((tab) => (
+              <Tab
+                key={tab.value}
+                iconPosition="end"
+                value={tab.value}
+                label={tab.label}
+                icon={
+                  <>
+                    <Label
+                      style={{ margin: '5px' }}
+                      variant={
+                        ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
+                      }
+                      color={
+                        (tab.value === 'Regular' && 'success') ||
+                        (tab.value === 'Overdue' && 'error') ||
+                        (tab.value === 'Disbursed' && 'info') ||
+                        (tab.value === 'Issued' && 'secondary') ||
+                        'default'
+                      }
+                    >
+                      {['Issued', 'Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
+                        ? otherLoanReports.filter((item) => item.status === tab.value).length
+                        : otherLoanReports.length}
+                    </Label>
+                  </>
+                }
+              />
+            ))}
+          </Tabs>
+
+          <OtherLonaInterestTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            dataFilter={dataFiltered}
+            configs={configs}
+            options={options}
+          />
+
           {canReset && (
-            <AllBranchLoanSummaryTableFiltersResult
+            <OtherLonaInterestTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -220,6 +319,15 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
               maxHeight: 500,
               overflow: 'auto',
               position: 'relative',
+              ' .css-131g1ae-MuiTableCell-root': {
+                padding: '6px',
+              },
+              ' .css-1613c04-MuiTableCell-root': {
+                padding: '8px',
+              },
+              ' .css-1ms7e38-MuiTableCell-root': {
+                padding: '6px',
+              },
             }}
           >
             <TableSelectedAction
@@ -241,7 +349,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
               }
             />
 
-            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+            <Table size={table.dense ? 'small' : 'medium'}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
@@ -265,7 +373,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
-                    <LoanPartPaymentDetailsTableRow
+                    <OtherLonaInterestTableRow
                       key={row._id}
                       row={row}
                       index={index}
@@ -281,14 +389,8 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                {dataFiltered.length == 0 && (
-                  <TableRow>
-                    <TableCell colSpan={15} align="center" sx={{ p: 1, fontWeight: 500 }}>
-                      No Data Available
-                    </TableCell>
-                  </TableRow>
-                )}
-                {/*<TableNoData notFound={notFound} />*/}
+
+                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>
@@ -299,6 +401,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
+            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
@@ -332,8 +435,8 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters, dateError, dataFilters }) {
-  const { username, status, startDate, endDate, branch } = dataFilters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { username, status, startDate, endDate, branch, issuedBy } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -345,23 +448,34 @@ function applyFilter({ inputData, comparator, filters, dateError, dataFilters })
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+        (
+          item.loan.customer.firstName +
+          ' ' +
+          item.loan.customer.middleName +
+          ' ' +
+          item.loan.customer.lastName
+        )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
   if (branch) {
-    inputData = inputData.filter((item) => item.loan.customer.branch._id === branch._id);
+    inputData = inputData.filter((loan) => loan.loan.customer.branch._id === branch._id);
   }
+  // if (issuedBy) {
+  //   inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
+  // }
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((loan) => isBetween(new Date(loan.createdAt), startDate, endDate));
+    inputData = inputData.filter((item) =>
+      isBetween(new Date(item.loan.issueDate), startDate, endDate)
+    );
   }
 
   return inputData;

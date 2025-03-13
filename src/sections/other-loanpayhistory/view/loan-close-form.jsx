@@ -109,7 +109,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
     cashAmount: '',
     account: null,
     bankAmount: null,
-    payDate:currentOtherLoan?.payDate || new Date(),
+    payDate: currentOtherLoan?.payDate || new Date(),
     closingCharge: '',
     remark: '',
   };
@@ -138,6 +138,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
   useEffect(() => {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
+  console.log(user, '111111111111');
 
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
@@ -170,11 +171,10 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
       remark: data.remark,
       paymentDetail: paymentDetail,
       closingCharge: data.closingCharge,
-      payDate:data.payDate
+      payDate: data.payDate,
     };
-
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}/${user._id}/other-loans/${currentOtherLoan._id}/loan-close`;
+      const url = `${import.meta.env.VITE_BASE_URL}/${user.company}/other-loans/${currentOtherLoan._id}/loan-close`;
       const config = {
         method: 'post',
         url,
@@ -373,7 +373,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                     />
                   </>
                 )}
-              <RHFDatePicker name="payDate" control={control} label="Pay Date" req={'red'} />
+                <RHFDatePicker name="payDate" control={control} label="Pay Date" req={'red'} />
               </Box>
               <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
                 <Button color="inherit" variant="outlined" onClick={() => reset()}>

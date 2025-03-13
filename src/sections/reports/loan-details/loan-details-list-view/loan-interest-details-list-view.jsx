@@ -48,19 +48,19 @@ import LoanInterestDetailsTableRow from '../loan-details-table/loan-interest-det
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'from', label: 'From Date' },
-  { id: 'to', label: 'To Date' },
-  { id: 'loanAmount', label: 'Loan Amt' },
-  { id: 'interestRate', label: 'Interest Rate' },
-  { id: 'consultantInterest', label: 'Consultant Int' },
-  { id: 'totalInterest', label: 'Total Int' },
-  { id: 'penaltyAmount', label: 'Penalty Amt' },
-  { id: 'crDrAmt', label: 'CR/DR Amt' },
-  { id: 'payAfterAdjust', label: 'Pay After Adjust' },
-  { id: 'entryDate', label: 'Entry Date' },
+  { id: 'from', label: 'From date' },
+  { id: 'to', label: 'To date' },
+  { id: 'loanAmount', label: 'Loan amt' },
+  { id: 'interestRate', label: 'Interest rate' },
+  { id: 'consultantInterest', label: 'Consultant int.' },
+  { id: 'totalInterest', label: 'Total int.' },
+  { id: 'penaltyAmount', label: 'Penalty amt' },
+  { id: 'crDrAmt', label: 'CR/DR amt' },
+  { id: 'payAfterAdjust', label: 'Pay after adjust' },
+  { id: 'entryDate', label: 'Entry date' },
   { id: 'days', label: 'Days' },
-  { id: 'uchakAmt', label: 'Uchak Amt' },
-  { id: 'totalPay', label: 'Total Pay Amt' },
+  { id: 'uchakAmt', label: 'Uchak amt' },
+  { id: 'totalPay', label: 'Total pay amt' },
 ];
 
 const STATUS_OPTIONS = [
@@ -353,7 +353,9 @@ function applyFilter({ inputData, comparator, filters, dateError, dataFilters })
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||

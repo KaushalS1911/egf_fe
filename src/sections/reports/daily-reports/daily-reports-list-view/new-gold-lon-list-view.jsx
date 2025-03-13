@@ -35,7 +35,7 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.' },
+  { id: 'LoanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'LoanAmount', label: 'loan amt' },
   { id: 'Rate', label: 'Rate' },
@@ -71,7 +71,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
 
   const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table?.dense ? 56 : 56 + 20;
@@ -86,7 +86,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -113,7 +113,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -131,14 +131,14 @@ export default function NewGoldLonListView({ LoanIssue }) {
     (id) => {
       router.push(paths.dashboard.loanissue.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleClick = useCallback(
     (id) => {
       router.push(paths.dashboard.disburse.new(id));
     },
-    [router],
+    [router]
   );
 
   return (
@@ -155,11 +155,13 @@ export default function NewGoldLonListView({ LoanIssue }) {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -167,13 +169,13 @@ export default function NewGoldLonListView({ LoanIssue }) {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -198,7 +200,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
                 {dataFiltered
                   ?.slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   ?.map((row, index) => (
                     <NewGoldLoanTableRow
@@ -216,14 +218,13 @@ export default function NewGoldLonListView({ LoanIssue }) {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                {
-                  dataFiltered.length == 0 &&
+                {dataFiltered.length == 0 && (
                   <TableRow>
-                    <TableCell colSpan={12} align='center' sx={{ p: 1, fontWeight: 500 }}>
+                    <TableCell colSpan={12} align="center" sx={{ p: 1, fontWeight: 500 }}>
                       No Data Available
                     </TableCell>
                   </TableRow>
-                }
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -241,7 +242,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -249,8 +250,8 @@ export default function NewGoldLonListView({ LoanIssue }) {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();

@@ -110,6 +110,16 @@ const CustomerStatement = lazy(
 const LoanIssueReports = lazy(
   () => import('../../sections/reports/view/loan-issue-reports-list-view.jsx')
 );
+const OtherLoanAllBranchReports = lazy(
+  () => import('../../sections/reports/view/all-branch-other-loan-summary-list-view.jsx')
+);
+const OtherLoanCloseReports = lazy(
+  () => import('../../sections/reports/view/other-loan-close-summary-list-view.jsx')
+);
+const OtherLoanInterestReports = lazy(
+  () => import('../../sections/reports/view/other-lona-interest-list-view.jsx')
+);
+
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
 
@@ -270,6 +280,9 @@ export const dashboardRoutes = [
           { path: 'interest-reports', element: <InterestReportsListView /> },
           { path: 'customer-statement', element: <CustomerStatement /> },
           { path: 'loan-issue-reports', element: <LoanIssueReports /> },
+          { path: 'other-loan-all-branch-reports', element: <OtherLoanAllBranchReports /> },
+          { path: 'other-loan-close-reports', element: <OtherLoanCloseReports /> },
+          { path: 'other-loan-interest-reports', element: <OtherLoanInterestReports /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },

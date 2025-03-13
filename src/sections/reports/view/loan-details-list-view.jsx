@@ -170,11 +170,6 @@ export default function LoanDetailsListView() {
             configs={configs}
             data={data}
           />
-          <Box></Box>
-          <Box mt={2}></Box>
-          <Box mt={2}></Box>
-          <Box mt={2}></Box>
-          <Box mt={2}></Box>
           <Grid container spacing={3} sx={{ mt: 1.5 }}>
             <Grid item xs={12} P={0}>
               <Tabs
@@ -184,11 +179,56 @@ export default function LoanDetailsListView() {
                 scrollButtons="auto"
                 sx={{ px: 3, mb: 1.5, '.css-1obiyde-MuiTabs-indicator': { bottom: 8 } }}
               >
-                <Tab label="Loan Interest Details" />
-                <Tab label="Loan part Release Details" />
-                <Tab label="Loan Uchak Pay Details" />
-                <Tab label="Loan part Payment Details" />
-                <Tab label="Loan Close Details" />
+                <Tab
+                  label={
+                    <>
+                      Loan Interest{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({loanDetail?.interestDetail?.length || 0})
+                      </strong>
+                    </>
+                  }
+                />
+                <Tab
+                  label={
+                    <>
+                      Loan part Release{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({loanDetail?.partReleaseDetail?.length || 0})
+                      </strong>
+                    </>
+                  }
+                />{' '}
+                <Tab
+                  label={
+                    <>
+                      Loan Uchak Pay{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({loanDetail?.uchakInterestDetail?.length || 0})
+                      </strong>
+                    </>
+                  }
+                />{' '}
+                <Tab
+                  label={
+                    <>
+                      Loan part Payment{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({loanDetail?.partPaymentDetail?.length || 0})
+                      </strong>
+                    </>
+                  }
+                />
+                <Tab
+                  label={
+                    <>
+                      Loan Close{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({loanDetail?.loanCloseDetail?.length || 0})
+                      </strong>
+                    </>
+                  }
+                />
               </Tabs>
               {activeTab === 0 && (
                 <LoanInterestDetailsListView

@@ -192,14 +192,44 @@ export default function DailyReportsListView() {
                 scrollButtons="auto"
                 sx={{ px: 3, mb: 1.5, '.css-1obiyde-MuiTabs-indicator': { bottom: 8 } }}
               >
-                <Tab label="New Gold Loan Details" />
-                <Tab label="Gold Loan Interest Details" />
                 <Tab
-                  label="Gold Loan part Close/Payment Details
-
-"
+                  label={
+                    <>
+                      New Gold Loan{' '}
+                      <strong style={{ marginLeft: '8px' }}>({report?.loans.length || 0})</strong>
+                    </>
+                  }
                 />
-                <Tab label="Gold Loan uchak part Details" />
+                <Tab
+                  label={
+                    <>
+                      Gold Loan Interest{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({report?.interestDetail.length || 0})
+                      </strong>
+                    </>
+                  }
+                />{' '}
+                <Tab
+                  label={
+                    <>
+                      Gold Loan Part Close/Payment{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({report?.partReleaseDetail.length || 0})
+                      </strong>
+                    </>
+                  }
+                />{' '}
+                <Tab
+                  label={
+                    <>
+                      Gold Loan Uchak Part{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({report?.uchakInterestDetail.length || 0})
+                      </strong>
+                    </>
+                  }
+                />
               </Tabs>
 
               {activeTab === 0 && <NewGoldLonListView LoanIssue={report?.loans} />}
