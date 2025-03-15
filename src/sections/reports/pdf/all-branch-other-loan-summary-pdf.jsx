@@ -123,6 +123,7 @@ export default function AllBranchOtherLoanSummaryPdf({
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
+    { value: fDate(new Date()), label: 'Date' },
   ];
   const rowsPerPage = 18;
   const pages = [];

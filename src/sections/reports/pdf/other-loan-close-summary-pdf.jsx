@@ -21,7 +21,6 @@ const useStyles = () =>
           backgroundColor: '#ffff',
           fontSize: 8,
           position: 'relative',
-          // padding: 40, // Add some padding to the page
         },
         subHeading: {
           fontWeight: 'bold',
@@ -102,19 +101,18 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
   const styles = useStyles();
   const headers = [
     { label: '#', flex: 0.1 },
-    { label: 'Loan No', flex: 2.5 },
+    { label: 'Loan No', flex: 2 },
     { label: 'Customer Name', flex: 3 },
-    { label: 'Other name', flex: 2 },
+    { label: 'Other name', flex: 1 },
     { label: 'Other no.', flex: 1.1 },
-    { label: 'int rate (%)', flex: 0.4 },
-    { label: 'Fund', flex: 1 },
-    { label: 'Open date', flex: 0.85 },
-    { label: 'Other loan amt', flex: 1 },
-    { label: 'Total int.', flex: 1 },
+    { label: 'int rate (%)', flex: 0.35 },
+    { label: 'Fund date', flex: 1 },
+    { label: 'Open loan amt', flex: 1 },
+    { label: 'Other Total int.', flex: 1 },
     { label: 'Day', flex: 0.3 },
     { label: 'closeAmt', flex: 1 },
     { label: 'Pending amt', flex: 1 },
-    { label: 'Close date', flex: 0.85 },
+    { label: 'Close date', flex: 1 },
     { label: 'Charge', flex: 0.8 },
     { label: 'Total close amt', flex: 1 },
   ];
@@ -126,7 +124,7 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
   const rowsPerPage = 18;
   const pages = [];
   let currentPageRows = [];
-  console.log(dataFilter);
+
   loans.forEach((row, index) => {
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === loans.length - 1;
@@ -142,15 +140,14 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
         wrap={false}
       >
         <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.loan.loanNo}</Text>
+        <Text style={[styles.tableCell, { flex: 2 }]}>{row.loan.loanNo}</Text>
         <Text style={[styles.tableCell, { flex: 3, fontSize: 7, padding: 5 }]}>
           {`${row.loan.customer.firstName} ${row.loan.customer.middleName}\n ${row.loan.customer.lastName}`}
         </Text>
-        <Text style={[styles.tableCell, { flex: 2 }]}>{row.otherName}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherNumber}</Text>
-        <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.loan.scheme.interestRate}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.rate}</Text>
-        <Text style={[styles.tableCell, { flex: 0.85 }]}>{fDate(row.loan.issueDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherName}</Text>
+        <Text style={[styles.tableCell, { flex: 1.1 }]}>{row.otherNumber}</Text>
+        <Text style={[styles.tableCell, { flex: 0.35 }]}>{row.loan.scheme.interestRate}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.issueDate)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.totalInterestAmt}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
@@ -158,7 +155,7 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {(row.amount - row.closingAmount || 0).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 0.85 }]}>{fDate(row.closeDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.closeDate)}</Text>
         <Text style={[styles.tableCell, { flex: 0.8 }]}>{(row.closingCharge || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {(row.totalInterestAmt + row.closingAmount + row.closingCharge || 0).toFixed(2)}

@@ -20,6 +20,7 @@ import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import AllBranchOtherLoanSummaryPdf from '../pdf/all-branch-other-loan-summary-pdf.jsx';
+import OtherLoanInterestPdf from '../pdf/other-loan-interest-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -239,11 +240,7 @@ export default function OtherLonaInterestTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <AllBranchOtherLoanSummaryPdf
-                loans={dataFilter}
-                configs={configs}
-                filterData={filterData}
-              />
+              <OtherLoanInterestPdf loans={dataFilter} configs={configs} filterData={filterData} />
             </PDFViewer>
           </Box>
         </Box>

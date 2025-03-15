@@ -192,6 +192,10 @@ export function useNavData() {
                 title: t('other loan interest'),
                 path: paths.dashboard.reports['other-loan-interest-reports'],
               },
+              {
+                title: t('total all in out loan reports'),
+                path: paths.dashboard.reports['total-all-in-out-loan-reports'],
+              },
             ],
           },
         ],

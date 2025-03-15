@@ -6,30 +6,18 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify';
-import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function AllBranchOtherLoanSummaryTableFiltersResult({
+export default function TotalAllInOutLoanReportsFilters({
   filters,
   onFilters,
   onResetFilters,
   results,
   ...other
 }) {
-  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
-
-  const handleRemoveIssuedBy = useCallback(() => {
-    onFilters('issuedBy', '');
-  }, [onFilters]);
-
-  const handleRemoveBranch = useCallback(() => {
-    onFilters('branch', '');
-  }, [onFilters]);
-
-  const handleRemoveDate = useCallback(() => {
-    onFilters('startDate', null);
-    onFilters('endDate', null);
+  const handleRemoveKeyword = useCallback(() => {
+    onFilters('username', '');
   }, [onFilters]);
 
   const handleRemoveService = useCallback(
@@ -41,7 +29,7 @@ export default function AllBranchOtherLoanSummaryTableFiltersResult({
   );
 
   const handleRemoveStatus = useCallback(() => {
-    onFilters('status', 'All');
+    onFilters('status', 'all');
   }, [onFilters]);
 
   return (
@@ -65,24 +53,9 @@ export default function AllBranchOtherLoanSummaryTableFiltersResult({
             ))}
           </Block>
         )}
-        {!!filters.issuedBy && (
-          <Block label="Issued By:">
-            <Chip label={filters.issuedBy.name} size="small" onDelete={handleRemoveIssuedBy} />
-          </Block>
-        )}
-        {!!filters.branch && (
-          <Block label="Branch:">
-            <Chip label={filters.branch.name} size="small" onDelete={handleRemoveBranch} />
-          </Block>
-        )}
-        {filters.startDate && filters.endDate && (
-          <Block label="Date:">
-            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
-          </Block>
-        )}
-        {filters.status !== 'All' && (
-          <Block label="Status:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+        {!!filters.userName && (
+          <Block label="Keyword:">
+            <Chip label={filters.userName} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
         <Button
@@ -97,7 +70,7 @@ export default function AllBranchOtherLoanSummaryTableFiltersResult({
   );
 }
 
-AllBranchOtherLoanSummaryTableFiltersResult.propTypes = {
+TotalAllInOutLoanReportsFilters.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

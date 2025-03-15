@@ -21,7 +21,6 @@ const useStyles = () =>
           backgroundColor: '#ffff',
           fontSize: 8,
           position: 'relative',
-          // padding: 40, // Add some padding to the page
         },
         subHeading: {
           fontWeight: 'bold',
@@ -98,29 +97,25 @@ const useStyles = () =>
     []
   );
 
-export default function BranchWiseLoanClosingPdf({ selectedBranch, configs, loans, filterData }) {
+export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, filterData }) {
   const styles = useStyles();
   const headers = [
-    { label: '#', flex: 0.3 },
-    { label: 'Loan No', flex: 2.5 },
-    { label: 'Customer Name', flex: 4.5 },
-    { label: 'Contact', flex: 1.4 },
-    { label: 'Int%', flex: 0.5 },
-    { label: 'Other Int%', flex: 0.8 },
-    { label: 'Issue Date', flex: 1.5 },
-    { label: 'Loan Amt', flex: 1 },
-    { label: 'Last Amt Pay Date', flex: 1.3 },
-    { label: 'Loan Amt Pay', flex: 1 },
-    { label: 'Loan Int. Amt', flex: 1 },
-    { label: 'Last Int. Pay Date', flex: 1.3 },
-    { label: 'Total Pay Int.', flex: 1.5 },
-    { label: 'Day', flex: 0.5 },
-    { label: 'Pending Int.', flex: 1 },
-    { label: 'Next Int. Pay Date', flex: 1.3 },
+    { label: '#', flex: 0.1 },
+    { label: 'Loan No', flex: 2 },
+    { label: 'Customer Name', flex: 3 },
+    { label: 'Other name', flex: 1 },
+    { label: 'Other no.', flex: 1.1 },
+    { label: 'int rate', flex: 1 },
+    { label: 'Open date', flex: 1 },
+    { label: 'Open loan amt', flex: 1 },
+    { label: 'charge', flex: 1 },
+    { label: 'Int.', flex: 0.3 },
+    { label: 'Last int. pay date', flex: 1 },
+    { label: 'Day', flex: 0.3 },
+    { label: 'Pending int.', flex: 1 },
+    { label: 'Next int. pay date', flex: 1 },
   ];
   const dataFilter = [
-    { value: filterData.closedBy.name, label: 'Closed By' },
-    { value: filterData.branch.name, label: 'Branch' },
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
@@ -128,7 +123,7 @@ export default function BranchWiseLoanClosingPdf({ selectedBranch, configs, loan
   const rowsPerPage = 18;
   const pages = [];
   let currentPageRows = [];
-  console.log(dataFilter);
+
   loans.forEach((row, index) => {
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === loans.length - 1;
@@ -143,32 +138,22 @@ export default function BranchWiseLoanClosingPdf({ selectedBranch, configs, loan
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.3 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.loanNo}</Text>
-        <Text style={[styles.tableCell, { flex: 4.5, fontSize: 7, padding: 5 }]}>
-          {`${row.customer.firstName} ${row.customer.middleName} ${row.customer.lastName}`}
+        <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
+        <Text style={[styles.tableCell, { flex: 2 }]}>{row.loan.loanNo}</Text>
+        <Text style={[styles.tableCell, { flex: 3, fontSize: 7, padding: 5 }]}>
+          {`${row.loan.customer.firstName} ${row.loan.customer.middleName}\n ${row.loan.customer.lastName}`}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1.4 }]}>{row.customer.contact}</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.scheme.interestRate}</Text>
-        <Text style={[styles.tableCell, { flex: 0.8 }]}>{row.consultingCharge}</Text>
-        <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(row.issueDate)}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loanAmount}</Text>
-        <Text style={[styles.tableCell, { flex: 1.3 }]}>
-          {fDate(row.lastInstallmentDate) || '-'}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {row.loanAmount - row.interestLoanAmount || '-'}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.interestLoanAmount || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1.3 }]}>
-          {fDate(row.lastInstallmentDate) || '-'}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1.5 }]}>Total Pay Int.</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>113</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>947.34</Text>
-        <Text style={[styles.tableCell, styles.tableCellLast, { flex: 1.3 }]}>
-          {fDate(row.nextInstallmentDate)}
-        </Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherName}</Text>
+        <Text style={[styles.tableCell, { flex: 1.1 }]}>{row.otherNumber}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.rate}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.issueDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{(row.closingCharge || 0).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.loan.scheme.interestRate}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.lastInterestPayDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{(row.pendingInterest || 0).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.nextInstallmentDate)}</Text>
       </View>
     );
 
@@ -196,9 +181,7 @@ export default function BranchWiseLoanClosingPdf({ selectedBranch, configs, loan
                   marginTop: 10,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>
-                  BRANCH WISE LOAN CLOSING REPORT{' '}
-                </Text>
+                <Text style={styles.termsAndConditionsHeaders}>OTHER LOAN INTEREST REPORTS</Text>
               </View>{' '}
             </>
           )}

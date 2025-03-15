@@ -49,25 +49,35 @@ import AllBranchOtherLoanSummaryTableRow from '../all-branch-other-loan/all-bran
 import OtherLonaInterestTableToolbar from '../other-loan-interest-reports/other-lona-interest-table-toolbar.jsx';
 import OtherLonaInterestTableFiltersResult from '../other-loan-interest-reports/other-lona-interest-table-filters-result.jsx';
 import OtherLonaInterestTableRow from '../other-loan-interest-reports/other-lona-interest-table-row.jsx';
+import TotalAllInOutLoanReportsTableToolbar from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-toolbar.jsx';
+import TotalAllInOutLoanReportsTableFiltersResult from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-filters-result.jsx';
+import TotalAllInOutLoanReportsTableRow from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-row.jsx';
+import { useGetTotalAllInoutLoanReports } from '../../../api/total-all-in-out-loan-reports.js';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'LoanNo', label: 'Loan no.' },
-  { id: 'CustomerName', label: 'Customer name' },
+  { id: 'issuedate', label: 'Issue date' },
+  { id: 'customername', label: 'Customer name' },
+  { id: 'totalloanamt', label: 'total loan amt' },
+  { id: 'partloanamt', label: 'part loan amt' },
+  { id: 'intloanamt', label: 'Int. loan amt' },
+  { id: 'toralwt', label: 'Total wt' },
+  { id: 'netwt', label: 'net wt' },
+  { id: 'intrate', label: 'Int. rate' },
+  { id: 'totalintamt', label: 'Total int.amt' },
+  { id: 'otherno', label: 'Other no' },
+  { id: 'date', label: 'Date' },
   { id: 'othername', label: 'Other name' },
-  { id: 'otherno', label: 'Other no.' },
-  { id: 'int%', label: 'int rate (%)' },
-  { id: 'opendate', label: 'Open date' },
-  { id: 'otherLoanAmount', label: 'Other loan amt' },
-  { id: 'charge', label: 'Charge' },
-  { id: 'int', label: 'Int.' },
-  { id: 'lastintpaydate', label: 'Last oint. pay date' },
-  { id: 'Day', label: ' Day' },
-  { id: 'pendingAmt', label: 'Pending int.' },
-  { id: 'nextointpaydayte', label: 'Next int. pay date' },
-  { id: 'Status', label: 'Status' },
+  { id: 'otherloanamt', label: 'Other Loan amt' },
+  { id: 'grosswt', label: 'Gross wt' },
+  { id: 'otherint', label: 'Other int(%)' },
+  { id: 'otherintamt', label: 'Other int amt' },
+  { id: 'diffloanamt', label: 'Diff loan amt' },
+  { id: 'diffintamt', label: 'Diff int amt' },
+  { id: 'diffintamt', label: 'Status' },
 ];
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
@@ -96,20 +106,21 @@ const defaultFilters = {
 export default function OtherLonaInterestListView() {
   const [options, setOptions] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
-  const { otherLoanReports, otherLoanReportsLoading } = useGetOtherLoanReports();
+  const { totalAllInoutLoanReports, totalAllInoutLoanReportsLoading } =
+    useGetTotalAllInoutLoanReports();
   const table = useTable();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(otherLoanReports);
+  const [tableData, setTableData] = useState(totalAllInoutLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
   // useEffect(() => {
   //   fetchStates();
-  // }, [otherLoanReports]);
+  // }, [totalAllInoutLoanReports]);
   const dataFiltered = applyFilter({
-    inputData: otherLoanReports,
+    inputData: totalAllInoutLoanReports,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -167,7 +178,7 @@ export default function OtherLonaInterestListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = otherLoanReports.filter((row) => table.selected.includes(row._id));
+    const deleteRows = totalAllInoutLoanReports.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -215,7 +226,7 @@ export default function OtherLonaInterestListView() {
   //   'Pending bankAmount': item.pendingBankAmount,
   // }));
 
-  if (otherLoanReportsLoading) {
+  if (totalAllInoutLoanReportsLoading) {
     return <LoadingScreen />;
   }
   //
@@ -241,13 +252,13 @@ export default function OtherLonaInterestListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Other Loan Interest Reports"
+          heading="Total All In Out Loan Reports"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reports', href: paths.dashboard.reports.root },
             {
-              name: 'Other Loan Interest Reports',
-              href: paths.dashboard.reports['other-loan-interest-reports'],
+              name: 'Total All In Out Loan Reports',
+              href: paths.dashboard.reports['total-all-in-out-loan-reports'],
             },
             { name: ' List' },
           ]}
@@ -287,8 +298,9 @@ export default function OtherLonaInterestListView() {
                       }
                     >
                       {['Issued', 'Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
-                        ? otherLoanReports.filter((item) => item.status === tab.value).length
-                        : otherLoanReports.length}
+                        ? totalAllInoutLoanReports.filter((item) => item.status === tab.value)
+                            .length
+                        : totalAllInoutLoanReports.length}
                     </Label>
                   </>
                 }
@@ -296,7 +308,7 @@ export default function OtherLonaInterestListView() {
             ))}
           </Tabs>
 
-          <OtherLonaInterestTableToolbar
+          <TotalAllInOutLoanReportsTableToolbar
             filters={filters}
             onFilters={handleFilters}
             dataFilter={dataFiltered}
@@ -305,7 +317,7 @@ export default function OtherLonaInterestListView() {
           />
 
           {canReset && (
-            <OtherLonaInterestTableFiltersResult
+            <TotalAllInOutLoanReportsTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -373,7 +385,7 @@ export default function OtherLonaInterestListView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
-                    <OtherLonaInterestTableRow
+                    <TotalAllInOutLoanReportsTableRow
                       key={row._id}
                       row={row}
                       index={index}

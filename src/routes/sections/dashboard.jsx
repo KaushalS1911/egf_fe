@@ -119,6 +119,9 @@ const OtherLoanCloseReports = lazy(
 const OtherLoanInterestReports = lazy(
   () => import('../../sections/reports/view/other-lona-interest-list-view.jsx')
 );
+const TotalAllinOutLoanReports = lazy(
+  () => import('../../sections/reports/view/total-all-in-out-loan-reports-list-view.jsx')
+);
 
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
@@ -283,6 +286,7 @@ export const dashboardRoutes = [
           { path: 'other-loan-all-branch-reports', element: <OtherLoanAllBranchReports /> },
           { path: 'other-loan-close-reports', element: <OtherLoanCloseReports /> },
           { path: 'other-loan-interest-reports', element: <OtherLoanInterestReports /> },
+          { path: 'total-all-in-out-loan-reports', element: <TotalAllinOutLoanReports /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },
