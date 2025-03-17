@@ -130,8 +130,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     otherCharge: Yup.string().required('OtherCharge is required'),
     closingCharge: Yup.string().required('ClosingCharge is required'),
     interestAmount: Yup.string().required('Interest Amount is required'),
-    totalOrnament : Yup.string().required('Total Ornament is required'),
-    ornamentDetail : Yup.string().required('Ornament Detail is required'),
+    totalOrnament: Yup.string().required('Total Ornament is required'),
+    ornamentDetail: Yup.string().required('Ornament Detail is required'),
     // propertyDetails: Yup.array().of(
     //   Yup.object().shape({
     //     type: Yup.string().required('Type is required'),
@@ -143,6 +143,44 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     //     netAmount: Yup.string().required('Net Amount is required'),
     //   })
     // ),
+    account: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) => schema.required('Account is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    accountNumber: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) => schema.required('Account Number is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    accountType: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) => schema.required('Account Type is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    accountHolderName: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) => schema.required('Account Holder Name is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    IFSC: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) =>
+        schema
+          .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC Code')
+          .required('IFSC Code is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    bankName: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) => schema.required('Bank Name is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    branchName: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) => schema.required('Branch Name is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   });
   const defaultValues = useMemo(() => {
     const baseValues = {
@@ -156,8 +194,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       periodTime: '',
       renewalTime: '',
       loanCloseTime: '',
-      totalOrnament : currentOtherLoanIssue?.totalOrnament || null,
-      ornamentDetail : currentOtherLoanIssue?.ornamentDetail || null,
+      totalOrnament: currentOtherLoanIssue?.totalOrnament || null,
+      ornamentDetail: currentOtherLoanIssue?.ornamentDetail || null,
       property_image: currentOtherLoanIssue?.loan?.propertyImage || null,
       loan: currentOtherLoanIssue
         ? {
@@ -308,8 +346,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       date: data.date,
       grossWt: data.grossWt,
       netWt: data.netWt,
-      ornamentDetail : data.ornamentDetail,
-      totalOrnament : data.totalOrnament,
+      ornamentDetail: data.ornamentDetail,
+      totalOrnament: data.totalOrnament,
       rate: data.rate,
       month: data.month,
       renewalDate: data.renewalDate,

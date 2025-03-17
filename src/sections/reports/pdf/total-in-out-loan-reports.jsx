@@ -101,10 +101,10 @@ const useStyles = () =>
 export default function TotalInOutLoanReports({ selectedBranch, configs, loans, filterData }) {
   const styles = useStyles();
   const headers = [
-    { label: '#', flex: 0.2 },
+    { label: '#', flex: 0.1 },
     { label: 'Loan No', flex: 2 },
     { label: 'Issue date', flex: 1 },
-    { label: 'Customer name', flex: 3 },
+    { label: 'Customer name', flex: 2.5 },
     { label: 'Total loan amt', flex: 1 },
     { label: 'Part loan amt', flex: 1 },
     { label: 'Int. loan amt', flex: 1 },
@@ -112,14 +112,15 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
     { label: 'Net wt', flex: 0.5 },
     { label: 'Int. rate', flex: 0.4 },
     { label: 'Total int.amt', flex: 1 },
-    { label: 'Other no', flex: 1 },
+    { label: 'Other no', flex: 1.2 },
     { label: 'Date', flex: 1 },
-    { label: 'Other name', flex: 0.6 },
+    { label: 'Other name', flex: 0.4 },
     { label: 'Other Loan amt', flex: 1 },
-    { label: 'Gross wt', flex: 1 },
+    { label: 'Gross wt', flex: 0.5 },
     { label: 'Other int(%)', flex: 1 },
     { label: 'Other int amt', flex: 1 },
     { label: 'Diff loan amt', flex: 1 },
+    { label: 'Diff int. amt', flex: 1 },
   ];
 
   const dataFilter = [
@@ -145,17 +146,15 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
+        <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
         <Text style={[styles.tableCell, { flex: 2 }]}>{row.loan.loanNo}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.issueDate)}</Text>
         <Text
-          style={[styles.tableCell, { flex: 3, fontSize: 6, padding: 5 }]}
-        >{`${row.loan.customer.firstName} ${row.loan.customer.middleName} ${row.loan.customer.lastName}`}</Text>
+          style={[styles.tableCell, { flex: 2.5, fontSize: 6, padding: 5 }]}
+        >{`${row.loan.customer.firstName} ${row.loan.customer.middleName}\n ${row.loan.customer.lastName}`}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
-          {Number(row.loan.loanAmount).toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {Number(row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)}
+          {Number(row.loan.loanAmount.toFixed(2) - row.loan.interestLoanAmount.toFixed(2))}
         </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {Number(row.loan.interestLoanAmount).toFixed(2)}
@@ -176,13 +175,13 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {Number(row.totalOtherInterestAmount).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherNumber}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row.otherNumber}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(new Date())}</Text>
-        <Text style={[styles.tableCell, { flex: 0.6 }]}>{row.otherName}</Text>
+        <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.otherName}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {Number(row.loan.loanAmount).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>
           {row.loan.propertyDetails
             .reduce((prev, next) => prev + (Number(next?.grossWeight) || 0), 0)
             .toFixed(2)}
@@ -191,7 +190,13 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {Number(row.totalOtherInterestAmount).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{Number(100000).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>
+          {row.loan.interestLoanAmount.toFixed(2) - row.amount.toFixed(2)}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>
+          {' '}
+          {row.totalInterestAmount.toFixed(2) - row.totalOtherInterestAmount.toFixed(2)}
+        </Text>
       </View>
     );
 
