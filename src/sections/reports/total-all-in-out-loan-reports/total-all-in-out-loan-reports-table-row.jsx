@@ -77,7 +77,7 @@ export default function TotalAllInOutLoanReportsTableRow({
           {(row.amount - interestLoanAmount).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {(row.totalOtherInterestAmount - row.totalInterestAmount).toFixed(2)}
+          {(row.totalInterestAmount - row.totalOtherInterestAmount).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px', textAlign: 'center' }}>
           <Label

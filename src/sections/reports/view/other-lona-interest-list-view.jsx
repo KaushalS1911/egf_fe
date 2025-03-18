@@ -72,14 +72,15 @@ const TABLE_HEAD = [
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
   { value: 'Issued', label: 'Issued' },
-  {
-    value: 'Disbursed',
-    label: 'Disbursed',
-  },
+
   { value: 'Regular', label: 'Regular' },
   {
     value: 'Overdue',
     label: 'Overdue',
+  },
+  {
+    value: 'Closed',
+    label: 'Closed',
   },
 ];
 const defaultFilters = {
@@ -281,7 +282,7 @@ export default function OtherLonaInterestListView() {
                       color={
                         (tab.value === 'Regular' && 'success') ||
                         (tab.value === 'Overdue' && 'error') ||
-                        (tab.value === 'Disbursed' && 'info') ||
+                        (tab.value === 'Closed' && 'warning') ||
                         (tab.value === 'Issued' && 'secondary') ||
                         'default'
                       }

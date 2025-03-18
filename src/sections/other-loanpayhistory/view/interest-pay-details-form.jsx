@@ -57,7 +57,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.payAfterAdjust) || 0),
     0
   );
-
+  console.log(currentOtherLoan, '00000000');
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -109,7 +109,12 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     ...paymentSchema,
   });
   const defaultValues = {
-    from: currentOtherLoan?.date ? new Date(currentOtherLoan?.date) : new Date(),
+    from: currentOtherLoan?.date
+      ? otherLoanInterest?.[0]?.to
+        ? new Date(otherLoanInterest[0].to)
+        : new Date(currentOtherLoan.date)
+      : new Date(),
+
     to: new Date(currentOtherLoan?.renewalDate)
       ? new Date(currentOtherLoan?.renewalDate)
       : new Date(),
@@ -226,19 +231,17 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   // }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
   const updateRenewalDate = (id) => {
     const date = currentOtherLoan.date;
-    const renewalDate = currentOtherLoan.renewalDate;
+    const fromDate = watch('from');
     const month = currentOtherLoan.month;
 
     const monthsToAdd =
       month === 'MONTHLY' ? 1 : month === 'YEARLY' ? 12 : parseInt(month.split(' ')[0], 10) || 0;
 
     const calculatedDate = new Date(date);
-    const calculatedDateRenewalDate = new Date(renewalDate);
+    const calculatedDateRenewalDate = new Date(fromDate);
     if (id) {
-      calculatedDate.setMonth(calculatedDate.getMonth() - monthsToAdd);
       calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() - monthsToAdd);
     } else {
-      calculatedDate.setMonth(calculatedDate.getMonth() + monthsToAdd);
       calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() + monthsToAdd);
     }
 
@@ -385,7 +388,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
           gridTemplateColumns={{
             xs: 'repeat(1, 1fr)',
             sm: 'repeat(3, 1fr)',
-            md: 'repeat(4, 1fr)',
+            md: 'repeat(7, 1fr)',
           }}
         >
           <RHFDatePicker name="from" control={control} label="From Date" req={'red'} />
