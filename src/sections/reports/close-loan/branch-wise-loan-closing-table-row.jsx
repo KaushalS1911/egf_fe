@@ -81,6 +81,7 @@ export default function BranchWiseLoanClosingTableRow({
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(closedDate)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.closeCharge || 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{closeAmt.toFixed(2) || 0}</TableCell>
         <TableCell
           sx={{
