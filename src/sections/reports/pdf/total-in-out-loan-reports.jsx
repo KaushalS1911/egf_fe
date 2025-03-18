@@ -117,7 +117,8 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
     { label: 'Other name', flex: 0.4 },
     { label: 'Other Loan amt', flex: 1 },
     { label: 'Gross wt', flex: 0.5 },
-    { label: 'Other int(%)', flex: 1 },
+    { label: 'Net wt', flex: 0.5 },
+    { label: 'Other int(%)', flex: 0.5 },
     { label: 'Other int amt', flex: 1 },
     { label: 'Diff loan amt', flex: 1 },
     { label: 'Diff int. amt', flex: 1 },
@@ -176,22 +177,17 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
           {Number(row.totalOtherInterestAmount).toFixed(2)}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{row.otherNumber}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(new Date())}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.date)}</Text>
         <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.otherName}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {Number(row.loan.loanAmount).toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>
-          {row.loan.propertyDetails
-            .reduce((prev, next) => prev + (Number(next?.grossWeight) || 0), 0)
-            .toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{Number(row.rate).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{Number(row.amount).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.grossWt}</Text>{' '}
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.NetWt}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{Number(row.percentage).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {Number(row.totalOtherInterestAmount).toFixed(2)}
         </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
-          {row.loan.interestLoanAmount.toFixed(2) - row.amount.toFixed(2)}
+          {row.amount.toFixed(2) - row.loan.interestLoanAmount.toFixed(2)}
         </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {' '}

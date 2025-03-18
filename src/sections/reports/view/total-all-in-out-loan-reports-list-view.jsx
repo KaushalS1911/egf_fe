@@ -73,6 +73,7 @@ const TABLE_HEAD = [
   { id: 'othername', label: 'Other name' },
   { id: 'otherloanamt', label: 'Other Loan amt' },
   { id: 'grosswt', label: 'Gross wt' },
+  { id: 'Netwt', label: 'Net wt' },
   { id: 'otherint', label: 'Other int(%)' },
   { id: 'otherintamt', label: 'Other int amt' },
   { id: 'diffloanamt', label: 'Diff loan amt' },

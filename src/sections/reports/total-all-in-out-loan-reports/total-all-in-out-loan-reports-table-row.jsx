@@ -64,23 +64,20 @@ export default function TotalAllInOutLoanReportsTableRow({
           {(row.totalInterestAmount || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherNumber}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(new Date())}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherName}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {loan.propertyDetails
-            .reduce((prev, next) => prev + (Number(next?.grossWeight) || 0), 0)
-            .toFixed(2)}
-        </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{scheme.interestRate}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.grossWt}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.netWt}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.percentage}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {row.totalOtherInterestAmount.toFixed(2)}
         </TableCell>{' '}
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {(interestLoanAmount - row.amount).toFixed(2)}
+          {(row.amount - interestLoanAmount).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {(row.totalInterestAmount - row.totalOtherInterestAmount).toFixed(2)}
+          {(row.totalOtherInterestAmount - row.totalInterestAmount).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px', textAlign: 'center' }}>
           <Label
