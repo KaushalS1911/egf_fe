@@ -41,14 +41,14 @@ export default function OtherLonaInterestTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherName}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherNumber}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(rate).toFixed(2) || 0}
+          {Number(row.percentage).toFixed(2) || 0}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {(row.closingCharge || 0).toFixed(2)}
+          {(row.otherCharge || 0).toFixed(2)}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{scheme.interestRate}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.totalInterestAmt}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {fDate(loan.lastInterestPayDate) || '-'}
         </TableCell>

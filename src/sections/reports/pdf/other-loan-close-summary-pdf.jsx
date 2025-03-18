@@ -103,10 +103,11 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
     { label: '#', flex: 0.1 },
     { label: 'Loan No', flex: 2 },
     { label: 'Customer Name', flex: 3 },
-    { label: 'Other name', flex: 1 },
+    { label: 'Other name', flex: 0.6 },
     { label: 'Other no.', flex: 1.1 },
     { label: 'int rate (%)', flex: 0.35 },
-    { label: 'Fund date', flex: 1 },
+    { label: 'Fund', flex: 1 },
+    { label: 'Date', flex: 1 },
     { label: 'Open loan amt', flex: 1 },
     { label: 'Other Total int.', flex: 1 },
     { label: 'Day', flex: 0.3 },
@@ -144,9 +145,10 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
         <Text style={[styles.tableCell, { flex: 3, fontSize: 7, padding: 5 }]}>
           {`${row.loan.customer.firstName} ${row.loan.customer.middleName}\n ${row.loan.customer.lastName}`}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherName}</Text>
+        <Text style={[styles.tableCell, { flex: 0.6 }]}>{row.otherName}</Text>
         <Text style={[styles.tableCell, { flex: 1.1 }]}>{row.otherNumber}</Text>
-        <Text style={[styles.tableCell, { flex: 0.35 }]}>{row.loan.scheme.interestRate}</Text>
+        <Text style={[styles.tableCell, { flex: 0.35 }]}>{row.percentage}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.rate}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.issueDate)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.totalInterestAmt}</Text>

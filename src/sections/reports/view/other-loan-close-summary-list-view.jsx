@@ -98,7 +98,7 @@ const defaultFilters = {
 export default function OtherLoanCloseSummaryListView() {
   const [options, setOptions] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
-  const { otherLoanReports, otherLoanReportsLoading } = useGetOtherLoanReports(false, false);
+  const { otherLoanReports, otherLoanReportsLoading } = useGetOtherLoanReports(false, true);
   const table = useTable();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();

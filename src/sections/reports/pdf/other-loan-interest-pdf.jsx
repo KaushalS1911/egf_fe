@@ -145,10 +145,10 @@ export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, f
         </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherName}</Text>
         <Text style={[styles.tableCell, { flex: 1.1 }]}>{row.otherNumber}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.rate}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.issueDate)}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{(row.closingCharge || 0).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.percentage}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.date)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.amount}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{(row.otherCharge || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.loan.scheme.interestRate}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.lastInterestPayDate)}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>

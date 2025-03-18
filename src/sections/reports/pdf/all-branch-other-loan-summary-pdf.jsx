@@ -150,10 +150,10 @@ export default function AllBranchOtherLoanSummaryPdf({
         </Text>
         <Text style={[styles.tableCell, { flex: 2 }]}>{row.otherName}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherNumber}</Text>
-        <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.loan.scheme.interestRate}</Text>
+        <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.percentage}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.rate}</Text>
-        <Text style={[styles.tableCell, { flex: 0.85 }]}>{fDate(row.loan.issueDate)}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
+        <Text style={[styles.tableCell, { flex: 0.85 }]}>{fDate(row.date)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.amount}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.pendingInterest.toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 0.85 }]}>{fDate(row.renewalDate)}</Text>
