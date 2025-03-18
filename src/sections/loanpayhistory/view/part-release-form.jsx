@@ -936,22 +936,24 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
               </Grid>
             </Box>
           </Box>
-        </Box>
-        <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
-          <Button
-            color="inherit"
-            sx={{ margin: '0px 10px', height: '36px' }}
-            variant="outlined"
-            onClick={() => reset()}
-          >
-            Reset
-          </Button>
-          {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-              Submit
-            </LoadingButton>
-          )}
-        </Box>
+        </Box>{' '}
+        {currentLoan.status !== 'Closed' && (
+          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
+            <Button
+              color="inherit"
+              sx={{ margin: '0px 10px', height: '36px' }}
+              variant="outlined"
+              onClick={() => reset()}
+            >
+              Reset
+            </Button>
+            {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                Submit
+              </LoadingButton>
+            )}
+          </Box>
+        )}
       </FormProvider>
       <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
         <TableHeadCustom headLabel={TABLE_HEAD} />

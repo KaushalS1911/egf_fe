@@ -505,21 +505,23 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
               )}
             </Box>
           </Box>
-          <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
-            <Button
-              color="inherit"
-              sx={{ height: '36px' }}
-              variant="outlined"
-              onClick={() => reset()}
-            >
-              Reset
-            </Button>
-            {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                Submit
-              </LoadingButton>
-            )}
-          </Box>
+          {currentOtherLoan.status !== 'Closed' && (
+            <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
+              <Button
+                color="inherit"
+                sx={{ height: '36px' }}
+                variant="outlined"
+                onClick={() => reset()}
+              >
+                Reset
+              </Button>
+              {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  Submit
+                </LoadingButton>
+              )}
+            </Box>
+          )}
         </Box>
       </FormProvider>
       <Box>

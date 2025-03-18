@@ -441,21 +441,23 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                   </>
                 )}
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button
-                  color="inherit"
-                  sx={{ margin: '0px 10px', height: '36px' }}
-                  variant="outlined"
-                  onClick={() => reset()}
-                >
-                  Reset
-                </Button>
-                {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                    Submit
-                  </LoadingButton>
-                )}
-              </Box>
+              {currentLoan.status !== 'Closed' && (
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    color="inherit"
+                    sx={{ margin: '0px 10px', height: '36px' }}
+                    variant="outlined"
+                    onClick={() => reset()}
+                  >
+                    Reset
+                  </Button>
+                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                    <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                      Submit
+                    </LoadingButton>
+                  )}
+                </Box>
+              )}
             </Box>
           </Grid>
         </Grid>

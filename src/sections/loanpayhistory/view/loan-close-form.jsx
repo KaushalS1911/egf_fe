@@ -198,7 +198,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
     const date2 = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : null;
 
     if (!date1 || !date2 || date1 < date2) {
-      return enqueueSnackbar('Please pay interest till today before close the loan.', { variant: 'info' });
+      return enqueueSnackbar('Please pay interest till today before close the loan.', {
+        variant: 'info',
+      });
     }
 
     let paymentDetail = {
@@ -446,16 +448,18 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   </>
                 )}
               </Box>
-              <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
-                <Button color="inherit" variant="outlined" onClick={() => reset()}>
-                  Reset
-                </Button>
-                {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                    Submit
-                  </LoadingButton>
-                )}
-              </Box>
+              {currentLoan.status !== 'Closed' && (
+                <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
+                  <Button color="inherit" variant="outlined" onClick={() => reset()}>
+                    Reset
+                  </Button>
+                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                    <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                      Submit
+                    </LoadingButton>
+                  )}
+                </Box>
+              )}
             </Box>
           </Grid>
         </Grid>

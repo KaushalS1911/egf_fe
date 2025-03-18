@@ -375,16 +375,18 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                 )}
                 <RHFDatePicker name="payDate" control={control} label="Pay Date" req={'red'} />
               </Box>
-              <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
-                <Button color="inherit" variant="outlined" onClick={() => reset()}>
-                  Reset
-                </Button>
-                {getResponsibilityValue('update_loanPayHistory', configs, user) && (
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                    Submit
-                  </LoadingButton>
-                )}
-              </Box>
+              {currentOtherLoan.status !== 'Closed' && (
+                <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>
+                  <Button color="inherit" variant="outlined" onClick={() => reset()}>
+                    Reset
+                  </Button>
+                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                    <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                      Submit
+                    </LoadingButton>
+                  )}
+                </Box>
+              )}
             </Box>
           </Grid>
         </Grid>
