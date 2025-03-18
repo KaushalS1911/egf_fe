@@ -295,7 +295,7 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Int. Loan Amount </Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{selectedRow.pendingLoanAmount}</Text>
+                    <Text style={styles.subText}>{selectedRow.interestLoanAmount}</Text>
                   </View>
                 </View>
                 <View style={{ width: '50%' }}>

@@ -223,7 +223,7 @@ export default function LoanPartPaymentDetailsPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{data?.loan?.loanAmount}</Text>
                 <Text style={styles.tableCell}>{data?.amountPaid}</Text>
                 <Text style={styles.tableCell}>
-                  {Number(data?.interestLoanAmount) - Number(data.amountPaid)}
+                  {Number(data?.interestLoanAmount).toFixed(2) || 0}
                 </Text>
                 <Text style={styles.tableCell}>{fDate(data?.date)}</Text>
                 <Text style={styles.tableCell}>{fDate(data?.createdAt)}</Text>

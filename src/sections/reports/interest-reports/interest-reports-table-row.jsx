@@ -50,18 +50,7 @@ export default function InterestReportsTableRow({ row }) {
     <>
       <TableRow hover>
         <TableCell>{row.srNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('create_loanIssue', configs, user) ? (
-            <Link
-              to={paths.dashboard.loanPayHistory.edit(_id)}
-              style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}
-            >
-              {loanNo}
-            </Link>
-          ) : (
-            loanNo
-          )}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {`${customer.firstName} ${customer.middleName} ${customer.lastName}`}
         </TableCell>{' '}

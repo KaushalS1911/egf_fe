@@ -215,7 +215,7 @@ export default function InterestPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{fDate(data.from)}</Text>
                 <Text style={styles.tableCell}>{fDate(data.to)}</Text>
                 <Text style={styles.tableCell}>{data.loan.loanAmount}</Text>
-                <Text style={styles.tableCell}>{data.loan.interestLoanAmount.toFixed(2)}</Text>
+                <Text style={styles.tableCell}>{data.interestLoanAmount.toFixed(2)}</Text>
                 <Text style={styles.tableCell}>{data.interestAmount}</Text>
                 <Text style={styles.tableCell}>{data.uchakInterestAmount || 0}</Text>
                 <Text style={styles.tableCell}>{data.amountPaid}</Text>
