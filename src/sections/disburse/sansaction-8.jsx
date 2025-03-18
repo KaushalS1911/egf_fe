@@ -456,7 +456,7 @@ export default function Sansaction8({ sansaction, configs }) {
                       }}
                     >
                       {
-                        'ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ મને કોઈ પણ જાતની છેડછાડ વગર પરિપૂર્ણ હાલતમાં મને મળી ગયેલ છે.જેની હું આપને લેખિત માં બાહેંધરી આપું છું.'
+                        'ઉપરોકત દર્શાવેલ માહિતી પ્રમાણે મેં અહીં ગીરવી મુકેલા દાગીનાઓમાંથી તમામ દાગીનાઓ મને કોઈ પણ જાતની છેડછાડ વગર પરીપૂંર્ણ હાલતમાં મને મળી ગયેલ છે.જેની હું આપને લેખીત માં બાહેંધરી આપું છું.'
                       }
                     </Text>
                   </View>
@@ -492,7 +492,7 @@ export default function Sansaction8({ sansaction, configs }) {
                             marginBottom: 4,
                           }}
                         >
-                          <Text style={{ fontSize: 10, marginRight: 4 }}>•</Text>{' '}
+                          <Text style={{ fontSize: 10, marginRight: 4, marginTop: 2 }}>•</Text>{' '}
                           {/* Bullet point */}
                           <Text style={{ ...styles.gujaratiText, fontSize: 10 }}>
                             {item.rule}

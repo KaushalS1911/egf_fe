@@ -64,7 +64,8 @@ export default function InterestReportsTableRow({ row }) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {`${customer.firstName} ${customer.middleName} ${customer.lastName}`}
-        </TableCell>
+        </TableCell>{' '}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {loanAmount && interestLoanAmount ? loanAmount - interestLoanAmount : '0'}

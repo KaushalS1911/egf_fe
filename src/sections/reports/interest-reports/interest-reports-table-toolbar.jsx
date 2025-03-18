@@ -21,7 +21,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import IntersetReportsPdf from '../pdf/interset-reports-pdf.jsx';
+import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -263,7 +263,7 @@ export default function InterestReportsTableToolbar({ filters, onFilters, data, 
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <IntersetReportsPdf data={data} configs={configs} />
+              <InterestReportsPdf data={data} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>

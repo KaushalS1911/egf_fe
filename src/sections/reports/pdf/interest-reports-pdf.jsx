@@ -57,6 +57,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
+          fontSize: 7,
         },
         numericCell: {
           textAlign: 'right',
@@ -98,16 +99,17 @@ const useStyles = () =>
     []
   );
 
-export default function IntersetReportsPdf({ selectedBranch, configs, data, filterData }) {
+export default function InterestReportsPdf({ selectedBranch, configs, data, filterData }) {
   const styles = useStyles();
   const headers = [
-    { label: '#', flex: 0.3 },
-    { label: 'Loan No', flex: 2.5 },
+    { label: '#', flex: 0.2 },
+    { label: 'Loan No', flex: 2.2 },
     { label: 'Customer Name', flex: 5 },
+    { label: 'Issue Date', flex: 1.2 },
     { label: 'Loan Amt', flex: 1 },
     { label: 'Part Loan Amt ', flex: 1.2 },
     { label: 'Int. Loan Amt', flex: 1.2 },
-    { label: 'Rate', flex: 0.5 },
+    { label: 'Rate', flex: 0.4 },
     { label: 'con.', flex: 0.5 },
     { label: 'Int. Amt', flex: 1.2 },
     { label: 'Con. Amt', flex: 1 },
@@ -135,14 +137,15 @@ export default function IntersetReportsPdf({ selectedBranch, configs, data, filt
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.3 }]}>{index + 1}</Text>
+        <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
 
-        <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.loanNo}</Text>
+        <Text style={[styles.tableCell, { flex: 2.2 }]}>{row.loanNo}</Text>
 
         <Text
           style={[styles.tableCell, { flex: 5, fontSize: 7 }]}
         >{`${row.customer.firstName} ${row.customer.middleName} ${row.customer.lastName} `}</Text>
 
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.issueDate)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.loanAmount}</Text>
 
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
@@ -153,7 +156,7 @@ export default function IntersetReportsPdf({ selectedBranch, configs, data, filt
           {(row.interestLoanAmount || 0).toFixed(2)}
         </Text>
 
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>
+        <Text style={[styles.tableCell, { flex: 0.4 }]}>
           {row.scheme.interestRate > 1.5 ? 1.5 : row.scheme.interestRate}
         </Text>
 

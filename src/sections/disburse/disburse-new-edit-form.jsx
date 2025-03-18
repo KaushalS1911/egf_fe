@@ -271,10 +271,12 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   const calculateTotal = (field) => {
     if (!currentDisburse?.propertyDetails || currentDisburse.propertyDetails.length === 0) return 0;
 
-    return currentDisburse.propertyDetails.reduce(
+    const total = currentDisburse.propertyDetails.reduce(
       (prev, next) => prev + (Number(next?.[field]) || 0),
       0
     );
+
+    return total.toFixed(2); // Apply toFixed(2) only at the end
   };
 
   return (
@@ -351,7 +353,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                           <RHFTextField
                             name={`propertyDetails.${index}.loseWeight`}
                             label="Lose Weight"
-                            defaultValue={(parseFloat(row.loseWeight) || 0.0).toFixed(2)}
+                            defaultValue={(parseFloat(row.loseWeight) || 0).toFixed(2)}
                             disabled={true}
                           />
                         </TableCell>

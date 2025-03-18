@@ -27,6 +27,10 @@ import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
 import { useGetReminder } from '../../../api/reminder';
 import * as XLSX from 'xlsx';
+import Tabs from '@mui/material/Tabs';
+import { alpha } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import Label from '../../../components/label/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -47,13 +51,21 @@ const TABLE_HEAD = [
 const defaultFilters = {
   name: '',
   day: '',
+  Status: 'All',
   startDate: null,
   endDate: null,
   nextInstallmentDay: [],
   startDay: null,
   endDay: null,
 };
-
+const STATUS_OPTIONS = [
+  { value: 'All', label: 'All' },
+  {
+    value: 'Overdue',
+    label: 'Overdue',
+  },
+  { value: 'Regular', label: 'Regular' },
+];
 // ----------------------------------------------------------------------
 
 export default function ReminderListView() {
@@ -73,7 +85,7 @@ export default function ReminderListView() {
   const dateError = isAfter(filters.startDate, filters.endDate);
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -88,9 +100,14 @@ export default function ReminderListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
-
+  const handleFilterStatus = useCallback(
+    (event, newValue) => {
+      handleFilters('status', newValue);
+    },
+    [handleFilters]
+  );
   const handleResetFilters = useCallback(() => {
     setFilters({ ...defaultFilters, day: '' });
   }, []);
@@ -99,7 +116,7 @@ export default function ReminderListView() {
     (id) => {
       router.push(paths.dashboard.reminder_details.list(id));
     },
-    [router],
+    [router]
   );
 
   if (LoanissueLoading) {
@@ -140,7 +157,7 @@ export default function ReminderListView() {
         };
 
         const relatedReminders = reminder.filter(
-          (r) => r?.loan?.customer?._id === loan?.customer?._id && r?.loan?._id === loan?._id,
+          (r) => r?.loan?.customer?._id === loan?.customer?._id && r?.loan?._id === loan?._id
         );
 
         const reminderRows = relatedReminders.map((reminderData, idx) => {
@@ -177,7 +194,7 @@ export default function ReminderListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Reminders'
+          heading="Reminders"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reminder', href: paths.dashboard.reminder.list },
@@ -188,6 +205,44 @@ export default function ReminderListView() {
           }}
         />
         <Card>
+          <Tabs
+            value={filters.status}
+            onChange={handleFilterStatus}
+            sx={{
+              px: 2.5,
+              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+            }}
+          >
+            {STATUS_OPTIONS.map((tab) => (
+              <Tab
+                key={tab.value}
+                iconPosition="end"
+                value={tab.value}
+                label={tab.label}
+                icon={
+                  <>
+                    <Label
+                      style={{ margin: '5px' }}
+                      variant={
+                        ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
+                      }
+                      color={
+                        (tab.value === 'Regular' && 'success') ||
+                        (tab.value === 'Overdue' && 'error') ||
+                        (tab.value === 'Disbursed' && 'info') ||
+                        (tab.value === 'Closed' && 'warning') ||
+                        'default'
+                      }
+                    >
+                      {['Overdue', 'Regular'].includes(tab.value)
+                        ? Loanissue.filter((item) => item.status === tab.value).length
+                        : Loanissue.length}
+                    </Label>
+                  </>
+                }
+              />
+            ))}
+          </Tabs>
           <ReminderTableToolbar
             filters={filters}
             onFilters={handleFilters}
@@ -232,7 +287,7 @@ export default function ReminderListView() {
                       {dataFiltered
                         .slice(
                           table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
                         )
                         .map((row, index) => (
                           <ReminderTableRow
@@ -274,7 +329,7 @@ export default function ReminderListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { startDate, endDate, name, nextInstallmentDay, startDay, endDay } = filters;
+  const { startDate, endDate, name, nextInstallmentDay, status, startDay, endDay } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -286,11 +341,13 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name && name.trim()) {
     inputData = inputData.filter(
       (rem) =>
-        (rem.customer.firstName + ' ' + rem.customer.middleName + ' ' + rem.customer.lastName).toLowerCase().includes(name.toLowerCase()) ||
+        (rem.customer.firstName + ' ' + rem.customer.middleName + ' ' + rem.customer.lastName)
+          .toLowerCase()
+          .includes(name.toLowerCase()) ||
         rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) ||
         rem.customer.middleName.toLowerCase().includes(name.toLowerCase()) ||
         rem.customer.lastName.toLowerCase().includes(name.toLowerCase()) ||
-        rem.loanNo.includes(name.toLowerCase()),
+        rem.loanNo.includes(name.toLowerCase())
     );
   }
   if (nextInstallmentDay.length) {
@@ -299,8 +356,12 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>
-      isBetween(new Date(order.nextInstallmentDate), startDate, endDate),
+      isBetween(new Date(order.nextInstallmentDate), startDate, endDate)
     );
   }
+  if (status && status !== 'All') {
+    inputData = inputData.filter((item) => item.status === status);
+  }
+
   return inputData;
 }

@@ -37,6 +37,7 @@ const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'customerName', label: 'Customer name' },
+  { id: 'issueDate', label: 'Issue date' },
   { id: 'loanAmt', label: 'Loan amt' },
   { id: 'partLoanAmt', label: 'Part loan amt' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
@@ -94,7 +95,7 @@ export default function InterestReportsListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -109,7 +110,7 @@ export default function InterestReportsListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Interest Reports'
+          heading="Interest Reports"
           links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Interest Reports' }]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -144,13 +145,13 @@ export default function InterestReportsListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -175,7 +176,7 @@ export default function InterestReportsListView() {
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
                     <InterestReportsTableRow key={row?._id} index={index} row={row} />
@@ -202,7 +203,7 @@ export default function InterestReportsListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -210,8 +211,8 @@ export default function InterestReportsListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -240,11 +241,20 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item?.customer?.firstName && item?.customer?.firstName + ' ' + item?.customer?.middleName + ' ' + item?.customer?.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (
+          item?.customer?.firstName &&
+          item?.customer?.firstName +
+            ' ' +
+            item?.customer?.middleName +
+            ' ' +
+            item?.customer?.lastName
+        )
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase()),
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (branch) {
@@ -253,7 +263,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) =>
-      isBetween(new Date(item?.lastInstallmentDate), startDate, endDate),
+      isBetween(new Date(item?.lastInstallmentDate), startDate, endDate)
     );
   }
 

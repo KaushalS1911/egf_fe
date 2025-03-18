@@ -387,6 +387,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   useEffect(() => {
     const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
     const paymentMode = watch('paymentMode');
+    const cashAmount = parseFloat(watch('cashAmount')) || 0;
 
     if (paymentMode === 'Cash') {
       setValue('cashAmount', totalAmountPaid);
@@ -395,12 +396,10 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       setValue('bankAmount', totalAmountPaid);
       setValue('cashAmount', 0);
     } else if (paymentMode === 'Both') {
-      const cashAmount = totalAmountPaid * 0.5;
-      const bankAmount = totalAmountPaid - cashAmount;
-      setValue('cashAmount', cashAmount.toFixed(2));
-      setValue('bankAmount', bankAmount.toFixed(2));
+      const updatedBankAmount = totalAmountPaid - cashAmount;
+      setValue('bankAmount', updatedBankAmount >= 0 ? updatedBankAmount.toFixed(2) : 0);
     }
-  }, [watch('amountPaid'), watch('paymentMode')]);
+  }, [watch('amountPaid'), watch('paymentMode'), watch('cashAmount')]);
 
   const handleDeleteInterest = async (id) => {
     try {
