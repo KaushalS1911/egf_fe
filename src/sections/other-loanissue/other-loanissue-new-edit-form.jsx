@@ -143,7 +143,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     //     netAmount: Yup.string().required('Net Amount is required'),
     //   })
     // ),
-    account: Yup.string().when('paymentMode', {
+    account: Yup.object().when('paymentMode', {
       is: (val) => val === 'Bank' || val === 'Both',
       then: (schema) => schema.required('Account is required'),
       otherwise: (schema) => schema.notRequired(),
@@ -222,7 +222,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       intLoanAmount: currentOtherLoanIssue?.loan?.intLoanAmount || '',
       intRate: currentOtherLoanIssue?.loan?.intRate || '',
       paymentMode: currentOtherLoanIssue?.paymentMode || '',
-      account: currentOtherLoanIssue?.bankDetails?.account || '',
+      account: currentOtherLoanIssue?.bankDetails?.account || null,
       cashAmount: currentOtherLoanIssue?.cashAmount || '',
       bankAmount: currentOtherLoanIssue?.bankAmount || 0,
       accountNumber: currentOtherLoanIssue?.bankDetails?.accountNumber || '',
@@ -915,7 +915,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       height: 0,
     },
   };
-
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
