@@ -57,7 +57,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.payAfterAdjust) || 0),
     0
   );
-  console.log(currentOtherLoan, '00000000');
+  const day = otherLoanInterest.reduce((prev, next) => prev + (Number(next?.days) || 0), 0);
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -610,7 +610,9 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                   TOTAL
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  {day}
+                </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {payAmt}
                 </TableCell>
