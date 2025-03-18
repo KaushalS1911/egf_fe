@@ -41,13 +41,13 @@ export default function AllBranchOtherLoanSummaryTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherName}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherNumber}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(scheme?.interestRate).toFixed(2) || 0}
+          {Number(row?.percentage).toFixed(2) || 0}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {Number(rate).toFixed(2) || 0}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {Number(pendingInterest).toFixed(2) || 0}

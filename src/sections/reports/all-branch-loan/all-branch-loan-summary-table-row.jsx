@@ -54,7 +54,7 @@ export default function AllBranchLoanSummaryTableRow({
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(scheme?.interestRate).toFixed(2)}
+          {Number(scheme?.interestRate > 1.5 ? 1.5 : scheme?.interestRate).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {Number(consultingCharge).toFixed(2) || 0}

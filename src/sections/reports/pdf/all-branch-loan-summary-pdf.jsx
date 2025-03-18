@@ -149,7 +149,9 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
           {`${row.customer.firstName} ${row.customer.middleName} ${row.customer.lastName}`}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.4 }]}>{row.customer.contact}</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.scheme.interestRate}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>
+          {row.scheme.interestRate > 1.5 ? 1.5 : row.scheme.interestRate}
+        </Text>
         <Text style={[styles.tableCell, { flex: 0.8 }]}>{row.consultingCharge}</Text>
         <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(row.issueDate)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.loanAmount}</Text>
