@@ -421,7 +421,7 @@ export default function OtherLonaInterestListView() {
                     backgroundColor: '#F4F6F8',
                     position: 'sticky',
                     bottom: 0,
-                    zIndex: 1000,
+                    zIndex: 1,
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
@@ -456,8 +456,6 @@ export default function OtherLonaInterestListView() {
                   <TableCell
                     sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}
                   ></TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}

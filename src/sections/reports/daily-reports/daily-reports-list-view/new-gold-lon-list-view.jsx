@@ -234,7 +234,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
                     backgroundColor: '#F4F6F8',
                     position: 'sticky',
                     bottom: 0,
-                    zIndex: 1000,
+                    zIndex: 1,
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
