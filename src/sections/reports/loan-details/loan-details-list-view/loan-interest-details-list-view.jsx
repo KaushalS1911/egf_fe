@@ -92,6 +92,41 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
   const [tableData, setTableData] = useState(interestDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
+  const int = interestDetail.reduce(
+    (prev, next) =>
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
+    0
+  );
+  const totalInt = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    0
+  );
+  const consultingCharge = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
+    0
+  );
+  const penalty = interestDetail.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
+  const cr_dr = interestDetail.reduce((prev, next) => prev + (Number(next?.cr_dr) || 0), 0);
+  const adjustedPay = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.adjustedPay) || 0),
+    0
+  );
+  const day = interestDetail.reduce((prev, next) => prev + (Number(next?.days) || 0), 0);
+  const uchakInterestAmount = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.uchakInterestAmount) || 0),
+    0
+  );
+  const loanAmt = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+
+  const amountPaid = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.amountPaid) || 0),
+    0
+  );
+
   const dataFiltered = applyFilter({
     inputData: interestDetail,
     comparator: getComparator(table.order, table.orderBy),
@@ -296,7 +331,54 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                     </TableCell>
                   </TableRow>
                 )}
-                {/*<TableNoData notFound={notFound} />*/}
+
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {loanAmt.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {int.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {consultingCharge.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalInt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {penalty.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {cr_dr.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {adjustedPay.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {day}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {uchakInterestAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {amountPaid.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>

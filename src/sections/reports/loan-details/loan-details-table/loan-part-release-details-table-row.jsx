@@ -42,7 +42,7 @@ export default function LoanPartReleaseDetailsTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.pendingLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
       </TableRow>

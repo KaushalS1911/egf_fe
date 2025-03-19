@@ -30,6 +30,7 @@ import InterestReportsTableFiltersResult from '../interest-reports/interest-repo
 import InterestReportsTableToolbar from '../interest-reports/interest-reports-table-toolbar.jsx';
 import { useGetInterestReports } from '../../../api/interest-reports.js';
 import { isBetween } from '../../../utils/format-time.js';
+import { TableCell, TableRow } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -63,19 +64,63 @@ const defaultFilters = {
 
 export default function InterestReportsListView() {
   const table = useTable();
-  const { Loanissue, LoanissueLoading } = useGetInterestReports();
+  const { interestReports, interestReportsLoading } = useGetInterestReports();
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
 
+  const loanAmt = interestReports.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+  const intLoanAmt = interestReports.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+  const int = interestReports.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
+    0
+  );
+  const consultingCharge = interestReports.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.consultingCharge) || 0),
+    0
+  );
+  const interestAmount = interestReports.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.interestAmount) || 0),
+    0
+  );
+  const consultingAmount = interestReports.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.consultingAmount) || 0),
+    0
+  );
+  const penaltyAmount = interestReports.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.penaltyAmount) || 0),
+    0
+  );
+  const totalPaidInterest = interestReports.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.totalPaidInterest) || 0),
+    0
+  );
+  const day = interestReports.reduce(
+    (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
+    0
+  );
+  const pendingInterest = interestReports.reduce(
+    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
+    0
+  );
+
   useEffect(() => {
-    const updatedData = Loanissue.map((item, index) => ({
+    const updatedData = interestReports.map((item, index) => ({
       ...item,
       srNo: index + 1,
     }));
     setSrData(updatedData);
-  }, [Loanissue]);
+  }, [interestReports]);
 
   const dataFiltered = applyFilter({
     inputData: srData,
@@ -102,7 +147,7 @@ export default function InterestReportsListView() {
     setFilters(defaultFilters);
   }, []);
 
-  if (LoanissueLoading) {
+  if (interestReportsLoading) {
     return <LoadingScreen />;
   }
 
@@ -120,7 +165,7 @@ export default function InterestReportsListView() {
           <InterestReportsTableToolbar
             filters={filters}
             onFilters={handleFilters}
-            data={Loanissue}
+            data={interestReports}
           />
           {canReset && (
             <InterestReportsTableFiltersResult
@@ -181,6 +226,56 @@ export default function InterestReportsListView() {
                   .map((row, index) => (
                     <InterestReportsTableRow key={row?._id} index={index} row={row} />
                   ))}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {loanAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(loanAmt - intLoanAmt).toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmt.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {int.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {consultingCharge.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {interestAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {consultingAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {penaltyAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {totalPaidInterest.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {day}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {pendingInterest.toFixed(2)}
+                  </TableCell>
+                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}

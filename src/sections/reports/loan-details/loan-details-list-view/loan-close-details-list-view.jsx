@@ -84,6 +84,19 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
   const [tableData, setTableData] = useState(loanCloseDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
+  const totalLoanAmount = loanCloseDetail.reduce(
+    (prev, next) => prev + (Number(next?.totalLoanAmount) || 0),
+    0
+  );
+  const netAmount = loanCloseDetail.reduce(
+    (prev, next) => prev + (Number(next?.netAmount) || 0),
+    0
+  );
+  const closingCharge = loanCloseDetail.reduce(
+    (prev, next) => prev + (Number(next?.closingCharge) || 0),
+    0
+  );
+
   const dataFiltered = applyFilter({
     inputData: loanCloseDetail,
     comparator: getComparator(table.order, table.orderBy),
@@ -285,6 +298,34 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
                     </TableCell>
                   </TableRow>
                 )}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {totalLoanAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {netAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(totalLoanAmount - netAmount).toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {closingCharge.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {netAmount.toFixed(2)}
+                  </TableCell>
+                </TableRow>
                 {/*<TableNoData notFound={notFound} />*/}
               </TableBody>
             </Table>
@@ -342,7 +383,9 @@ function applyFilter({ inputData, comparator, filters, dateError, dataFilters })
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||

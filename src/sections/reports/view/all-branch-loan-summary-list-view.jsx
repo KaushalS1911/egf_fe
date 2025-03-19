@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -42,6 +42,8 @@ import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
 import { useGetAllLoanSummary } from '../../../api/all-branch-loan-summary';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
 // ----------------------------------------------------------------------
 
@@ -100,6 +102,36 @@ export default function AllBranchLoanSummaryListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(LoanSummary);
   const [filters, setFilters] = useState(defaultFilters);
+
+  const int = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next?.scheme.interestRate) || 0),
+    0
+  );
+
+  const conCharge = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    0
+  );
+
+  const loanAmt = LoanSummary.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+
+  const intLoanAmt = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+
+  const totalIntPay = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
+    0
+  );
+  const day = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
+    0
+  );
+  const pendingIntAmt = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
+    0
+  );
 
   useEffect(() => {
     fetchStates();
@@ -377,7 +409,52 @@ export default function AllBranchLoanSummaryListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
-
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  {/*<TableCell padding="checkbox" />*/}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {int.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {conCharge.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {loanAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(loanAmt - intLoanAmt).toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {intLoanAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalIntPay.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {day.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {pendingIntAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
@@ -441,7 +518,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||

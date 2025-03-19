@@ -30,6 +30,7 @@ import LoanIssueReportsTableToolbar from '../loan-issue-report/loan-issue-report
 import LoanIssueReportsTableFiltersResult from '../loan-issue-report/loan-issue-reports-table-filters-result.jsx';
 import LoanIssueReportsTableRow from '../loan-issue-report/loan-issue-reports-table-row.jsx';
 import { isBetween } from '../../../utils/format-time.js';
+import { TableCell, TableRow } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -65,6 +66,27 @@ export default function LoanIssueReportsListView() {
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
+
+  const loanAmount = loanIssueReports.reduce(
+    (prev, next) => prev + (Number(next?.loanAmount) || 0),
+    0
+  );
+  const intLoanAmount = loanIssueReports.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+  const cashAmt = loanIssueReports.reduce(
+    (prev, next) => prev + (Number(next?.cashAmount) || 0),
+    0
+  );
+  const bankAmt = loanIssueReports.reduce(
+    (prev, next) => prev + (Number(next?.bankAmount) || 0),
+    0
+  );
+  const int = loanIssueReports.reduce(
+    (prev, next) => prev + (Number(next?.scheme.interestRate) || 0),
+    0
+  );
 
   useEffect(() => {
     const updatedData = loanIssueReports.map((item, index) => ({
@@ -174,6 +196,43 @@ export default function LoanIssueReportsListView() {
                   .map((row, index) => (
                     <LoanIssueReportsTableRow key={row?._id} index={index} row={row} />
                   ))}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {loanAmount.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(loanAmount - intLoanAmount).toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {int.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {cashAmt.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {bankAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
@@ -234,7 +293,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||

@@ -221,10 +221,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 0.4 }]}>Rate</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan int. amt</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>Total int.</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Total pay amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Closing charge</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Close date</Text>
                 <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}>
                   Entry date
                 </Text>
@@ -252,9 +249,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                     {fDate(item.loan.interestLoanAmount)}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.amountPaid}</Text>
-                  <Text style={[styles.tableCell, { flex: 1 }]}>10000</Text>
-                  <Text style={[styles.tableCell, { flex: 0.8 }]}>200</Text>
-                  <Text style={[styles.tableCell, { flex: 0.8 }]}>2/02/2000</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.createdAt)}</Text>
                   <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}>
                     {fDate(item.createdAt)}
                   </Text>
@@ -288,7 +283,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan int. amt</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Uchak Amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Close Date</Text>
                 <Text style={[styles.tableCell, { flex: 0.8, borderRightWidth: 0 }]}>
                   Entry date
                 </Text>
@@ -316,7 +310,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                     {item.loan.interestLoanAmount}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.amountPaid}</Text>
-                  <Text style={[styles.tableCell, { flex: 0.8 }]}>closedate</Text>
                   <Text style={[styles.tableCell, { flex: 0.8, borderRightWidth: 0 }]}>
                     {fDate(item.createdAt)}
                   </Text>

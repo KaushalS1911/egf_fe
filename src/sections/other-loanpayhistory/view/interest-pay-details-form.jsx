@@ -145,12 +145,14 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     formState: { isSubmitting },
   } = methods;
   useEffect(() => {
-    const days = watch('days');
-    const totalLoanAmount = (
-      (((currentOtherLoan.amount * currentOtherLoan.percentage) / 100) * (12 * days)) /
-      365
-    ).toFixed(2);
-    setValue('interestAmount', totalLoanAmount);
+    if (currentOtherLoan.status !== 'Closed') {
+      const days = watch('days');
+      const totalLoanAmount = (
+        (((currentOtherLoan.amount * currentOtherLoan.percentage) / 100) * (12 * days)) /
+        365
+      ).toFixed(2);
+      setValue('interestAmount', totalLoanAmount);
+    }
   }, [currentOtherLoan.amount, currentOtherLoan.percentage, watch('days')]);
 
   useEffect(() => {
@@ -159,7 +161,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
     if (toDate && fromDate) {
       const diffTime = new Date(toDate) - new Date(fromDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
       setValue('days', diffDays);
     } else {
       setValue('days', 0);

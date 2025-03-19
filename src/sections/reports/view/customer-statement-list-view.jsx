@@ -32,6 +32,7 @@ import CustomerStatementTableRow from '../customer-statement/customer-statement-
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { isBetween } from '../../../utils/format-time.js';
+import { TableCell, TableRow } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -64,6 +65,16 @@ export default function CustomerStatementListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const [customerStatement, setCustomerStatement] = useState([]);
   const [customerStatementLoading, setCustomerStatementLoading] = useState(false);
+
+  const loanAmount = customerStatement.reduce(
+    (prev, next) => prev + (Number(next?.loanAmount) || 0),
+    0
+  );
+  const intLoanAmount = customerStatement.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+  const amt = customerStatement.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
   const fetchCustomerStatement = async () => {
     if (!filters.customer) return;
 
@@ -201,6 +212,34 @@ export default function CustomerStatementListView() {
                   .map((row, index) => (
                     <CustomerStatementTableRow key={row?._id} index={index} row={row} />
                   ))}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {loanAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(loanAmount - intLoanAmount).toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {amt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}

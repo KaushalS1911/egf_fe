@@ -15,19 +15,15 @@ import { fDate } from '../../../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function GoldLoanUchakPaymentTableRow({
-                                                       row,
-                                                       index,
-                                                       selected,
-                                                       onEditRow,
-                                                       onSelectRow,
-                                                       onDeleteRow,
-                                                       handleClick,
-                                                     }) {
-  const {
-    loan,
-    amountPaid,
-    createdAt,
-  } = row;
+  row,
+  index,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  handleClick,
+}) {
+  const { loan, amountPaid, createdAt } = row;
   const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -47,49 +43,52 @@ export default function GoldLoanUchakPaymentTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'close date'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
       />
     </>
   );
-};
+}
 
 GoldLoanUchakPaymentTableRow.propTypes = {
   onDeleteRow: PropTypes.func,

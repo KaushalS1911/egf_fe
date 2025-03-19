@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -70,6 +70,25 @@ export default function GoldLoanInterestListView({ interestDetail }) {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(interestDetail);
   const [filters, setFilters] = useState(defaultFilters);
+
+  const int = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    0
+  );
+  const loanAmt = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const intLoanAmt = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+  const penalty = interestDetail.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
+  const day = interestDetail.reduce((prev, next) => prev + (Number(next?.day) || 0), 0);
+  const amountPaid = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.amountPaid) || 0),
+    0
+  );
 
   const dataFiltered = applyFilter({
     inputData: interestDetail,
@@ -236,6 +255,47 @@ export default function GoldLoanInterestListView({ interestDetail }) {
                     </TableCell>
                   </TableRow>
                 )}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  {/*<TableCell padding="checkbox" />*/}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {loanAmt.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {int.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {intLoanAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {day}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    int
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {penalty.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {amountPaid.toFixed(2)}
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>

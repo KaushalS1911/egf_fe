@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -62,6 +62,9 @@ export default function NewGoldLonListView({ LoanIssue }) {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(LoanIssue);
   const [filters, setFilters] = useState(defaultFilters);
+
+  const int = LoanIssue.reduce((prev, next) => prev + (Number(next?.scheme.interestRate) || 0), 0);
+  const loanAmt = LoanIssue.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
 
   const dataFiltered = applyFilter({
     inputData: LoanIssue,
@@ -214,6 +217,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
                       onEditRow={() => handleEditRow(row?._id)}
                     />
                   ))}
+
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
@@ -225,6 +229,30 @@ export default function NewGoldLonListView({ LoanIssue }) {
                     </TableCell>
                   </TableRow>
                 )}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  {/*<TableCell padding="checkbox" />*/}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {loanAmt.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {int.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
