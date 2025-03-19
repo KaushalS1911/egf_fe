@@ -347,35 +347,35 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {loanAmt.toFixed(2)}
+                    {loanAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {int.toFixed(2)}
+                    {(int / interestDetail.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {consultingCharge.toFixed(2)}
+                    {(consultingCharge / interestDetail.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalInt.toFixed(2)}
+                    {(totalInt / interestDetail.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {penalty.toFixed(2)}
+                    {penalty.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {cr_dr.toFixed(2)}
+                    {cr_dr.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {adjustedPay.toFixed(2)}
+                    {adjustedPay.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day}
+                    {day / interestDetail.length}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {uchakInterestAmount.toFixed(2)}
+                    {uchakInterestAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {amountPaid.toFixed(2)}
+                    {amountPaid.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>

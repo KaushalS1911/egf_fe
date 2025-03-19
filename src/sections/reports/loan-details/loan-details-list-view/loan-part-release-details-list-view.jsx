@@ -283,15 +283,14 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {loanAmt.toFixed(2)}
+                    {loanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {amountPaid.toFixed(2)}
+                    {amountPaid.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {pendingLoanAmount.toFixed(2)}
+                    {pendingLoanAmount.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>

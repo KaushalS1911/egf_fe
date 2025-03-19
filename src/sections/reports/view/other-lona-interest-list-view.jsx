@@ -414,6 +414,8 @@ export default function OtherLonaInterestListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
+                <TableNoData notFound={notFound} />
+
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -431,24 +433,24 @@ export default function OtherLonaInterestListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {percentage.toFixed(2)}
+                    {(percentage / otherLoanReports.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {amount.toFixed(2)}
+                    {amount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {closingCharge.toFixed(2)}
+                    {closingCharge.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalInterestAmt.toFixed(2)}
+                    {totalInterestAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day}
+                    {(day / otherLoanReports.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {pendingInterest.toFixed(2)}
+                    {pendingInterest.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell
@@ -461,8 +463,6 @@ export default function OtherLonaInterestListView() {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

@@ -371,6 +371,7 @@ export default function BranchViseLoanClosingListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
+                <TableNoData notFound={notFound} />
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -388,37 +389,37 @@ export default function BranchViseLoanClosingListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {int.toFixed(2)}
+                    {(int / LoanSummary.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {conCharge.toFixed(2)}
+                    {(conCharge / LoanSummary.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {loanAmt.toFixed(2)}
+                    {loanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(loanAmt - intLoanAmt).toFixed(2)}
+                    {(loanAmt - intLoanAmt).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {intLoanAmt.toFixed(2)}
+                    {intLoanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalIntPay.toFixed(2)}
+                    {totalIntPay.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day}
+                    {day / LoanSummary.length}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {closeCharge.toFixed(2)}
+                    {closeCharge.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(closeAmt - closeCharge).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {pendingIntAmt.toFixed(2)}
+                    {pendingIntAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
@@ -427,7 +428,6 @@ export default function BranchViseLoanClosingListView() {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

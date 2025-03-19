@@ -311,19 +311,19 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
                     TOTAL
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {totalLoanAmount.toFixed(2)}
+                    {totalLoanAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {netAmount.toFixed(2)}
+                    {netAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(totalLoanAmount - netAmount).toFixed(2)}
+                    {(totalLoanAmount - netAmount).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {closingCharge.toFixed(2)}
+                    {closingCharge.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {netAmount.toFixed(2)}
+                    {netAmount.toFixed(0)}
                   </TableCell>
                 </TableRow>
                 {/*<TableNoData notFound={notFound} />*/}

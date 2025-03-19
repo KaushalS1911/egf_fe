@@ -196,6 +196,8 @@ export default function LoanIssueReportsListView() {
                   .map((row, index) => (
                     <LoanIssueReportsTableRow key={row?._id} index={index} row={row} />
                   ))}
+                <TableNoData notFound={notFound} />
+
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -213,22 +215,22 @@ export default function LoanIssueReportsListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {loanAmount.toFixed(2)}
+                    {loanAmount.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {intLoanAmount.toFixed(2)}
+                    {intLoanAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(loanAmount - intLoanAmount).toFixed(2)}
+                    {(loanAmount - intLoanAmount).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {int.toFixed(2)}
+                    {(int / loanIssueReports.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {cashAmt.toFixed(2)}
+                    {cashAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {bankAmt.toFixed(2)}
+                    {bankAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
@@ -237,7 +239,6 @@ export default function LoanIssueReportsListView() {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

@@ -226,6 +226,8 @@ export default function InterestReportsListView() {
                   .map((row, index) => (
                     <InterestReportsTableRow key={row?._id} index={index} row={row} />
                   ))}
+                <TableNoData notFound={notFound} />
+
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -242,45 +244,44 @@ export default function InterestReportsListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {loanAmt.toFixed(2)}
+                    {loanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(loanAmt - intLoanAmt).toFixed(2)}
+                    {(loanAmt - intLoanAmt).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {intLoanAmt.toFixed(2)}
+                    {intLoanAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {int.toFixed(2)}
+                    {(int / interestReports.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {consultingCharge.toFixed(2)}
+                    {(consultingCharge / interestReports.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {interestAmount.toFixed(2)}
+                    {interestAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {consultingAmount.toFixed(2)}
+                    {consultingAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {penaltyAmount.toFixed(2)}
+                    {penaltyAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {totalPaidInterest.toFixed(2)}
+                    {totalPaidInterest.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {day}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {pendingInterest.toFixed(2)}
+                    {pendingInterest.toFixed(0)}
                   </TableCell>
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

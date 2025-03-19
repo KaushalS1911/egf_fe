@@ -409,6 +409,7 @@ export default function AllBranchLoanSummaryListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
+                <TableNoData notFound={notFound} />
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -459,8 +460,6 @@ export default function AllBranchLoanSummaryListView() {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

@@ -84,7 +84,10 @@ export default function GoldLoanInterestListView({ interestDetail }) {
     0
   );
   const penalty = interestDetail.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
-  const day = interestDetail.reduce((prev, next) => prev + (Number(next?.day) || 0), 0);
+  const day = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
+    0
+  );
   const amountPaid = interestDetail.reduce(
     (prev, next) => prev + (Number(next?.amountPaid) || 0),
     0
@@ -271,19 +274,19 @@ export default function GoldLoanInterestListView({ interestDetail }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {loanAmt.toFixed(2)}
+                    {loanAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {int.toFixed(2)}
+                    {(int / interestDetail.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {intLoanAmt.toFixed(2)}
+                    {intLoanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day}
+                    {day / interestDetail.length}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
@@ -293,7 +296,7 @@ export default function GoldLoanInterestListView({ interestDetail }) {
                     {penalty.toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {amountPaid.toFixed(2)}
+                    {amountPaid.toFixed(0)}
                   </TableCell>
                 </TableRow>
               </TableBody>

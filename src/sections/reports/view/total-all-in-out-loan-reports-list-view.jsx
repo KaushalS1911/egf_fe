@@ -467,6 +467,7 @@ export default function OtherLonaInterestListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
+                <TableNoData notFound={notFound} />
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -498,7 +499,7 @@ export default function OtherLonaInterestListView() {
                     {grossWt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {int.toFixed(2)}
+                    {(int / totalAllInoutLoanReports.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {totalInterestAmount.toFixed(0)}
@@ -516,10 +517,10 @@ export default function OtherLonaInterestListView() {
                     {otherNetWT.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {otherInt.toFixed(2)}
+                    {(otherInt / totalAllInoutLoanReports.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalOtherInterestAmount.toFixed(2)}
+                    {totalOtherInterestAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(amount - intLoanAmount).toFixed(0)}
@@ -533,8 +534,6 @@ export default function OtherLonaInterestListView() {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

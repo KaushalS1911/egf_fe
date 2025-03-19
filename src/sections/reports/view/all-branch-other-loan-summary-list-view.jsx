@@ -396,6 +396,8 @@ export default function AllBranchLoanSummaryListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
+                <TableNoData notFound={notFound} />
+
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -413,20 +415,20 @@ export default function AllBranchLoanSummaryListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {percentage.toFixed(2)}
+                    {(percentage / otherLoanReports.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {rate.toFixed(2)}
+                    {rate.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {amount.toFixed(2)}
+                    {amount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day}
+                    {day / otherLoanReports.length}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {pendingInterest.toFixed(2)}
+                    {pendingInterest.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
@@ -435,8 +437,6 @@ export default function AllBranchLoanSummaryListView() {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

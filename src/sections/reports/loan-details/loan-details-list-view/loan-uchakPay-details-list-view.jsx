@@ -295,7 +295,7 @@ export default function LoanUchakPayDetailsListView({ uchakInterestDetail, dataF
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {amountPaid.toFixed(2)}
+                    {amountPaid.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>

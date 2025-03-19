@@ -212,6 +212,7 @@ export default function CustomerStatementListView() {
                   .map((row, index) => (
                     <CustomerStatementTableRow key={row?._id} index={index} row={row} />
                   ))}
+                <TableNoData notFound={notFound} />
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -227,16 +228,16 @@ export default function CustomerStatementListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {loanAmount.toFixed(2)}
+                    {loanAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(loanAmount - intLoanAmount).toFixed(2)}
+                    {(loanAmount - intLoanAmount).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {intLoanAmount.toFixed(2)}
+                    {intLoanAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {amt.toFixed(2)}
+                    {amt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
@@ -244,7 +245,6 @@ export default function CustomerStatementListView() {
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

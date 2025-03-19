@@ -254,25 +254,25 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {loanAmt.toFixed(2)}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {loanAmt.toFixed(0)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {int.toFixed(2)}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(int / uchakPayment.length).toFixed(2)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {intLoanAmt.toFixed(2)}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {amountPaid.toFixed(2)}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {amountPaid.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
               </TableBody>
             </Table>
