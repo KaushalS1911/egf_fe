@@ -49,6 +49,7 @@ import AllBranchOtherLoanSummaryTableRow from '../all-branch-other-loan/all-bran
 import OtherLoanCloseSummaryTableToolbar from '../other-loan-close-reports/other-loan-close-summary-table-toolbar.jsx';
 import OtherLoanCloseSummaryTableFiltersResult from '../other-loan-close-reports/other-loan-close-summary-table-filters-result.jsx';
 import OtherLoanCloseSummaryTableRow from '../other-loan-close-reports/other-loan-close-summary-table-row.jsx';
+import { TableCell, TableRow } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -107,6 +108,34 @@ export default function OtherLoanCloseSummaryListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(otherLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
+
+  const percentage = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.percentage) || 0),
+    0
+  );
+  const rate = otherLoanReports.reduce((prev, next) => prev + (Number(next?.rate) || 0), 0);
+  const amount = otherLoanReports.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+  const totalInterestAmt = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.totalInterestAmt) || 0),
+    0
+  );
+  const pendingInterest = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
+    0
+  );
+  const day = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
+    0
+  );
+  const closeAmt = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.closingAmount) || 0),
+    0
+  );
+  const closingCharge = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.closingCharge) || 0),
+    0
+  );
+
   // useEffect(() => {
   //   fetchStates();
   // }, [otherLoanReports]);
@@ -386,7 +415,53 @@ export default function OtherLoanCloseSummaryListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
-
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {percentage.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {rate.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {amount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalInterestAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {day}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {closeAmt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {pendingInterest.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {closingCharge.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(totalInterestAmt + closeAmt + closingCharge).toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}

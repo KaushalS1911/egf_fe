@@ -15,7 +15,7 @@ import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRow }) {
   const { loanNo, customer, loanAmount, scheme, cashAmount, bankAmount } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -62,30 +62,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
             Edit
           </MenuItem>
         )}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && (
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
-        )}
       </CustomPopover>
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }

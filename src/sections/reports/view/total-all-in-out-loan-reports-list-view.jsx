@@ -53,6 +53,7 @@ import TotalAllInOutLoanReportsTableToolbar from '../total-all-in-out-loan-repor
 import TotalAllInOutLoanReportsTableFiltersResult from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-filters-result.jsx';
 import TotalAllInOutLoanReportsTableRow from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-row.jsx';
 import { useGetTotalAllInoutLoanReports } from '../../../api/total-all-in-out-loan-reports.js';
+import { TableCell, TableRow } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -117,6 +118,76 @@ export default function OtherLonaInterestListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(totalAllInoutLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
+
+  const loanAmount = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const amount = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.amount) || 0),
+    0
+  );
+
+  const intLoanAmount = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
+    0
+  );
+  const totalWt = totalAllInoutLoanReports?.reduce((prev, next) => {
+    const propertyTotal =
+      next?.loan?.propertyDetails?.reduce(
+        (sum, item) => sum + (Number(item?.totalWeight) || 0),
+        0
+      ) || 0;
+
+    return prev + propertyTotal;
+  }, 0);
+  const grossWt = totalAllInoutLoanReports?.reduce((prev, next) => {
+    const propertyTotal =
+      next?.loan?.propertyDetails?.reduce(
+        (sum, item) => sum + (Number(item?.grossWeight) || 0),
+        0
+      ) || 0;
+
+    return prev + propertyTotal;
+  }, 0);
+
+  const netWt = totalAllInoutLoanReports?.loan?.propertyDetails.reduce(
+    (prev, next) => prev + (Number(next?.netWeight) || 0),
+    0
+  );
+  const int = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    0
+  );
+  const totalInterestAmount = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.totalInterestAmount) || 0),
+    0
+  );
+  const amt = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.amount) || 0),
+    0
+  );
+  const otherGrossWT = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.grossWt) || 0),
+    0
+  );
+  const otherNetWT = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.netWt) || 0),
+    0
+  );
+  const otherInt = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.percentage) || 0),
+    0
+  );
+  const intAmt = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.percentage) || 0),
+    0
+  );
+  const totalOtherInterestAmount = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.totalOtherInterestAmount) || 0),
+    0
+  );
+
   // useEffect(() => {
   //   fetchStates();
   // }, [totalAllInoutLoanReports]);
@@ -248,7 +319,6 @@ export default function OtherLonaInterestListView() {
   //     });
   //   });
   // }
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -397,7 +467,68 @@ export default function OtherLonaInterestListView() {
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
-
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {loanAmount}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(loanAmount - intLoanAmount).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {intLoanAmount.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalWt.toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {grossWt.toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {int.toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalInterestAmount.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {amount.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {otherGrossWT.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {otherNetWT.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {otherInt.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalOtherInterestAmount.toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(amount - intLoanAmount).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(totalInterestAmount - totalOtherInterestAmount).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}

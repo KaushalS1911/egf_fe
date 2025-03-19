@@ -192,6 +192,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
             id: currentLoanIssue?.customer?._id,
             name:
               currentLoanIssue?.customer?.firstName + ' ' + currentLoanIssue?.customer?.lastName,
+            branch: currentLoanIssue?.customer?.branch._id,
           }
         : null,
       scheme: currentLoanIssue ? currentLoanIssue?.scheme : null,
@@ -294,7 +295,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     height: 360,
     facingMode: 'user',
   };
-
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -328,6 +328,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('series', mainbranchid?.series);
     payload.append('company', user.company);
     payload.append('customer', data.customer.id);
+    payload.append('branch', customerData.branch._id);
     payload.append('scheme', data?.scheme?._id);
     payload.append('loanNo', data.loanNo);
     payload.append('issueDate', data.issueDate);

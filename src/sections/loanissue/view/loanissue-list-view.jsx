@@ -273,7 +273,6 @@ export default function LoanissueListView() {
                       handleClick={() => handleClick(row._id)}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row._id)}
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
@@ -331,7 +330,12 @@ function applyFilter({ inputData, comparator, filters }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName && item.customer.firstName + ' ' + item.customer.middleName + '' + item.customer.lastName).toLowerCase().includes(username.toLowerCase()) ||
+        (
+          item.customer.firstName &&
+          item.customer.firstName + ' ' + item.customer.middleName + '' + item.customer.lastName
+        )
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
         item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
