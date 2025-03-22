@@ -63,7 +63,7 @@ export default function ReminderDetailsListView() {
   const { reminder, mutate, reminderLoading } = useGetReminder();
   const { user } = useAuthContext();
   const { id } = useParams();
-  const reminderDetails = reminder.filter((item) => item.loan._id === id);
+  const reminderDetails = reminder.filter((item) => item?.loan?._id === id);
   const { loanInterest } = useGetAllInterest(id);
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();

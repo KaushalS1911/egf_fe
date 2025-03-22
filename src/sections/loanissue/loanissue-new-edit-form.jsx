@@ -1159,7 +1159,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   onChange={(event, value) => setValue('loanType', value || '')}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
-                      {option}
+                      {option?.loanType}
                     </li>
                   )}
                 />

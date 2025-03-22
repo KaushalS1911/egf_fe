@@ -36,14 +36,14 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'loan.loanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'LoanAmount', label: 'loan amt' },
+  { id: 'loan.loanAmount', label: 'loan amt' },
   { id: 'Rate', label: 'Rate' },
-  { id: 'IssueDate', label: 'Issue date' },
-  { id: 'LoanIntAmt', label: 'Loan int. amt' },
-  { id: 'UchakAmt', label: 'Uchak amt' },
-  { id: 'EntryDate', label: ' Entry date' },
+  { id: 'loan.issueDate', label: 'Issue date' },
+  { id: 'loan.interestLoanAmount', label: 'Loan int. amt' },
+  { id: 'amountPaid', label: 'Uchak amt' },
+  { id: 'createdAt', label: ' Entry date' },
 ];
 
 const defaultFilters = {
