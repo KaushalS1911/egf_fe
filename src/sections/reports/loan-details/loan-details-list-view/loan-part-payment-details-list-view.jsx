@@ -49,12 +49,12 @@ import LoanPartPaymentDetailsTableRow from '../loan-details-table/loan-part-paym
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'loanAmount', label: 'Loan amount' },
+  { id: 'loan.loanAmount', label: 'Loan amount' },
   { id: 'payAmount', label: 'Pay amount' },
-  { id: 'intLoanAmount', label: 'Int. loan amt' },
-  { id: 'payDate', label: 'Pay date' },
-  { id: 'entryDate', label: 'Entry date' },
-  { id: 'remarks', label: 'Remarks' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
+  { id: 'date', label: 'Pay date' },
+  { id: 'createdAt', label: 'Entry date' },
+  { id: 'remark', label: 'Remarks' },
 ];
 
 const STATUS_OPTIONS = [

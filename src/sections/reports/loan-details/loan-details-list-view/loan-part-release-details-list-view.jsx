@@ -36,12 +36,12 @@ import LoanPartReleaseDetailsTableRow from '../loan-details-table/loan-part-rele
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'loanNo', label: 'Loan no.' },
-  { id: 'loanAmount', label: 'Loan amount' },
-  { id: 'payAmount', label: 'Pay amount' },
-  { id: 'pendingAmount', label: 'Pending amount' },
+  { id: 'loan.loanNo', label: 'Loan no.' },
+  { id: 'loan.loanAmount', label: 'Loan amount' },
+  { id: 'amountPaid', label: 'Pay amount' },
+  { id: 'pendingLoanAmount', label: 'Pending amount' },
   { id: 'payDate', label: 'Pay date' },
-  { id: 'remarks', label: 'Remarks' },
+  { id: 'remark', label: 'Remarks' },
 ];
 
 const defaultFilters = {
