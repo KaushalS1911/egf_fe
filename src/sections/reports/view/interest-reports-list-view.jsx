@@ -212,9 +212,7 @@ export default function InterestReportsListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -272,7 +270,7 @@ export default function InterestReportsListView() {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {day}
+                    {(day / interestReports.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {pendingInterest.toFixed(0)}

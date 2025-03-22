@@ -43,6 +43,7 @@ const TABLE_HEAD = [
   { id: 'IssueDate', label: 'Issue date' },
   { id: 'LoanIntAmt', label: 'Loan int. amt' },
   { id: 'UchakAmt', label: 'Uchak amt' },
+  { id: 'date', label: 'Pay date' },
   { id: 'EntryDate', label: ' Entry date' },
 ];
 
@@ -211,9 +212,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -272,6 +271,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {amountPaid.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
               </TableBody>

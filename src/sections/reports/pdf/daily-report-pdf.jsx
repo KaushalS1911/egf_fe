@@ -146,19 +146,18 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
               <View style={[styles.tableRow, styles.tableHeader]}>
                 <Text style={[styles.tableCell, { flex: 0.3 }]}>#</Text>
                 <Text style={[styles.tableCell, { flex: 2 }]}>Loan No</Text>
-                <Text style={[styles.tableCell, { flex: 5.2 }]}>Customer Name</Text>
+                <Text style={[styles.tableCell, { flex: 5 }]}>Customer Name</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan Amt</Text>
                 <Text style={[styles.tableCell, { flex: 0.5 }]}>Rate</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
                 <Text style={[styles.tableCell, { flex: 1.3 }]}>Loan int. amt</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>From date</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>To date</Text>
-                <Text style={[styles.tableCell, { flex: 0.5 }]}>Days</Text>
-                <Text style={[styles.tableCell, { flex: 0.5 }]}>Int</Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>Days</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Pay by</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Int</Text>
                 <Text style={[styles.tableCell, { flex: 0.8 }]}>penalty</Text>
-                <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
-                  Total Pay
-                </Text>
+                <Text style={[styles.tableCell, { flex: 1, borderRightWidth: 0 }]}>Total Pay</Text>
               </View>
               {loanIntDetails.map((item, index) => (
                 <View
@@ -171,7 +170,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 >
                   <Text style={[styles.tableCell, { flex: 0.3 }]}>{index + 1}</Text>
                   <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.loanNo}</Text>
-                  <Text style={[styles.tableCell, { flex: 5.2 }]}>
+                  <Text style={[styles.tableCell, { flex: 5 }]}>
                     {`${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.loanAmount}</Text>
@@ -184,10 +183,13 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.from)}</Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.to)}</Text>
-                  <Text style={[styles.tableCell, { flex: 0.5 }]}>{item.days}</Text>
-                  <Text style={[styles.tableCell, { flex: 0.5 }]}>int</Text>
+                  <Text style={[styles.tableCell, { flex: 0.4 }]}>{item.days}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>
+                    {item?.paymentDetail?.paymentMode}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item?.interestAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.penalty}</Text>
-                  <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
+                  <Text style={[styles.tableCell, { flex: 1, borderRightWidth: 0 }]}>
                     {item.amountPaid}
                   </Text>
                 </View>
@@ -230,8 +232,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 <View
                   style={[
                     styles.tableRow,
-                    index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                    index === partReleaseDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                    index % 2 !== 0 && styles.strippedRow,
+                    index === partReleaseDetails.length - 1 && styles.lastRow,
                   ]}
                   key={index}
                 >
@@ -249,7 +251,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                     {fDate(item.loan.interestLoanAmount)}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.amountPaid}</Text>
-                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.createdAt)}</Text>
                   <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}>
                     {fDate(item.createdAt)}
                   </Text>
@@ -283,6 +284,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan int. amt</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Uchak Amt</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Pay date</Text>
                 <Text style={[styles.tableCell, { flex: 0.8, borderRightWidth: 0 }]}>
                   Entry date
                 </Text>
@@ -310,6 +312,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                     {item.loan.interestLoanAmount}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.amountPaid}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.date)}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8, borderRightWidth: 0 }]}>
                     {fDate(item.createdAt)}
                   </Text>

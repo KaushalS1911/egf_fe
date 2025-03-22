@@ -63,7 +63,7 @@ export default function ReminderDetailsListView() {
   const { reminder, mutate, reminderLoading } = useGetReminder();
   const { user } = useAuthContext();
   const { id } = useParams();
-  const reminderDetails = reminder.filter((item) => item.loan._id === id);
+  const reminderDetails = reminder.filter((item) => item?.loan?._id === id);
   const { loanInterest } = useGetAllInterest(id);
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
@@ -82,24 +82,23 @@ export default function ReminderDetailsListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const
-    handleFilters = useCallback(
-      (name, value) => {
-        table.onResetPage();
-        setFilters((prevState) => ({
-          ...prevState,
-          [name]: value,
-        }));
-      },
-      [table],
-    );
+  const handleFilters = useCallback(
+    (name, value) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -127,7 +126,7 @@ export default function ReminderDetailsListView() {
       handleDelete([id]);
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -142,16 +141,14 @@ export default function ReminderDetailsListView() {
   }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
 
   if (reminderLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Reminder Details'
+          heading="Reminder Details"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reminder', href: paths.dashboard.reminder.list },
@@ -162,9 +159,7 @@ export default function ReminderDetailsListView() {
           }}
         />
         <Card>
-          <ReminderDetailsTableToolbar
-            filters={filters} onFilters={handleFilters}
-          />
+          <ReminderDetailsTableToolbar filters={filters} onFilters={handleFilters} />
           {canReset && (
             <ReminderDetailsTableFiltersResult
               filters={filters}
@@ -174,11 +169,13 @@ export default function ReminderDetailsListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -186,44 +183,44 @@ export default function ReminderDetailsListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
             />
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row._id),
-                    )
-                  }
-                  sx={{
-                    position: 'sticky',
-                    top: 0,
-                    backgroundColor: 'white',
-                    zIndex: 1000,
-                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
-                  }}
-                />
-                <TableBody>
-                  <>      {dataFiltered
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id)
+                  )
+                }
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1000,
+                }}
+              />
+              <TableBody>
+                <>
+                  {' '}
+                  {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
                       <ReminderDetailsTableRow
@@ -237,14 +234,14 @@ export default function ReminderDetailsListView() {
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-                    <TableEmptyRows
-                      height={denseHeight}
-                      emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                    />
-                  </>
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
+                  <TableEmptyRows
+                    height={denseHeight}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                  />
+                </>
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
           </TableContainer>
           <TablePaginationCustom
             count={dataFiltered.length}
@@ -260,7 +257,7 @@ export default function ReminderDetailsListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -268,8 +265,8 @@ export default function ReminderDetailsListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -281,7 +278,7 @@ export default function ReminderDetailsListView() {
       />
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
@@ -297,15 +294,14 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter(
-      (rem) =>
-        rem.loan.customer.firstName.toLowerCase().includes(name.toLowerCase()),
+    inputData = inputData.filter((rem) =>
+      rem.loan.customer.firstName.toLowerCase().includes(name.toLowerCase())
     );
   }
 
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>
-      isBetween(new Date(order.nextRecallingDate), startDate, endDate),
+      isBetween(new Date(order.nextRecallingDate), startDate, endDate)
     );
   }
   return inputData;

@@ -138,7 +138,6 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
   useEffect(() => {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
-  console.log(user, '111111111111');
 
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {

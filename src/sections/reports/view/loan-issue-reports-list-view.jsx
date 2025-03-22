@@ -129,8 +129,11 @@ export default function LoanIssueReportsListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Interest Reports"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Interest Reports' }]}
+          heading="Loan Issue Reports"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Loan Issue Reports' },
+          ]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}
@@ -182,9 +185,7 @@ export default function LoanIssueReportsListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>

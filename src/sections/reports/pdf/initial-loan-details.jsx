@@ -57,8 +57,8 @@ const useStyles = () =>
           height: '75.8%',
         },
         pagePadding2: {
-          padding: '0px 24px 24px 24px',
-          height: '87.8%',
+          padding: '24px 24px 24px 24px',
+          height: '95.8%',
         },
         gridContainer: {
           flexDirection: 'row',
@@ -277,7 +277,7 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function LoanIssueDetails({ selectedRow, configs }) {
+export default function InitialLoanDetails({ selectedRow, configs }) {
   const styles = useStyles();
   const renewDate = () => {
     if (!selectedRow?.issueDate) return null;
@@ -455,10 +455,9 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       <Text style={[styles.tableCell, { flex: 2 }]}>Property Name</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>Qty</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>Total Wt</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>Gross Wt</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>Net Wt</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>Net Amt</Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>Part Close Date</Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>Sign</Text>
                     </View>
 
                     {selectedRow.propertyDetails.map((row, index) => (
@@ -469,11 +468,12 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                           {Number(row.totalWeight).toFixed(2)}
                         </Text>
                         <Text style={[styles.tableCell, { flex: 1 }]}>
+                          {Number(row.grossWeight).toFixed(2)}
+                        </Text>
+                        <Text style={[styles.tableCell, { flex: 1 }]}>
                           {Number(row.netWeight).toFixed(2)}
                         </Text>
                         <Text style={[styles.tableCell, { flex: 1 }]}>{row.netAmount}</Text>
-                        <Text style={[styles.tableCell, { flex: 1 }]}></Text>
-                        <Text style={[styles.tableCell, { flex: 1 }]}></Text>
                       </View>
                     ))}
 
@@ -495,6 +495,11 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                         {selectedRow.propertyDetails
                           .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
                           .toFixed(2)}
+                      </Text>{' '}
+                      <Text style={[styles.tableCell, { flex: 1 }]}>
+                        {selectedRow.propertyDetails
+                          .reduce((prev, next) => prev + (Number(next?.grossWeight) || 0), 0)
+                          .toFixed(2)}
                       </Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>
                         {selectedRow.propertyDetails
@@ -506,8 +511,6 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                           .reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)
                           .toFixed(2)}
                       </Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}></Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}></Text>
                     </View>
                   </View>
                 </View>
@@ -523,25 +526,85 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
         <Page size="A4" style={styles.page}>
           <View style={{ border: '1px solid #000' }}>
             <View style={styles.pagePadding2}>
-              <view style={{ marginTop: 20 }}>
-                <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>
-                <View style={{ marginTop: 10 }}>
-                  {configs.exportPolicyConfig.map((item, index) => (
-                    <View
-                      key={index}
-                      style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}
-                    >
-                      <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text>{' '}
-                      <Text style={{ fontSize: 10, fontWeight: '500' }}>{item}</Text>{' '}
-                    </View>
-                  ))}
+              <View
+                style={{
+                  border: '1px solid #b1b0b0',
+                  borderTopLeftRadius: 10,
+                  borderTopRightRadius: 10,
+                }}
+              >
+                <View style={[styles.tableRow, styles.tableHeader]}>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>Date</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>From Date</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>to Date</Text>
+                  <Text style={[styles.tableCell, { flex: 0.5 }]}>Int.</Text>
+                  <Text style={[styles.tableCell, { flex: 0.5 }]}>Cons. rate</Text>
+                  <Text style={[styles.tableCell, { flex: 0.5 }]}>Days</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>Int. Amt</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>Cons. Charge</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>Total pay</Text>
                 </View>
-              </view>
+
+                {selectedRow.interests.map((row, index) => (
+                  <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.createdAt)}</Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.from)}</Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.to)}</Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>
+                      {Number(selectedRow.scheme.interestRate).toFixed(2)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>
+                      {Number(selectedRow.consultingCharge).toFixed(2)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.days}</Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {Number(row.interestAmount).toFixed(2)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {Number(row.consultingCharge).toFixed(2)}
+                    </Text>{' '}
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {Number(row.amountPaid).toFixed(2)}
+                    </Text>
+                  </View>
+                ))}
+
+                <View
+                  style={{
+                    ...styles.tableRow,
+                    ...styles.tableFooter,
+                    borderTopStyle: 'solid',
+                  }}
+                >
+                  <Text style={[styles.tableCell, { flex: 4.7 }]}>Total</Text>
+                  <Text style={[styles.tableCell, { flex: 0.5 }]}>
+                    {selectedRow.interests.reduce(
+                      (prev, next) => prev + (Number(next?.days > 0 ? next.days : 0) || 0),
+                      0
+                    )}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>
+                    {selectedRow.interests
+                      .reduce((prev, next) => prev + (Number(next?.interestAmount) || 0), 0)
+                      .toFixed(2)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>
+                    {selectedRow.interests
+                      .reduce((prev, next) => prev + (Number(next?.consultingCharge) || 0), 0)
+                      .toFixed(2)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>
+                    {selectedRow.interests
+                      .reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0)
+                      .toFixed(2)}
+                  </Text>
+                </View>
+              </View>
             </View>
-            <View style={styles.d_flex}>
-              <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
-              <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
-            </View>
+            {/*<View style={styles.d_flex}>*/}
+            {/*  <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>*/}
+            {/*  <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>*/}
+            {/*</View>*/}
             <InvoiceFooter configs={configs} />
           </View>
         </Page>

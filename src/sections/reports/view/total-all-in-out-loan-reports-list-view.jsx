@@ -119,6 +119,8 @@ export default function OtherLonaInterestListView() {
   const [tableData, setTableData] = useState(totalAllInoutLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
 
+  const data = Object.values(totalAllInoutLoanReports);
+
   const loanAmount = totalAllInoutLoanReports.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
     0
@@ -443,9 +445,7 @@ export default function OtherLonaInterestListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 

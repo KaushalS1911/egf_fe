@@ -49,12 +49,15 @@ import LoanPartPaymentDetailsTableRow from '../loan-details-table/loan-part-paym
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
+  { id: 'loanNo', label: 'Loan no' },
   { id: 'loanAmount', label: 'Loan amount' },
+  { id: 'IntloanAmount', label: ' Int. loan amt' },
   { id: 'payAmount', label: 'Pay amount' },
-  { id: 'intLoanAmount', label: 'Int. loan amt' },
+  { id: 'intLoanAmount', label: 'pending loan amt' },
   { id: 'payDate', label: 'Pay date' },
   { id: 'entryDate', label: 'Entry date' },
   { id: 'remarks', label: 'Remarks' },
+  { id: 'remarks', label: 'Entry date' },
 ];
 
 const STATUS_OPTIONS = [
@@ -265,9 +268,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 
@@ -314,8 +315,12 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {loanAmt.toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {amountPaid.toFixed(0)}
@@ -323,6 +328,7 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {intLoanAmt.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

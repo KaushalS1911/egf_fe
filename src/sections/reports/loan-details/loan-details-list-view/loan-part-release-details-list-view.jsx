@@ -38,9 +38,12 @@ const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'loanAmount', label: 'Loan amount' },
+  { id: 'intLoanamt', label: 'Int. loan amount' },
   { id: 'payAmount', label: 'Pay amount' },
   { id: 'pendingAmount', label: 'Pending amount' },
   { id: 'payDate', label: 'Pay date' },
+  { id: 'entrydate', label: 'Pay date' },
+  { id: 'entryBt', label: 'Pay date' },
   { id: 'remarks', label: 'Remarks' },
 ];
 
@@ -66,6 +69,10 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
 
   const loanAmt = partReleaseDetail.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const intLoanAmt = partReleaseDetail.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
   const amountPaid = partReleaseDetail.reduce(
@@ -235,9 +242,7 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -286,11 +291,16 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
                     {loanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmt.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {amountPaid.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {pendingLoanAmount.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>

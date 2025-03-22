@@ -128,7 +128,6 @@ export default function AllBranchOtherLoanSummaryPdf({
   const rowsPerPage = 18;
   const pages = [];
   let currentPageRows = [];
-  console.log(dataFilter);
   loans.forEach((row, index) => {
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === loans.length - 1;

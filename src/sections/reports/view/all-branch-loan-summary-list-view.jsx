@@ -385,9 +385,7 @@ export default function AllBranchLoanSummaryListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 

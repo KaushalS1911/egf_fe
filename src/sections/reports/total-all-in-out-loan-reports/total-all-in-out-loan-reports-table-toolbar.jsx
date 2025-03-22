@@ -86,7 +86,6 @@ export default function TotalAllInOutLoanReportsTableToolbar({
     },
     [onFilters]
   );
-  console.log(dataFilter, '............');
   const customStyle = {
     maxWidth: { md: 350 },
     label: {

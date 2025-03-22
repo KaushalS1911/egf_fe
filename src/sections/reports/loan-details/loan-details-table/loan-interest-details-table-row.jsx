@@ -17,19 +17,29 @@ import { getResponsibilityValue } from '../../../../permission/permission';
 import Label from '../../../../components/label';
 import { fDate } from '../../../../utils/format-time';
 
-
 // ----------------------------------------------------------------------
 
 export default function LoanInterestDetailsTableRow({
-                                                      row,
-                                                      index,
-                                                      selected,
-                                                      onEditRow,
-                                                      onSelectRow,
-                                                      onDeleteRow,
-                                                      handleClick,
-                                                    }) {
-  const { from, to, penalty, days, loan, amountPaid, cr_dr, adjustedPay, createdAt, uchakInterestAmount } = row;
+  row,
+  index,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  handleClick,
+}) {
+  const {
+    from,
+    to,
+    penalty,
+    days,
+    loan,
+    amountPaid,
+    cr_dr,
+    adjustedPay,
+    createdAt,
+    uchakInterestAmount,
+  } = row;
   const { consultingCharge } = loan;
   const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
@@ -39,7 +49,6 @@ export default function LoanInterestDetailsTableRow({
   const calculateDateDifference = (date1, date2) => {
     const diffTime = Math.abs(new Date(date1) - new Date(date2));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
   };
   return (
     <>
@@ -48,15 +57,17 @@ export default function LoanInterestDetailsTableRow({
         <TableCell sx={{ padding: '6px' }}>{fDate(from)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(to)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{scheme?.interestRate >= 1.5 ? 1.5 : scheme?.interestRate}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>
+          {scheme?.interestRate >= 1.5 ? 1.5 : scheme?.interestRate}
+        </TableCell>
         <TableCell sx={{ padding: '6px' }}>{consultingCharge}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{Number(row.interestAmount).toFixed(2)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{penalty}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{cr_dr.toFixed(2)}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{adjustedPay}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{uchakInterestAmount || 0}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(createdAt)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{uchakInterestAmount || 0}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{adjustedPay}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
       </TableRow>
 
@@ -66,27 +77,29 @@ export default function LoanInterestDetailsTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-
-
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
@@ -99,7 +112,6 @@ export default function LoanInterestDetailsTableRow({
           </Button>
         }
       />
-
     </>
   );
 }

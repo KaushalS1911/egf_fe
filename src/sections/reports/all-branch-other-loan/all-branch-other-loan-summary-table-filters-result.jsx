@@ -19,8 +19,8 @@ export default function AllBranchOtherLoanSummaryTableFiltersResult({
 }) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
 
-  const handleRemoveIssuedBy = useCallback(() => {
-    onFilters('issuedBy', '');
+  const handleRemoveOtherName = useCallback(() => {
+    onFilters('otherName', '');
   }, [onFilters]);
 
   const handleRemoveBranch = useCallback(() => {
@@ -65,9 +65,9 @@ export default function AllBranchOtherLoanSummaryTableFiltersResult({
             ))}
           </Block>
         )}
-        {!!filters.issuedBy && (
-          <Block label="Issued By:">
-            <Chip label={filters.issuedBy.name} size="small" onDelete={handleRemoveIssuedBy} />
+        {!!filters.otherName && (
+          <Block label="Other Name:">
+            <Chip label={filters.otherName} size="small" onDelete={handleRemoveOtherName} />
           </Block>
         )}
         {!!filters.branch && (

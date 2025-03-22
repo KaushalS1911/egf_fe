@@ -44,6 +44,8 @@ const TABLE_HEAD = [
   { id: 'payAfterAdjust', label: 'Pay After Adjust' },
   { id: 'days', label: 'Days' },
   { id: 'entryDate', label: 'Entry Date' },
+  { id: 'cashamt', label: 'Cash amt' },
+  { id: 'bankamt', label: 'Bank amt' },
   { id: 'totalPay', label: 'Total Pay Amt' },
   { id: 'pdf', label: 'PDF' },
   // { id: 'crDrAmt', label: 'CR/DR Amt' },
@@ -775,6 +777,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {totalPayAmt}
                 </TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

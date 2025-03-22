@@ -71,6 +71,10 @@ const STATUS_OPTIONS = [
     value: 'Closed',
     label: 'Closed',
   },
+  {
+    value: 'Overdue',
+    label: 'Overdue',
+  },
 ];
 
 const defaultFilters = {
@@ -78,6 +82,8 @@ const defaultFilters = {
   status: 'All',
   startDate: null,
   endDate: null,
+  renewStartDate: null,
+  renewEndDate: null,
 };
 
 // ----------------------------------------------------------------------
@@ -227,10 +233,11 @@ export default function LoanpayhistoryListView() {
                       color={
                         (tab.value === 'Issued' && 'success') ||
                         (tab.value === 'Closed' && 'warning') ||
+                        (tab.value === 'Overdue' && 'error') ||
                         'default'
                       }
                     >
-                      {['Issued', 'Closed'].includes(tab.value)
+                      {['Issued', 'Closed', 'Overdue'].includes(tab.value)
                         ? otherLoanissue.filter((item) => item.status === tab.value).length
                         : otherLoanissue.length}
                     </Label>
@@ -283,7 +290,7 @@ export default function LoanpayhistoryListView() {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  sx={{' th': {padding : '8px'}}}
+                  sx={{ ' th': { padding: '8px' }, position: 'sticky', top: 0, zIndex: 1000 }}
                 />
                 <TableBody>
                   {dataFiltered
@@ -352,7 +359,7 @@ export default function LoanpayhistoryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate } = filters;
+  const { username, status, startDate, endDate, renewStartDate, renewEndDate } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -364,11 +371,13 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   inputData = stabilizedThis.map((el) => el[0]);
   if (username && username.trim()) {
     inputData = inputData.filter(
-      (item) => item.otherName.toLowerCase().includes(username.toLowerCase())
-      // item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-      // item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-      // item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-      // item.customer.contact.toLowerCase().includes(username.toLowerCase())
+      (item) =>
+        item.otherName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
 
@@ -376,8 +385,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item.status === status);
   }
   if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((order) => isBetween(new Date(order.date), startDate, endDate));
+  }
+  if (!dateError && renewStartDate && renewEndDate) {
     inputData = inputData.filter((order) =>
-      isBetween(new Date(order.renewalDate), startDate, endDate)
+      isBetween(new Date(order.renewalDate), renewStartDate, renewEndDate)
     );
   }
   return inputData;

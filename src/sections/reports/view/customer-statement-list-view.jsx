@@ -87,8 +87,6 @@ export default function CustomerStatementListView() {
 
       const statementData = res.data.data || [];
 
-      console.log(statementData);
-
       const updatedData = statementData.map((item, index) => ({
         ...item,
         srNo: index + 1,
@@ -133,7 +131,6 @@ export default function CustomerStatementListView() {
   if (customerStatementLoading) {
     return <LoadingScreen />;
   }
-  console.log(user, '0000000');
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -198,9 +195,7 @@ export default function CustomerStatementListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>

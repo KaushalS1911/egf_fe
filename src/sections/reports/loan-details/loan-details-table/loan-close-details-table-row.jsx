@@ -43,11 +43,16 @@ export default function LoanCloseDetailsTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{netAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.loan.interestLoanAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{netAmount - closingCharge}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{totalLoanAmount - netAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{closingCharge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{netAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.entryBy}</TableCell>
       </TableRow>
 
       <CustomPopover

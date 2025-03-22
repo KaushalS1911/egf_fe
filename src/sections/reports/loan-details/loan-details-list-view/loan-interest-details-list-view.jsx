@@ -56,10 +56,10 @@ const TABLE_HEAD = [
   { id: 'totalInterest', label: 'Total int.' },
   { id: 'penaltyAmount', label: 'Penalty amt' },
   { id: 'crDrAmt', label: 'CR/DR amt' },
-  { id: 'payAfterAdjust', label: 'Pay after adjust' },
+  { id: 'uchakAmt', label: 'Uchak amt' },
   { id: 'entryDate', label: 'Entry date' },
   { id: 'days', label: 'Days' },
-  { id: 'uchakAmt', label: 'Uchak amt' },
+  { id: 'payAfterAdjust', label: 'Pay after adjust' },
   { id: 'totalPay', label: 'Total pay amt' },
 ];
 
@@ -99,7 +99,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
     0
   );
   const totalInt = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
   const consultingCharge = interestDetail.reduce(
@@ -292,9 +292,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   ' th': {
                     padding: '8px',
                   },

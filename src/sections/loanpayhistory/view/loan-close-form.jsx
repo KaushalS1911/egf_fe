@@ -97,6 +97,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
           };
 
   const NewLoanCloseSchema = Yup.object().shape({
+    expectPaymentMode: Yup.string().required('Expected Payment Mode is required'),
+
     totalLoanAmount: Yup.number()
       .min(1, 'Total Loan Amount must be greater than 0')
       .required('Total Loan Amount is required')
@@ -120,6 +122,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
     closingCharge: '0',
     closeRemarks: '',
     paymentMode: '',
+    expectPaymentMode: null,
     cashAmount: '',
     account: null,
     bankAmount: null,
@@ -205,6 +208,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
     let paymentDetail = {
       paymentMode: data.paymentMode,
+      expectPaymentMode: data.expectPaymentMode,
     };
 
     if (data.paymentMode === 'Cash') {
@@ -308,6 +312,14 @@ function LoanCloseForm({ currentLoan, mutate }) {
           }
         }}
       >
+        <Box sx={{ display: 'flex', gap: 4, pl: 0.5, mb: 2 }}>
+          <Typography variant="body1" gutterBottom sx={{ fontWeight: '700' }}>
+            Cash Amount : {currentLoan.cashAmount || 0}
+          </Typography>
+          <Typography variant="body1" gutterBottom sx={{ fontWeight: '700' }}>
+            Bank Amount : {currentLoan.bankAmount || 0}
+          </Typography>
+        </Box>
         <Grid rowSpacing={3} columnSpacing={2}>
           <Box
             rowGap={3}
@@ -364,6 +376,18 @@ function LoanCloseForm({ currentLoan, mutate }) {
             />
             <RHFTextField name="closeRemarks" label="Close Remarks" />
             <RHFDatePicker name="date" control={control} label="Pay Date" req={'red'} />
+            <RHFAutocomplete
+              name="expectPaymentMode"
+              label="Expected Payment Mode"
+              req="red"
+              options={['Cash', 'Bank', 'Both']}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+            />
           </Box>
         </Grid>
         <Grid pb={2}>

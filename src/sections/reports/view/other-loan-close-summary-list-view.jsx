@@ -391,9 +391,7 @@ export default function OtherLoanCloseSummaryListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 
@@ -551,7 +549,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.closeDaTe), startDate, endDate));
   }
-  console.log(inputData, '00000000');
 
   return inputData;
 }
