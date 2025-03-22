@@ -217,6 +217,7 @@ export const paths = {
       'other-loan-all-branch-reports': `${ROOTS.DASHBOARD}/reports/other-loan-all-branch-reports`,
       'other-loan-close-reports': `${ROOTS.DASHBOARD}/reports/other-loan-close-reports`,
       'other-loan-interest-reports': `${ROOTS.DASHBOARD}/reports/other-loan-interest-reports`,
+      'other-loan-daily-reports': `${ROOTS.DASHBOARD}/reports/other-loan-daily-reports`,
       'total-all-in-out-loan-reports': `${ROOTS.DASHBOARD}/reports/total-all-in-out-loan-reports`,
     },
     product: {

@@ -36,15 +36,14 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'loan.loanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'LoanAmount', label: 'loan amt' },
+  { id: 'loan.loanAmount', label: 'loan amt' },
   { id: 'Rate', label: 'Rate' },
-  { id: 'IssueDate', label: 'Issue date' },
-  { id: 'LoanIntAmt', label: 'Loan int. amt' },
-  { id: 'UchakAmt', label: 'Uchak amt' },
-  { id: 'date', label: 'Pay date' },
-  { id: 'EntryDate', label: ' Entry date' },
+  { id: 'loan.issueDate', label: 'Issue date' },
+  { id: 'loan.interestLoanAmount', label: 'Loan int. amt' },
+  { id: 'amountPaid', label: 'Uchak amt' },
+  { id: 'createdAt', label: ' Entry date' },
 ];
 
 const defaultFilters = {
@@ -212,7 +211,9 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                 sx={{
                   position: 'sticky',
                   top: 0,
+                  backgroundColor: 'white',
                   zIndex: 1,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -271,7 +272,6 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {amountPaid.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
               </TableBody>

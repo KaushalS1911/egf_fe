@@ -64,12 +64,12 @@ const STATUS_OPTIONS = [
 
 const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
-  { id: 'Recalling Date', label: 'Recalling Date' },
+  { id: 'recallingDate', label: 'Recalling Date' },
   { id: 'name', label: 'Name' },
   { id: 'contact', label: 'Contact' },
-  { id: 'inquiry for', label: 'Inquiry for' },
+  { id: 'inquiryFor', label: 'Inquiry for' },
   { id: 'remark', label: 'Remark' },
-  { id: 'Status', label: 'Status' },
+  { id: 'isActive', label: 'Status' },
   { id: '', width: 88 },
 ];
 

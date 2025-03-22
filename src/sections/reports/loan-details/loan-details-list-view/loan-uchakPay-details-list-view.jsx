@@ -49,8 +49,8 @@ import LoanUchakpayDetailsTableRow from '../loan-details-table/loan-uchakpay-det
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'uchakPayDate', label: 'Uchak pay date' },
-  { id: 'uchakIntAmt', label: 'Uchak int amt' },
+  { id: 'date', label: 'Uchak pay date' },
+  { id: 'amountPaid', label: 'Uchak int amt' },
   { id: 'remark', label: 'Remarks' },
 ];
 

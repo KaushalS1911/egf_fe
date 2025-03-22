@@ -35,11 +35,11 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'loanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'LoanAmount', label: 'loan amt' },
+  { id: 'loanAmount', label: 'loan amt' },
   { id: 'Rate', label: 'Rate' },
-  { id: 'IssueDate', label: 'Issue date' },
+  { id: 'issueDate', label: 'Issue date' },
   { id: 'EntryBy', label: 'Entry by' },
 ];
 
@@ -67,7 +67,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
   const loanAmt = LoanIssue.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
 
   const dataFiltered = applyFilter({
-    inputData: LoanIssue,
+    inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -294,5 +294,12 @@ export default function NewGoldLonListView({ LoanIssue }) {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch } = filters;
+   const stabilizedThis = inputData.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    inputData = stabilizedThis.map((el) => el[0]);
   return inputData;
 }

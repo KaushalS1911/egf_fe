@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -16,11 +16,9 @@ import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
@@ -28,61 +26,71 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 import axios from 'axios';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetLoanissue } from '../../../api/loanissue';
-import DisburseTableRow from '../disburse-table-row';
-import DisburseTableToolbar from '../disburse-table-toolbar';
-import DisburseTableFiltersResult from '../disburse-table-filters-result';
-import { LoadingScreen } from '../../../components/loading-screen';
-import { getResponsibilityValue } from '../../../permission/permission';
-import { useGetConfigs } from '../../../api/config';
+import { useAuthContext } from '../../../../auth/hooks';
+import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
+import { TableCell, TableRow, Typography } from '@mui/material';
+import OtherNewGoldLoanTableRow from '../other-daily-reports-table/new-other-gold-loan-table-row';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'LoanNo', label: 'Loan no.' },
-  { id: 'CustomerName', label: 'Customer name' },
-  { id: 'ContactNo', label: 'Contact' },
-  { id: 'interestLoanAmount', label: 'Int. loan amt' },
-  { id: 'InterestRate', label: 'Int. rate' },
-  { id: 'cashAmount', label: 'Cash amt' },
-  { id: 'bankAmount', label: 'Bank amt' },
-  { id: 'disburse', label: 'Disburse' },
-  { id: '', width: 88 },
+  { id: 'date', label: 'Open Date' },
+  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'customerName', label: 'Customer name' },
+  { id: 'otherName', label: 'Other name' },
+  { id: 'otherLoanNumber', label: 'Other loan no' },
+  { id: 'rate', label: 'Rate' },
+  { id: 'grossWt', label: 'Gross Wt.' },
+  { id: 'netWt', label: 'Net Wt.' },
+  { id: 'otherCharge', label: 'Charge' },
+  { id: 'cashAmount', label: 'Cash Amt.' },
+  { id: 'bankAmount', label: 'Bank Amt.' },
+  { id: 'amount', label: 'Other Amt.' },
+  { id: 'createdAt', label: 'Entry date' },
 ];
 
 const defaultFilters = {
   username: '',
+  status: 'All',
+  startDate: null,
+  endDate: null,
+  branch: '',
 };
 
 // ----------------------------------------------------------------------
 
-export default function DisburseListView() {
+export default function OtherNewGoldLonListView({ LoanIssue }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
-  const { Loanissue, mutate, LoanissueLoading } = useGetLoanissue(false, false, true);
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(Loanissue);
+  const [tableData, setTableData] = useState(LoanIssue);
   const [filters, setFilters] = useState(defaultFilters);
 
+  const rate = LoanIssue.reduce((prev, next) => prev + (Number(next?.percentage) || 0), 0);
+  const grossWt = LoanIssue.reduce((prev, next) => prev + (Number(next?.grossWt) || 0), 0);
+  const netWt = LoanIssue.reduce((prev, next) => prev + (Number(next?.netWt) || 0), 0);
+  const charge = LoanIssue.reduce((prev, next) => prev + (Number(next?.otherCharge) || 0), 0);
+  const cash = LoanIssue.reduce((prev, next) => prev + (Number(next?.cashAmount) || 0), 0);
+  const bank = LoanIssue.reduce((prev, next) => prev + (Number(next?.bankAmount) || 0), 0);
+  const other = LoanIssue.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+
   const dataFiltered = applyFilter({
-    inputData: Loanissue,
+    inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
-  const dataInPage = dataFiltered.slice(
+  const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
 
-  const denseHeight = table.dense ? 56 : 56 + 20;
+  const denseHeight = table?.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -100,10 +108,6 @@ export default function DisburseListView() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!getResponsibilityValue('delete_disburse', configs, user)) {
-      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
-      return;
-    }
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`, {
         data: { ids: id },
@@ -127,7 +131,7 @@ export default function DisburseListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = LoanIssue.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -139,7 +143,7 @@ export default function DisburseListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.disburse.edit(id));
+      router.push(paths.dashboard.loanissue.edit(id));
     },
     [router]
   );
@@ -151,28 +155,13 @@ export default function DisburseListView() {
     [router]
   );
 
-  if (LoanissueLoading) {
-    return <LoadingScreen />;
-  }
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <CustomBreadcrumbs
-          heading="Disbursed Loans"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Disburse', href: paths.dashboard.disburse.root },
-            { name: 'List' },
-          ]}
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        />
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>New Gold Loan Details</Typography>
         <Card>
-          <DisburseTableToolbar filters={filters} onFilters={handleFilters} />
           {canReset && (
-            <DisburseTableFiltersResult
+            <AllBranchLoanSummaryTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -205,7 +194,7 @@ export default function DisburseListView() {
                 </Tooltip>
               }
             />
-            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 950 }}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
@@ -213,40 +202,85 @@ export default function DisburseListView() {
                 rowCount={dataFiltered.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
                 sx={{
                   position: 'sticky',
                   top: 0,
+                  backgroundColor: 'white',
                   zIndex: 1000,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
                 {dataFiltered
-                  .slice(
+                  ?.slice(
                     table.page * table.rowsPerPage,
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
-                  .map((row) => (
-                    <DisburseTableRow
-                      key={row._id}
+                  ?.map((row, index) => (
+                    <OtherNewGoldLoanTableRow
+                      key={row?._id}
                       row={row}
-                      handleClick={() => handleClick(row._id)}
-                      selected={table.selected.includes(row._id)}
-                      onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row._id)}
-                      onEditRow={() => handleEditRow(row._id)}
+                      index={index}
+                      handleClick={() => handleClick(row?._id)}
+                      selected={table.selected.includes(row?._id)}
+                      onSelectRow={() => table.onSelectRow(row?._id)}
+                      onDeleteRow={() => handleDeleteRow(row?._id)}
+                      onEditRow={() => handleEditRow(row?._id)}
                     />
                   ))}
+
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableNoData notFound={notFound} />
+                {dataFiltered.length == 0 && (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center" sx={{ p: 1, fontWeight: 500 }}>
+                      No Data Available
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  {/*<TableCell padding="checkbox" />*/}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {rate.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {grossWt.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {netWt.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {charge.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {cash.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {bank.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {other.toFixed(0)}
+                  </TableCell>
+                 
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
@@ -288,28 +322,14 @@ export default function DisburseListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
-  const { username } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  inputData = stabilizedThis.map((el) => el[0]);
-  if (username && username.trim()) {
-    inputData = inputData.filter(
-      (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
-          .toLowerCase()
-          .includes(username.toLowerCase()) ||
-        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
-    );
-  }
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { username, status, startDate, endDate, branch } = filters;
+   const stabilizedThis = inputData.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    inputData = stabilizedThis.map((el) => el[0]);
   return inputData;
 }

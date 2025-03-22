@@ -49,16 +49,12 @@ import LoanCloseDetailsTableRow from '../loan-details-table/loan-close-details-t
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no' },
-  { id: 'totalLoanAmt', label: 'Total loan amt' },
-  { id: 'INTLoanAmt', label: 'Int. loan amt' },
+  { id: 'loan.loanAmount', label: 'Total loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
   { id: 'date', label: 'Pay date' },
   { id: 'pendingLoanAmt', label: 'pending loan Amt' },
-  { id: 'closinCharge', label: 'Closing charge' },
-  { id: 'netAmt', label: 'Net amt' },
-  { id: 'entryDate', label: 'Entry date' },
-  { id: 'entryBy', label: 'Entry by' },
+  { id: 'closingCharge', label: 'Closing charge' },
+  { id: 'netAmount', label: 'Net amt' },
 ];
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },

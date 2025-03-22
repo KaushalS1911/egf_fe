@@ -42,12 +42,12 @@ const TABLE_HEAD = [
   { id: 'Rate', label: 'Rate' },
   { id: 'IssueDate', label: 'Issue date' },
   { id: 'LoanIntAmt', label: 'Loan int. amt' },
-  { id: 'From date', label: 'From date' },
-  { id: 'To date', label: 'To date' },
-  { id: 'Days', label: 'Days' },
+  { id: 'from', label: 'From date' },
+  { id: 'to', label: 'To date' },
+  { id: 'days', label: 'Days' },
   { id: 'PaymentBy', label: 'Payment by' },
   { id: 'Interest', label: 'Interest' },
-  { id: 'Penalty', label: 'Penalty' },
+  { id: 'penalty', label: 'Penalty' },
   { id: 'TotalPay', label: 'Total pay' },
 ];
 
@@ -98,7 +98,7 @@ export default function GoldLoanInterestListView({ interestDetail }) {
   );
 
   const dataFiltered = applyFilter({
-    inputData: interestDetail,
+    inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -344,14 +344,12 @@ export default function GoldLoanInterestListView({ interestDetail }) {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch } = filters;
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-
+ const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (username && username.trim()) {

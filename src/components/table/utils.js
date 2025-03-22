@@ -5,18 +5,20 @@ export function emptyRows(page, rowsPerPage, arrayLength) {
 }
 
 function descendingComparator(a, b, orderBy) {
-  if (a[orderBy] === null) {
-    return 1;
+  const valA = a[orderBy];
+  const valB = b[orderBy];
+
+  if (valA === null || valA === undefined) return 1;
+  if (valB === null || valB === undefined) return -1;
+
+  if (typeof valA === "number" && typeof valB === "number") {
+    return valB - valA; // Numeric comparison (descending)
   }
-  if (b[orderBy] === null) {
-    return -1;
+
+  if (typeof valA === "string" && typeof valB === "string") {
+    return valB.localeCompare(valA, undefined, { sensitivity: "base" }); // String comparison (case-insensitive)
   }
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+
   return 0;
 }
 

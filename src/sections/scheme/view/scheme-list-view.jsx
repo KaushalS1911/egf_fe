@@ -55,15 +55,15 @@ const STATUS_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
-  { id: 'scheme name', label: 'Name' },
-  { id: 'rate per gram', label: 'Rate / gm' },
-  { id: 'interest rate', label: 'Int. rate' },
-  { id: 'valuation per%', label: 'Valuation(%)' },
-  { id: 'interest period', label: 'Int.period' },
-  { id: 'renewal time', label: 'Renewal time' },
-  { id: 'minimum loan time', label: 'Min loan time' },
-  { id: 'scheme type', label: 'Type' },
-  { id: 'active', label: 'Status' },
+  { id: 'name', label: 'Name' },
+  { id: 'ratePerGram', label: 'Rate / gm' },
+  { id: 'interestRate', label: 'Int. rate' },
+  { id: 'valuation', label: 'Valuation(%)' },
+  { id: 'interestPeriod', label: 'Int.period' },
+  { id: 'renewalTime', label: 'Renewal time' },
+  { id: 'minLoanTime', label: 'Min loan time' },
+  { id: 'schemeType', label: 'Type' },
+  { id: 'isActive', label: 'Status' },
   { id: '', width: 88 },
 ];
 

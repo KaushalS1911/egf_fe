@@ -56,9 +56,9 @@ const STATUS_OPTIONS = [
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'branch', label: 'Branch' },
-  { id: 'aadharVerified', label: 'Aadhar verified', width: 180 },
+  { id: 'isAadharVerified', label: 'Aadhar verified', width: 180 },
   { id: 'contact', label: 'Contact', width: 180 },
-  { id: 'CustomerCode', label: 'Customer code', width: 220 },
+  { id: 'customerCode', label: 'Customer code', width: 220 },
   { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 120 },
 ];

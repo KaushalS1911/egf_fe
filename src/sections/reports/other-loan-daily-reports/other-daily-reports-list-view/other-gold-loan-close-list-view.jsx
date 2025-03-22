@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -10,67 +10,74 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import EmployeeTableRow from '../employee-table-row';
-import EmployeeTableToolbar from '../employee-table-toolbar';
-import EmployeeTableFiltersResult from '../employee-table-filters-result';
-import { useGetEmployee } from 'src/api/employee';
 import axios from 'axios';
-import { useAuthContext } from '../../../auth/hooks';
-import { LoadingScreen } from '../../../components/loading-screen';
-import { fDate } from '../../../utils/format-time';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
+import { useAuthContext } from '../../../../auth/hooks';
+import { isBetween } from '../../../../utils/format-time';
+import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
+import { TableCell, TableRow, Typography } from '@mui/material';
+import OtherGoldLoanCloseTableRow from '../other-daily-reports-table/other-gold-loan-close-table-row';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'branchname', label: 'Branch' },
-  { id: 'contact', label: 'Contact' },
-  { id: 'joiningDate', label: 'Joining date' },
-  { id: 'role', label: 'Role' },
-  { id: 'status', label: 'Status' },
-  { id: '', width: 88 },
+  { id: 'date', label: 'Open Date' },
+  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'customerName', label: 'Customer name' },
+  { id: 'otherName', label: 'Other name' },
+  { id: 'otherLoanNumber', label: 'Other loan no' },
+  { id: 'otherAmount', label: 'Other amout' },
+  { id: 'rate', label: 'Rate' },
+  { id: 'otherCharge', label: 'Charge' },
+  { id: 'cashAmount', label: 'Cash Amt.' },
+  { id: 'bankAmount', label: 'Bank Amt.' },
+  { id: 'amount', label: 'Pay Amt.' },
+  { id: 'closeDate', label: 'Close date' },
+  { id: 'createdAt', label: 'Entry date' },
 ];
 
 const defaultFilters = {
-  name: '',
+  username: '',
+  status: 'All',
+  startDate: null,
+  endDate: null,
+  branch: '',
 };
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeListView() {
+export default function OtherGoldLoanCloseListView({ partPayment }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
-  const { employee, mutate, employeeLoading } = useGetEmployee();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(employee);
+  const [tableData, setTableData] = useState(partPayment);
   const [filters, setFilters] = useState(defaultFilters);
-  const { configs } = useGetConfigs();
+  const otherAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.amount) || 0), 0);
+  const rate = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.percentage) || 0), 0);
+  const charge = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.otherCharge) || 0), 0);
+  const cashAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.cashAmount) || 0), 0);
+  const bankAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.bankAmount) || 0), 0);
+  const payAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.closingAmount) || 0), 0);
 
   const dataFiltered = applyFilter({
-    inputData: employee,
+    inputData: partPayment,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -100,17 +107,13 @@ export default function EmployeeListView() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!getResponsibilityValue('delete_employee', configs, user)) {
-      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
-      return;
-    }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`, {
         data: { ids: id },
       });
+      enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
-      enqueueSnackbar(res.data.message);
     } catch (err) {
       enqueueSnackbar('Failed to delete Employee');
     }
@@ -127,11 +130,10 @@ export default function EmployeeListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = employee.filter((row) => table.selected.includes(row._id));
-    const deleteIds = deleteRows.map((row) => row.user._id);
+    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
-
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
@@ -140,63 +142,28 @@ export default function EmployeeListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.employee.edit(id));
+      router.push(paths.dashboard.loanissue.edit(id));
     },
     [router]
   );
 
-  const employees = employee?.map((item) => ({
-    Name: `${item?.user?.firstName} ${item?.user?.middleName} ${item?.user?.lastName}`,
-    Email: item?.user?.email,
-    Contact: item?.user?.contact,
-    DOB: fDate(item?.dob),
-    'Aadhar card': item?.aadharCard,
-    'Pan card': item?.panCard,
-    'Driving license': item?.drivingLicense,
-    'Voter id': item?.voterCard,
-    role: item?.user?.role,
-    'Joining Date:': fDate(item?.joiningDate),
-    'Reporting to': `${item?.reportingTo?.firstName} ${item?.reportingTo?.middleName} ${item?.reportingTo?.lastName}`,
-    Branch: item?.user?.branch?.name,
-    'Permanent address': `${item?.permanentAddress?.street} ${item?.permanentAddress?.landmark} ${item?.permanentAddress?.city} , ${item?.permanentAddress?.state} ${item?.permanentAddress?.country} ${item?.permanentAddress?.zipcode}`,
-    Remark: item?.remark,
-    Status: item?.status,
-  }));
-
-  if (employeeLoading) {
-    return <LoadingScreen />;
-  }
+  const handleClick = useCallback(
+    (id) => {
+      router.push(paths.dashboard.disburse.new(id));
+    },
+    [router]
+  );
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <CustomBreadcrumbs
-          heading="Employees"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Employee', href: paths.dashboard.employee.root },
-            { name: 'List' },
-          ]}
-          action={
-            getResponsibilityValue('create_employee', configs, user) && (
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.employee.new}
-                variant="contained"
-                startIcon={<Iconify icon="mingcute:add-line" />}
-              >
-                Add Employee
-              </Button>
-            )
-          }
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        />
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>
+          {' '}
+          Gold Loan part Close/Payment Details
+        </Typography>
         <Card>
-          <EmployeeTableToolbar filters={filters} onFilters={handleFilters} employees={employees} />
           {canReset && (
-            <EmployeeTableFiltersResult
+            <AllBranchLoanSummaryTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -218,7 +185,7 @@ export default function EmployeeListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
@@ -229,7 +196,7 @@ export default function EmployeeListView() {
                 </Tooltip>
               }
             />
-            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+            <Table size={table.dense ? 'small' : 'medium'}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
@@ -237,16 +204,15 @@ export default function EmployeeListView() {
                 rowCount={dataFiltered.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  zIndex: 1000,
+                  backgroundColor: 'white',
+                  zIndex: 1,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  ' th': {
+                    padding: '8px',
+                  },
                 }}
               />
               <TableBody>
@@ -255,22 +221,54 @@ export default function EmployeeListView() {
                     table.page * table.rowsPerPage,
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
-                  .map((row) => (
-                    <EmployeeTableRow
+                  .map((row, index) => (
+                    <OtherGoldLoanCloseTableRow
                       key={row._id}
                       row={row}
+                      index={index}
+                      handleClick={() => handleClick(row._id)}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row.user._id)}
-                      onEditRow={() => handleEditRow(row.user._id)}
-                      loginuser={user}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableNoData notFound={notFound} />
+                {dataFiltered.length == 0 && (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center" sx={{ p: 1, fontWeight: 500 }}>
+                      No Data Available
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableRow
+                  sx={{
+                    backgroundColor: '#F4F6F8',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 1000,
+                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    TOTAL
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{otherAmount.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{rate.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{charge.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{cashAmount.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{bankAmount.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{payAmount.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
@@ -312,10 +310,10 @@ export default function EmployeeListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
-  const { name } = filters;
-
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { username, status, startDate, endDate, branch } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
+
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
@@ -323,19 +321,30 @@ function applyFilter({ inputData, comparator, filters }) {
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-  if (name && name.trim()) {
+  if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (
-          item.user.firstName &&
-          item.user.firstName + ' ' + item.user.middleName + ' ' + item.user.lastName
-        )
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
           .toLowerCase()
-          .includes(name.toLowerCase()) ||
-        item.user.firstName.toLowerCase().includes(name.toLowerCase()) ||
-        item.user.middleName.toLowerCase().includes(name.toLowerCase()) ||
-        item.user.lastName.toLowerCase().includes(name.toLowerCase())
+          .includes(username.toLowerCase()) ||
+        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
+  if (status && status !== 'All') {
+    inputData = inputData.filter((item) => item.status === status);
+  }
+
+  if (branch) {
+    inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
+  }
+
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
+  }
+
   return inputData;
 }

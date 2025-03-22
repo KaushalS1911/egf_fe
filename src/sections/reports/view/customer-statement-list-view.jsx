@@ -40,11 +40,11 @@ const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'customerName', label: 'Customer name' },
-  { id: 'loanAmt', label: 'Loan amt' },
-  { id: 'partLoanAmt', label: 'Part loan amt' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'loanAmount', label: 'Loan amt' },
+  { id: 'partLoanAmount', label: 'Part loan amt' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'amount', label: 'amount' },
-  { id: 'entry', label: 'Entry date' },
+  { id: 'createdAt', label: 'Entry date' },
 ];
 
 const defaultFilters = {

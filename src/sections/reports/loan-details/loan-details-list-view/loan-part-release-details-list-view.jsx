@@ -38,12 +38,12 @@ const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'loanAmount', label: 'Loan amount' },
-  { id: 'intLoanamt', label: 'Int. loan amount' },
+  { id: 'interestLoanAmount', label: 'Int. loan amount' },
   { id: 'payAmount', label: 'Pay amount' },
   { id: 'pendingAmount', label: 'Pending amount' },
-  { id: 'payDate', label: 'Pay date' },
-  { id: 'entrydate', label: 'Pay date' },
-  { id: 'entryBt', label: 'Pay date' },
+  { id: 'date', label: 'Pay date' },
+  { id: 'createdAy', label: 'Entry date' },
+  { id: 'entryBy', label: 'Pay date' },
   { id: 'remarks', label: 'Remarks' },
 ];
 

@@ -48,12 +48,12 @@ import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'EntryDate', label: 'Entry Date' },
+  { id: 'createdAt', label: 'Entry Date' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
   { id: 'InterestRate', label: 'Int. rate' },
-  { id: 'CashAmount', label: 'Cash amt' },
-  { id: 'BankAmount', label: 'Bank amt' },
+  { id: 'cashAmount', label: 'Cash amt' },
+  { id: 'bankAmount', label: 'Bank amt' },
   { id: '', width: 88 },
 ];
 
