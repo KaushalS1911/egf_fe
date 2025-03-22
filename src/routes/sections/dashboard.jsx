@@ -8,6 +8,7 @@ import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 import GoldLoanCalculator from '../../sections/goldloancalculator/gold-loan-calculator';
 import Notice from '../../sections/reminder/view/notice';
+import OtherDailyReportsListView from 'src/sections/reports/view/other-loan-daily-report';
 
 // ----------------------------------------------------------------------
 
@@ -286,6 +287,7 @@ export const dashboardRoutes = [
           { path: 'other-loan-all-branch-reports', element: <OtherLoanAllBranchReports /> },
           { path: 'other-loan-close-reports', element: <OtherLoanCloseReports /> },
           { path: 'other-loan-interest-reports', element: <OtherLoanInterestReports /> },
+          { path: 'other-loan-daily-reports', element: <OtherDailyReportsListView /> },
           { path: 'total-all-in-out-loan-reports', element: <TotalAllinOutLoanReports /> },
         ],
       },
