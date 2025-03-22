@@ -42,10 +42,10 @@ import { getResponsibilityValue } from '../../../permission/permission';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'username', label: 'Name' },
+  { id: 'name', label: 'Name' },
   { id: 'branchname', label: 'Branch' },
-  { id: 'ContactNo', label: 'Contact' },
-  { id: 'joinDate', label: 'Joining date' },
+  { id: 'contact', label: 'Contact' },
+  { id: 'joiningDate', label: 'Joining date' },
   { id: 'role', label: 'Role' },
   { id: 'status', label: 'Status' },
   { id: '', width: 88 },
