@@ -739,7 +739,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {intAmt.toFixed(2)}
+                  {intAmt.toFixed(0)}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -749,7 +749,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {conCharge.toFixed(2)}
+                  {conCharge.toFixed(0)}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -759,16 +759,16 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {penaltyAmt.toFixed(2)}
+                  {penaltyAmt.toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {(intAmt + penaltyAmt + conCharge).toFixed(2)}{' '}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {uchakAmt}
+                  {uchakAmt.toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {oldCrDr}
+                  {oldCrDr.toFixed(0)}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -778,18 +778,18 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {payAfterAdjustAmt.toFixed(2)}
+                  {payAfterAdjustAmt.toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {cashAmt}
+                  {cashAmt.toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {bankAmt}
+                  {bankAmt.toFixed(0)}
                 </TableCell>{' '}
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {totalPayAmt}
+                  {totalPayAmt.toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
