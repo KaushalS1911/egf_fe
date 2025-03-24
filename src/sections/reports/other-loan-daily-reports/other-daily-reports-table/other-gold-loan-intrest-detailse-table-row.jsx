@@ -15,16 +15,26 @@ import { fDate } from '../../../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function OtherGoldLoanIntrestDetailseTableRow({
-                                                          row,
-                                                          index,
-                                                          selected,
-                                                          onEditRow,
-                                                          onSelectRow,
-                                                          onDeleteRow,
-                                                          handleClick,
-                                                        }) {
+  row,
+  index,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  handleClick,
+}) {
   const { from, to, penalty, days, otherLoan, amountPaid } = row;
-  const {date,otherName,loan,otherNumber,percentage,cashAmount,bankAmount,amount,createdAt} = otherLoan
+  const {
+    date,
+    otherName,
+    loan,
+    otherNumber,
+    percentage,
+    cashAmount,
+    bankAmount,
+    amount,
+    createdAt,
+  } = otherLoan;
   const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -35,9 +45,7 @@ export default function OtherGoldLoanIntrestDetailseTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ padding: '6px' }}>{fDate(date)}</TableCell>
-        <TableCell sx={{padding: '6px'}}>
-          {loanNo}
-        </TableCell>
+        <TableCell sx={{ padding: '6px' }}>{loanNo}</TableCell>
         <TableCell sx={{ padding: '6px' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
@@ -50,41 +58,46 @@ export default function OtherGoldLoanIntrestDetailseTableRow({
         <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{cashAmount}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{bankAmount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{row.amountPaid}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(createdAt)}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

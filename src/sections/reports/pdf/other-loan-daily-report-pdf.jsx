@@ -88,20 +88,20 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data }) {
               </View>{' '}
               <View style={styles.table}>
                 <View style={[styles.tableRow, styles.tableHeader]}>
-                <Text style={[styles.tableCell, { flex: 0.2 }]}>#</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>Open Date</Text>
-                <Text style={[styles.tableCell, { flex: 1.8 }]}>Loan No</Text>
-                <Text style={[styles.tableCell, { flex: 2.2 }]}>Customer Name</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Other Name</Text>
-                <Text style={[styles.tableCell, { flex: 1.3 }]}>Other Loan No</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Rate</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Gross Wt</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Net Wt</Text>
-                <Text style={[styles.tableCell, { flex: 0.6 }]}>Charge</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Cash Amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Bank Amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.8 }]}>Other Amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.9 }]}>Entry Date</Text>
+                  <Text style={[styles.tableCell, { flex: 0.2 }]}>#</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>Open Date</Text>
+                  <Text style={[styles.tableCell, { flex: 1.8 }]}>Loan No</Text>
+                  <Text style={[styles.tableCell, { flex: 2.2 }]}>Customer Name</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>Other Name</Text>
+                  <Text style={[styles.tableCell, { flex: 1.3 }]}>Other Loan No</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>Rate</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>Gross Wt</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>Net Wt</Text>
+                  <Text style={[styles.tableCell, { flex: 0.6 }]}>Charge</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>Cash Amt</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>Bank Amt</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>Other Amt</Text>
+                  <Text style={[styles.tableCell, { flex: 0.9 }]}>Entry Date</Text>
                 </View>
                 {loanDetails.map((item, index) => (
                   <View
@@ -165,6 +165,7 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 0.6 }]}>Day</Text>
                 <Text style={[styles.tableCell, { flex: 0.8 }]}>Cash Amt</Text>
                 <Text style={[styles.tableCell, { flex: 0.8 }]}>Bank Amt</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Int Amt</Text>
                 <Text style={[styles.tableCell, { flex: 0.9 }]}>Entry Date</Text>
               </View>
               {loanIntDetails.map((item, index) => (
@@ -177,21 +178,28 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data }) {
                   key={index}
                 >
                   <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.otherLoan.date)}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.8 }]}>{item?.otherLoan?.loan.loanNo}</Text>
-                    <Text style={[styles.tableCell, { flex: 2.2 }]}>
-                      {`${item?.otherLoan?.loan?.customer?.firstName} ${item?.otherLoan?.loan?.customer?.middleName} ${item?.otherLoan?.loan?.customer?.lastName}`}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.otherName}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.otherLoan.otherNumber}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.amount}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.percentage}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.from)}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.to)}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.6 }]}>{item.days}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.cashAmount}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.bankAmount}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.otherLoan.createdAt)}</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.otherLoan.date)}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.8 }]}>
+                    {item?.otherLoan?.loan.loanNo}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 2.2 }]}>
+                    {`${item?.otherLoan?.loan?.customer?.firstName} ${item?.otherLoan?.loan?.customer?.middleName} ${item?.otherLoan?.loan?.customer?.lastName}`}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.otherName}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.5 }]}>
+                    {item.otherLoan.otherNumber}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.amount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.percentage}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.from)}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.to)}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.6 }]}>{item.days}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.cashAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.bankAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.amountPaid}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.9 }]}>
+                    {fDate(item.otherLoan.createdAt)}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -201,22 +209,20 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data }) {
 
       {/* Gold Loan Part Close/Payment Details Table */}
       {closedLoanDetails && closedLoanDetails.length > 0 && (
-          <Page size="A4" orientation="landscape" style={styles.page}>
+        <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>
             <View
               style={{
-                  textAlign: 'center',
+                textAlign: 'center',
                 fontSize: 18,
                 marginTop: 10,
               }}
             >
-              <Text style={styles.termsAndConditionsHeaders}>
-                GOLD LOAN CLOSE{' '}
-              </Text>
+              <Text style={styles.termsAndConditionsHeaders}>GOLD LOAN CLOSE </Text>
             </View>{' '}
             <View style={styles.table}>
               <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={[styles.tableCell, { flex: 0.2 }]}>#</Text>
+                <Text style={[styles.tableCell, { flex: 0.2 }]}>#</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Open Date</Text>
                 <Text style={[styles.tableCell, { flex: 1.8 }]}>Loan No</Text>
                 <Text style={[styles.tableCell, { flex: 2.2 }]}>Customer Name</Text>
@@ -231,37 +237,47 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 0.9 }]}>Entry Date</Text>
               </View>
               {closedLoanDetails.map((item, index) => (
-                  <View
+                <View
                   style={[
-                      styles.tableRow,
-                      index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                      index === closedLoanDetails.length - 1 && styles.lastRow, // Remove border for the last row
-                    ]}
+                    styles.tableRow,
+                    index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
+                    index === closedLoanDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                  ]}
                   key={index}
-                  >
+                >
                   <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.otherLoan.date)}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.8 }]}>{item?.otherLoan?.loan.loanNo}</Text>
-                    <Text style={[styles.tableCell, { flex: 2.2 }]}>
-                      {`${item?.otherLoan?.loan?.customer?.firstName} ${item?.otherLoan?.loan?.customer?.middleName} ${item?.otherLoan?.loan?.customer?.lastName}`}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.otherName}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.otherLoan.otherNumber}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.percentage}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.otherCharge}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.cashAmount}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.bankAmount}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.closingAmount}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.otherLoan.closeDate)}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.otherLoan.createdAt)}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.8 }]}>
+                    {item?.otherLoan?.loan.loanNo}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 2.2 }]}>
+                    {`${item?.otherLoan?.loan?.customer?.firstName} ${item?.otherLoan?.loan?.customer?.middleName} ${item?.otherLoan?.loan?.customer?.lastName}`}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.otherName}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.5 }]}>
+                    {item.otherLoan.otherNumber}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.percentage}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>
+                    {item.otherLoan.otherCharge}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.cashAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.bankAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>
+                    {item.otherLoan.closingAmount}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.9 }]}>
+                    {fDate(item.otherLoan.closeDate)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.9 }]}>
+                    {fDate(item.otherLoan.createdAt)}
+                  </Text>
                 </View>
               ))}
             </View>
           </View>
         </Page>
       )}
-
-     
     </Document>
   );
 }
