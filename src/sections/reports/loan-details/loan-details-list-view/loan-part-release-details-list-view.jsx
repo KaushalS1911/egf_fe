@@ -43,8 +43,8 @@ const TABLE_HEAD = [
   { id: 'pendingAmount', label: 'Pending amount' },
   { id: 'date', label: 'Pay date' },
   { id: 'createdAy', label: 'Entry date' },
-  { id: 'entryBy', label: 'Pay date' },
   { id: 'remarks', label: 'Remarks' },
+  { id: 'entryBy', label: 'Entry by' },
 ];
 
 const defaultFilters = {

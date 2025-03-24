@@ -48,8 +48,8 @@ export default function LoanPartReleaseDetailsTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.pendingLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.entryBy}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.entryBy || '-'}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
