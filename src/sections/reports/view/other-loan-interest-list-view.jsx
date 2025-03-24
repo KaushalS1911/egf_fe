@@ -64,7 +64,7 @@ const TABLE_HEAD = [
   { id: 'amount', label: 'Other loan amt' },
   { id: 'otherCharge', label: 'Charge' },
   { id: 'int', label: 'Int.' },
-  { id: 'lastintpaydate', label: 'Last oint. pay date' },
+  { id: 'lastintpaydate', label: 'Last int. pay date' },
   { id: 'day', label: ' Day' },
   { id: 'pendingAmt', label: 'Pending int.' },
   { id: 'nextointpaydayte', label: 'Next int. pay date' },
@@ -95,7 +95,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function OtherLonaInterestListView() {
+export default function OtherLoanInterestListView() {
   const [options, setOptions] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const { otherLoanReports, otherLoanReportsLoading } = useGetOtherLoanReports();

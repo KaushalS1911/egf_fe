@@ -118,7 +118,7 @@ const OtherLoanCloseReports = lazy(
   () => import('../../sections/reports/view/other-loan-close-summary-list-view.jsx')
 );
 const OtherLoanInterestReports = lazy(
-  () => import('../../sections/reports/view/other-lona-interest-list-view.jsx')
+  () => import('../../sections/reports/view/other-loan-interest-list-view.jsx')
 );
 const TotalAllinOutLoanReports = lazy(
   () => import('../../sections/reports/view/total-all-in-out-loan-reports-list-view.jsx')
