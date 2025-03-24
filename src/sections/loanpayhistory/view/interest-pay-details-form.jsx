@@ -729,6 +729,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 </TableCell>
                 <TableCell />
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell
                   sx={{
                     fontWeight: '600',
@@ -786,11 +788,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {bankAmt}
                 </TableCell>{' '}
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {totalPayAmt}
                 </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

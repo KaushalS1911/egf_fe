@@ -104,6 +104,7 @@ export default function InterestReportsListView() {
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
     0
   );
+
   const pendingInterest = interestReports.reduce(
     (prev, next) => prev + (Number(next?.pendingInterest) || 0),
     0
