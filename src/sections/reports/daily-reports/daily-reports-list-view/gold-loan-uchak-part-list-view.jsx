@@ -43,7 +43,7 @@ const TABLE_HEAD = [
   { id: 'loan.issueDate', label: 'Issue date' },
   { id: 'loan.interestLoanAmount', label: 'Loan int. amt' },
   { id: 'amountPaid', label: 'Uchak amt' },
-  { id: 'date', label: 'Pay dtae' },
+  { id: 'date', label: 'Pay date' },
   { id: 'createdAt', label: ' Entry date' },
 ];
 
