@@ -79,7 +79,7 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   branch: '',
-  issuedBy: '',
+  otherName: '',
 };
 
 // ----------------------------------------------------------------------
@@ -124,9 +124,9 @@ export default function OtherLoanCloseSummaryListView() {
     0
   );
 
-  // useEffect(() => {
-  //   fetchStates();
-  // }, [otherLoanReports]);
+  useEffect(() => {
+    fetchStates();
+  }, [otherLoanReports]);
   const dataFiltered = applyFilter({
     inputData: otherLoanReports,
     comparator: getComparator(table.order, table.orderBy),
@@ -237,24 +237,17 @@ export default function OtherLoanCloseSummaryListView() {
   if (otherLoanReportsLoading) {
     return <LoadingScreen />;
   }
-  //
-  // function fetchStates() {
-  //   dataFiltered?.map((data) => {
-  //     setOptions((item) => {
-  //       if (!item.find((option) => option.value === data.issuedBy._id)) {
-  //         return [
-  //           ...item,
-  //           {
-  //             name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
-  //             value: data.issuedBy._id,
-  //           },
-  //         ];
-  //       } else {
-  //         return item;
-  //       }
-  //     });
-  //   });
-  // }
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option.value === data.otherName)) {
+          return [...item, data.otherName];
+        } else {
+          return item;
+        }
+      });
+    });
+  }
 
   return (
     <>
@@ -480,10 +473,10 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.firstName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.lastName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.loanNo?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.contact?.toLowerCase()?.includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
