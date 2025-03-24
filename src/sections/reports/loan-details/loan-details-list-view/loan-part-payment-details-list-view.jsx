@@ -57,7 +57,7 @@ const TABLE_HEAD = [
   { id: 'date', label: 'Pay date' },
   { id: 'createdAt', label: 'Entry date' },
   { id: 'remarks', label: 'Remarks' },
-  { id: 'entryBy', label: 'Entry date' },
+  { id: 'entryBy', label: 'Entry by' },
 ];
 
 const STATUS_OPTIONS = [
@@ -317,15 +317,22 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {loanAmt.toFixed(0)}
+                  </TableCell>
+
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {amountPaid.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {intLoanAmt.toFixed(0)}
+                    {(intLoanAmt - amountPaid).toFixed(0)}
                   </TableCell>
+
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

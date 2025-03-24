@@ -48,16 +48,16 @@ export default function OtherLonaInterestTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {(row.otherCharge || 0).toFixed(2)}
         </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.totalInterestAmt}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {fDate(loan.lastInterestPayDate) || '-'}
-        </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(pendingInterest).toFixed(2) || 0}
+          {fDate(loan.lastInstallmentDate) || '-'}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {row.pendingDay > 0 ? row.pendingDay : 0}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {Number(pendingInterest).toFixed(2) || 0}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {fDate(loan.nextInstallmentDate) || '-'}

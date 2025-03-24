@@ -117,7 +117,9 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loan.loanAmount}</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.scheme.interestRate}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loan.consultingCharge}</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>{item.interestAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {item.interestAmount + item.consultingCharge}
+                </Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.penalty}</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.cr_dr}</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.uchakInterestAmount}</Text>
@@ -247,7 +249,7 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
               <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay Date</Text>
               <Text style={[styles.tableCell, { flex: 1.5 }]}>Entry Date</Text>
               <Text style={[styles.tableCell, { flex: 1.5 }]}>Remarks</Text>
-              <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>Entry Date</Text>
+              <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>Entry By</Text>
             </View>
             {partPaymentDetails?.map((item, index) => (
               <View
@@ -264,7 +266,7 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.interestLoanAmount}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.amountPaid}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>
-                  {item.loan.interestLoanAmount}
+                  {item.interestLoanAmount - item.amountPaid}
                 </Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.date || '-')}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.createdAt)}</Text>

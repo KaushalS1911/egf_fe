@@ -231,7 +231,7 @@ export default function AllBranchLoanSummaryListView() {
   function fetchStates() {
     dataFiltered?.map((data) => {
       setOptions((item) => {
-        if (!item.find((option) => option.value === data.otherName)) {
+        if (!item.find((option) => option === data.otherName)) {
           return [...item, data.otherName];
         } else {
           return item;
@@ -495,7 +495,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item?.loan?.customer?.lastName?.toLowerCase().includes(username.toLowerCase()) ||
         item?.loan?.loanNo?.toLowerCase().includes(username.toLowerCase()) ||
         item?.otherNumber?.toLowerCase().includes(username.toLowerCase()) ||
-        item?.loan?.customer?.contact?.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.contact?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.otherName?.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
@@ -504,9 +505,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (branch) {
     inputData = inputData.filter((loan) => loan.loan.customer.branch._id === branch._id);
   }
-  // if (otherName) {
-  //   inputData = inputData.filter((item) => item?.otherName?._id === issuedBy?.value);
-  // }
+  if (otherName) {
+    inputData = inputData.filter((item) => item?.otherName === otherName);
+  }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) =>
       isBetween(new Date(item.loan.issueDate), startDate, endDate)

@@ -127,6 +127,10 @@ export default function OtherLoanInterestListView() {
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
     0
   );
+  const penDay = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
+    0
+  );
   const closeAmt = otherLoanReports.reduce(
     (prev, next) => prev + (Number(next?.closingAmount) || 0),
     0
@@ -442,11 +446,16 @@ export default function OtherLoanInterestListView() {
                     {closingCharge.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(day / otherLoanReports.length).toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(penDay / otherLoanReports.length).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {totalInterestAmt.toFixed(0)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(day / otherLoanReports.length).toFixed(0)}
+                    {(penDay / otherLoanReports.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingInterest.toFixed(0)}
@@ -527,10 +536,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.firstName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.lastName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.loanNo?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.contact?.toLowerCase()?.includes(usernametoLowerCase()) ||
+        item?.otherNumber.toLowerCase()?.includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {

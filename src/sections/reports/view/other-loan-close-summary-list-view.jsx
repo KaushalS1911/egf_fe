@@ -240,7 +240,7 @@ export default function OtherLoanCloseSummaryListView() {
   function fetchStates() {
     dataFiltered?.map((data) => {
       setOptions((item) => {
-        if (!item.find((option) => option.value === data.otherName)) {
+        if (!item.find((option) => option === data.otherName)) {
           return [...item, data.otherName];
         } else {
           return item;
@@ -452,7 +452,7 @@ export default function OtherLoanCloseSummaryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch, issuedBy } = filters;
+  const { username, status, startDate, endDate, branch, otherName } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -476,7 +476,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item?.loan?.customer?.firstName?.toLowerCase()?.includes(username.toLowerCase()) ||
         item?.loan?.customer?.lastName?.toLowerCase()?.includes(username.toLowerCase()) ||
         item?.loan?.loanNo?.toLowerCase()?.includes(username.toLowerCase()) ||
-        item?.loan?.customer?.contact?.toLowerCase()?.includes(username.toLowerCase())
+        item?.loan?.customer?.contact?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.otherNumber?.toLowerCase()?.includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
@@ -485,9 +486,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (branch) {
     inputData = inputData.filter((loan) => loan.loan.customer.branch._id === branch._id);
   }
-  // if (issuedBy) {
-  //   inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
-  // }
+  if (otherName) {
+    inputData = inputData.filter((item) => item?.otherName === otherName);
+  }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.closeDaTe), startDate, endDate));
   }

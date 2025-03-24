@@ -76,7 +76,7 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
     0
   );
   const amountPaid = partReleaseDetail.reduce(
-    (prev, next) => prev + (Number(next?.amountPaid) || 0),
+    (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
     0
   );
   const pendingLoanAmount = partReleaseDetail.reduce(

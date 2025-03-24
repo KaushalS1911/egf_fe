@@ -61,7 +61,9 @@ export default function LoanInterestDetailsTableRow({
           {scheme?.interestRate >= 1.5 ? 1.5 : scheme?.interestRate}
         </TableCell>
         <TableCell sx={{ padding: '6px' }}>{consultingCharge}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{Number(row.interestAmount).toFixed(2)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>
+          {Number(row.interestAmount + row.consultingCharge).toFixed(2)}
+        </TableCell>
         <TableCell sx={{ padding: '6px' }}>{penalty}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{cr_dr.toFixed(2)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{uchakInterestAmount || 0}</TableCell>
