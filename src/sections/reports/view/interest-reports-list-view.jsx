@@ -270,7 +270,7 @@ export default function InterestReportsListView() {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(day / interestReports.length).toFixed(2)}
+                    {(day / interestReports.length).toFixed()}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {pendingInterest.toFixed(0)}

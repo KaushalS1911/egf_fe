@@ -72,19 +72,7 @@ const TABLE_HEAD = [
   { id: 'totalCloseamt', label: 'Total close amt' },
   { id: 'status', label: 'Status' },
 ];
-const STATUS_OPTIONS = [
-  { value: 'All', label: 'All' },
-  { value: 'Issued', label: 'Issued' },
-  {
-    value: 'Disbursed',
-    label: 'Disbursed',
-  },
-  { value: 'Regular', label: 'Regular' },
-  {
-    value: 'Overdue',
-    label: 'Overdue',
-  },
-];
+
 const defaultFilters = {
   username: '',
   status: 'All',
@@ -288,45 +276,6 @@ export default function OtherLoanCloseSummaryListView() {
         />
 
         <Card>
-          <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <>
-                    <Label
-                      style={{ margin: '5px' }}
-                      variant={
-                        ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
-                      }
-                      color={
-                        (tab.value === 'Regular' && 'success') ||
-                        (tab.value === 'Overdue' && 'error') ||
-                        (tab.value === 'Disbursed' && 'info') ||
-                        (tab.value === 'Issued' && 'secondary') ||
-                        'default'
-                      }
-                    >
-                      {['Issued', 'Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
-                        ? otherLoanReports.filter((item) => item.status === tab.value).length
-                        : otherLoanReports.length}
-                    </Label>
-                  </>
-                }
-              />
-            ))}
-          </Tabs>
-
           <OtherLoanCloseSummaryTableToolbar
             filters={filters}
             onFilters={handleFilters}
