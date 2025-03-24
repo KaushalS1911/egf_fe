@@ -258,7 +258,7 @@ export default function OtherNewGoldLonListView({ LoanIssue }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {rate.toFixed(0)}
+                    {(rate / LoanIssue.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {grossWt.toFixed(0)}
@@ -278,7 +278,7 @@ export default function OtherNewGoldLonListView({ LoanIssue }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {other.toFixed(0)}
                   </TableCell>
-                 
+
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
               </TableBody>
@@ -324,12 +324,12 @@ export default function OtherNewGoldLonListView({ LoanIssue }) {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch } = filters;
-   const stabilizedThis = inputData.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-      const order = comparator(a[0], b[0]);
-      if (order !== 0) return order;
-      return a[1] - b[1];
-    });
-    inputData = stabilizedThis.map((el) => el[0]);
+  const stabilizedThis = inputData.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  inputData = stabilizedThis.map((el) => el[0]);
   return inputData;
 }

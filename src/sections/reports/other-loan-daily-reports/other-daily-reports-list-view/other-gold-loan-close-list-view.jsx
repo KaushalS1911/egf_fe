@@ -69,12 +69,30 @@ export default function OtherGoldLoanCloseListView({ partPayment }) {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(partPayment);
   const [filters, setFilters] = useState(defaultFilters);
-  const otherAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.amount) || 0), 0);
-  const rate = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.percentage) || 0), 0);
-  const charge = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.otherCharge) || 0), 0);
-  const cashAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.cashAmount) || 0), 0);
-  const bankAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.bankAmount) || 0), 0);
-  const payAmount = partPayment.reduce((prev, next) => prev + (Number(next?.otherLoan?.closingAmount) || 0), 0);
+  const otherAmount = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.otherLoan?.amount) || 0),
+    0
+  );
+  const rate = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.otherLoan?.percentage) || 0),
+    0
+  );
+  const charge = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.otherLoan?.otherCharge) || 0),
+    0
+  );
+  const cashAmount = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.otherLoan?.cashAmount) || 0),
+    0
+  );
+  const bankAmount = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.otherLoan?.bankAmount) || 0),
+    0
+  );
+  const payAmount = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.otherLoan?.closingAmount) || 0),
+    0
+  );
 
   const dataFiltered = applyFilter({
     inputData: partPayment,
@@ -260,12 +278,24 @@ export default function OtherGoldLoanCloseListView({ partPayment }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{otherAmount.toFixed(0)}</TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{rate.toFixed(0)}</TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{charge.toFixed(0)}</TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{cashAmount.toFixed(0)}</TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{bankAmount.toFixed(0)}</TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{payAmount.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {otherAmount.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(rate / partPayment.length).toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {charge.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {cashAmount.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {bankAmount.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {payAmount.toFixed(0)}
+                  </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>
