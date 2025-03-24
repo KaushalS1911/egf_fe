@@ -455,6 +455,7 @@ export default function OtherLoanInterestListView() {
                   <TableCell
                     sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}
                   ></TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
