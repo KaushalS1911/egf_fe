@@ -81,28 +81,23 @@ export default function InterestReportsListView() {
     0
   );
   const consultingCharge = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.consultingCharge) || 0),
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
   const interestAmount = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.interestAmount) || 0),
+    (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
   const consultingAmount = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.consultingAmount) || 0),
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
   const penaltyAmount = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.penaltyAmount) || 0),
+    (prev, next) => prev + (Number(next?.penaltyAmount) || 0),
     0
   );
   const totalPaidInterest = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.totalPaidInterest) || 0),
+    (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
     0
   );
   const day = interestReports.reduce(

@@ -172,8 +172,8 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data }) {
                 <View
                   style={[
                     styles.tableRow,
-                    index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                    index === loanIntDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                    index % 2 !== 0 && styles.strippedRow,
+                    index === loanIntDetails.length - 1 && styles.lastRow,
                   ]}
                   key={index}
                 >
