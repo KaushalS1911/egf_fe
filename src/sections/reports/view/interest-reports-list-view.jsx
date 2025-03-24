@@ -89,7 +89,7 @@ export default function InterestReportsListView() {
     0
   );
   const consultingAmount = interestReports.reduce(
-    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    (prev, next) => prev + (Number(next?.consultingAmount) || 0),
     0
   );
   const penaltyAmount = interestReports.reduce(
