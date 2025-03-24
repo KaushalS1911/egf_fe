@@ -66,8 +66,8 @@ const TABLE_HEAD = [
   { id: 'day', label: ' Day' },
   { id: 'int', label: 'Int.' },
   { id: 'lastintpaydate', label: 'Last int. pay date' },
-  { id: 'pendingAmt', label: 'Pending int.' },
   { id: 'pendingDay', label: 'Pending day' },
+  { id: 'pendingAmt', label: 'Pending int.' },
   { id: 'nextointpaydayte', label: 'Next int. pay date' },
   { id: 'status', label: 'Status' },
 ];
@@ -449,11 +449,9 @@ export default function OtherLoanInterestListView() {
                     {(day / otherLoanReports.length).toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(penDay / otherLoanReports.length).toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {totalInterestAmt.toFixed(0)}
                   </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(penDay / otherLoanReports.length).toFixed(0)}
                   </TableCell>

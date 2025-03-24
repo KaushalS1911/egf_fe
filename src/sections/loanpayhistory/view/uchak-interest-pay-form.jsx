@@ -46,6 +46,8 @@ const TABLE_HEAD = [
   },
   { id: 'remark', label: 'Remarks' },
   { id: 'entryBy', label: 'Entry By' },
+  { id: 'cashAmt', label: 'Cash amt' },
+  { id: 'bankAmt', label: 'Bank amt' },
   { id: 'action', label: 'Action' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -63,6 +65,14 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   const { configs } = useGetConfigs();
 
   const uchakAmt = uchak.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+  const cashAmt = uchak.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
+    0
+  );
+  const bankAmt = uchak.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
+    0
+  );
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -425,6 +435,12 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.entryBy || '-'}
                 </TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {row.paymentDetail.cashAmount || 0}
+                </TableCell>{' '}
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {row.paymentDetail.bankAmount || 0}
+                </TableCell>
                 {getResponsibilityValue('delete_uchak_interest', configs, user) ? (
                   <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                     {
@@ -496,6 +512,12 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {cashAmt}
+            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {bankAmt}
+            </TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
           </TableRow>

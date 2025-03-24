@@ -113,7 +113,7 @@ export default function AllBranchLoanSummaryListView() {
     0
   );
   const day = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
+    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
     0
   );
 
@@ -413,7 +413,7 @@ export default function AllBranchLoanSummaryListView() {
                     {amount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day / otherLoanReports.length}
+                    {(day / otherLoanReports.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingInterest.toFixed(0)}

@@ -41,6 +41,8 @@ const TABLE_HEAD = [
   { id: 'closinDate', label: 'Closing Date' },
   { id: 'closinCharge', label: 'Closing charge' },
   { id: 'netAmt', label: 'Net amt' },
+  { id: 'cashAmt', label: 'Cash Amt' },
+  { id: 'bankAmt', label: 'Bank Amt' },
   { id: 'entryBy', label: 'Entry By' },
   { id: 'PDF', label: 'PDF' },
 ];
