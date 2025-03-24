@@ -496,9 +496,11 @@ function LoanCloseForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.totalLoanAmount}
               </TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
-                {row.totalLoanAmount - row.netAmount}
+                {row.netAmount - row.closingCharge}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.totalLoanAmount - (row.netAmount - row.closingCharge)}
               </TableCell>
               <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
