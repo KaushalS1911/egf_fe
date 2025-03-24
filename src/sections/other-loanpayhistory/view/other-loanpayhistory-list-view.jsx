@@ -59,6 +59,8 @@ const TABLE_HEAD = [
   { id: 'grossWt', label: 'Gross Wt' },
   { id: 'netWt', label: 'Net Wt' },
   { id: 'month', label: 'Month' },
+  { id: 'cashAmt', label: 'Cash amt' },
+  { id: 'bankAmt', label: 'Bank amt' },
   { id: 'closeAmount', label: 'Close Amt' },
   { id: 'renewalDate', label: 'Renew Date' },
   { id: 'status', label: 'Status' },
