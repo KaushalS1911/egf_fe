@@ -57,6 +57,9 @@ export default function OtherLonaInterestTableRow({
           {Number(pendingInterest).toFixed(2) || 0}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {row.pendingDay > 0 ? row.pendingDay : 0}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {fDate(loan.nextInstallmentDate) || '-'}
         </TableCell>
         {/*<TableCell sx={{ fontSize: '12px', padding: '6px' }}>*/}

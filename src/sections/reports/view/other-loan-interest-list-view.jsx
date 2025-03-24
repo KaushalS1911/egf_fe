@@ -63,10 +63,11 @@ const TABLE_HEAD = [
   { id: 'date', label: 'Open date' },
   { id: 'amount', label: 'Other loan amt' },
   { id: 'otherCharge', label: 'Charge' },
+  { id: 'day', label: ' Day' },
   { id: 'int', label: 'Int.' },
   { id: 'lastintpaydate', label: 'Last int. pay date' },
-  { id: 'day', label: ' Day' },
   { id: 'pendingAmt', label: 'Pending int.' },
+  { id: 'pendingDay', label: 'Pending day' },
   { id: 'nextointpaydayte', label: 'Next int. pay date' },
   { id: 'status', label: 'Status' },
 ];
