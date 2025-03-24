@@ -80,6 +80,14 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.amountPaid) || 0),
     0
   );
+  const cashAmt = loanInterest.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
+    0
+  );
+  const bankAmt = loanInterest.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
+    0
+  );
 
   const intAmt = loanInterest.reduce((prev, next) => prev + (Number(next?.interestAmount) || 0), 0);
   const oldCrDr = loanInterest.reduce((prev, next) => prev + (Number(next?.old_cr_dr) || 0), 0);
@@ -660,6 +668,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
@@ -719,8 +729,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 </TableCell>
                 <TableCell />
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell
                   sx={{
                     fontWeight: '600',
@@ -751,7 +759,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 >
                   {penaltyAmt.toFixed(2)}
                 </TableCell>
-
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {(intAmt + penaltyAmt + conCharge).toFixed(2)}{' '}
                 </TableCell>
@@ -773,11 +780,16 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  {cashAmt}
+                </TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  {bankAmt}
+                </TableCell>{' '}
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {totalPayAmt}
                 </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
