@@ -660,12 +660,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     </TableCell>
 
                     <TableCell sx={{ py: 0, px: 2 }}>{row.penalty}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>
-                      {(row.interestAmount + row.penalty + row.consultingCharge).toFixed(2)}
-                    </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.old_cr_dr}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.old_cr_dr}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
+                      {(row.interestAmount + row.penalty + row.consultingCharge + row.old_cr_dr).toFixed(2)}
+                    </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
