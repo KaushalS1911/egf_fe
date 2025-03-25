@@ -65,7 +65,7 @@ export default function LoanInterestDetailsTableRow({
           {Number(row.interestAmount + row.consultingCharge).toFixed(2)}
         </TableCell>
         <TableCell sx={{ padding: '6px' }}>{penalty}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{cr_dr.toFixed(2)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{row.old_cr_dr.toFixed(2)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{uchakInterestAmount || 0}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(createdAt)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{days}</TableCell>

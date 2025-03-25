@@ -121,7 +121,7 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                   {item.interestAmount + item.consultingCharge}
                 </Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.penalty}</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>{item.cr_dr}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{item.old_cr_dr}</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.uchakInterestAmount}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.createdAt)}</Text>
                 <Text style={[styles.tableCell, { flex: 0.5 }]}>{item.days}</Text>

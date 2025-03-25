@@ -111,7 +111,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
     0
   );
   const penalty = interestDetail.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
-  const cr_dr = interestDetail.reduce((prev, next) => prev + (Number(next?.cr_dr) || 0), 0);
+  const cr_dr = interestDetail.reduce((prev, next) => prev + (Number(next?.old_cr_dr) || 0), 0);
   const adjustedPay = interestDetail.reduce(
     (prev, next) => prev + (Number(next?.adjustedPay) || 0),
     0
