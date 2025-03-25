@@ -166,7 +166,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     cr_dr: '',
     totalPay: '',
     payAfterAdjusted1: '',
-    oldCrDr: loanInterest[0]?.cr_dr || 0,
+    oldCrDr: loanInterest[0]?.old_cr_dr || 0,
     paymentMode: '',
     account: '',
     cashAmount: '',
