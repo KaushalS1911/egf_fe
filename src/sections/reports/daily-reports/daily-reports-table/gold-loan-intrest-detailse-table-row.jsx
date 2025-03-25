@@ -49,7 +49,9 @@ export default function GoldLoanIntrestDetailseTableRow({
         <TableCell sx={{ padding: '6px' }}>{fDate(to)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{row?.paymentDetail?.paymentMode}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{row.interestAmount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>
+          {(row.interestAmount + row.consultingCharge).toFixed(2)}
+        </TableCell>
         <TableCell sx={{ padding: '6px' }}>{penalty}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
       </TableRow>

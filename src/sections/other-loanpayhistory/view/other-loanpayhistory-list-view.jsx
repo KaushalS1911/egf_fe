@@ -68,7 +68,7 @@ const TABLE_HEAD = [
 
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
-  { value: 'Issued', label: 'Active' },
+  { value: 'Regular', label: 'Regular' },
   {
     value: 'Closed',
     label: 'Closed',
@@ -233,7 +233,7 @@ export default function LoanpayhistoryListView() {
                         ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
                       }
                       color={
-                        (tab.value === 'Issued' && 'success') ||
+                        (tab.value === 'Regular' && 'success') ||
                         (tab.value === 'Closed' && 'warning') ||
                         (tab.value === 'Overdue' && 'error') ||
                         'default'

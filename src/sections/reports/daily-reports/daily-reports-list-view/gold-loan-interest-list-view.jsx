@@ -103,6 +103,10 @@ export default function GoldLoanInterestListView({ interestDetail }) {
     (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
+  const consultingCharge = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    0
+  );
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -302,7 +306,7 @@ export default function GoldLoanInterestListView({ interestDetail }) {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {interestAmount.toFixed(0)}
+                    {(interestAmount + consultingCharge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {penalty.toFixed(2)}
