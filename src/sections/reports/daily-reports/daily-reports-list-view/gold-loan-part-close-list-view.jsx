@@ -27,21 +27,24 @@ import {
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
+import { isBetween } from '../../../../utils/format-time';
 import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
-import NewGoldLoanTableRow from '../daily-reports-table/new-gold-loan-table-row';
+import GoldLoanPartCloseDetailsTableRow from '../daily-reports-table/gold-loan-part-close-details-table-row.jsx';
 import { TableCell, TableRow, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'loanNo', label: 'Loan no.' },
+  { id: 'loan.loanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'loanAmount', label: 'loan amt' },
+  { id: 'loan.loanAmount', label: 'loan amt' },
   { id: 'int', label: 'Int(%)' },
   { id: 'ConCharge', label: 'Con. charge' },
-  { id: 'issueDate', label: 'Issue date' },
-  { id: 'EntryBy', label: 'Entry by' },
+  { id: 'loan.issueDate', label: 'Issue date' },
+  { id: 'loan.interestLoanAmount', label: 'Loan int. amt' },
+  { id: 'Total pay amt', label: 'Total pay amt' },
+  { id: 'createdAt', label: ' Entry date' },
 ];
 
 const defaultFilters = {
@@ -54,41 +57,47 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function NewGoldLonListView({ LoanIssue }) {
+export default function GoldLoanPartCloseListView({ partClose }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(LoanIssue);
+  const [tableData, setTableData] = useState(partClose);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = LoanIssue.reduce(
+  const int = partClose.reduce(
     (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
-  const loanAmt = LoanIssue.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
-  const conCharge = LoanIssue.reduce(
-    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+  const loanAmt = partClose.reduce((prev, next) => prev + (Number(next?.loan.loanAmount) || 0), 0);
+  const conCharge = partClose.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
     0
   );
+  const intLoanAmt = partClose.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+  const amountPaid = partClose.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: partClose,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
-  const dataInPage = dataFiltered?.slice(
+  const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
 
-  const denseHeight = table?.dense ? 56 : 56 + 20;
+  const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
+  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -129,7 +138,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = LoanIssue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -156,17 +165,8 @@ export default function NewGoldLonListView({ LoanIssue }) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>New Gold Loan Details</Typography>
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}> Loan part Close</Typography>
         <Card>
-          {canReset && (
-            <AllBranchLoanSummaryTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              onResetFilters={handleResetFilters}
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -192,7 +192,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
                 </Tooltip>
               }
             />
-            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 950 }}>
+            <Table size={table.dense ? 'small' : 'medium'}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
@@ -203,28 +203,30 @@ export default function NewGoldLonListView({ LoanIssue }) {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  zIndex: 1000,
+                  zIndex: 1,
+                  ' th': {
+                    padding: '8px',
+                  },
                 }}
               />
               <TableBody>
                 {dataFiltered
-                  ?.slice(
+                  .slice(
                     table.page * table.rowsPerPage,
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
-                  ?.map((row, index) => (
-                    <NewGoldLoanTableRow
-                      key={row?._id}
+                  .map((row, index) => (
+                    <GoldLoanPartCloseDetailsTableRow
+                      key={row._id}
                       row={row}
                       index={index}
-                      handleClick={() => handleClick(row?._id)}
-                      selected={table.selected.includes(row?._id)}
-                      onSelectRow={() => table.onSelectRow(row?._id)}
-                      onDeleteRow={() => handleDeleteRow(row?._id)}
-                      onEditRow={() => handleEditRow(row?._id)}
+                      handleClick={() => handleClick(row._id)}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
-
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
@@ -241,27 +243,32 @@ export default function NewGoldLonListView({ LoanIssue }) {
                     backgroundColor: '#F4F6F8',
                     position: 'sticky',
                     bottom: 0,
-                    zIndex: 1,
+                    zIndex: 1000,
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/*<TableCell padding="checkbox" />*/}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     TOTAL
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {loanAmt.toFixed(0)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(int / LoanIssue.length).toFixed(2)}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(int / partClose.length).toFixed(2)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(conCharge / LoanIssue.length).toFixed(2)}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(conCharge / partClose.length).toFixed(2)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {intLoanAmt.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {amountPaid.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -307,11 +314,38 @@ export default function NewGoldLonListView({ LoanIssue }) {
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
+
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+
   inputData = stabilizedThis.map((el) => el[0]);
+  if (username && username.trim()) {
+    inputData = inputData.filter(
+      (item) =>
+        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+          .toLowerCase()
+          .includes(username.toLowerCase()) ||
+        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+    );
+  }
+
+  if (status && status !== 'All') {
+    inputData = inputData.filter((item) => item.status === status);
+  }
+
+  if (branch) {
+    inputData = inputData.filter((loan) => loan.customer.branch.name == branch.name);
+  }
+
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
+  }
+
   return inputData;
 }

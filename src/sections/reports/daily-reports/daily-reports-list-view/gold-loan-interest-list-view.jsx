@@ -39,7 +39,8 @@ const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'LoanAmount', label: 'loan amt' },
-  { id: 'Rate', label: 'Rate' },
+  { id: 'int', label: 'Int(%)' },
+  { id: 'ConCharge', label: 'Con. charge' },
   { id: 'IssueDate', label: 'Issue date' },
   { id: 'LoanIntAmt', label: 'Loan int. amt' },
   { id: 'from', label: 'From date' },
@@ -72,11 +73,17 @@ export default function GoldLoanInterestListView({ interestDetail }) {
   const [filters, setFilters] = useState(defaultFilters);
 
   const int = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    (prev, next) =>
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
   const loanAmt = interestDetail.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const conCharge = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
     0
   );
   const intLoanAmt = interestDetail.reduce(
@@ -281,6 +288,9 @@ export default function GoldLoanInterestListView({ interestDetail }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(int / interestDetail.length).toFixed(2)}
                   </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(conCharge / interestDetail.length).toFixed(2)}
+                  </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {intLoanAmt.toFixed(0)}
@@ -292,7 +302,7 @@ export default function GoldLoanInterestListView({ interestDetail }) {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {interestAmount}
+                    {interestAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {penalty.toFixed(2)}
@@ -344,7 +354,7 @@ export default function GoldLoanInterestListView({ interestDetail }) {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch } = filters;
- const stabilizedThis = inputData.map((el, index) => [el, index]);
+  const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;

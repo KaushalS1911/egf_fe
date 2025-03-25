@@ -104,7 +104,8 @@ export default function AllBranchLoanSummaryListView() {
   const [filters, setFilters] = useState(defaultFilters);
 
   const int = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.scheme.interestRate) || 0),
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
 

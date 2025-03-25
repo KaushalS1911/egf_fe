@@ -14,7 +14,7 @@ import { fDate } from '../../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanUchakPaymentTableRow({
+export default function GoldLoanPartCloseDetailsTableRow({
   row,
   index,
   selected,
@@ -23,8 +23,8 @@ export default function GoldLoanUchakPaymentTableRow({
   onDeleteRow,
   handleClick,
 }) {
-  const { loan, amountPaid, createdAt } = row;
-  const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
+  const { loan, amountPaid } = row;
+  const { loanNo, customer, loanAmount, issueDate, interestLoanAmount, scheme } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -33,21 +33,26 @@ export default function GoldLoanUchakPaymentTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{index + 1}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ padding: '6px' }}>{index + 1}</TableCell>
+        <TableCell
+          sx={{
+            padding: '6px',
+          }}
+        >
+          {loanNo}
+        </TableCell>
+        <TableCell sx={{ padding: '6px' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ padding: '6px' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>
           {scheme.interestRate > 1.5 ? 1.5 : scheme.interestRate}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loan.consultingCharge}</TableCell>{' '}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.date)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{loan.consultingCharge}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{interestLoanAmount.toFixed(2)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(row.createdAt)}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
@@ -94,7 +99,7 @@ export default function GoldLoanUchakPaymentTableRow({
   );
 }
 
-GoldLoanUchakPaymentTableRow.propTypes = {
+GoldLoanPartCloseDetailsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

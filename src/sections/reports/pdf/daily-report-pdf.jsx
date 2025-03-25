@@ -67,8 +67,8 @@ const useStyles = () =>
 
 export default function DailyReportPdf({ selectedBranch, configs, data }) {
   const styles = useStyles();
-  const { loanDetails, loanIntDetails, partReleaseDetails, uchakIntDetails } = data;
-
+  const { loanDetails, loanIntDetails, partReleaseDetails, uchakIntDetails, partPaymentDetails } =
+    data;
   return (
     <Document>
       {/* New Gold Loan Details Table */}
@@ -92,7 +92,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                   <Text style={[styles.tableCell, { flex: 1.5 }]}>Loan No</Text>
                   <Text style={[styles.tableCell, { flex: 4.8 }]}>Customer Name</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>Loan Amt</Text>
-                  <Text style={[styles.tableCell, { flex: 0.4 }]}>Rate</Text>
+                  <Text style={[styles.tableCell, { flex: 0.4 }]}>Int. (%)</Text>
+                  <Text style={[styles.tableCell, { flex: 0.4 }]}>Con. (%)</Text>
                   <Text style={[styles.tableCell, { flex: 0.7 }]}>Issue Date</Text>
                   <Text style={[styles.tableCell, { flex: 3.5, borderRightWidth: 0 }]}>
                     Entry by
@@ -114,8 +115,9 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                     </Text>
                     <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.loanAmount}</Text>
                     <Text style={[styles.tableCell, { flex: 0.4 }]}>
-                      {item.scheme.interestRate}
-                    </Text>
+                      {item.scheme.interestRate > 1.5 ? 1.5 : item.scheme.interestRate}
+                    </Text>{' '}
+                    <Text style={[styles.tableCell, { flex: 0.4 }]}>{item.consultingCharge}</Text>
                     <Text style={[styles.tableCell, { flex: 0.7 }]}>{fDate(item.issueDate)}</Text>
                     <Text style={[styles.tableCell, { flex: 3.5, borderRightWidth: 0 }]}>
                       {`${item.issuedBy.firstName} ${item.issuedBy.middleName} ${item.issuedBy.lastName}`.toUpperCase()}
@@ -127,7 +129,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
           )}
         </View>
       </Page>
-
       {/* Gold Loan Interest Details Table */}
       {loanIntDetails && loanIntDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
@@ -148,7 +149,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 2 }]}>Loan No</Text>
                 <Text style={[styles.tableCell, { flex: 5 }]}>Customer Name</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan Amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.5 }]}>Rate</Text>
+                <Text style={[styles.tableCell, { flex: 0.5 }]}>Int. (%)</Text>
+                <Text style={[styles.tableCell, { flex: 0.5 }]}>Con. (%)</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
                 <Text style={[styles.tableCell, { flex: 1.3 }]}>Loan int. amt</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>From date</Text>
@@ -175,7 +177,10 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.loanAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.5 }]}>
-                    {item.loan.scheme.interestRate}
+                    {item.loan.scheme.interestRate > 1.5 ? 1.5 : item.loan.scheme.interestRate}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.5 }]}>
+                    {item.loan.consultingCharge}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.loan.issueDate)}</Text>
                   <Text style={[styles.tableCell, { flex: 1.3 }]}>
@@ -198,8 +203,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
           </View>
         </Page>
       )}
-
-      {/* Gold Loan Part Close/Payment Details Table */}
+      {/* Gold Loan Part Close Details Table */}
       {partReleaseDetails && partReleaseDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>
@@ -210,9 +214,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 marginTop: 10,
               }}
             >
-              <Text style={styles.termsAndConditionsHeaders}>
-                GOLD LOAN PART CLOSE/PAYMENT DETAILS{' '}
-              </Text>
+              <Text style={styles.termsAndConditionsHeaders}>GOLD LOAN PART CLOSE</Text>
             </View>{' '}
             <View style={styles.table}>
               <View style={[styles.tableRow, styles.tableHeader]}>
@@ -220,7 +222,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1.8 }]}>Loan No</Text>
                 <Text style={[styles.tableCell, { flex: 5 }]}>Customer Name</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan Amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.4 }]}>Rate</Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>Int (%)</Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>Con (%)</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan int. amt</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Total pay amt</Text>
@@ -244,7 +247,74 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.loanAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.4 }]}>
-                    {item.loan.scheme.interestRate}
+                    {item.loan.scheme.interestRate > 1.5 ? 1.5 : item.loan.scheme.interestRate}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                    {item.loan.consultingCharge}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.loan.issueDate)}</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>
+                    {fDate(item.loan.interestLoanAmount)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>{item.amountPaid}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}>
+                    {fDate(item.createdAt)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </Page>
+      )}
+
+      {/* Gold Loan Part Payment Details Table */}
+      {partPaymentDetails && partPaymentDetails.length > 0 && (
+        <Page size="A4" orientation="landscape" style={styles.page}>
+          <View style={{ padding: '10px' }}>
+            <View
+              style={{
+                textAlign: 'center',
+                fontSize: 18,
+                marginTop: 10,
+              }}
+            >
+              <Text style={styles.termsAndConditionsHeaders}>GOLD LOAN PART PAYMENT</Text>
+            </View>{' '}
+            <View style={styles.table}>
+              <View style={[styles.tableRow, styles.tableHeader]}>
+                <Text style={[styles.tableCell, { flex: 0.25 }]}>#</Text>
+                <Text style={[styles.tableCell, { flex: 1.8 }]}>Loan No</Text>
+                <Text style={[styles.tableCell, { flex: 5 }]}>Customer Name</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>Loan Amt</Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>Int. (%)</Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>Con. (%)</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>Loan int. amt</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>Total pay amt</Text>
+                <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}>
+                  Entry date
+                </Text>
+              </View>
+              {partPaymentDetails.map((item, index) => (
+                <View
+                  style={[
+                    styles.tableRow,
+                    index % 2 !== 0 && styles.strippedRow,
+                    index === partPaymentDetails.length - 1 && styles.lastRow,
+                  ]}
+                  key={index}
+                >
+                  <Text style={[styles.tableCell, { flex: 0.25 }]}>{index + 1}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.8 }]}>{item.loan.loanNo}</Text>
+                  <Text style={[styles.tableCell, { flex: 5 }]}>
+                    {`${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.loanAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                    {item.loan.scheme.interestRate > 1.5 ? 1.5 : item.loan.scheme.interestRate}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                    {item.loan.consultingCharge}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.loan.issueDate)}</Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>
@@ -280,7 +350,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>Loan No</Text>
                 <Text style={[styles.tableCell, { flex: 5 }]}>Customer Name</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan Amt</Text>
-                <Text style={[styles.tableCell, { flex: 0.3 }]}>Rate</Text>
+                <Text style={[styles.tableCell, { flex: 0.3 }]}>Int. (%)</Text>
+                <Text style={[styles.tableCell, { flex: 0.3 }]}>Con. (%)</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Issue Date</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan int. amt</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Uchak Amt</Text>
@@ -305,7 +376,10 @@ export default function DailyReportPdf({ selectedBranch, configs, data }) {
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.loanAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.3 }]}>
-                    {item.loan.scheme.interestRate}
+                    {item.loan.scheme.interestRate > 1.5 ? 1.5 : item.loan.scheme.interestRate}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.3 }]}>
+                    {item.loan.consultingCharge}
                   </Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(item.issueDate)}</Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>

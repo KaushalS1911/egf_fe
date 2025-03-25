@@ -15,22 +15,15 @@ import { fDate } from '../../../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function NewGoldLoanTableRow({
-                                              row,
-                                              index,
-                                              selected,
-                                              onEditRow,
-                                              onSelectRow,
-                                              onDeleteRow,
-                                              handleClick,
-                                            }) {
-  const {
-    loanNo,
-    customer,
-    loanAmount,
-    scheme,
-    issueDate,
-    issuedBy,
-  } = row;
+  row,
+  index,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  handleClick,
+}) {
+  const { loanNo, customer, loanAmount, scheme, issueDate, issuedBy } = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -45,51 +38,59 @@ export default function NewGoldLoanTableRow({
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {scheme?.interestRate > 1.5 ? 1.5 : scheme?.interestRate}
+        </TableCell>{' '}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.consultingCharge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>
         <TableCell
-          sx={{ whiteSpace: 'nowrap' }}>{`${issuedBy.firstName} ${issuedBy.middleName} ${issuedBy.lastName}`}</TableCell>
+          sx={{ whiteSpace: 'nowrap' }}
+        >{`${issuedBy.firstName} ${issuedBy.middleName} ${issuedBy.lastName}`}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
+        {getResponsibilityValue('update_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
       />
     </>
   );
-};
+}
 
 NewGoldLoanTableRow.propTypes = {
   onDeleteRow: PropTypes.func,

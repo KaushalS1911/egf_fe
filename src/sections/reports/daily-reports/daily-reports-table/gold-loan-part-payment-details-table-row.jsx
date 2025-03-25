@@ -14,7 +14,7 @@ import { fDate } from '../../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanPartPaymateDetailsTableRow({
+export default function GoldLoanPartPaymentDetailsTableRow({
   row,
   index,
   selected,
@@ -45,7 +45,10 @@ export default function GoldLoanPartPaymateDetailsTableRow({
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
         <TableCell sx={{ padding: '6px' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{scheme.interestRate}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>
+          {scheme.interestRate > 1.5 ? 1.5 : scheme.interestRate}
+        </TableCell>
+        <TableCell sx={{ padding: '6px' }}>{loan.consultingCharge}</TableCell>{' '}
         <TableCell sx={{ padding: '6px' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{interestLoanAmount.toFixed(2)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
@@ -96,7 +99,7 @@ export default function GoldLoanPartPaymateDetailsTableRow({
   );
 }
 
-GoldLoanPartPaymateDetailsTableRow.propTypes = {
+GoldLoanPartPaymentDetailsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

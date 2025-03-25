@@ -69,9 +69,6 @@ const TABLE_HEAD = [
   { id: 'closeamt', label: 'Close amt' },
   { id: 'pendingInterest', label: 'Pending int.' },
   { id: 'closeby', label: 'Close By' },
-  // { id: 'LoanAmountPay', label: 'loan amt pay' },
-  // { id: 'LastIntPayDate', label: 'Last int. pay date' },
-  // { id: 'nextIntPayDate', label: 'Next int. pay date', width: '100px' },
   { id: 'Status', label: 'Status' },
 ];
 
@@ -100,7 +97,8 @@ export default function BranchViseLoanClosingListView() {
   const [filters, setFilters] = useState(defaultFilters);
 
   const int = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.scheme.interestRate) || 0),
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
 
@@ -407,14 +405,14 @@ export default function BranchViseLoanClosingListView() {
                     {totalIntPay.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day / LoanSummary.length}
+                    {(day / LoanSummary.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {closeCharge.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(closeAmt - closeCharge).toFixed(2)}
+                    {(closeAmt - closeCharge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingIntAmt.toFixed(0)}

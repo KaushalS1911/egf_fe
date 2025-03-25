@@ -45,7 +45,7 @@ import NewGoldLoanTableRow from '../daily-reports/daily-reports-table/new-gold-l
 import NewGoldLonListView from '../daily-reports/daily-reports-list-view/new-gold-lon-list-view';
 import GoldLoanInterestListView from '../daily-reports/daily-reports-list-view/gold-loan-interest-list-view';
 import { Box } from '@mui/system';
-import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-view/gold-loan-part-payment-list-view';
+import GoldLoanPartCloseListView from '../daily-reports/daily-reports-list-view/gold-loan-part-close-list-view.jsx';
 import GoldLoanUchakPaymentTableRow from '../daily-reports/daily-reports-table/gold-loan-uchak-payment-table-row';
 import GoldLoanUchakPartListView from '../daily-reports/daily-reports-list-view/gold-loan-uchak-part-list-view';
 import { useGetAllInterest } from '../../../api/interest-pay';
@@ -58,6 +58,7 @@ import PartReleaseForm from '../../loanpayhistory/view/part-release-form.jsx';
 import UchakInterestPayForm from '../../loanpayhistory/view/uchak-interest-pay-form.jsx';
 import LoanPartPaymentForm from '../../loanpayhistory/view/loan-part-payment-form.jsx';
 import LoanCloseForm from '../../loanpayhistory/view/loan-close-form.jsx';
+import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-view/gold-loan-part-payment-list-view.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -158,6 +159,7 @@ export default function DailyReportsListView() {
     loanDetails: report?.loans,
     loanIntDetails: report?.interestDetail,
     partReleaseDetails: report?.partReleaseDetail,
+    partPaymentDetails: report?.partPaymentDetail,
     uchakIntDetails: report?.uchakInterestDetail,
   };
   return (
@@ -203,7 +205,7 @@ export default function DailyReportsListView() {
                 <Tab
                   label={
                     <>
-                      Gold Loan Interest{' '}
+                      Loan Interest{' '}
                       <strong style={{ marginLeft: '8px' }}>
                         ({report?.interestDetail.length || 0})
                       </strong>
@@ -213,7 +215,7 @@ export default function DailyReportsListView() {
                 <Tab
                   label={
                     <>
-                      Gold Loan Part Close/Payment{' '}
+                      Loan Part Close
                       <strong style={{ marginLeft: '8px' }}>
                         ({report?.partReleaseDetail.length || 0})
                       </strong>
@@ -223,7 +225,17 @@ export default function DailyReportsListView() {
                 <Tab
                   label={
                     <>
-                      Gold Loan Uchak Part{' '}
+                      Loan Part Payment{' '}
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({report?.partReleaseDetail.length || 0})
+                      </strong>
+                    </>
+                  }
+                />{' '}
+                <Tab
+                  label={
+                    <>
+                      Uchak Pay Int.
                       <strong style={{ marginLeft: '8px' }}>
                         ({report?.uchakInterestDetail.length || 0})
                       </strong>
@@ -237,9 +249,12 @@ export default function DailyReportsListView() {
                 <GoldLoanInterestListView interestDetail={report?.interestDetail} />
               )}
               {activeTab === 2 && (
-                <GoldLoanPartPaymentListView partPayment={report?.partReleaseDetail} />
+                <GoldLoanPartCloseListView partClose={report?.partReleaseDetail} />
               )}
               {activeTab === 3 && (
+                <GoldLoanPartPaymentListView partPayment={report?.partPaymentDetail} />
+              )}
+              {activeTab === 4 && (
                 <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
               )}
             </Grid>
