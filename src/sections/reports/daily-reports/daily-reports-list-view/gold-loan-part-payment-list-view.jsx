@@ -29,21 +29,23 @@ import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
 import { isBetween } from '../../../../utils/format-time';
 import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
-import GoldLoanPartPaymateDetailsTableRow from '../daily-reports-table/gold-loan-part-paymate-details-table-row';
+import GoldLoanPartCloseDetailsTableRow from '../daily-reports-table/gold-loan-part-close-details-table-row.jsx';
 import { TableCell, TableRow, Typography } from '@mui/material';
+import GoldLoanPartPaymentDetailsTableRow from '../daily-reports-table/gold-loan-part-payment-details-table-row.jsx';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'loan.loanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'LoanAmount', label: 'loan amt' },
-  { id: 'Rate', label: 'Rate' },
-  { id: 'IssueDate', label: 'Issue date' },
-  { id: 'LoanIntAmt', label: 'Loan int. amt' },
+  { id: 'loan.loanAmount', label: 'loan amt' },
+  { id: 'int', label: 'Int(%)' },
+  { id: 'ConCharge', label: 'Con. charge' },
+  { id: 'loan.issueDate', label: 'Issue date' },
+  { id: 'loan.interestLoanAmount', label: 'Loan int. amt' },
   { id: 'Total pay amt', label: 'Total pay amt' },
-  { id: 'EntryDate', label: ' Entry date' },
+  { id: 'createdAt', label: ' Entry date' },
 ];
 
 const defaultFilters = {
@@ -67,11 +69,17 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
   const [filters, setFilters] = useState(defaultFilters);
 
   const int = partPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    (prev, next) =>
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
   const loanAmt = partPayment.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const conCharge = partPayment.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
     0
   );
   const intLoanAmt = partPayment.reduce(
@@ -161,20 +169,8 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>
-          {' '}
-          Gold Loan part Close/Payment Details
-        </Typography>
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}> Loan part Payment Details</Typography>
         <Card>
-          {canReset && (
-            <AllBranchLoanSummaryTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              onResetFilters={handleResetFilters}
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -211,9 +207,7 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   ' th': {
                     padding: '8px',
                   },
@@ -226,7 +220,7 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, index) => (
-                    <GoldLoanPartPaymateDetailsTableRow
+                    <GoldLoanPartPaymentDetailsTableRow
                       key={row._id}
                       row={row}
                       index={index}
@@ -267,6 +261,9 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(int / partPayment.length).toFixed(2)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(conCharge / partPayment.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>

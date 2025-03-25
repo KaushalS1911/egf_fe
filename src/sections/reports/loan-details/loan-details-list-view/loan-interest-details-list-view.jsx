@@ -50,16 +50,16 @@ const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'from', label: 'From date' },
   { id: 'to', label: 'To date' },
-  { id: 'loanAmount', label: 'Loan amt' },
+  { id: 'loan.loanAmount', label: 'Loan amt' },
   { id: 'interestRate', label: 'Interest rate' },
   { id: 'consultantInterest', label: 'Consultant int.' },
-  { id: 'totalInterest', label: 'Total int.' },
-  { id: 'penaltyAmount', label: 'Penalty amt' },
-  { id: 'crDrAmt', label: 'CR/DR amt' },
-  { id: 'payAfterAdjust', label: 'Pay after adjust' },
-  { id: 'entryDate', label: 'Entry date' },
+  { id: 'interestRate', label: 'Total int.' },
+  { id: 'penalty', label: 'Penalty amt' },
+  { id: 'cr_dr', label: 'CR/DR amt' },
+  { id: 'amountPaid', label: 'Uchak amt' },
+  { id: 'createdAt', label: 'Entry date' },
   { id: 'days', label: 'Days' },
-  { id: 'uchakAmt', label: 'Uchak amt' },
+  { id: 'adjustedPay', label: 'Pay after adjust' },
   { id: 'totalPay', label: 'Total pay amt' },
 ];
 
@@ -99,7 +99,11 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
     0
   );
   const totalInt = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    (prev, next) => prev + (Number(next?.interestAmount) || 0),
+    0
+  );
+  const conCharge = interestDetail.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
   const consultingCharge = interestDetail.reduce(
@@ -292,9 +296,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   ' th': {
                     padding: '8px',
                   },
@@ -351,33 +353,32 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(int / interestDetail.length).toFixed(2)}
-                  </TableCell>{' '}
+                  </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(consultingCharge / interestDetail.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(totalInt / interestDetail.length).toFixed(2)}
+                    {(totalInt + conCharge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {penalty.toFixed(0)}
-                  </TableCell>{' '}
+                  </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {cr_dr.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {adjustedPay.toFixed(0)}
+                    {uchakInterestAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {day / interestDetail.length}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {uchakInterestAmount.toFixed(0)}
+                    {adjustedPay.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {amountPaid.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>
               </TableBody>
             </Table>

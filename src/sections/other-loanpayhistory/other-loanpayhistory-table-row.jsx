@@ -26,12 +26,12 @@ import { fDate } from '../../utils/format-time';
 // ----------------------------------------------------------------------
 
 export default function OtherLoanpayhistoryTableRow({
-                                                      row,
-                                                      selected,
-                                                      onDeleteRow,
-                                                      loanStatus,
-                                                      index,
-                                                    }) {
+  row,
+  selected,
+  onDeleteRow,
+  loanStatus,
+  index,
+}) {
   const {
     loan,
     otherName,
@@ -89,8 +89,11 @@ export default function OtherLoanpayhistoryTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}
-                sx={{ backgroundColor: statusColors[status] || '', ' td': { padding: '6px' } }}>
+      <TableRow
+        hover
+        selected={selected}
+        sx={{ backgroundColor: statusColors[status] || '', ' td': { padding: '6px' } }}
+      >
         <TableCell>{srNo}</TableCell>
         {getResponsibilityValue('create_loanIssue', configs, user) ? (
           <TableCell>
@@ -122,8 +125,10 @@ export default function OtherLoanpayhistoryTableRow({
         <TableCell>{grossWt}</TableCell>
         <TableCell>{netWt}</TableCell>
         <TableCell>{month}</TableCell>
+        <TableCell>{row.cashAmount || 0}</TableCell>
+        <TableCell>{row.bankAmount || 0}</TableCell>
         {/*<TableCell>{fDate(closeDate)}</TableCell>*/}
-        <TableCell>{closingCharge}</TableCell>
+        <TableCell>{closingCharge || 0}</TableCell>
         <TableCell>{fDate(renewalDate)}</TableCell>
         {/*<TableCell>*/}
         {/*  <Label*/}
@@ -146,7 +151,7 @@ export default function OtherLoanpayhistoryTableRow({
         {/*</TableCell>*/}
         <TableCell>
           <Label
-            variant='soft'
+            variant="soft"
             color={
               (status === 'Disbursed' && 'info') ||
               (status === 'Closed' && 'warning') ||
@@ -162,7 +167,7 @@ export default function OtherLoanpayhistoryTableRow({
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -171,7 +176,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='clarity:details-line' />
+          <Iconify icon="clarity:details-line" />
           Loan Details
         </MenuItem>
         <MenuItem
@@ -180,7 +185,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='mdi:file-document-outline' />
+          <Iconify icon="mdi:file-document-outline" />
           Sanction{' '}
         </MenuItem>
         <MenuItem
@@ -189,7 +194,7 @@ export default function OtherLoanpayhistoryTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='material-symbols:verified-user-outline' />
+          <Iconify icon="material-symbols:verified-user-outline" />
           Authority{' '}
         </MenuItem>
         {row.status === 'Closed' ? (
@@ -199,7 +204,7 @@ export default function OtherLoanpayhistoryTableRow({
               popover.onClose();
             }}
           >
-            <Iconify icon='mdi:certificate-outline' />
+            <Iconify icon="mdi:certificate-outline" />
             NOC
           </MenuItem>
         ) : (
@@ -209,7 +214,7 @@ export default function OtherLoanpayhistoryTableRow({
               popover.onClose();
             }}
           >
-            <Iconify icon='gridicons:notice' />
+            <Iconify icon="gridicons:notice" />
             Notice
           </MenuItem>
         )}
@@ -217,10 +222,10 @@ export default function OtherLoanpayhistoryTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -228,12 +233,12 @@ export default function OtherLoanpayhistoryTableRow({
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
-            <Button color='inherit' variant='contained' onClick={view.onFalse}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
               Close
             </Button>
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width='100%' height='100%' style={{ border: 'none' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               {renderDialogContent()}
             </PDFViewer>
           </Box>

@@ -51,20 +51,20 @@ const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'ContactNo', label: 'Contact' },
+  { id: 'contact', label: 'Contact' },
   { id: 'int%', label: 'int (%)' },
   { id: 'OtherInt%', label: 'Other int (%)' },
-  { id: 'int%', label: 'Issue date' },
-  { id: 'LoanAmount', label: 'loan amt' },
-  { id: 'LastAmtPayDate', label: 'Last amt. pay date' },
+  { id: 'issueDate', label: 'Issue date' },
+  { id: 'loanAmount', label: 'loan amt' },
+  { id: 'lastAmtPayDate', label: 'Last amt. pay date' },
   { id: 'LoanAmountPay', label: 'loan amt pay' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'LastIntPayDate', label: 'Last int. pay date' },
-  { id: 'TotalIntPay', label: 'Total int. pay ' },
-  { id: 'Day', label: ' Day ' },
-  { id: 'pendingAmt', label: ' Pending int. ' },
-  { id: 'nextIntPayDate', label: 'Next int. pay date' },
-  { id: 'Status', label: 'Status' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
+  { id: 'lastInstallmentDate', label: 'Last int. pay date' },
+  { id: 'totalPaidInterest', label: 'Total int. pay ' },
+  { id: 'day', label: ' Day ' },
+  { id: 'pendingInterest', label: ' Pending int. ' },
+  { id: 'nextInstallmentDate', label: 'Next int. pay date' },
+  { id: 'status', label: 'Status' },
 ];
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
@@ -104,7 +104,8 @@ export default function AllBranchLoanSummaryListView() {
   const [filters, setFilters] = useState(defaultFilters);
 
   const int = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.scheme.interestRate) || 0),
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
 
@@ -385,9 +386,7 @@ export default function AllBranchLoanSummaryListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 

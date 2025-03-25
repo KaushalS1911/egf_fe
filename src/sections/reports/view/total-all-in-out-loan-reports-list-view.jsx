@@ -59,27 +59,27 @@ import { TableCell, TableRow } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no.' },
-  { id: 'issuedate', label: 'Issue date' },
-  { id: 'customername', label: 'Customer name' },
-  { id: 'totalloanamt', label: 'total loan amt' },
-  { id: 'partloanamt', label: 'part loan amt' },
-  { id: 'intloanamt', label: 'Int. loan amt' },
+  { id: `loan.LoanNo`, label: 'Loan no.' },
+  { id: 'issueDate', label: 'Issue date' },
+  { id: 'firstName', label: 'Customer name' },
+  { id: 'amount', label: 'total loan amt' },
+  { id: 'partLoanamt', label: 'part loan amt' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'toralwt', label: 'Total wt' },
   { id: 'netwt', label: 'net wt' },
   { id: 'intrate', label: 'Int. rate' },
-  { id: 'totalintamt', label: 'Total int.amt' },
-  { id: 'otherno', label: 'Other no' },
+  { id: 'totalInterestAmount', label: 'Total int.amt' },
+  { id: 'otherNumber', label: 'Other no' },
   { id: 'date', label: 'Date' },
-  { id: 'othername', label: 'Other name' },
+  { id: 'otherName', label: 'Other name' },
   { id: 'otherloanamt', label: 'Other Loan amt' },
-  { id: 'grosswt', label: 'Gross wt' },
-  { id: 'Netwt', label: 'Net wt' },
+  { id: 'grossWt', label: 'Gross wt' },
+  { id: 'netWt', label: 'Net wt' },
   { id: 'otherint', label: 'Other int(%)' },
   { id: 'otherintamt', label: 'Other int amt' },
   { id: 'diffloanamt', label: 'Diff loan amt' },
   { id: 'diffintamt', label: 'Diff int amt' },
-  { id: 'diffintamt', label: 'Status' },
+  { id: 'status', label: 'Status' },
 ];
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
@@ -119,6 +119,7 @@ export default function OtherLonaInterestListView() {
   const [tableData, setTableData] = useState(totalAllInoutLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
 
+<<<<<<< HEAD
   // const loanAmount = totalAllInoutLoanReports.reduce(
   //   (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
   //   0
@@ -127,6 +128,18 @@ export default function OtherLonaInterestListView() {
   //   (prev, next) => prev + (Number(next?.amount) || 0),
   //   0
   // );
+=======
+  const data = Object.values(totalAllInoutLoanReports);
+
+  const loanAmount = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const amount = totalAllInoutLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.amount) || 0),
+    0
+  );
+>>>>>>> d182f4ab640e70d98dc15c107a17844163202f2b
 
   // const intLoanAmount = totalAllInoutLoanReports.reduce(
   //   (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
@@ -448,9 +461,7 @@ export default function OtherLonaInterestListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 

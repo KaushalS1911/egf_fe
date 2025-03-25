@@ -49,12 +49,12 @@ const TABLE_HEAD = [
   { id: 'issueDate', label: 'Issue date' },
   { id: 'customerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
-  { id: 'loanAmt', label: 'Total loan amt' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'loanAmount', label: 'Total loan amt' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'PartLoanAmount', label: 'Part loan amt' },
   { id: 'InterestRate', label: 'Int. rate' },
-  { id: 'CashAmount', label: 'Cash amt' },
-  { id: 'BankAmount', label: 'Bank amt' },
+  { id: 'cashAmount', label: 'Cash amt' },
+  { id: 'bankAmount', label: 'Bank amt' },
   { id: 'status', label: 'Status' },
   { id: 'reports', label: 'Reports' },
   { id: 'action', label: 'Action' },
@@ -293,9 +293,7 @@ export default function LoanpayhistoryListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>

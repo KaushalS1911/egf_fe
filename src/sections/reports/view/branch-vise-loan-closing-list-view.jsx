@@ -52,13 +52,13 @@ import TableRow from '@mui/material/TableRow';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.' },
+  { id: 'loanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'int%', label: 'int (%)' },
-  { id: 'concharge', label: 'Con. charge' },
-  { id: 'int%', label: 'Issue date' },
-  { id: 'LoanAmount', label: 'loan amt' },
+  { id: 'consultingCharge', label: 'Con. charge' },
+  { id: 'issueDate', label: 'Issue date' },
+  { id: 'loanAmount', label: 'loan amt' },
   { id: 'partamt', label: 'Part loan amt' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
   { id: 'LastAmtPayDate', label: 'Last int. pay date' },
@@ -67,11 +67,8 @@ const TABLE_HEAD = [
   { id: 'closedtae', label: 'Close date' },
   { id: 'closecharge', label: 'Close charge' },
   { id: 'closeamt', label: 'Close amt' },
-  { id: 'pendingAmt', label: 'Pending int.' },
+  { id: 'pendingInterest', label: 'Pending int.' },
   { id: 'closeby', label: 'Close By' },
-  // { id: 'LoanAmountPay', label: 'loan amt pay' },
-  // { id: 'LastIntPayDate', label: 'Last int. pay date' },
-  // { id: 'nextIntPayDate', label: 'Next int. pay date', width: '100px' },
   { id: 'Status', label: 'Status' },
 ];
 
@@ -100,7 +97,8 @@ export default function BranchViseLoanClosingListView() {
   const [filters, setFilters] = useState(defaultFilters);
 
   const int = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.scheme.interestRate) || 0),
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
 
@@ -348,9 +346,7 @@ export default function BranchViseLoanClosingListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -409,14 +405,14 @@ export default function BranchViseLoanClosingListView() {
                     {totalIntPay.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day / LoanSummary.length}
+                    {(day / LoanSummary.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {closeCharge.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(closeAmt - closeCharge).toFixed(2)}
+                    {(closeAmt - closeCharge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingIntAmt.toFixed(0)}

@@ -125,10 +125,9 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
-  const rowsPerPage = 18;
+  const rowsPerPage = 17;
   const pages = [];
   let currentPageRows = [];
-  console.log(dataFilter);
   loans.forEach((row, index) => {
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === loans.length - 1;
@@ -165,9 +164,13 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
         <Text style={[styles.tableCell, { flex: 1.3 }]}>
           {fDate(row.lastInstallmentDate) || '-'}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1.5 }]}>Total Pay Int.</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>113</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>947.34</Text>
+        <Text style={[styles.tableCell, { flex: 1.5 }]}>
+          {Number(row.totalPaidInterest).toFixed(2)}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : 0}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>
+          {Number(row.pendingInterest).toFixed(2)}
+        </Text>
         <Text style={[styles.tableCell, styles.tableCellLast, { flex: 1.3 }]}>
           {fDate(row.nextInstallmentDate)}
         </Text>

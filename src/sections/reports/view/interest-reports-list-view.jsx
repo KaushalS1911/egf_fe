@@ -39,15 +39,15 @@ const TABLE_HEAD = [
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'customerName', label: 'Customer name' },
   { id: 'issueDate', label: 'Issue date' },
-  { id: 'loanAmt', label: 'Loan amt' },
+  { id: 'loanAmount', label: 'Loan amt' },
   { id: 'partLoanAmt', label: 'Part loan amt' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'InterestRate', label: 'Rate' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
+  { id: 'interestRate', label: 'Rate' },
   { id: 'consultingCharge', label: 'Consulting Charge' },
-  { id: 'intamt', label: 'int. amt' },
-  { id: 'conamt', label: 'Con. amt' },
-  { id: 'penalty', label: 'Penalty' },
-  { id: 'totalPayIntAmt', label: 'Total Int. amt' },
+  { id: 'interestAmount', label: 'int. amt' },
+  { id: 'consultingAmount', label: 'Con. amt' },
+  { id: 'penaltyAmount', label: 'Penalty' },
+  { id: 'totalPaidInterest', label: 'Total Int. amt' },
   { id: 'lastInterestPayDate', label: 'Last Int. pay date' },
   { id: 'pendingDay', label: 'Pending day' },
   { id: 'pendingIntAmt', label: 'Pending Int. amt' },
@@ -81,34 +81,30 @@ export default function InterestReportsListView() {
     0
   );
   const consultingCharge = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.consultingCharge) || 0),
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
   const interestAmount = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.interestAmount) || 0),
+    (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
   const consultingAmount = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.consultingAmount) || 0),
+    (prev, next) => prev + (Number(next?.consultingAmount) || 0),
     0
   );
   const penaltyAmount = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.penaltyAmount) || 0),
+    (prev, next) => prev + (Number(next?.penaltyAmount) || 0),
     0
   );
   const totalPaidInterest = interestReports.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.totalPaidInterest) || 0),
+    (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
     0
   );
   const day = interestReports.reduce(
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
     0
   );
+
   const pendingInterest = interestReports.reduce(
     (prev, next) => prev + (Number(next?.pendingInterest) || 0),
     0
@@ -212,9 +208,7 @@ export default function InterestReportsListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -272,7 +266,7 @@ export default function InterestReportsListView() {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {day}
+                    {(day / interestReports.length).toFixed()}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {pendingInterest.toFixed(0)}

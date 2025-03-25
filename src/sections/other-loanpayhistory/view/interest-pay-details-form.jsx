@@ -35,9 +35,11 @@ const TABLE_HEAD = [
   { id: 'to', label: 'To Date' },
   { id: 'days', label: 'Days' },
   { id: 'amountPaid', label: 'Amount Paid' },
+  { id: 'cashAmt', label: 'Cash Amt' },
+  { id: 'BankAmt', label: 'Bank Amt' },
   { id: 'EntryDate', label: 'Entry Date' },
   { id: 'action', label: 'Action' },
-  { id: 'pdf', label: 'PDF' },
+  // { id: 'pdf', label: 'PDF' },
 ];
 
 function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
@@ -53,11 +55,25 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   );
   const table = useTable();
   const { user } = useAuthContext();
+
   const payAmt = otherLoanInterest.reduce(
     (prev, next) => prev + (Number(next?.payAfterAdjust) || 0),
     0
   );
-  const day = otherLoanInterest.reduce((prev, next) => prev + (Number(next?.days) || 0), 0);
+  const cahAmt = otherLoanInterest.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
+    0
+  );
+  const bankAmt = otherLoanInterest.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
+    0
+  );
+
+  const day = otherLoanInterest.reduce(
+    (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
+    0
+  );
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -560,8 +576,10 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                 <TableRow key={index}>
                   <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.from)}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.to)}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
+                  <TableCell sx={{ py: 0, px: 2 }}>{row.days > 0 ? row.days : 0}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
+                  <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
+                  <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>
                     {
@@ -583,27 +601,27 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                       </IconButton>
                     }
                   </TableCell>
-                  {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
-                    <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>
-                      {
-                        <Typography
-                          onClick={() => {
-                            view.onTrue();
-                            setData(row);
-                          }}
-                          sx={{
-                            cursor: 'pointer',
-                            color: 'inherit',
-                            pointerEvents: 'auto',
-                          }}
-                        >
-                          <Iconify icon="basil:document-solid" />
-                        </Typography>
-                      }
-                    </TableCell>
-                  ) : (
-                    <TableCell>'-'</TableCell>
-                  )}
+                  {/*{getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (*/}
+                  {/*  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>*/}
+                  {/*    {*/}
+                  {/*      <Typography*/}
+                  {/*        onClick={() => {*/}
+                  {/*          view.onTrue();*/}
+                  {/*          setData(row);*/}
+                  {/*        }}*/}
+                  {/*        sx={{*/}
+                  {/*          cursor: 'pointer',*/}
+                  {/*          color: 'inherit',*/}
+                  {/*          pointerEvents: 'auto',*/}
+                  {/*        }}*/}
+                  {/*      >*/}
+                  {/*        <Iconify icon="basil:document-solid" />*/}
+                  {/*      </Typography>*/}
+                  {/*    }*/}
+                  {/*  </TableCell>*/}
+                  {/*) : (*/}
+                  {/*  <TableCell>'-'</TableCell>*/}
+                  {/*)}*/}
                 </TableRow>
               ))}
               <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
@@ -618,7 +636,12 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {payAmt}
                 </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  {cahAmt}
+                </TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  {bankAmt}
+                </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
               </TableRow>

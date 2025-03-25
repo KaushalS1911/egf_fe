@@ -154,9 +154,7 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
     }
   }, [currentOtherLoan?.loan, reset, defaultValues, mutate]);
 
-  const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
-  });
+  const onSubmit = handleSubmit(async (data) => {});
 
   return (
     <>

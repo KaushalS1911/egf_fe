@@ -45,16 +45,20 @@ import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-  value: 'false',
-  label: 'In Active',
-}];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'true', label: 'Active' },
+  {
+    value: 'false',
+    label: 'In Active',
+  },
+];
 
 const TABLE_HEAD = [
   { id: 'cara', label: 'Carat' },
   { id: 'caratPercentage', label: 'Carat (%)' },
-  { id: 'remarks', label: 'Remarks' },
-  { id: 'active', label: 'Status' },
+  { id: 'remark', label: 'Remarks' },
+  { id: 'isActive', label: 'Status' },
   { id: '', width: 88 },
 ];
 
@@ -85,25 +89,24 @@ export default function CaratListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const
-    handleFilters = useCallback(
-      (name, value) => {
-        console.log('name', value);
-        table.onResetPage();
-        setFilters((prevState) => ({
-          ...prevState,
-          [name]: value,
-        }));
-      },
-      [table],
-    );
+  const handleFilters = useCallback(
+    (name, value) => {
+      console.log('name', value);
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -115,7 +118,9 @@ export default function CaratListView() {
       return;
     }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat`, { data: { ids: id } });
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/carat`, {
+        data: { ids: id },
+      });
       mutate();
       confirm.onFalse();
       enqueueSnackbar(res.data.message);
@@ -130,7 +135,7 @@ export default function CaratListView() {
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -148,14 +153,14 @@ export default function CaratListView() {
     (id) => {
       router.push(paths.dashboard.carat.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('isActive', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
 
   const carats = carat.map((item) => ({
@@ -166,16 +171,14 @@ export default function CaratListView() {
   }));
 
   if (caratLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Carats'
+          heading="Carats"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Carat', href: paths.dashboard.carat.root },
@@ -183,14 +186,16 @@ export default function CaratListView() {
           ]}
           action={
             <Box>
-              {getResponsibilityValue('create_carat', configs, user) && <Button
-                component={RouterLink}
-                href={paths.dashboard.carat.new}
-                variant='contained'
-                startIcon={<Iconify icon='mingcute:add-line' />}
-              >
-                Add Carat
-              </Button>}
+              {getResponsibilityValue('create_carat', configs, user) && (
+                <Button
+                  component={RouterLink}
+                  href={paths.dashboard.carat.new}
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                >
+                  Add Carat
+                </Button>
+              )}
             </Box>
           }
           sx={{
@@ -209,7 +214,7 @@ export default function CaratListView() {
             {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
-                iconPosition='end'
+                iconPosition="end"
                 value={tab.value}
                 label={tab.label}
                 icon={
@@ -217,7 +222,8 @@ export default function CaratListView() {
                     <Label
                       style={{ margin: '5px' }}
                       variant={
-                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'
+                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') ||
+                        'soft'
                       }
                       color={
                         (tab.value == 'true' && 'success') ||
@@ -234,9 +240,7 @@ export default function CaratListView() {
               />
             ))}
           </Tabs>
-          <CaratTableToolbar
-            filters={filters} onFilters={handleFilters} carats={carats}
-          />
+          <CaratTableToolbar filters={filters} onFilters={handleFilters} carats={carats} />
           {canReset && (
             <CaratTableFiltersResult
               filters={filters}
@@ -246,11 +250,13 @@ export default function CaratListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -258,13 +264,13 @@ export default function CaratListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -280,22 +286,20 @@ export default function CaratListView() {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    dataFiltered.map((row) => row._id),
+                    dataFiltered.map((row) => row._id)
                   )
                 }
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
                     <CaratTableRow
@@ -329,7 +333,7 @@ export default function CaratListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -337,8 +341,8 @@ export default function CaratListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -350,13 +354,10 @@ export default function CaratListView() {
       />
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
-function applyFilter({
-                       inputData, comparator, filters,
-                     },
-) {
+function applyFilter({ inputData, comparator, filters }) {
   const { isActive, name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -368,10 +369,7 @@ function applyFilter({
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter(
-      (sch) =>
-        sch.name.toLowerCase().includes(name.toLowerCase()),
-    );
+    inputData = inputData.filter((sch) => sch.name.toLowerCase().includes(name.toLowerCase()));
   }
 
   if (isActive !== 'all') {
@@ -380,4 +378,3 @@ function applyFilter({
 
   return inputData;
 }
-

@@ -45,18 +45,22 @@ import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-  value: 'false',
-  label: 'In Active',
-}];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'true', label: 'Active' },
+  {
+    value: 'false',
+    label: 'In Active',
+  },
+];
 
 const TABLE_HEAD = [
-  { id: 'penalty name', label: 'Name' },
-  { id: 'after due date from day', label: 'After due date from day' },
-  { id: 'after due date to day', label: 'After due date to day' },
-  { id: 'penalty interest', label: 'Penalty interest (%)' },
+  { id: 'name', label: 'Name' },
+  { id: 'afterDueDateFromDate', label: 'After due date from day' },
+  { id: 'afterDueDateToDate', label: 'After due date to day' },
+  { id: 'penaltyInterest', label: 'Penalty interest (%)' },
   { id: 'remark', label: 'Remark' },
-  { id: 'active', label: 'Status' },
+  { id: 'isActive', label: 'Status' },
   { id: '', width: 88 },
 ];
 
@@ -87,25 +91,24 @@ export default function PenaltyListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const
-    handleFilters = useCallback(
-      (name, value) => {
-        console.log('name', value);
-        table.onResetPage();
-        setFilters((prevState) => ({
-          ...prevState,
-          [name]: value,
-        }));
-      },
-      [table],
-    );
+  const handleFilters = useCallback(
+    (name, value) => {
+      console.log('name', value);
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -117,7 +120,9 @@ export default function PenaltyListView() {
       return;
     }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty`, { data: { ids: id } });
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty`, {
+        data: { ids: id },
+      });
       mutate();
       confirm.onFalse();
       enqueueSnackbar(res.data.message);
@@ -132,7 +137,7 @@ export default function PenaltyListView() {
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -150,14 +155,14 @@ export default function PenaltyListView() {
     (id) => {
       router.push(paths.dashboard.penalty.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('isActive', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
 
   const penalties = penalty.map((item) => ({
@@ -170,16 +175,14 @@ export default function PenaltyListView() {
   }));
 
   if (penaltyLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Penalties'
+          heading="Penalties"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Penalty', href: paths.dashboard.penalty.root },
@@ -187,14 +190,16 @@ export default function PenaltyListView() {
           ]}
           action={
             <Box>
-              {getResponsibilityValue('create_penalty', configs, user) && <Button
-                component={RouterLink}
-                href={paths.dashboard.penalty.new}
-                variant='contained'
-                startIcon={<Iconify icon='mingcute:add-line' />}
-              >
-                Add Penalty
-              </Button>}
+              {getResponsibilityValue('create_penalty', configs, user) && (
+                <Button
+                  component={RouterLink}
+                  href={paths.dashboard.penalty.new}
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                >
+                  Add Penalty
+                </Button>
+              )}
             </Box>
           }
           sx={{
@@ -213,7 +218,7 @@ export default function PenaltyListView() {
             {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
-                iconPosition='end'
+                iconPosition="end"
                 value={tab.value}
                 label={tab.label}
                 icon={
@@ -221,7 +226,8 @@ export default function PenaltyListView() {
                     <Label
                       style={{ margin: '5px' }}
                       variant={
-                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'
+                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') ||
+                        'soft'
                       }
                       color={
                         (tab.value == 'true' && 'success') ||
@@ -238,9 +244,7 @@ export default function PenaltyListView() {
               />
             ))}
           </Tabs>
-          <PenaltyTableToolbar
-            filters={filters} onFilters={handleFilters} penalties={penalties}
-          />
+          <PenaltyTableToolbar filters={filters} onFilters={handleFilters} penalties={penalties} />
           {canReset && (
             <PenaltyTableFiltersResult
               filters={filters}
@@ -250,11 +254,13 @@ export default function PenaltyListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -262,13 +268,13 @@ export default function PenaltyListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -284,22 +290,20 @@ export default function PenaltyListView() {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    dataFiltered.map((row) => row._id),
+                    dataFiltered.map((row) => row._id)
                   )
                 }
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
                     <PenaltyTableRow
@@ -333,7 +337,7 @@ export default function PenaltyListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -341,8 +345,8 @@ export default function PenaltyListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -354,13 +358,10 @@ export default function PenaltyListView() {
       />
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
-function applyFilter({
-                       inputData, comparator, filters,
-                     },
-) {
+function applyFilter({ inputData, comparator, filters }) {
   const { isActive, name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -372,9 +373,8 @@ function applyFilter({
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter(
-      (sch) =>
-        sch.penaltyCode.toLowerCase().includes(name.toLowerCase()),
+    inputData = inputData.filter((sch) =>
+      sch.penaltyCode.toLowerCase().includes(name.toLowerCase())
     );
   }
   if (isActive !== 'all') {
@@ -383,4 +383,3 @@ function applyFilter({
 
   return inputData;
 }
-

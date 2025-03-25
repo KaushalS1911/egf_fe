@@ -38,14 +38,14 @@ const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'issueDate', label: 'Issue date' },
-  { id: 'customerName', label: 'Customer name' },
-  { id: 'ContactNo', label: 'Contact' },
-  { id: 'loanAmt', label: 'Total loan amt' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'firstName', label: 'Customer name' },
+  { id: 'contact', label: 'Contact' },
+  { id: 'loanAmount', label: 'Total loan amt' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'PartLoanAmount', label: 'Part loan amt' },
   { id: 'InterestRate', label: 'Int. rate' },
-  { id: 'CashAmount', label: 'Cash amt' },
-  { id: 'BankAmount', label: 'Bank amt' },
+  { id: 'cashAmount', label: 'Cash amt' },
+  { id: 'bankAmount', label: 'Bank amt' },
   { id: 'status', label: 'Status' },
   { id: 'reports', label: 'Reports' },
 ];
@@ -129,8 +129,11 @@ export default function LoanIssueReportsListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Interest Reports"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Interest Reports' }]}
+          heading="Loan Issue Reports"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Loan Issue Reports' },
+          ]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}
@@ -182,9 +185,7 @@ export default function LoanIssueReportsListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>

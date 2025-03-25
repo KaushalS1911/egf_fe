@@ -35,11 +35,12 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'loanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'LoanAmount', label: 'loan amt' },
-  { id: 'Rate', label: 'Rate' },
-  { id: 'IssueDate', label: 'Issue date' },
+  { id: 'loanAmount', label: 'loan amt' },
+  { id: 'int', label: 'Int(%)' },
+  { id: 'ConCharge', label: 'Con. charge' },
+  { id: 'issueDate', label: 'Issue date' },
   { id: 'EntryBy', label: 'Entry by' },
 ];
 
@@ -63,11 +64,19 @@ export default function NewGoldLonListView({ LoanIssue }) {
   const [tableData, setTableData] = useState(LoanIssue);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = LoanIssue.reduce((prev, next) => prev + (Number(next?.scheme.interestRate) || 0), 0);
+  const int = LoanIssue.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
+    0
+  );
   const loanAmt = LoanIssue.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+  const conCharge = LoanIssue.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    0
+  );
 
   const dataFiltered = applyFilter({
-    inputData: LoanIssue,
+    inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -194,9 +203,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -250,6 +257,9 @@ export default function NewGoldLonListView({ LoanIssue }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {(int / LoanIssue.length).toFixed(2)}
                   </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(conCharge / LoanIssue.length).toFixed(2)}
+                  </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
@@ -296,5 +306,12 @@ export default function NewGoldLonListView({ LoanIssue }) {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch } = filters;
+  const stabilizedThis = inputData.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  inputData = stabilizedThis.map((el) => el[0]);
   return inputData;
 }

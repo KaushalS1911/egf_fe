@@ -45,21 +45,25 @@ import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'true', label: 'Active' }, {
-  value: 'false',
-  label: 'In Active',
-}];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'true', label: 'Active' },
+  {
+    value: 'false',
+    label: 'In Active',
+  },
+];
 
 const TABLE_HEAD = [
-  { id: 'scheme name', label: 'Name' },
-  { id: 'rate per gram', label: 'Rate / gm' },
-  { id: 'interest rate', label: 'Int. rate' },
-  { id: 'valuation per%', label: 'Valuation(%)' },
-  { id: 'interest period', label: 'Int.period' },
-  { id: 'renewal time', label: 'Renewal time' },
-  { id: 'minimum loan time', label: 'Min loan time' },
-  { id: 'scheme type', label: 'Type' },
-  { id: 'active', label: 'Status' },
+  { id: 'name', label: 'Name' },
+  { id: 'ratePerGram', label: 'Rate / gm' },
+  { id: 'interestRate', label: 'Int. rate' },
+  { id: 'valuation', label: 'Valuation(%)' },
+  { id: 'interestPeriod', label: 'Int.period' },
+  { id: 'renewalTime', label: 'Renewal time' },
+  { id: 'minLoanTime', label: 'Min loan time' },
+  { id: 'schemeType', label: 'Type' },
+  { id: 'isActive', label: 'Status' },
   { id: '', width: 88 },
 ];
 
@@ -90,13 +94,14 @@ export default function SchemeListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
+<<<<<<< HEAD
   const
     handleFilters = useCallback(
       (name, value) => {
@@ -108,6 +113,19 @@ export default function SchemeListView() {
       },
       [table],
     );
+=======
+  const handleFilters = useCallback(
+    (name, value) => {
+      console.log('name', value);
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
+>>>>>>> d182f4ab640e70d98dc15c107a17844163202f2b
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -136,7 +154,7 @@ export default function SchemeListView() {
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -155,14 +173,14 @@ export default function SchemeListView() {
     (id) => {
       router.push(paths.dashboard.scheme.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('isActive', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
 
   const schemes = scheme.map((item) => ({
@@ -179,16 +197,14 @@ export default function SchemeListView() {
   }));
 
   if (schemeLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Schemes'
+          heading="Schemes"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Scheme', href: paths.dashboard.scheme.root },
@@ -196,22 +212,26 @@ export default function SchemeListView() {
           ]}
           action={
             <Box>
-              {getResponsibilityValue('print_gold_price_change', configs, user) && <Button
-                component={RouterLink}
-                href={paths.dashboard.scheme.goldpricelist}
-                variant='contained'
-                sx={{ mx: 2 }}
-              >
-                Gold Price change
-              </Button>}
-              {getResponsibilityValue('create_scheme', configs, user) && <Button
-                component={RouterLink}
-                href={paths.dashboard.scheme.new}
-                variant='contained'
-                startIcon={<Iconify icon='mingcute:add-line' />}
-              >
-                Add Scheme
-              </Button>}
+              {getResponsibilityValue('print_gold_price_change', configs, user) && (
+                <Button
+                  component={RouterLink}
+                  href={paths.dashboard.scheme.goldpricelist}
+                  variant="contained"
+                  sx={{ mx: 2 }}
+                >
+                  Gold Price change
+                </Button>
+              )}
+              {getResponsibilityValue('create_scheme', configs, user) && (
+                <Button
+                  component={RouterLink}
+                  href={paths.dashboard.scheme.new}
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                >
+                  Add Scheme
+                </Button>
+              )}
             </Box>
           }
           sx={{
@@ -230,7 +250,7 @@ export default function SchemeListView() {
             {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
-                iconPosition='end'
+                iconPosition="end"
                 value={tab.value}
                 label={tab.label}
                 icon={
@@ -238,7 +258,8 @@ export default function SchemeListView() {
                     <Label
                       style={{ margin: '5px' }}
                       variant={
-                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') || 'soft'
+                        ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') ||
+                        'soft'
                       }
                       color={
                         (tab.value == 'true' && 'success') ||
@@ -255,9 +276,7 @@ export default function SchemeListView() {
               />
             ))}
           </Tabs>
-          <SchemeTableToolbar
-            filters={filters} onFilters={handleFilters} schemes={schemes}
-          />
+          <SchemeTableToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
           {canReset && (
             <SchemeTableFiltersResult
               filters={filters}
@@ -267,11 +286,13 @@ export default function SchemeListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -280,13 +301,12 @@ export default function SchemeListView() {
                 table.onSelectAllRows(
                   checked,
                   dataFiltered.map((row) => row._id)
-                  ,
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -302,22 +322,20 @@ export default function SchemeListView() {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    dataFiltered.map((row) => row._id),
+                    dataFiltered.map((row) => row._id)
                   )
                 }
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
                     <SchemeTableRow
@@ -351,7 +369,7 @@ export default function SchemeListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -359,8 +377,8 @@ export default function SchemeListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -372,13 +390,10 @@ export default function SchemeListView() {
       />
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
-function applyFilter({
-                       inputData, comparator, filters,
-                     },
-) {
+function applyFilter({ inputData, comparator, filters }) {
   const { isActive, name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -390,10 +405,7 @@ function applyFilter({
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter(
-      (sch) =>
-        sch.name.toLowerCase().includes(name.toLowerCase()),
-    );
+    inputData = inputData.filter((sch) => sch.name.toLowerCase().includes(name.toLowerCase()));
   }
 
   if (isActive !== 'all') {

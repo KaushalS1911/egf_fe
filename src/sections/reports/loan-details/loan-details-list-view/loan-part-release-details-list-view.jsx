@@ -38,10 +38,13 @@ const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'loanAmount', label: 'Loan amount' },
+  { id: 'interestLoanAmount', label: 'Int. loan amount' },
   { id: 'payAmount', label: 'Pay amount' },
   { id: 'pendingAmount', label: 'Pending amount' },
-  { id: 'payDate', label: 'Pay date' },
+  { id: 'date', label: 'Pay date' },
+  { id: 'createdAy', label: 'Entry date' },
   { id: 'remarks', label: 'Remarks' },
+  { id: 'entryBy', label: 'Entry by' },
 ];
 
 const defaultFilters = {
@@ -68,8 +71,12 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
     0
   );
+  const intLoanAmt = partReleaseDetail.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
   const amountPaid = partReleaseDetail.reduce(
-    (prev, next) => prev + (Number(next?.amountPaid) || 0),
+    (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
     0
   );
   const pendingLoanAmount = partReleaseDetail.reduce(
@@ -235,9 +242,7 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
@@ -286,11 +291,16 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
                     {loanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmt.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {amountPaid.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {pendingLoanAmount.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>

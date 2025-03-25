@@ -33,7 +33,8 @@ export default function PolicyConfigCreateView() {
     const updatedConfig = [...localPolicyConfig, exportPolicyConfig.trim()];
     setLocalPolicyConfig(updatedConfig);
 
-    axios.put(URL, { ...configs, exportPolicyConfig: updatedConfig })
+    axios
+      .put(URL, { ...configs, exportPolicyConfig: updatedConfig })
       .then(() => {
         setExportPolicyConfig('');
         enqueueSnackbar('Terms And Conditions added successfully', { variant: 'success' });
@@ -50,7 +51,8 @@ export default function PolicyConfigCreateView() {
     setLocalPolicyConfig(updatedConfig);
     const apiEndpoint = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
 
-    axios.put(apiEndpoint, { ...configs, exportPolicyConfig: updatedConfig })
+    axios
+      .put(apiEndpoint, { ...configs, exportPolicyConfig: updatedConfig })
       .then(() => {
         enqueueSnackbar('Terms and Conditions deleted successfully', { variant: 'success' });
         mutate();
@@ -71,7 +73,8 @@ export default function PolicyConfigCreateView() {
     setLocalPolicyConfig(reorderedList);
 
     const apiEndpoint = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
-    axios.put(apiEndpoint, { ...configs, exportPolicyConfig: reorderedList })
+    axios
+      .put(apiEndpoint, { ...configs, exportPolicyConfig: reorderedList })
       .then(() => {
         mutate();
       })
@@ -97,7 +100,8 @@ export default function PolicyConfigCreateView() {
     setLocalPolicyConfig(updatedConfig);
 
     const apiEndpoint = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
-    axios.put(apiEndpoint, { ...configs, exportPolicyConfig: updatedConfig })
+    axios
+      .put(apiEndpoint, { ...configs, exportPolicyConfig: updatedConfig })
       .then(() => {
         enqueueSnackbar('Terms And Conditions updated successfully', { variant: 'success' });
         setEditingIndex(null);
@@ -114,22 +118,22 @@ export default function PolicyConfigCreateView() {
     <Box sx={{ width: '100%', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant='h5' sx={{ fontWeight: 600 }}>
-            Add Terms And Conditions
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            Terms And Conditions
           </Typography>
         </Grid>
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', padding: '10px' }}>
             <TextField
               fullWidth
-              variant='outlined'
-              label='Terms And Conditions'
+              variant="outlined"
+              label="Terms And Conditions"
               value={exportPolicyConfig}
               onChange={(e) => setExportPolicyConfig(e.target.value)}
               sx={{ fontSize: '16px' }}
             />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
-              <Button variant='contained' onClick={handleRemarkClick}>
+              <Button variant="contained" onClick={handleRemarkClick}>
                 Add
               </Button>
             </Box>
@@ -138,7 +142,7 @@ export default function PolicyConfigCreateView() {
         <Grid item xs={12} md={8}>
           <Card>
             <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId='exportPolicyConfig'>
+              <Droppable droppableId="exportPolicyConfig">
                 {(provided) => (
                   <Stack
                     spacing={2}
@@ -171,7 +175,7 @@ export default function PolicyConfigCreateView() {
                                 <TextField
                                   value={editingValue}
                                   onChange={(e) => setEditingValue(e.target.value)}
-                                  size='small'
+                                  size="small"
                                   sx={{
                                     width: '95%',
                                   }}
@@ -193,7 +197,7 @@ export default function PolicyConfigCreateView() {
                             </Box>
                             <Box sx={{ display: 'flex', gap: 1 }}>
                               {editingIndex === index ? (
-                                <Button variant='contained' size='small' onClick={handleEditSave}>
+                                <Button variant="contained" size="small" onClick={handleEditSave}>
                                   Save
                                 </Button>
                               ) : (
@@ -201,15 +205,14 @@ export default function PolicyConfigCreateView() {
                                   sx={{ color: 'primary.main', cursor: 'pointer' }}
                                   onClick={() => handleEditClick(index, item)}
                                 >
-                                  <Iconify icon='eva:edit-fill' />
+                                  <Iconify icon="eva:edit-fill" />
                                 </Box>
-
                               )}
                               <Box
                                 sx={{ color: 'error.main', cursor: 'pointer' }}
                                 onClick={() => handleDeleteRemark(item)}
                               >
-                                <Iconify icon='solar:trash-bin-trash-bold' />
+                                <Iconify icon="solar:trash-bin-trash-bold" />
                               </Box>
                             </Box>
                           </Box>

@@ -43,12 +43,12 @@ import { getResponsibilityValue } from '../../../permission/permission';
 
 const TABLE_HEAD = [
   { id: 'LoanNo', label: 'Loan No.' },
-  { id: 'CustomerName', label: 'Customer name' },
-  { id: 'ContactNo', label: 'Contact' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'firstName', label: 'Customer name' },
+  { id: 'contact', label: 'Contact' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'InterestRate', label: 'Int. rate' },
-  { id: 'CashAmount', label: 'Cash amt' },
-  { id: 'BankAmount', label: 'Bank amt' },
+  { id: 'cashAmount', label: 'Cash amt' },
+  { id: 'bankAmount', label: 'Bank amt' },
   { id: '', width: 88 },
 ];
 
@@ -255,9 +255,7 @@ export default function LoanissueListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>

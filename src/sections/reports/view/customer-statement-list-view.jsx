@@ -40,11 +40,11 @@ const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
   { id: 'customerName', label: 'Customer name' },
-  { id: 'loanAmt', label: 'Loan amt' },
-  { id: 'partLoanAmt', label: 'Part loan amt' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
+  { id: 'loanAmount', label: 'Loan amt' },
+  { id: 'partLoanAmount', label: 'Part loan amt' },
+  { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'amount', label: 'amount' },
-  { id: 'entry', label: 'Entry date' },
+  { id: 'createdAt', label: 'Entry date' },
 ];
 
 const defaultFilters = {
@@ -86,8 +86,6 @@ export default function CustomerStatementListView() {
       );
 
       const statementData = res.data.data || [];
-
-      console.log(statementData);
 
       const updatedData = statementData.map((item, index) => ({
         ...item,
@@ -133,7 +131,6 @@ export default function CustomerStatementListView() {
   if (customerStatementLoading) {
     return <LoadingScreen />;
   }
-  console.log(user, '0000000');
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -198,9 +195,7 @@ export default function CustomerStatementListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>

@@ -62,6 +62,8 @@ const TABLE_HEAD = [
   { id: 'pendingAmount', label: 'Pending Amount' },
   { id: 'payDate', label: 'Pay Date' },
   { id: 'entryDate', label: 'Entry Date' },
+  { id: 'cashAmt', label: 'Cash amt' },
+  { id: 'bankAmt', label: 'Bank amt' },
   { id: 'remarks', label: 'Remarks' },
   { id: 'entryBy', label: 'Entry By' },
   { id: 'action', label: 'Action' },
@@ -93,10 +95,19 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     0
   );
   const totalPayAmt = partRelease.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
-  const intAmt = partRelease.reduce(
+  const pendingLoanAmount = partRelease.reduce(
     (prev, next) => prev + (Number(next?.pendingLoanAmount) || 0),
     0
   );
+  const casAmt = partRelease.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
+    0
+  );
+  const bankAmt = partRelease.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
+    0
+  );
+
   useEffect(() => {
     if (currentLoan.propertyDetails) {
       setProperties(currentLoan.propertyDetails);
@@ -973,13 +984,21 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   {row.adjustedAmount}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.pendingLoanAmount && row.pendingLoanAmount.toFixed(2)}
+                  {row.pendingLoanAmount.toFixed(2) || 0}
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {fDate(row.createdAt)}
                 </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.remark}</TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {row.paymentDetail.cashAmount || 0}
+                </TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {row.paymentDetail.bankAmount || 0}
+                </TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                  {row.remark || '-'}
+                </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                   {row.entryBy || '-'}
                 </TableCell>
@@ -1037,7 +1056,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-              {totalPayAmt ? totalPayAmt.toFixed(2) : '-'}
+              {totalPayAmt ? totalPayAmt.toFixed(0) : '-'}
             </TableCell>
             <TableCell
               sx={{
@@ -1047,11 +1066,26 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 px: 2,
               }}
             >
-              {adjustedAmount ? adjustedAmount.toFixed(2) : '-'}
+              {adjustedAmount ? adjustedAmount.toFixed(0) : '-'}
+            </TableCell>
+            <TableCell
+              sx={{
+                fontWeight: '600',
+                color: '#637381',
+                py: 1,
+                px: 2,
+              }}
+            >
+              {pendingLoanAmount.toFixed(0)}
             </TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {casAmt.toFixed(0)}
+            </TableCell>
+            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+              {bankAmt.toFixed(0)}
+            </TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>

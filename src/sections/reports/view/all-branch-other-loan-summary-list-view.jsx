@@ -53,25 +53,22 @@ import { TableCell, TableRow } from '@mui/material';
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'LoanNo', label: 'Loan no.' },
-  { id: 'CustomerName', label: 'Customer name' },
-  { id: 'othername', label: 'Other name' },
-  { id: 'otherno', label: 'Other no.' },
-  { id: 'int%', label: 'int rate (%)' },
+  { id: 'firstName', label: 'Customer name' },
+  { id: 'otherName', label: 'Other name' },
+  { id: 'otherNumber\n', label: 'Other no.' },
+  { id: 'percentage', label: 'int rate (%)' },
   { id: 'fund', label: 'Fund' },
-  { id: 'opendate', label: 'Open date' },
+  { id: 'date', label: 'Open date' },
   { id: 'otherLoanAmount', label: 'Other loan amt' },
-  { id: 'Day', label: ' Day' },
+  { id: 'day', label: ' Day' },
   { id: 'pendingAmt', label: 'Pending int.' },
-  { id: 'renewdate', label: 'Renew date' },
-  { id: 'Status', label: 'Status' },
+  { id: 'renewalDate', label: 'Renew date' },
+  { id: 'status', label: 'Status' },
 ];
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
   { value: 'Issued', label: 'Issued' },
-  {
-    value: 'Disbursed',
-    label: 'Disbursed',
-  },
+
   { value: 'Regular', label: 'Regular' },
   {
     value: 'Overdue',
@@ -84,7 +81,7 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   branch: '',
-  issuedBy: '',
+  otherName: '',
 };
 
 // ----------------------------------------------------------------------
@@ -101,9 +98,9 @@ export default function AllBranchLoanSummaryListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(otherLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
-  // useEffect(() => {
-  //   fetchStates();
-  // }, [otherLoanReports]);
+  useEffect(() => {
+    fetchStates();
+  }, [otherLoanReports]);
 
   const percentage = otherLoanReports.reduce(
     (prev, next) => prev + (Number(next?.percentage) || 0),
@@ -116,7 +113,7 @@ export default function AllBranchLoanSummaryListView() {
     0
   );
   const day = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
+    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
     0
   );
 
@@ -231,23 +228,17 @@ export default function AllBranchLoanSummaryListView() {
     return <LoadingScreen />;
   }
   //
-  // function fetchStates() {
-  //   dataFiltered?.map((data) => {
-  //     setOptions((item) => {
-  //       if (!item.find((option) => option.value === data.issuedBy._id)) {
-  //         return [
-  //           ...item,
-  //           {
-  //             name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
-  //             value: data.issuedBy._id,
-  //           },
-  //         ];
-  //       } else {
-  //         return item;
-  //       }
-  //     });
-  //   });
-  // }
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option === data.otherName)) {
+          return [...item, data.otherName];
+        } else {
+          return item;
+        }
+      });
+    });
+  }
 
   return (
     <>
@@ -293,12 +284,11 @@ export default function AllBranchLoanSummaryListView() {
                       color={
                         (tab.value === 'Regular' && 'success') ||
                         (tab.value === 'Overdue' && 'error') ||
-                        (tab.value === 'Disbursed' && 'info') ||
                         (tab.value === 'Issued' && 'secondary') ||
                         'default'
                       }
                     >
-                      {['Issued', 'Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
+                      {['Issued', 'Regular', 'Overdue', 'Closed'].includes(tab.value)
                         ? otherLoanReports.filter((item) => item.status === tab.value).length
                         : otherLoanReports.length}
                     </Label>
@@ -372,9 +362,7 @@ export default function AllBranchLoanSummaryListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 
@@ -425,7 +413,7 @@ export default function AllBranchLoanSummaryListView() {
                     {amount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day / otherLoanReports.length}
+                    {(day / otherLoanReports.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingInterest.toFixed(0)}
@@ -482,7 +470,7 @@ export default function AllBranchLoanSummaryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch, issuedBy } = filters;
+  const { username, status, startDate, endDate, branch, otherName } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -503,10 +491,12 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.firstName?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.customer?.lastName?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.loanNo?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.otherNumber?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.customer?.contact?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.otherName?.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
@@ -515,9 +505,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (branch) {
     inputData = inputData.filter((loan) => loan.loan.customer.branch._id === branch._id);
   }
-  // if (issuedBy) {
-  //   inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
-  // }
+  if (otherName) {
+    inputData = inputData.filter((item) => item?.otherName === otherName);
+  }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) =>
       isBetween(new Date(item.loan.issueDate), startDate, endDate)

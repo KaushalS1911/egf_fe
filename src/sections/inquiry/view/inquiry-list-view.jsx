@@ -48,21 +48,28 @@ import Label from '../../../components/label';
 import Tabs from '@mui/material/Tabs';
 
 // ----------------------------------------------------------------------
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, { value: 'Active', label: 'Active' }, {
-  value: 'Responded',
-  label: 'Responded',
-}, { value: 'Completed', label: 'Completed' }, {
-  value: 'Not Responded', label: 'Not Responded',
-}];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'Active', label: 'Active' },
+  {
+    value: 'Responded',
+    label: 'Responded',
+  },
+  { value: 'Completed', label: 'Completed' },
+  {
+    value: 'Not Responded',
+    label: 'Not Responded',
+  },
+];
 
 const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
-  { id: 'Recalling Date', label: 'Recalling Date' },
+  { id: 'recallingDate', label: 'Recalling Date' },
   { id: 'name', label: 'Name' },
   { id: 'contact', label: 'Contact' },
-  { id: 'inquiry for', label: 'Inquiry for' },
+  { id: 'inquiryFor', label: 'Inquiry for' },
   { id: 'remark', label: 'Remark' },
-  { id: 'Status', label: 'Status' },
+  { id: 'isActive', label: 'Status' },
   { id: '', width: 88 },
 ];
 
@@ -106,7 +113,7 @@ export default function InquiryListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -122,7 +129,7 @@ export default function InquiryListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -162,7 +169,7 @@ export default function InquiryListView() {
         table.onUpdatePageDeleteRow(dataInPage.length);
       }
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -180,14 +187,14 @@ export default function InquiryListView() {
     (id) => {
       router.push(paths.dashboard.inquiry.edit(id));
     },
-    [router],
+    [router]
   );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
     },
-    [handleFilters],
+    [handleFilters]
   );
 
   const handleFileChange = (e) => {
@@ -208,22 +215,25 @@ export default function InquiryListView() {
         }
       }
 
-      const branchQuery = parsedBranch && parsedBranch === 'all'
-        ? `branch=${mainbranchid?._id}`
-        : `branch=${parsedBranch}`;
+      const branchQuery =
+        parsedBranch && parsedBranch === 'all'
+          ? `branch=${mainbranchid?._id}`
+          : `branch=${parsedBranch}`;
 
-      const employeeQuery = user?.role === 'Admin'
-        ? `&assignTo=${selectedEmployee}`
-        : ``;
+      const employeeQuery = user?.role === 'Admin' ? `&assignTo=${selectedEmployee}` : ``;
 
       const queryString = `${branchQuery}${employeeQuery}`;
 
       axios
-        .post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/bulk-inquiry?${queryString}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
+        .post(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/bulk-inquiry?${queryString}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
         .then((response) => {
           enqueueSnackbar('File uploaded successfully');
           document.getElementById('file-upload').value = '';
@@ -281,10 +291,13 @@ export default function InquiryListView() {
     dataFiltered?.map((data) => {
       setOptions((item) => {
         if (!item.find((option) => option?.value === data?.assignTo?.user?._id)) {
-          return [...item, {
-            name: `${data?.assignTo?.user?.firstName} ${data?.assignTo?.user?.middleName} ${data?.assignTo?.user?.lastName}`,
-            value: data?.assignTo?.user?._id,
-          }];
+          return [
+            ...item,
+            {
+              name: `${data?.assignTo?.user?.firstName} ${data?.assignTo?.user?.middleName} ${data?.assignTo?.user?.lastName}`,
+              value: data?.assignTo?.user?._id,
+            },
+          ];
         } else {
           return item;
         }
@@ -296,7 +309,7 @@ export default function InquiryListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Inquiries'
+          heading="Inquiries"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Inquiry', href: paths.dashboard.inquiry.root },
@@ -304,8 +317,10 @@ export default function InquiryListView() {
           ]}
           action={
             <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-              {user?.role === 'Admin' && branch && storedBranch === 'all' && getResponsibilityValue('bulk_inquiry_detail', configs, user)
-                && (
+              {user?.role === 'Admin' &&
+                branch &&
+                storedBranch === 'all' &&
+                getResponsibilityValue('bulk_inquiry_detail', configs, user) && (
                   <FormControl
                     sx={{
                       flexShrink: 0,
@@ -315,17 +330,20 @@ export default function InquiryListView() {
                   >
                     <InputLabel
                       sx={{
-                        mt: -1, '&.MuiInputLabel-shrink': {
+                        mt: -1,
+                        '&.MuiInputLabel-shrink': {
                           mt: 0,
                         },
                       }}
-                    >Branch</InputLabel>
+                    >
+                      Branch
+                    </InputLabel>
                     <Select
                       value={selectedBranch}
                       onChange={handleBranchChange}
                       input={
                         <OutlinedInput
-                          label='Branch'
+                          label="Branch"
                           sx={{
                             height: '36px',
                           }}
@@ -369,20 +387,27 @@ export default function InquiryListView() {
                   }}
                   disabled={!selectedBranch}
                 >
-                  <InputLabel sx={{
-                    mt: -1, '&.MuiInputLabel-shrink': {
-                      mt: 0,
-                    },
-                  }}>Emplyoee</InputLabel>
+                  <InputLabel
+                    sx={{
+                      mt: -1,
+                      '&.MuiInputLabel-shrink': {
+                        mt: 0,
+                      },
+                    }}
+                  >
+                    Emplyoee
+                  </InputLabel>
                   <Select
                     value={selectedEmployee}
                     onChange={handleEmployeeChange}
-                    input={<OutlinedInput
-                      label='Emplyoee'
-                      sx={{
-                        height: '36px',
-                      }}
-                    />}
+                    input={
+                      <OutlinedInput
+                        label="Emplyoee"
+                        sx={{
+                          height: '36px',
+                        }}
+                      />
+                    }
                     MenuProps={{
                       PaperProps: {
                         sx: {
@@ -412,38 +437,43 @@ export default function InquiryListView() {
                   </Select>
                 </FormControl>
               )}
-              {getResponsibilityValue('bulk_inquiry_detail', configs, user)
-                && <>
-                  <Box display='flex' alignItems='center' mx={1}>
+              {getResponsibilityValue('bulk_inquiry_detail', configs, user) && (
+                <>
+                  <Box display="flex" alignItems="center" mx={1}>
                     <input
                       disabled={!selectedEmployee}
-                      type='file'
-                      accept='.xlsx, .xls'
+                      type="file"
+                      accept=".xlsx, .xls"
                       onChange={handleFileChange}
                       style={{ display: 'none' }}
-                      id='file-upload'
+                      id="file-upload"
                     />
-                    <label htmlFor='file-upload'>
-                      <Button variant='outlined' disabled={!selectedEmployee} component='span'
-                              startIcon={<Iconify icon='mdi:file-upload' />}>
+                    <label htmlFor="file-upload">
+                      <Button
+                        variant="outlined"
+                        disabled={!selectedEmployee}
+                        component="span"
+                        startIcon={<Iconify icon="mdi:file-upload" />}
+                      >
                         Select Excel File
                       </Button>
                     </label>
                   </Box>
-                  <Button variant='contained' sx={{ mx: 1 }} onClick={handleDownload}>
+                  <Button variant="contained" sx={{ mx: 1 }} onClick={handleDownload}>
                     Download Sample File
                   </Button>
                 </>
-              }
-              {getResponsibilityValue('create_inquiry', configs, user)
-                && <Button
+              )}
+              {getResponsibilityValue('create_inquiry', configs, user) && (
+                <Button
                   component={RouterLink}
                   href={paths.dashboard.inquiry.new}
-                  variant='contained'
-                  startIcon={<Iconify icon='mingcute:add-line' />}
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
                 >
                   Add Inquiry
-                </Button>}
+                </Button>
+              )}
             </Box>
           }
           sx={{
@@ -462,7 +492,7 @@ export default function InquiryListView() {
             {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
-                iconPosition='end'
+                iconPosition="end"
                 value={tab.value}
                 label={tab.label}
                 icon={
@@ -470,7 +500,8 @@ export default function InquiryListView() {
                     <Label
                       style={{ margin: '5px' }}
                       variant={
-                        ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                        ((tab.value === 'all' || tab.value === filters.status) && 'filled') ||
+                        'soft'
                       }
                       color={
                         (tab.value === 'Active' && 'info') ||
@@ -490,7 +521,11 @@ export default function InquiryListView() {
             ))}
           </Tabs>
           <InquiryTableToolbar
-            filters={filters} onFilters={handleFilters} dateError={dateError} inquiries={inquiries} options={options}
+            filters={filters}
+            onFilters={handleFilters}
+            dateError={dateError}
+            inquiries={inquiries}
+            options={options}
           />
           {canReset && (
             <InquiryTableFiltersResult
@@ -501,11 +536,13 @@ export default function InquiryListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-          <TableContainer sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}>
+          <TableContainer
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              position: 'relative',
+            }}
+          >
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -513,13 +550,13 @@ export default function InquiryListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id),
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -535,22 +572,20 @@ export default function InquiryListView() {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    dataFiltered.map((row) => row._id),
+                    dataFiltered.map((row) => row._id)
                   )
                 }
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
               <TableBody>
                 {dataFiltered
                   .slice(
                     table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
                     <InquiryTableRow
@@ -585,14 +620,14 @@ export default function InquiryListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong>{table.selected.length}</strong> items?
           </>
         }
         action={
-          <Button variant='contained' color='error' onClick={handleDeleteRows}>
+          <Button variant="contained" color="error" onClick={handleDeleteRows}>
             Delete
           </Button>
         }
@@ -620,16 +655,16 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter((user) =>
-      (user.firstName && user.firstName + ' ' + user.lastName).toLowerCase().includes(name.toLowerCase()),
+      (user.firstName && user.firstName + ' ' + user.lastName)
+        .toLowerCase()
+        .includes(name.toLowerCase())
     );
   }
   if (assignTo) {
     inputData = inputData.filter((item) => item?.assignTo?.user?._id === assignTo?.value);
   }
   if (startDate && endDate) {
-    inputData = inputData.filter((user) =>
-      isBetween(user.date, startDate, endDate),
-    );
+    inputData = inputData.filter((user) => isBetween(user.date, startDate, endDate));
   }
 
   return inputData;

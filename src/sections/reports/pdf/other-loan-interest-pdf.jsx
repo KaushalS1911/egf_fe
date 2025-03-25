@@ -109,9 +109,10 @@ export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, f
     { label: 'Open date', flex: 1 },
     { label: 'Open loan amt', flex: 1 },
     { label: 'charge', flex: 1 },
+    { label: 'Day', flex: 0.3 },
     { label: 'Int.', flex: 0.3 },
     { label: 'Last int. pay date', flex: 1 },
-    { label: 'Day', flex: 0.3 },
+    { label: 'Pen. day', flex: 0.3 },
     { label: 'Pending int.', flex: 1 },
     { label: 'Next int. pay date', flex: 1 },
   ];
@@ -149,9 +150,12 @@ export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, f
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.date)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.amount}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{(row.otherCharge || 0).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.loan.scheme.interestRate}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.lastInterestPayDate)}</Text>
-        <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
+        <Text style={[styles.tableCell, { flex: 0.3 }]}>
+          {row.pendingDay > 0 ? row.pendingDay : 0}
+        </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{(row.pendingInterest || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.nextInstallmentDate)}</Text>
       </View>

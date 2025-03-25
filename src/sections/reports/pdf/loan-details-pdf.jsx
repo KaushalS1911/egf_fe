@@ -94,10 +94,10 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
               <Text style={[styles.tableCell, { flex: 1 }]}>Total Int</Text>
               <Text style={[styles.tableCell, { flex: 1 }]}>Penalty Amt</Text>
               <Text style={[styles.tableCell, { flex: 1 }]}>CR/OR Amt</Text>
-              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay After Adjust</Text>
+              <Text style={[styles.tableCell, { flex: 1 }]}>Uchak Amt</Text>
               <Text style={[styles.tableCell, { flex: 1.5 }]}>Entry Date</Text>
               <Text style={[styles.tableCell, { flex: 0.5 }]}>Days</Text>
-              <Text style={[styles.tableCell, { flex: 1 }]}>Uchak Amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay After Adjust</Text>
               <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
                 Total Pay Amt
               </Text>
@@ -117,13 +117,15 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loan.loanAmount}</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.scheme.interestRate}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loan.consultingCharge}</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.scheme.interestRate}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {item.interestAmount + item.consultingCharge}
+                </Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.loan.penalty}</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.cr_dr}</Text>
-                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.adjustedPay}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{item.uchakInterestAmount}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.createdAt)}</Text>
                 <Text style={[styles.tableCell, { flex: 0.5 }]}>{item.days}</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>{item.uchakInterestAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.adjustedPay}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
                   {item.amountPaid}
                 </Text>
@@ -147,12 +149,15 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeader]}>
               <Text style={[styles.tableCell, { flex: 0.1 }]}>#</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Loan No</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Loan Amount</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Pay Amount</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Pending Amount</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Pay Date</Text>
-              <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}>Remarks</Text>
+              <Text style={[styles.tableCell, { flex: 2.5 }]}>Loan No</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Loan Amount</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Int. loan amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay Amount</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pending Amount</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay Date</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Entry date</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Entry by</Text>
+              <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>Remarks</Text>
             </View>
             {partReleaseDetails?.map((item, index) => (
               <View
@@ -164,12 +169,17 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                 key={index}
               >
                 <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.loanNo}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.loanAmount}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.amountPaid}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.interestLoanAmount}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{fDate(item.date) || '-'}</Text>
-                <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}>
+                <Text style={[styles.tableCell, { flex: 2.5 }]}>{item.loan.loanNo}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loan.loanAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.interestLoanAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.amountPaid}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.pendingLoanAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.date) || '-'}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>
+                  {fDate(item.createdAt) || '-'}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.entryBy}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
                   {item.remark || '-'}
                 </Text>
               </View>
@@ -231,12 +241,15 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeader]}>
               <Text style={[styles.tableCell, { flex: 0.1 }]}>#</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Loan Amount</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Pay Amount</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>INT Loan Amt</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Pay Date</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Entry Date</Text>
-              <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}>Remarks</Text>
+              <Text style={[styles.tableCell, { flex: 2.5 }]}>Loan no</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Loan Amount</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Int. Loan amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay Amount</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>InT Loan Amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay Date</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Entry Date</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Remarks</Text>
+              <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>Entry By</Text>
             </View>
             {partPaymentDetails?.map((item, index) => (
               <View
@@ -248,13 +261,18 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                 key={index}
               >
                 <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.loanAmount}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.amountPaid}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.interestLoanAmount}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{fDate(item.date || '-')}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{fDate(item.createdAt)}</Text>
-                <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}>
-                  {item.remark || '-'}
+                <Text style={[styles.tableCell, { flex: 2.5 }]}>{item.loan.loanNo}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loan.loanAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.interestLoanAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.amountPaid}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>
+                  {item.interestLoanAmount - item.amountPaid}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.date || '-')}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.createdAt)}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.entry}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
+                  {item.entry}
                 </Text>
               </View>
             ))}
@@ -276,11 +294,16 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeader]}>
               <Text style={[styles.tableCell, { flex: 0.1 }]}>#</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Total Loan Amt</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Paid Loan Amt</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Pending Loan Amt</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Closing Charge</Text>
-              <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}>Net Amt</Text>
+              <Text style={[styles.tableCell, { flex: 2.5 }]}>Loan No</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Int. Loan No</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Total Loan Amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Paid Loan Amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pay Date</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Pending Loan Amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Closing Charge</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Entry Date</Text>
+              <Text style={[styles.tableCell, { flex: 1.5 }]}>Net Amt</Text>
+              <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>Entry By</Text>
             </View>
             {loanCloseDetails?.map((item, index) => (
               <View
@@ -292,14 +315,21 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                 key={index}
               >
                 <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.totalLoanAmount}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.netAmount || 0}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>
+                <Text style={[styles.tableCell, { flex: 2.5 }]}>{item.loan.loanNo}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.totalLoanAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.interestLoanAmount}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>
+                  {item.netAmount - item.closingCharge || 0}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.date)}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>
                   {item.totalLoanAmount - item.netAmount || 0}
                 </Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{item.closingCharge || 0}</Text>
-                <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}>
-                  {item.netAmount || '-'}
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.closingCharge || 0}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.createdAt) || 0}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.netAmount || '-'}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
+                  {item.entryBy || 0}
                 </Text>
               </View>
             ))}

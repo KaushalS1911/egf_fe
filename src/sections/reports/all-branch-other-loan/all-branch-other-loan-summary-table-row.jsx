@@ -48,33 +48,13 @@ export default function AllBranchOtherLoanSummaryTableRow({
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {row.pendingDay > 0 ? row.pendingDay : 0}
+        </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {Number(pendingInterest).toFixed(2) || 0}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(renewalDate)}</TableCell>
-        {/*<TableCell sx={{ fontSize: '12px', padding: '6px' }}>*/}
-        {/*  {fDate(lastAmtPayDate) || '-'}*/}
-        {/*</TableCell>*/}
-        {/*<TableCell*/}
-        {/*  sx={{*/}
-        {/*    fontSize: '12px',*/}
-        {/*    padding: '6px',*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  {parseFloat((loanAmount - interestLoanAmount).toFixed(2)) || 0}*/}
-        {/*</TableCell>*/}
-        {/*<TableCell sx={{ fontSize: '12px', padding: '6px' }}>{interestLoanAmount || 0}</TableCell>*/}
-        {/*<TableCell sx={{ fontSize: '12px', padding: '6px' }}>*/}
-        {/*  {fDate(lastInstallmentDate) || '-'}*/}
-        {/*</TableCell>*/}
-        {/*<TableCell sx={{ fontSize: '12px', padding: '6px' }}>*/}
-        {/*  {Number(totalPaidInterest).toFixed(2) || 0}*/}
-        {/*</TableCell>*/}
-
-        {/*<TableCell sx={{ fontSize: '12px', padding: '6px' }}>*/}
-        {/*  {fDate(nextInstallmentDate) || '-'}*/}
-        {/*</TableCell>*/}
         <TableCell sx={{ fontSize: '12px', padding: '6px', textAlign: 'center' }}>
           <Label
             variant="soft"

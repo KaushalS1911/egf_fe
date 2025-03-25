@@ -49,11 +49,16 @@ import LoanCloseDetailsTableRow from '../loan-details-table/loan-close-details-t
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'totalLoanAmt', label: 'Total loan amt' },
+  { id: 'loan.loanNo', label: 'Loan No' },
+  { id: 'loan.loanAmount', label: 'Total loan amt' },
+  { id: 'loan.interestLoanAmount', label: 'Int. loan amt' },
   { id: 'paidLoanAmt', label: 'Paid loan amt' },
+  { id: 'date', label: 'Pay date' },
   { id: 'pendingLoanAmt', label: 'pending loan Amt' },
-  { id: 'closinCharge', label: 'Closing charge' },
-  { id: 'netAmt', label: 'Net amt' },
+  { id: 'closingCharge', label: 'Closing charge' },
+  { id: 'netAmount', label: 'Net amt' },
+  { id: 'createdAt', label: 'Entry date' },
+  { id: 'entryBy', label: 'Entry by' },
 ];
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
@@ -94,6 +99,10 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
   );
   const closingCharge = loanCloseDetail.reduce(
     (prev, next) => prev + (Number(next?.closingCharge) || 0),
+    0
+  );
+  const intLoanAmt = loanCloseDetail.reduce(
+    (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
     0
   );
 
@@ -262,9 +271,7 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 
@@ -310,12 +317,17 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {totalLoanAmount.toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {intLoanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {netAmount.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {(totalLoanAmount - netAmount).toFixed(0)}
                   </TableCell>
@@ -325,6 +337,8 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {netAmount.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
                 {/*<TableNoData notFound={notFound} />*/}
               </TableBody>

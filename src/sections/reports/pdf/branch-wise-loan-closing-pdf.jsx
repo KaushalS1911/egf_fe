@@ -129,7 +129,7 @@ export default function BranchWiseLoanClosingPdf({ selectedBranch, configs, loan
     { value: fDate(new Date()) || '-', label: 'Date' },
   ];
 
-  const rowsPerPage = 18;
+  const rowsPerPage = 17;
   const pages = [];
   let currentPageRows = [];
 

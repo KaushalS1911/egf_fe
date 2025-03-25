@@ -14,7 +14,7 @@ import { fDate } from '../../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export default function GoldLoanPartPaymateDetailsTableRow({
+export default function OtherGoldLoanIntrestDetailseTableRow({
   row,
   index,
   selected,
@@ -23,8 +23,19 @@ export default function GoldLoanPartPaymateDetailsTableRow({
   onDeleteRow,
   handleClick,
 }) {
-  const { loan, amountPaid } = row;
-  const { loanNo, customer, loanAmount, issueDate, interestLoanAmount, scheme } = loan;
+  const { from, to, penalty, days, otherLoan, amountPaid } = row;
+  const {
+    date,
+    otherName,
+    loan,
+    otherNumber,
+    percentage,
+    cashAmount,
+    bankAmount,
+    amount,
+    createdAt,
+  } = otherLoan;
+  const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -33,23 +44,22 @@ export default function GoldLoanPartPaymateDetailsTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ padding: '6px' }}>{index + 1}</TableCell>
-        <TableCell
-          sx={{
-            padding: '6px',
-          }}
-        >
-          {loanNo}
-        </TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(date)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{loanNo}</TableCell>
         <TableCell sx={{ padding: '6px' }}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ padding: '6px' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{scheme.interestRate}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{interestLoanAmount.toFixed(2)}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{fDate(row.createdAt)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{otherName}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{otherNumber}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{amount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{percentage}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(from)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(to)}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{cashAmount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{bankAmount}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{row.amountPaid}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{fDate(createdAt)}</TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
@@ -96,7 +106,7 @@ export default function GoldLoanPartPaymateDetailsTableRow({
   );
 }
 
-GoldLoanPartPaymateDetailsTableRow.propTypes = {
+OtherGoldLoanIntrestDetailseTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

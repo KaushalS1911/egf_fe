@@ -56,42 +56,30 @@ import { TableCell, TableRow } from '@mui/material';
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'LoanNo', label: 'Loan no.' },
-  { id: 'CustomerName', label: 'Customer name' },
-  { id: 'othername', label: 'Other name' },
-  { id: 'otherno', label: 'Other no.' },
-  { id: 'int%', label: 'int rate (%)' },
+  { id: 'firstName', label: 'Customer name' },
+  { id: 'otherName', label: 'Other name' },
+  { id: 'otherNumber', label: 'Other no.' },
+  { id: 'percentage', label: 'int rate (%)' },
   { id: 'fund', label: 'Fund' },
-  { id: 'opendate', label: 'Open date' },
+  { id: 'date', label: 'Open date' },
   { id: 'otherLoanAmount', label: 'Other loan amt' },
-  { id: 'totalint.', label: 'Total int.' },
-  { id: 'Day', label: ' Day' },
-  { id: 'closeamt', label: 'closeAmt' },
+  { id: 'totalInterestAmt.', label: 'Total int.' },
+  { id: 'day', label: ' Day' },
+  { id: 'closingAmount', label: 'closeAmt' },
   { id: 'pendingAmt', label: 'Pending amt' },
-  { id: 'closedate', label: 'Close date' },
+  { id: 'closeDate', label: 'Close date' },
   { id: 'charge', label: 'Charge' },
-  { id: 'totalcloseamt', label: 'Total close amt' },
-  { id: 'Status', label: 'Status' },
+  { id: 'totalCloseamt', label: 'Total close amt' },
+  { id: 'status', label: 'Status' },
 ];
-const STATUS_OPTIONS = [
-  { value: 'All', label: 'All' },
-  { value: 'Issued', label: 'Issued' },
-  {
-    value: 'Disbursed',
-    label: 'Disbursed',
-  },
-  { value: 'Regular', label: 'Regular' },
-  {
-    value: 'Overdue',
-    label: 'Overdue',
-  },
-];
+
 const defaultFilters = {
   username: '',
   status: 'All',
   startDate: null,
   endDate: null,
   branch: '',
-  issuedBy: '',
+  otherName: '',
 };
 
 // ----------------------------------------------------------------------
@@ -136,9 +124,9 @@ export default function OtherLoanCloseSummaryListView() {
     0
   );
 
-  // useEffect(() => {
-  //   fetchStates();
-  // }, [otherLoanReports]);
+  useEffect(() => {
+    fetchStates();
+  }, [otherLoanReports]);
   const dataFiltered = applyFilter({
     inputData: otherLoanReports,
     comparator: getComparator(table.order, table.orderBy),
@@ -249,24 +237,17 @@ export default function OtherLoanCloseSummaryListView() {
   if (otherLoanReportsLoading) {
     return <LoadingScreen />;
   }
-  //
-  // function fetchStates() {
-  //   dataFiltered?.map((data) => {
-  //     setOptions((item) => {
-  //       if (!item.find((option) => option.value === data.issuedBy._id)) {
-  //         return [
-  //           ...item,
-  //           {
-  //             name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
-  //             value: data.issuedBy._id,
-  //           },
-  //         ];
-  //       } else {
-  //         return item;
-  //       }
-  //     });
-  //   });
-  // }
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option === data.otherName)) {
+          return [...item, data.otherName];
+        } else {
+          return item;
+        }
+      });
+    });
+  }
 
   return (
     <>
@@ -288,45 +269,6 @@ export default function OtherLoanCloseSummaryListView() {
         />
 
         <Card>
-          <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <>
-                    <Label
-                      style={{ margin: '5px' }}
-                      variant={
-                        ((tab.value === 'All' || tab.value == filters.status) && 'filled') || 'soft'
-                      }
-                      color={
-                        (tab.value === 'Regular' && 'success') ||
-                        (tab.value === 'Overdue' && 'error') ||
-                        (tab.value === 'Disbursed' && 'info') ||
-                        (tab.value === 'Issued' && 'secondary') ||
-                        'default'
-                      }
-                    >
-                      {['Issued', 'Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
-                        ? otherLoanReports.filter((item) => item.status === tab.value).length
-                        : otherLoanReports.length}
-                    </Label>
-                  </>
-                }
-              />
-            ))}
-          </Tabs>
-
           <OtherLoanCloseSummaryTableToolbar
             filters={filters}
             onFilters={handleFilters}
@@ -391,9 +333,7 @@ export default function OtherLoanCloseSummaryListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 
@@ -512,7 +452,7 @@ export default function OtherLoanCloseSummaryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch, issuedBy } = filters;
+  const { username, status, startDate, endDate, branch, otherName } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -533,10 +473,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.firstName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.lastName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.loanNo?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.contact?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.otherNumber?.toLowerCase()?.includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {
@@ -545,13 +486,12 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (branch) {
     inputData = inputData.filter((loan) => loan.loan.customer.branch._id === branch._id);
   }
-  // if (issuedBy) {
-  //   inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
-  // }
+  if (otherName) {
+    inputData = inputData.filter((item) => item?.otherName === otherName);
+  }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.closeDaTe), startDate, endDate));
   }
-  console.log(inputData, '00000000');
 
   return inputData;
 }

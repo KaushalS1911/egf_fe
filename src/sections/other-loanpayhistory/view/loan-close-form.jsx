@@ -38,6 +38,8 @@ const TABLE_HEAD = [
   { id: 'closingCharge', label: 'Closing Charge' },
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'payDate', label: 'Pay Date' },
+  { id: 'cashAmt', label: 'Cash Amt' },
+  { id: 'bankAmt', label: 'Bank Amt' },
   { id: 'remark', label: 'Remark' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -138,7 +140,6 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
   useEffect(() => {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
-  console.log(user, '111111111111');
 
   const onSubmit = handleSubmit(async (data) => {
     let paymentDetail = {
@@ -410,6 +411,12 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {fDate(row.payDate) || '-'}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.paymentDetail.cashAmount || 0}
+              </TableCell>{' '}
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.paymentDetail.bankAmount || 0}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.remark || '-'}

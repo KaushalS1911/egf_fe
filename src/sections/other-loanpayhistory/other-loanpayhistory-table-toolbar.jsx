@@ -22,6 +22,8 @@ export default function OtherLoanpayhistoryTableToolbar({ filters, onFilters, da
 
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [renewStartDateOpen, setRenewStartDateOpen] = useState(false);
+  const [renewEndDateOpen, setRenewEndDateOpen] = useState(false);
 
   const handleFilterName = useCallback(
     (event) => {
@@ -58,6 +60,39 @@ export default function OtherLoanpayhistoryTableToolbar({ filters, onFilters, da
       } else {
         console.warn('Invalid date selected');
         onFilters('endDate', null);
+      }
+    },
+    [onFilters]
+  );
+  const handleFilterRenewStartDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('renewStartDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('renewStartDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('renewStartDate', null);
+      }
+    },
+    [onFilters]
+  );
+
+  const handleFilterRenewEndDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('renewEndDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('renewEndDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('renewEndDate', null);
       }
     },
     [onFilters]
@@ -133,6 +168,62 @@ export default function OtherLoanpayhistoryTableToolbar({ filters, onFilters, da
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
+                fullWidth: true,
+                error: dateError,
+                helperText: dateError && 'End date must be later than start date',
+              },
+            }}
+            sx={{
+              maxWidth: { md: 200 },
+              [`& .${formHelperTextClasses.root}`]: {
+                position: { md: 'absolute' },
+                bottom: { md: -40 },
+              },
+              label: {
+                mt: -0.8,
+                fontSize: '14px',
+              },
+              '& .MuiInputLabel-shrink': {
+                mt: 0,
+              },
+              input: { height: 7 },
+            }}
+          />{' '}
+          <DatePicker
+            label="Renew Start date"
+            value={filters.renewStartDate ? moment(filters.renewStartDate).toDate() : null}
+            open={renewStartDateOpen}
+            onClose={() => setRenewStartDateOpen(false)}
+            onChange={handleFilterRenewStartDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setRenewStartDateOpen(true),
+                fullWidth: true,
+              },
+            }}
+            sx={{
+              maxWidth: { md: 200 },
+              label: {
+                mt: -0.8,
+                fontSize: '14px',
+              },
+              '& .MuiInputLabel-shrink': {
+                mt: 0,
+              },
+              input: { height: 7 },
+            }}
+          />
+          <DatePicker
+            label="Renew End date"
+            value={filters.renewEndDate}
+            open={renewEndDateOpen}
+            onClose={() => setRenewEndDateOpen(false)}
+            onChange={handleFilterRenewEndDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setRenewEndDateOpen(true),
                 fullWidth: true,
                 error: dateError,
                 helperText: dateError && 'End date must be later than start date',

@@ -67,7 +67,7 @@ export default function OtherLoanCloseSummaryTableRow({
           {Number(closingAmount || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {Number(row.amount - closingAmount || 0).toFixed(2)}
+          {Number(pendingInterest || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {fDate(row.closeDate) || '-'}

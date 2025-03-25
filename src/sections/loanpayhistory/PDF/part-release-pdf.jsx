@@ -233,7 +233,6 @@ const useStyles = () =>
 
 export default function PartReleasePdf({ selectedRow, configs }) {
   const styles = useStyles();
-  console.log(selectedRow, '111');
   return (
     <>
       <Document>

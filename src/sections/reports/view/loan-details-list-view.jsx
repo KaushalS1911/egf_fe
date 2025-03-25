@@ -27,7 +27,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import NewGoldLonListView from '../daily-reports/daily-reports-list-view/new-gold-lon-list-view.jsx';
 import GoldLoanInterestListView from '../daily-reports/daily-reports-list-view/gold-loan-interest-list-view.jsx';
-import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-view/gold-loan-part-payment-list-view.jsx';
+import GoldLoanPartCloseListView from '../daily-reports/daily-reports-list-view/gold-loan-part-close-list-view.jsx';
 import GoldLoanUchakPartListView from '../daily-reports/daily-reports-list-view/gold-loan-uchak-part-list-view.jsx';
 import axios from 'axios';
 

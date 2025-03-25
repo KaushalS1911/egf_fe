@@ -36,14 +36,16 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
-  { id: 'LoanNo', label: 'Loan no.' },
+  { id: 'loan.loanNo', label: 'Loan no.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'LoanAmount', label: 'loan amt' },
-  { id: 'Rate', label: 'Rate' },
-  { id: 'IssueDate', label: 'Issue date' },
-  { id: 'LoanIntAmt', label: 'Loan int. amt' },
-  { id: 'UchakAmt', label: 'Uchak amt' },
-  { id: 'EntryDate', label: ' Entry date' },
+  { id: 'loan.loanAmount', label: 'loan amt' },
+  { id: 'int', label: 'Int(%)' },
+  { id: 'ConCharge', label: 'Con. charge' },
+  { id: 'loan.issueDate', label: 'Issue date' },
+  { id: 'loan.interestLoanAmount', label: 'Loan int. amt' },
+  { id: 'amountPaid', label: 'Uchak amt' },
+  { id: 'date', label: 'Pay date' },
+  { id: 'createdAt', label: ' Entry date' },
 ];
 
 const defaultFilters = {
@@ -67,11 +69,17 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
   const [filters, setFilters] = useState(defaultFilters);
 
   const int = uchakPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+    (prev, next) =>
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.05 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
   const loanAmt = uchakPayment.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const conCharge = uchakPayment.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
     0
   );
   const intLoanAmt = uchakPayment.reduce(
@@ -161,10 +169,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Typography sx={{ fontSize: 22, fontWeight: 600 }}>
-          {' '}
-          Gold Loan uchak part Details
-        </Typography>
+        <Typography sx={{ fontSize: 22, fontWeight: 600 }}> Loan uchak part Details</Typography>
         <Card>
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
@@ -265,6 +270,9 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {(int / uchakPayment.length).toFixed(2)}
                   </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(conCharge / uchakPayment.length).toFixed(2)}
+                  </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {intLoanAmt.toFixed(0)}
@@ -272,6 +280,7 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {amountPaid.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
               </TableBody>

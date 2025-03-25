@@ -56,19 +56,20 @@ import { TableCell, TableRow } from '@mui/material';
 const TABLE_HEAD = [
   { id: 'index', label: '#' },
   { id: 'LoanNo', label: 'Loan no.' },
-  { id: 'CustomerName', label: 'Customer name' },
-  { id: 'othername', label: 'Other name' },
-  { id: 'otherno', label: 'Other no.' },
-  { id: 'int%', label: 'int rate (%)' },
-  { id: 'opendate', label: 'Open date' },
-  { id: 'otherLoanAmount', label: 'Other loan amt' },
-  { id: 'charge', label: 'Charge' },
+  { id: 'firstName', label: 'Customer name' },
+  { id: 'otherName', label: 'Other name' },
+  { id: 'otherNumber', label: 'Other no.' },
+  { id: 'interestRate', label: 'int rate (%)' },
+  { id: 'date', label: 'Open date' },
+  { id: 'amount', label: 'Other loan amt' },
+  { id: 'otherCharge', label: 'Charge' },
+  { id: 'day', label: ' Day' },
   { id: 'int', label: 'Int.' },
-  { id: 'lastintpaydate', label: 'Last oint. pay date' },
-  { id: 'Day', label: ' Day' },
+  { id: 'lastintpaydate', label: 'Last int. pay date' },
+  { id: 'pendingDay', label: 'Pending day' },
   { id: 'pendingAmt', label: 'Pending int.' },
   { id: 'nextointpaydayte', label: 'Next int. pay date' },
-  { id: 'Status', label: 'Status' },
+  { id: 'status', label: 'Status' },
 ];
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
@@ -95,7 +96,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function OtherLonaInterestListView() {
+export default function OtherLoanInterestListView() {
   const [options, setOptions] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const { otherLoanReports, otherLoanReportsLoading } = useGetOtherLoanReports();
@@ -124,6 +125,10 @@ export default function OtherLonaInterestListView() {
   );
   const day = otherLoanReports.reduce(
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
+    0
+  );
+  const penDay = otherLoanReports.reduce(
+    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
     0
   );
   const closeAmt = otherLoanReports.reduce(
@@ -390,9 +395,7 @@ export default function OtherLonaInterestListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
-                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                 }}
               />
 
@@ -443,11 +446,14 @@ export default function OtherLonaInterestListView() {
                     {closingCharge.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(day / otherLoanReports.length).toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {totalInterestAmt.toFixed(0)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(day / otherLoanReports.length).toFixed(0)}
+                    {(penDay / otherLoanReports.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingInterest.toFixed(0)}
@@ -456,6 +462,7 @@ export default function OtherLonaInterestListView() {
                   <TableCell
                     sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}
                   ></TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
@@ -527,10 +534,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.firstName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.lastName?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.loanNo?.toLowerCase()?.includes(username.toLowerCase()) ||
+        item?.loan?.customer?.contact?.toLowerCase()?.includes(usernametoLowerCase()) ||
+        item?.otherNumber.toLowerCase()?.includes(username.toLowerCase())
     );
   }
   if (status && status !== 'All') {

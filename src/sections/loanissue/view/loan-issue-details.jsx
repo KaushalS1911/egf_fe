@@ -184,40 +184,15 @@ const useStyles = () =>
           borderRadius: 5,
         },
         table: {
-          width: 'auto',
-          borderRadius: 10,
-          flex: 2,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
         },
-        tableFooter: {
-          borderTop: '1px solid #232C4B',
-          fontWeight: 'bold',
-          borderBottomLeftRadius: 10,
-          borderBottomRightRadius: 10,
-          paddingVertical: 8,
-        },
-        tableHeader: {
-          backgroundColor: '#5B9BD4',
-          fontWeight: 'bold',
-          borderTopLeftRadius: 10,
-          borderTopRightRadius: 10,
-          textWrap: 'nowrap',
-          paddingVertical: 6,
-        },
-        tableRow: {
-          flexDirection: 'row',
-          borderStyle: 'solid',
-          paddingVertical: 5,
-          textWrap: 'nowrap',
-        },
+
         tableRowBorder: {
-          borderBottom: '1.5px solid gray',
+          borderBottom: '0.5px solid gray',
         },
-        tableCell: {
-          flex: 1,
-          fontSize: 10,
-          paddingHorizontal: 4,
-          textAlign: 'center',
-        },
+
         heading: {
           fontSize: '13px',
           fontWeight: '500',
@@ -269,6 +244,32 @@ const useStyles = () =>
         detailsSpacing: {
           marginLeft: 20,
           fontSize: 10,
+        },
+        tableHeader: {
+          backgroundColor: '#5B9BD4',
+          fontWeight: 'bold',
+          textWrap: 'nowrap',
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
+        },
+        tableRow: {
+          flexDirection: 'row',
+          minHeight: 22,
+          // borderBottomWidth: 0.5,
+          borderBottomColor: '#c7c6c6',
+          pageBreakInside: 'avoid',
+        },
+        tableCell: {
+          padding: 5,
+          // borderRightWidth: 0.5,
+          // borderRightColor: '#b1b0b0',
+          textAlign: 'center',
+          fontSize: 10,
+        },
+        tableFooter: {
+          borderTop: '1px solid #232C4B',
+          fontWeight: 'bold',
+          backgroundColor: '#F2F2F2',
         },
       }),
     []
@@ -443,65 +444,71 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       Property Details
                     </Text>
                   </View>
-                  <View style={[styles.tableRow, styles.tableHeader]}>
-                    <Text style={[styles.tableCell, { minWidth: 100 }]}>Property Name</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>Qty</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>Total Wt</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>Net Wt</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>Net Amt</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>Part Close Date</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>Sign</Text>
-                  </View>
+                  <View
+                    style={{
+                      border: '1px solid #b1b0b0',
+                      borderTopLeftRadius: 10,
+                      borderTopRightRadius: 10,
+                    }}
+                  >
+                    <View style={[styles.tableRow, styles.tableHeader]}>
+                      <Text style={[styles.tableCell, { flex: 2 }]}>Property Name</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>Qty</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>Total Wt</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>Net Wt</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>Net Amt</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>Part Close Date</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>Sign</Text>
+                    </View>
 
-                  {selectedRow.propertyDetails.map((row, index) => (
-                    <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
-                      <Text style={[styles.tableCell, { minWidth: 100 }]}>{row.type}</Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>{row.pcs}</Text>
+                    {selectedRow.propertyDetails.map((row, index) => (
+                      <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
+                        <Text style={[styles.tableCell, { flex: 2 }]}>{row.type}</Text>
+                        <Text style={[styles.tableCell, { flex: 1 }]}>{row.pcs}</Text>
+                        <Text style={[styles.tableCell, { flex: 1 }]}>
+                          {Number(row.totalWeight).toFixed(2)}
+                        </Text>
+                        <Text style={[styles.tableCell, { flex: 1 }]}>
+                          {Number(row.netWeight).toFixed(2)}
+                        </Text>
+                        <Text style={[styles.tableCell, { flex: 1 }]}>{row.netAmount}</Text>
+                        <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                        <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                      </View>
+                    ))}
+
+                    <View
+                      style={{
+                        ...styles.tableRow,
+                        ...styles.tableFooter,
+                        borderTopStyle: 'solid',
+                      }}
+                    >
+                      <Text style={[styles.tableCell, { flex: 2 }]}>Total</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>
-                        {Number(row.totalWeight).toFixed(2)}
+                        {selectedRow.propertyDetails.reduce(
+                          (prev, next) => prev + (Number(next?.pcs) || 0),
+                          0
+                        )}
                       </Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>
-                        {Number(row.netWeight).toFixed(2)}
+                        {selectedRow.propertyDetails
+                          .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
+                          .toFixed(2)}
                       </Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>{row.netAmount}</Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>
+                        {selectedRow.propertyDetails
+                          .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
+                          .toFixed(2)}
+                      </Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>
+                        {selectedRow.propertyDetails
+                          .reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)
+                          .toFixed(2)}
+                      </Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}></Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}></Text>
                     </View>
-                  ))}
-
-                  <View
-                    style={{
-                      ...styles.tableRow,
-                      ...styles.tableFooter,
-                      borderTopWidth: 3,
-                      borderTopColor: '#000',
-                      borderTopStyle: 'solid',
-                    }}
-                  >
-                    <Text style={[styles.tableCell, { minWidth: 100 }]}>Total</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
-                      {selectedRow.propertyDetails.reduce(
-                        (prev, next) => prev + (Number(next?.pcs) || 0),
-                        0
-                      )}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
-                      {selectedRow.propertyDetails
-                        .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
-                        .toFixed(2)}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
-                      {selectedRow.propertyDetails
-                        .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
-                        .toFixed(2)}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
-                      {selectedRow.propertyDetails
-                        .reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0)
-                        .toFixed(2)}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}></Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}></Text>
                   </View>
                 </View>
               </View>

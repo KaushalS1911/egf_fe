@@ -56,9 +56,7 @@ export default function InterestReportsTableRow({ row }) {
         </TableCell>{' '}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.issueDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {loanAmount && interestLoanAmount ? loanAmount - interestLoanAmount : '0'}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount - interestLoanAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {interestLoanAmount ? interestLoanAmount : '0'}
         </TableCell>
@@ -77,7 +75,7 @@ export default function InterestReportsTableRow({ row }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {lastInstallmentDate ? fDate(lastInstallmentDate) : '-'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.day > 0 ? row.day : '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.day > 0 ? row.day : 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{(row.pendingInterest || 0).toFixed(2)}</TableCell>
       </TableRow>
     </>
