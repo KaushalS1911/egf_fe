@@ -37,7 +37,7 @@ const useStyles = () =>
         },
         tableRow: {
           flexDirection: 'row',
-          minHeight: 22,
+          minHeight: 20,
           borderBottomWidth: 0.5,
           borderBottomColor: '#c7c6c6',
           pageBreakInside: 'avoid',
@@ -52,14 +52,18 @@ const useStyles = () =>
           textAlign: 'center',
         },
         tableCell: {
-          padding: 5,
+          padding: '4px 6px',
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
           fontSize: 6.5,
+          overflow: 'hidden',
         },
         numericCell: {
-          textAlign: 'right',
+          textAlign: 'center',
+        },
+        textCell: {
+          textAlign: 'left',
         },
         tableCellLast: {
           borderRightWidth: 0,
@@ -94,6 +98,19 @@ const useStyles = () =>
           fontSize: 10,
           flex: 2,
         },
+        mergedCell: {
+          padding: '4px 6px',
+          borderRightWidth: 0.5,
+          borderRightColor: '#b1b0b0',
+          textAlign: 'center',
+          fontSize: 6.5,
+          overflow: 'hidden',
+          backgroundColor: '#F4F6F8',
+          minHeight: 20,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
       }),
     []
   );
@@ -101,27 +118,27 @@ const useStyles = () =>
 export default function TotalInOutLoanReports({ selectedBranch, configs, loans, filterData }) {
   const styles = useStyles();
   const headers = [
-    { label: '#', flex: 0.1 },
-    { label: 'Loan No', flex: 2 },
-    { label: 'Issue date', flex: 1 },
-    { label: 'Customer name', flex: 2.5 },
-    { label: 'Total loan amt', flex: 1 },
-    { label: 'Part loan amt', flex: 1 },
-    { label: 'Int. loan amt', flex: 1 },
-    { label: 'Total wt', flex: 0.5 },
-    { label: 'Net wt', flex: 0.5 },
-    { label: 'Int. rate', flex: 0.4 },
-    { label: 'Total int.amt', flex: 1 },
-    { label: 'Other no', flex: 1.2 },
-    { label: 'Date', flex: 1 },
-    { label: 'Other name', flex: 0.4 },
-    { label: 'Other Loan amt', flex: 1 },
-    { label: 'Gross wt', flex: 0.5 },
-    { label: 'Net wt', flex: 0.5 },
-    { label: 'Other int(%)', flex: 0.5 },
-    { label: 'Other int amt', flex: 1 },
-    { label: 'Diff loan amt', flex: 1 },
-    { label: 'Diff int. amt', flex: 1 },
+    { label: '#', flex: 0.1, width: 40 },
+    { label: 'Loan No', flex: 1.2, width: 90 },
+    { label: 'Issue date', flex: 1, width: 80 },
+    { label: 'Customer name', flex: 2, width: 130 },
+    { label: 'Total loan amt', flex: 1, width: 90 },
+    { label: 'Part loan amt', flex: 1, width: 90 },
+    { label: 'Int. loan amt', flex: 1, width: 90 },
+    { label: 'Total wt', flex: 0.5, width: 70 },
+    { label: 'Net wt', flex: 0.5, width: 70 },
+    { label: 'Int. rate', flex: 0.4, width: 60 },
+    { label: 'Total int.amt', flex: 1, width: 90 },
+    { label: 'Other no', flex: 1.2, width: 90 },
+    { label: 'Date', flex: 1, width: 80 },
+    { label: 'Other name', flex: 0.4, width: 90 },
+    { label: 'Other Loan amt', flex: 1, width: 90 },
+    { label: 'Gross wt', flex: 0.5, width: 70 },
+    { label: 'Net wt', flex: 0.5, width: 70 },
+    { label: 'Other int(%)', flex: 0.5, width: 70 },
+    { label: 'Other int amt', flex: 1, width: 90 },
+    { label: 'Diff loan amt', flex: 1, width: 90 },
+    { label: 'Diff int. amt', flex: 1, width: 90 },
   ];
 
   const dataFilter = [
@@ -129,124 +146,156 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
+
   const rowsPerPage = 18;
   const pages = [];
   let currentPageRows = [];
+  let currentRowCount = 0;
 
-  loans.forEach((row, index) => {
-    const isAlternateRow = index % 2 !== 0;
-    const isLastRow = index === loans.length - 1;
+  // Process each loan group
+  Object.entries(loans).forEach(([loanId, otherLoans], loanIndex) => {
+    const firstRow = otherLoans[0];
+    const rowSpan = otherLoans.length;
 
-    currentPageRows.push(
-      <View
-        key={index}
-        style={[
-          styles.tableRow,
-          isAlternateRow ? styles.alternateRow : {},
-          isLastRow ? styles.lastTableRow : {},
-        ]}
-        wrap={false}
-      >
-        <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 2 }]}>{row.loan.loanNo}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.issueDate)}</Text>
-        <Text
-          style={[styles.tableCell, { flex: 2.5, fontSize: 6, padding: 5 }]}
-        >{`${row.loan.customer.firstName} ${row.loan.customer.middleName}\n ${row.loan.customer.lastName}`}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {Number(row.loan.loanAmount.toFixed(2) - row.loan.interestLoanAmount.toFixed(2))}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {Number(row.loan.interestLoanAmount).toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>
-          {row.loan.propertyDetails
-            .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
-            .toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>
-          {row.loan.propertyDetails
-            .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
-            .toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 0.4 }]}>
-          {Number(row.loan.scheme.interestRate).toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {Number(row.totalOtherInterestAmount).toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row.otherNumber}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.date)}</Text>
-        <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.otherName}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{Number(row.amount).toFixed(2)}</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.grossWt}</Text>{' '}
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.NetWt}</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{Number(row.percentage).toFixed(2)}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {Number(row.totalOtherInterestAmount).toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {row.amount.toFixed(2) - row.loan.interestLoanAmount.toFixed(2)}
-        </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {' '}
-          {row.totalInterestAmount.toFixed(2) - row.totalOtherInterestAmount.toFixed(2)}
-        </Text>
-      </View>
-    );
+    // Process each row in the loan group
+    otherLoans.forEach((row, index) => {
+      const isAlternateRow = currentRowCount % 2 !== 0;
+      const isLastRow = currentRowCount === Object.values(loans).flat().length - 1;
 
-    if ((index + 1) % rowsPerPage === 0 || index === loans.length - 1) {
-      const isFirstPage = pages.length === 0;
-      pages.push(
-        <Page key={pages.length} size="A4" style={styles.page} orientation="landscape">
-          {isFirstPage && (
+      currentPageRows.push(
+        <View
+          key={`${loanId}-${index}`}
+          style={[
+            styles.tableRow,
+            isAlternateRow ? styles.alternateRow : {},
+            isLastRow ? styles.lastTableRow : {},
+          ]}
+          wrap={false}
+        >
+          {/* Initial loan details - show in first row, empty cells in subsequent rows */}
+          {index === 0 ? (
             <>
-              <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
-              <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
-                {dataFilter.map((item, index) => (
-                  <View style={styles.row}>
-                    <Text style={styles.subHeading2}>{item.label || '-'}</Text>
-                    <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{item.value || '-'}</Text>
-                  </View>
-                ))}
-              </View>
-              <View
-                style={{
-                  textAlign: 'center',
-                  fontSize: 18,
-                  marginHorizontal: 15,
-                  marginTop: 10,
-                }}
-              >
-                <Text style={styles.termsAndConditionsHeaders}>TOTAL ALL IN OUT LOAN REPORTS</Text>
-              </View>{' '}
+              <Text style={[styles.tableCell, { flex: 0.1 }, styles.numericCell]}>{loanIndex + 1}</Text>
+              <Text style={[styles.tableCell, { flex: 1.2 }, styles.textCell]}>{row.loan.loanNo}</Text>
+              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{fDate(row.loan.issueDate)}</Text>
+              <Text style={[styles.tableCell, { flex: 2 }, styles.textCell]}>
+                {`${row.loan.customer.firstName} ${row.loan.customer.middleName} ${row.loan.customer.lastName}`}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{row.loan.loanAmount}</Text>
+              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+                {(row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+                {row.loan.interestLoanAmount.toFixed(2)}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>
+                {row.loan.propertyDetails
+                  .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
+                  .toFixed(2)}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>
+                {row.loan.propertyDetails
+                  .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
+                  .toFixed(2)}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 0.4 }, styles.numericCell]}>
+                {row.loan.scheme.interestRate.toFixed(2)}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+                {row.totalInterestAmount.toFixed(2)}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={[styles.tableCell, { flex: 0.1, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 1.2, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 2, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 0.5, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 0.5, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 0.4, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
             </>
           )}
-          <View style={{ flexGrow: 1, padding: '12px' }}>
-            <View style={styles.table}>
-              <View style={[styles.tableRow, styles.tableHeader]}>
-                {headers.map((header, i) => (
-                  <Text
-                    key={i}
-                    style={[
-                      styles.tableCell,
-                      { flex: header.flex },
-                      i === headers.length - 1 ? styles.tableCellLast : {},
-                    ]}
-                  >
-                    {header.label}
-                  </Text>
-                ))}
-              </View>
-              {currentPageRows}
-            </View>
-          </View>
-        </Page>
+
+          {/* Other loan details */}
+          <Text style={[styles.tableCell, { flex: 1.2 }, styles.textCell]}>{row.otherNumber}</Text>
+          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{fDate(row.date)}</Text>
+          <Text style={[styles.tableCell, { flex: 0.4 }, styles.textCell]}>{row.otherName}</Text>
+          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{Number(row.amount).toFixed(2)}</Text>
+          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{row.grossWt}</Text>
+          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{row.netWt}</Text>
+          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{Number(row.percentage).toFixed(2)}</Text>
+          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+            {Number(row.totalOtherInterestAmount).toFixed(2)}
+          </Text>
+          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+            {(row.amount - row.loan.interestLoanAmount).toFixed(2)}
+          </Text>
+          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+            {(row.totalInterestAmount - row.totalOtherInterestAmount).toFixed(2)}
+          </Text>
+        </View>
       );
-      currentPageRows = [];
-    }
+
+      currentRowCount++;
+
+      // Check if we need to create a new page
+      if (currentRowCount % rowsPerPage === 0 || currentRowCount === Object.values(loans).flat().length) {
+        const isFirstPage = pages.length === 0;
+        pages.push(
+          <Page key={pages.length} size="A4" style={styles.page} orientation="landscape">
+            {isFirstPage && (
+              <>
+                <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
+                <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
+                  {dataFilter.map((item, index) => (
+                    <View style={styles.row}>
+                      <Text style={styles.subHeading2}>{item.label || '-'}</Text>
+                      <Text style={styles.colon}>:</Text>
+                      <Text style={styles.subText}>{item.value || '-'}</Text>
+                    </View>
+                  ))}
+                </View>
+                <View
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 18,
+                    marginHorizontal: 15,
+                    marginTop: 10,
+                  }}
+                >
+                  <Text style={styles.termsAndConditionsHeaders}>TOTAL ALL IN OUT LOAN REPORTS</Text>
+                </View>{' '}
+              </>
+            )}
+            <View style={{ flexGrow: 1, padding: '12px' }}>
+              <View style={styles.table}>
+                <View style={[styles.tableRow, styles.tableHeader]}>
+                  {headers.map((header, i) => (
+                    <Text
+                      key={i}
+                      style={[
+                        styles.tableCell,
+                        { flex: header.flex },
+                        i === headers.length - 1 ? styles.tableCellLast : {},
+                      ]}
+                    >
+                      {header.label}
+                    </Text>
+                  ))}
+                </View>
+                {currentPageRows}
+              </View>
+            </View>
+          </Page>
+        );
+        currentPageRows = [];
+      }
+    });
   });
 
   return <Document>{pages}</Document>;
