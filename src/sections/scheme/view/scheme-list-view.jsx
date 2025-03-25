@@ -101,19 +101,6 @@ export default function SchemeListView() {
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-<<<<<<< HEAD
-  const
-    handleFilters = useCallback(
-      (name, value) => {
-        table.onResetPage();
-        setFilters((prevState) => ({
-          ...prevState,
-          [name]: value,
-        }));
-      },
-      [table],
-    );
-=======
   const handleFilters = useCallback(
     (name, value) => {
       console.log('name', value);
@@ -125,7 +112,6 @@ export default function SchemeListView() {
     },
     [table]
   );
->>>>>>> d182f4ab640e70d98dc15c107a17844163202f2b
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
