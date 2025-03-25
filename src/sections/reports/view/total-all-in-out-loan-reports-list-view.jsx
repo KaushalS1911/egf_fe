@@ -492,10 +492,10 @@ export default function OtherLonaInterestListView() {
                 {Object.entries(dataFiltered).map(([loanId, otherLoans], loanIndex) => {
                   const firstRow = otherLoans[0];
                   const rowSpan = otherLoans.length;
-                  
+
                   return otherLoans.map((row, index) => (
-                    <TableRow 
-                      key={row._id} 
+                    <TableRow
+                      key={row._id}
                       hover
                       sx={{
                         '&:last-child td': {
@@ -506,137 +506,139 @@ export default function OtherLonaInterestListView() {
                       {/* Show these cells only for the first row of each loan group */}
                       {index === 0 && (
                         <>
-                          <TableCell 
-                            sx={{ 
+                          <TableCell
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               textAlign: 'center',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[0].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {loanIndex + 1}
                           </TableCell>
-                          <TableCell 
-                            sx={{ 
+                          <TableCell
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[1].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {row.loan.loanNo}
                           </TableCell>
-                          
-                          <TableCell 
-                            sx={{ 
+
+                          <TableCell
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               textAlign: 'center',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[2].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {fDate(row.loan.issueDate)}
                           </TableCell>
-                          <TableCell 
-                            sx={{ 
+                          <TableCell
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[3].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {`${row.loan.customer.firstName || ''} ${row.loan.customer.middleName || ''} ${row.loan.customer.lastName || ''}`}
                           </TableCell>
-                          <TableCell 
+                          <TableCell
                             align="center"
-                            sx={{ 
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[4].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {row.loan.loanAmount}
                           </TableCell>
-                          <TableCell 
+                          <TableCell
                             align="center"
-                            sx={{ 
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[5].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
-                            {parseFloat((row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)) || 0}
+                            {parseFloat(
+                              (row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)
+                            ) || 0}
                           </TableCell>
-                          <TableCell 
+                          <TableCell
                             align="center"
-                            sx={{ 
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[6].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {row.loan.interestLoanAmount}
                           </TableCell>
-                          <TableCell 
+                          <TableCell
                             align="center"
-                            sx={{ 
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[7].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {row.loan.propertyDetails
                               .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
                               .toFixed(2)}
                           </TableCell>
-                          <TableCell 
+                          <TableCell
                             align="center"
-                            sx={{ 
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[8].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {row.loan.propertyDetails
                               .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
                               .toFixed(2)}
                           </TableCell>
-                          <TableCell 
+                          <TableCell
                             align="center"
-                            sx={{ 
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[9].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {row.loan.scheme.interestRate}
                           </TableCell>
-                          <TableCell 
+                          <TableCell
                             align="center"
-                            sx={{ 
+                            sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
                               backgroundColor: index === 0 ? 'rgba(244, 246, 248, 0.5)' : 'inherit',
                               width: TABLE_HEAD[10].width,
-                            }} 
+                            }}
                             rowSpan={rowSpan}
                           >
                             {(row.totalInterestAmount || 0).toFixed(2)}
@@ -644,9 +646,9 @@ export default function OtherLonaInterestListView() {
                         </>
                       )}
                       {/* Other Number cell */}
-                      <TableCell 
-                        align="left" 
-                        sx={{ 
+                      <TableCell
+                        align="left"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[11].width,
@@ -654,9 +656,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {row.otherNumber}
                       </TableCell>
-                      <TableCell 
+                      <TableCell
                         align="center"
-                        sx={{ 
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[12].width,
@@ -664,8 +666,8 @@ export default function OtherLonaInterestListView() {
                       >
                         {fDate(row.date)}
                       </TableCell>
-                      <TableCell 
-                        sx={{ 
+                      <TableCell
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[13].width,
@@ -673,9 +675,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {row.otherName}
                       </TableCell>
-                      <TableCell 
-                        align="center" 
-                        sx={{ 
+                      <TableCell
+                        align="center"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[14].width,
@@ -683,9 +685,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {row.amount}
                       </TableCell>
-                      <TableCell 
-                        align="center" 
-                        sx={{ 
+                      <TableCell
+                        align="center"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[15].width,
@@ -693,9 +695,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {row.grossWt}
                       </TableCell>
-                      <TableCell 
-                        align="center" 
-                        sx={{ 
+                      <TableCell
+                        align="center"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[16].width,
@@ -703,9 +705,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {row.netWt}
                       </TableCell>
-                      <TableCell 
-                        align="center" 
-                        sx={{ 
+                      <TableCell
+                        align="center"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[17].width,
@@ -713,9 +715,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {row.percentage}
                       </TableCell>
-                      <TableCell 
-                        align="center" 
-                        sx={{ 
+                      <TableCell
+                        align="center"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[18].width,
@@ -723,9 +725,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {row.totalOtherInterestAmount.toFixed(2)}
                       </TableCell>
-                      <TableCell 
-                        align="center" 
-                        sx={{ 
+                      <TableCell
+                        align="center"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[19].width,
@@ -733,9 +735,9 @@ export default function OtherLonaInterestListView() {
                       >
                         {(row.amount - row.loan.interestLoanAmount).toFixed(2)}
                       </TableCell>
-                      <TableCell 
-                        align="center" 
-                        sx={{ 
+                      <TableCell
+                        align="center"
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           width: TABLE_HEAD[20].width,
@@ -743,8 +745,8 @@ export default function OtherLonaInterestListView() {
                       >
                         {(row.totalInterestAmount - row.totalOtherInterestAmount).toFixed(2)}
                       </TableCell>
-                      <TableCell 
-                        sx={{ 
+                      <TableCell
+                        sx={{
                           fontSize: '11px',
                           padding: '4px 6px',
                           textAlign: 'center',

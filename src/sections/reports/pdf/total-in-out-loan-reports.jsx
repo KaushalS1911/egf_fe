@@ -119,7 +119,7 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
   const styles = useStyles();
   const headers = [
     { label: '#', flex: 0.1, width: 40 },
-    { label: 'Loan No', flex: 1.2, width: 90 },
+    { label: 'Loan No', flex: 2, width: 90 },
     { label: 'Issue date', flex: 1, width: 80 },
     { label: 'Customer name', flex: 2, width: 130 },
     { label: 'Total loan amt', flex: 1, width: 90 },
@@ -175,13 +175,21 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
           {/* Initial loan details - show in first row, empty cells in subsequent rows */}
           {index === 0 ? (
             <>
-              <Text style={[styles.tableCell, { flex: 0.1 }, styles.numericCell]}>{loanIndex + 1}</Text>
-              <Text style={[styles.tableCell, { flex: 1.2 }, styles.textCell]}>{row.loan.loanNo}</Text>
-              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{fDate(row.loan.issueDate)}</Text>
+              <Text style={[styles.tableCell, { flex: 0.1 }, styles.numericCell]}>
+                {loanIndex + 1}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 2 }, styles.textCell]}>
+                {row.loan.loanNo}
+              </Text>
+              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+                {fDate(row.loan.issueDate)}
+              </Text>
               <Text style={[styles.tableCell, { flex: 2 }, styles.textCell]}>
                 {`${row.loan.customer.firstName} ${row.loan.customer.middleName} ${row.loan.customer.lastName}`}
               </Text>
-              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{row.loan.loanAmount}</Text>
+              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+                {row.loan.loanAmount}
+              </Text>
               <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
                 {(row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)}
               </Text>
@@ -208,7 +216,7 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
           ) : (
             <>
               <Text style={[styles.tableCell, { flex: 0.1, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 1.2, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text style={[styles.tableCell, { flex: 2, backgroundColor: '#F4F6F8' }]}> </Text>
               <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
               <Text style={[styles.tableCell, { flex: 2, backgroundColor: '#F4F6F8' }]}> </Text>
               <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
@@ -225,10 +233,14 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
           <Text style={[styles.tableCell, { flex: 1.2 }, styles.textCell]}>{row.otherNumber}</Text>
           <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{fDate(row.date)}</Text>
           <Text style={[styles.tableCell, { flex: 0.4 }, styles.textCell]}>{row.otherName}</Text>
-          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{Number(row.amount).toFixed(2)}</Text>
+          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+            {Number(row.amount).toFixed(2)}
+          </Text>
           <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{row.grossWt}</Text>
           <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{row.netWt}</Text>
-          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{Number(row.percentage).toFixed(2)}</Text>
+          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>
+            {Number(row.percentage).toFixed(2)}
+          </Text>
           <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
             {Number(row.totalOtherInterestAmount).toFixed(2)}
           </Text>
@@ -244,7 +256,10 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
       currentRowCount++;
 
       // Check if we need to create a new page
-      if (currentRowCount % rowsPerPage === 0 || currentRowCount === Object.values(loans).flat().length) {
+      if (
+        currentRowCount % rowsPerPage === 0 ||
+        currentRowCount === Object.values(loans).flat().length
+      ) {
         const isFirstPage = pages.length === 0;
         pages.push(
           <Page key={pages.length} size="A4" style={styles.page} orientation="landscape">
@@ -268,7 +283,9 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
                     marginTop: 10,
                   }}
                 >
-                  <Text style={styles.termsAndConditionsHeaders}>TOTAL ALL IN OUT LOAN REPORTS</Text>
+                  <Text style={styles.termsAndConditionsHeaders}>
+                    TOTAL ALL IN OUT LOAN REPORTS
+                  </Text>
                 </View>{' '}
               </>
             )}
