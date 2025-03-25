@@ -21,6 +21,8 @@ export default function TotalAllInOutLoanReportsTableRow({
   selected,
   onEditRow,
   onDeleteRow,
+  isFirstRow,
+  rowSpan,
 }) {
   const { loan, day, pendingInterest, otherNumber, otherName, rate, renewalDate, status } = row;
   const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } = loan;
@@ -33,34 +35,35 @@ export default function TotalAllInOutLoanReportsTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{index + 1}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanNo}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(issueDate)}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{index + 1}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{loanNo}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{fDate(issueDate)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
           {`${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{loanAmount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{loanAmount}</TableCell>
         <TableCell
           sx={{
             fontSize: '12px',
             padding: '6px',
           }}
+          rowSpan={rowSpan}
         >
           {parseFloat((loanAmount - interestLoanAmount).toFixed(2)) || 0}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{interestLoanAmount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
           {loan.propertyDetails
             .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
             .toFixed(2)}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
           {loan.propertyDetails
             .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
             .toFixed(2)}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{scheme.interestRate}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{scheme.interestRate}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
           {(row.totalInterestAmount || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{otherNumber}</TableCell>
@@ -72,7 +75,7 @@ export default function TotalAllInOutLoanReportsTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.percentage}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {row.totalOtherInterestAmount.toFixed(2)}
-        </TableCell>{' '}
+        </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {(row.amount - interestLoanAmount).toFixed(2)}
         </TableCell>
@@ -146,4 +149,6 @@ TotalAllInOutLoanReportsTableRow.propTypes = {
   onSelectRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
+  isFirstRow: PropTypes.bool,
+  rowSpan: PropTypes.number,
 };

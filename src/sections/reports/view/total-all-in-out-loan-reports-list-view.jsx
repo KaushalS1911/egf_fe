@@ -119,92 +119,97 @@ export default function OtherLonaInterestListView() {
   const [tableData, setTableData] = useState(totalAllInoutLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const loanAmount = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
-  );
-  const amount = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.amount) || 0),
-    0
-  );
+  // const loanAmount = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+  //   0
+  // );
+  // const amount = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.amount) || 0),
+  //   0
+  // );
 
-  const intLoanAmount = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
-    0
-  );
-  const totalWt = totalAllInoutLoanReports?.reduce((prev, next) => {
-    const propertyTotal =
-      next?.loan?.propertyDetails?.reduce(
-        (sum, item) => sum + (Number(item?.totalWeight) || 0),
-        0
-      ) || 0;
+  // const intLoanAmount = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
+  //   0
+  // );
+  // const totalWt = totalAllInoutLoanReports?.reduce((prev, next) => {
+  //   const propertyTotal =
+  //     next?.loan?.propertyDetails?.reduce(
+  //       (sum, item) => sum + (Number(item?.totalWeight) || 0),
+  //       0
+  //     ) || 0;
 
-    return prev + propertyTotal;
-  }, 0);
-  const grossWt = totalAllInoutLoanReports?.reduce((prev, next) => {
-    const propertyTotal =
-      next?.loan?.propertyDetails?.reduce(
-        (sum, item) => sum + (Number(item?.grossWeight) || 0),
-        0
-      ) || 0;
+  //   return prev + propertyTotal;
+  // }, 0);
+  // const grossWt = totalAllInoutLoanReports?.reduce((prev, next) => {
+  //   const propertyTotal =
+  //     next?.loan?.propertyDetails?.reduce(
+  //       (sum, item) => sum + (Number(item?.grossWeight) || 0),
+  //       0
+  //     ) || 0;
 
-    return prev + propertyTotal;
-  }, 0);
+  //   return prev + propertyTotal;
+  // }, 0);
 
-  const netWt = totalAllInoutLoanReports?.loan?.propertyDetails.reduce(
-    (prev, next) => prev + (Number(next?.netWeight) || 0),
-    0
-  );
-  const int = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
-    0
-  );
-  const totalInterestAmount = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.totalInterestAmount) || 0),
-    0
-  );
-  const amt = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.amount) || 0),
-    0
-  );
-  const otherGrossWT = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.grossWt) || 0),
-    0
-  );
-  const otherNetWT = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.netWt) || 0),
-    0
-  );
-  const otherInt = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.percentage) || 0),
-    0
-  );
-  const intAmt = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.percentage) || 0),
-    0
-  );
-  const totalOtherInterestAmount = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.totalOtherInterestAmount) || 0),
-    0
-  );
+  // const netWt = totalAllInoutLoanReports?.loan?.propertyDetails.reduce(
+  //   (prev, next) => prev + (Number(next?.netWeight) || 0),
+  //   0
+  // );
+  // const int = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
+  //   0
+  // );
+  // const totalInterestAmount = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.totalInterestAmount) || 0),
+  //   0
+  // );
+  // const amt = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.amount) || 0),
+  //   0
+  // );
+  // const otherGrossWT = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.grossWt) || 0),
+  //   0
+  // );
+  // const otherNetWT = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.netWt) || 0),
+  //   0
+  // );
+  // const otherInt = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.percentage) || 0),
+  //   0
+  // );
+  // const intAmt = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.percentage) || 0),
+  //   0
+  // );
+  // const totalOtherInterestAmount = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.totalOtherInterestAmount) || 0),
+  //   0
+  // );
 
   // useEffect(() => {
   //   fetchStates();
   // }, [totalAllInoutLoanReports]);
+
+  console.log("totalAllInoutLoanReports", totalAllInoutLoanReports);
+  
   const dataFiltered = applyFilter({
     inputData: totalAllInoutLoanReports,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
-  const dataInPage = dataFiltered.slice(
+  // Convert grouped data to array for pagination
+  const flattenedData = Object.values(dataFiltered).flat();
+  const dataInPage = flattenedData.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!flattenedData.length && canReset) || !flattenedData.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -416,11 +421,11 @@ export default function OtherLonaInterestListView() {
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
+              rowCount={flattenedData.length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row._id)
+                  flattenedData.map((row) => row._id)
                 )
               }
               action={
@@ -437,7 +442,7 @@ export default function OtherLonaInterestListView() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
+                rowCount={flattenedData.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 sx={{
@@ -450,23 +455,79 @@ export default function OtherLonaInterestListView() {
               />
 
               <TableBody>
-                {dataFiltered
-                  .slice(
-                    table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
-                  )
-                  .map((row, index) => (
-                    <TotalAllInOutLoanReportsTableRow
-                      key={row._id}
-                      row={row}
-                      index={index}
-                      handleClick={() => handleClick(row._id)}
-                      selected={table.selected.includes(row._id)}
-                      onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row._id)}
-                      onEditRow={() => handleEditRow(row._id)}
-                    />
-                  ))}
+                {Object.entries(dataFiltered).map(([loanId, otherLoans], loanIndex) => {
+                  const firstRow = otherLoans[0];
+                  const rowSpan = otherLoans.length;
+                  
+                  return otherLoans.map((row, index) => (
+                    <TableRow key={row._id} hover>
+                      {/* Show these cells only for the first row of each loan group */}
+                      {index === 0 && (
+                        <>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {loanIndex + 1}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.loanNo}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {`${row.loan.customer.firstName || ''} ${row.loan.customer.middleName || ''} ${row.loan.customer.lastName || ''}`}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{fDate(row.loan.issueDate)}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.loanAmount}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {parseFloat((row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)) || 0}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.interestLoanAmount}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {row.loan.propertyDetails
+                              .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
+                              .toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {row.loan.propertyDetails
+                              .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
+                              .toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.scheme.interestRate}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {(row.totalInterestAmount || 0).toFixed(2)}
+                          </TableCell>
+                        </>
+                      )}
+                      {/* These cells are shown for every row */}
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.otherNumber}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.otherName}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.grossWt}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.netWt}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.percentage}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+                        {row.totalOtherInterestAmount.toFixed(2)}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+                        {(row.amount - row.loan.interestLoanAmount).toFixed(2)}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+                        {(row.totalInterestAmount - row.totalOtherInterestAmount).toFixed(2)}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px', textAlign: 'center' }}>
+                        <Label
+                          variant="soft"
+                          color={
+                            (row.status === 'Disbursed' && 'info') ||
+                            (row.status === 'Issued' && 'secondary') ||
+                            (row.status === 'Closed' && 'warning') ||
+                            (row.status === 'Overdue' && 'error') ||
+                            (row.status === 'Regular' && 'success') ||
+                            'default'
+                          }
+                        >
+                          {row.status}
+                        </Label>
+                      </TableCell>
+                    </TableRow>
+                  ));
+                })}
                 <TableNoData notFound={notFound} />
                 <TableRow
                   sx={{
@@ -482,69 +543,107 @@ export default function OtherLonaInterestListView() {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.loan.loanAmount) || 0), 0), 0).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.loan.loanAmount) - Number(item.loan.interestLoanAmount) || 0), 0), 0).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.loan.interestLoanAmount) || 0), 0), 0).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => {
+                        const propertyTotal = item.loan.propertyDetails?.reduce(
+                          (sum, detail) => sum + (Number(detail.totalWeight) || 0),
+                          0
+                        ) || 0;
+                        return loanSum + propertyTotal;
+                      }, 0), 0).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => {
+                        const propertyTotal = item.loan.propertyDetails?.reduce(
+                          (sum, detail) => sum + (Number(detail.grossWeight) || 0),
+                          0
+                        ) || 0;
+                        return loanSum + propertyTotal;
+                      }, 0), 0).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.loan.scheme.interestRate) || 0), 0), 0) / 
+                      Object.values(dataFiltered).reduce((sum, otherLoans) => sum + otherLoans.length, 0)).toFixed(2)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.totalInterestAmount) || 0), 0), 0).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {loanAmount}
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.amount) || 0), 0), 0).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(loanAmount - intLoanAmount).toFixed(0)}
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.grossWt) || 0), 0), 0).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {intLoanAmount.toFixed(0)}
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.netWt) || 0), 0), 0).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalWt.toFixed(0)}
-                  </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {grossWt.toFixed(0)}
-                  </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(int / totalAllInoutLoanReports.length).toFixed(2)}
-                  </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalInterestAmount.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {amount.toFixed(0)}
+                    {(Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.percentage) || 0), 0), 0) / 
+                      Object.values(dataFiltered).reduce((sum, otherLoans) => sum + otherLoans.length, 0)).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {otherGrossWT.toFixed(0)}
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.totalOtherInterestAmount) || 0), 0), 0).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {otherNetWT.toFixed(0)}
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.amount) - Number(item.loan.interestLoanAmount) || 0), 0), 0).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(otherInt / totalAllInoutLoanReports.length).toFixed(2)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalOtherInterestAmount.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(amount - intLoanAmount).toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(totalInterestAmount - totalOtherInterestAmount).toFixed(0)}
+                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
+                      sum + otherLoans.reduce((loanSum, item) => 
+                        loanSum + (Number(item.totalInterestAmount) - Number(item.totalOtherInterestAmount) || 0), 0), 0).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, flattenedData.length)}
                 />
               </TableBody>
             </Table>
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={flattenedData.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
@@ -581,15 +680,24 @@ export default function OtherLonaInterestListView() {
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch, issuedBy } = filters;
 
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
+  // Convert inputData to array if it's an object
+  const dataArray = Array.isArray(inputData) ? inputData : Object.values(inputData);
+
+  // Flatten the data structure to get all other loan entries
+  const flattenedData = dataArray.flatMap(loanGroup => 
+    Array.isArray(loanGroup) ? loanGroup : [loanGroup]
+  );
+
+  const stabilizedThis = flattenedData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  inputData = stabilizedThis.map((el) => el[0]);
+  let filteredData = stabilizedThis.map((el) => el[0]);
+
   if (username && username.trim()) {
-    inputData = inputData.filter(
+    filteredData = filteredData.filter(
       (item) =>
         (
           item.loan.customer.firstName +
@@ -606,20 +714,30 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   if (status && status !== 'All') {
-    inputData = inputData.filter((item) => item.status === status);
+    filteredData = filteredData.filter((item) => item.status === status);
   }
+
   if (branch) {
-    inputData = inputData.filter((loan) => loan.loan.customer.branch._id === branch._id);
+    filteredData = filteredData.filter((loan) => loan.loan.customer.branch._id === branch._id);
   }
-  // if (issuedBy) {
-  //   inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
-  // }
+
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((item) =>
+    filteredData = filteredData.filter((item) =>
       isBetween(new Date(item.loan.issueDate), startDate, endDate)
     );
   }
 
-  return inputData;
+  // Group the filtered data by loan ID
+  const groupedData = filteredData.reduce((acc, item) => {
+    const loanId = item.loan._id;
+    if (!acc[loanId]) {
+      acc[loanId] = [];
+    }
+    acc[loanId].push(item);
+    return acc;
+  }, {});
+
+  return groupedData;
 }

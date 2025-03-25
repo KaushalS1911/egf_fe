@@ -100,7 +100,6 @@ export default function SchemeListView() {
   const
     handleFilters = useCallback(
       (name, value) => {
-        console.log('name', value);
         table.onResetPage();
         setFilters((prevState) => ({
           ...prevState,

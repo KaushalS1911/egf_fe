@@ -7,10 +7,10 @@ export function useGetTotalAllInoutLoanReports() {
   const { user } = useAuthContext();
   const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/all-in-out-report`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
-
+  
   const memoizedValue = useMemo(
     () => ({
-      totalAllInoutLoanReports: data?.data || [],
+      totalAllInoutLoanReports: (data?.data && Object.values(data?.data)) || [],
       totalAllInoutLoanReportsLoading: isLoading,
       totalAllInoutLoanReportsError: error,
       totalAllInoutLoanReportsValidating: isValidating,
