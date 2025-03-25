@@ -50,6 +50,7 @@ export default function WhatsappConfigs() {
                 onChange={(e) => setWhatsappConfig({ ...whatsappConfig, contact1: e.target.value })}
                 size="small"
                 fullWidth
+                placeholder={'App Contact 1'}
               />
             </Stack>
           </Card>
@@ -63,6 +64,7 @@ export default function WhatsappConfigs() {
                 onChange={(e) => setWhatsappConfig({ ...whatsappConfig, contact2: e.target.value })}
                 size="small"
                 fullWidth
+                placeholder={'WhatsApp Contact 2'}
               />
             </Stack>
           </Card>
