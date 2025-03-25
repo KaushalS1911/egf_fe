@@ -119,7 +119,6 @@ export default function OtherLonaInterestListView() {
   const [tableData, setTableData] = useState(totalAllInoutLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
 
-<<<<<<< HEAD
   // const loanAmount = totalAllInoutLoanReports.reduce(
   //   (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
   //   0
@@ -128,18 +127,17 @@ export default function OtherLonaInterestListView() {
   //   (prev, next) => prev + (Number(next?.amount) || 0),
   //   0
   // );
-=======
+
   const data = Object.values(totalAllInoutLoanReports);
 
-  const loanAmount = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
-  );
+  // const loanAmount = totalAllInoutLoanReports.reduce(
+  //   (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+  //   0
+  // );
   const amount = totalAllInoutLoanReports.reduce(
     (prev, next) => prev + (Number(next?.amount) || 0),
     0
   );
->>>>>>> d182f4ab640e70d98dc15c107a17844163202f2b
 
   // const intLoanAmount = totalAllInoutLoanReports.reduce(
   //   (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
@@ -205,8 +203,8 @@ export default function OtherLonaInterestListView() {
   //   fetchStates();
   // }, [totalAllInoutLoanReports]);
 
-  console.log("totalAllInoutLoanReports", totalAllInoutLoanReports);
-  
+  console.log('totalAllInoutLoanReports', totalAllInoutLoanReports);
+
   const dataFiltered = applyFilter({
     inputData: totalAllInoutLoanReports,
     comparator: getComparator(table.order, table.orderBy),
@@ -469,7 +467,7 @@ export default function OtherLonaInterestListView() {
                 {Object.entries(dataFiltered).map(([loanId, otherLoans], loanIndex) => {
                   const firstRow = otherLoans[0];
                   const rowSpan = otherLoans.length;
-                  
+
                   return otherLoans.map((row, index) => (
                     <TableRow key={row._id} hover>
                       {/* Show these cells only for the first row of each loan group */}
@@ -478,16 +476,26 @@ export default function OtherLonaInterestListView() {
                           <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
                             {loanIndex + 1}
                           </TableCell>
-                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.loanNo}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {row.loan.loanNo}
+                          </TableCell>
                           <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
                             {`${row.loan.customer.firstName || ''} ${row.loan.customer.middleName || ''} ${row.loan.customer.lastName || ''}`}
                           </TableCell>
-                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{fDate(row.loan.issueDate)}</TableCell>
-                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.loanAmount}</TableCell>
                           <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
-                            {parseFloat((row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)) || 0}
+                            {fDate(row.loan.issueDate)}
                           </TableCell>
-                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.interestLoanAmount}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {row.loan.loanAmount}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {parseFloat(
+                              (row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)
+                            ) || 0}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {row.loan.interestLoanAmount}
+                          </TableCell>
                           <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
                             {row.loan.propertyDetails
                               .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
@@ -498,20 +506,30 @@ export default function OtherLonaInterestListView() {
                               .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
                               .toFixed(2)}
                           </TableCell>
-                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>{row.loan.scheme.interestRate}</TableCell>
+                          <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
+                            {row.loan.scheme.interestRate}
+                          </TableCell>
                           <TableCell sx={{ fontSize: '12px', padding: '6px' }} rowSpan={rowSpan}>
                             {(row.totalInterestAmount || 0).toFixed(2)}
                           </TableCell>
                         </>
                       )}
                       {/* These cells are shown for every row */}
-                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.otherNumber}</TableCell>
-                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
-                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.otherName}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+                        {row.otherNumber}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+                        {fDate(row.date)}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+                        {row.otherName}
+                      </TableCell>
                       <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
                       <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.grossWt}</TableCell>
                       <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.netWt}</TableCell>
-                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.percentage}</TableCell>
+                      <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+                        {row.percentage}
+                      </TableCell>
                       <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
                         {row.totalOtherInterestAmount.toFixed(2)}
                       </TableCell>
@@ -554,90 +572,218 @@ export default function OtherLonaInterestListView() {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.loan.loanAmount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) => loanSum + (Number(item.loan.loanAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.loan.loanAmount) - Number(item.loan.interestLoanAmount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) =>
+                              loanSum +
+                              (Number(item.loan.loanAmount) -
+                                Number(item.loan.interestLoanAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.loan.interestLoanAmount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) =>
+                              loanSum + (Number(item.loan.interestLoanAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => {
-                        const propertyTotal = item.loan.propertyDetails?.reduce(
-                          (sum, detail) => sum + (Number(detail.totalWeight) || 0),
-                          0
-                        ) || 0;
-                        return loanSum + propertyTotal;
-                      }, 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce((loanSum, item) => {
+                            const propertyTotal =
+                              item.loan.propertyDetails?.reduce(
+                                (sum, detail) => sum + (Number(detail.totalWeight) || 0),
+                                0
+                              ) || 0;
+                            return loanSum + propertyTotal;
+                          }, 0),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => {
-                        const propertyTotal = item.loan.propertyDetails?.reduce(
-                          (sum, detail) => sum + (Number(detail.grossWeight) || 0),
-                          0
-                        ) || 0;
-                        return loanSum + propertyTotal;
-                      }, 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce((loanSum, item) => {
+                            const propertyTotal =
+                              item.loan.propertyDetails?.reduce(
+                                (sum, detail) => sum + (Number(detail.grossWeight) || 0),
+                                0
+                              ) || 0;
+                            return loanSum + propertyTotal;
+                          }, 0),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.loan.scheme.interestRate) || 0), 0), 0) / 
-                      Object.values(dataFiltered).reduce((sum, otherLoans) => sum + otherLoans.length, 0)).toFixed(2)}
+                    {(
+                      Object.values(dataFiltered).reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) =>
+                              loanSum + (Number(item.loan.scheme.interestRate) || 0),
+                            0
+                          ),
+                        0
+                      ) /
+                      Object.values(dataFiltered).reduce(
+                        (sum, otherLoans) => sum + otherLoans.length,
+                        0
+                      )
+                    ).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.totalInterestAmount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) => loanSum + (Number(item.totalInterestAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.amount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) => loanSum + (Number(item.amount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.grossWt) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) => loanSum + (Number(item.grossWt) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.netWt) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) => loanSum + (Number(item.netWt) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.percentage) || 0), 0), 0) / 
-                      Object.values(dataFiltered).reduce((sum, otherLoans) => sum + otherLoans.length, 0)).toFixed(2)}
+                    {(
+                      Object.values(dataFiltered).reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) => loanSum + (Number(item.percentage) || 0),
+                            0
+                          ),
+                        0
+                      ) /
+                      Object.values(dataFiltered).reduce(
+                        (sum, otherLoans) => sum + otherLoans.length,
+                        0
+                      )
+                    ).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.totalOtherInterestAmount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) =>
+                              loanSum + (Number(item.totalOtherInterestAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.amount) - Number(item.loan.interestLoanAmount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) =>
+                              loanSum +
+                              (Number(item.amount) - Number(item.loan.interestLoanAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {Object.values(dataFiltered).reduce((sum, otherLoans) => 
-                      sum + otherLoans.reduce((loanSum, item) => 
-                        loanSum + (Number(item.totalInterestAmount) - Number(item.totalOtherInterestAmount) || 0), 0), 0).toFixed(0)}
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) =>
+                              loanSum +
+                              (Number(item.totalInterestAmount) -
+                                Number(item.totalOtherInterestAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>
@@ -695,7 +841,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   const dataArray = Array.isArray(inputData) ? inputData : Object.values(inputData);
 
   // Flatten the data structure to get all other loan entries
-  const flattenedData = dataArray.flatMap(loanGroup => 
+  const flattenedData = dataArray.flatMap((loanGroup) =>
     Array.isArray(loanGroup) ? loanGroup : [loanGroup]
   );
 
