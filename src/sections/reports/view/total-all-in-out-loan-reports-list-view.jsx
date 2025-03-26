@@ -732,7 +732,7 @@ export default function OtherLonaInterestListView() {
                             sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
-                              width: TABLE_HEAD[19].width
+                              width: TABLE_HEAD[19].width,
                             }}
                             rowSpan={rowSpan}
                           >
@@ -741,7 +741,7 @@ export default function OtherLonaInterestListView() {
                                 (sum, loan) => sum + Number(loan.amount || 0),
                                 0
                               );
-                              const diffAmount = totalOtherAmount - row.loan.loanAmount;
+                              const diffAmount = row.loan.loanAmount - totalOtherAmount;
                               return diffAmount.toFixed(2);
                             })()}
                           </TableCell>
@@ -750,7 +750,7 @@ export default function OtherLonaInterestListView() {
                             sx={{
                               fontSize: '11px',
                               padding: '4px 6px',
-                              width: TABLE_HEAD[20].width
+                              width: TABLE_HEAD[20].width,
                             }}
                             rowSpan={rowSpan}
                           >
@@ -759,7 +759,7 @@ export default function OtherLonaInterestListView() {
                                 (sum, loan) => sum + Number(loan.totalOtherInterestAmount || 0),
                                 0
                               );
-                              const diffInterest = totalOtherInterest - row.totalInterestAmount;
+                              const diffInterest = row.totalInterestAmount - totalOtherInterest;
                               return diffInterest.toFixed(2);
                             })()}
                           </TableCell>
@@ -813,110 +813,159 @@ export default function OtherLonaInterestListView() {
                   <TableCell></TableCell>
                   <TableCell>
                     {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
-                          sum +
-                          otherLoans.reduce(
-                            (loanSum, item) => loanSum + (Number(item.loan.loanAmount) || 0),
-                            0
-                          ),
-                        0
-                      )
-                      .toFixed(0)}
-                  </TableCell>
-                  <TableCell>
-                    {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
-                          sum +
-                          otherLoans.reduce(
-                            (loanSum, item) =>
-                              loanSum +
-                              (Number(item.loan.loanAmount) -
-                                Number(item.loan.interestLoanAmount) || 0),
-                            0
-                          ),
-                        0
-                      )
-                      .toFixed(0)}
-                  </TableCell>
-                  <TableCell>
-                    {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
-                          sum +
-                          otherLoans.reduce(
-                            (loanSum, item) =>
-                              loanSum + (Number(item.loan.interestLoanAmount) || 0),
-                            0
-                          ),
-                        0
-                      )
-                      .toFixed(0)}
-                  </TableCell>
-                  <TableCell>
-                    {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loan numbers
+                        return (
                           sum +
                           otherLoans.reduce((loanSum, item) => {
-                            const propertyTotal =
-                              item.loan.propertyDetails?.reduce(
-                                (sum, detail) => sum + (Number(detail.totalWeight) || 0),
-                                0
-                              ) || 0;
-                            return loanSum + propertyTotal;
-                          }, 0),
-                        0
-                      )
+                            const loanAmount = Number(item.loan.loanAmount) || 0;
+
+                            // Add loanAmount only if the loanNo is not already counted
+                            if (!uniqueLoans.has(item.loan.loanNo)) {
+                              uniqueLoans.add(item.loan.loanNo);
+                              return loanSum + loanAmount;
+                            }
+                            return loanSum;
+                          }, 0)
+                        );
+                      }, 0)
                       .toFixed(0)}
                   </TableCell>
                   <TableCell>
                     {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loan numbers
+                        return (
                           sum +
                           otherLoans.reduce((loanSum, item) => {
-                            const propertyTotal =
-                              item.loan.propertyDetails?.reduce(
-                                (sum, detail) => sum + (Number(detail.grossWeight) || 0),
-                                0
-                              ) || 0;
-                            return loanSum + propertyTotal;
-                          }, 0),
-                        0
-                      )
+                            const loanNo = item.loan.loanNo;
+                            const loanAmount = Number(item.loan.loanAmount) || 0;
+                            const interestLoanAmount = Number(item.loan.interestLoanAmount) || 0;
+
+                            // Add loanAmount - interestLoanAmount only if loanNo is not already counted
+                            if (!uniqueLoans.has(loanNo)) {
+                              uniqueLoans.add(loanNo);
+                              return loanSum + (loanAmount - interestLoanAmount);
+                            }
+                            return loanSum;
+                          }, 0)
+                        );
+                      }, 0)
                       .toFixed(0)}
                   </TableCell>
                   <TableCell>
-                    {(
-                      Object.values(dataFiltered).reduce(
-                        (sum, otherLoans) =>
+                    {Object.values(dataFiltered)
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loan numbers
+                        return (
                           sum +
-                          otherLoans.reduce(
-                            (loanSum, item) =>
-                              loanSum + (Number(item.loan.scheme.interestRate) || 0),
-                            0
-                          ),
-                        0
-                      ) /
-                      Object.values(dataFiltered).reduce(
-                        (sum, otherLoans) => sum + otherLoans.length,
-                        0
-                      )
-                    ).toFixed(2)}
+                          otherLoans.reduce((loanSum, item) => {
+                            const loanNo = item.loan.loanNo;
+                            const interestLoanAmount = Number(item.loan.interestLoanAmount) || 0;
+
+                            // Add interestLoanAmount only if loanNo is not already counted
+                            if (!uniqueLoans.has(loanNo)) {
+                              uniqueLoans.add(loanNo);
+                              return loanSum + interestLoanAmount;
+                            }
+                            return loanSum;
+                          }, 0)
+                        );
+                      }, 0)
+                      .toFixed(0)}
                   </TableCell>
                   <TableCell>
                     {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loan numbers
+                        return (
                           sum +
-                          otherLoans.reduce(
-                            (loanSum, item) => loanSum + (Number(item.totalInterestAmount) || 0),
-                            0
-                          ),
-                        0
-                      )
+                          otherLoans.reduce((loanSum, item) => {
+                            if (!uniqueLoans.has(item.loan.loanNo)) {
+                              uniqueLoans.add(item.loan.loanNo);
+
+                              const propertyTotal =
+                                item.loan.propertyDetails?.reduce(
+                                  (sum, detail) => sum + (Number(detail.totalWeight) || 0),
+                                  0
+                                ) || 0;
+
+                              return loanSum + propertyTotal;
+                            }
+                            return loanSum;
+                          }, 0)
+                        );
+                      }, 0)
+                      .toFixed(0)}
+                  </TableCell>
+                  <TableCell>
+                    {Object.values(dataFiltered)
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loan numbers
+                        return (
+                          sum +
+                          otherLoans.reduce((loanSum, item) => {
+                            if (!uniqueLoans.has(item.loan.loanNo)) {
+                              uniqueLoans.add(item.loan.loanNo);
+
+                              const propertyTotal =
+                                item.loan.propertyDetails?.reduce(
+                                  (sum, detail) => sum + (Number(detail.grossWeight) || 0),
+                                  0
+                                ) || 0;
+
+                              return loanSum + propertyTotal;
+                            }
+                            return loanSum;
+                          }, 0)
+                        );
+                      }, 0)
+                      .toFixed(0)}
+                  </TableCell>
+                  <TableCell>
+                    {(() => {
+                      const uniqueLoans = new Set();
+                      let totalInterestRate = 0;
+                      let uniqueLoanCount = 0;
+
+                      Object.values(dataFiltered).forEach((otherLoans) => {
+                        otherLoans.forEach((item) => {
+                          const loanNo = item.loan.loanNo;
+                          const interestRate = Number(item.loan.scheme.interestRate) || 0;
+
+                          // Count only unique loans
+                          if (!uniqueLoans.has(loanNo)) {
+                            uniqueLoans.add(loanNo);
+                            totalInterestRate += interestRate;
+                            uniqueLoanCount++;
+                          }
+                        });
+                      });
+
+                      return (
+                        uniqueLoanCount > 0 ? totalInterestRate / uniqueLoanCount : 0
+                      ).toFixed(2);
+                    })()}
+                  </TableCell>
+                  <TableCell>
+                    {Object.values(dataFiltered)
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loan numbers
+                        return (
+                          sum +
+                          otherLoans.reduce((loanSum, item) => {
+                            const loanNo = item.loan.loanNo;
+                            const totalInterestAmount = Number(item.totalInterestAmount) || 0;
+
+                            // Add totalInterestAmount only if loanNo is not already counted
+                            if (!uniqueLoans.has(loanNo)) {
+                              uniqueLoans.add(loanNo);
+                              return loanSum + totalInterestAmount;
+                            }
+                            return loanSum;
+                          }, 0)
+                        );
+                      }, 0)
                       .toFixed(0)}
                   </TableCell>
                   <TableCell></TableCell>
@@ -994,33 +1043,45 @@ export default function OtherLonaInterestListView() {
                   </TableCell>
                   <TableCell>
                     {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loan amounts
+                        return (
                           sum +
-                          otherLoans.reduce(
-                            (loanSum, item) =>
-                              loanSum +
-                              (Number(item.amount) - Number(item.loan.interestLoanAmount) || 0),
-                            0
-                          ),
-                        0
-                      )
+                          otherLoans.reduce((loanSum, item) => {
+                            const loanAmount = Number(item.loan.loanAmount);
+                            const amount = Number(item.amount) || 0;
+
+                            // Add loanAmount only if it's not already counted
+                            if (!uniqueLoans.has(item.loan.loanNo)) {
+                              uniqueLoans.add(item.loan.loanNo);
+                              return loanSum + (loanAmount - amount);
+                            }
+                            return loanSum - amount;
+                          }, 0)
+                        );
+                      }, 0)
                       .toFixed(0)}
                   </TableCell>
                   <TableCell>
                     {Object.values(dataFiltered)
-                      .reduce(
-                        (sum, otherLoans) =>
+                      .reduce((sum, otherLoans) => {
+                        const uniqueLoans = new Set(); // Track unique loans
+                        return (
                           sum +
-                          otherLoans.reduce(
-                            (loanSum, item) =>
-                              loanSum +
-                              (Number(item.totalInterestAmount) -
-                                Number(item.totalOtherInterestAmount) || 0),
-                            0
-                          ),
-                        0
-                      )
+                          otherLoans.reduce((loanSum, item) => {
+                            const totalInterestAmount = Number(item.totalInterestAmount);
+                            const totalOtherInterestAmount =
+                              Number(item.totalOtherInterestAmount) || 0;
+
+                            // Add totalInterestAmount only if it's not already counted
+                            if (!uniqueLoans.has(item.loan.loanNo)) {
+                              uniqueLoans.add(item.loan.loanNo);
+                              return loanSum + (totalInterestAmount - totalOtherInterestAmount);
+                            }
+                            return loanSum - totalOtherInterestAmount;
+                          }, 0)
+                        );
+                      }, 0)
                       .toFixed(0)}
                   </TableCell>
                   <TableCell></TableCell>
