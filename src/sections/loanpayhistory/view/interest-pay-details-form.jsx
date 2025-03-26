@@ -670,7 +670,15 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
+                      {(
+                        row.interestAmount +
+                        row.penalty +
+                        row.consultingCharge -
+                        row.uchakInterestAmount +
+                        row.old_cr_dr
+                      ).toFixed(2)}
+                    </TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                         {
