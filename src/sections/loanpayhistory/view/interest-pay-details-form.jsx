@@ -670,15 +670,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>
-                      {(
-                        row.interestAmount +
-                        row.penalty +
-                        row.consultingCharge -
-                        row.uchakInterestAmount +
-                        row.old_cr_dr
-                      ).toFixed(2)}
-                    </TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{(((row.interestAmount + row.penalty + row.consultingCharge) - row.uchakInterestAmount) +row.old_cr_dr).toFixed(2)}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                         {
@@ -786,7 +778,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {(intAmt + penaltyAmt + conCharge - uchakAmt + oldCrDr).toFixed(0)}
+                  {(((intAmt + penaltyAmt + conCharge) - uchakAmt) + oldCrDr).toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
