@@ -69,7 +69,10 @@ export default function LoanInterestDetailsTableRow({
         <TableCell sx={{ padding: '6px' }}>{uchakInterestAmount || 0}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(createdAt)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{adjustedPay}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>
+          {' '}
+          {Number(row.interestAmount + row.consultingCharge + row.old_cr_dr).toFixed(2)}
+        </TableCell>
         <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
       </TableRow>
 

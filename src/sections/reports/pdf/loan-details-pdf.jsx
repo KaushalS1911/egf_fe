@@ -125,7 +125,10 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
                 <Text style={[styles.tableCell, { flex: 1 }]}>{item.uchakInterestAmount}</Text>
                 <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(item.createdAt)}</Text>
                 <Text style={[styles.tableCell, { flex: 0.5 }]}>{item.days}</Text>
-                <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.adjustedPay}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>
+                  {' '}
+                  {(item.interestAmount + item.consultingCharge + item.old_cr_dr).toFixed(2)}
+                </Text>
                 <Text style={[styles.tableCell, { flex: 1.5, borderRightWidth: 0 }]}>
                   {item.amountPaid}
                 </Text>

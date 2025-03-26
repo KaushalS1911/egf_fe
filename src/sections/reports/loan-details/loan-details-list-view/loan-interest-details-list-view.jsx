@@ -374,7 +374,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                     {day / interestDetail.length}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {adjustedPay.toFixed(0)}
+                    {(totalInt + conCharge + cr_dr).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {amountPaid.toFixed(0)}
