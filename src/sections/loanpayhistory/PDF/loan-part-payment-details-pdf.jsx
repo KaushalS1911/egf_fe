@@ -211,8 +211,9 @@ export default function LoanPartPaymentDetailsPdf({ data, configs }) {
               </Text>
               <View style={[styles.tableRow, styles.tableHeader]}>
                 <Text style={styles.tableCell}>Loan amt</Text>
-                <Text style={styles.tableCell}>Pay amt</Text>
                 <Text style={styles.tableCell}>Int. loan amt</Text>
+                <Text style={styles.tableCell}>Pay amt</Text>
+                <Text style={styles.tableCell}>Pending amt</Text>
                 <Text style={styles.tableCell}>Pay date</Text>
                 <Text style={styles.tableCell}> Entry Date</Text>
                 <Text style={styles.tableCell}>Payment mode</Text>
@@ -221,9 +222,13 @@ export default function LoanPartPaymentDetailsPdf({ data, configs }) {
               </View>
               <View style={styles.tableRow}>
                 <Text style={styles.tableCell}>{data?.loan?.loanAmount}</Text>
-                <Text style={styles.tableCell}>{data?.amountPaid}</Text>
                 <Text style={styles.tableCell}>
                   {Number(data?.interestLoanAmount).toFixed(2) || 0}
+                </Text>
+                <Text style={styles.tableCell}>{data?.amountPaid}</Text>
+                <Text style={styles.tableCell}>
+                  {' '}
+                  {Number(data?.interestLoanAmount - data?.amountPaid).toFixed(2) || 0}
                 </Text>
                 <Text style={styles.tableCell}>{fDate(data?.date)}</Text>
                 <Text style={styles.tableCell}>{fDate(data?.createdAt)}</Text>
