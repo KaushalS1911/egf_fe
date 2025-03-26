@@ -19,7 +19,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../../components/iconify';
 import moment from 'moment';
 import { pdf, PDFViewer } from '@react-pdf/renderer';
@@ -100,28 +100,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
-        account: Yup.object().required('Account is required').typeError('Account is required'),
-        bankAmount: Yup.string()
-          .required('Bank Amount is required')
-          .test(
-            'is-positive',
-            'Bank Amount must be a positive number',
-            (value) => parseFloat(value) >= 0
-          ),
-      }
-      : paymentMode === 'Cash'
-        ? {
-          cashAmount: Yup.number()
-            .typeError('Cash Amount must be a valid number')
-            .required('Cash Amount is required')
-            .min(0, 'Cash Amount must be a positive number'),
-        }
-        : {
-          cashAmount: Yup.number()
-            .typeError('Cash Amount must be a valid number')
-            .required('Cash Amount is required')
-            .min(0, 'Cash Amount must be a positive number'),
-
+          account: Yup.object().required('Account is required').typeError('Account is required'),
           bankAmount: Yup.string()
             .required('Bank Amount is required')
             .test(
@@ -129,8 +108,29 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               'Bank Amount must be a positive number',
               (value) => parseFloat(value) >= 0
             ),
-          account: Yup.object().required('Account is required'),
-        };
+        }
+      : paymentMode === 'Cash'
+        ? {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+          }
+        : {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+
+            bankAmount: Yup.string()
+              .required('Bank Amount is required')
+              .test(
+                'is-positive',
+                'Bank Amount must be a positive number',
+                (value) => parseFloat(value) >= 0
+              ),
+            account: Yup.object().required('Account is required'),
+          };
 
   const NewInterestPayDetailsSchema = Yup.object().shape({
     from: Yup.string().required('From Date is required'),
@@ -228,8 +228,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       'interestAmount',
       (
         (((currentLoan.interestLoanAmount *
-              (currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate)) /
-            100) *
+          (currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate)) /
+          100) *
           (12 * differenceInDays)) /
         365
       ).toFixed(2)
@@ -238,8 +238,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       'consultingCharge',
       (
         (((currentLoan.interestLoanAmount *
-              (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
-            100) *
+          (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
+          100) *
           (12 * differenceInDays)) /
         365
       ).toFixed(2)
@@ -439,8 +439,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             md: 'repeat(6, 1fr)',
           }}
         >
-          <RHFDatePicker name="from" control={control} label="From Date" req={'red'} />
-          <RHFDatePicker name="to" control={control} label="To Date" req={'red'} />
+          <RhfDatePicker name="from" control={control} label="From Date" req={'red'} />
+          <RhfDatePicker name="to" control={control} label="To Date" req={'red'} />
           <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField
             name="interestAmount"
@@ -664,7 +664,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       {(row.interestAmount + row.penalty + row.consultingCharge).toFixed(2)}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.old_cr_dr !== 0 ? row.old_cr_dr * -1 : row.old_cr_dr}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
+                      {row.old_cr_dr !== 0 ? row.old_cr_dr * -1 : row.old_cr_dr}
+                    </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>

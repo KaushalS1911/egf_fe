@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useAuthContext } from '../../auth/hooks';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import Typography from '@mui/material/Typography';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 import Image from '../../components/image';
@@ -160,7 +160,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     label="Interest Period Time"
                     InputProps={{ readOnly: true }}
                   />
-                  <RHFDatePicker
+                  <RhfDatePicker
                     name="nextInterestPayDate"
                     control={control}
                     label="Next Interest Pay Date"
@@ -193,7 +193,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     label="Loan Period (Month)"
                     InputProps={{ readOnly: true }}
                   />
-                  <RHFDatePicker
+                  <RhfDatePicker
                     name="lastInterestPayDate"
                     control={control}
                     label="Last Interest Pay Date"
@@ -221,8 +221,8 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
                     InputProps={{ readOnly: true }}
                     InputLabelProps={{ shrink: true }}
                   />
-                  <RHFDatePicker name="issueDate" control={control} label="Issue Date" />
-                  <RHFDatePicker name="renewDate" control={control} label="Renew Date" />
+                  <RhfDatePicker name="issueDate" control={control} label="Issue Date" />
+                  <RhfDatePicker name="renewDate" control={control} label="Renew Date" />
                   <Box pb={0}>
                     <Box
                       sx={{

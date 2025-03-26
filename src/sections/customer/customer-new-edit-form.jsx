@@ -33,7 +33,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import DialogTitle from '@mui/material/DialogTitle';
 import Webcam from 'react-webcam';
 import DialogActions from '@mui/material/DialogActions';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../components/iconify';
 import Lightbox, { useLightBox } from '../../components/lightbox/index.js';
 
@@ -702,7 +702,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   disabled: true,
                 }}
               />
-              <RHFDatePicker
+              <RhfDatePicker
                 name="joiningDate"
                 control={control}
                 label="Joining Date"
@@ -839,7 +839,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 }}
               />
               <RHFTextField disabled={disabledField} name="email" label="Email" />
-              <RHFDatePicker
+              <RhfDatePicker
                 disabled={disabledField}
                 name="dob"
                 control={control}

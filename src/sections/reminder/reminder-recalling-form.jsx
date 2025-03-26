@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import {  useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,17 +14,17 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 
 // ----------------------------------------------------------------------
 
 export default function ReminderRecallingForm({
-                                                currentReminderDetails,
-                                                currentReminder,
-                                                open,
-                                                setOpen,
-                                                mutate,
-                                              }) {
+  currentReminderDetails,
+  currentReminder,
+  open,
+  setOpen,
+  mutate,
+}) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
 
@@ -40,7 +40,7 @@ export default function ReminderRecallingForm({
       nextRecallingDate: new Date(currentReminderDetails?.nextRecallingDate) || '',
       remark: currentReminderDetails?.remark || '',
     }),
-    [currentReminderDetails],
+    [currentReminderDetails]
   );
 
   const onClose = () => {
@@ -67,7 +67,10 @@ export default function ReminderRecallingForm({
           nextRecallingDate: data.nextRecallingDate,
           remark: data.remark,
         };
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder/${currentReminderDetails._id}`, payload2);
+        const res = await axios.put(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder/${currentReminderDetails._id}`,
+          payload2
+        );
         mutate();
         onClose();
         enqueueSnackbar(res?.data.message);
@@ -77,7 +80,10 @@ export default function ReminderRecallingForm({
           nextRecallingDate: data.nextRecallingDate,
           remark: data.remark,
         };
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`, payload);
+        const res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`,
+          payload
+        );
         mutate();
         onClose();
         reset();
@@ -104,27 +110,27 @@ export default function ReminderRecallingForm({
           <Box
             rowGap={3}
             columnGap={2}
-            display='grid'
+            display="grid"
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(2, 1fr)',
             }}
             mt={2}
           >
-            <RHFDatePicker
-              name='nextRecallingDate'
+            <RhfDatePicker
+              name="nextRecallingDate"
               control={control}
-              label='Next Recalling Date'
+              label="Next Recalling Date"
               req={'red'}
             />
-            <RHFTextField name='remark' label='Remark' />
+            <RHFTextField name="remark" label="Remark" />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button variant='outlined' onClick={onClose}>
+          <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             {currentReminderDetails ? 'Save' : 'Submit'}
           </LoadingButton>
         </DialogActions>

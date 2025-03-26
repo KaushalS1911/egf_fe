@@ -17,7 +17,7 @@ import CardContent from '@mui/material/CardContent';
 import { Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 import axios from 'axios';
 import { paths } from '../../routes/paths';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import { TableHeadCustom, useTable } from '../../components/table';
 import { useAuthContext } from '../../auth/hooks/index.js';
 import { pdf } from '@react-pdf/renderer';
@@ -304,7 +304,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
               <RHFTextField name="address" label="Address" req={'red'} />
               <RHFTextField name="branch" label="Branch" req={'red'} />
               <RHFTextField name="approvalCharge" label="Approval Charge" req={'red'} />
-              <RHFDatePicker name="issueDate" control={control} label="issueDate" />
+              <RhfDatePicker name="issueDate" control={control} label="issueDate" />
             </Box>
           </Card>
         </Grid>
@@ -507,7 +507,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         setValue('companyBankDetail.account', value);
                       }}
                     />
-                    <RHFDatePicker
+                    <RhfDatePicker
                       name="bankDate"
                       control={control}
                       label="Bank Date"
@@ -588,7 +588,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         }
                       }}
                     />
-                    <RHFDatePicker name="cashDate" control={control} label="Date" />
+                    <RhfDatePicker name="cashDate" control={control} label="Date" />
                   </Box>
                 </>
               )}

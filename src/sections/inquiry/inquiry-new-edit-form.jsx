@@ -17,7 +17,7 @@ import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
 import { Button } from '@mui/material';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import { useGetEmployee } from '../../api/employee';
 
 // ----------------------------------------------------------------------
@@ -37,7 +37,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   const { enqueueSnackbar } = useSnackbar();
   const { configs } = useGetConfigs();
   const storedBranch = sessionStorage.getItem('selectedBranch');
-  const [filteredEmployee,setFilteredEmployee] = useState([])
+  const [filteredEmployee, setFilteredEmployee] = useState([]);
 
   function checkInquiryFor(val) {
     const isLoanValue = configs?.loanTypes?.find((item) => item === val);
@@ -82,14 +82,21 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
 
   const defaultValues = useMemo(
     () => ({
-      branchId: currentInquiry ? {
-        label: currentInquiry?.branch?.name,
-        value: currentInquiry?.branch?._id,
-      } : null,
-      assignTo: currentInquiry ? {
-        label: currentInquiry?.assignTo?.user?.firstName + ' ' + currentInquiry?.assignTo?.user?.lastName,
-        value: currentInquiry?.assignTo?._id,
-      } : null,
+      branchId: currentInquiry
+        ? {
+            label: currentInquiry?.branch?.name,
+            value: currentInquiry?.branch?._id,
+          }
+        : null,
+      assignTo: currentInquiry
+        ? {
+            label:
+              currentInquiry?.assignTo?.user?.firstName +
+              ' ' +
+              currentInquiry?.assignTo?.user?.lastName,
+            value: currentInquiry?.assignTo?._id,
+          }
+        : null,
       response: currentInquiry?.status || 'Active',
       firstName: currentInquiry?.firstName || '',
       lastName: currentInquiry?.lastName || '',
@@ -97,13 +104,19 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       email: currentInquiry?.email || '',
       date: currentInquiry ? new Date(currentInquiry?.date) : new Date(),
       recallingDate: currentInquiry ? new Date(currentInquiry?.recallingDate) : null,
-      inquiryFor: (currentInquiry && checkInquiryFor(currentInquiry?.inquiryFor) ? 'Other' : currentInquiry?.inquiryFor) || '',
+      inquiryFor:
+        (currentInquiry && checkInquiryFor(currentInquiry?.inquiryFor)
+          ? 'Other'
+          : currentInquiry?.inquiryFor) || '',
       other: checkInquiryFor(currentInquiry?.inquiryFor) ? currentInquiry?.inquiryFor : null || '',
-      remark: (currentInquiry && checkremark(currentInquiry?.remark) ? 'Other' : currentInquiry?.remark) || '',
+      remark:
+        (currentInquiry && checkremark(currentInquiry?.remark)
+          ? 'Other'
+          : currentInquiry?.remark) || '',
       otherRemark: checkremark(currentInquiry?.remark) ? currentInquiry?.remark : null || '',
       address: currentInquiry?.address || '',
     }),
-    [currentInquiry],
+    [currentInquiry]
   );
 
   const methods = useForm({
@@ -119,7 +132,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
     formState: { isSubmitting },
   } = methods;
 
-  const selectedBranch = watch('branchId')
+  const selectedBranch = watch('branchId');
   useEffect(() => {
     const handleFilterEmployee = employee.filter(
       (item) =>
@@ -127,7 +140,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
         item?.user?.branch?._id === selectedBranch?.value
     );
     setFilteredEmployee(handleFilterEmployee);
-  }, [selectedBranch, employee,storedBranch]);
+  }, [selectedBranch, employee, storedBranch]);
   const onSubmit = handleSubmit(async (data) => {
     const payload = {
       firstName: data.firstName,
@@ -154,9 +167,10 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       }
     }
 
-    const branchQuery = parsedBranch && parsedBranch === 'all'
-      ? `branch=${mainbranchid?._id}`
-      : `branch=${parsedBranch}`;
+    const branchQuery =
+      parsedBranch && parsedBranch === 'all'
+        ? `branch=${mainbranchid?._id}`
+        : `branch=${parsedBranch}`;
 
     const employeeQuery = `&assignTo=${data?.assignTo?.value}`;
 
@@ -166,14 +180,14 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       if (currentInquiry) {
         const res = await axios.put(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?${queryString}`,
-          payload,
+          payload
         );
         enqueueSnackbar(res?.data?.message);
         router.push(paths.dashboard.inquiry.list);
       } else {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${queryString}`,
-          payload,
+          payload
         );
         enqueueSnackbar(res?.data?.message);
         router.push(paths.dashboard.inquiry.list);
@@ -194,15 +208,15 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       reset({
         branchId: nextInquiry.branch
           ? {
-            label: nextInquiry.branch.name,
-            value: nextInquiry.branch._id,
-          }
+              label: nextInquiry.branch.name,
+              value: nextInquiry.branch._id,
+            }
           : null,
         assignTo: nextInquiry.assignTo
           ? {
-            label: `${nextInquiry.assignTo.user.firstName} ${nextInquiry.assignTo.user.lastName}`,
-            value: nextInquiry.assignTo._id,
-          }
+              label: `${nextInquiry.assignTo.user.firstName} ${nextInquiry.assignTo.user.lastName}`,
+              value: nextInquiry.assignTo._id,
+            }
           : null,
         response: nextInquiry.status || 'Active',
         firstName: nextInquiry.firstName || '',
@@ -228,24 +242,23 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+          <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: '600' }}>
             Inquiry Details
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>
-          {
-            currentInquiry &&
+          {currentInquiry && (
             <Box sx={{ display: 'flex', justifyContent: 'end', mb: 2 }}>
-              <LoadingButton variant='contained' onClick={fetchNextInquiry}>
+              <LoadingButton variant="contained" onClick={fetchNextInquiry}>
                 Next Inquiry
               </LoadingButton>
             </Box>
-          }
+          )}
           <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}
               columnGap={2}
-              display='grid'
+              display="grid"
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',
@@ -253,34 +266,43 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
             >
               {user?.role === 'Admin' && branch && storedBranch === 'all' && (
                 <RHFAutocomplete
-                  name='branchId'
+                  name="branchId"
                   req={'red'}
-                  label='Branch'
-                  placeholder='Choose a Branch'
-                  options={branch?.map((branchItem) => ({
-                    label: branchItem?.name,
-                    value: branchItem?._id,
-                  })) || []}
+                  label="Branch"
+                  placeholder="Choose a Branch"
+                  options={
+                    branch?.map((branchItem) => ({
+                      label: branchItem?.name,
+                      value: branchItem?._id,
+                    })) || []
+                  }
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 />
               )}
               {/*{user?.role === 'Admin' && employee && (*/}
               <RHFAutocomplete
-                name='assignTo'
+                name="assignTo"
                 req={'red'}
-                label='Employee'
-                placeholder='Choose an Employee'
-                options={filteredEmployee?.map((employeeitem) => ({
-                  label: employeeitem?.user?.firstName + ' '+employeeitem?.user?.middleName  + ' ' +employeeitem?.user?.lastName,
-                  value: employeeitem?._id,
-                })) || []}
+                label="Employee"
+                placeholder="Choose an Employee"
+                options={
+                  filteredEmployee?.map((employeeitem) => ({
+                    label:
+                      employeeitem?.user?.firstName +
+                      ' ' +
+                      employeeitem?.user?.middleName +
+                      ' ' +
+                      employeeitem?.user?.lastName,
+                    value: employeeitem?._id,
+                  })) || []
+                }
                 isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 // disabled={user?.role === 'Employee'}
               />
               {/*)}*/}
               <RHFTextField
-                name='firstName'
-                label='First Name'
+                name="firstName"
+                label="First Name"
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   e.target.value = e.target.value.toUpperCase();
@@ -288,8 +310,8 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 }}
               />
               <RHFTextField
-                name='lastName'
-                label='Last Name'
+                name="lastName"
+                label="Last Name"
                 inputProps={{ style: { textTransform: 'uppercase' } }}
                 onChange={(e) => {
                   e.target.value = e.target.value.toUpperCase();
@@ -297,9 +319,9 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 }}
               />
               <RHFTextField
-                name='contact'
+                name="contact"
                 req={'red'}
-                label='Mobile No.'
+                label="Mobile No."
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -316,39 +338,32 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   if (!/[0-9]/.test(e.key)) {
                     e.preventDefault();
                   }
-                }} />
-              <RHFTextField name='email' label='Email'  />
-              <RHFDatePicker
-                name='date'
-                control={control}
-                label='Date'
+                }}
               />
-              <RHFDatePicker
-                name='recallingDate'
-                control={control}
-                label='Recalling Date'
-              />
-              {configs?.loanTypes && <RHFAutocomplete
-                name='inquiryFor'
-                label={'Inquiry For'}
-                autoHighlight
-                options={[...configs?.loanTypes, { loanType: 'Other' }]?.map((option) => option.loanType)}
-                getOptionLabel={(option) => option}
-
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />}
-              {
-                (watch('inquiryFor') === 'Other') &&
-                <RHFTextField name='other' label='Other' />
-              }
+              <RHFTextField name="email" label="Email" />
+              <RhfDatePicker name="date" control={control} label="Date" />
+              <RhfDatePicker name="recallingDate" control={control} label="Recalling Date" />
+              {configs?.loanTypes && (
+                <RHFAutocomplete
+                  name="inquiryFor"
+                  label={'Inquiry For'}
+                  autoHighlight
+                  options={[...configs?.loanTypes, { loanType: 'Other' }]?.map(
+                    (option) => option.loanType
+                  )}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+              )}
+              {watch('inquiryFor') === 'Other' && <RHFTextField name="other" label="Other" />}
               <RHFAutocomplete
-                name='response'
-                label='Status'
-                placeholder='Choose a Status'
+                name="response"
+                label="Status"
+                placeholder="Choose a Status"
                 options={STATUS_OPTIONS.map((item) => item.value)}
                 onChange={(e, value) => {
                   methods.setValue('response', value);
@@ -357,12 +372,12 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   }
                 }}
               />
-              <RHFTextField name='address' label='Address' />
+              <RHFTextField name="address" label="Address" />
               <RHFAutocomplete
-                name='remark'
-                label='Remark'
-                placeholder='Choose a Remark'
-                options={[...configs?.remarks || [], 'Other']}
+                name="remark"
+                label="Remark"
+                placeholder="Choose a Remark"
+                options={[...(configs?.remarks || []), 'Other']}
                 isOptionEqualToValue={(option, value) => option === value}
                 renderOption={(props, option) => (
                   <li {...props} key={option}>
@@ -372,18 +387,24 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
               />
               {watch('remark') === 'Other' && (
                 <RHFTextField
-                  name='otherRemark'
-                  label='Other Remark'
-                  placeholder='Enter other remark'
+                  name="otherRemark"
+                  label="Other Remark"
+                  placeholder="Enter other remark"
                 />
               )}
             </Box>
           </Card>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
             <Box>
-              <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                      variant='outlined' onClick={() => reset()}>Reset</Button>
-              <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+              <Button
+                color="inherit"
+                sx={{ margin: '0px 10px', height: '36px' }}
+                variant="outlined"
+                onClick={() => reset()}
+              >
+                Reset
+              </Button>
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {!currentInquiry ? 'Submit' : 'Save'}
               </LoadingButton>
             </Box>

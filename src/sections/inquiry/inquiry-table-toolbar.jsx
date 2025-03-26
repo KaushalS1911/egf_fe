@@ -16,7 +16,7 @@ import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker.jsx';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 
 // ----------------------------------------------------------------------
 

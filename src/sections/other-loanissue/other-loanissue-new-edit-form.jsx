@@ -41,7 +41,7 @@ import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import { TableHeadCustom, useTable } from '../../components/table';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -1056,7 +1056,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   InputProps={{ readOnly: true }}
                   disabled
                 />
-                <RHFDatePicker
+                <RhfDatePicker
                   name="issueDate"
                   control={control}
                   label="Issue Date"
@@ -1717,7 +1717,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     }
                   }}
                 />
-                <RHFDatePicker
+                <RhfDatePicker
                   name="date"
                   control={control}
                   label="Date"
@@ -1751,7 +1751,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     </li>
                   )}
                 />
-                <RHFDatePicker
+                <RhfDatePicker
                   name="renewalDate"
                   control={control}
                   label="Renewal Date"

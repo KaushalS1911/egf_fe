@@ -19,7 +19,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../../components/iconify';
 import moment from 'moment';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -410,8 +410,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
             md: 'repeat(7, 1fr)',
           }}
         >
-          <RHFDatePicker name="from" control={control} label="From Date" req={'red'} />
-          <RHFDatePicker name="to" control={control} label="To Date" req={'red'} />
+          <RhfDatePicker name="from" control={control} label="From Date" req={'red'} />
+          <RhfDatePicker name="to" control={control} label="To Date" req={'red'} />
           <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name="interest" label="Interest" req={'red'} />
           {/*<RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} InputProps={{ readOnly: true }} />*/}

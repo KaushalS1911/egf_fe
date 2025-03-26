@@ -28,7 +28,7 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useGetAllPartRelease } from '../../../api/part-release';
 import { useGetBranch } from '../../../api/branch';
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../../components/iconify';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -729,7 +729,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                 <Grid item xs={9}>
                   <Grid container rowSpacing={3} columnSpacing={2}>
                     <Grid item xs={3}>
-                      <RHFDatePicker name="date" control={control} label="Pay Date" req={'red'} />
+                      <RhfDatePicker name="date" control={control} label="Pay Date" req={'red'} />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <RHFTextField

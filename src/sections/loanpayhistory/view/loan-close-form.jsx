@@ -29,7 +29,7 @@ import { useGetCloseLoan } from '../../../api/loan-close';
 import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { fDate } from '../../../utils/format-time.js';
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker.jsx';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import { useGetAllInterest } from '../../../api/interest-pay.js';
 import { ConfirmDialog } from '../../../components/custom-dialog/index.js';
 
@@ -377,7 +377,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
               InputProps={{ readOnly: true }}
             />
             <RHFTextField name="closeRemarks" label="Close Remarks" />
-            <RHFDatePicker name="date" control={control} label="Pay Date" req={'red'} />
+            <RhfDatePicker name="date" control={control} label="Pay Date" req={'red'} />
             <RHFAutocomplete
               name="expectPaymentMode"
               label="Expected Payment Mode"

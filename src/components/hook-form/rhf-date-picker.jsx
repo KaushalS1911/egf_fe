@@ -6,7 +6,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { format } from 'date-fns';
 import enGB from 'date-fns/locale/en-GB'; // for UK style date formatting
 
-const RHFDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }) => {
+const RhfDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }) => {
   const customStyle = req ? { borderLeft: `2px solid ${req}`, borderRadius: '8px' } : {};
 
   return (
@@ -19,14 +19,14 @@ const RHFDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }
             format="dd/MM/yyyy"
             sx={{
               ':not(:focus-within) label ~ div:first-of-type': customStyle,
-              "label": {
+              label: {
                 mt: -0.8,
-                fontSize: "14px",
+                fontSize: '14px',
               },
-              "& .MuiInputLabel-shrink": {
+              '& .MuiInputLabel-shrink': {
                 mt: 0,
               },
-              "input": { height: 7 },
+              input: { height: 7 },
             }}
             label={label || 'Date'}
             value={field.value}
@@ -47,4 +47,4 @@ const RHFDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }
   );
 };
 
-export default RHFDatePicker;
+export default RhfDatePicker;

@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useAuthContext } from '../../auth/hooks';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import Typography from '@mui/material/Typography';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 import Image from '../../components/image';
@@ -180,7 +180,7 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
                       InputProps={{ readOnly: true }}
                       disabled
                     />
-                    <RHFDatePicker name="issueDate" control={control} label="Issue Date" disabled />
+                    <RhfDatePicker name="issueDate" control={control} label="Issue Date" disabled />
                     <RHFTextField
                       name="totalLoanAmount"
                       label="Total Loan Amount"
@@ -292,7 +292,7 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
                         }
                       }}
                     />
-                    <RHFDatePicker name="date" control={control} label="Date" disabled />
+                    <RhfDatePicker name="date" control={control} label="Date" disabled />
                     <RHFTextField
                       name="grossWt"
                       label="Gross Wt"
@@ -309,13 +309,13 @@ function OtherLoanpayhistoryNewEditForm({ currentOtherLoan, mutate }) {
                     <RHFTextField name="netWt" label="Net Wt" disabled />
                     <RHFTextField name="rate" label="Rate" disabled />
                     <RHFTextField name="month" label="Month" disabled />
-                    <RHFDatePicker
+                    <RhfDatePicker
                       name="renewalDate"
                       control={control}
                       label="Renewal Date"
                       disabled
                     />
-                    <RHFDatePicker name="closeDate" control={control} label="Close Date" disabled />
+                    <RhfDatePicker name="closeDate" control={control} label="Close Date" disabled />
                     <RHFTextField name="otherCharge" label="Other Charge" disabled />
                     <RHFTextField
                       name="ornamentDetail"

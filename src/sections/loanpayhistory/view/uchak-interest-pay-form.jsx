@@ -20,7 +20,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useGetBranch } from '../../../api/branch';
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import { useGetAllUchakPay } from '../../../api/uchak';
 import { TableHeadCustom } from '../../../components/table';
 import { fDate } from '../../../utils/format-time';
@@ -301,7 +301,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Grid container rowSpacing={3} columnSpacing={2}>
           <Grid item xs={4}>
-            <RHFDatePicker
+            <RhfDatePicker
               name="uchakPayDate"
               control={control}
               label="Uchak Pay date"

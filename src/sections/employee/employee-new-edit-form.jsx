@@ -24,7 +24,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
 import { useGetConfigs } from '../../api/config';
 import { useGetBranch } from '../../api/branch';
-import RHFDatePicker from '../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import ReactCrop from 'react-image-crop';
 import DialogTitle from '@mui/material/DialogTitle';
 import Webcam from 'react-webcam';
@@ -778,7 +778,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                     }
                   }}
                 />
-                <RHFDatePicker
+                <RhfDatePicker
                   disabled={disabledField}
                   name="dob"
                   control={control}
@@ -873,14 +873,14 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   />
                 )}
                 <RHFTextField disabled={disabledField} name="email" label="Email" req={'red'} />
-                <RHFDatePicker
+                <RhfDatePicker
                   disabled={disabledField}
                   name="joiningDate"
                   control={control}
                   label="Join Date"
                   req={'red'}
                 />
-                <RHFDatePicker
+                <RhfDatePicker
                   disabled={disabledField}
                   name="leaveDate"
                   control={control}

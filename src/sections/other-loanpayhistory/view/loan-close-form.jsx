@@ -1,4 +1,4 @@
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
@@ -374,7 +374,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                     />
                   </>
                 )}
-                <RHFDatePicker name="payDate" control={control} label="Pay Date" req={'red'} />
+                <RhfDatePicker name="payDate" control={control} label="Pay Date" req={'red'} />
               </Box>
               {currentOtherLoan.status !== 'Closed' && (
                 <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', gap: 1 }}>

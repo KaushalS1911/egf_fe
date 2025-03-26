@@ -23,7 +23,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useGetAllPartPayment } from '../../../api/part-payment';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../../components/iconify';
 import { ConfirmDialog } from '../../../components/custom-dialog';
 import { usePopover } from '../../../components/custom-popover';
@@ -335,7 +335,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
         </Box>
         <Grid container rowSpacing={3} columnSpacing={2}>
           <Grid item xs={3}>
-            <RHFDatePicker name="date" control={control} label="Pay date" req={'red'} />
+            <RhfDatePicker name="date" control={control} label="Pay date" req={'red'} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <RHFTextField
