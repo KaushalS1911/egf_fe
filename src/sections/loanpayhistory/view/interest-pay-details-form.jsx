@@ -426,6 +426,14 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
   };
 
+  const calculateTotalAmount = (row) => {
+    const interestComponents = row.interestAmount + row.penalty + row.consultingCharge;
+    const adjustedInterest = interestComponents - row.uchakInterestAmount;
+    const finalAmount = adjustedInterest + row.old_cr_dr;
+
+    return Number(finalAmount.toFixed(2));
+  };
+
   return (
     <Box sx={{ py: 0 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -670,7 +678,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{(((row.interestAmount + row.penalty + row.consultingCharge) - row.uchakInterestAmount) +row.old_cr_dr).toFixed(2)}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
+                      {calculateTotalAmount(row)}
+                    </TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                         {
