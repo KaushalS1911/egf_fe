@@ -174,6 +174,16 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
                   <Text style={styles.colon}>:</Text>
                   <Text style={styles.subText}>{fDate(data.loan.nextInstallmentDate)}</Text>
                 </View>
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Loan Amount</Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{data.loan.loanAmount}</Text>
+                </View>{' '}
+                <View style={styles.row}>
+                  <Text style={styles.subHeading}>Int. Loan Amount</Text>
+                  <Text style={styles.colon}>:</Text>
+                  <Text style={styles.subText}>{data.loan.interestLoanAmount}</Text>
+                </View>
               </View>
               <View style={{ width: '50%' }}>
                 <View style={styles.row}>
@@ -210,17 +220,17 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
               </Text>
               <View style={[styles.tableRow, styles.tableHeader]}>
                 <Text style={styles.tableCell}>Uchak pay date</Text>
-                <Text style={styles.tableCell}>Uchak int. amt</Text>
                 <Text style={styles.tableCell}>Payment mode</Text>
                 <Text style={styles.tableCell}>Cash amt</Text>
                 <Text style={styles.tableCell}>Bank amt</Text>
+                <Text style={styles.tableCell}>Uchak int. amt</Text>
               </View>
               <View style={styles.tableRow}>
                 <Text style={styles.tableCell}>{fDate(data?.date)}</Text>
-                <Text style={styles.tableCell}>{data?.amountPaid}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.cashAmount || 0}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.bankAmount || 0}</Text>
+                <Text style={styles.tableCell}>{data?.amountPaid}</Text>
               </View>
             </View>
             <Text style={{ marginTop: 20 }}>
