@@ -667,7 +667,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>
                       {row.old_cr_dr !== 0 ? row.old_cr_dr * -1 : row.old_cr_dr}
                     </TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
+                      {(row.adjustedPay + row.old_cr_dr).toFixed(2)}
+                    </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
@@ -780,7 +782,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {payAfterAdjustAmt.toFixed(0)}
+                  {(payAfterAdjustAmt + oldCrDr).toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
