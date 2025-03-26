@@ -83,6 +83,46 @@ export default function TotalAllInOutLoanReportsTableRow({
           {(row.totalInterestAmount - row.totalOtherInterestAmount).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px', textAlign: 'center' }}>
+          {index === 0 && (
+            <>
+              <TableCell
+                align="center"
+                sx={{
+                  fontSize: '11px',
+                  padding: '4px 6px',
+                  width: TABLE_HEAD[19].width
+                }}
+                rowSpan={rowSpan}
+              >
+                {(() => {
+                  const totalOtherAmount = otherLoans.reduce(
+                    (sum, loan) => sum + Number(loan.amount || 0),
+                    0
+                  );
+                  const diffAmount = totalOtherAmount - row.loan.loanAmount;
+                  return diffAmount.toFixed(2);
+                })()}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  fontSize: '11px',
+                  padding: '4px 6px',
+                  width: TABLE_HEAD[20].width
+                }}
+                rowSpan={rowSpan}
+              >
+                {(() => {
+                  const totalOtherInterest = otherLoans.reduce(
+                    (sum, loan) => sum + Number(loan.totalOtherInterestAmount || 0),
+                    0
+                  );
+                  const diffInterest = totalOtherInterest - row.totalInterestAmount;
+                  return diffInterest.toFixed(2);
+                })()}
+              </TableCell>
+            </>
+          )}
           <Label
             variant="soft"
             color={
