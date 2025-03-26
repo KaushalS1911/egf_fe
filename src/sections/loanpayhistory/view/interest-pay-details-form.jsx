@@ -665,7 +665,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {row.old_cr_dr !== 0 ? row.old_cr_dr * -1 : row.old_cr_dr}
+                      {row.old_cr_dr}
+                      {/*{row.old_cr_dr !== 0 ? row.old_cr_dr * -1 : row.old_cr_dr}*/}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
                       {(row.adjustedPay + row.old_cr_dr).toFixed(2)}
