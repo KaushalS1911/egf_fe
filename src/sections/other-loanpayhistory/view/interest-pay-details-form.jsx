@@ -29,6 +29,7 @@ import { ConfirmDialog } from '../../../components/custom-dialog';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetOtherLoanInterestPay } from '../../../api/other-loan-interest-pay.js';
+import { formatDate } from '@fullcalendar/core';
 
 const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
@@ -53,6 +54,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   const { otherLoanInterest, refetchOtherLoanInterest } = useGetOtherLoanInterestPay(
     currentOtherLoan._id
   );
+  console.log(otherLoanInterest, '00000');
   const table = useTable();
   const { user } = useAuthContext();
 
@@ -125,11 +127,9 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     ...paymentSchema,
   });
   const defaultValues = {
-    from: currentOtherLoan?.date
-      ? otherLoanInterest?.[0]?.to
-        ? new Date(otherLoanInterest[0].to)
-        : new Date(currentOtherLoan.date)
-      : new Date(),
+    from: otherLoanInterest[0]?.to
+      ? new Date(otherLoanInterest[0].to)
+      : new Date(currentOtherLoan.date),
 
     to: new Date(currentOtherLoan?.renewalDate)
       ? new Date(currentOtherLoan?.renewalDate)
@@ -249,7 +249,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   // }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
   const updateRenewalDate = (id) => {
     const date = currentOtherLoan.date;
-    const fromDate = watch('from');
+    const fromDate = watch('to');
+    console.log(fromDate, 'tttttttttttt');
     const month = currentOtherLoan.month;
 
     const monthsToAdd =
@@ -257,7 +258,9 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
     const calculatedDate = new Date(date);
     const calculatedDateRenewalDate = new Date(fromDate);
+
     if (id) {
+      alert('heet');
       calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() - monthsToAdd);
     } else {
       calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() + monthsToAdd);
@@ -328,17 +331,16 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/${user._id}/other-loans/${currentOtherLoan?._id}/interest`;
-      const config = {
-        method: 'post',
-        url,
-        data: payload,
-      };
-      const response = await axios(config);
+
+      const response = await axios.post(url, payload);
+
       reset();
       mutate();
       refetchOtherLoanInterest();
       enqueueSnackbar(response?.data.message);
-      updateRenewalDate();
+      if (response?.data) {
+        updateRenewalDate();
+      }
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to pay interest', { variant: 'error' });
