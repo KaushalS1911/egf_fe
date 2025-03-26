@@ -54,7 +54,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
   const { otherLoanInterest, refetchOtherLoanInterest } = useGetOtherLoanInterestPay(
     currentOtherLoan._id
   );
-  console.log(otherLoanInterest, '00000');
   const table = useTable();
   const { user } = useAuthContext();
 
