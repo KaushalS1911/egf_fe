@@ -19,7 +19,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
-import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
+import RHFDatePicker from '../../../components/hook-form/rhf-date-picker';
 import Iconify from '../../../components/iconify';
 import moment from 'moment';
 import { pdf, PDFViewer } from '@react-pdf/renderer';
@@ -439,8 +439,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             md: 'repeat(6, 1fr)',
           }}
         >
-          <RhfDatePicker name="from" control={control} label="From Date" req={'red'} />
-          <RhfDatePicker name="to" control={control} label="To Date" req={'red'} />
+          <RHFDatePicker name="from" control={control} label="From Date" req={'red'} />
+          <RHFDatePicker name="to" control={control} label="To Date" req={'red'} />
           <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField
             name="interestAmount"
@@ -664,13 +664,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       {(row.interestAmount + row.penalty + row.consultingCharge).toFixed(2)}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>
-                      {row.old_cr_dr}
-                      {/*{row.old_cr_dr !== 0 ? row.old_cr_dr * -1 : row.old_cr_dr}*/}
-                    </TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>
-                      {(row.adjustedPay + row.old_cr_dr).toFixed(2)}
-                    </TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.old_cr_dr}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
@@ -783,7 +778,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     px: 2,
                   }}
                 >
-                  {(payAfterAdjustAmt + oldCrDr).toFixed(0)}
+                  {payAfterAdjustAmt.toFixed(0)}
                 </TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
