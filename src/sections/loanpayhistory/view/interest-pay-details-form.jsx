@@ -429,8 +429,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const calculateTotalAmount = (row) => {
     const interestComponents = row.interestAmount + row.penalty + row.consultingCharge;
     const adjustedInterest = interestComponents - row.uchakInterestAmount;
-    const finalAmount = adjustedInterest + row.old_cr_dr;
 
+    const finalAmount = adjustedInterest + row.old_cr_dr;
     return Number(finalAmount.toFixed(2));
   };
 
@@ -673,14 +673,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.uchakInterestAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.old_cr_dr}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.adjustedPay}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{calculateTotalAmount(row)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>
-                      {calculateTotalAmount(row)}
-                    </TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                         {
