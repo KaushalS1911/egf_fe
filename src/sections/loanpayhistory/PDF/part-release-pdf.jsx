@@ -178,7 +178,7 @@ const useStyles = () =>
         subHeading: {
           fontWeight: '600',
           fontSize: 10,
-          flex: 0.85,
+          flex: 1.3,
         },
         subHeading2: {
           fontWeight: '600',
@@ -285,16 +285,21 @@ export default function PartReleasePdf({ selectedRow, configs }) {
                     <Text style={styles.subHeading}>Loan Amount </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow.loan.loanAmount}</Text>
+                  </View>{' '}
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading}>Int. Loan Amount </Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{selectedRow.interestLoanAmount}</Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Pay Amount </Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{selectedRow.adjustedAmount}</Text>
-                  </View>
+                  </View>{' '}
                   <View style={styles.row}>
-                    <Text style={styles.subHeading}>Int. Loan Amount </Text>
+                    <Text style={styles.subHeading}>Pending Loan Amount</Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{selectedRow.interestLoanAmount}</Text>
+                    <Text style={styles.subText}>{selectedRow.pendingLoanAmount}</Text>
                   </View>
                 </View>
                 <View style={{ width: '50%' }}>

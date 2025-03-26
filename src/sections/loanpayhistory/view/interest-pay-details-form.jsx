@@ -19,7 +19,6 @@ import { enqueueSnackbar } from 'notistack';
 import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
-import RHFDatePicker from '../../../components/hook-form/rhf-.date-picker';
 import Iconify from '../../../components/iconify';
 import moment from 'moment';
 import { pdf, PDFViewer } from '@react-pdf/renderer';
@@ -28,6 +27,7 @@ import { useBoolean } from '../../../hooks/use-boolean';
 import { ConfirmDialog } from '../../../components/custom-dialog';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
+import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 
 const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
@@ -256,7 +256,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
 
     setValue(
       'payAfterAdjusted1',
-      (Number(watch('totalPay')) - Number(watch('uchakAmount')) - Number(watch('oldCrDr'))).toFixed(
+      (Number(watch('totalPay')) - Number(watch('uchakAmount')) + Number(watch('oldCrDr'))).toFixed(
         2
       )
     );
@@ -439,8 +439,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             md: 'repeat(6, 1fr)',
           }}
         >
-          <RHFDatePicker name="from" control={control} label="From Date" req={'red'} />
-          <RHFDatePicker name="to" control={control} label="To Date" req={'red'} />
+          <RhfDatePicker name="from" control={control} label="From Date" req={'red'} />
+          <RhfDatePicker name="to" control={control} label="To Date" req={'red'} />
           <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField
             name="interestAmount"

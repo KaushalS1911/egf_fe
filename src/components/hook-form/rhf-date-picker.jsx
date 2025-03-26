@@ -3,7 +3,6 @@ import { Controller } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { format } from 'date-fns';
 import enGB from 'date-fns/locale/en-GB'; // for UK style date formatting
 
 const RhfDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }) => {
