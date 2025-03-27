@@ -239,7 +239,7 @@ export default function LoanpayhistoryListView() {
                         'default'
                       }
                     >
-                      {['Issued', 'Closed', 'Overdue'].includes(tab.value)
+                      {['Regular', 'Closed', 'Overdue'].includes(tab.value)
                         ? otherLoanissue.filter((item) => item.status === tab.value).length
                         : otherLoanissue.length}
                     </Label>
