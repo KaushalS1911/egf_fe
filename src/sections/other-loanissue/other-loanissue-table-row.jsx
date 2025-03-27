@@ -22,7 +22,7 @@ export default function OtherLoanissueTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  const { loan, cashAmount, bankAmount } = row;
+  const { loan, cashAmount, bankAmount, srNo } = row;
   const { loanNo, customer, scheme, loanAmount, createdAt } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -32,14 +32,14 @@ export default function OtherLoanissueTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{srNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{new Date(createdAt).toLocaleDateString('en-GB')}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {new Date(createdAt).toLocaleDateString('en-GB')}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
@@ -71,18 +71,6 @@ export default function OtherLoanissueTableRow({
           >
             <Iconify icon="solar:pen-bold" />
             Edit
-          </MenuItem>
-        )}
-        {getResponsibilityValue('delete_loanIssue', configs, user) && (
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
           </MenuItem>
         )}
       </CustomPopover>

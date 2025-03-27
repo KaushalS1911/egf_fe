@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -46,6 +46,7 @@ import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: '#', label: '#' },
   { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer name' },
   { id: 'createdAt', label: 'Entry Date' },
@@ -74,9 +75,18 @@ export default function OtherLoanissueListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(otherLoanissue);
   const [filters, setFilters] = useState(defaultFilters);
+  const [srData, setSrData] = useState([]);
+
+  useEffect(() => {
+    const updatedData = otherLoanissue.map((item, index) => ({
+      ...item,
+      srNo: index + 1,
+    }));
+    setSrData(updatedData);
+  }, [otherLoanissue]);
 
   const dataFiltered = applyFilter({
-    inputData: otherLoanissue,
+    inputData: srData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -136,7 +146,7 @@ export default function OtherLoanissueListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = otherLoanissue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = srData.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -260,12 +270,6 @@ export default function OtherLoanissueListView() {
                 rowCount={dataFiltered.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
                 sx={{
                   position: 'sticky',
                   top: 0,
