@@ -13,11 +13,11 @@ import Label from '../../components/label';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
-import { Box, Dialog, DialogActions } from '@mui/material';
+import { Box, Dialog, DialogActions, IconButton } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import Notice from '../reminder/view/notice';
 import Noc from './PDF/noc';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import LetterOfAuthority from '../disburse/letter-of-authority';
 import Sansaction11 from '../disburse/sansaction-11.jsx';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details';
@@ -162,6 +162,16 @@ export default function OtherLoanpayhistoryTableRow({
           >
             {status}
           </Label>
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
+          <IconButton
+            color="error"
+            onClick={() => {
+              confirm.onTrue();
+            }}
+          >
+            <Iconify icon="eva:trash-2-outline" />
+          </IconButton>
         </TableCell>
       </TableRow>
       <CustomPopover

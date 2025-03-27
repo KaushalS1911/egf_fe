@@ -48,6 +48,9 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.pendingCashAmount + row.pendingBankAmount}
+        </TableCell>
         {(getResponsibilityValue('create_disburse', configs, user) && (
           <Button
             onClick={() => router.push(paths.dashboard.disburse.new(row._id))}

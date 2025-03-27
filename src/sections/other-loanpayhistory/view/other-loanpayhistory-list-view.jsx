@@ -64,6 +64,7 @@ const TABLE_HEAD = [
   { id: 'closeAmount', label: 'Close Amt' },
   { id: 'renewalDate', label: 'Renew Date' },
   { id: 'status', label: 'Status' },
+  { id: 'action', label: 'Actions' },
 ];
 
 const STATUS_OPTIONS = [
@@ -145,14 +146,14 @@ export default function LoanpayhistoryListView() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
-        data: { ids: id },
-      });
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan/${id}`
+      );
       confirm.onFalse();
       mutate();
       enqueueSnackbar(res.data.message);
     } catch (err) {
-      enqueueSnackbar('Failed to delete Employee');
+      enqueueSnackbar('Loan cannot be deleted because it is not latest one.', { variant: 'error' });
     }
   };
 
