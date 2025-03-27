@@ -84,14 +84,14 @@ const TABLE_HEAD = [
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
   { value: 'Issued', label: 'Issued' },
-  {
-    value: 'Disbursed',
-    label: 'Disbursed',
-  },
   { value: 'Regular', label: 'Regular' },
   {
     value: 'Overdue',
     label: 'Overdue',
+  },
+  {
+    value: 'Closed',
+    label: 'Closed',
   },
 ];
 const defaultFilters = {
@@ -202,8 +202,6 @@ export default function OtherLonaInterestListView() {
   // useEffect(() => {
   //   fetchStates();
   // }, [totalAllInoutLoanReports]);
-
-  console.log('totalAllInoutLoanReports', totalAllInoutLoanReports);
 
   const dataFiltered = applyFilter({
     inputData: totalAllInoutLoanReports,
@@ -379,15 +377,15 @@ export default function OtherLonaInterestListView() {
                       color={
                         (tab.value === 'Regular' && 'success') ||
                         (tab.value === 'Overdue' && 'error') ||
-                        (tab.value === 'Disbursed' && 'info') ||
+                        (tab.value === 'Closed' && 'warning') ||
                         (tab.value === 'Issued' && 'secondary') ||
                         'default'
                       }
                     >
-                      {['Issued', 'Regular', 'Overdue', 'Disbursed', 'Closed'].includes(tab.value)
-                        ? totalAllInoutLoanReports.filter((item) => item.status === tab.value)
+                      {['Issued', 'Regular', 'Overdue', 'Closed'].includes(tab.value)
+                        ? totalAllInoutLoanReports.flat().filter((item) => item.status === tab.value)
                             .length
-                        : totalAllInoutLoanReports.length}
+                        : totalAllInoutLoanReports.flat().length}
                     </Label>
                   </>
                 }

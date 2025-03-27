@@ -265,7 +265,7 @@ function Noc({ nocData, configs }) {
                   been successfully closed as of{' '}
                   <Text style={[styles.fw, styles.bottomDetails]}>
                     {fDate(nocData.closingDate)}
-                  </Text>
+                  </Text>{' '}
                   <Text style={styles.bottomDetails}>
                     {' '}
                     All outstanding dues and obligations related to the aforementioned gold loan
@@ -278,14 +278,14 @@ function Noc({ nocData, configs }) {
                   Details of the closed gold loan account:
                 </Text>
                 <Text style={styles.bottomDetails}>
-                  - Loan Account Number: {nocData.customer.bankDetails.accountNumber}
+                  - Loan Account Number: {nocData.loanNo}
                 </Text>
                 <Text style={styles.bottomDetails}>
                   - Customer Name:{' '}
                   {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}
                 </Text>
                 <Text style={styles.bottomDetails}>- Loan Amount: {nocData.loanAmount}</Text>
-                <Text style={styles.bottomDetails}>- Closing Charge: {nocData.closingCharge}</Text>
+                <Text style={styles.bottomDetails}>- Closing Charge: {nocData.closingCharge || 0}</Text>
                 <Text style={styles.bottomDetails}>
                   - Date of Loan Disbursement: {fDate(nocData.issueDate)}
                 </Text>
