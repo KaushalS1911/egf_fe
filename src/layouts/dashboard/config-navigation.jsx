@@ -180,25 +180,32 @@ export function useNavData() {
                 title: t('loan issue reports'),
                 path: paths.dashboard.reports['loan-issue-reports'],
               },
+            ],
+          },
+          {
+            title: t('Other Reports'),
+            path: paths.dashboard.otherReports.root,
+            icon: ICONS.user,
+            children: [
               {
                 title: t('other loan all branch reports'),
-                path: paths.dashboard.reports['other-loan-all-branch-reports'],
+                path: paths.dashboard.otherReports['other-loan-all-branch-reports'],
               },
               {
                 title: t('other loan close reports'),
-                path: paths.dashboard.reports['other-loan-close-reports'],
+                path: paths.dashboard.otherReports['other-loan-close-reports'],
               },
               {
                 title: t('other loan interest'),
-                path: paths.dashboard.reports['other-loan-interest-reports'],
+                path: paths.dashboard.otherReports['other-loan-interest-reports'],
               },
               {
                 title: t('other loan daily reports'),
-                path: paths.dashboard.reports['other-loan-daily-reports'],
+                path: paths.dashboard.otherReports['other-loan-daily-reports'],
               },
               {
                 title: t('total all in out loan reports'),
-                path: paths.dashboard.reports['total-all-in-out-loan-reports'],
+                path: paths.dashboard.otherReports['total-all-in-out-loan-reports'],
               },
             ],
           },

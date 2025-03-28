@@ -284,6 +284,12 @@ export const dashboardRoutes = [
           { path: 'interest-reports', element: <InterestReportsListView /> },
           { path: 'customer-statement', element: <CustomerStatement /> },
           { path: 'loan-issue-reports', element: <LoanIssueReports /> },
+        ],
+      },
+      {
+        path: 'other-reports',
+        children: [
+          { element: <OtherLoanAllBranchReports />, index: true },
           { path: 'other-loan-all-branch-reports', element: <OtherLoanAllBranchReports /> },
           { path: 'other-loan-close-reports', element: <OtherLoanCloseReports /> },
           { path: 'other-loan-interest-reports', element: <OtherLoanInterestReports /> },
