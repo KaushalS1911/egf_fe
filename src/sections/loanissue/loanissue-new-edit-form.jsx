@@ -232,7 +232,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       loanType: currentLoanIssue?.loanType || 'GOLD LOAN',
       loanAmount: currentLoanIssue?.loanAmount || '',
       paymentMode: currentLoanIssue?.paymentMode || '',
-      cashAmount: currentLoanIssue?.cashAmount || '',
+      cashAmount: currentLoanIssue?.cashAmount || 0,
       bankAmount: currentLoanIssue?.bankAmount || 0,
       accountNumber: currentLoanIssue?.customerBankDetail?.accountNumber || '',
       accountType: currentLoanIssue?.customerBankDetail?.accountType || '',
@@ -397,26 +397,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('loanAmount', parseFloat(data.loanAmount));
     payload.append('interestLoanAmount', parseFloat(data.loanAmount));
     payload.append('paymentMode', data.paymentMode);
-    payload.append('cashAmount', parseFloat(data.cashAmount));
+    payload.append('cashAmount', data.cashAmount);
     payload.append('bankAmount', parseFloat(data.bankAmount));
     payload.append('issuedBy', user._id);
 
     if (['Bank', 'Both'].includes(watch('paymentMode'))) {
-      payload.append(
-        'customerBankDetail[accountNumber]',
-        data.accountNumber || selectedBank.accountNumber
-      );
-      payload.append(
-        'customerBankDetail[accountType]',
-        data.accountType || selectedBank.accountType
-      );
-      payload.append(
-        'customerBankDetail[accountHolderName]',
-        data.accountHolderName || selectedBank.accountHolderName
-      );
-      payload.append('customerBankDetail[IFSC]', data.IFSC || selectedBank.IFSC);
-      payload.append('customerBankDetail[bankName]', data.bankName || selectedBank.bankName);
-      payload.append('customerBankDetail[branchName]', data.branchName || selectedBank.branchName);
+      const customerBankDetails = {
+        accountNumber: data?.accountNumber || selectedBank?.accountNumber,
+        accountType: data?.accountType || selectedBank?.accountType,
+        accountHolderName: data?.accountHolderName || selectedBank?.accountHolderName,
+        IFSC: data?.IFSC || selectedBank?.IFSC,
+        bankName: data?.bankName || selectedBank?.bankName,
+        branchName: data?.branchName || selectedBank?.branchName,
+      };
+
+      payload.append('customerBankDetail', JSON.stringify(customerBankDetails));
     }
 
     try {

@@ -206,6 +206,8 @@ const useStyles = () =>
 
 function Noc({ nocData, configs }) {
   const styles = useStyles();
+  const customerBankDetails = JSON.parse(nocData.customerBankDetail);
+  console.log(customerBankDetails);
   return (
     <>
       <Document>
@@ -255,7 +257,7 @@ function Noc({ nocData, configs }) {
                     This is to certify that the gold loan account bearing account number{' '}
                   </Text>
                   <Text style={[styles.fw, styles.bottomDetails]}>
-                    {nocData.customer.bankDetails.accountNumber}
+                    {customerBankDetails.accountNumber}
                   </Text>
                   , held by{' '}
                   <Text
@@ -277,15 +279,15 @@ function Noc({ nocData, configs }) {
                 <Text style={[styles.fw, styles.bottomDetails, styles.my4]}>
                   Details of the closed gold loan account:
                 </Text>
-                <Text style={styles.bottomDetails}>
-                  - Loan Account Number: {nocData.loanNo}
-                </Text>
+                <Text style={styles.bottomDetails}>- Loan Account Number: {nocData.loanNo}</Text>
                 <Text style={styles.bottomDetails}>
                   - Customer Name:{' '}
                   {`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}
                 </Text>
                 <Text style={styles.bottomDetails}>- Loan Amount: {nocData.loanAmount}</Text>
-                <Text style={styles.bottomDetails}>- Closing Charge: {nocData.closingCharge || 0}</Text>
+                <Text style={styles.bottomDetails}>
+                  - Closing Charge: {nocData.closingCharge || 0}
+                </Text>
                 <Text style={styles.bottomDetails}>
                   - Date of Loan Disbursement: {fDate(nocData.issueDate)}
                 </Text>
