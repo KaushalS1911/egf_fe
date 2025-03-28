@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import countrystatecity from '../../_mock/map/csc.json';
 import Box from '@mui/material/Box';
@@ -21,7 +21,18 @@ import FormProvider, {
   RHFRadioGroup,
   RHFCode,
 } from 'src/components/hook-form';
-import { Button, Dialog, DialogContent, IconButton } from '@mui/material';
+import {
+  Button,
+  CardActions,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+} from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
@@ -36,6 +47,8 @@ import DialogActions from '@mui/material/DialogActions';
 import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../components/iconify';
 import Lightbox, { useLightBox } from '../../components/lightbox/index.js';
+import CardContent from '@mui/material/CardContent';
+import { TableHeadCustom, useTable } from '../../components/table/index.js';
 
 //---------------------------------------------------------------------
 
@@ -61,6 +74,20 @@ const INQUIRY_REFERENCE_BY = [
   },
   { value: 'Brochure', label: 'Brochure' },
   { value: 'Other', label: 'Other' },
+];
+
+const TABLE_HEAD = [
+  { id: 'AccountHolder', label: 'Account holder' },
+  { id: 'Accountnumber', label: 'Account number' },
+  { id: 'accountType', label: 'Acoountv type' },
+  {
+    id: 'IFSCcode',
+    label: 'IFSC code',
+  },
+  { id: 'bankName', label: 'Bank name' },
+  { id: 'branchName', label: 'Branch name' },
+
+  { id: 'actions', label: 'Actions' },
 ];
 
 export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
@@ -92,6 +119,16 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   const [disabledField, setDisabledField] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [referanceByOther, setReferaceByOther] = useState('');
+  const table = useTable();
+  const [editRowIndex, setEditRowIndex] = useState(null);
+
+  const handleEdit = (index) => {
+    setEditRowIndex(index);
+  };
+
+  const handleSave = () => {
+    setEditRowIndex(null);
+  };
 
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
@@ -184,12 +221,17 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       tempState: currentCustomer?.temporaryAddress?.state || '',
       tempCity: currentCustomer?.temporaryAddress?.city || '',
       tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
-      bankName: currentCustomer?.bankDetails?.bankName || '',
-      IFSC: currentCustomer?.bankDetails?.IFSC || '',
-      accountType: currentCustomer?.bankDetails?.accountType || '',
-      accountNumber: currentCustomer?.bankDetails?.accountNumber || '',
-      accountHolderName: currentCustomer?.bankDetails?.accountHolderName || '',
-      branchName: currentCustomer?.bankDetails?.branchName || '',
+
+      bankDetails: currentCustomer?.bankDetails || [
+        {
+          accountHolderName: '',
+          accountNumber: '',
+          accountType: '',
+          IFSC: '',
+          bankName: '',
+          branchName: '',
+        },
+      ],
     }),
     [currentCustomer, branch]
   );
@@ -207,6 +249,37 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'bankDetails',
+  });
+  const handleAdd = () => {
+    append({
+      accountHolderName: '',
+      accountNumber: '',
+      accountType: '',
+      IFSC: '',
+      bankName: '',
+      branchName: '',
+      isNew: true, // Mark row as new
+    });
+  };
+
+  const handleReset = (index) => {
+    methods.setValue(`bankDetails[${index}]`, {
+      accountHolderName: '',
+      accountNumber: '',
+      accountType: '',
+      IFSC: '',
+      bankName: '',
+      branchName: '',
+    });
+  };
+  const handleRemove = (index) => {
+    if (fields.length > 1) {
+      remove(index);
+    }
+  };
 
   const [aspectRatio, setAspectRatio] = useState(null);
 
@@ -273,27 +346,25 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           city: data.tempCity,
           zipcode: data.tempZipcode,
         },
-        bankDetails: {
-          branchName: data.branchName,
-          accountHolderName: data.accountHolderName,
-          accountNumber: data.accountNumber,
-          accountType: data.accountType,
-          IFSC: data.IFSC,
-          bankName: data.bankName,
-        },
+        bankDetails: data.bankDetails,
       };
 
       const formData = new FormData();
-      Object.keys(payload).forEach((key) => {
-        if (typeof payload[key] === 'object') {
-          if (key == 'dob' || key == 'joiningDate') {
-            formData.append(key, payload[key]);
-          }
-          Object.keys(payload[key]).forEach((subKey) => {
-            formData.append(`${key}[${subKey}]`, payload[key][subKey]);
+      Object.entries(payload).forEach(([key, value]) => {
+        if (typeof value === 'object' && key !== 'bankDetails') {
+          // Handle nested objects (permanentAddress, temporaryAddress)
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            formData.append(`${key}[${subKey}]`, subValue);
+          });
+        } else if (key === 'bankDetails' && Array.isArray(value)) {
+          // Handle bankDetails array separately
+          value.forEach((bank, index) => {
+            Object.entries(bank).forEach(([field, fieldValue]) => {
+              formData.append(`bankDetails[${index}][${field}]`, fieldValue);
+            });
           });
         } else {
-          formData.append(key, payload[key]);
+          formData.append(key, value);
         }
       });
 
@@ -1201,58 +1272,140 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
   const BankDetails = (
     <>
-      <Grid xs={12} md={12}>
+      <Grid item xs={12} md={12}>
         <Card>
-          {!mdUp && <CardHeader title="Bank Accounts" />}
-          <Stack spacing={3} sx={{ p: 2, pt: 0.5 }}>
-            <Box>
-              <Typography variant="subtitle1" sx={{ my: 1, fontWeight: '600' }}>
-                Bank Account Details
-              </Typography>
-              <Box
-                columnGap={2}
-                rowGap={3}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  md: 'repeat(6, 1fr)',
-                }}
-              >
-                <RHFTextField
-                  name="accountHolderName"
-                  label="Account Holder Name"
-                  disabled={disabledField}
+          <CardContent sx={{ p: 2 }}>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                mb: 1,
+                fontWeight: '600',
+              }}
+            >
+              Bank Account Details
+            </Typography>
+            <TableContainer>
+              <Table>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={TABLE_HEAD}
+                  onSort={table.onSort}
                 />
-                <RHFTextField
-                  disabled={disabledField}
-                  name="accountNumber"
-                  label="Account Number"
-                  type="number"
-                  inputProps={{ min: 0 }}
-                />
-                <RHFAutocomplete
-                  disabled={disabledField}
-                  name="accountType"
-                  label="Account Type"
-                  placeholder="Choose account type"
-                  options={ACCOUNT_TYPE_OPTIONS}
-                  isOptionEqualToValue={(option, value) => option === value}
-                />
-                <RHFTextField
-                  disabled={disabledField}
-                  name="IFSC"
-                  label="IFSC Code"
-                  inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
-                  onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-                  }}
-                  onBlur={(e) => checkIFSC(e.target.value)}
-                />
-                <RHFTextField disabled={disabledField} name="bankName" label="Bank Name" />
-                <RHFTextField disabled={disabledField} name="branchName" label="Branch Name" />
-              </Box>
-            </Box>
-          </Stack>
+                <TableBody>
+                  {fields.map((row, index) => {
+                    const isEditing = editRowIndex === index;
+                    const isNewRow = row.isNew; // New row identifier
+                    const isDisabled = !!currentCustomer && !isEditing && !isNewRow; // Disable only for existing non-edit rows
+
+                    return (
+                      <TableRow
+                        key={row.id}
+                        sx={{
+                          '&:hover': { backgroundColor: 'inherit' },
+                          height: '70px',
+                        }}
+                      >
+                        <TableCell sx={{ width: 240, padding: '0px 8px' }}>
+                          <RHFTextField
+                            name={`bankDetails[${index}].accountHolderName`}
+                            label="Account Holder Name"
+                            disabled={isDisabled}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ width: 240, padding: '0px 8px' }}>
+                          <RHFTextField
+                            name={`bankDetails[${index}].accountNumber`}
+                            label="Account Number"
+                            type="number"
+                            inputProps={{ min: 0 }}
+                            disabled={isDisabled}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ width: 240, padding: '0px 8px' }}>
+                          <RHFAutocomplete
+                            name={`bankDetails[${index}].accountType`}
+                            label="Account Type"
+                            placeholder="Choose account type"
+                            options={ACCOUNT_TYPE_OPTIONS}
+                            isOptionEqualToValue={(option, value) => option === value}
+                            disabled={isDisabled}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ width: 240, padding: '0px 8px' }}>
+                          <RHFTextField
+                            name={`bankDetails[${index}].IFSC`}
+                            label="IFSC Code"
+                            inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
+                            onInput={(e) => {
+                              e.target.value = e.target.value
+                                .replace(/[^A-Za-z0-9]/g, '')
+                                .toUpperCase();
+                            }}
+                            onBlur={(e) => checkIFSC(e.target.value)}
+                            disabled={isDisabled}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ width: 240, padding: '0px 8px' }}>
+                          <RHFTextField
+                            name={`bankDetails[${index}].bankName`}
+                            label="Bank Name"
+                            disabled={isDisabled}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ width: 240, padding: '0px 8px' }}>
+                          <RHFTextField
+                            name={`bankDetails[${index}].branchName`}
+                            label="Branch Name"
+                            disabled={isDisabled}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ width: '150px', padding: '0px 8px' }}>
+                          <IconButton onClick={() => handleReset(index)}>
+                            <Iconify icon="ic:baseline-refresh" />
+                          </IconButton>
+
+                          {!!currentCustomer &&
+                            !isNewRow && // Hide edit options for new rows
+                            (isEditing ? (
+                              <IconButton color="primary" onClick={handleSave}>
+                                <Iconify icon="mdi:check" />
+                              </IconButton>
+                            ) : (
+                              <IconButton color="default" onClick={() => handleEdit(index)}>
+                                <Iconify icon="mdi:pencil" />
+                              </IconButton>
+                            ))}
+
+                          <IconButton color="error" onClick={() => handleRemove(index)}>
+                            <Iconify icon="solar:trash-bin-trash-bold" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+          <CardActions
+            sx={{
+              margin: '0px 16px 10px 16px',
+              justifyContent: 'flex-end',
+              p: 0,
+            }}
+          >
+            <Button
+              size="small"
+              // disabled={!isFieldsEnabled}
+              variant="contained"
+              color="primary"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={handleAdd}
+            >
+              Add Bank Details
+            </Button>
+          </CardActions>
         </Card>
       </Grid>
     </>

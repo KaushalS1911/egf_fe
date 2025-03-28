@@ -103,7 +103,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [completedCrop, setCompletedCrop] = useState(null);
   const [rotation, setRotation] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(null);
-
+  const [selectedBank, setSelectedBank] = useState(null);
+  const [selectBankAccount, setSelectBankAccount] = useState(false);
+  const [addBankAccount, setAddBankAccount] = useState(false);
   useEffect(() => {
     setMultiSchema(scheme);
   }, [scheme]);
@@ -139,40 +141,63 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         netAmount: Yup.string().required('Net Amount is required'),
       })
     ),
-    accountNumber: Yup.string().when('paymentMode', {
-      is: (val) => val === 'Bank' || val === 'Both',
+    selectBankAccount: Yup.boolean(),
+    addBankAccount: Yup.boolean(),
+
+    account: Yup.mixed().when(['paymentMode', 'selectBankAccount'], {
+      is: (paymentMode, selectBankAccount) =>
+        selectBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+      then: (schema) => schema.required('Account is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+
+    accountNumber: Yup.string().when(['paymentMode', 'addBankAccount'], {
+      is: (paymentMode, addBankAccount) =>
+        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
       then: (schema) => schema.required('Account Number is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
-    accountType: Yup.string().when('paymentMode', {
-      is: (val) => val === 'Bank' || val === 'Both',
+
+    accountType: Yup.string().when(['paymentMode', 'addBankAccount'], {
+      is: (paymentMode, addBankAccount) =>
+        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
       then: (schema) => schema.required('Account Type is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
-    accountHolderName: Yup.string().when('paymentMode', {
-      is: (val) => val === 'Bank' || val === 'Both',
+
+    accountHolderName: Yup.string().when(['paymentMode', 'addBankAccount'], {
+      is: (paymentMode, addBankAccount) =>
+        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
       then: (schema) => schema.required('Account Holder Name is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
-    IFSC: Yup.string().when('paymentMode', {
-      is: (val) => val === 'Bank' || val === 'Both',
+
+    IFSC: Yup.string().when(['paymentMode', 'addBankAccount'], {
+      is: (paymentMode, addBankAccount) =>
+        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
       then: (schema) =>
         schema
           .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC Code')
           .required('IFSC Code is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
-    bankName: Yup.string().when('paymentMode', {
-      is: (val) => val === 'Bank' || val === 'Both',
+
+    bankName: Yup.string().when(['paymentMode', 'addBankAccount'], {
+      is: (paymentMode, addBankAccount) =>
+        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
       then: (schema) => schema.required('Bank Name is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
-    branchName: Yup.string().when('paymentMode', {
-      is: (val) => val === 'Bank' || val === 'Both',
+
+    branchName: Yup.string().when(['paymentMode', 'addBankAccount'], {
+      is: (paymentMode, addBankAccount) =>
+        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
       then: (schema) => schema.required('Branch Name is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
   });
+
+  console.log(currentLoanIssue?.customerBankDetail?.account || '', 'dfdjhfgdjhdfgdfgdu');
 
   const defaultValues = useMemo(() => {
     const baseValues = {
@@ -215,6 +240,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       IFSC: currentLoanIssue?.customerBankDetail?.IFSC || '',
       bankName: currentLoanIssue?.customerBankDetail?.bankName || '',
       branchName: currentLoanIssue?.customerBankDetail?.branchName || null,
+      account: currentLoanIssue?.customerBankDetail?.account || null,
       propertyDetails: currentLoanIssue?.propertyDetails || [
         {
           type: '',
@@ -376,12 +402,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('issuedBy', user._id);
 
     if (['Bank', 'Both'].includes(watch('paymentMode'))) {
-      payload.append('customerBankDetail[accountNumber]', data.accountNumber);
-      payload.append('customerBankDetail[accountType]', data.accountType);
-      payload.append('customerBankDetail[accountHolderName]', data.accountHolderName);
-      payload.append('customerBankDetail[IFSC]', data.IFSC);
-      payload.append('customerBankDetail[bankName]', data.bankName);
-      payload.append('customerBankDetail[branchName]', data.branchName);
+      payload.append(
+        'customerBankDetail[accountNumber]',
+        data.accountNumber || selectedBank.accountNumber
+      );
+      payload.append(
+        'customerBankDetail[accountType]',
+        data.accountType || selectedBank.accountType
+      );
+      payload.append(
+        'customerBankDetail[accountHolderName]',
+        data.accountHolderName || selectedBank.accountHolderName
+      );
+      payload.append('customerBankDetail[IFSC]', data.IFSC || selectedBank.IFSC);
+      payload.append('customerBankDetail[bankName]', data.bankName || selectedBank.bankName);
+      payload.append('customerBankDetail[branchName]', data.branchName || selectedBank.branchName);
     }
 
     try {
@@ -569,16 +604,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
   const saveCustomerBankDetails = async () => {
     const payload = {
-      bankDetails: {
-        branchName: watch('branchName'),
-        accountHolderName: watch('accountHolderName'),
-        accountNumber: watch('accountNumber'),
-        accountType: watch('accountType'),
-        IFSC: watch('IFSC'),
-        bankName: watch('bankName'),
-      },
+      bankDetails: [
+        ...customerData.bankDetails,
+        {
+          branchName: watch('branchName'),
+          accountHolderName: watch('accountHolderName'),
+          accountNumber: watch('accountNumber'),
+          accountType: watch('accountType'),
+          IFSC: watch('IFSC'),
+          bankName: watch('bankName'),
+        },
+      ],
     };
-
     const mainbranchid = branch?.find((e) => e?._id === customerData?.branch?._id);
     let parsedBranch = storedBranch;
 
@@ -1662,47 +1699,66 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
               </Box>
             </Card>
           </Grid>
-          {['Bank', 'Both'].includes(watch('paymentMode')) && (
+          {['Bank', 'Both'].includes(watch('paymentMode')) && !currentLoanIssue && (
             <>
               <Grid item xs={12} md={12}>
                 <Card sx={{ p: 2 }}>
+                  <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: '600' }}>
+                    Account Details
+                  </Typography>
+
+                  {/* Buttons to toggle sections */}
                   <Box
                     sx={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      alignItems: 'flex-start',
+                      alignItems: 'center',
+                      pb: 1.5,
                     }}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        mb: 0.5,
-                        fontWeight: '600',
-                      }}
-                    >
-                      Account Details
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        pb: 1.5,
-                      }}
-                    >
+                    <Box>
                       <Button
-                        variant={'outlined'}
+                        variant="contained"
                         disabled={!isFieldsEnabled}
-                        onClick={() => saveCustomerBankDetails()}
-                        style={{
-                          fontWeight: 'bold',
-                          textDecoration: 'none',
-                          color: 'inherit',
+                        onClick={() => {
+                          setSelectBankAccount(true);
+                          setAddBankAccount(false); // Hide other fields
                         }}
+                        sx={{ fontWeight: 'bold', textDecoration: 'none' }}
                       >
-                        Add beneficiary
+                        Select Account
+                      </Button>{' '}
+                      <Button
+                        variant="contained"
+                        disabled={!isFieldsEnabled}
+                        onClick={() => {
+                          setAddBankAccount(true);
+                          setSelectBankAccount(false); // Hide dropdown field
+                        }}
+                        sx={{ fontWeight: 'bold', textDecoration: 'none' }}
+                      >
+                        Add Beneficiary
                       </Button>
                     </Box>
+                    {addBankAccount && (
+                      <Box>
+                        <Button
+                          variant={'outlined'}
+                          disabled={!isFieldsEnabled}
+                          onClick={() => saveCustomerBankDetails()}
+                          style={{
+                            fontWeight: 'bold',
+                            textDecoration: 'none',
+                            color: 'inherit',
+                          }}
+                        >
+                          Add beneficiary
+                        </Button>
+                      </Box>
+                    )}
                   </Box>
+
+                  {/* Form Sections */}
                   <Box
                     rowGap={3}
                     columnGap={2}
@@ -1712,55 +1768,92 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       sm: 'repeat(6, 1fr)',
                     }}
                   >
-                    <RHFTextField
-                      name="accountNumber"
-                      label="Account No."
-                      req={'red'}
-                      disabled={!isFieldsEnabled}
-                      type="number"
-                      inputProps={{ min: 0 }}
-                    />
-                    <RHFAutocomplete
-                      name="accountType"
-                      label="Account Type"
-                      req={'red'}
-                      disabled={!isFieldsEnabled}
-                      fullWidth
-                      options={ACCOUNT_TYPE_OPTIONS?.map((item) => item)}
-                      getOptionLabel={(option) => option}
-                      renderOption={(props, option) => (
-                        <li {...props} key={option}>
-                          {option}
-                        </li>
-                      )}
-                    />
-                    <RHFTextField
-                      name="accountHolderName"
-                      label="Account Holder Name"
-                      disabled={!isFieldsEnabled}
-                      req={'red'}
-                    />
-                    <RHFTextField
-                      name="IFSC"
-                      label="IFSC Code"
-                      inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
-                      onInput={(e) => {
-                        e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-                      }}
-                      onBlur={(e) => checkIFSC(e.target.value)}
-                    />
-                    <RHFTextField
-                      name="bankName"
-                      label="Bank Name"
-                      req={'red'}
-                      disabled={!isFieldsEnabled}
-                    />
-                    <RHFTextField
-                      name="branchName"
-                      label="Branch Name"
-                      req={'red'}
-                      disabled={!isFieldsEnabled}
-                    />
+                    {/* ✅ Show only Account Dropdown when Select Account is clicked */}
+                    {selectBankAccount && (
+                      <Controller
+                        name="account"
+                        control={control}
+                        render={({ field }) => (
+                          <RHFAutocomplete
+                            {...field}
+                            label="Account"
+                            req={'red'}
+                            disabled={!isFieldsEnabled}
+                            fullWidth
+                            options={customerData.bankDetails || []}
+                            getOptionLabel={(option) => option.bankName}
+                            isOptionEqualToValue={(option, value) => option._id === value?._id}
+                            value={field.value || null}
+                            onChange={(_, newValue) => {
+                              field.onChange(newValue);
+                              setSelectedBank(newValue);
+                            }}
+                            renderOption={(props, option) => (
+                              <li {...props} key={option._id}>
+                                {option.bankName}
+                              </li>
+                            )}
+                          />
+                        )}
+                      />
+                    )}
+
+                    {/* ✅ Show only Add Beneficiary fields when clicked */}
+                    {addBankAccount && (
+                      <>
+                        <RHFTextField
+                          name="accountNumber"
+                          label="Account No."
+                          req={'red'}
+                          disabled={!isFieldsEnabled}
+                          type="number"
+                          inputProps={{ min: 0 }}
+                        />
+                        <RHFAutocomplete
+                          name="accountType"
+                          label="Account Type"
+                          req={'red'}
+                          disabled={!isFieldsEnabled}
+                          fullWidth
+                          options={ACCOUNT_TYPE_OPTIONS?.map((item) => item)}
+                          getOptionLabel={(option) => option}
+                          renderOption={(props, option) => (
+                            <li {...props} key={option}>
+                              {option}
+                            </li>
+                          )}
+                        />
+                        <RHFTextField
+                          name="accountHolderName"
+                          label="Account Holder Name"
+                          disabled={!isFieldsEnabled}
+                          req={'red'}
+                        />
+                        <RHFTextField
+                          name="IFSC"
+                          label="IFSC Code"
+                          inputProps={{ maxLength: 11, pattern: '[A-Za-z0-9]*' }}
+                          onInput={(e) => {
+                            e.target.value = e.target.value
+                              .replace(/[^A-Za-z0-9]/g, '')
+                              .toUpperCase();
+                          }}
+                          onBlur={(e) => checkIFSC(e.target.value)}
+                        />
+                        <RHFTextField
+                          name="bankName"
+                          label="Bank Name"
+                          req={'red'}
+                          disabled={!isFieldsEnabled}
+                        />
+                        <RHFTextField
+                          name="branchName"
+                          label="Branch Name"
+                          req={'red'}
+                          disabled={!isFieldsEnabled}
+                        />
+                      </>
+                    )}
                   </Box>
                 </Card>
               </Grid>
