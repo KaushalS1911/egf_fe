@@ -186,6 +186,7 @@ export default function LoanIssueReportsListView() {
                   position: 'sticky',
                   top: 0,
                   zIndex: 1,
+                  backgroundColor: '#2f3944',
                 }}
               />
               <TableBody>

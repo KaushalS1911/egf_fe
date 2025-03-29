@@ -202,6 +202,7 @@ export default function GoldLoanPartCloseListView({ partClose }) {
                 onSort={table.onSort}
                 sx={{
                   position: 'sticky',
+                  backgroundColor: '#2f3944',
                   top: 0,
                   zIndex: 1,
                   ' th': {

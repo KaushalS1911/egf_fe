@@ -383,8 +383,9 @@ export default function OtherLonaInterestListView() {
                       }
                     >
                       {['Issued', 'Regular', 'Overdue', 'Closed'].includes(tab.value)
-                        ? totalAllInoutLoanReports.flat().filter((item) => item.status === tab.value)
-                            .length
+                        ? totalAllInoutLoanReports
+                            .flat()
+                            .filter((item) => item.status === tab.value).length
                         : totalAllInoutLoanReports.flat().length}
                     </Label>
                   </>
@@ -476,10 +477,9 @@ export default function OtherLonaInterestListView() {
                   top: 0,
                   zIndex: 1000,
                   '& .MuiTableCell-root': {
-                    backgroundColor: '#F4F6F8',
                     fontWeight: 600,
                     color: '#637381',
-                    borderBottom: '2px solid rgba(224, 224, 224, 1)',
+                    backgroundColor: '#2f3944',
                     padding: '6px 4px',
                     fontSize: '11px',
                   },

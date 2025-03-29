@@ -300,6 +300,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                   ' th': {
                     padding: '8px',
                   },
+                  backgroundColor: '#2f3944',
                 }}
               />
 

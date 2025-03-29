@@ -307,6 +307,7 @@ export default function CustomerListView() {
                   position: 'sticky',
                   top: 0,
                   zIndex: 1000,
+                  backgroundColor: '#2f3944',
                 }}
               />
               <TableBody>

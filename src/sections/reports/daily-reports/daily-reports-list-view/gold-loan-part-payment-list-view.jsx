@@ -211,6 +211,7 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
                   ' th': {
                     padding: '8px',
                   },
+                  backgroundColor: '#2f3944',
                 }}
               />
               <TableBody>

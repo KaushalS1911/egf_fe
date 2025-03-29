@@ -236,6 +236,7 @@ export default function GoldLoanInterestListView({ interestDetail }) {
                 sx={{
                   position: 'sticky',
                   top: 0,
+                  backgroundColor: '#2f3944',
                   zIndex: 1,
                   ' th': {
                     padding: '8px',

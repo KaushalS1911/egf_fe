@@ -248,6 +248,7 @@ export default function LoanUchakPayDetailsListView({ uchakInterestDetail, dataF
                   position: 'sticky',
                   top: 0,
                   zIndex: 1,
+                  backgroundColor: '#2f3944',
                 }}
               />
               <TableBody>
