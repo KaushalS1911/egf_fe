@@ -105,18 +105,14 @@ export function useNavData() {
         ],
       },
       {
-        subheader: t('Transaction'),
+        subheader: t('loans'),
         items: [
           {
             title: t('Loan issue'),
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
           },
-          {
-            title: t('other loan issue'),
-            path: paths.dashboard.other_loanissue.root,
-            icon: ICONS.loanissue,
-          },
+
           {
             title: t('disburse'),
             path: paths.dashboard.disburse.root,
@@ -127,6 +123,17 @@ export function useNavData() {
             path: paths.dashboard.loanPayHistory.list,
             icon: ICONS.loanPayHistory,
           },
+        ],
+      },
+      {
+        subheader: t('other loans'),
+        items: [
+          {
+            title: t('other loan issue'),
+            path: paths.dashboard.other_loanissue.root,
+            icon: ICONS.loanissue,
+          },
+
           {
             title: t('other loan pay history'),
             path: paths.dashboard.other_loanPayHistory.list,
