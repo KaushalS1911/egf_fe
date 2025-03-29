@@ -638,7 +638,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             <TableBody>
               {loanInterest.map((row, index) => (
                 <>
-                  <TableRow key={index}>
+                  <TableRow key={index} hover >
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.from)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.to)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.loan.loanAmount}</TableCell>
