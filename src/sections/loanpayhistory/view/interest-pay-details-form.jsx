@@ -440,7 +440,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
             md: 'repeat(6, 1fr)',
           }}
         >
-          <RhfDatePicker name="from" control={control} label="From Date" req={'red'} />
+          <RhfDatePicker name="from" control={control} label="From Date" req={'red'} disabled={true}/>
           <RhfDatePicker name="to" control={control} label="To Date" req={'red'} />
           <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField
