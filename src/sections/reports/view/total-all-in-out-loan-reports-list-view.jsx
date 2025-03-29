@@ -742,6 +742,14 @@ export default function OtherLonaInterestListView() {
                               fontSize: '11px',
                               padding: '4px 6px',
                               width: TABLE_HEAD[19].width,
+                              color: (() => {
+                                const totalOtherAmount = otherLoans.reduce(
+                                  (sum, loan) => sum + Number(loan.amount || 0),
+                                  0
+                                );
+                                const diffAmount =  totalOtherAmount - row.loan.loanAmount ;
+                                return diffAmount < 0 ? 'green' : 'red' ;
+                              })()
                             }}
                             rowSpan={rowSpan}
                           >
@@ -760,6 +768,14 @@ export default function OtherLonaInterestListView() {
                               fontSize: '11px',
                               padding: '4px 6px',
                               width: TABLE_HEAD[20].width,
+                              color:(() => {
+                                const totalOtherInterest = otherLoans.reduce(
+                                  (sum, loan) => sum + Number(loan.totalOtherInterestAmount || 0),
+                                  0
+                                );
+                                const diffInterest = row.totalInterestAmount - totalOtherInterest;
+                                return diffInterest < 0 ? 'red' : 'green' ;
+                              })()
                             }}
                             rowSpan={rowSpan}
                           >
