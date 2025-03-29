@@ -47,6 +47,7 @@ const TABLE_HEAD = [
   { id: 'interestAmount', label: 'int. amt' },
   { id: 'consultingAmount', label: 'Con. amt' },
   { id: 'penaltyAmount', label: 'Penalty' },
+  { id: 'Day', label: 'Day' },
   { id: 'totalPaidInterest', label: 'Total Int. amt' },
   { id: 'lastInterestPayDate', label: 'Last Int. pay date' },
   { id: 'pendingDay', label: 'Pending day' },
@@ -102,6 +103,10 @@ export default function InterestReportsListView() {
   );
   const day = interestReports.reduce(
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
+    0
+  );
+  const pendingDay = interestReports.reduce(
+    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
     0
   );
 
@@ -263,11 +268,14 @@ export default function InterestReportsListView() {
                     {penaltyAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {(day / interestReports.length).toFixed()}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {totalPaidInterest.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(day / interestReports.length).toFixed()}
+                    {(pendingDay / interestReports.length).toFixed()}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {pendingInterest.toFixed(0)}

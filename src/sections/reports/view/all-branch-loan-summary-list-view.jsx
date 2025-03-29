@@ -60,8 +60,9 @@ const TABLE_HEAD = [
   { id: 'LoanAmountPay', label: 'loan amt pay' },
   { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'lastInstallmentDate', label: 'Last int. pay date' },
-  { id: 'totalPaidInterest', label: 'Total int. pay ' },
   { id: 'day', label: ' Day ' },
+  { id: 'totalPaidInterest', label: 'Total int. pay ' },
+  { id: 'pendingDay', label: 'Pending day' },
   { id: 'pendingInterest', label: ' Pending int. ' },
   { id: 'nextInstallmentDate', label: 'Next int. pay date' },
   { id: 'status', label: 'Status' },
@@ -127,6 +128,9 @@ export default function AllBranchLoanSummaryListView() {
   );
   const day = LoanSummary.reduce(
     (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
+    0
+  );  const pendingDays = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next.pendingDays > 0 && next?.pendingDays) || 0),
     0
   );
   const pendingIntAmt = LoanSummary.reduce(
@@ -445,10 +449,13 @@ export default function AllBranchLoanSummaryListView() {
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalIntPay.toFixed(0)}
-                  </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(day / LoanSummary.length).toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalIntPay.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {(pendingDays / LoanSummary.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingIntAmt.toFixed(0)}

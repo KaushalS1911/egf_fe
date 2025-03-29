@@ -114,6 +114,7 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
     { label: 'Int. Amt', flex: 1.2 },
     { label: 'Con. Amt', flex: 1 },
     { label: 'Penalty', flex: 1.1 },
+    { label: 'Day', flex: 0.5 },
     { label: 'Total Int. Amt', flex: 1.2 },
     { label: 'Last Int. Pay Date', flex: 1.2 },
     { label: 'Pen. Day', flex: 0.5 },
@@ -171,11 +172,12 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
         </Text>
 
         <Text style={[styles.tableCell, { flex: 1.1 }]}>{(row.penaltyAmount || 0).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
           {(row.totalPaidInterest || 0).toFixed(2)}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.lastInstallmentDate)}</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.pendingDays > 0 ? row.pendingDays : '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
           {(row.pendingInterest || 0).toFixed(2)}
         </Text>
