@@ -25,6 +25,7 @@ import AllBranchLoanSummaryPdf from '../../pdf/all-branch-loan-summary-pdf.jsx';
 import { useGetLoanissue } from '../../../../api/loanissue';
 import LoanDetailsPdf from '../../pdf/loan-details-pdf.jsx';
 import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
+import Autocomplete from '@mui/material/Autocomplete';
 
 // ----------------------------------------------------------------------
 
@@ -151,48 +152,23 @@ export default function LoanDetailTableToolbarTableToolbar({
               width: { xs: 1, sm: 355 },
             }}
           >
-            <InputLabel
+            <Autocomplete
+              options={Loanissue}
+              getOptionLabel={(option) => option?.loanNo || ''}
+              value={Loanissue.find((item) => item._id === filters.loan) || null}
+              onChange={(event, newValue) => onFilters('loan', newValue ? newValue._id : null)}
+              renderInput={(params) => <TextField {...params} label="Loan" />}
               sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
+                input: { height: 7 },
+                label: {
+                  mt: -0.8,
+                  fontSize: '14px',
+                },
+                '& .MuiInputLabel-shrink': {
                   mt: 0,
                 },
               }}
-            >
-              Loan
-            </InputLabel>
-
-            <Select
-              value={filters.loan}
-              onChange={handleFilterLoan}
-              input={<OutlinedInput label="Loan" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {Loanissue.map((option) => (
-                <MenuItem key={option._id} value={option._id}>
-                  {option?.loanNo}
-                </MenuItem>
-              ))}
-            </Select>
+            />
           </FormControl>{' '}
           <FormControl
             sx={{
