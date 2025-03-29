@@ -333,8 +333,8 @@ export default function OtherLoanCloseSummaryListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  zIndex: 1                  backgroundColor: '#2f3944',
-
+                  zIndex: 1,
+                  backgroundColor: '#2f3944',
                 }}
               />
 
