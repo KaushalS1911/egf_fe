@@ -64,6 +64,7 @@ const TABLE_HEAD = [
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'cashAmt', label: 'Cash amt' },
   { id: 'bankAmt', label: 'Bank amt' },
+  { id: 'bank', label: 'Bank' },
   { id: 'remarks', label: 'Remarks' },
   { id: 'entryBy', label: 'Entry By' },
   { id: 'action', label: 'Action' },
@@ -966,134 +967,164 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
           </Box>
         )}
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
-        <TableHeadCustom headLabel={TABLE_HEAD} />
-        <TableBody>
-          {partRelease &&
-            partRelease.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.loan.loanNo}</TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.loan.loanAmount}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.interestLoanAmount}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.adjustedAmount}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.pendingLoanAmount.toFixed(2) || 0}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {fDate(row.createdAt)}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.paymentDetail.cashAmount || 0}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.paymentDetail.bankAmount || 0}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.remark || '-'}
-                </TableCell>
-                <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                  {row.entryBy || '-'}
-                </TableCell>
-                {getResponsibilityValue('delete_part_release', configs, user) ? (
+      <Box
+        sx={{
+          overflowX: 'auto',
+          '&::-webkit-scrollbar': {
+            height: '5px',
+            transition: 'opacity 0.3s ease',
+          },
+          '&:hover::-webkit-scrollbar-thumb': {
+            visibility: 'visible',
+            display: 'block',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            visibility: 'hidden',
+            backgroundColor: '#B4BCC3',
+            borderRadius: '4px',
+          },
+        }}
+      >
+        <Table sx={{ borderRadius: '8px', mt: 2.5, minWidth: '1600px' }}>
+          <TableHeadCustom headLabel={TABLE_HEAD} />
+          <TableBody>
+            {partRelease &&
+              partRelease.map((row, index) => (
+                <TableRow key={index}>
                   <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
-                    {
-                      <IconButton
-                        color="error"
-                        onClick={() => {
-                          if (index === 0) {
-                            confirm.onTrue();
-                            popover.onClose();
-                            setDeleteId(row?._id);
-                          }
-                        }}
-                        sx={{
-                          cursor: index === 0 ? 'pointer' : 'default',
-                          opacity: index === 0 ? 1 : 0.5,
-                          pointerEvents: index === 0 ? 'auto' : 'none',
-                        }}
-                      >
-                        <Iconify icon="eva:trash-2-outline" />
-                      </IconButton>
-                    }
+                    {row.loan.loanNo}
                   </TableCell>
-                ) : (
-                  <TableCell>-</TableCell>
-                )}
-                {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
-                  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
-                    {
-                      <Typography
-                        onClick={() => {
-                          view.onTrue();
-                          setData(row);
-                          console.log(row);
-                        }}
-                        sx={{
-                          cursor: 'pointer',
-                          color: 'inherit',
-                          pointerEvents: 'auto',
-                        }}
-                      >
-                        <Iconify icon="basil:document-solid" />
-                      </Typography>
-                    }
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.loan.loanAmount}
                   </TableCell>
-                ) : (
-                  <TableCell>-</TableCell>
-                )}
-              </TableRow>
-            ))}
-          <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-              {totalPayAmt ? totalPayAmt.toFixed(0) : '-'}
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: '600',
-                color: '#637381',
-                py: 1,
-                px: 2,
-              }}
-            >
-              {adjustedAmount ? adjustedAmount.toFixed(0) : '-'}
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: '600',
-                color: '#637381',
-                py: 1,
-                px: 2,
-              }}
-            >
-              {pendingLoanAmount.toFixed(0)}
-            </TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-              {casAmt.toFixed(0)}
-            </TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-              {bankAmt.toFixed(0)}
-            </TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-            <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.interestLoanAmount}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.amountPaid}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.adjustedAmount}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.pendingLoanAmount.toFixed(2) || 0}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {fDate(row.date)}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {fDate(row.createdAt)}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.paymentDetail.cashAmount || 0}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.paymentDetail.bankAmount || 0}
+                  </TableCell>{' '}
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.paymentDetail?.bankName || '-'}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.remark || '-'}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                    {row.entryBy || '-'}
+                  </TableCell>
+                  {getResponsibilityValue('delete_part_release', configs, user) ? (
+                    <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
+                      {
+                        <IconButton
+                          color="error"
+                          onClick={() => {
+                            if (index === 0) {
+                              confirm.onTrue();
+                              popover.onClose();
+                              setDeleteId(row?._id);
+                            }
+                          }}
+                          sx={{
+                            cursor: index === 0 ? 'pointer' : 'default',
+                            opacity: index === 0 ? 1 : 0.5,
+                            pointerEvents: index === 0 ? 'auto' : 'none',
+                          }}
+                        >
+                          <Iconify icon="eva:trash-2-outline" />
+                        </IconButton>
+                      }
+                    </TableCell>
+                  ) : (
+                    <TableCell>-</TableCell>
+                  )}
+                  {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
+                    <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
+                      {
+                        <Typography
+                          onClick={() => {
+                            view.onTrue();
+                            setData(row);
+                            console.log(row);
+                          }}
+                          sx={{
+                            cursor: 'pointer',
+                            color: 'inherit',
+                            pointerEvents: 'auto',
+                          }}
+                        >
+                          <Iconify icon="basil:document-solid" />
+                        </Typography>
+                      }
+                    </TableCell>
+                  ) : (
+                    <TableCell>-</TableCell>
+                  )}
+                </TableRow>
+              ))}
+            <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                TOTAL
+              </TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                {totalPayAmt ? totalPayAmt.toFixed(0) : '-'}
+              </TableCell>
+              <TableCell
+                sx={{
+                  fontWeight: '600',
+                  color: '#637381',
+                  py: 1,
+                  px: 2,
+                }}
+              >
+                {adjustedAmount ? adjustedAmount.toFixed(0) : '-'}
+              </TableCell>
+              <TableCell
+                sx={{
+                  fontWeight: '600',
+                  color: '#637381',
+                  py: 1,
+                  px: 2,
+                }}
+              >
+                {pendingLoanAmount.toFixed(0)}
+              </TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                {casAmt.toFixed(0)}
+              </TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                {bankAmt.toFixed(0)}
+              </TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+              <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Box>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

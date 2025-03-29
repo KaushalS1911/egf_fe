@@ -223,6 +223,7 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
                 <Text style={styles.tableCell}>Payment mode</Text>
                 <Text style={styles.tableCell}>Cash amt</Text>
                 <Text style={styles.tableCell}>Bank amt</Text>
+                <Text style={styles.tableCell}>Bank</Text>
                 <Text style={styles.tableCell}>Uchak int. amt</Text>
               </View>
               <View style={styles.tableRow}>
@@ -230,6 +231,7 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.cashAmount || 0}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.bankAmount || 0}</Text>
+                <Text style={styles.tableCell}>{data?.paymentDetail?.bankName || 0}</Text>
                 <Text style={styles.tableCell}>{data?.amountPaid}</Text>
               </View>
             </View>

@@ -40,6 +40,7 @@ const TABLE_HEAD = [
   { id: 'payDate', label: 'Pay Date' },
   { id: 'cashAmt', label: 'Cash Amt' },
   { id: 'bankAmt', label: 'Bank Amt' },
+  { id: 'bank', label: 'Bank' },
   { id: 'remark', label: 'Remark' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -417,6 +418,9 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               </TableCell>{' '}
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.paymentDetail.bankAmount || 0}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.paymentDetail.bankName || '-'}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.remark || '-'}

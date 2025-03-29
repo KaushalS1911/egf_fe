@@ -46,6 +46,7 @@ const TABLE_HEAD = [
   { id: 'entryDate', label: 'Entry Date' },
   { id: 'cashamt', label: 'Cash amt' },
   { id: 'bankamt', label: 'Bank amt' },
+  { id: 'bank', label: 'Bank' },
   { id: 'totalPay', label: 'Total Pay Amt' },
   { id: 'pdf', label: 'PDF' },
   // { id: 'crDrAmt', label: 'CR/DR Amt' },
@@ -100,28 +101,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
-        account: Yup.object().required('Account is required').typeError('Account is required'),
-        bankAmount: Yup.string()
-          .required('Bank Amount is required')
-          .test(
-            'is-positive',
-            'Bank Amount must be a positive number',
-            (value) => parseFloat(value) >= 0
-          ),
-      }
-      : paymentMode === 'Cash'
-        ? {
-          cashAmount: Yup.number()
-            .typeError('Cash Amount must be a valid number')
-            .required('Cash Amount is required')
-            .min(0, 'Cash Amount must be a positive number'),
-        }
-        : {
-          cashAmount: Yup.number()
-            .typeError('Cash Amount must be a valid number')
-            .required('Cash Amount is required')
-            .min(0, 'Cash Amount must be a positive number'),
-
+          account: Yup.object().required('Account is required').typeError('Account is required'),
           bankAmount: Yup.string()
             .required('Bank Amount is required')
             .test(
@@ -129,8 +109,29 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               'Bank Amount must be a positive number',
               (value) => parseFloat(value) >= 0
             ),
-          account: Yup.object().required('Account is required'),
-        };
+        }
+      : paymentMode === 'Cash'
+        ? {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+          }
+        : {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+
+            bankAmount: Yup.string()
+              .required('Bank Amount is required')
+              .test(
+                'is-positive',
+                'Bank Amount must be a positive number',
+                (value) => parseFloat(value) >= 0
+              ),
+            account: Yup.object().required('Account is required'),
+          };
 
   const NewInterestPayDetailsSchema = Yup.object().shape({
     from: Yup.string().required('From Date is required'),
@@ -228,8 +229,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       'interestAmount',
       (
         (((currentLoan.interestLoanAmount *
-              (currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate)) /
-            100) *
+          (currentLoan?.scheme.interestRate > 1.5 ? 1.5 : currentLoan?.scheme.interestRate)) /
+          100) *
           (12 * differenceInDays)) /
         365
       ).toFixed(2)
@@ -238,8 +239,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       'consultingCharge',
       (
         (((currentLoan.interestLoanAmount *
-              (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
-            100) *
+          (currentLoan?.scheme.interestRate < 1.5 ? 0 : currentLoan?.scheme.interestRate - 1.5)) /
+          100) *
           (12 * differenceInDays)) /
         365
       ).toFixed(2)
@@ -670,6 +671,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
+                      {row?.paymentDetail?.account?.bankName || '-'}
+                    </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
@@ -788,6 +792,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {bankAmt.toFixed(0)}
                 </TableCell>{' '}
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {totalPayAmt.toFixed(0)}
                 </TableCell>

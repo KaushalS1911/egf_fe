@@ -38,6 +38,7 @@ const TABLE_HEAD = [
   { id: 'amountPaid', label: 'Amount Paid' },
   { id: 'cashAmt', label: 'Cash Amt' },
   { id: 'BankAmt', label: 'Bank Amt' },
+  { id: 'Bank', label: 'Bank' },
   { id: 'EntryDate', label: 'Entry Date' },
   { id: 'action', label: 'Action' },
   // { id: 'pdf', label: 'PDF' },
@@ -581,6 +582,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                   <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
+                  <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankName || '-'}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                   <TableCell sx={{ py: 0, px: 2 }}>
                     {
@@ -643,6 +645,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   {bankAmt}
                 </TableCell>
+                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
               </TableRow>

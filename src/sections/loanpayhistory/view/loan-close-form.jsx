@@ -43,6 +43,7 @@ const TABLE_HEAD = [
   { id: 'netAmt', label: 'Net amt' },
   { id: 'cashAmt', label: 'Cash Amt' },
   { id: 'bankAmt', label: 'Bank Amt' },
+  { id: 'bank', label: 'Bank' },
   { id: 'entryBy', label: 'Entry By' },
   { id: 'PDF', label: 'PDF' },
 ];
@@ -510,6 +511,15 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 {row.closingCharge}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.paymentDetail.cashAmount || 0}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.paymentDetail.bankAmount || 0}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.paymentDetail.bankName || '-'}
+              </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {row.entryBy || '-'}
               </TableCell>

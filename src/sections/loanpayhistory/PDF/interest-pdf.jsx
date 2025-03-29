@@ -96,7 +96,7 @@ const useStyles = () =>
         },
         tableCell: {
           flex: 1,
-          fontSize: 10,
+          fontSize: 9,
           paddingHorizontal: 4,
           textAlign: 'center',
         },
@@ -210,6 +210,7 @@ export default function InterestPdf({ data, configs }) {
                 <Text style={styles.tableCell}>Total Int.</Text>
                 <Text style={styles.tableCell}>cash Amt</Text>
                 <Text style={styles.tableCell}>Bank Amt</Text>
+                <Text style={styles.tableCell}>Bank</Text>
                 <Text style={styles.tableCell}>Uchak Amt</Text>
                 <Text style={styles.tableCell}>Pay Amt</Text>
               </View>
@@ -221,6 +222,7 @@ export default function InterestPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{data.adjustedPay}</Text>
                 <Text style={styles.tableCell}>{data.paymentDetail.cashAmount || 0}</Text>
                 <Text style={styles.tableCell}>{data.paymentDetail.bankAmount || 0}</Text>
+                <Text style={styles.tableCell}>{data.paymentDetail?.account?.bankName || '-'}</Text>
                 <Text style={styles.tableCell}>{data.uchakInterestAmount || 0}</Text>
                 <Text style={styles.tableCell}>{data.amountPaid}</Text>
               </View>
