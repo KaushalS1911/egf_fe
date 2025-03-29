@@ -132,7 +132,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
-      setDisabledField(true);
+      // setDisabledField(true);
       enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
     }
     setOpenPopup(false);
@@ -630,7 +630,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         });
 
         if (userRole.toLowerCase() === 'employee') {
-          setDisabledField(true);
+          // setDisabledField(true);
           enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
             variant: 'error',
           });

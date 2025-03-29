@@ -61,7 +61,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
-      setDisabledField(true);
+      // setDisabledField(true);
       enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
     }
     setOpenPopup(false);
@@ -510,7 +510,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         });
 
         if (userRole.toLowerCase() === 'employee') {
-          setDisabledField(true);
+          // setDisabledField(true);
           enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
             variant: 'error',
           });
@@ -566,7 +566,7 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         setOtpPopupOpen(false);
         enqueueSnackbar('Error in OTP verification. Please try again.', { variant: 'error' });
         if (userRole.toLowerCase() === 'employee') {
-          setDisabledField(true);
+          // setDisabledField(true);
           enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
             variant: 'error',
           });
