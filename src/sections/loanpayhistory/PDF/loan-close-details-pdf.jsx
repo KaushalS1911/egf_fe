@@ -210,7 +210,6 @@ export default function LoanCloseDetailsPdf({ data, configs }) {
                 <Text style={styles.tableCell}>Payment mode</Text>
                 <Text style={styles.tableCell}>Cash amt</Text>
                 <Text style={styles.tableCell}>Bank amt</Text>
-                <Text style={styles.tableCell}>Bank</Text>
               </View>
               <View style={styles.tableRow}>
                 <Text style={styles.tableCell}>{data?.totalLoanAmount}</Text>
@@ -221,7 +220,6 @@ export default function LoanCloseDetailsPdf({ data, configs }) {
                 <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.cashAmount || 0}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.bankAmount || 0}</Text>
-                <Text style={styles.tableCell}>{data?.paymentDetail?.bankName || '-'}</Text>
               </View>
             </View>
             <Text
