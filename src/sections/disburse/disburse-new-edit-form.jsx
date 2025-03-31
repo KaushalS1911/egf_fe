@@ -171,8 +171,9 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         companyName: item.company.name,
         companyEmail: item.company.email,
         companyContact: item.company.contact,
+        branchContact: item.customer.branch.contact,
         file: file1,
-        type: 'loan_detail',
+        type: 'loan_details',
       };
 
       const formData1 = new FormData();
@@ -231,7 +232,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
             sendPdfToWhatsApp(res.data.data);
           }
         })
-        .catch((err) => console.error('Error:', err));
+        .catch((err) => enqueueSnackbar(err.response?.data?.message));
 
       if (currentDisburse.status === 'Disbursed') {
         mutate();
@@ -239,14 +240,14 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
       reset();
     } catch (error) {
-      enqueueSnackbar(currentDisburse ? 'Failed to update scheme' : 'Failed to create scheme');
+      enqueueSnackbar(currentDisburse ? 'Failed to update disbursed' : 'Failed to disburse loan');
       console.error('Error:', error);
     }
   });
 
   const handleCashAmountChange = (event) => {
     const cashPayingAmount = parseFloat(event.target.value) || '';
-    const cashNetAmount = parseFloat(watch('cashNetAmount') - watch('approvalCharge'));
+    // const cashNetAmount = parseFloat(watch('cashNetAmount') - watch('approvalCharge'));
 
     if (cashPayingAmount > cashNetAmount) {
       setValue('payingCashAmount', cashNetAmount);
@@ -258,7 +259,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
   const handleBankAmountChange = (event) => {
     const bankPayingAmount = parseFloat(event.target.value) || '';
-    const bankNetAmount = parseFloat(watch('bankNetAmount') - watch('approvalCharge')) || '';
+    // const bankNetAmount = parseFloat(watch('bankNetAmount') - watch('approvalCharge')) || '';
 
     if (bankPayingAmount > bankNetAmount) {
       setValue('payingBankAmount', bankNetAmount);
@@ -445,7 +446,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       name="bankNetAmount"
                       label="Net Amount"
                       req={'red'}
-                      value={watch('bankNetAmount') - watch('approvalCharge') || 0}
+                      // value={watch('bankNetAmount') - watch('approvalCharge') || 0}
                       onKeyPress={(e) => {
                         if (
                           !/[0-9.]/.test(e.key) ||
@@ -483,11 +484,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       name="bankPendingAmount"
                       label="Pending Amount"
                       req={'red'}
-                      value={
-                        watch('bankNetAmount') -
-                          watch('approvalCharge') -
-                          watch('payingBankAmount') || 0
-                      }
+                      value={watch('bankNetAmount') - watch('payingBankAmount') || 0}
                       InputLabelProps={{ shrink: true }}
                     />
                     <RHFAutocomplete
@@ -535,7 +532,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       name="cashNetAmount"
                       label="Net Amount"
                       req={'red'}
-                      value={watch('cashNetAmount') - watch('approvalCharge') || 0}
+                      // value={watch('cashNetAmount') - watch('approvalCharge') || 0}
                       onKeyPress={(e) => {
                         if (
                           !/[0-9.]/.test(e.key) ||
@@ -573,11 +570,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       name="cashPendingAmount"
                       label="Pending Amount"
                       req={'red'}
-                      value={parseFloat(
-                        watch('cashNetAmount') -
-                          watch('approvalCharge') -
-                          watch('payingCashAmount') || 0
-                      )}
+                      value={parseFloat(watch('cashNetAmount') - watch('payingCashAmount') || 0)}
                       InputLabelProps={{ shrink: true }}
                       onKeyPress={(e) => {
                         if (
