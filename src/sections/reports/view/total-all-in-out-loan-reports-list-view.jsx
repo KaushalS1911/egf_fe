@@ -1087,7 +1087,7 @@ export default function OtherLonaInterestListView() {
                           sum +
                           otherLoans.reduce((loanSum, item) => {
                             const loanAmount = Number(item.loan.interestLoanAmount);
-                            const amount = Number(item.otherLoanAmount) || 0;
+                            const amount = Number(item.amount) || 0;
 
                             // Add loanAmount only if it's not already counted
                             if (!uniqueLoans.has(item.loan.loanNo)) {
