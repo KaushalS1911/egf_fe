@@ -256,13 +256,10 @@ function Noc({ nocData, configs }) {
                   <Text style={styles.bottomDetails}>
                     This is to certify that the gold loan account bearing account number{' '}
                   </Text>
-                  <Text style={[styles.fw, styles.bottomDetails]}>
-                    {customerBankDetails.accountNumber}
-                  </Text>
-                  , held by{' '}
+                  <Text style={[styles.fw, styles.bottomDetails]}>{nocData.loanNo}</Text>, held by{' '}
                   <Text
                     style={[styles.fw, styles.bottomDetails]}
-                  >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>{' '}
+                  >{`${nocData.customer.firstName} ${nocData.customer.middleName}\n ${nocData.customer.lastName}`}</Text>{' '}
                   with <Text style={[styles.fw, styles.bottomDetails]}>Easy Gold FinCorp</Text>, has
                   been successfully closed as of{' '}
                   <Text style={[styles.fw, styles.bottomDetails]}>
