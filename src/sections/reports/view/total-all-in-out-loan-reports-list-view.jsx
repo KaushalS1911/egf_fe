@@ -747,7 +747,7 @@ export default function OtherLonaInterestListView() {
                                   (sum, loan) => sum + Number(loan.amount || 0),
                                   0
                                 );
-                                const diffAmount =  totalOtherAmount - row.loan.loanAmount ;
+                                const diffAmount =  totalOtherAmount - row.loan.interestLoanAmount ;
                                 return diffAmount < 0 ? 'green' : 'red' ;
                               })()
                             }}
@@ -758,7 +758,7 @@ export default function OtherLonaInterestListView() {
                                 (sum, loan) => sum + Number(loan.amount || 0),
                                 0
                               );
-                              const diffAmount =  totalOtherAmount - row.loan.loanAmount ;
+                              const diffAmount =  totalOtherAmount - row.loan.interestLoanAmount ;
                               return diffAmount.toFixed(2);
                             })()}
                           </TableCell>
@@ -1082,19 +1082,23 @@ export default function OtherLonaInterestListView() {
                   <TableCell>
                     {Object.values(dataFiltered)
                       .reduce((sum, otherLoans) => {
+
                         const uniqueLoans = new Set(); // Track unique loan amounts
                         return (
                           sum +
                           otherLoans.reduce((loanSum, item) => {
                             const loanAmount = Number(item.loan.interestLoanAmount);
-                            const amount = Number(item.otherLoanAmount) || 0;
+                            const amount =  otherLoans.reduce(
+                              (sum, loan) => sum + Number(loan.amount || 0),
+                              0
+                            );
 
                             // Add loanAmount only if it's not already counted
                             if (!uniqueLoans.has(item.loan.loanNo)) {
                               uniqueLoans.add(item.loan.loanNo);
                               return loanSum + (amount - loanAmount);
                             }
-                            return loanSum - amount;
+                            return loanSum;
                           }, 0)
                         );
                       }, 0)
