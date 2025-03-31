@@ -172,6 +172,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
         companyEmail: item ? item.loan.company.email : data.loan.company.email,
         companyContact: item ? item.loan.company.contact : data.loan.company.contact,
         branchContact: item ? item.loan.customer.branch.contact : data.loan.customer.branch.contact,
+        company: user.company,
 
         file,
         type: 'uchak_interest',

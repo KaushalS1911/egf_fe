@@ -141,6 +141,8 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             companyName: company.name,
             companyEmail: company.email,
             companyContact: company.contact,
+            company: user.company,
+
             type,
           };
           break;

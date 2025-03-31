@@ -172,6 +172,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         companyEmail: item.company.email,
         companyContact: item.company.contact,
         branchContact: item.customer.branch.contact,
+        company: user.company,
+
         file: file1,
         type: 'loan_details',
       };

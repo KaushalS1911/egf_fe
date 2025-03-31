@@ -289,6 +289,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
         companyEmail: data.loan.company.email,
         companyContact: data.loan.company.contact,
         branchContact: data.loan.customer.branch.contact,
+        company: user.company,
         file,
         type: 'interest_payment',
       };
