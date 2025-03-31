@@ -747,7 +747,7 @@ export default function OtherLonaInterestListView() {
                                   (sum, loan) => sum + Number(loan.amount || 0),
                                   0
                                 );
-                                const diffAmount =  totalOtherAmount - row.loan.loanAmount ;
+                                const diffAmount =  totalOtherAmount - row.loan.interestLoanAmount ;
                                 return diffAmount < 0 ? 'green' : 'red' ;
                               })()
                             }}
@@ -758,7 +758,7 @@ export default function OtherLonaInterestListView() {
                                 (sum, loan) => sum + Number(loan.amount || 0),
                                 0
                               );
-                              const diffAmount =  totalOtherAmount - row.loan.loanAmount ;
+                              const diffAmount =  totalOtherAmount - row.loan.interestLoanAmount ;
                               return diffAmount.toFixed(2);
                             })()}
                           </TableCell>
