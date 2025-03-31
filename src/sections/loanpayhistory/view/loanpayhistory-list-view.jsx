@@ -55,6 +55,7 @@ const TABLE_HEAD = [
   { id: 'InterestRate', label: 'Int. rate' },
   { id: 'cashAmount', label: 'Cash amt' },
   { id: 'bankAmount', label: 'Bank amt' },
+  { id: 'approvalCharge', label: 'Approval charge' },
   { id: 'status', label: 'Status' },
   { id: 'reports', label: 'Reports' },
   { id: 'action', label: 'Action' },

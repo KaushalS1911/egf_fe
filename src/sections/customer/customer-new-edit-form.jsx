@@ -1377,9 +1377,11 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                               </IconButton>
                             ))}
 
-                          <IconButton color="error" onClick={() => handleRemove(index)}>
-                            <Iconify icon="solar:trash-bin-trash-bold" />
-                          </IconButton>
+                          {user.role === 'Admin' && (
+                            <IconButton color="error" onClick={() => handleRemove(index)}>
+                              <Iconify icon="solar:trash-bin-trash-bold" />
+                            </IconButton>
+                          )}
                         </TableCell>
                       </TableRow>
                     );

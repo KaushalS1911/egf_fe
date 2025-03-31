@@ -392,7 +392,6 @@ export default function AllBranchLoanSummaryListView() {
                     position: 'sticky',
                     bottom: 0,
                     zIndex: 1,
-                    backgroundColor: '#2f3944',
                   }}
                 >
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>

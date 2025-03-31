@@ -65,6 +65,7 @@ const TABLE_HEAD = [
   { id: 'pendingDay', label: 'Pending day' },
   { id: 'pendingInterest', label: ' Pending int. ' },
   { id: 'nextInstallmentDate', label: 'Next int. pay date' },
+  { id: 'approvalCharge', label: 'Approval charge' },
   { id: 'status', label: 'Status' },
 ];
 const STATUS_OPTIONS = [
@@ -109,7 +110,10 @@ export default function AllBranchLoanSummaryListView() {
       prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
-
+  const approvalCharge = LoanSummary.reduce(
+    (prev, next) => prev + (Number(next?.approvalCharge) || 0),
+    0
+  );
   const conCharge = LoanSummary.reduce(
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
@@ -129,7 +133,8 @@ export default function AllBranchLoanSummaryListView() {
   const day = LoanSummary.reduce(
     (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
     0
-  );  const pendingDays = LoanSummary.reduce(
+  );
+  const pendingDays = LoanSummary.reduce(
     (prev, next) => prev + (Number(next.pendingDays > 0 && next?.pendingDays) || 0),
     0
   );
@@ -424,44 +429,63 @@ export default function AllBranchLoanSummaryListView() {
                   }}
                 >
                   {/*<TableCell padding="checkbox" />*/}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     TOTAL
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(int / LoanSummary.length).toFixed(2)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(conCharge / LoanSummary.length).toFixed(2)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {loanAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(loanAmt - intLoanAmt).toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {intLoanAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(day / LoanSummary.length).toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {totalIntPay.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(pendingDays / LoanSummary.length).toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {pendingIntAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
+                    {approvalCharge}
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
