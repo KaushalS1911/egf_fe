@@ -491,7 +491,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
           </Grid>
         </Grid>
       </FormProvider>
-      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }}>
+      <Table sx={{ borderRadius: '8px', overflow: 'hidden', mt: 2.5 }} hover>
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {loanClose.map((row, index) => (

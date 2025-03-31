@@ -990,7 +990,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
           <TableBody>
             {partRelease &&
               partRelease.map((row, index) => (
-                <TableRow key={index}>
+                <TableRow key={index} hover>
                   <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                     {row.loan.loanNo}
                   </TableCell>

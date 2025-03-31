@@ -73,6 +73,7 @@ const TABLE_HEAD = [
   { id: 'date', label: 'Date', width: 80 },
   { id: 'otherName', label: 'Other name', width: 100 },
   { id: 'otherloanamt', label: 'Other Loan amt', width: 90 },
+  { id: 'otherloanintamt', label: 'Other Loan Int Amt', width: 90 },
   { id: 'grossWt', label: 'Gross wt', width: 70 },
   { id: 'netWt', label: 'Net wt', width: 70 },
   { id: 'otherint', label: 'Other int(%)', width: 80 },
@@ -681,6 +682,16 @@ export default function OtherLonaInterestListView() {
                           width: TABLE_HEAD[14].width,
                         }}
                       >
+                        {row.otherLoanAmount}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{
+                          fontSize: '11px',
+                          padding: '4px 6px',
+                          width: TABLE_HEAD[14].width,
+                        }}
+                      >
                         {row.amount}
                       </TableCell>
                       <TableCell
@@ -731,6 +742,14 @@ export default function OtherLonaInterestListView() {
                               fontSize: '11px',
                               padding: '4px 6px',
                               width: TABLE_HEAD[19].width,
+                              color: (() => {
+                                const totalOtherAmount = otherLoans.reduce(
+                                  (sum, loan) => sum + Number(loan.amount || 0),
+                                  0
+                                );
+                                const diffAmount =  totalOtherAmount - row.loan.loanAmount ;
+                                return diffAmount < 0 ? 'green' : 'red' ;
+                              })()
                             }}
                             rowSpan={rowSpan}
                           >
@@ -739,7 +758,7 @@ export default function OtherLonaInterestListView() {
                                 (sum, loan) => sum + Number(loan.amount || 0),
                                 0
                               );
-                              const diffAmount = row.loan.loanAmount - totalOtherAmount;
+                              const diffAmount =  totalOtherAmount - row.loan.loanAmount ;
                               return diffAmount.toFixed(2);
                             })()}
                           </TableCell>
@@ -749,6 +768,14 @@ export default function OtherLonaInterestListView() {
                               fontSize: '11px',
                               padding: '4px 6px',
                               width: TABLE_HEAD[20].width,
+                              color:(() => {
+                                const totalOtherInterest = otherLoans.reduce(
+                                  (sum, loan) => sum + Number(loan.totalOtherInterestAmount || 0),
+                                  0
+                                );
+                                const diffInterest = row.totalInterestAmount - totalOtherInterest;
+                                return diffInterest < 0 ? 'red' : 'green' ;
+                              })()
                             }}
                             rowSpan={rowSpan}
                           >
@@ -969,6 +996,19 @@ export default function OtherLonaInterestListView() {
                   <TableCell></TableCell>
                   <TableCell></TableCell>
                   <TableCell></TableCell>
+                  <TableCell>
+                    {Object.values(dataFiltered)
+                      .reduce(
+                        (sum, otherLoans) =>
+                          sum +
+                          otherLoans.reduce(
+                            (loanSum, item) => loanSum + (Number(item.otherLoanAmount) || 0),
+                            0
+                          ),
+                        0
+                      )
+                      .toFixed(0)}
+                  </TableCell>
                   <TableCell>
                     {Object.values(dataFiltered)
                       .reduce(

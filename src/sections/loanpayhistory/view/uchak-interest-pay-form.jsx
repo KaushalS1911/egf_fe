@@ -428,7 +428,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
         <TableBody>
           {uchak &&
             uchak.map((row, index) => (
-              <TableRow key={index}>
+              <TableRow key={index} hover>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                 <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>

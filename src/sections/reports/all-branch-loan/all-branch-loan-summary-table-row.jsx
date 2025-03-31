@@ -76,10 +76,11 @@ export default function AllBranchLoanSummaryTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {fDate(lastInstallmentDate) || '-'}
         </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {totalPaidInterest.toFixed(2)}
         </TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.pendingDays > 0 ? row.pendingDays : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {Number(pendingInterest).toFixed(2) || 0}
         </TableCell>

@@ -476,7 +476,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
         <TableHeadCustom headLabel={TABLE_HEAD} />
         <TableBody>
           {partPayment.map((row, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} hover>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {row.loan.loanAmount}
               </TableCell>

@@ -69,13 +69,14 @@ export default function InterestReportsTableRow({ row }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.penaltyAmount ? row.penaltyAmount : '0'}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.day > 0 ? row.day : 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.totalPaidInterest ? row.totalPaidInterest.toFixed(2) : '0'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {lastInstallmentDate ? fDate(lastInstallmentDate) : '-'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.day > 0 ? row.day : 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.pendingDays > 0 ? row.pendingDays : 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{(row.pendingInterest || 0).toFixed(2)}</TableCell>
       </TableRow>
     </>

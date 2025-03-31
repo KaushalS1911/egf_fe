@@ -57,6 +57,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
+          fontSize:7
         },
         numericCell: {
           textAlign: 'right',
@@ -113,8 +114,9 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
     { label: 'Loan Amt Pay', flex: 1 },
     { label: 'Loan Int. Amt', flex: 1 },
     { label: 'Last Int. Pay Date', flex: 1.3 },
-    { label: 'Total Pay Int.', flex: 1.5 },
     { label: 'Day', flex: 0.5 },
+    { label: 'Total Pay Int.', flex: 1.5 },
+    { label: 'pen. Day', flex: 0.5 },
     { label: 'Pending Int.', flex: 1 },
     { label: 'Next Int. Pay Date', flex: 1.3 },
   ];
@@ -164,10 +166,11 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
         <Text style={[styles.tableCell, { flex: 1.3 }]}>
           {fDate(row.lastInstallmentDate) || '-'}
         </Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : 0}</Text>
         <Text style={[styles.tableCell, { flex: 1.5 }]}>
           {Number(row.totalPaidInterest).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : 0}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.pendingDays > 0 ? row.pendingDays : 0}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {Number(row.pendingInterest).toFixed(2)}
         </Text>

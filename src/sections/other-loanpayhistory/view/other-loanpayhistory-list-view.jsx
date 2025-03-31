@@ -386,6 +386,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.loan.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.otherNumber.toLowerCase().includes(username.toLowerCase()) ||
         item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
