@@ -1086,13 +1086,13 @@ export default function OtherLonaInterestListView() {
                         return (
                           sum +
                           otherLoans.reduce((loanSum, item) => {
-                            const loanAmount = Number(item.loan.loanAmount);
-                            const amount = Number(item.amount) || 0;
+                            const loanAmount = Number(item.loan.interestLoanAmount);
+                            const amount = Number(item.otherLoanAmount) || 0;
 
                             // Add loanAmount only if it's not already counted
                             if (!uniqueLoans.has(item.loan.loanNo)) {
                               uniqueLoans.add(item.loan.loanNo);
-                              return loanSum + (loanAmount - amount);
+                              return loanSum + (amount - loanAmount);
                             }
                             return loanSum - amount;
                           }, 0)
