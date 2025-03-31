@@ -429,47 +429,63 @@ export default function AllBranchLoanSummaryListView() {
                   }}
                 >
                   {/*<TableCell padding="checkbox" />*/}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     TOTAL
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(int / LoanSummary.length).toFixed(2)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(conCharge / LoanSummary.length).toFixed(2)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {loanAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(loanAmt - intLoanAmt).toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {intLoanAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(day / LoanSummary.length).toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {totalIntPay.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {(pendingDays / LoanSummary.length).toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {pendingIntAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {approvalCharge}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell
+                    sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
+                  ></TableCell>
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
