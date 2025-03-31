@@ -171,8 +171,10 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
         companyName: item ? item.loan.company.name : data.loan.company.name,
         companyEmail: item ? item.loan.company.email : data.loan.company.email,
         companyContact: item ? item.loan.company.contact : data.loan.company.contact,
+        branchContact: item ? item.loan.customer.branch.contact : data.loan.customer.branch.contact,
+
         file,
-        type: 'uchak_interest_payment',
+        type: 'uchak_interest',
       };
       const formData = new FormData();
 
