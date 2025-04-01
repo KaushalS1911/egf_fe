@@ -50,7 +50,7 @@ export default function EmployeeTableRow({
           />
           <Lightbox image={avatar_url} open={lightbox.open} close={lightbox.onClose} />
           <ListItemText
-            primary={firstName + ' ' + middleName + ' ' + lastName}
+            primary={(firstName + ' ' + middleName + ' ' + lastName).toUpperCase()}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
