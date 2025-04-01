@@ -1317,8 +1317,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                           <RHFTextField
                             name={`bankDetails[${index}].accountNumber`}
                             label="Account Number"
-                            type="number"
-                            inputProps={{ min: 0 }}
+                            type="text" // Change from "number" to "text"
+                            inputProps={{ pattern: '[0-9]*', inputMode: 'numeric' }} // Ensures only numbers are allowed
                             disabled={isDisabled}
                           />
                         </TableCell>
