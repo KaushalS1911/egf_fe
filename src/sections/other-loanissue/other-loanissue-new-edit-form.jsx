@@ -1676,25 +1676,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   name="otherNumber"
                   label="Other Number"
                   req={'red'}
-                  disabled={!isFieldsEnabled}
-                  inputProps={{
-                    maxLength: 10,
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*',
-                  }}
-                  rules={{
-                    required: 'Contact number is required',
-                    pattern: {
-                      value: /^[0-9]{10}$/,
-                      message: 'Please enter a valid 10-digit contact number',
-                    },
-                  }}
-                  onKeyPress={(e) => {
-                    if (!/[0-9]/.test(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                />
+                  disabled={!isFieldsEnabled}/>
                 <RHFTextField
                   name="amount"
                   label="Amount"
