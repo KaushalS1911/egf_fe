@@ -33,7 +33,11 @@ export default function InterestReportsTableToolbar({ filters, onFilters, data, 
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { branch } = useGetBranch();
   const view = useBoolean();
-
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    branch: filters.branch,
+  };
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -263,7 +267,7 @@ export default function InterestReportsTableToolbar({ filters, onFilters, data, 
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InterestReportsPdf data={data} configs={configs} />
+              <InterestReportsPdf data={data} configs={configs} filterData={filterData} />
             </PDFViewer>
           </Box>
         </Box>

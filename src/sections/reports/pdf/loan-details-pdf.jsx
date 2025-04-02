@@ -62,18 +62,51 @@ const useStyles = () =>
       paddingVertical: 5,
       marginBottom: 10,
     },
+    row: {
+      flexDirection: 'row',
+      marginVertical: 2,
+    },
+    subHeading2: {
+      fontWeight: '600',
+      fontSize: 10,
+      flex: 0.7,
+    },
+    colon: {
+      fontSize: 10,
+      fontWeight: '600',
+      marginHorizontal: 3,
+    },
+    subText: {
+      fontSize: 10,
+      flex: 2,
+    },
   });
 
-export default function LoanDetailsPdf({ selectedBranch, configs, data }) {
+export default function LoanDetailsPdf({ selectedBranch, configs, data, filterData }) {
   const styles = useStyles();
   const { intDetails, partReleaseDetails, uchakPayDetails, partPaymentDetails, loanCloseDetails } =
     data;
-
+  const dataFilter = [
+    // { value: filterData.loan, label: 'loanNo' },
+    { value: filterData.branch.name, label: 'Branch' },
+    { value: fDate(filterData.startDate), label: 'Start Date' },
+    { value: fDate(filterData.endDate), label: 'End Date' },
+    { value: fDate(new Date()), label: 'Date' },
+  ];
   return (
     <Document>
       {/* Loan Interest Details Table */}
-      <Page size="A4" orientation="landscape" style={styles.page}>
+      <Page size="A4" orientation="landscape" style={{ ...styles.page, position: 'relative' }}>
         <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape />
+        <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
+          {dataFilter.map((item, index) => (
+            <View style={styles.row}>
+              <Text style={styles.subHeading2}>{item.label || '-'}</Text>
+              <Text style={styles.colon}>:</Text>
+              <Text style={styles.subText}>{item.value || '-'}</Text>
+            </View>
+          ))}
+        </View>
         <View style={{ padding: '10px' }}>
           <View
             style={{

@@ -223,6 +223,11 @@ export const paths = {
       'other-loan-daily-reports': `${ROOTS.DASHBOARD}/other-reports/other-loan-daily-reports`,
       'total-all-in-out-loan-reports': `${ROOTS.DASHBOARD}/other-reports/total-all-in-out-loan-reports`,
     },
+    cashAndBank: {
+      root: `${ROOTS.DASHBOARD}/cash-and-bank`,
+      cashIn: `${ROOTS.DASHBOARD}/cash-and-bank/cash-in`,
+      bankAccount: `${ROOTS.DASHBOARD}/cash-and-bank/bank-account`,
+    },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
       new: `${ROOTS.DASHBOARD}/product/new`,

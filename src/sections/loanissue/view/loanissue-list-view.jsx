@@ -274,7 +274,8 @@ export default function LoanissueListView() {
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onEditRow={() => handleEditRow(row._id)}
                     />
-                  ))}
+                  ))}{' '}
+                <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </TableContainer>

@@ -222,6 +222,21 @@ export function useNavData() {
         subheader: t('config'),
         items: [
           {
+            title: t('Casg & bank'),
+            path: paths.dashboard.cashAndBank.root,
+            icon: ICONS.user,
+            children: [
+              {
+                title: t('Cash in'),
+                path: paths.dashboard.cashAndBank.cashIn,
+              },
+              {
+                title: t('bank account'),
+                path: paths.dashboard.cashAndBank.bankAccount,
+              },
+            ],
+          },
+          {
             title: t('setting'),
             path: paths.dashboard.setting,
             icon: ICONS.setting,

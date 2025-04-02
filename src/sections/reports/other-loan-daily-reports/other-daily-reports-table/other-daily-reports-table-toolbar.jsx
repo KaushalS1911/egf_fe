@@ -40,6 +40,10 @@ export default function OtherDailyReportsTableToolbar({
   const [selectedBranch, setSelectedBranch] = useState('');
   const view = useBoolean();
 
+  const filterData = {
+    date: filters.date,
+  };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -244,7 +248,12 @@ export default function OtherDailyReportsTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <OtherDailyReportPdf data={data} selectedBranch={selectedBranch} configs={configs} />
+              <OtherDailyReportPdf
+                data={data}
+                selectedBranch={selectedBranch}
+                configs={configs}
+                filterData={filterData}
+              />
             </PDFViewer>
           </Box>
         </Box>

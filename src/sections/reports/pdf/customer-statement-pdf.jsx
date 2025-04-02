@@ -108,7 +108,11 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
     { label: 'Int. Loan Amt', flex: 1.5 },
     { label: 'Amt', flex: 1.5 },
   ];
-
+  const dataFilter = [
+    { value: fDate(filterData.startDate), label: 'Start Date' },
+    { value: fDate(filterData.endDate), label: 'End Date' },
+    { value: fDate(new Date()), label: 'Date' },
+  ];
   const rowsPerPage = 18;
   const pages = [];
   let currentPageRows = [];
@@ -139,10 +143,19 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
     if ((index + 1) % rowsPerPage === 0 || index === data.length - 1) {
       const isFirstPage = pages.length === 0;
       pages.push(
-        <Page key={pages.length} size="A4" style={styles.page}>
+        <Page key={pages.length} size="A4" style={{ ...styles.page, position: 'relative' }}>
           {isFirstPage && (
             <>
               <InvoiceHeader selectedBranch={selectedBranch} configs={configs} />
+              <View style={{ position: 'absolute', top: 20, right: -75, width: 200 }}>
+                {dataFilter.map((item, index) => (
+                  <View style={styles.row}>
+                    <Text style={styles.subHeading2}>{item.label || '-'}</Text>
+                    <Text style={styles.colon}>:</Text>
+                    <Text style={styles.subText}>{item.value || '-'}</Text>
+                  </View>
+                ))}
+              </View>
               <View
                 style={{
                   textAlign: 'center',
