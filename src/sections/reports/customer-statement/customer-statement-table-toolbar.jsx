@@ -31,6 +31,12 @@ export default function CustomerStatementTableToolbar({ data, filters, onFilters
   const view = useBoolean();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -257,7 +263,7 @@ export default function CustomerStatementTableToolbar({ data, filters, onFilters
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <CustomerStatementPdf data={data} configs={configs} />
+              <CustomerStatementPdf data={data} configs={configs} filterData={filterData} />
             </PDFViewer>
           </Box>
         </Box>

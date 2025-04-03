@@ -63,17 +63,47 @@ const useStyles = () =>
       paddingVertical: 5,
       marginBottom: 10,
     },
+    row: {
+      flexDirection: 'row',
+      marginVertical: 2,
+    },
+    subHeading2: {
+      fontWeight: '600',
+      fontSize: 10,
+      flex: 0.7,
+    },
+    colon: {
+      fontSize: 10,
+      fontWeight: '600',
+      marginHorizontal: 3,
+    },
+    subText: {
+      fontSize: 10,
+      flex: 2,
+    },
   });
 
-export default function OtherDailyReportPdf({ selectedBranch, configs, data }) {
+export default function OtherDailyReportPdf({ selectedBranch, configs, data, filterData }) {
   const styles = useStyles();
   const { loanDetails, loanIntDetails, closedLoanDetails } = data;
-
+  const dataFilter = [
+    { value: fDate(filterData.date), label: 'Report Date' },
+    { value: fDate(new Date()), label: 'Date' },
+  ];
   return (
     <Document>
       {/* New Gold Loan Details Table */}
-      <Page size="A4" orientation="landscape" style={styles.page}>
+      <Page size="A4" orientation="landscape" style={{ ...styles.page, position: 'relative' }}>
         <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape />
+        <View style={{ position: 'absolute', top: 20, right: -40, width: 250 }}>
+          {dataFilter.map((item, index) => (
+            <View style={styles.row}>
+              <Text style={styles.subHeading2}>{item.label || '-'}</Text>
+              <Text style={styles.colon}>:</Text>
+              <Text style={styles.subText}>{item.value || '-'}</Text>
+            </View>
+          ))}
+        </View>
         <View style={{ padding: '10px' }}>
           {loanDetails && (
             <>

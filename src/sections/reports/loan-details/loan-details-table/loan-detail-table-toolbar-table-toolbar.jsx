@@ -43,7 +43,12 @@ export default function LoanDetailTableToolbarTableToolbar({
   const { user } = useAuthContext();
   const { Loanissue } = useGetLoanissue();
   const { branch } = useGetBranch();
-
+  const filterData = {
+    loan: filters.loan,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    branch: filters.branch,
+  };
   const view = useBoolean();
   const handleFilterName = useCallback(
     (event) => {
@@ -322,7 +327,7 @@ export default function LoanDetailTableToolbarTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <LoanDetailsPdf data={data} configs={configs} />
+              <LoanDetailsPdf data={data} configs={configs} filterData={filterData} />
             </PDFViewer>
           </Box>
         </Box>

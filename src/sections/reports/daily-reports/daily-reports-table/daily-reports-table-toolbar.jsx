@@ -38,7 +38,10 @@ export default function DailyReportsTableToolbar({
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const view = useBoolean();
-
+  const filterData = {
+    branch: filters.branch,
+    data: filters.data,
+  };
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -243,7 +246,12 @@ export default function DailyReportsTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <DailyReportPdf data={data} selectedBranch={selectedBranch} configs={configs} />
+              <DailyReportPdf
+                data={data}
+                selectedBranch={selectedBranch}
+                configs={configs}
+                filterData={filterData}
+              />
             </PDFViewer>
           </Box>
         </Box>

@@ -124,6 +124,14 @@ const TotalAllinOutLoanReports = lazy(
   () => import('../../sections/reports/view/total-all-in-out-loan-reports-list-view.jsx')
 );
 
+// CASH_AND_BANK
+const CashInListView = lazy(
+  () => import('../../sections/cash-and-bank/cash-in/view/cash-in-list-view.jsx')
+);
+const BankAccountListView = lazy(
+  () => import('../../sections/cash-and-bank/bank-account/view/bank-account-list-view.jsx')
+);
+
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
 
@@ -295,6 +303,14 @@ export const dashboardRoutes = [
           { path: 'other-loan-interest-reports', element: <OtherLoanInterestReports /> },
           { path: 'other-loan-daily-reports', element: <OtherDailyReportsListView /> },
           { path: 'total-all-in-out-loan-reports', element: <TotalAllinOutLoanReports /> },
+        ],
+      },
+      {
+        path: 'cash-and-bank',
+        children: [
+          { element: <CashInListView />, index: true },
+          { path: 'cash-in', element: <CashInListView /> },
+          { path: 'bank-account', element: <BankAccountListView /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },
