@@ -164,7 +164,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         contact: item.customer.contact,
         loanNo: item.loanNo,
         loanAmount: item.loanAmount,
-        interestRate: item.scheme.interestRate,
+        interestRate: Math.max(item.scheme.interestRate, 1.5),
         consultingCharge: item.consultingCharge,
         issueDate: item.issueDate,
         nextInstallmentDate: item.nextInstallmentDate,
