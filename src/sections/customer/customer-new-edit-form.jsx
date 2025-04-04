@@ -312,7 +312,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
         return;
       }
-
+      console.log(typeof data.joiningDate, typeof data.dob, '2222222222222');
       const payload = {
         status: data.status,
         isAadharVerified: data.isAadharVerified,
@@ -351,13 +351,16 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => {
-        if (typeof value === 'object' && key !== 'bankDetails') {
-          // Handle nested objects (permanentAddress, temporaryAddress)
+        if (
+          typeof value === 'object' &&
+          key !== 'bankDetails' &&
+          key !== 'joiningDate' &&
+          key !== 'dob'
+        ) {
           Object.entries(value).forEach(([subKey, subValue]) => {
             formData.append(`${key}[${subKey}]`, subValue);
           });
         } else if (key === 'bankDetails' && Array.isArray(value)) {
-          // Handle bankDetails array separately
           value.forEach((bank, index) => {
             Object.entries(bank).forEach(([field, fieldValue]) => {
               formData.append(`bankDetails[${index}][${field}]`, fieldValue);

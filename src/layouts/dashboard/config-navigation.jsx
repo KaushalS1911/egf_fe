@@ -51,6 +51,8 @@ const ICONS = {
   setting: <Iconify icon="solar:settings-bold-duotone" width={24} />,
   goldLoanCalculator: <Iconify icon="icon-park-solid:calculator" width={24} />,
   loanPayHistory: <Iconify icon="cuida:history-outline" width={24} />,
+  reports: <Iconify icon="iconoir:reports" width={24} />,
+  otherReports: <Iconify icon="mdi:report-box-multiple-outline" width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -157,7 +159,7 @@ export function useNavData() {
           {
             title: t('Reports'),
             path: paths.dashboard.reports.root,
-            icon: ICONS.user,
+            icon: ICONS.reports,
             children: [
               {
                 title: t('all branch loan summary'),
@@ -192,7 +194,7 @@ export function useNavData() {
           {
             title: t('Other Reports'),
             path: paths.dashboard.otherReports.root,
-            icon: ICONS.user,
+            icon: ICONS.otherReports,
             children: [
               {
                 title: t('other loan all branch reports'),
