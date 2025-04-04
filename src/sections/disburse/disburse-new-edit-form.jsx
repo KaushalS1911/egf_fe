@@ -151,11 +151,13 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
 
+  console.log(currentDisburse.scheme);
   const sendPdfToWhatsApp = async (item) => {
     try {
       // Generate the first PDF
       const blob1 = await pdf(<LoanIssueDetails selectedRow={item} configs={configs} />).toBlob();
       const file1 = new File([blob1], `LoanIssueDetailsPdf.pdf`, { type: 'application/pdf' });
+
 
       const payload = {
         firstName: item.customer.firstName,
@@ -164,7 +166,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         contact: item.customer.contact,
         loanNo: item.loanNo,
         loanAmount: item.loanAmount,
-        interestRate: Math.max(item.scheme.interestRate, 1.5),
+        interestRate: Math.min(item.scheme.interestRate, 1.5),
         consultingCharge: item.consultingCharge,
         issueDate: item.issueDate,
         nextInstallmentDate: item.nextInstallmentDate,

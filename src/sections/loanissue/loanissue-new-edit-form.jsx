@@ -197,8 +197,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }),
   });
 
-  console.log(currentLoanIssue?.customerBankDetail?.account || '', 'dfdjhfgdjhdfgdfgdu');
-
+dis
   const defaultValues = useMemo(() => {
     const baseValues = {
       customer_url: '',
