@@ -197,7 +197,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }),
   });
 
-dis
   const defaultValues = useMemo(() => {
     const baseValues = {
       customer_url: '',
