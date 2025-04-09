@@ -162,7 +162,7 @@ const useStyles = () =>
           marginTop: 3,
         },
         date: {
-          marginTop: 25,
+          marginTop: 15,
           width: '100%',
           textAlign: 'right',
           fontSize: 10,
@@ -237,9 +237,10 @@ function Noc({ nocData, configs }) {
                 <Text
                   style={styles.topDetails}
                 >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
-                <Text
-                  style={styles.topDetails}
-                >{`${nocData.customer.permanentAddress.street} ${nocData.customer.permanentAddress.landmark} ,${nocData.customer.permanentAddress.city}-${nocData.customer.permanentAddress.zipcode} ,${nocData.customer.permanentAddress.state}`}</Text>
+                <Text style={styles.topDetails}>
+                  {`${nocData.customer.permanentAddress.street},\n${nocData.customer.permanentAddress.landmark}\n${nocData.customer.permanentAddress.city} - ${nocData.customer.permanentAddress.zipcode}\n${nocData.customer.permanentAddress.state}`}
+                </Text>
+
                 <Text style={styles.topDetails}>{nocData.customer.contact}</Text>
               </View>
               <View>
@@ -259,7 +260,7 @@ function Noc({ nocData, configs }) {
                   <Text style={[styles.fw, styles.bottomDetails]}>{nocData.loanNo}</Text>, held by{' '}
                   <Text
                     style={[styles.fw, styles.bottomDetails]}
-                  >{`${nocData.customer.firstName} ${nocData.customer.middleName}\n ${nocData.customer.lastName}`}</Text>{' '}
+                  >{`${nocData.customer.firstName} \n${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>{' '}
                   with <Text style={[styles.fw, styles.bottomDetails]}>Easy Gold FinCorp</Text>, has
                   been successfully closed as of{' '}
                   <Text style={[styles.fw, styles.bottomDetails]}>
