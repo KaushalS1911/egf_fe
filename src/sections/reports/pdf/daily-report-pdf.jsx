@@ -2,6 +2,7 @@ import React from 'react';
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { fDate } from '../../../utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
+import TableCell from '@mui/material/TableCell';
 
 const useStyles = () =>
   StyleSheet.create({
@@ -85,8 +86,14 @@ const useStyles = () =>
 
 export default function DailyReportPdf({ selectedBranch, configs, data, filterData }) {
   const styles = useStyles();
-  const { loanDetails, loanIntDetails, partReleaseDetails, uchakIntDetails, partPaymentDetails } =
-    data;
+  const {
+    loanDetails,
+    loanIntDetails,
+    partReleaseDetails,
+    uchakIntDetails,
+    partPaymentDetails,
+    closedLoans,
+  } = data;
   const dataFilter = [
     // { value: filterData.issuedBy.name, label: 'Issued By' },
     { value: filterData.branch.name, label: 'Branch' },
@@ -300,7 +307,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
           </View>
         </Page>
       )}
-
       {/* Gold Loan Part Payment Details Table */}
       {partPaymentDetails && partPaymentDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
@@ -364,7 +370,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
           </View>
         </Page>
       )}
-
       {/* Gold Loan Uchak Part Details Table */}
       {uchakIntDetails && uchakIntDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
@@ -398,8 +403,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                 <View
                   style={[
                     styles.tableRow,
-                    index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                    index === uchakIntDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                    index % 2 !== 0 && styles.strippedRow,
+                    index === uchakIntDetails.length - 1 && styles.lastRow,
                   ]}
                   key={index}
                 >
@@ -423,6 +428,66 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.date)}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8, borderRightWidth: 0 }]}>
                     {fDate(item.createdAt)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </Page>
+      )}{' '}
+      {closedLoans && closedLoans.length > 0 && (
+        <Page size="A4" orientation="landscape" style={styles.page}>
+          <View style={{ padding: '10px' }}>
+            <View
+              style={{
+                textAlign: 'center',
+                fontSize: 18,
+                marginTop: 10,
+              }}
+            >
+              <Text style={styles.termsAndConditionsHeaders}>LOAN CLOSE DETAILS</Text>
+            </View>{' '}
+            <View style={styles.table}>
+              <View style={[styles.tableRow, styles.tableHeader]}>
+                <Text style={[styles.tableCell, { flex: 0.1 }]}>#</Text>
+                <Text style={[styles.tableCell, { flex: 1.7 }]}>Loan No</Text>
+                <Text style={[styles.tableCell, { flex: 4 }]}>Customer Name</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>Total loan amt</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>Paid Loan amt</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>pending loan amt</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Pay date</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Closing date</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Closing charge</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Net amt</Text>
+                <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}>Entry by</Text>
+              </View>
+              {closedLoans.map((item, index) => (
+                <View
+                  style={[
+                    styles.tableRow,
+                    index % 2 !== 0 && styles.strippedRow,
+                    index === uchakIntDetails.length - 1 && styles.lastRow,
+                  ]}
+                  key={index}
+                >
+                  <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
+                  <Text style={[styles.tableCell, { flex: 1.7 }]}>{item.loan.loanNo}</Text>
+                  <Text style={[styles.tableCell, { flex: 4 }]}>
+                    {`${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>{item.totalLoanAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>
+                    {(item.netAmount - item.closingCharge).toFixed(2)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>
+                    {item.totalLoanAmount - (item.netAmount - item.closingCharge)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.date)}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.createdAt)}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.closingCharge}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.netAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0, fontSize: 7 }]}>
+                    {item.entryBy}
                   </Text>
                 </View>
               ))}

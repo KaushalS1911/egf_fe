@@ -59,6 +59,7 @@ import UchakInterestPayForm from '../../loanpayhistory/view/uchak-interest-pay-f
 import LoanPartPaymentForm from '../../loanpayhistory/view/loan-part-payment-form.jsx';
 import LoanCloseForm from '../../loanpayhistory/view/loan-close-form.jsx';
 import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-view/gold-loan-part-payment-list-view.jsx';
+import LoanCloseListView from '../daily-reports/daily-reports-list-view/loan-close-list-view.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -161,6 +162,7 @@ export default function DailyReportsListView() {
     partReleaseDetails: report?.partReleaseDetail,
     partPaymentDetails: report?.partPaymentDetail,
     uchakIntDetails: report?.uchakInterestDetail,
+    closedLoans: report?.closedLoans,
   };
   return (
     <>
@@ -241,9 +243,18 @@ export default function DailyReportsListView() {
                       </strong>
                     </>
                   }
+                />{' '}
+                <Tab
+                  label={
+                    <>
+                      Loan close
+                      <strong style={{ marginLeft: '8px' }}>
+                        ({report?.closedLoans.length || 0})
+                      </strong>
+                    </>
+                  }
                 />
               </Tabs>
-
               {activeTab === 0 && <NewGoldLonListView LoanIssue={report?.loans} />}
               {activeTab === 1 && (
                 <GoldLoanInterestListView interestDetail={report?.interestDetail} />
@@ -256,7 +267,8 @@ export default function DailyReportsListView() {
               )}
               {activeTab === 4 && (
                 <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
-              )}
+              )}{' '}
+              {activeTab === 5 && <LoanCloseListView closedLoans={report?.closedLoans} />}
             </Grid>
           </Grid>
         </Card>
