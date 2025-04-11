@@ -40,7 +40,7 @@ export default function DailyReportsTableToolbar({
   const view = useBoolean();
   const filterData = {
     branch: filters.branch,
-    data: filters.data,
+    date: filters.startDate,
   };
   const handleFilterName = useCallback(
     (event) => {

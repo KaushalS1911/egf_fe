@@ -97,6 +97,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
   const dataFilter = [
     // { value: filterData.issuedBy.name, label: 'Issued By' },
     { value: filterData.branch.name, label: 'Branch' },
+    { value: fDate(filterData.date), label: 'Report Date' },
     // { value: fDate(filterData.startDate), label: 'Start Date' },
     // { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
@@ -106,7 +107,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
       {/* New Gold Loan Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape />
-        <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
+        <View style={{ position: 'absolute', top: 20, right: 5, width: 250 }}>
           {dataFilter.map((item, index) => (
             <View style={styles.row}>
               <Text style={styles.subHeading2}>{item.label || '-'}</Text>

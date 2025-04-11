@@ -102,7 +102,6 @@ export default function DailyReportsListView() {
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
   const dataFiltered = applyFilter({
     inputData: report,
     comparator: getComparator(table.order, table.orderBy),
