@@ -178,7 +178,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     tempState: Yup.string().required('State is required'),
     tempCity: Yup.string().required('City is required'),
     tempZipcode: Yup.string().required('Pincode is required'),
-    profile_pic: Yup.mixed().required('A profile picture is required'),
+    // profile_pic: Yup.mixed().required('A profile picture is required'),
     referenceBy: Yup.string().required('Other detail is required'),
   });
 
