@@ -17,6 +17,8 @@ import PolicyConfigCreateView from './policy-config-create-view';
 import MonthCreateView from './month-create-view.jsx';
 import OtherNameCreateView from './other-name-create-view.jsx';
 import WhatsappConfigs from './whatsapp-configs.jsx';
+import ExpenseTypeCreteView from './expense-type-crete-view.jsx';
+import OtherIncomeTypeCreteView from './other-income-type-crete-view.jsx';
 
 const TABS = [
   {
@@ -48,6 +50,16 @@ const TABS = [
     value: 'Loan type',
     label: 'Loan type',
     icon: <Iconify icon="mdi:cash-sync" width={24} />,
+  },
+  {
+    value: 'Expense type',
+    label: 'Expense type',
+    icon: <Iconify icon="arcticons:expense-manager-2" width={24} sx={{ color: '#000' }} />,
+  },
+  {
+    value: 'Other income type',
+    label: 'Other income type',
+    icon: <Iconify icon="qlementine-icons:money-16" width={20} />,
   },
   {
     value: 'Remark type',
@@ -109,6 +121,8 @@ export default function SettingsPage() {
         {currentTab === 'Permission' && <PermissionView />}
         {currentTab === 'Business type' && <BusinessTypeCreteView />}
         {currentTab === 'Loan type' && <LoanTypeView />}
+        {currentTab === 'Expense type' && <ExpenseTypeCreteView />}
+        {currentTab === 'Other income type' && <OtherIncomeTypeCreteView />}
         {currentTab === 'Branch' && <BranchCreateView />}
         {currentTab === 'Remark type' && <RemarkCreateView />}
         {currentTab === 'Export Policy Config' && <PolicyConfigCreateView />}

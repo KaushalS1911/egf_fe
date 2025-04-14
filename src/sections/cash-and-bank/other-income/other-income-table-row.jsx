@@ -17,7 +17,13 @@ import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
-export default function CashInTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+export default function OtherIncomeTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}) {
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -26,39 +32,14 @@ export default function CashInTableRow({ row, selected, onEditRow, onSelectRow, 
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <TableCell sx={{ fontSize: '12px', textAlign: 'center' }}>
-            <Label
-              variant="soft"
-              sx={{
-                borderRadius: '100%',
-                height: 12,
-                minWidth: 10,
-                backgroundColor:
-                  (row.status === 'Loan issued' && 'red') ||
-                  (row.status === 'Customer Interest' && 'secondary') ||
-                  (row.status === 'Part Release' && 'warning') ||
-                  (row.status === 'Payment In' && 'error') ||
-                  (row.status === 'Loan Part Payment' && 'success') ||
-                  (row.status === 'Uchak Interest' && 'success') ||
-                  (row.status === 'Uchak Interest' && 'success') ||
-                  (row.status === 'Customer Loan Close' && 'success') ||
-                  (row.status === 'Other Loan Issued' && 'success') ||
-                  (row.status === 'Other Loan Interest' && 'success') ||
-                  (row.status === 'Other Loan Close' && 'success') ||
-                  'default',
-              }}
-            ></Label>
-          </TableCell>{' '}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.srNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.incomeType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.status})`}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
-        <TableCell
-          sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}
-        >
-          {row.amount}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetails.cashAmount || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetails.bankAmount || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetails.bankName || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.description || '-'}</TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {getResponsibilityValue('delete_scheme', configs, user) ||
@@ -116,7 +97,7 @@ export default function CashInTableRow({ row, selected, onEditRow, onSelectRow, 
   );
 }
 
-CashInTableRow.propTypes = {
+OtherIncomeTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

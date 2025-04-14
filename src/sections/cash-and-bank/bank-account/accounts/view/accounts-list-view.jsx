@@ -36,6 +36,7 @@ import { useGetScheme } from '../../../../../api/scheme.js';
 import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../../permission/permission.js';
+import { LoadingScreen } from '../../../../../components/loading-screen/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -93,7 +94,7 @@ const data = [
 
 // ----------------------------------------------------------------------
 
-export default function AccountsListView() {
+export default function AccountsListView({ accounts, setAccountDetails, accountDetails }) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { scheme, mutate, schemeLoading } = useGetScheme();
@@ -102,11 +103,11 @@ export default function AccountsListView() {
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(data);
+  const [tableData, setTableData] = useState(accounts);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: data,
+    inputData: accounts,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -207,160 +208,82 @@ export default function AccountsListView() {
 
   return (
     <>
-      <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        {/*<CustomBreadcrumbs*/}
-        {/*  heading="Cash In"*/}
-        {/*  links={[*/}
-        {/*    { name: 'Dashboard', href: paths.dashboard.root },*/}
-        {/*    { name: 'Cash in', href: paths.dashboard.scheme.root },*/}
-        {/*    { name: 'List' },*/}
-        {/*  ]}*/}
-        {/*  action={*/}
-        {/*    <Box>*/}
-        {/*      {getResponsibilityValue('print_gold_price_change', configs, user) && (*/}
-        {/*        <Button*/}
-        {/*          component={RouterLink}*/}
-        {/*          href={paths.dashboard.scheme.goldpricelist}*/}
-        {/*          variant="contained"*/}
-        {/*          sx={{ mx: 2 }}*/}
-        {/*        >*/}
-        {/*          Gold Price change*/}
-        {/*        </Button>*/}
-        {/*      )}*/}
-        {/*      {getResponsibilityValue('create_scheme', configs, user) && (*/}
-        {/*        <Button*/}
-        {/*          component={RouterLink}*/}
-        {/*          href={paths.dashboard.scheme.new}*/}
-        {/*          variant="contained"*/}
-        {/*          startIcon={<Iconify icon="mingcute:add-line" />}*/}
-        {/*        >*/}
-        {/*          Add Scheme*/}
-        {/*        </Button>*/}
-        {/*      )}*/}
-        {/*    </Box>*/}
-        {/*  }*/}
-        {/*  sx={{*/}
-        {/*    mb: { xs: 3, md: 5 },*/}
-        {/*  }}*/}
-        {/*/>*/}
-        {/*<Tabs*/}
-        {/*  value={filters.isActive}*/}
-        {/*  onChange={handleFilterStatus}*/}
-        {/*  sx={{*/}
-        {/*    px: 2.5,*/}
-        {/*    boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  {STATUS_OPTIONS.map((tab) => (*/}
-        {/*    <Tab*/}
-        {/*      key={tab.value}*/}
-        {/*      iconPosition="end"*/}
-        {/*      value={tab.value}*/}
-        {/*      label={tab.label}*/}
-        {/*      icon={*/}
-        {/*        <>*/}
-        {/*          <Label*/}
-        {/*            style={{ margin: '5px' }}*/}
-        {/*            variant={*/}
-        {/*              ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') ||*/}
-        {/*              'soft'*/}
-        {/*            }*/}
-        {/*            color={*/}
-        {/*              (tab.value == 'true' && 'success') ||*/}
-        {/*              (tab.value == 'false' && 'error') ||*/}
-        {/*              'default'*/}
-        {/*            }*/}
-        {/*          >*/}
-        {/*            {['false', 'true'].includes(tab.value)*/}
-        {/*              ? scheme.filter((emp) => String(emp.isActive) == tab.value).length*/}
-        {/*              : scheme.length}*/}
-        {/*          </Label>*/}
-        {/*        </>*/}
-        {/*      }*/}
-        {/*    />*/}
-        {/*  ))}*/}
-        {/*</Tabs>*/}
-        <AccountsToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
-        {canReset && (
-          <AccountsTableFiltersResult
-            filters={filters}
-            onFilters={handleFilters}
-            onResetFilters={handleResetFilters}
-            results={dataFiltered.length}
-            sx={{ p: 2.5, pt: 0 }}
-          />
-        )}
-        <TableContainer
-          sx={{
-            maxHeight: 500,
-            overflow: 'auto',
-            position: 'relative',
-          }}
-        >
-          <TableSelectedAction
-            dense={table.dense}
-            numSelected={table.selected.length}
+      <AccountsToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
+      {canReset && (
+        <AccountsTableFiltersResult
+          filters={filters}
+          onFilters={handleFilters}
+          onResetFilters={handleResetFilters}
+          results={dataFiltered.length}
+          sx={{ p: 2.5, pt: 0 }}
+        />
+      )}
+      <TableContainer
+        sx={{
+          maxHeight: 500,
+          overflow: 'auto',
+          position: 'relative',
+        }}
+      >
+        <TableSelectedAction
+          dense={table.dense}
+          numSelected={table.selected.length}
+          rowCount={dataFiltered.length}
+          onSelectAllRows={(checked) =>
+            table.onSelectAllRows(
+              checked,
+              dataFiltered.map((row) => row._id)
+            )
+          }
+          action={
+            <Tooltip title="Delete">
+              <IconButton color="primary" onClick={confirm.onTrue}>
+                <Iconify icon="solar:trash-bin-trash-bold" />
+              </IconButton>
+            </Tooltip>
+          }
+        />
+        <Table size={table.dense ? 'small' : 'medium'}>
+          <TableHeadCustom
+            order={table.order}
+            orderBy={table.orderBy}
+            headLabel={TABLE_HEAD}
             rowCount={dataFiltered.length}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                dataFiltered.map((row) => row._id)
-              )
-            }
-            action={
-              <Tooltip title="Delete">
-                <IconButton color="primary" onClick={confirm.onTrue}>
-                  <Iconify icon="solar:trash-bin-trash-bold" />
-                </IconButton>
-              </Tooltip>
-            }
+            numSelected={table.selected.length}
+            onSort={table.onSort}
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 1000,
+              backgroundColor: '#2f3944',
+            }}
           />
-          <Table size={table.dense ? 'small' : 'medium'}>
-            <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
-              headLabel={TABLE_HEAD}
-              rowCount={dataFiltered.length}
-              numSelected={table.selected.length}
-              onSort={table.onSort}
-              // onSelectAllRows={(checked) =>
-              //   table.onSelectAllRows(
-              //     checked,
-              //     dataFiltered.map((row) => row._id)
-              //   )
-              // }
-              sx={{
-                position: 'sticky',
-                top: 0,
-                zIndex: 1000,
-                backgroundColor: '#2f3944',
-              }}
+          <TableBody>
+            {dataFiltered
+              .slice(
+                table.page * table.rowsPerPage,
+                table.page * table.rowsPerPage + table.rowsPerPage
+              )
+              .map((row) => (
+                <AccountsTableRow
+                  key={row._id}
+                  row={row}
+                  selected={table.selected.includes(row._id)}
+                  onSelectRow={() => table.onSelectRow(row._id)}
+                  onDeleteRow={() => handleDeleteRow(row._id)}
+                  onEditRow={() => handleEditRow(row._id)}
+                  setAccountDetails={setAccountDetails}
+                  accountDetails={accountDetails}
+                />
+              ))}
+            <TableEmptyRows
+              height={denseHeight}
+              emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
             />
-            <TableBody>
-              {dataFiltered
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage
-                )
-                .map((row) => (
-                  <AccountsTableRow
-                    key={row._id}
-                    row={row}
-                    selected={table.selected.includes(row._id)}
-                    onSelectRow={() => table.onSelectRow(row._id)}
-                    onDeleteRow={() => handleDeleteRow(row._id)}
-                    onEditRow={() => handleEditRow(row._id)}
-                  />
-                ))}
-              <TableEmptyRows
-                height={denseHeight}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-              />
-              <TableNoData notFound={notFound} />
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
+            <TableNoData notFound={notFound} />
+          </TableBody>
+        </Table>
+      </TableContainer>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -400,7 +323,9 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) => sch.name.toLowerCase().includes(name.toLowerCase()));
+    inputData = inputData.filter((sch) =>
+      sch?.bankName?.toLowerCase().includes(name.toLowerCase())
+    );
   }
 
   if (isActive !== 'all') {

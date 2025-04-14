@@ -227,6 +227,16 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/cash-and-bank`,
       cashIn: `${ROOTS.DASHBOARD}/cash-and-bank/cash-in`,
       bankAccount: `${ROOTS.DASHBOARD}/cash-and-bank/bank-account`,
+      expense: {
+        list: `${ROOTS.DASHBOARD}/cash-and-bank/expense/list`,
+        new: `${ROOTS.DASHBOARD}/cash-and-bank/expense/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/cash-and-bank/expense/${id}/edit`,
+      },
+      otherIncome: {
+        list: `${ROOTS.DASHBOARD}/cash-and-bank/other-income/list`,
+        new: `${ROOTS.DASHBOARD}/cash-and-bank/other-income/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/cash-and-bank/other-income/${id}/edit`,
+      },
     },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,

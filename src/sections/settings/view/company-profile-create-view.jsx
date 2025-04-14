@@ -371,10 +371,10 @@ export default function CompanyProfile() {
                       {account.bankName} ({account.accountType})
                     </Typography>
                     <Box>
-                      <IconButton onClick={() => handleEditBankDetail(account)}>
+                      <IconButton color={'primary'} onClick={() => handleEditBankDetail(account)}>
                         <Iconify icon={'eva:edit-fill'} />
                       </IconButton>
-                      <IconButton onClick={() => handleDeleteBankDetail(account)}>
+                      <IconButton color={'error'} onClick={() => handleDeleteBankDetail(account)}>
                         <Iconify icon={'eva:trash-2-outline'} />
                       </IconButton>
                     </Box>

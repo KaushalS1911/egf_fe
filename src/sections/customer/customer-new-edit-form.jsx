@@ -1369,14 +1369,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                           </IconButton>
 
                           {!!currentCustomer &&
-                            !isNewRow && // Hide edit options for new rows
+                            !isNewRow &&
                             (isEditing ? (
                               <IconButton color="primary" onClick={handleSave}>
                                 <Iconify icon="mdi:check" />
                               </IconButton>
                             ) : (
-                              <IconButton color="default" onClick={() => handleEdit(index)}>
-                                <Iconify icon="mdi:pencil" />
+                              <IconButton color="primary" onClick={() => handleEdit(index)}>
+                                <Iconify icon="eva:edit-fill" />
                               </IconButton>
                             ))}
 

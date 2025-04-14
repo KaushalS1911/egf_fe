@@ -5,6 +5,7 @@ import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
+import { getResponsibilityValue } from '../../permission/permission.js';
 
 // ----------------------------------------------------------------------
 
@@ -46,13 +47,16 @@ const ICONS = {
   property: <Iconify icon="clarity:building-solid" sx={{ width: 1, height: 1 }} />,
   penalty: <Iconify icon="icon-park-outline:gavel" sx={{ width: 1, height: 1 }} />,
   loanissue: <Iconify icon="streamline:bank-solid" />,
+  otherLoanIssue: <Iconify icon="mdi-light:bank" sx={{ width: '25px', height: '25px' }} />,
   disburse: <Iconify icon="mdi:bank-transfer-out" sx={{ width: '30px', height: '30px' }} />,
   reminder: <Iconify icon="carbon:reminder" sx={{ width: 1, height: 1 }} />,
   setting: <Iconify icon="solar:settings-bold-duotone" width={24} />,
   goldLoanCalculator: <Iconify icon="icon-park-solid:calculator" width={24} />,
   loanPayHistory: <Iconify icon="cuida:history-outline" width={24} />,
+  otherPayHistory: <Iconify icon="solar:history-2-outline" width={24} />,
   reports: <Iconify icon="iconoir:reports" width={24} />,
   otherReports: <Iconify icon="mdi:report-box-multiple-outline" width={24} />,
+  cashAndBank: <Iconify icon="fluent:building-bank-toolbox-20-regular" width={24} />,
 };
 
 // ----------------------------------------------------------------------
@@ -133,13 +137,13 @@ export function useNavData() {
           {
             title: t('other loan issue'),
             path: paths.dashboard.other_loanissue.root,
-            icon: ICONS.loanissue,
+            icon: ICONS.otherLoanIssue,
           },
 
           {
             title: t('other loan pay history'),
             path: paths.dashboard.other_loanPayHistory.list,
-            icon: ICONS.loanPayHistory,
+            icon: ICONS.otherPayHistory,
           },
         ],
       },
@@ -157,7 +161,7 @@ export function useNavData() {
             icon: ICONS.goldLoanCalculator,
           },
           {
-            title: t('Reports'),
+            title: t('reports'),
             path: paths.dashboard.reports.root,
             icon: ICONS.reports,
             children: [
@@ -192,7 +196,7 @@ export function useNavData() {
             ],
           },
           {
-            title: t('Other Reports'),
+            title: t('other reports'),
             path: paths.dashboard.otherReports.root,
             icon: ICONS.otherReports,
             children: [
@@ -224,17 +228,25 @@ export function useNavData() {
         subheader: t('config'),
         items: [
           // {
-          //   title: t('Casg & bank'),
+          //   title: t('cash & bank'),
           //   path: paths.dashboard.cashAndBank.root,
-          //   icon: ICONS.user,
+          //   icon: ICONS.cashAndBank,
           //   children: [
           //     {
-          //       title: t('Cash in'),
+          //       title: t('cash in'),
           //       path: paths.dashboard.cashAndBank.cashIn,
           //     },
           //     {
           //       title: t('bank account'),
           //       path: paths.dashboard.cashAndBank.bankAccount,
+          //     },
+          //     {
+          //       title: t('expense'),
+          //       path: paths.dashboard.cashAndBank.expense.list,
+          //     },
+          //     {
+          //       title: t('other income'),
+          //       path: paths.dashboard.cashAndBank.otherIncome.list,
           //     },
           //   ],
           // },
@@ -252,17 +264,32 @@ export function useNavData() {
   const module =
     user?.role !== 'Admin' &&
     data
-      ?.map((data) => {
-        if (!data) return null;
+      ?.map((section) => {
+        if (!section) return null;
         return {
-          subheader: data?.subheader,
-          items: data?.items?.filter((item) => {
-            return configs?.permissions?.[user?.role]?.sections?.includes(item?.title);
-          }),
+          subheader: section.subheader,
+          items: section.items
+            ?.map((item) => {
+              const hasPermission = configs?.permissions?.[user?.role]?.sections?.includes(
+                item.title
+              );
+
+              if (item.children && configs?.permissions) {
+                item.children = item.children.filter((child) => {
+                  const childPermission =
+                    configs?.permissions?.[user?.role]?.responsibilities[child.title];
+                  return childPermission === true;
+                });
+              }
+
+              return hasPermission || (item.children && item.children.length > 0) ? item : null;
+            })
+            .filter(Boolean),
         };
       })
       .filter(Boolean);
+  const moduleFilter =
+    user?.role !== 'Admin' && module?.filter((section) => section?.items?.length > 0);
 
-  const moduleFilter = user?.role !== 'Admin' && module?.filter((data) => data?.items?.length > 0);
   return user?.role === 'Admin' ? data : moduleFilter;
 }

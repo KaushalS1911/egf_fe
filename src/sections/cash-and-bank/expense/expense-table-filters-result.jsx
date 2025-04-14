@@ -6,25 +6,29 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify/index.js';
+import { shortDateLabel } from '../../../components/custom-date-range-picker/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function BankAccountTableFiltersResult({
+export default function ExpenseTableFiltersResult({
   filters,
   onFilters,
   onResetFilters,
   results,
-  setAcc,
   ...other
 }) {
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
+
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+  const handleRemoveDate = useCallback(() => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
+  }, [onFilters]);
+
   const handleRemoveStatus = useCallback(() => {
     onFilters('isActive', 'all');
-  }, [onFilters]);
-  const handleRemoveAcc = useCallback(() => {
-    setAcc({});
   }, [onFilters]);
 
   return (
@@ -36,23 +40,14 @@ export default function BankAccountTableFiltersResult({
         </Box>
       </Box>
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.isActive !== 'all' && (
-          <Block label="Status">
-            <Chip
-              size="small"
-              label={filters.isActive === 'true' ? 'Active' : 'In Active'}
-              onDelete={handleRemoveStatus}
-            />
+        {filters.startDate && filters.endDate && (
+          <Block label="Date:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
           </Block>
         )}
         {!!filters.name && (
-          <Block label="Scheme Name:">
+          <Block label="Expance Type:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
-          </Block>
-        )}{' '}
-        {!!filters.account && (
-          <Block label="Bank Account:">
-            <Chip label={filters.account.bankName} size="small" onDelete={handleRemoveAcc} />
           </Block>
         )}
         <Button
@@ -67,7 +62,7 @@ export default function BankAccountTableFiltersResult({
   );
 }
 
-BankAccountTableFiltersResult.propTypes = {
+ExpenseTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

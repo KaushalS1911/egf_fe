@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -44,6 +44,7 @@ import { LoadingScreen } from '../../../../components/loading-screen/index.js';
 import { getResponsibilityValue } from '../../../../permission/permission.js';
 import Typography from '@mui/material/Typography';
 import AccountsListView from '../accounts/view/accounts-list-view.jsx';
+import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ const STATUS_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
+  { id: '#', label: '' },
   { id: 'type', label: 'Type' },
   { id: 'name', label: 'Name' },
   { id: 'date', label: 'Date' },
@@ -72,31 +74,34 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function BankAccountListView() {
+  const [accountDetails, setAccountDetails] = useState({});
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const { scheme, mutate, schemeLoading } = useGetScheme();
+  const { bankTransactions, mutate, bankTransactionsLoading } = useGetBankTransactions();
   const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(scheme);
-  const [filters, setFilters] = useState(defaultFilters);
+  const [tableData, setTableData] = useState(bankTransactions);
+  const [filters, setFilters] = useState({ ...defaultFilters, account: accountDetails });
 
+  useEffect(() => {
+    setFilters({ ...defaultFilters, account: accountDetails });
+  }, [accountDetails]);
   const dataFiltered = applyFilter({
-    inputData: scheme,
+    inputData: bankTransactions?.transactions,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
+  const dataInPage = dataFiltered?.slice(
+    table.page * table?.rowsPerPage,
+    table.page * table?.rowsPerPage + table?.rowsPerPage
   );
 
-  const denseHeight = table.dense ? 56 : 56 + 20;
+  const denseHeight = table?.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -114,43 +119,14 @@ export default function BankAccountListView() {
     setFilters(defaultFilters);
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!getResponsibilityValue('delete_scheme', configs, user)) {
-      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
-      return;
-    }
-    try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
-        data: { ids: id },
-      });
-      enqueueSnackbar(res.data.message);
-      confirm.onFalse();
-      mutate();
-    } catch (err) {
-      enqueueSnackbar('Failed to delete Scheme');
-    }
-  };
-
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
+      table.onUpdatePageDeleteRow(dataInPage?.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage?.length, enqueueSnackbar, table, tableData]
   );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-    const deleteIds = deleteRows.map((row) => row._id);
-    handleDelete(deleteIds);
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -166,20 +142,7 @@ export default function BankAccountListView() {
     [handleFilters]
   );
 
-  const schemes = scheme.map((item) => ({
-    Name: item.name,
-    'Rate per gram': item.ratePerGram,
-    'Interest rate': item.interestRate,
-    valuation: item.valuation,
-    'Interest period': item.interestPeriod,
-    'Renewal time': item.renewalTime,
-    'min loan time': item.minLoanTime,
-    Type: item.schemeType,
-    remark: item.remark,
-    Status: item.isActive === true ? 'Active' : 'inActive',
-  }));
-
-  if (schemeLoading) {
+  if (bankTransactionsLoading) {
     return <LoadingScreen />;
   }
 
@@ -193,108 +156,48 @@ export default function BankAccountListView() {
             { name: 'Bank Account', href: paths.dashboard.scheme.root },
             { name: 'List' },
           ]}
-          // action={
-          //   <Box>
-          //     {getResponsibilityValue('print_gold_price_change', configs, user) && (
-          //       <Button
-          //         component={RouterLink}
-          //         href={paths.dashboard.scheme.goldpricelist}
-          //         variant="contained"
-          //         sx={{ mx: 2 }}
-          //       >
-          //         Gold Price change
-          //       </Button>
-          //     )}
-          //     {getResponsibilityValue('create_scheme', configs, user) && (
-          //       <Button
-          //         component={RouterLink}
-          //         href={paths.dashboard.scheme.new}
-          //         variant="contained"
-          //         startIcon={<Iconify icon="mingcute:add-line" />}
-          //       >
-          //         Add Scheme
-          //       </Button>
-          //     )}
-          //   </Box>
-          // }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card sx={{ p: 2 }}>
-          {/*<Tabs*/}
-          {/*  value={filters.isActive}*/}
-          {/*  onChange={handleFilterStatus}*/}
-          {/*  sx={{*/}
-          {/*    px: 2.5,*/}
-          {/*    boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {STATUS_OPTIONS.map((tab) => (*/}
-          {/*    <Tab*/}
-          {/*      key={tab.value}*/}
-          {/*      iconPosition="end"*/}
-          {/*      value={tab.value}*/}
-          {/*      label={tab.label}*/}
-          {/*      icon={*/}
-          {/*        <>*/}
-          {/*          <Label*/}
-          {/*            style={{ margin: '5px' }}*/}
-          {/*            variant={*/}
-          {/*              ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') ||*/}
-          {/*              'soft'*/}
-          {/*            }*/}
-          {/*            color={*/}
-          {/*              (tab.value == 'true' && 'success') ||*/}
-          {/*              (tab.value == 'false' && 'error') ||*/}
-          {/*              'default'*/}
-          {/*            }*/}
-          {/*          >*/}
-          {/*            {['false', 'true'].includes(tab.value)*/}
-          {/*              ? scheme.filter((emp) => String(emp.isActive) == tab.value).length*/}
-          {/*              : scheme.length}*/}
-          {/*          </Label>*/}
-          {/*        </>*/}
-          {/*      }*/}
-          {/*    />*/}
-          {/*  ))}*/}
-          {/*</Tabs>*/}
           <Grid container>
             <Grid md={3}>
               <Card sx={{ height: '100%', p: 2, mr: 2 }}>
-                <AccountsListView />
+                <AccountsListView
+                  accounts={bankTransactions.bankBalances}
+                  setAccountDetails={setAccountDetails}
+                  accountDetails={accountDetails}
+                />
               </Card>
             </Grid>
             <Grid md={9}>
               <Card sx={{ p: 2, mb: 2 }}>
                 <Typography variant="body2" color="textSecondary" component="div">
-                  Bank Name:
+                  Bank Name : {accountDetails.bankName}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
-                  Account Number:
+                  Account Number : {accountDetails.accountNumber}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
-                  IFSC Code:
+                  IFSC Code : {accountDetails.IFSC}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
-                  UPI ID
+                  UPI ID : -
                 </Typography>
               </Card>
               <Card>
-                <BankAccountTableToolbar
-                  filters={filters}
-                  onFilters={handleFilters}
-                  schemes={schemes}
-                />
-                {canReset && (
-                  <BankAccountTableFiltersResult
-                    filters={filters}
-                    onFilters={handleFilters}
-                    onResetFilters={handleResetFilters}
-                    results={dataFiltered.length}
-                    sx={{ p: 2.5, pt: 0 }}
-                  />
-                )}
+                <BankAccountTableToolbar filters={filters} onFilters={handleFilters} />
+                {/*{canReset && (*/}
+                {/*  <BankAccountTableFiltersResult*/}
+                {/*    filters={filters}*/}
+                {/*    onFilters={handleFilters}*/}
+                {/*    onResetFilters={handleResetFilters}*/}
+                {/*    results={dataFiltered.length}*/}
+                {/*    setAcc={setAccountDetails}*/}
+                {/*    sx={{ p: 2.5, pt: 0 }}*/}
+                {/*  />*/}
+                {/*)}*/}
                 <TableContainer
                   sx={{
                     maxHeight: 500,
@@ -328,12 +231,6 @@ export default function BankAccountListView() {
                       rowCount={dataFiltered.length}
                       numSelected={table.selected.length}
                       onSort={table.onSort}
-                      onSelectAllRows={(checked) =>
-                        table.onSelectAllRows(
-                          checked,
-                          dataFiltered.map((row) => row._id)
-                        )
-                      }
                       sx={{
                         position: 'sticky',
                         top: 0,
@@ -353,7 +250,6 @@ export default function BankAccountListView() {
                             row={row}
                             selected={table.selected.includes(row._id)}
                             onSelectRow={() => table.onSelectRow(row._id)}
-                            onDeleteRow={() => handleDeleteRow(row._id)}
                             onEditRow={() => handleEditRow(row._id)}
                           />
                         ))}
@@ -393,7 +289,6 @@ export default function BankAccountListView() {
             variant="contained"
             color="error"
             onClick={() => {
-              handleDeleteRows();
               confirm.onFalse();
             }}
           >
@@ -407,22 +302,24 @@ export default function BankAccountListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, name } = filters;
+  const { isActive, name, account } = filters;
 
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
+  const stabilizedThis = inputData?.map((el, index) => [el, index]);
+  stabilizedThis?.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  inputData = stabilizedThis.map((el) => el[0]);
+  inputData = stabilizedThis?.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) => sch.name.toLowerCase().includes(name.toLowerCase()));
+    inputData = inputData.filter((sch) =>
+      sch?.transitions?.details?.toLowerCase().includes(name.toLowerCase())
+    );
   }
 
-  if (isActive !== 'all') {
-    inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
+  if (account && !account) {
+    inputData = inputData?.filter((acc) => account.bankName === acc.bankName);
   }
 
   return inputData;

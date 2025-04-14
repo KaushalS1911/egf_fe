@@ -62,7 +62,7 @@ export default function OtherLoanissueTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_loanIssue', configs, user) && (
+        {getResponsibilityValue('update_other_loanIssue', configs, user) && (
           <MenuItem
             onClick={() => {
               onEditRow();

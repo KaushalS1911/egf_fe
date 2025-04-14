@@ -13,6 +13,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover/index.j
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import { getResponsibilityValue } from '../../../permission/permission.js';
+import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -43,24 +44,39 @@ export default function BankAccountTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
+          <TableCell sx={{ fontSize: '12px', textAlign: 'center' }}>
+            <Label
+              variant="soft"
+              sx={{
+                borderRadius: '100%',
+                height: 12,
+                minWidth: 10,
+                backgroundColor:
+                  (row.status === 'Loan issued' && 'red') ||
+                  (row.status === 'Customer Interest' && 'secondary') ||
+                  (row.status === 'Part Release' && 'warning') ||
+                  (row.status === 'Payment In' && 'error') ||
+                  (row.status === 'Loan Part Payment' && 'success') ||
+                  (row.status === 'Uchak Interest' && 'success') ||
+                  (row.status === 'Uchak Interest' && 'success') ||
+                  (row.status === 'Customer Loan Close' && 'success') ||
+                  (row.status === 'Other Loan Issued' && 'success') ||
+                  (row.status === 'Other Loan Interest' && 'success') ||
+                  (row.status === 'Other Loan Close' && 'success') ||
+                  'default',
+              }}
+            ></Label>
+          </TableCell>{' '}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ratePerGram}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestRate}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{valuation}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestPeriod}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{renewalTime}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{minLoanTime}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{schemeType}</TableCell>
-        <TableCell>
-          <Label
-            variant="soft"
-            color={(isActive == true && 'success') || (isActive == false && 'error') || 'default'}
-          >
-            {isActive ? 'Active' : 'In Active'}
-          </Label>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.status})`}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}
+        >
+          {row.amount}
         </TableCell>
+
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {getResponsibilityValue('delete_scheme', configs, user) ||
           getResponsibilityValue('update_scheme', configs, user) ? (

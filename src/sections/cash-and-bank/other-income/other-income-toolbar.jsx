@@ -16,7 +16,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // ----------------------------------------------------------------------
 
-export default function CashInTableToolbar({ filters, onFilters, schemes, dateError }) {
+export default function OtherIncomeToolbar({ filters, onFilters, schemes, dateError }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -181,7 +181,7 @@ export default function CashInTableToolbar({ filters, onFilters, schemes, dateEr
   );
 }
 
-CashInTableToolbar.propTypes = {
+OtherIncomeToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

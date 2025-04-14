@@ -8,16 +8,14 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-import { useBoolean } from 'src/hooks/use-boolean';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
-import { useSnackbar } from 'src/components/snackbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import { paths } from 'src/routes/paths.js';
+import { useRouter } from 'src/routes/hooks/index.js';
+import { useBoolean } from 'src/hooks/use-boolean.js';
+import Iconify from 'src/components/iconify/index.js';
+import { useSnackbar } from 'src/components/snackbar/index.js';
+import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
+import { useSettingsContext } from 'src/components/settings/index.js';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
 import {
   useTable,
   emptyRows,
@@ -27,63 +25,65 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
-} from 'src/components/table';
-import LoanissueTableRow from '../other-loanissue-table-row';
-import LoanissueTableToolbar from '../other-loanissue-table-toolbar';
-import LoanissueTableFiltersResult from '../other-loanissue-table-filters-result';
+} from 'src/components/table/index.js';
+import ExpenseTableToolbar from '../expense-table-toolbar.jsx';
+import ExpenseTableFiltersResult from '../expense-table-filters-result.jsx';
+import ExpenseTableRow from '../expense-table-row.jsx';
 import axios from 'axios';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetLoanissue } from '../../../api/loanissue';
-import { LoadingScreen } from '../../../components/loading-screen';
-import { fDate } from '../../../utils/format-time';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-import OtherLoanissueTableFiltersResult from '../other-loanissue-table-filters-result';
-import OtherLoanissueTableRow from '../other-loanissue-table-row';
-import OtherLoanissueTableToolbar from '../other-loanissue-table-toolbar';
-import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
+import { useAuthContext } from '../../../../auth/hooks/index.js';
+import { useGetConfigs } from '../../../../api/config.js';
+import { LoadingScreen } from '../../../../components/loading-screen/index.js';
+import { getResponsibilityValue } from '../../../../permission/permission.js';
+import { useGetCashTransactions } from '../../../../api/cash-transactions.js';
+import { isBetween } from '../../../../utils/format-time.js';
+import Typography from '@mui/material/Typography';
+import { Box } from '@mui/material';
+import { RouterLink } from '../../../../routes/components/index.js';
+import { useGetExpanse } from '../../../../api/expense.js';
 
 // ----------------------------------------------------------------------
 
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'true', label: 'Active' },
+  {
+    value: 'false',
+    label: 'In Active',
+  },
+];
+
 const TABLE_HEAD = [
   { id: '#', label: '#' },
-  { id: 'LoanNo', label: 'Loan No.' },
-  { id: 'CustomerName', label: 'Customer name' },
-  { id: 'createdAt', label: 'Entry Date' },
-  { id: 'ContactNo', label: 'Contact' },
-  { id: 'InterestLoanAmount', label: 'Int. loan amt' },
-  { id: 'InterestRate', label: 'Int. rate' },
+  { id: 'expenseType', label: 'Expense Type' },
+  { id: 'category', label: 'Category' },
+  { id: 'date', label: 'Date' },
   { id: 'cashAmount', label: 'Cash amt' },
   { id: 'bankAmount', label: 'Bank amt' },
+  { id: 'bank', label: 'Bank' },
+  { id: 'description', label: 'Description' },
   { id: '', width: 88 },
 ];
 
 const defaultFilters = {
-  username: '',
+  name: '',
+  startDate: null,
+  endDate: null,
 };
 
 // ----------------------------------------------------------------------
 
-export default function OtherLoanissueListView() {
-  const { otherLoanissue, otherLoanissueLoading, mutate } = useGetOtherLoanissue();
+export default function ExpenseListView() {
   const { enqueueSnackbar } = useSnackbar();
-  const table = useTable();
   const { user } = useAuthContext();
+  const { expense, mutate, expenseLoading } = useGetExpanse();
   const { configs } = useGetConfigs();
+  const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(otherLoanissue);
+  const [tableData, setTableData] = useState(expense);
   const [filters, setFilters] = useState(defaultFilters);
   const [srData, setSrData] = useState([]);
-
-  useEffect(() => {
-    const updatedData = otherLoanissue.map((item, index) => ({
-      ...item,
-      srNo: index + 1,
-    }));
-    setSrData(updatedData);
-  }, [otherLoanissue]);
 
   const dataFiltered = applyFilter({
     inputData: srData,
@@ -100,8 +100,17 @@ export default function OtherLoanissueListView() {
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
+  useEffect(() => {
+    const updatedData = expense.map((item, index) => ({
+      ...item,
+      srNo: index + 1,
+    }));
+    setSrData(updatedData);
+  }, [expense]);
+
   const handleFilters = useCallback(
     (name, value) => {
+      console.log('name', value);
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -116,40 +125,37 @@ export default function OtherLoanissueListView() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!getResponsibilityValue('delete_other_loanIssue', configs, user)) {
+    if (!getResponsibilityValue('delete_scheme', configs, user)) {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loans`,
-        {
-          data: { ids: id },
-        }
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/expense/${id}`
       );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
     } catch (err) {
-      enqueueSnackbar('Failed to delete Employee');
+      enqueueSnackbar('Failed to delete Expense');
     }
   };
 
   const handleDeleteRow = useCallback(
     (id) => {
-      if (id) {
-        handleDelete([id]);
-        table.onUpdatePageDeleteRow(dataInPage.length);
-      }
+      handleDelete([id]);
+
+      table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = srData.filter((row) => table.selected.includes(row._id));
+    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
+
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
@@ -158,43 +164,19 @@ export default function OtherLoanissueListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.other_loanissue.edit(id));
+      router.push(paths.dashboard.cashAndBank.expense.edit(id));
     },
     [router]
   );
 
-  const handleClick = useCallback(
-    (id) => {
-      router.push(paths.dashboard.disburse.new(id));
+  const handleFilterStatus = useCallback(
+    (event, newValue) => {
+      handleFilters('isActive', newValue);
     },
-    [router]
+    [handleFilters]
   );
 
-  // const loans = otherLoanissue.map((item) => ({
-  //   'Loan No': item.loan.loanNo,
-  //   'Customer Name': `${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`,
-  //   Contact: item.loan.customer.contact,
-  //   'OTP Contact': item.loan.customer.otpContact,
-  //   Email: item.loan.customer.email,
-  //   'Permanent address': `${item.loan.customer.permanentAddress.street} ${item.loan.customer.permanentAddress.landmark} ${item.loan.customer.permanentAddress.city} , ${item.loan.customer.permanentAddress.state} ${item.loan.customer.permanentAddress.country} ${item.loan.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.loan.issueDate,
-  //   Scheme: item.loan.scheme.name,
-  //   'Rate per gram': item.loan.scheme.ratePerGram,
-  //   'Interest rate': item.loan.scheme.interestRate,
-  //   valuation: item.loan.scheme.valuation,
-  //   'Interest period': item.loan.scheme.interestPeriod,
-  //   'Renewal time': item.loan.scheme.renewalTime,
-  //   'min loan time': item.loan.scheme.minLoanTime,
-  //   'Loan amount': item.loan.loanAmount,
-  //   'Next nextInstallment date': fDate(item.loan.nextInstallmentDate),
-  //   'Payment mode': item.loan.paymentMode,
-  //   'Paying cashAmount': item.loan.payingCashAmount,
-  //   'Pending cashAmount': item.loan.pendingCashAmount,
-  //   'Paying bankAmount': item.loan.payingBankAmount,
-  //   'Pending bankAmount': item.loan.pendingBankAmount,
-  // }));
-
-  if (otherLoanissueLoading) {
+  if (expenseLoading) {
     return <LoadingScreen />;
   }
 
@@ -202,34 +184,30 @@ export default function OtherLoanissueListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Other Issued Loans"
+          heading="Expanse"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Other Loan Issue', href: paths.dashboard.other_loanissue.root },
-            { name: ' List' },
+            { name: `Cash in`, href: paths.dashboard.scheme.root },
+            { name: 'List' },
           ]}
           action={
-            getResponsibilityValue('create_other_loanIssue', configs, user) && (
-              <>
-                <Button
-                  component={RouterLink}
-                  href={paths.dashboard.other_loanissue.new}
-                  variant="contained"
-                  startIcon={<Iconify icon="mingcute:add-line" />}
-                >
-                  Add Other Loan issue
-                </Button>
-              </>
-            )
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.cashAndBank.expense.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              Add Expense
+            </Button>
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
-          <OtherLoanissueTableToolbar filters={filters} onFilters={handleFilters} />
+          <ExpenseTableToolbar filters={filters} onFilters={handleFilters} />
           {canReset && (
-            <OtherLoanissueTableFiltersResult
+            <ExpenseTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -273,7 +251,7 @@ export default function OtherLoanissueListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  zIndex: 1000,
+                  zIndex: 1,
                   backgroundColor: '#2f3944',
                 }}
               />
@@ -284,10 +262,9 @@ export default function OtherLoanissueListView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <OtherLoanissueTableRow
+                    <ExpenseTableRow
                       key={row._id}
                       row={row}
-                      handleClick={() => handleClick(row._id)}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}
@@ -340,8 +317,8 @@ export default function OtherLoanissueListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
-  const { username } = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { name, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -350,18 +327,15 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-  if (username && username.trim()) {
-    inputData = inputData.filter(
-      (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
-          .toLowerCase()
-          .includes(username.toLowerCase()) ||
-        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+
+  if (name && name.trim()) {
+    inputData = inputData.filter((sch) =>
+      sch.expenseType.toLowerCase().includes(name.toLowerCase())
     );
+  }
+
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
   return inputData;
 }

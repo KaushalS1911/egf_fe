@@ -13,10 +13,19 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover/index.j
 import { useAuthContext } from '../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../permission/permission.js';
+import { info } from '../../../../theme/palette.js';
 
 // ----------------------------------------------------------------------
 
-export default function AccountsTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+export default function AccountsTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  setAccountDetails,
+  accountDetails,
+}) {
   // const {
   //   name,
   //   ratePerGram,
@@ -32,14 +41,18 @@ export default function AccountsTableRow({ row, selected, onEditRow, onSelectRow
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow
+        hover
+        selected={selected}
+        sx={{ backgroundColor: row?._id === accountDetails?._id ? info.lighter : '' }}
+        onClick={() => setAccountDetails(row)}
+      >
         {/*<TableCell padding="checkbox">*/}
         {/*  <Checkbox checked={selected} onClick={onSelectRow} />*/}
         {/*</TableCell>*/}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>IDBI Bank</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.bankName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>100000</TableCell>
         {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{row.date}</TableCell>*/}
         {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amount}</TableCell>*/}

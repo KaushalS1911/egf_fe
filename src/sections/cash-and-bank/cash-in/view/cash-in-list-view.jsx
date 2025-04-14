@@ -10,10 +10,8 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths.js';
 import { useRouter } from 'src/routes/hooks/index.js';
-import { RouterLink } from 'src/routes/components/index.js';
 import { useBoolean } from 'src/hooks/use-boolean.js';
 import Iconify from 'src/components/iconify/index.js';
-import Scrollbar from 'src/components/scrollbar/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
 import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
@@ -31,17 +29,14 @@ import {
 import CashInTableToolbar from '../cash-in-table-toolbar.jsx';
 import CashInTableFiltersResult from '../cash-in-table-filters-result.jsx';
 import CashInTableRow from '../cash-in-table-row.jsx';
-import { Box } from '@mui/material';
-import Label from '../../../../components/label/index.js';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { useGetScheme } from '../../../../api/scheme.js';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../api/config.js';
 import { LoadingScreen } from '../../../../components/loading-screen/index.js';
 import { getResponsibilityValue } from '../../../../permission/permission.js';
+import { useGetCashTransactions } from '../../../../api/cash-transactions.js';
+import { isBetween } from '../../../../utils/format-time.js';
+import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +50,7 @@ const STATUS_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
+  { id: '', label: '' },
   { id: 'type', label: 'Type' },
   { id: 'name', label: 'Name' },
   { id: 'date', label: 'Date' },
@@ -64,58 +60,28 @@ const TABLE_HEAD = [
 
 const defaultFilters = {
   name: '',
-  isActive: 'all',
+  startDate: null,
+  endDate: null,
 };
-
-const data = [
-  {
-    type: 'Payment-in',
-    name: 'Heet kumar timbadiya',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-Out',
-    name: 'sujal kumar paghdal',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-Out',
-    name: 'Darshil kumar Thummar',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-in',
-    name: 'kaushal kumar Sojitra',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-Out',
-    name: 'Monil kumar kakadiya',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-];
 
 // ----------------------------------------------------------------------
 
 export default function CashInListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const { scheme, mutate, schemeLoading } = useGetScheme();
+  const { cashTransactions, mutate, cashTransactionsLoading } = useGetCashTransactions();
   const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(data);
+  const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
 
+  const amount = cashTransactions.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+
   const dataFiltered = applyFilter({
-    inputData: data,
+    inputData: cashTransactions,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -197,20 +163,7 @@ export default function CashInListView() {
     [handleFilters]
   );
 
-  const schemes = scheme.map((item) => ({
-    Name: item.name,
-    'Rate per gram': item.ratePerGram,
-    'Interest rate': item.interestRate,
-    valuation: item.valuation,
-    'Interest period': item.interestPeriod,
-    'Renewal time': item.renewalTime,
-    'min loan time': item.minLoanTime,
-    Type: item.schemeType,
-    remark: item.remark,
-    Status: item.isActive === true ? 'Active' : 'inActive',
-  }));
-
-  if (schemeLoading) {
+  if (cashTransactionsLoading) {
     return <LoadingScreen />;
   }
 
@@ -218,79 +171,23 @@ export default function CashInListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Cash In"
+          heading={
+            <Typography variant="h4" gutterBottom>
+              Cash In Hand{' '}
+              <span style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</span>
+            </Typography>
+          }
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Cash in', href: paths.dashboard.scheme.root },
+            { name: `Cash in`, href: paths.dashboard.scheme.root },
             { name: 'List' },
           ]}
-          // action={
-          //   <Box>
-          //     {getResponsibilityValue('print_gold_price_change', configs, user) && (
-          //       <Button
-          //         component={RouterLink}
-          //         href={paths.dashboard.scheme.goldpricelist}
-          //         variant="contained"
-          //         sx={{ mx: 2 }}
-          //       >
-          //         Gold Price change
-          //       </Button>
-          //     )}
-          //     {getResponsibilityValue('create_scheme', configs, user) && (
-          //       <Button
-          //         component={RouterLink}
-          //         href={paths.dashboard.scheme.new}
-          //         variant="contained"
-          //         startIcon={<Iconify icon="mingcute:add-line" />}
-          //       >
-          //         Add Scheme
-          //       </Button>
-          //     )}
-          //   </Box>
-          // }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
         <Card>
-          {/*<Tabs*/}
-          {/*  value={filters.isActive}*/}
-          {/*  onChange={handleFilterStatus}*/}
-          {/*  sx={{*/}
-          {/*    px: 2.5,*/}
-          {/*    boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {STATUS_OPTIONS.map((tab) => (*/}
-          {/*    <Tab*/}
-          {/*      key={tab.value}*/}
-          {/*      iconPosition="end"*/}
-          {/*      value={tab.value}*/}
-          {/*      label={tab.label}*/}
-          {/*      icon={*/}
-          {/*        <>*/}
-          {/*          <Label*/}
-          {/*            style={{ margin: '5px' }}*/}
-          {/*            variant={*/}
-          {/*              ((tab.value === 'all' || tab.value == filters.isActive) && 'filled') ||*/}
-          {/*              'soft'*/}
-          {/*            }*/}
-          {/*            color={*/}
-          {/*              (tab.value == 'true' && 'success') ||*/}
-          {/*              (tab.value == 'false' && 'error') ||*/}
-          {/*              'default'*/}
-          {/*            }*/}
-          {/*          >*/}
-          {/*            {['false', 'true'].includes(tab.value)*/}
-          {/*              ? scheme.filter((emp) => String(emp.isActive) == tab.value).length*/}
-          {/*              : scheme.length}*/}
-          {/*          </Label>*/}
-          {/*        </>*/}
-          {/*      }*/}
-          {/*    />*/}
-          {/*  ))}*/}
-          {/*</Tabs>*/}
-          <CashInTableToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
+          <CashInTableToolbar filters={filters} onFilters={handleFilters} />
           {canReset && (
             <CashInTableFiltersResult
               filters={filters}
@@ -333,12 +230,6 @@ export default function CashInListView() {
                 rowCount={dataFiltered.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
                 sx={{
                   position: 'sticky',
                   top: 0,
@@ -408,8 +299,8 @@ export default function CashInListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, name } = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { name, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -420,12 +311,11 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) => sch.name.toLowerCase().includes(name.toLowerCase()));
+    inputData = inputData.filter((sch) => sch.detail.toLowerCase().includes(name.toLowerCase()));
   }
 
-  if (isActive !== 'all') {
-    inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
-
   return inputData;
 }

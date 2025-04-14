@@ -6,6 +6,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify/index.js';
+import { shortDateLabel } from '../../../components/custom-date-range-picker/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +19,12 @@ export default function CashInTableFiltersResult({
 }) {
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
+  }, [onFilters]);
+
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+  const handleRemoveDate = useCallback(() => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
   }, [onFilters]);
 
   const handleRemoveStatus = useCallback(() => {
@@ -33,13 +40,9 @@ export default function CashInTableFiltersResult({
         </Box>
       </Box>
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.isActive !== 'all' && (
-          <Block label="Status">
-            <Chip
-              size="small"
-              label={filters.isActive === 'true' ? 'Active' : 'In Active'}
-              onDelete={handleRemoveStatus}
-            />
+        {filters.startDate && filters.endDate && (
+          <Block label="Date:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
           </Block>
         )}
         {!!filters.name && (
