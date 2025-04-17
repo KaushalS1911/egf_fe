@@ -227,29 +227,29 @@ export function useNavData() {
       {
         subheader: t('config'),
         items: [
-          // {
-          //   title: t('cash & bank'),
-          //   path: paths.dashboard.cashAndBank.root,
-          //   icon: ICONS.cashAndBank,
-          //   children: [
-          //     {
-          //       title: t('cash in'),
-          //       path: paths.dashboard.cashAndBank.cashIn,
-          //     },
-          //     {
-          //       title: t('bank account'),
-          //       path: paths.dashboard.cashAndBank.bankAccount,
-          //     },
-          //     {
-          //       title: t('expense'),
-          //       path: paths.dashboard.cashAndBank.expense.list,
-          //     },
-          //     {
-          //       title: t('other income'),
-          //       path: paths.dashboard.cashAndBank.otherIncome.list,
-          //     },
-          //   ],
-          // },
+          {
+            title: t('cash & bank'),
+            path: paths.dashboard.cashAndBank.root,
+            icon: ICONS.cashAndBank,
+            children: [
+              // {
+              //   title: t('cash in'),
+              //   path: paths.dashboard.cashAndBank.cashIn,
+              // },
+              // {
+              //   title: t('bank account'),
+              //   path: paths.dashboard.cashAndBank.bankAccount,
+              // },
+              {
+                title: t('expense'),
+                path: paths.dashboard.cashAndBank.expense.list,
+              },
+              {
+                title: t('other income'),
+                path: paths.dashboard.cashAndBank.otherIncome.list,
+              },
+            ],
+          },
           {
             title: t('setting'),
             path: paths.dashboard.setting,
