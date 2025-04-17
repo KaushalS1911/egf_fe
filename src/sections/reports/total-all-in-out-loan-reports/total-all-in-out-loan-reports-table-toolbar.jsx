@@ -87,7 +87,7 @@ export default function TotalAllInOutLoanReportsTableToolbar({
     [onFilters]
   );
   const customStyle = {
-    maxWidth: { md: 350 },
+    minWidth: { md: 350 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -186,9 +186,11 @@ export default function TotalAllInOutLoanReportsTableToolbar({
             sx={{ ...customStyle }}
           />
 
-          <IconButton onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          {getResponsibilityValue('print_total_all_in_out_loan_reports', configs, user) && (
+            <IconButton onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
         </Stack>
         <CustomPopover
           open={popover.open}
@@ -196,31 +198,29 @@ export default function TotalAllInOutLoanReportsTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
-            <>
-              {' '}
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                  view.onTrue();
-                }}
-              >
-                <Iconify icon="solar:printer-minimalistic-bold" />
-                Print
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="ant-design:file-pdf-filled" />
-                PDF
-              </MenuItem>
-              <MenuItem>
-                <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />
-              </MenuItem>
-            </>
-          )}
+          <>
+            {' '}
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+                view.onTrue();
+              }}
+            >
+              <Iconify icon="solar:printer-minimalistic-bold" />
+              Print
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon="ant-design:file-pdf-filled" />
+              PDF
+            </MenuItem>
+            <MenuItem>
+              <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />
+            </MenuItem>
+          </>
           <MenuItem
             onClick={() => {
               popover.onClose();
@@ -242,7 +242,6 @@ export default function TotalAllInOutLoanReportsTableToolbar({
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <TotalInOutLoanReports loans={dataFilter} configs={configs} filterData={filterData} />
             </PDFViewer>
-            `
           </Box>
         </Box>
       </Dialog>

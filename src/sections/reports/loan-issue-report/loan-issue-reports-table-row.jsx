@@ -22,12 +22,12 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
 import { fDate } from '../../../utils/format-time';
 import Notice from '../../reminder/view/notice';
 import { paths } from '../../../routes/paths';
 import LoanIssueDetails from '../../loanissue/view/loan-issue-details.jsx';
 import InitialLoanDetails from '../pdf/initial-loan-details.jsx';
+import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
 
@@ -85,9 +85,13 @@ export default function LoanIssueReportsTableRow({ row }) {
           </Label>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          {getResponsibilityValue('print_loan_issue_reports', configs, user) ? (
+            <IconButton color={popover?.open ? 'inherit' : 'default'} onClick={popover?.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            '-'
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover

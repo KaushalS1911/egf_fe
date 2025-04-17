@@ -129,6 +129,7 @@ export const modules = [
       { action: 'update Loan Pay History', key: 'update_loanPayHistory' },
       { action: 'print Loan Pay History', key: 'print_loanPayHistory_detail' },
       { action: 'Delete Interest', key: 'delete_interest' },
+      { action: 'Delete Loan', key: 'delete_loan' },
       { action: 'Delete Part Release', key: 'delete_part_release' },
       { action: 'Delete Uchak Interest', key: 'delete_uchak_interest' },
       { action: 'Delete Loan Part Payment', key: 'delete_loan_part_payment' },
@@ -149,6 +150,7 @@ export const modules = [
     permissions: [
       { action: 'update Other Loan Pay History', key: 'update_-otherloanPayHistory' },
       { action: 'print Other Loan Pay History', key: 'print_-otherloanPayHistory_detail' },
+      { action: 'Delete Other Loan', key: 'delete_loan' },
       { action: 'Delete Interest', key: 'delete_other_interest' },
       // { action: 'Delete Part Release', key: 'delete_other_part_release' },
       // { action: 'Delete Uchak Interest', key: 'delete_uchak_interest' },
@@ -180,6 +182,19 @@ export const modules = [
     ],
   },
   {
+    label: 'Reports Print',
+    value: 'reports print',
+    permissions: [
+      { action: 'All Branch Loan Summary', key: 'print_all_branch_loan_summary' },
+      { action: 'Branch Vise Loan Closing Report', key: 'print_branch_vise_loan_closing_report' },
+      { action: 'Daily Reports', key: 'print_daily_reports' },
+      { action: 'Loan Details', key: 'print_loan_details' },
+      { action: 'Interest Reports', key: 'print_Interest_Reports' },
+      { action: 'Customer Statement', key: 'print_customer_statement' },
+      { action: 'Loan Issue Reports', key: 'print_loan_issue_reports' },
+    ],
+  },
+  {
     label: 'Other Reports',
     value: 'other reports',
     permissions: [
@@ -188,6 +203,17 @@ export const modules = [
       { action: 'Other Loan Interest', key: 'other loan interest' },
       { action: 'Other Loan Daily Reports', key: 'other loan daily reports' },
       { action: 'total all in out Loan Reports', key: 'total all in out loan reports' },
+    ],
+  },
+  {
+    label: 'Other Reports Print',
+    value: 'other reports Print',
+    permissions: [
+      { action: 'Other Loan All Branch Reports', key: 'print_other_loan_all_branch_reports' },
+      { action: 'Other Loan close Reports', key: 'print_other_loan_close_reports' },
+      { action: 'Other Loan Interest', key: 'print_other_loan_interest' },
+      { action: 'Other Loan Daily Reports', key: 'print_other_loan_daily_reports' },
+      { action: 'total all in out Loan Reports', key: 'print_total_all_in_out_loan_reports' },
     ],
   },
   {

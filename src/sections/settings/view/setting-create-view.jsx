@@ -19,6 +19,7 @@ import OtherNameCreateView from './other-name-create-view.jsx';
 import WhatsappConfigs from './whatsapp-configs.jsx';
 import ExpenseTypeCreteView from './expense-type-crete-view.jsx';
 import OtherIncomeTypeCreteView from './other-income-type-crete-view.jsx';
+import DeviceAccessView from './device-access-view.jsx';
 
 const TABS = [
   {
@@ -86,6 +87,12 @@ const TABS = [
     label: 'WhatsApp Configs',
     icon: <Iconify icon="ic:baseline-whatsapp" width={20} />,
   },
+
+  {
+    value: 'Device Access',
+    label: 'Device Access',
+    icon: <Iconify icon="rivet-icons:device" width={18} sx={{ color: 'gray' }} />,
+  },
 ];
 
 export default function SettingsPage() {
@@ -129,6 +136,7 @@ export default function SettingsPage() {
         {currentTab === 'Other Name' && <OtherNameCreateView />}
         {currentTab === 'Month' && <MonthCreateView />}
         {currentTab === 'WhatsApp Configs' && <WhatsappConfigs />}
+        {currentTab === 'Device Access' && <DeviceAccessView />}
       </Container>
     </>
   );

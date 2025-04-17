@@ -11,7 +11,7 @@ export default function TableNoData({ notFound, sx }) {
   return (
     <TableRow>
       {notFound ? (
-        <TableCell colSpan={17}>
+        <TableCell colSpan={20}>
           <EmptyContent
             filled
             title="No Data"

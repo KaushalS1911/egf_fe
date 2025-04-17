@@ -87,7 +87,7 @@ export default function OtherLoanCloseSummaryTableToolbar({
   );
 
   const customStyle = {
-    maxWidth: { md: 350 },
+    minWidth: { md: 350 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -233,9 +233,11 @@ export default function OtherLoanCloseSummaryTableToolbar({
             sx={{ ...customStyle }}
           />
 
-          <IconButton onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          {getResponsibilityValue('print_other_loan_daily_reports', configs, user) && (
+            <IconButton onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
         </Stack>
         <CustomPopover
           open={popover.open}
@@ -243,39 +245,37 @@ export default function OtherLoanCloseSummaryTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
-            <>
-              {' '}
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                  view.onTrue();
-                }}
-              >
-                <Iconify icon="solar:printer-minimalistic-bold" />
-                Print
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="ant-design:file-pdf-filled" />
-                PDF
-              </MenuItem>
-              <MenuItem>
-                <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />
-              </MenuItem>
-            </>
-          )}
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="ic:round-whatsapp" />
-            whatsapp share
-          </MenuItem>
+          <>
+            {' '}
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+                view.onTrue();
+              }}
+            >
+              <Iconify icon="solar:printer-minimalistic-bold" />
+              Print
+            </MenuItem>
+            {/*<MenuItem*/}
+            {/*  onClick={() => {*/}
+            {/*    popover.onClose();*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
+            {/*  PDF*/}
+            {/*</MenuItem>*/}
+            {/*<MenuItem>*/}
+            {/*  <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />*/}
+            {/*</MenuItem>*/}
+          </>
+          {/*<MenuItem*/}
+          {/*  onClick={() => {*/}
+          {/*    popover.onClose();*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <Iconify icon="ic:round-whatsapp" />*/}
+          {/*  whatsapp share*/}
+          {/*</MenuItem>*/}
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>

@@ -259,15 +259,19 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
           </IconButton>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
-          <IconButton
-            color="error"
-            onClick={() => {
-              confirm.onTrue();
-              setDeleteId(row?._id);
-            }}
-          >
-            <Iconify icon="eva:trash-2-outline" />
-          </IconButton>
+          {getResponsibilityValue('delete_loan', configs, user) ? (
+            <IconButton
+              color="error"
+              onClick={() => {
+                confirm.onTrue();
+                setDeleteId(row?._id);
+              }}
+            >
+              <Iconify icon="eva:trash-2-outline" />
+            </IconButton>
+          ) : (
+            '-'
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover

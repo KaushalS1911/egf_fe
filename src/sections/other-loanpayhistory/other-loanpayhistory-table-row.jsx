@@ -164,14 +164,18 @@ export default function OtherLoanpayhistoryTableRow({
           </Label>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
-          <IconButton
-            color="error"
-            onClick={() => {
-              confirm.onTrue();
-            }}
-          >
-            <Iconify icon="eva:trash-2-outline" />
-          </IconButton>
+          {getResponsibilityValue('delete_loan', configs, user) ? (
+            <IconButton
+              color="error"
+              onClick={() => {
+                confirm.onTrue();
+              }}
+            >
+              <Iconify icon="eva:trash-2-outline" />
+            </IconButton>
+          ) : (
+            '-'
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
