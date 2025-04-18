@@ -161,7 +161,7 @@ export default function DeviceAccessView() {
                         <Typography variant="subtitle2">
                           <strong>Employee :</strong> {device.employee}
                         </Typography>
-                        <Typography mt={1}>
+                        <Typography mt={1} variant="subtitle2">
                           <strong>MAC : </strong> {device.macAddress}
                         </Typography>
                       </Box>
