@@ -28,31 +28,27 @@ export default function DeviceAccessView() {
   });
   const [editIndex, setEditIndex] = useState(null);
 
-  const formatEmployeeName = (emp) => {
-    if (!emp || !emp.user) return '';
-    const { firstName, middleName, lastName } = emp.user;
-    return `${firstName || ''} ${middleName || ''} ${lastName || ''}`.trim();
-  };
-
   const handleAddOrUpdateDevice = () => {
-    // Validation
     if (!deviceInput.employee || !deviceInput.macAddress) {
       enqueueSnackbar('Employee and MAC address are required', { variant: 'warning' });
       return;
     }
 
-    const nameOnly = formatEmployeeName(deviceInput.employee);
-
     const newDevice = {
-      employee: nameOnly,
+      employee: {
+        userId: deviceInput.employee.user?._id,
+        name: `${deviceInput.employee?.user.firstName || ''} ${deviceInput.employee?.user.middleName || ''} ${deviceInput.employee?.user.lastName || ''}`.trim(),
+      },
       macAddress: deviceInput.macAddress,
     };
 
     let updatedDevices = configs?.devices ? [...configs.devices] : [];
 
     if (editIndex !== null) {
+      // Edit mode: update specific index
       updatedDevices[editIndex] = newDevice;
     } else {
+      // Add mode
       updatedDevices.push(newDevice);
     }
 
@@ -64,7 +60,9 @@ export default function DeviceAccessView() {
       .then(() => {
         enqueueSnackbar(
           editIndex !== null ? 'Device updated successfully' : 'Device added successfully',
-          { variant: 'success' }
+          {
+            variant: 'success',
+          }
         );
         mutate();
         setDeviceInput({ employee: null, macAddress: '' });
@@ -77,15 +75,10 @@ export default function DeviceAccessView() {
   };
 
   const handleEditDevice = (device, index) => {
-    const matchedEmployee = employees?.find(
-      (emp) => formatEmployeeName(emp).toLowerCase() === device.employee.toLowerCase()
-    );
-
     setDeviceInput({
-      employee: matchedEmployee || null,
+      employee: device.employee,
       macAddress: device.macAddress,
     });
-
     setEditIndex(index);
   };
 
@@ -99,6 +92,7 @@ export default function DeviceAccessView() {
       .then(() => {
         enqueueSnackbar('Device deleted successfully', { variant: 'success' });
         mutate();
+        // Reset edit mode if the deleted device was being edited
         if (editIndex === indexToRemove) {
           setEditIndex(null);
           setDeviceInput({ employee: null, macAddress: '' });
@@ -120,7 +114,9 @@ export default function DeviceAccessView() {
         <Grid item xs={12} md={4}>
           <Autocomplete
             options={employees || []}
-            getOptionLabel={formatEmployeeName}
+            getOptionLabel={(option) =>
+              ` ${option.user.firstName || ''} ${option.user.middleName || ''} ${option.user.lastName || ''}`
+            }
             value={deviceInput.employee}
             onChange={(_, newValue) => setDeviceInput({ ...deviceInput, employee: newValue })}
             renderInput={(params) => <TextField {...params} label="Employee Name" />}
@@ -149,7 +145,12 @@ export default function DeviceAccessView() {
             {configs?.devices?.length > 0 ? (
               configs.devices.map((device, index) => (
                 <Grid key={index} item xs={12} sm={6} md={4} lg={6}>
-                  <Card sx={{ p: 2, minHeight: 100 }}>
+                  <Card
+                    sx={{
+                      p: 2,
+                      minHeight: 100,
+                    }}
+                  >
                     <Box
                       sx={{
                         display: 'flex',
@@ -159,9 +160,10 @@ export default function DeviceAccessView() {
                     >
                       <Box>
                         <Typography variant="subtitle2">
-                          <strong>Employee :</strong> {device.employee}
+                          <strong>Employee :</strong>
+                          {device.employee.name}
                         </Typography>
-                        <Typography mt={1} variant="subtitle2">
+                        <Typography mt={1}>
                           <strong>MAC : </strong> {device.macAddress}
                         </Typography>
                       </Box>
