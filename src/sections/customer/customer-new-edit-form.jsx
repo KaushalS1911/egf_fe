@@ -571,12 +571,15 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     }
   };
 
-  const checkIFSC = async (ifscCode) => {
+  const checkIFSC = async (ifscCode, index) => {
     if (ifscCode.length === 11) {
       try {
         const response = await axios.get(`https://ifsc.razorpay.com/${ifscCode}`);
         if (response.data) {
-          setValue('branchName', response?.data?.BRANCH || '', { shouldValidate: true });
+          console.log(response);
+          setValue(`bankDetails[${index}].branchName`, response?.data?.BRANCH || '', {
+            shouldValidate: true,
+          });
           enqueueSnackbar('IFSC code is valid and branch details fetched.', { variant: 'success' });
         }
       } catch (error) {
@@ -1345,7 +1348,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                                 .replace(/[^A-Za-z0-9]/g, '')
                                 .toUpperCase();
                             }}
-                            onBlur={(e) => checkIFSC(e.target.value)}
+                            onBlur={(e) => checkIFSC(e.target.value, index)}
                             disabled={isDisabled}
                           />
                         </TableCell>

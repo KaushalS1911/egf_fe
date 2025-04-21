@@ -39,7 +39,7 @@ export default function DeviceAccessView() {
         userId: deviceInput.employee.user?._id,
         name: `${deviceInput.employee?.user.firstName || ''} ${deviceInput.employee?.user.middleName || ''} ${deviceInput.employee?.user.lastName || ''}`.trim(),
       },
-      macAddress: deviceInput.macAddress,
+      macAddress: deviceInput.macAddress.trim(),
     };
 
     let updatedDevices = configs?.devices ? [...configs.devices] : [];
