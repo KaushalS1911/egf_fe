@@ -45,10 +45,8 @@ export default function DeviceAccessView() {
     let updatedDevices = configs?.devices ? [...configs.devices] : [];
 
     if (editIndex !== null) {
-      // Edit mode: update specific index
       updatedDevices[editIndex] = newDevice;
     } else {
-      // Add mode
       updatedDevices.push(newDevice);
     }
 
@@ -60,9 +58,7 @@ export default function DeviceAccessView() {
       .then(() => {
         enqueueSnackbar(
           editIndex !== null ? 'Device updated successfully' : 'Device added successfully',
-          {
-            variant: 'success',
-          }
+          { variant: 'success' }
         );
         mutate();
         setDeviceInput({ employee: null, macAddress: '' });
@@ -75,8 +71,10 @@ export default function DeviceAccessView() {
   };
 
   const handleEditDevice = (device, index) => {
+    const fullEmployee = employees.find((emp) => emp.user._id === device.employee.userId);
+
     setDeviceInput({
-      employee: device.employee,
+      employee: fullEmployee || null,
       macAddress: device.macAddress,
     });
     setEditIndex(index);
@@ -92,7 +90,6 @@ export default function DeviceAccessView() {
       .then(() => {
         enqueueSnackbar('Device deleted successfully', { variant: 'success' });
         mutate();
-        // Reset edit mode if the deleted device was being edited
         if (editIndex === indexToRemove) {
           setEditIndex(null);
           setDeviceInput({ employee: null, macAddress: '' });
@@ -145,12 +142,7 @@ export default function DeviceAccessView() {
             {configs?.devices?.length > 0 ? (
               configs.devices.map((device, index) => (
                 <Grid key={index} item xs={12} sm={6} md={4} lg={6}>
-                  <Card
-                    sx={{
-                      p: 2,
-                      minHeight: 100,
-                    }}
-                  >
+                  <Card sx={{ p: 2, minHeight: 100 }}>
                     <Box
                       sx={{
                         display: 'flex',
@@ -160,8 +152,7 @@ export default function DeviceAccessView() {
                     >
                       <Box>
                         <Typography variant="subtitle2">
-                          <strong>Employee :</strong>
-                          {device.employee.name}
+                          <strong>Employee :</strong> {device.employee.name}
                         </Typography>
                         <Typography mt={1}>
                           <strong>MAC : </strong> {device.macAddress}
