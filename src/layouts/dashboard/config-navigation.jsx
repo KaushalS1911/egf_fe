@@ -232,14 +232,14 @@ export function useNavData() {
             path: paths.dashboard.cashAndBank.root,
             icon: ICONS.cashAndBank,
             children: [
-              // {
-              //   title: t('cash in'),
-              //   path: paths.dashboard.cashAndBank.cashIn,
-              // },
-              // {
-              //   title: t('bank account'),
-              //   path: paths.dashboard.cashAndBank.bankAccount,
-              // },
+              {
+                title: t('cash in'),
+                path: paths.dashboard.cashAndBank.cashIn,
+              },
+              {
+                title: t('bank account'),
+                path: paths.dashboard.cashAndBank.bankAccount,
+              },
               {
                 title: t('expense'),
                 path: paths.dashboard.cashAndBank.expense.list,
