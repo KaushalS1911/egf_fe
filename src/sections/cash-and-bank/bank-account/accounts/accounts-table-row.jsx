@@ -53,7 +53,7 @@ export default function AccountsTableRow({
         {/*  <Checkbox checked={selected} onClick={onSelectRow} />*/}
         {/*</TableCell>*/}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.bankName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>100000</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.balance}</TableCell>
         {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{row.date}</TableCell>*/}
         {/*<TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amount}</TableCell>*/}
         {/*<TableCell>*/}

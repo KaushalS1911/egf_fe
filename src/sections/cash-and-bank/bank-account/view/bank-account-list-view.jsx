@@ -74,17 +74,27 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function BankAccountListView() {
-  const [accountDetails, setAccountDetails] = useState({});
-  const { enqueueSnackbar } = useSnackbar();
-  const { user } = useAuthContext();
   const { bankTransactions, mutate, bankTransactionsLoading } = useGetBankTransactions();
-  const { configs } = useGetConfigs();
+  const { enqueueSnackbar } = useSnackbar();
+  const [accountDetails, setAccountDetails] = useState({});
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(bankTransactions);
   const [filters, setFilters] = useState({ ...defaultFilters, account: accountDetails });
+
+  // useEffect(() => {
+  //   setAccountDetails();
+  // }, [bankTransactions]);
+
+  useEffect(() => {
+    if (bankTransactions?.bankBalances && bankTransactions?.bankBalances.length > 0) {
+      setAccountDetails(
+        bankTransactions?.bankBalances[Number(bankTransactions?.bankBalances?.length) - 1]
+      );
+    }
+  }, [bankTransactions.bankBalances]);
 
   useEffect(() => {
     setFilters({ ...defaultFilters, account: accountDetails });
@@ -176,15 +186,15 @@ export default function BankAccountListView() {
                 <Typography variant="body2" color="textSecondary" component="div">
                   Bank Name : {accountDetails.bankName}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="div">
+                <Typography variant="body2" color="textSecondary" component="div" mt={1}>
                   Account Number : {accountDetails.accountNumber}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="div">
+                <Typography variant="body2" color="textSecondary" component="div" mt={1}>
                   IFSC Code : {accountDetails.IFSC}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="div">
-                  UPI ID : -
-                </Typography>
+                {/*<Typography variant="body2" color="textSecondary" component="div">*/}
+                {/*  UPI ID : -*/}
+                {/*</Typography>*/}
               </Card>
               <Card>
                 <BankAccountTableToolbar filters={filters} onFilters={handleFilters} />
@@ -318,7 +328,7 @@ function applyFilter({ inputData, comparator, filters }) {
     );
   }
 
-  if (account && !account) {
+  if (account) {
     inputData = inputData?.filter((acc) => account.bankName === acc.bankName);
   }
 
