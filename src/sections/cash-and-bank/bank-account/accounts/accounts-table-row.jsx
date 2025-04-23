@@ -13,7 +13,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover/index.j
 import { useAuthContext } from '../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../permission/permission.js';
-import { info } from '../../../../theme/palette.js';
+import { grey } from '../../../../theme/palette.js';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ export default function AccountsTableRow({
       <TableRow
         hover
         selected={selected}
-        sx={{ backgroundColor: row?._id === accountDetails?._id ? info.lighter : '' }}
+        sx={{ cursor:"pointer", backgroundColor: row?._id === accountDetails?._id ? grey[400] : '' }}
         onClick={() => setAccountDetails(row)}
       >
         {/*<TableCell padding="checkbox">*/}

@@ -60,7 +60,7 @@ const STATUS_OPTIONS = [
 const TABLE_HEAD = [
   { id: '#', label: '' },
   { id: 'type', label: 'Type' },
-  { id: 'name', label: 'Name' },
+  { id: 'name', label: 'Detail' },
   { id: 'date', label: 'Date' },
   { id: 'Amount', label: 'Amount' },
   { id: '', width: 88 },
@@ -160,14 +160,14 @@ export default function BankAccountListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Bank Account"
+          heading="Bank Accounts"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Bank Account', href: paths.dashboard.scheme.root },
+            { name: 'Bank Accounts', href: paths.dashboard.scheme.root },
             { name: 'List' },
           ]}
           sx={{
-            mb: { xs: 3, md: 5 },
+            mb: { xs: 3, md: 1 },
           }}
         />
         <Card sx={{ p: 2 }}>
@@ -182,22 +182,9 @@ export default function BankAccountListView() {
               </Card>
             </Grid>
             <Grid md={9}>
-              <Card sx={{ p: 2, mb: 2 }}>
-                <Typography variant="body2" color="textSecondary" component="div">
-                  Bank Name : {accountDetails.bankName}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="div" mt={1}>
-                  Account Number : {accountDetails.accountNumber}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="div" mt={1}>
-                  IFSC Code : {accountDetails.IFSC}
-                </Typography>
-                {/*<Typography variant="body2" color="textSecondary" component="div">*/}
-                {/*  UPI ID : -*/}
-                {/*</Typography>*/}
-              </Card>
               <Card>
-                <BankAccountTableToolbar filters={filters} onFilters={handleFilters} />
+
+                <BankAccountTableToolbar filters={filters} onFilters={handleFilters} accountDetails={accountDetails} />
                 {/*{canReset && (*/}
                 {/*  <BankAccountTableFiltersResult*/}
                 {/*    filters={filters}*/}

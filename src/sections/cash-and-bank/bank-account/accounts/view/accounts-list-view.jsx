@@ -50,8 +50,8 @@ const STATUS_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
-  { id: 'accountName', label: 'Account name' },
-  { id: 'amount', label: 'Amount' },
+  { id: 'accountName', label: 'Bank Acc.' },
+  { id: 'amount', label: 'Balance' },
 ];
 
 const defaultFilters = {
@@ -123,7 +123,6 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
 
   const handleFilters = useCallback(
     (name, value) => {
-      console.log('name', value);
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,

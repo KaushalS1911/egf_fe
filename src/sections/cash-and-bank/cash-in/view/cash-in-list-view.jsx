@@ -52,7 +52,7 @@ const STATUS_OPTIONS = [
 const TABLE_HEAD = [
   { id: '', label: '' },
   { id: 'type', label: 'Type' },
-  { id: 'name', label: 'Name' },
+  { id: 'name', label: 'Detail' },
   { id: 'date', label: 'Date' },
   { id: 'Amount', label: 'Amount' },
   { id: '', width: 88 },
@@ -78,7 +78,7 @@ export default function CashInListView() {
   const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const amount = cashTransactions.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+  const amount = (cashTransactions.filter(e => e.category === 'Payment In').reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) - cashTransactions.filter(e => e.category === 'Payment Out').reduce((prev, next) => prev + (Number(next?.amount) || 0), 0));
 
   const dataFiltered = applyFilter({
     inputData: cashTransactions,
@@ -97,7 +97,6 @@ export default function CashInListView() {
 
   const handleFilters = useCallback(
     (name, value) => {
-      console.log('name', value);
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -173,8 +172,8 @@ export default function CashInListView() {
         <CustomBreadcrumbs
           heading={
             <Typography variant="h4" gutterBottom>
-              Cash In Hand{' '}
-              <span style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</span>
+              Cash In Hand :  {' '}
+              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</strong>
             </Typography>
           }
           links={[
@@ -183,7 +182,7 @@ export default function CashInListView() {
             { name: 'List' },
           ]}
           sx={{
-            mb: { xs: 3, md: 5 },
+            mb: { xs: 3, md: 1 },
           }}
         />
         <Card>

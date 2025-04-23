@@ -14,6 +14,8 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import { getResponsibilityValue } from '../../../permission/permission.js';
 import { fDate } from '../../../utils/format-time.js';
+import { statusColorMap } from '../../../assets/data/index.js';
+import { Box } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -45,31 +47,18 @@ export default function BankAccountTableRow({
       <TableRow hover selected={selected}>
         <TableCell padding="checkbox">
           <TableCell sx={{ fontSize: '12px', textAlign: 'center' }}>
-            <Label
-              variant="soft"
+            <Box
               sx={{
-                borderRadius: '100%',
-                height: 12,
-                minWidth: 10,
-                backgroundColor:
-                  (row.status === 'Loan issued' && 'red') ||
-                  (row.status === 'Customer Interest' && 'secondary') ||
-                  (row.status === 'Part Release' && 'warning') ||
-                  (row.status === 'Payment In' && 'error') ||
-                  (row.status === 'Loan Part Payment' && 'success') ||
-                  (row.status === 'Uchak Interest' && 'success') ||
-                  (row.status === 'Uchak Interest' && 'success') ||
-                  (row.status === 'Customer Loan Close' && 'success') ||
-                  (row.status === 'Other Loan Issued' && 'success') ||
-                  (row.status === 'Other Loan Interest' && 'success') ||
-                  (row.status === 'Other Loan Close' && 'success') ||
-                  'default',
+                borderRadius: '50%',
+                width: 8,
+                height: 8,
+                bgcolor: statusColorMap[row.status] || 'grey.400',
               }}
-            ></Label>
+            />
           </TableCell>{' '}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.status})`}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.status}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.ref})`}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell
           sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}
