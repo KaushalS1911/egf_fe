@@ -64,7 +64,7 @@ const STATUS_OPTIONS = [
 
 const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
-  { id: 'recallingDate', label: 'Recalling Date' },
+  { id: 'recallingDate', label: 'Recalling date' },
   { id: 'name', label: 'Name' },
   { id: 'contact', label: 'Contact' },
   { id: 'inquiryFor', label: 'Inquiry for' },
@@ -276,7 +276,7 @@ export default function InquiryListView() {
     Contact: item.contact,
     Email: item.email,
     Branch: item.branch.name,
-    'Inqiry for': item.inquiryFor,
+    'inquiry for': item.inquiryFor,
     'Recalling date': fDate(item.recallingDate),
     Address: item.address,
     Remark: item.remark,
@@ -395,7 +395,7 @@ export default function InquiryListView() {
                       },
                     }}
                   >
-                    Emplyoee
+                    Employee
                   </InputLabel>
                   <Select
                     value={selectedEmployee}
