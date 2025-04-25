@@ -206,15 +206,17 @@ export default function LoanCloseDetailsPdf({ data, configs }) {
                 <Text style={styles.tableCell}>Paid loan amt</Text>
                 <Text style={styles.tableCell}>Pending loan amt</Text>
                 <Text style={styles.tableCell}>Closing charge</Text>
-                <Text style={styles.tableCell}>net Amt</Text>
+                <Text style={styles.tableCell}>Net amt</Text>
                 <Text style={styles.tableCell}>Payment mode</Text>
                 <Text style={styles.tableCell}>Cash amt</Text>
                 <Text style={styles.tableCell}>Bank amt</Text>
               </View>
               <View style={styles.tableRow}>
                 <Text style={styles.tableCell}>{data?.totalLoanAmount}</Text>
-                <Text style={styles.tableCell}>{data?.netAmount}</Text>
-                <Text style={styles.tableCell}>{data?.totalLoanAmount - data?.netAmount}</Text>
+                <Text style={styles.tableCell}>{data?.netAmount - data?.closingCharge}</Text>
+                <Text style={styles.tableCell}>
+                  {data?.netAmount - data?.totalLoanAmount - data?.closingCharge}
+                </Text>
                 <Text style={styles.tableCell}>{data?.closingCharge}</Text>
                 <Text style={styles.tableCell}>{data?.netAmount}</Text>
                 <Text style={styles.tableCell}>{data?.paymentDetail?.paymentMode}</Text>

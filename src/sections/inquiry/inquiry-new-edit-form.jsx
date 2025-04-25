@@ -183,7 +183,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
           payload
         );
         enqueueSnackbar(res?.data?.message);
-        router.push(paths.dashboard.inquiry.list);
       } else {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry?${queryString}`,
