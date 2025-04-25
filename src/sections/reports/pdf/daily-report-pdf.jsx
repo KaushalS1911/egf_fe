@@ -107,7 +107,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
       {/* New Gold Loan Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape />
-        <View style={{ position: 'absolute', top: 20, right: 5, width: 250 }}>
+        <View style={{ position: 'absolute', top: 20, right: -30, width: 220 }}>
           {dataFilter.map((item, index) => (
             <View style={styles.row}>
               <Text style={styles.subHeading2}>{item.label || '-'}</Text>
