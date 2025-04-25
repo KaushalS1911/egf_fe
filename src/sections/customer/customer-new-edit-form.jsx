@@ -168,13 +168,13 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     otpContact: Yup.string().required('OTP Contact number isrequired').max(10).min(10),
     PerStreet: Yup.string().required('Address Line 1 isrequired'),
     PerLandmark: Yup.string().required('Landmark 1 is required'),
-    PerCountry: Yup.string().required('Country is required'),
+    PerArea: Yup.string().required('Area is required'),
     PerState: Yup.string().required('State is required'),
     PerCity: Yup.string().required('City is required'),
     PerZipcode: Yup.string().required('Pincode is required'),
     tempStreet: Yup.string().required('Street is required'),
     tempLandmark: Yup.string().required('Landmark is required'),
-    tempCountry: Yup.string().required('Country is required'),
+    tempArea: Yup.string().required('Area is required'),
     tempState: Yup.string().required('State is required'),
     tempCity: Yup.string().required('City is required'),
     tempZipcode: Yup.string().required('Pincode is required'),
@@ -212,12 +212,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       PerStreet: currentCustomer?.permanentAddress?.street || '',
       PerLandmark: currentCustomer?.permanentAddress?.landmark || '',
       PerCountry: currentCustomer?.permanentAddress?.country || '',
+      PerArea: currentCustomer?.permanentAddress?.area || '',
       PerState: currentCustomer?.permanentAddress?.state || '',
       PerCity: currentCustomer?.permanentAddress?.city || '',
       PerZipcode: currentCustomer?.permanentAddress?.zipcode || '',
       tempStreet: currentCustomer?.temporaryAddress?.street || '',
       tempLandmark: currentCustomer?.temporaryAddress?.landmark || '',
       tempCountry: currentCustomer?.temporaryAddress?.country || '',
+      tempArea: currentCustomer?.temporaryAddress?.area || '',
       tempState: currentCustomer?.temporaryAddress?.state || '',
       tempCity: currentCustomer?.temporaryAddress?.city || '',
       tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
@@ -307,6 +309,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   }, [currentCustomer, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log(data, '69856958');
     try {
       if (data?.referenceBy === 'Other' && data.otherReferenceBy === '') {
         enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
@@ -333,7 +336,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         permanentAddress: {
           street: data.PerStreet.toUpperCase(),
           landmark: data.PerLandmark.toUpperCase(),
-          country: data.PerCountry,
+          area: data.PerArea,
           state: data.PerState,
           city: data.PerCity,
           zipcode: data.PerZipcode,
@@ -341,7 +344,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         temporaryAddress: {
           street: data.tempStreet.toUpperCase(),
           landmark: data.tempLandmark.toUpperCase(),
-          country: data.tempCountry,
+          area: data.tempArea,
           state: data.tempState,
           city: data.tempCity,
           zipcode: data.tempZipcode,
@@ -1059,6 +1062,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   }
                 }}
               />
+              <RHFTextField
+                name="PerArea"
+                label="Area"
+                req={'red'}
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
+              />
               <RHFAutocomplete
                 disabled={disabledField}
                 name="PerCountry"
@@ -1068,6 +1079,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 options={countrystatecity.map((country) => country.name)}
                 isOptionEqualToValue={(option, value) => option === value}
                 defaultValue="India"
+                sx={{ display: 'none' }}
               />
               <RHFAutocomplete
                 disabled={disabledField}
@@ -1164,6 +1176,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   }
                 }}
               />
+              <RHFTextField
+                name="tempArea"
+                label="Area"
+                req={'red'}
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
+              />
               <RHFAutocomplete
                 disabled={disabledField}
                 req={'red'}
@@ -1173,7 +1193,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 options={countrystatecity.map((country) => country.name)}
                 isOptionEqualToValue={(option, value) => option === value}
                 defaultValue="India"
+                sx={{ display: 'none' }}
               />
+
               <RHFAutocomplete
                 disabled={disabledField}
                 req={'red'}
