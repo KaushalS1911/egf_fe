@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Container from '@mui/material/Container';
@@ -75,9 +75,18 @@ export default function ReminderListView() {
   const settings = useSettingsContext();
   const router = useRouter();
   const [filters, setFilters] = useState(defaultFilters);
+  const [srData, setSrData] = useState([]);
+
+  useEffect(() => {
+    const updatedData = Loanissue.map((item, index) => ({
+      ...item,
+      srNo: index + 1,
+    }));
+    setSrData(updatedData);
+  }, [Loanissue]);
 
   const dataFiltered = applyFilter({
-    inputData: Loanissue,
+    inputData: srData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -289,7 +298,7 @@ export default function ReminderListView() {
                         )
                         .map((row, index) => (
                           <ReminderTableRow
-                            index={index + 1}
+                            index={row.srNo}
                             key={row._id}
                             row={row}
                             handleClick={() => handleClick(row._id)}
