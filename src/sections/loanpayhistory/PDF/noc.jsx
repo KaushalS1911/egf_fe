@@ -206,8 +206,6 @@ const useStyles = () =>
 
 function Noc({ nocData, configs }) {
   const styles = useStyles();
-  const customerBankDetails = JSON.parse(nocData.customerBankDetail);
-  console.log(customerBankDetails);
   return (
     <>
       <Document>

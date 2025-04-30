@@ -183,8 +183,11 @@ export default function BankAccountListView() {
             </Grid>
             <Grid md={9}>
               <Card>
-
-                <BankAccountTableToolbar filters={filters} onFilters={handleFilters} accountDetails={accountDetails} />
+                <BankAccountTableToolbar
+                  filters={filters}
+                  onFilters={handleFilters}
+                  accountDetails={accountDetails}
+                />
                 {/*{canReset && (*/}
                 {/*  <BankAccountTableFiltersResult*/}
                 {/*    filters={filters}*/}
@@ -310,8 +313,10 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis?.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) =>
-      sch?.transitions?.details?.toLowerCase().includes(name.toLowerCase())
+    inputData = inputData.filter(
+      (sch) =>
+        sch?.ref?.toLowerCase().includes(name?.toLowerCase()) ||
+        sch?.detail?.toLowerCase().includes(name?.toLowerCase())
     );
   }
 

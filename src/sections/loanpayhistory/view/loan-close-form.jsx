@@ -32,6 +32,7 @@ import { fDate } from '../../../utils/format-time.js';
 import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import { useGetAllInterest } from '../../../api/interest-pay.js';
 import { ConfirmDialog } from '../../../components/custom-dialog/index.js';
+import Noc from '../PDF/noc.jsx';
 
 const TABLE_HEAD = [
   { id: 'totalLoanAmt', label: 'Total loan amt' },
@@ -157,10 +158,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
   const sendPdfToWhatsApp = async (item) => {
     try {
-      const blob = await pdf(
-        <LoanCloseDetailsPdf data={item ? item : data} configs={configs} />
-      ).toBlob();
-      const file = new File([blob], `Loan-Part-Release.pdf`, { type: 'application/pdf' });
+      const blob = await pdf(<Noc nocData={currentLoan} configs={configs} />).toBlob();
+      const file = new File([blob], `Noc.pdf`, { type: 'application/pdf' });
       const payload = {
         firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
         middleName: item ? item.loan.customer.middleName : data.loan.customer.middleName,
@@ -176,7 +175,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
         companyContact: item ? item.loan.company.contact : data.loan.company.contact,
         branchContact: item ? item.loan.customer.branch.contact : data.loan.customer.branch.contact,
         company: user.company,
-
         file,
         type: 'loan_close',
       };
@@ -579,7 +577,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <LoanCloseDetailsPdf data={data} configs={configs} />
+              <Noc nocData={currentLoan} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>
