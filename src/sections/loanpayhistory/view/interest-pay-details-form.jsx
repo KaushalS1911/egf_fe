@@ -273,7 +273,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
   }, [watch('paymentMode')]);
 
-  const sendPdfToWhatsApp = async () => {
+  const sendPdfToWhatsApp = async (data) => {
     try {
       const blob = await pdf(<InterestPdf data={data} configs={configs} />).toBlob();
       const file = new File([blob], `interestPayment.pdf`, { type: 'application/pdf' });
@@ -372,11 +372,11 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
         data: payload,
       };
       const response = await axios(config);
-      sendPdfToWhatsApp();
-      reset();
+      sendPdfToWhatsApp(response?.data?.data);
       mutate();
       refetchLoanInterest();
       enqueueSnackbar(response?.data.message);
+      // reset();
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to pay interest', { variant: 'error' });
