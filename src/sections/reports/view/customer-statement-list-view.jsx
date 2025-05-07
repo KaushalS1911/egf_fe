@@ -66,15 +66,17 @@ export default function CustomerStatementListView() {
   const [customerStatement, setCustomerStatement] = useState([]);
   const [customerStatementLoading, setCustomerStatementLoading] = useState(false);
 
-  const loanAmount = customerStatement.reduce(
-    (prev, next) => prev + (Number(next?.loanAmount) || 0),
-    0
-  );
-  const intLoanAmount = customerStatement.reduce(
+  const dataFiltered = applyFilter({
+    inputData: srData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters,
+  });
+  const loanAmount = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+  const intLoanAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
-  const amt = customerStatement.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+  const amt = dataFiltered.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
   const fetchCustomerStatement = async () => {
     if (!filters.customer) return;
 
@@ -100,14 +102,15 @@ export default function CustomerStatementListView() {
     }
   };
 
+  const total = {
+    loanAmount,
+    amt,
+    intLoanAmount,
+  };
+
   useEffect(() => {
     fetchCustomerStatement();
   }, [filters.customer]);
-  const dataFiltered = applyFilter({
-    inputData: srData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
@@ -149,6 +152,7 @@ export default function CustomerStatementListView() {
             filters={filters}
             onFilters={handleFilters}
             data={customerStatement}
+            total={total}
           />
           {canReset && (
             <InterestReportsTableFiltersResult

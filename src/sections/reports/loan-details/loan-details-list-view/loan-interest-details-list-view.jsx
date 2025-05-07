@@ -92,51 +92,48 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
   const [tableData, setTableData] = useState(interestDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = interestDetail.reduce(
-    (prev, next) =>
-      prev +
-      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
-    0
-  );
-  const totalInt = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.interestAmount) || 0),
-    0
-  );
-  const conCharge = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
-    0
-  );
-  const consultingCharge = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
-    0
-  );
-  const penalty = interestDetail.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
-  const cr_dr = interestDetail.reduce((prev, next) => prev + (Number(next?.old_cr_dr) || 0), 0);
-  const adjustedPay = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.adjustedPay) || 0),
-    0
-  );
-  const day = interestDetail.reduce((prev, next) => prev + (Number(next?.days) || 0), 0);
-  const uchakInterestAmount = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.uchakInterestAmount) || 0),
-    0
-  );
-  const loanAmt = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
-  );
-
-  const amountPaid = interestDetail.reduce(
-    (prev, next) => prev + (Number(next?.amountPaid) || 0),
-    0
-  );
-
   const dataFiltered = applyFilter({
     inputData: interestDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
     dataFilters,
   });
+
+  const int = dataFiltered.reduce(
+    (prev, next) =>
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
+    0
+  );
+  const totalInt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.interestAmount) || 0),
+    0
+  );
+  const conCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    0
+  );
+  const consultingCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
+    0
+  );
+  const penalty = dataFiltered.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
+  const cr_dr = dataFiltered.reduce((prev, next) => prev + (Number(next?.old_cr_dr) || 0), 0);
+  const adjustedPay = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.adjustedPay) || 0),
+    0
+  );
+  const day = dataFiltered.reduce((prev, next) => prev + (Number(next?.days) || 0), 0);
+  const uchakInterestAmount = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.uchakInterestAmount) || 0),
+    0
+  );
+  const loanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+
+  const amountPaid = dataFiltered.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -353,10 +350,10 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                     {loanAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(int / interestDetail.length).toFixed(2)}
+                    {(int / dataFiltered.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(consultingCharge / interestDetail.length).toFixed(2)}
+                    {(consultingCharge / dataFiltered.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(totalInt + conCharge).toFixed(0)}
@@ -372,7 +369,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {day / interestDetail.length}
+                    {day / dataFiltered.length}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(totalInt + conCharge + cr_dr).toFixed(0)}

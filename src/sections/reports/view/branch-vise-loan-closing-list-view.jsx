@@ -96,50 +96,63 @@ export default function BranchViseLoanClosingListView() {
   const [tableData, setTableData] = useState(LoanSummary);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = LoanSummary.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
-    0
-  );
-
-  const conCharge = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
-    0
-  );
-
-  const loanAmt = LoanSummary.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
-
-  const intLoanAmt = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
-    0
-  );
-
-  const totalIntPay = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
-    0
-  );
-  const day = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
-    0
-  );
-  const pendingIntAmt = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
-    0
-  );
-  const closeCharge = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.closeCharge) || 0),
-    0
-  );
-  const closeAmt = LoanSummary.reduce((prev, next) => prev + (Number(next?.closeAmt) || 0), 0);
-
-  useEffect(() => {
-    fetchStates();
-  }, [LoanSummary]);
   const dataFiltered = applyFilter({
     inputData: LoanSummary,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const int = dataFiltered.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
+    0
+  );
+
+  const conCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    0
+  );
+
+  const loanAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+
+  const intLoanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+
+  const totalIntPay = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
+    0
+  );
+  const day = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
+    0
+  );
+  const pendingIntAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
+    0
+  );
+  const closeCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.closeCharge) || 0),
+    0
+  );
+  const closeAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.closeAmt) || 0), 0);
+
+  const total = {
+    int,
+    conCharge,
+    totalIntPay,
+    closeCharge,
+    closeAmt,
+    loanAmt,
+    intLoanAmt,
+    pendingIntAmt,
+    day,
+  };
+
+  useEffect(() => {
+    fetchStates();
+  }, [dataFiltered]);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -290,6 +303,7 @@ export default function BranchViseLoanClosingListView() {
             dataFilter={dataFiltered}
             configs={configs}
             options={options}
+            total={total}
           />
           {canReset && (
             <BranchWiseLoanClosingFiltersResult
@@ -375,7 +389,7 @@ export default function BranchViseLoanClosingListView() {
                     position: 'sticky',
                     bottom: 0,
                     zIndex: 1,
-                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                    boxShaodw: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
                   {/*<TableCell padding="checkbox" />*/}

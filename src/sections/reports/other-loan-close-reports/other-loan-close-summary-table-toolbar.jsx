@@ -31,6 +31,7 @@ export default function OtherLoanCloseSummaryTableToolbar({
   dataFilter,
   configs,
   options,
+  total,
 }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -291,6 +292,7 @@ export default function OtherLoanCloseSummaryTableToolbar({
                 loans={dataFilter}
                 configs={configs}
                 filterData={filterData}
+                total={total}
               />
             </PDFViewer>
           </Box>

@@ -22,26 +22,29 @@ const useStyles = () =>
       display: 'flex',
       flexDirection: 'column',
       borderWidth: 1,
-      borderColor: '#000',
+      borderColor: '#b1b0b0',
       marginBottom: 10,
     },
     tableRow: {
       flexDirection: 'row',
       display: 'flex',
       minHeight: 22,
-      borderBottomWidth: 1,
-      borderBottomColor: '#000',
+      borderBottomWidth: 0.5,
+      borderBottomColor: '#c7c6c6',
+      pageBreakInside: 'avoid',
     },
     tableHeader: {
       backgroundColor: '#5B9BD4',
       fontWeight: 'bold',
+      color: '#000',
       textAlign: 'center',
+      minHeight: 25,
     },
     tableCell: {
       flex: 1,
       padding: 5,
-      borderRightWidth: 1,
-      borderRightColor: '#000',
+      borderRightWidth: 0.5,
+      borderRightColor: '#b1b0b0',
       textAlign: 'center',
       fontSize: 8,
     },
@@ -49,10 +52,10 @@ const useStyles = () =>
       borderRightWidth: 0,
     },
     strippedRow: {
-      backgroundColor: '#F2F2F2', // Light gray background for stripped rows
+      backgroundColor: '#F2F2F2',
     },
     lastRow: {
-      borderBottomWidth: 0, // Remove border for the last row
+      borderBottomWidth: 0,
     },
     termsAndConditionsHeaders: {
       color: '#232C4B',
@@ -82,6 +85,24 @@ const useStyles = () =>
       fontSize: 10,
       flex: 2,
     },
+    totalRow: {
+      backgroundColor: '#E8F0FE',
+      minHeight: 25,
+    },
+    totalCell: {
+      padding: 5,
+      borderRightWidth: 0.5,
+      borderRightColor: '#b1b0b0',
+      textAlign: 'center',
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#1a237e',
+    },
+    totalLabel: {
+      fontSize: 7,
+      textAlign: 'center',
+      color: '#666',
+    },
   });
 
 export default function DailyReportPdf({ selectedBranch, configs, data, filterData }) {
@@ -102,6 +123,82 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
     // { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
+
+  // Add this function to calculate totals
+  const calculateTotals = (data, columns) => {
+    const totals = {};
+    columns.forEach((col) => {
+      totals[col] = data.reduce((sum, item) => {
+        const value = parseFloat(item[col]) || 0;
+        return sum + value;
+      }, 0);
+    });
+    return totals;
+  };
+
+  // Add this function to calculate averages
+  const calculateAverage = (data, field) => {
+    const validValues = data.filter((item) => {
+      let value;
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        value = parseFloat(item[parent]?.[child]);
+      } else {
+        value = parseFloat(item[field]);
+      }
+      return !isNaN(value) && value !== null && value !== undefined;
+    });
+
+    if (validValues.length === 0) return 0;
+
+    const sum = validValues.reduce((acc, item) => {
+      let value;
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        value = parseFloat(item[parent]?.[child]) || 0;
+      } else {
+        value = parseFloat(item[field]) || 0;
+      }
+      return acc + value;
+    }, 0);
+
+    return (sum / validValues.length).toFixed(0);
+  };
+
+  // Add this function to handle interest rate specifically
+  const calculateInterestRateAverage = (data) => {
+    const validValues = data.filter((item) => {
+      const rate = item?.scheme?.interestRate || item.loan?.scheme?.interestRate;
+      return !isNaN(rate) && rate !== null && rate !== undefined;
+    });
+
+    if (validValues.length === 0) return 0;
+
+    const sum = validValues.reduce((acc, item) => {
+      const rate = parseFloat(item?.scheme?.interestRate || item.loan?.scheme?.interestRate) || 0;
+      return acc + (rate > 1.5 ? 1.5 : rate);
+    }, 0);
+
+    return (sum / validValues.length).toFixed(2);
+  };
+
+  // Add this function to handle consulting charge specifically
+  const calculateConsultingChargeAverage = (data) => {
+    const validValues = data.filter((item) => {
+      const charge = item?.consultingCharge || item.loan?.consultingCharge;
+      return !isNaN(charge) && charge !== null && charge !== undefined;
+    });
+
+    if (validValues.length === 0) return 0;
+
+    const sum = validValues.reduce((acc, item) => {
+      const charge = parseFloat(item?.consultingCharge || item.loan?.consultingCharge) || 0;
+      return acc + charge;
+    }, 0);
+
+    return (sum / validValues.length).toFixed();
+  };
+
   return (
     <Document>
       {/* New Gold Loan Details Table */}
@@ -131,7 +228,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
               <View style={styles.table}>
                 <View style={[styles.tableRow, styles.tableHeader]}>
                   <Text style={[styles.tableCell, { flex: 0.2 }]}>#</Text>
-                  <Text style={[styles.tableCell, { flex: 1.5 }]}>Loan No</Text>
+                  <Text style={[styles.tableCell, { flex: 2 }]}>Loan No</Text>
                   <Text style={[styles.tableCell, { flex: 4.8 }]}>Customer Name</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>Loan Amt</Text>
                   <Text style={[styles.tableCell, { flex: 0.4 }]}>Int. (%)</Text>
@@ -145,15 +242,15 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   <View
                     style={[
                       styles.tableRow,
-                      index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                      index === loanDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                      index % 2 !== 0 && styles.strippedRow,
+                      index === loanDetails.length - 1 && styles.lastRow,
                     ]}
                     key={index}
                   >
                     <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loanNo}</Text>
+                    <Text style={[styles.tableCell, { flex: 2 }]}>{item.loanNo}</Text>
                     <Text style={[styles.tableCell, { flex: 4.8 }]}>
-                      {`${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`}
+                      {`${item?.customer?.firstName} ${item?.customer?.middleName} ${item?.customer?.lastName}`}
                     </Text>
                     <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.loanAmount}</Text>
                     <Text style={[styles.tableCell, { flex: 0.4 }]}>
@@ -166,6 +263,25 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                     </Text>
                   </View>
                 ))}
+                {/* Add total row */}
+                <View style={[styles.tableRow, styles.totalRow]}>
+                  <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 2 }]}>TOTAL</Text>
+                  <Text style={[styles.totalCell, { flex: 4.8 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                    {loanDetails
+                      .reduce((sum, item) => sum + (parseFloat(item.loanAmount) || 0), 0)
+                      .toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.4 }]}>
+                    {calculateInterestRateAverage(loanDetails)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.4 }]}>
+                    {calculateConsultingChargeAverage(loanDetails)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.7 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 3.5, borderRightWidth: 0 }]}></Text>
+                </View>
               </View>
             </>
           )}
@@ -188,7 +304,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
             <View style={styles.table}>
               <View style={[styles.tableRow, styles.tableHeader]}>
                 <Text style={[styles.tableCell, { flex: 0.3 }]}>#</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>Loan No</Text>
+                <Text style={[styles.tableCell, { flex: 2.7 }]}>Loan No</Text>
                 <Text style={[styles.tableCell, { flex: 5 }]}>Customer Name</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan Amt</Text>
                 <Text style={[styles.tableCell, { flex: 0.5 }]}>Int. (%)</Text>
@@ -213,7 +329,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   key={index}
                 >
                   <Text style={[styles.tableCell, { flex: 0.3 }]}>{index + 1}</Text>
-                  <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.loanNo}</Text>
+                  <Text style={[styles.tableCell, { flex: 2.7 }]}>{item.loan.loanNo}</Text>
                   <Text style={[styles.tableCell, { flex: 5 }]}>
                     {`${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`}
                   </Text>
@@ -241,6 +357,50 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
+              {/* Add total row */}
+              <View style={[styles.tableRow, styles.totalRow]}>
+                <Text style={[styles.totalCell, { flex: 0.3 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 2.7 }]}>TOTAL</Text>
+                <Text style={[styles.totalCell, { flex: 5 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 1 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.loanAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.5 }]}>
+                  {calculateInterestRateAverage(loanIntDetails)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.5 }]}>
+                  {calculateConsultingChargeAverage(loanIntDetails)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 1 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 1.3 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.interestLoanAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 1 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 1 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.4 }]}>
+                  {calculateAverage(loanIntDetails, 'days')}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.interestAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.penalty) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 1, borderRightWidth: 0 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.amountPaid) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+              </View>
             </View>
           </View>
         </Page>
@@ -304,6 +464,35 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
+              {/* Add total row */}
+              <View style={[styles.tableRow, styles.totalRow]}>
+                <Text style={[styles.tableCell, { flex: 0.25 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1.8 }]}>TOTAL</Text>
+                <Text style={[styles.tableCell, { flex: 5 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {partReleaseDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.loanAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                  {calculateInterestRateAverage(partReleaseDetails)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                  {calculateConsultingChargeAverage(partReleaseDetails)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {partReleaseDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.interestLoanAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {partReleaseDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.amountPaid) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}></Text>
+              </View>
             </View>
           </View>
         </Page>
@@ -367,6 +556,35 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
+              {/* Add total row */}
+              <View style={[styles.tableRow, styles.totalRow]}>
+                <Text style={[styles.tableCell, { flex: 0.25 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1.8 }]}>TOTAL</Text>
+                <Text style={[styles.tableCell, { flex: 5 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {partPaymentDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.loanAmount) || 0), 0)
+                    .toFixed(2)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                  {calculateInterestRateAverage(partPaymentDetails)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                  {calculateConsultingChargeAverage(partPaymentDetails)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {partPaymentDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.interestLoanAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {partPaymentDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.amountPaid) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}></Text>
+              </View>
             </View>
           </View>
         </Page>
@@ -387,7 +605,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
             <View style={styles.table}>
               <View style={[styles.tableRow, styles.tableHeader]}>
                 <Text style={[styles.tableCell, { flex: 0.2 }]}>#</Text>
-                <Text style={[styles.tableCell, { flex: 1.5 }]}>Loan No</Text>
+                <Text style={[styles.tableCell, { flex: 2 }]}>Loan No</Text>
                 <Text style={[styles.tableCell, { flex: 5 }]}>Customer Name</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Loan Amt</Text>
                 <Text style={[styles.tableCell, { flex: 0.3 }]}>Int. (%)</Text>
@@ -410,7 +628,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   key={index}
                 >
                   <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-                  <Text style={[styles.tableCell, { flex: 1.5 }]}>{item.loan.loanNo}</Text>
+                  <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.loanNo}</Text>
                   <Text style={[styles.tableCell, { flex: 5 }]}>
                     {`${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`}
                   </Text>
@@ -432,6 +650,36 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
+              {/* Add total row */}
+              <View style={[styles.tableRow, styles.totalRow]}>
+                <Text style={[styles.tableCell, { flex: 0.2 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 2 }]}>TOTAL</Text>
+                <Text style={[styles.tableCell, { flex: 5 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {uchakIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.loanAmount) || 0), 0)
+                    .toFixed(2)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.3 }]}>
+                  {calculateInterestRateAverage(uchakIntDetails)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.3 }]}>
+                  {calculateConsultingChargeAverage(uchakIntDetails)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {uchakIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.loan.interestLoanAmount) || 0), 0)
+                    .toFixed(2)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {uchakIntDetails
+                    .reduce((sum, item) => sum + (parseFloat(item.amountPaid) || 0), 0)
+                    .toFixed(2)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 0.8, borderRightWidth: 0 }]}></Text>
+              </View>
             </View>
           </View>
         </Page>
@@ -450,8 +698,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
             </View>{' '}
             <View style={styles.table}>
               <View style={[styles.tableRow, styles.tableHeader]}>
-                <Text style={[styles.tableCell, { flex: 0.1 }]}>#</Text>
-                <Text style={[styles.tableCell, { flex: 1.7 }]}>Loan No</Text>
+                <Text style={[styles.tableCell, { flex: 0.2 }]}>#</Text>
+                <Text style={[styles.tableCell, { flex: 2 }]}>Loan No</Text>
                 <Text style={[styles.tableCell, { flex: 4 }]}>Customer Name</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Total loan amt</Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>Paid Loan amt</Text>
@@ -471,8 +719,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   ]}
                   key={index}
                 >
-                  <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
-                  <Text style={[styles.tableCell, { flex: 1.7 }]}>{item.loan.loanNo}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
+                  <Text style={[styles.tableCell, { flex: 2 }]}>{item.loan.loanNo}</Text>
                   <Text style={[styles.tableCell, { flex: 4 }]}>
                     {`${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`}
                   </Text>
@@ -486,12 +734,55 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.date)}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(item.createdAt)}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.closingCharge}</Text>
-                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.netAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.netAmount.toFixed(2)}</Text>
                   <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0, fontSize: 7 }]}>
                     {item.entryBy}
                   </Text>
                 </View>
               ))}
+              {/* Add total row */}
+              <View style={[styles.tableRow, styles.totalRow]}>
+                <Text style={[styles.tableCell, { flex: 0.2 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 2 }]}>TOTAL</Text>
+                <Text style={[styles.tableCell, { flex: 4 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {closedLoans
+                    .reduce((sum, item) => sum + (parseFloat(item.totalLoanAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {closedLoans
+                    .reduce(
+                      (sum, item) => sum + (parseFloat(item.netAmount - item.closingCharge) || 0),
+                      0
+                    )
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {closedLoans
+                    .reduce(
+                      (sum, item) =>
+                        sum +
+                        (parseFloat(item.totalLoanAmount - (item.netAmount - item.closingCharge)) ||
+                          0),
+                      0
+                    )
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>
+                  {closedLoans
+                    .reduce((sum, item) => sum + (parseFloat(item.closingCharge) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>
+                  {closedLoans
+                    .reduce((sum, item) => sum + (parseFloat(item.netAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 2, borderRightWidth: 0 }]}></Text>
+              </View>
             </View>
           </View>
         </Page>

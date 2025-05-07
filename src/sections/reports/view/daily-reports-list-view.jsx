@@ -254,20 +254,36 @@ export default function DailyReportsListView() {
                   }
                 />
               </Tabs>
-              {activeTab === 0 && <NewGoldLonListView LoanIssue={report?.loans} />}
+              {activeTab === 0 && (
+                <NewGoldLonListView LoanIssue={report?.loans} branch={filters.branch} />
+              )}
               {activeTab === 1 && (
-                <GoldLoanInterestListView interestDetail={report?.interestDetail} />
+                <GoldLoanInterestListView
+                  interestDetail={report?.interestDetail}
+                  branch={filters.branch}
+                />
               )}
               {activeTab === 2 && (
-                <GoldLoanPartCloseListView partClose={report?.partReleaseDetail} />
+                <GoldLoanPartCloseListView
+                  partClose={report?.partReleaseDetail}
+                  branch={filters.branch}
+                />
               )}
               {activeTab === 3 && (
-                <GoldLoanPartPaymentListView partPayment={report?.partPaymentDetail} />
+                <GoldLoanPartPaymentListView
+                  partPayment={report?.partPaymentDetail}
+                  branch={filters.branch}
+                />
               )}
               {activeTab === 4 && (
-                <GoldLoanUchakPartListView uchakPayment={report?.uchakInterestDetail} />
+                <GoldLoanUchakPartListView
+                  uchakPayment={report?.uchakInterestDetail}
+                  branch={filters.branch}
+                />
               )}{' '}
-              {activeTab === 5 && <LoanCloseListView closedLoans={report?.closedLoans} />}
+              {activeTab === 5 && (
+                <LoanCloseListView closedLoans={report?.closedLoans} branch={filters.branch} />
+              )}
             </Grid>
           </Grid>
         </Card>

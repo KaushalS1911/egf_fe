@@ -105,52 +105,65 @@ export default function AllBranchLoanSummaryListView() {
   const [tableData, setTableData] = useState(LoanSummary);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = LoanSummary.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
-    0
-  );
-  const approvalCharge = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.approvalCharge) || 0),
-    0
-  );
-  const conCharge = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
-    0
-  );
-
-  const loanAmt = LoanSummary.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
-
-  const intLoanAmt = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
-    0
-  );
-
-  const totalIntPay = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
-    0
-  );
-  const day = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
-    0
-  );
-  const pendingDays = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next.pendingDays > 0 && next?.pendingDays) || 0),
-    0
-  );
-  const pendingIntAmt = LoanSummary.reduce(
-    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
-    0
-  );
-
-  useEffect(() => {
-    fetchStates();
-  }, [LoanSummary]);
   const dataFiltered = applyFilter({
     inputData: LoanSummary,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  console.log(table.page, '3222222');
+
+  const int = dataFiltered.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
+    0
+  );
+  const approvalCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.approvalCharge) || 0),
+    0
+  );
+  const conCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    0
+  );
+
+  const loanAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+
+  const intLoanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+
+  const totalIntPay = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
+    0
+  );
+  const day = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
+    0
+  );
+  const pendingDays = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next.pendingDays > 0 && next?.pendingDays) || 0),
+    0
+  );
+  const pendingIntAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
+    0
+  );
+
+  const total = {
+    int,
+    approvalCharge,
+    conCharge,
+    loanAmt,
+    intLoanAmt,
+    totalIntPay,
+    day,
+    pendingDays,
+    pendingIntAmt,
+  };
+  useEffect(() => {
+    fetchStates();
+  }, [dataFiltered]);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -337,6 +350,7 @@ export default function AllBranchLoanSummaryListView() {
             dataFilter={dataFiltered}
             configs={configs}
             options={options}
+            total={total}
           />
 
           {canReset && (
@@ -442,10 +456,10 @@ export default function AllBranchLoanSummaryListView() {
                     sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
                   ></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
-                    {(int / LoanSummary.length).toFixed(2)}
+                    {(int / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
-                    {(conCharge / LoanSummary.length).toFixed(2)}
+                    {(conCharge / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell
                     sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
@@ -466,13 +480,13 @@ export default function AllBranchLoanSummaryListView() {
                     sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}
                   ></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
-                    {(day / LoanSummary.length).toFixed(0)}
+                    {(day / dataFiltered.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {totalIntPay.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
-                    {(pendingDays / LoanSummary.length).toFixed(0)}
+                    {(pendingDays / dataFiltered.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     {pendingIntAmt.toFixed(0)}

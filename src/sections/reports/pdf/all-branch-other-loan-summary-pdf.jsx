@@ -94,6 +94,18 @@ const useStyles = () =>
           fontSize: 10,
           flex: 2,
         },
+        totalRow: {
+          flexDirection: 'row',
+          backgroundColor: '#F4F6F8',
+          minHeight: 25,
+        },
+        totalCell: {
+          padding: 5,
+          borderRightWidth: 0.5,
+          borderRightColor: '#b1b0b0',
+          fontWeight: 'bold',
+          color: '#637381',
+        },
       }),
     []
   );
@@ -103,10 +115,17 @@ export default function AllBranchOtherLoanSummaryPdf({
   configs,
   loans,
   filterData,
+  total,
 }) {
   const styles = useStyles();
+
+  const { percentage, rate, amount, pendingInterest, day } = total;
+
+  // Define dataFiltered for calculations
+  const dataFiltered = loans;
+
   const headers = [
-    { label: '#', flex: 0.1 },
+    { label: '#', flex: 0.2 },
     { label: 'Loan No', flex: 2 },
     { label: 'Customer Name', flex: 4 },
     { label: 'Other name', flex: 2 },
@@ -125,7 +144,7 @@ export default function AllBranchOtherLoanSummaryPdf({
     { value: fDate(new Date()), label: 'Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
-  const rowsPerPage = 18;
+  const rowsPerPage = 17;
   const pages = [];
   let currentPageRows = [];
   loans.forEach((row, index) => {
@@ -142,7 +161,7 @@ export default function AllBranchOtherLoanSummaryPdf({
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
+        <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
         <Text style={[styles.tableCell, { flex: 2 }]}>{row.loan.loanNo}</Text>
         <Text style={[styles.tableCell, { flex: 4, fontSize: 7, padding: 5 }]}>
           {`${row.loan.customer.firstName} ${row.loan.customer.middleName} ${row.loan.customer.lastName}`}
@@ -168,7 +187,7 @@ export default function AllBranchOtherLoanSummaryPdf({
               <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
               <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
                 {dataFilter.map((item, index) => (
-                  <View style={styles.row}>
+                  <View key={index} style={styles.row}>
                     <Text style={styles.subHeading2}>{item.label || '-'}</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{item.value || '-'}</Text>
@@ -204,6 +223,56 @@ export default function AllBranchOtherLoanSummaryPdf({
                 ))}
               </View>
               {currentPageRows}
+              {index === loans.length - 1 && (
+                <View
+                  style={[
+                    styles.tableRow,
+                    {
+                      backgroundColor: '#E8F0FE',
+                      minHeight: 25,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[styles.tableCell, { flex: 0.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  ></Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 2, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    TOTAL
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 4 }]}></Text>
+                  <Text style={[styles.tableCell, { flex: 2 }]}></Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 0.4, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {(percentage / loans.length).toFixed(2)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {rate.toFixed(0)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.85 }]}></Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {amount.toFixed(0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 0.3, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {(day / loans.length || 0).toFixed(0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {pendingInterest.toFixed(0)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 0.85, borderRight: 0 }]}></Text>
+                </View>
+              )}
             </View>
           </View>
         </Page>

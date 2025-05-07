@@ -23,7 +23,13 @@ import moment from 'moment/moment.js';
 
 // ----------------------------------------------------------------------
 
-export default function CustomerStatementTableToolbar({ data, filters, onFilters, dateError }) {
+export default function CustomerStatementTableToolbar({
+  data,
+  filters,
+  onFilters,
+  dateError,
+  total,
+}) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -263,7 +269,12 @@ export default function CustomerStatementTableToolbar({ data, filters, onFilters
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <CustomerStatementPdf data={data} configs={configs} filterData={filterData} />
+              <CustomerStatementPdf
+                data={data}
+                configs={configs}
+                filterData={filterData}
+                total={total}
+              />
             </PDFViewer>
           </Box>
         </Box>

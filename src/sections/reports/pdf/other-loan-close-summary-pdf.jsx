@@ -48,7 +48,7 @@ const useStyles = () =>
         tableHeader: {
           backgroundColor: '#5B9BD4',
           fontWeight: 'bold',
-          color: '#000',
+          color: '#fff',
           textAlign: 'center',
         },
         tableCell: {
@@ -56,6 +56,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
+          fontSize: 8,
         },
         numericCell: {
           textAlign: 'right',
@@ -93,14 +94,49 @@ const useStyles = () =>
           fontSize: 10,
           flex: 2,
         },
+        totalRow: {
+          backgroundColor: '#E8F0FE',
+          minHeight: 25,
+          flexDirection: 'row',
+        },
+        totalCell: {
+          padding: 5,
+          borderRightWidth: 0.5,
+          borderRightColor: '#b1b0b0',
+          textAlign: 'center',
+          fontSize: 8,
+          fontWeight: 'bold',
+          color: '#1a237e',
+        },
       }),
     []
   );
 
-export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loans, filterData }) {
+export default function OtherLoanCloseSummaryPdf({
+  selectedBranch,
+  configs,
+  loans,
+  filterData,
+  total,
+}) {
   const styles = useStyles();
+
+  // Define dataFiltered for calculations
+  const dataFiltered = loans;
+
+  const {
+    percentage,
+    rate,
+    amount,
+    totalInterestAmt,
+    pendingInterest,
+    day,
+    closeAmt,
+    closingCharge,
+  } = total;
+
   const headers = [
-    { label: '#', flex: 0.1 },
+    { label: '#', flex: 0.2 },
     { label: 'Loan No', flex: 2 },
     { label: 'Customer Name', flex: 3 },
     { label: 'Other name', flex: 0.6 },
@@ -140,7 +176,7 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
+        <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
         <Text style={[styles.tableCell, { flex: 2 }]}>{row.loan.loanNo}</Text>
         <Text style={[styles.tableCell, { flex: 3, fontSize: 7, padding: 5 }]}>
           {`${row.loan.customer.firstName} ${row.loan.customer.middleName}\n ${row.loan.customer.lastName}`}
@@ -174,7 +210,7 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
               <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
               <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
                 {dataFilter.map((item, index) => (
-                  <View style={styles.row}>
+                  <View key={index} style={styles.row}>
                     <Text style={styles.subHeading2}>{item.label || '-'}</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{item.value || '-'}</Text>
@@ -189,7 +225,7 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
                   marginTop: 10,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>OTHER LOAN ALL BRANCH REPORTS</Text>
+                <Text style={styles.termsAndConditionsHeaders}>OTHER LOAN CLOSE REPORTS</Text>
               </View>{' '}
             </>
           )}
@@ -210,6 +246,32 @@ export default function OtherLoanCloseSummaryPdf({ selectedBranch, configs, loan
                 ))}
               </View>
               {currentPageRows}
+              {index === loans.length - 1 && (
+                <View style={[styles.totalRow, { textAlign: 'center' }]}>
+                  <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 2 }]}>TOTAL</Text>
+                  <Text style={[styles.totalCell, { flex: 3 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.6 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 1.1 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.35 }]}>
+                    {(percentage / loans.length).toFixed(2)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}>{rate.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}>{amount.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}>{totalInterestAmt.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 0.3 }]}>
+                    {(day / loans.length).toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}>{closeAmt.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}>{pendingInterest.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>{closingCharge.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}>
+                    {(totalInterestAmt + closeAmt + closingCharge).toFixed(0)}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         </Page>

@@ -89,29 +89,26 @@ export default function LoanCloseDetailsListView({ loanCloseDetail, dataFilters 
   const [tableData, setTableData] = useState(loanCloseDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const totalLoanAmount = loanCloseDetail.reduce(
-    (prev, next) => prev + (Number(next?.totalLoanAmount) || 0),
-    0
-  );
-  const netAmount = loanCloseDetail.reduce(
-    (prev, next) => prev + (Number(next?.netAmount) || 0),
-    0
-  );
-  const closingCharge = loanCloseDetail.reduce(
-    (prev, next) => prev + (Number(next?.closingCharge) || 0),
-    0
-  );
-  const intLoanAmt = loanCloseDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
-    0
-  );
-
   const dataFiltered = applyFilter({
     inputData: loanCloseDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
     dataFilters,
   });
+
+  const totalLoanAmount = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.totalLoanAmount) || 0),
+    0
+  );
+  const netAmount = dataFiltered.reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0);
+  const closingCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.closingCharge) || 0),
+    0
+  );
+  const intLoanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
+    0
+  );
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,

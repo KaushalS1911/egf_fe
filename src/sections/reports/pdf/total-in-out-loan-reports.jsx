@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
@@ -115,8 +115,32 @@ const useStyles = () =>
     []
   );
 
-export default function TotalInOutLoanReports({ selectedBranch, configs, loans, filterData }) {
+export default function TotalInOutLoanReports({
+  selectedBranch,
+  configs,
+  loans,
+  filterData,
+  total,
+}) {
   const styles = useStyles();
+
+  const {
+    loanAmount,
+    partLoanAmount,
+    interestLoanAmount,
+    totalWeight,
+    netWeight,
+    averageInterestRate,
+    totalInterestAmount,
+    otherLoanAmount,
+    amount,
+    grossWeight,
+    averagePercentage,
+    totalOtherInterestAmount,
+    diffLoanAmount,
+    diffInterestAmount,
+  } = total;
+
   const headers = [
     { label: '#', flex: 0.1, width: 40 },
     { label: 'Loan No', flex: 2, width: 90 },
@@ -306,6 +330,50 @@ export default function TotalInOutLoanReports({ selectedBranch, configs, loans, 
                   ))}
                 </View>
                 {currentPageRows}
+                {currentRowCount === Object.values(loans).flat().length && (
+                  <View
+                    style={[
+                      styles.tableRow,
+                      { backgroundColor: '#e8f0fe', color: '#1a237e', fontWeight: 'bold' },
+                    ]}
+                  >
+                    <Text style={[styles.tableCell, { flex: 0.1 }]}></Text>
+                    <Text style={[styles.tableCell, { flex: 2 }]}>TOTAL</Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                    <Text style={[styles.tableCell, { flex: 2 }]}></Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>{loanAmount.toFixed(0)}</Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>{partLoanAmount.toFixed(0)}</Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {interestLoanAmount.toFixed(2)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{totalWeight.toFixed(0)}</Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{netWeight.toFixed(0)}</Text>
+                    <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                      {averageInterestRate.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {totalInterestAmount.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 1.2 }]}></Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}></Text>
+                    <Text style={[styles.tableCell, { flex: 0.4 }]}></Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {otherLoanAmount.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{grossWeight.toFixed(0)}</Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{netWeight.toFixed(0)}</Text>
+                    <Text style={[styles.tableCell, { flex: 0.5 }]}>
+                      {averagePercentage.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {totalOtherInterestAmount.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>{diffLoanAmount.toFixed(0)}</Text>
+                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                      {diffInterestAmount.toFixed(0)}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           </Page>

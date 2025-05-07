@@ -91,17 +91,42 @@ const useStyles = () =>
         },
         subText: {
           fontSize: 10,
-          flex: 2,
+          flex: 2.5,
+        },
+        footerRow: {
+          backgroundColor: '#F4F6F8',
+          borderTopWidth: 1,
+          borderTopColor: '#b1b0b0',
+          flexDirection: 'row',
+          minHeight: 22,
+        },
+        footerCell: {
+          padding: 5,
+          borderRightWidth: 0.5,
+          borderRightColor: '#b1b0b0',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          color: '#637381',
         },
       }),
     []
   );
 
-export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, filterData }) {
+export default function OtherLoanInterestPdf({
+  selectedBranch,
+  configs,
+  loans,
+  filterData,
+  total,
+}) {
   const styles = useStyles();
+
+  const { percentage, amount, totalInterestAmt, pendingInterest, day, penDay, closingCharge } =
+    total;
+
   const headers = [
-    { label: '#', flex: 0.1 },
-    { label: 'Loan No', flex: 2 },
+    { label: '#', flex: 0.2 },
+    { label: 'Loan No', flex: 2.5 },
     { label: 'Customer Name', flex: 3 },
     { label: 'Other name', flex: 1 },
     { label: 'Other no.', flex: 1.1 },
@@ -139,8 +164,8 @@ export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, f
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 2 }]}>{row.loan.loanNo}</Text>
+        <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
+        <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.loan.loanNo}</Text>
         <Text style={[styles.tableCell, { flex: 3, fontSize: 7, padding: 5 }]}>
           {`${row.loan.customer.firstName} ${row.loan.customer.middleName}\n ${row.loan.customer.lastName}`}
         </Text>
@@ -170,7 +195,7 @@ export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, f
               <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
               <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
                 {dataFilter.map((item, index) => (
-                  <View style={styles.row}>
+                  <View style={styles.row} key={index}>
                     <Text style={styles.subHeading2}>{item.label || '-'}</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{item.value || '-'}</Text>
@@ -186,7 +211,7 @@ export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, f
                 }}
               >
                 <Text style={styles.termsAndConditionsHeaders}>OTHER LOAN INTEREST REPORTS</Text>
-              </View>{' '}
+              </View>
             </>
           )}
           <View style={{ flexGrow: 1, padding: '12px' }}>
@@ -206,6 +231,32 @@ export default function OtherLoanInterestPdf({ selectedBranch, configs, loans, f
                 ))}
               </View>
               {currentPageRows}
+              {/* Footer row */}
+              <View style={styles.footerRow}>
+                <Text style={[styles.footerCell, { flex: 0.2 }]}></Text>
+                <Text style={[styles.footerCell, { flex: 2.5 }]}>TOTAL</Text>
+                <Text style={[styles.footerCell, { flex: 3 }]}></Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}></Text>
+                <Text style={[styles.footerCell, { flex: 1.1 }]}></Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}>
+                  {loans.length > 0 ? (percentage / loans.length).toFixed(2) : '0.00'}
+                </Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}></Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}>{amount.toFixed(0)}</Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}>{closingCharge.toFixed(0)}</Text>
+                <Text style={[styles.footerCell, { flex: 0.3 }]}>
+                  {loans.length > 0 ? (day / loans.length).toFixed(0) : '0'}
+                </Text>
+                <Text style={[styles.footerCell, { flex: 0.3 }]}>
+                  {totalInterestAmt.toFixed(0)}
+                </Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}></Text>
+                <Text style={[styles.footerCell, { flex: 0.3 }]}>
+                  {loans.length > 0 ? (penDay / loans.length).toFixed(0) : '0'}
+                </Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}>{pendingInterest.toFixed(0)}</Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}></Text>
+              </View>
             </View>
           </View>
         </Page>

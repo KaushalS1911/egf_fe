@@ -25,7 +25,13 @@ import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function InterestReportsTableToolbar({ filters, onFilters, data, dateError }) {
+export default function InterestReportsTableToolbar({
+  filters,
+  onFilters,
+  data,
+  dateError,
+  total,
+}) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -267,7 +273,12 @@ export default function InterestReportsTableToolbar({ filters, onFilters, data, 
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InterestReportsPdf data={data} configs={configs} filterData={filterData} />
+              <InterestReportsPdf
+                data={data}
+                configs={configs}
+                filterData={filterData}
+                total={total}
+              />
             </PDFViewer>
           </Box>
         </Box>

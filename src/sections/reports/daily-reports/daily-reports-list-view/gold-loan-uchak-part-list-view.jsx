@@ -68,31 +68,31 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
   const [tableData, setTableData] = useState(uchakPayment);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = uchakPayment.reduce(
-    (prev, next) =>
-      prev +
-      (Number(next?.loan.scheme.interestRate > 1.05 ? 1.5 : next?.loan.scheme.interestRate) || 0),
-    0
-  );
-  const loanAmt = uchakPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
-  );
-  const conCharge = uchakPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
-    0
-  );
-  const intLoanAmt = uchakPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
-    0
-  );
-  const amountPaid = uchakPayment.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
-
   const dataFiltered = applyFilter({
     inputData: uchakPayment,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const int = dataFiltered.reduce(
+    (prev, next) =>
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.05 ? 1.5 : next?.loan.scheme.interestRate) || 0),
+    0
+  );
+  const loanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const conCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
+    0
+  );
+  const intLoanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
+    0
+  );
+  const amountPaid = dataFiltered.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -267,10 +267,10 @@ export default function GoldLoanUchakPartListView({ uchakPayment }) {
                     {loanAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(int / uchakPayment.length).toFixed(2)}
+                    {(int / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(conCharge / uchakPayment.length).toFixed(2)}
+                    {(conCharge / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>

@@ -89,25 +89,22 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
   const [tableData, setTableData] = useState(partPaymentDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const loanAmt = partPaymentDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
-  );
-  const amountPaid = partPaymentDetail.reduce(
-    (prev, next) => prev + (Number(next?.amountPaid) || 0),
-    0
-  );
-  const intLoanAmt = partPaymentDetail.reduce(
-    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
-    0
-  );
-
   const dataFiltered = applyFilter({
     inputData: partPaymentDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
     dataFilters,
   });
+
+  const loanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const amountPaid = dataFiltered.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+  const intLoanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -268,7 +265,6 @@ export default function LoanPartPaymentDetailsListView({ partPaymentDetail, data
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  backgroundColor: 'white',
                   zIndex: 1000,
                   backgroundColor: '#2f3944',
                 }}

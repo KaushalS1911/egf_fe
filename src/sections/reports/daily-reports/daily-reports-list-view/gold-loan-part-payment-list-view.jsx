@@ -68,31 +68,31 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
   const [tableData, setTableData] = useState(partPayment);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = partPayment.reduce(
-    (prev, next) =>
-      prev +
-      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
-    0
-  );
-  const loanAmt = partPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
-  );
-  const conCharge = partPayment.reduce(
-    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
-    0
-  );
-  const intLoanAmt = partPayment.reduce(
-    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
-    0
-  );
-  const amountPaid = partPayment.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
-
   const dataFiltered = applyFilter({
     inputData: partPayment,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const int = dataFiltered.reduce(
+    (prev, next) =>
+      prev +
+      (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
+    0
+  );
+  const loanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const conCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
+    0
+  );
+  const intLoanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+  const amountPaid = dataFiltered.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -261,10 +261,10 @@ export default function GoldLoanPartPaymentListView({ partPayment }) {
                     {loanAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(int / partPayment.length).toFixed(2)}
+                    {(int / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(conCharge / partPayment.length).toFixed(2)}
+                    {(conCharge / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>

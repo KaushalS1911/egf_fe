@@ -69,19 +69,19 @@ export default function OtherNewGoldLonListView({ LoanIssue }) {
   const [tableData, setTableData] = useState(LoanIssue);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const rate = LoanIssue.reduce((prev, next) => prev + (Number(next?.percentage) || 0), 0);
-  const grossWt = LoanIssue.reduce((prev, next) => prev + (Number(next?.grossWt) || 0), 0);
-  const netWt = LoanIssue.reduce((prev, next) => prev + (Number(next?.netWt) || 0), 0);
-  const charge = LoanIssue.reduce((prev, next) => prev + (Number(next?.otherCharge) || 0), 0);
-  const cash = LoanIssue.reduce((prev, next) => prev + (Number(next?.cashAmount) || 0), 0);
-  const bank = LoanIssue.reduce((prev, next) => prev + (Number(next?.bankAmount) || 0), 0);
-  const other = LoanIssue.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
-
   const dataFiltered = applyFilter({
     inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const rate = dataFiltered.reduce((prev, next) => prev + (Number(next?.percentage) || 0), 0);
+  const grossWt = dataFiltered.reduce((prev, next) => prev + (Number(next?.grossWt) || 0), 0);
+  const netWt = dataFiltered.reduce((prev, next) => prev + (Number(next?.netWt) || 0), 0);
+  const charge = dataFiltered.reduce((prev, next) => prev + (Number(next?.otherCharge) || 0), 0);
+  const cash = dataFiltered.reduce((prev, next) => prev + (Number(next?.cashAmount) || 0), 0);
+  const bank = dataFiltered.reduce((prev, next) => prev + (Number(next?.bankAmount) || 0), 0);
+  const other = dataFiltered.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
 
   const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,
@@ -257,7 +257,7 @@ export default function OtherNewGoldLonListView({ LoanIssue }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(rate / LoanIssue.length).toFixed(2)}
+                    {(rate / dataFiltered.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {grossWt.toFixed(0)}

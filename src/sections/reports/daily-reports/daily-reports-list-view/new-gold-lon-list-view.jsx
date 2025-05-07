@@ -54,7 +54,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function NewGoldLonListView({ LoanIssue }) {
+export default function NewGoldLonListView({ LoanIssue, branch }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const { user } = useAuthContext();
@@ -64,22 +64,28 @@ export default function NewGoldLonListView({ LoanIssue }) {
   const [tableData, setTableData] = useState(LoanIssue);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const int = LoanIssue.reduce(
-    (prev, next) =>
-      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
-    0
-  );
-  const loanAmt = LoanIssue.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
-  const conCharge = LoanIssue.reduce(
-    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
-    0
-  );
-
   const dataFiltered = applyFilter({
     inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const int = dataFiltered.reduce(
+    (prev, next) =>
+      prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
+    0
+  );
+  const loanAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+  const conCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+    0
+  );
+
+  const total = {
+    int,
+    loanAmt,
+    conCharge,
+  };
 
   const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,
@@ -129,7 +135,7 @@ export default function NewGoldLonListView({ LoanIssue }) {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = LoanIssue.filter((row) => table.selected.includes(row._id));
+    const deleteRows = dataFiltered.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -256,10 +262,10 @@ export default function NewGoldLonListView({ LoanIssue }) {
                     {loanAmt.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(int / LoanIssue.length).toFixed(2)}
+                    {(int / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(conCharge / LoanIssue.length).toFixed(2)}
+                    {(conCharge / dataFiltered.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
@@ -313,6 +319,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+  if (branch) {
+    inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
+  }
   inputData = stabilizedThis.map((el) => el[0]);
   return inputData;
 }

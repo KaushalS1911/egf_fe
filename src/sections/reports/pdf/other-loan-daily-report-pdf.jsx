@@ -20,8 +20,8 @@ const useStyles = () =>
       width: '100%',
       display: 'flex',
       flexDirection: 'column',
-      borderWidth: 1,
-      borderColor: '#000',
+      borderWidth: 0.5,
+      borderColor: '#b1b0b0',
       marginBottom: 10,
     },
     tableRow: {
@@ -39,8 +39,8 @@ const useStyles = () =>
     tableCell: {
       flex: 1,
       padding: 5,
-      borderRightWidth: 1,
-      borderRightColor: '#000',
+      borderRightWidth: 0.5,
+      borderRightColor: '#b1b0b0',
       textAlign: 'center',
       fontSize: 8,
     },
@@ -80,6 +80,23 @@ const useStyles = () =>
     subText: {
       fontSize: 10,
       flex: 2,
+    },
+    totalRow: {
+      flexDirection: 'row',
+      display: 'flex',
+      minHeight: 22,
+      borderBottomWidth: 1,
+      borderBottomColor: '#b1b0b0',
+      backgroundColor: '#e8f0fe',
+    },
+    totalCell: {
+      padding: 5,
+      borderRightWidth: 0.5,
+      borderRightColor: '#b1b0b0',
+      textAlign: 'center',
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#1a237e',
     },
   });
 
@@ -137,8 +154,8 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                   <View
                     style={[
                       styles.tableRow,
-                      index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                      index === loanDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                      index % 2 !== 0 && styles.strippedRow,
+                      index === loanDetails.length - 1 && styles.lastRow,
                     ]}
                     key={index}
                   >
@@ -160,6 +177,46 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                     <Text style={[styles.tableCell, { flex: 0.9 }]}>{fDate(item.createdAt)}</Text>
                   </View>
                 ))}
+                <View style={styles.totalRow}>
+                  <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}>TOTAL</Text>
+                  <Text style={[styles.totalCell, { flex: 1.8 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 2.2 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 1.3 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                    {loanDetails
+                      .reduce((sum, item) => sum + (Number(item.grossWt) || 0), 0)
+                      .toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                    {loanDetails
+                      .reduce((sum, item) => sum + (Number(item.netWt) || 0), 0)
+                      .toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.6 }]}>
+                    {loanDetails
+                      .reduce((sum, item) => sum + (Number(item.otherCharge) || 0), 0)
+                      .toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                    {loanDetails
+                      .reduce((sum, item) => sum + (Number(item.cashAmount) || 0), 0)
+                      .toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                    {loanDetails
+                      .reduce((sum, item) => sum + (Number(item.bankAmount) || 0), 0)
+                      .toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                    {loanDetails
+                      .reduce((sum, item) => sum + (Number(item.amount) || 0), 0)
+                      .toFixed(0)}
+                  </Text>
+                  <Text style={[styles.totalCell, { flex: 0.9 }]}></Text>
+                </View>
               </View>
             </>
           )}
@@ -232,6 +289,43 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                   </Text>
                 </View>
               ))}
+              <View style={styles.totalRow}>
+                <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 1 }]}>TOTAL</Text>
+                <Text style={[styles.totalCell, { flex: 1.8 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 2.2 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 1.5 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (Number(item.otherLoan.amount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.9 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.9 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.6 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (Number(item.days) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (Number(item.otherLoan.cashAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (Number(item.otherLoan.bankAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (Number(item.amountPaid) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.9 }]}></Text>
+              </View>
             </View>
           </View>
         </Page>
@@ -270,8 +364,8 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                 <View
                   style={[
                     styles.tableRow,
-                    index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                    index === closedLoanDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                    index % 2 !== 0 && styles.strippedRow,
+                    index === closedLoanDetails.length - 1 && styles.lastRow,
                   ]}
                   key={index}
                 >
@@ -304,6 +398,37 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                   </Text>
                 </View>
               ))}
+              <View style={styles.totalRow}>
+                <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 1 }]}>TOTAL</Text>
+                <Text style={[styles.totalCell, { flex: 1.8 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 2.2 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 1.5 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {closedLoanDetails
+                    .reduce((sum, item) => sum + (Number(item.otherLoan.otherCharge) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {closedLoanDetails
+                    .reduce((sum, item) => sum + (Number(item.otherLoan.cashAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {closedLoanDetails
+                    .reduce((sum, item) => sum + (Number(item.otherLoan.bankAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {closedLoanDetails
+                    .reduce((sum, item) => sum + (Number(item.otherLoan.closingAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text>
+                <Text style={[styles.totalCell, { flex: 0.9 }]}></Text>
+                <Text style={[styles.totalCell, { flex: 0.9 }]}></Text>
+              </View>
             </View>
           </View>
         </Page>
