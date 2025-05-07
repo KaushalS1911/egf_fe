@@ -21,7 +21,7 @@ const useStyles = () =>
         page: {
           fontFamily: 'Roboto',
           backgroundColor: '#ffff',
-          fontSize: 8,
+          fontSize: 7,
         },
         subHeading: {
           fontWeight: 'bold',
@@ -50,7 +50,7 @@ const useStyles = () =>
         tableHeader: {
           backgroundColor: '#5B9BD4',
           fontWeight: 'bold',
-          color: '#fff',
+          color: '#000',
           textAlign: 'center',
           minHeight: 25,
         },
@@ -59,7 +59,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
-          fontSize: 8,
+          fontSize: 7,
         },
         numericCell: {
           textAlign: 'right',
@@ -143,7 +143,7 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
     { label: 'Customer Name', flex: 5 },
     { label: 'Issue Date', flex: 1.2 },
     { label: 'Loan Amt', flex: 1 },
-    { label: 'Part Loan Amt ', flex: 1.2 },
+    // { label: 'Part Loan Amt ', flex: 1.2 },
     { label: 'Int. Loan Amt', flex: 1.2 },
     { label: 'Rate', flex: 0.4 },
     { label: 'con.', flex: 0.5 },
@@ -153,6 +153,7 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
     { label: 'Day', flex: 0.5 },
     { label: 'Total Int. Amt', flex: 1.2 },
     { label: 'Last Int. Pay Date', flex: 1.2 },
+    { label: 'Entry Date', flex: 1.2 },
     { label: 'Pen. Day', flex: 0.5 },
     { label: 'pending Int. Amt', flex: 1.2 },
   ];
@@ -201,9 +202,9 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
         >{`${row.customer?.firstName || ''} ${row.customer?.middleName || ''} ${row.customer?.lastName || ''}`}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.issueDate) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{formatCurrency(row.loanAmount)}</Text>
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {formatCurrency((row.loanAmount || 0) - (row.interestLoanAmount || 0))}
-        </Text>
+        {/*<Text style={[styles.tableCell, { flex: 1.2 }]}>*/}
+        {/*  {formatCurrency((row.loanAmount || 0) - (row.interestLoanAmount || 0))}*/}
+        {/*</Text>*/}
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
           {formatCurrency(row.interestLoanAmount)}
         </Text>
@@ -222,7 +223,8 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
         </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
           {fDate(row.lastInstallmentDate) || '-'}
-        </Text>
+        </Text>{' '}
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.createdAt) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.5 }]}>
           {row.pendingDays > 0 ? row.pendingDays : '-'}
         </Text>
@@ -294,9 +296,9 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
                   <Text style={[styles.totalCell, { flex: 5 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>{formatCurrency(loanAmt, 0)}</Text>
-                  <Text style={[styles.totalCell, { flex: 1.2 }]}>
-                    {formatCurrency((loanAmt || 0) - (intLoanAmt || 0), 0)}
-                  </Text>
+                  {/*<Text style={[styles.totalCell, { flex: 1.2 }]}>*/}
+                  {/*  {formatCurrency((loanAmt || 0) - (intLoanAmt || 0), 0)}*/}
+                  {/*</Text>*/}
                   <Text style={[styles.totalCell, { flex: 1.2 }]}>
                     {formatCurrency(intLoanAmt, 0)}
                   </Text>
@@ -321,6 +323,7 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
                   <Text style={[styles.totalCell, { flex: 1.2 }]}>
                     {formatCurrency(totalPaidInterest, 0)}
                   </Text>
+                  <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 0.5 }]}>
                     {formatCurrency((pendingDay || 0) / (reportCount || 1), 0)}

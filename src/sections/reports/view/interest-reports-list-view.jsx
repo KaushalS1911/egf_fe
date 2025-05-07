@@ -40,7 +40,7 @@ const TABLE_HEAD = [
   { id: 'customerName', label: 'Customer name' },
   { id: 'issueDate', label: 'Issue date' },
   { id: 'loanAmount', label: 'Loan amt' },
-  { id: 'partLoanAmt', label: 'Part loan amt' },
+  // { id: 'partLoanAmt', label: 'Part loan amt' },
   { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'interestRate', label: 'Rate' },
   { id: 'consultingCharge', label: 'Consulting Charge' },
@@ -50,6 +50,7 @@ const TABLE_HEAD = [
   { id: 'Day', label: 'Day' },
   { id: 'totalPaidInterest', label: 'Total Int. amt' },
   { id: 'lastInterestPayDate', label: 'Last Int. pay date' },
+  { id: 'entryDate', label: 'Entry date' },
   { id: 'pendingDay', label: 'Pending day' },
   { id: 'pendingIntAmt', label: 'Pending Int. amt' },
 ];
@@ -112,7 +113,7 @@ export default function InterestReportsListView() {
     0
   );
   const pendingDay = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
+    (prev, next) => prev + Number(next?.pendingDays >= 0 ? next.pendingDays : 0),
     0
   );
 
@@ -120,6 +121,8 @@ export default function InterestReportsListView() {
     (prev, next) => prev + (Number(next?.pendingInterest) || 0),
     0
   );
+
+  console.log(pendingDay, '0000000');
 
   const total = {
     int,
@@ -261,9 +264,9 @@ export default function InterestReportsListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {loanAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(loanAmt - intLoanAmt).toFixed(0)}
-                  </TableCell>
+                  {/*<TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>*/}
+                  {/*  /!*{(loanAmt - intLoanAmt).toFixed(0)}*!/*/}
+                  {/*</TableCell>*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {intLoanAmt.toFixed(0)}
                   </TableCell>{' '}
@@ -288,6 +291,7 @@ export default function InterestReportsListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {totalPaidInterest.toFixed(0)}
                   </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {(pendingDay / dataFiltered.length).toFixed()}
