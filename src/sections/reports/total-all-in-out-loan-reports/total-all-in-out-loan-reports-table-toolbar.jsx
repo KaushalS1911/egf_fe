@@ -31,6 +31,7 @@ export default function TotalAllInOutLoanReportsTableToolbar({
   dateError,
   dataFilter,
   configs,
+  total,
   options,
 }) {
   const popover = usePopover();
@@ -240,7 +241,12 @@ export default function TotalAllInOutLoanReportsTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <TotalInOutLoanReports loans={dataFilter} configs={configs} filterData={filterData} />
+              <TotalInOutLoanReports
+                loans={dataFilter}
+                configs={configs}
+                filterData={filterData}
+                total={total}
+              />
             </PDFViewer>
           </Box>
         </Box>

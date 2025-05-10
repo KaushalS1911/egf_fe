@@ -40,7 +40,7 @@ const TABLE_HEAD = [
   { id: 'customerName', label: 'Customer name' },
   { id: 'issueDate', label: 'Issue date' },
   { id: 'loanAmount', label: 'Loan amt' },
-  { id: 'partLoanAmt', label: 'Part loan amt' },
+  // { id: 'partLoanAmt', label: 'Part loan amt' },
   { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'interestRate', label: 'Rate' },
   { id: 'consultingCharge', label: 'Consulting Charge' },
@@ -50,6 +50,7 @@ const TABLE_HEAD = [
   { id: 'Day', label: 'Day' },
   { id: 'totalPaidInterest', label: 'Total Int. amt' },
   { id: 'lastInterestPayDate', label: 'Last Int. pay date' },
+  { id: 'entryDate', label: 'Entry date' },
   { id: 'pendingDay', label: 'Pending day' },
   { id: 'pendingIntAmt', label: 'Pending Int. amt' },
 ];
@@ -71,49 +72,71 @@ export default function InterestReportsListView() {
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const loanAmt = interestReports.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
-  const intLoanAmt = interestReports.reduce(
+  const dataFiltered = applyFilter({
+    inputData: srData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters,
+  });
+
+  const loanAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
+  const intLoanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
-  const int = interestReports.reduce(
+  const int = dataFiltered.reduce(
     (prev, next) =>
       prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
-  const consultingCharge = interestReports.reduce(
+  const consultingCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
-  const interestAmount = interestReports.reduce(
+  const interestAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
-  const consultingAmount = interestReports.reduce(
+  const consultingAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingAmount) || 0),
     0
   );
-  const penaltyAmount = interestReports.reduce(
+  const penaltyAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.penaltyAmount) || 0),
     0
   );
-  const totalPaidInterest = interestReports.reduce(
+  const totalPaidInterest = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
     0
   );
-  const day = interestReports.reduce(
+  const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
     0
   );
-  const pendingDay = interestReports.reduce(
-    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
+  const pendingDay = dataFiltered.reduce(
+    (prev, next) => prev + Number(next?.pendingDays >= 0 ? next.pendingDays : 0),
     0
   );
 
-  const pendingInterest = interestReports.reduce(
+  const pendingInterest = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.pendingInterest) || 0),
     0
   );
+
+  console.log(pendingDay, '0000000');
+
+  const total = {
+    int,
+    intLoanAmt,
+    consultingCharge,
+    interestAmount,
+    consultingAmount,
+    penaltyAmount,
+    totalPaidInterest,
+    day,
+    pendingDay,
+    pendingInterest,
+    loanAmt,
+  };
 
   useEffect(() => {
     const updatedData = interestReports.map((item, index) => ({
@@ -122,12 +145,6 @@ export default function InterestReportsListView() {
     }));
     setSrData(updatedData);
   }, [interestReports]);
-
-  const dataFiltered = applyFilter({
-    inputData: srData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
@@ -167,6 +184,7 @@ export default function InterestReportsListView() {
             filters={filters}
             onFilters={handleFilters}
             data={interestReports}
+            total={total}
           />
           {canReset && (
             <InterestReportsTableFiltersResult
@@ -246,9 +264,9 @@ export default function InterestReportsListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {loanAmt.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(loanAmt - intLoanAmt).toFixed(0)}
-                  </TableCell>
+                  {/*<TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>*/}
+                  {/*  /!*{(loanAmt - intLoanAmt).toFixed(0)}*!/*/}
+                  {/*</TableCell>*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {intLoanAmt.toFixed(0)}
                   </TableCell>{' '}
@@ -256,7 +274,7 @@ export default function InterestReportsListView() {
                     {(int / interestReports.length).toFixed(2)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(consultingCharge / interestReports.length).toFixed(2)}
+                    {(consultingCharge / dataFiltered.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {interestAmount.toFixed(0)}
@@ -268,14 +286,15 @@ export default function InterestReportsListView() {
                     {penaltyAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(day / interestReports.length).toFixed()}
+                    {(day / dataFiltered.length).toFixed()}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {totalPaidInterest.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(pendingDay / interestReports.length).toFixed()}
+                    {(pendingDay / dataFiltered.length).toFixed()}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {pendingInterest.toFixed(0)}
@@ -362,7 +381,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) =>
-      isBetween(new Date(item?.lastInstallmentDate), startDate, endDate)
+      isBetween(new Date(item?.createdAt), startDate, endDate)
     );
   }
 

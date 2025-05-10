@@ -21,7 +21,6 @@ const useStyles = () =>
           backgroundColor: '#ffff',
           fontSize: 8,
           position: 'relative',
-          // padding: 40, // Add some padding to the page
         },
         subHeading: {
           fontWeight: 'bold',
@@ -57,7 +56,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
-          fontSize:7
+          fontSize: 7,
         },
         numericCell: {
           textAlign: 'right',
@@ -99,8 +98,26 @@ const useStyles = () =>
     []
   );
 
-export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans, filterData }) {
+export default function AllBranchLoanSummaryPdf({
+  selectedBranch,
+  configs,
+  loans,
+  filterData,
+  total,
+}) {
+  const {
+    int,
+    approvalCharge,
+    conCharge,
+    loanAmt,
+    intLoanAmt,
+    totalIntPay,
+    day,
+    pendingDays,
+    pendingIntAmt,
+  } = total;
   const styles = useStyles();
+
   const headers = [
     { label: '#', flex: 0.3 },
     { label: 'Loan No', flex: 2.5 },
@@ -120,6 +137,7 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
     { label: 'Pending Int.', flex: 1 },
     { label: 'Next Int. Pay Date', flex: 1.3 },
   ];
+
   const dataFilter = [
     { value: filterData.issuedBy.name, label: 'Issued By' },
     { value: filterData.branch.name, label: 'Branch' },
@@ -127,14 +145,24 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
-  const rowsPerPage = 17;
-  const pages = [];
-  let currentPageRows = [];
-  loans.forEach((row, index) => {
-    const isAlternateRow = index % 2 !== 0;
-    const isLastRow = index === loans.length - 1;
 
-    currentPageRows.push(
+  // Create pages with correct row distribution
+  const rowsPerPageFirst = 17;
+  const rowsPerPageOther = 23;
+
+  // Calculate how many pages we'll need
+  const remainingRows = loans.length - rowsPerPageFirst;
+  const additionalPages = Math.ceil(Math.max(0, remainingRows) / rowsPerPageOther);
+  const totalPages = 1 + additionalPages;
+
+  // Create an array to hold all pages
+  const pages = [];
+
+  // Function to render a row
+  const renderRow = (row, index, isLastRow) => {
+    const isAlternateRow = index % 2 !== 0;
+
+    return (
       <View
         key={index}
         style={[
@@ -170,7 +198,9 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
         <Text style={[styles.tableCell, { flex: 1.5 }]}>
           {Number(row.totalPaidInterest).toFixed(2)}
         </Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.pendingDays > 0 ? row.pendingDays : 0}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>
+          {row.pendingDays > 0 ? row.pendingDays : 0}
+        </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {Number(row.pendingInterest).toFixed(2)}
         </Text>
@@ -179,61 +209,135 @@ export default function AllBranchLoanSummaryPdf({ selectedBranch, configs, loans
         </Text>
       </View>
     );
+  };
 
-    if ((index + 1) % rowsPerPage === 0 || index === loans.length - 1) {
-      const isFirstPage = pages.length === 0;
+  // Function to render the table header
+  const renderTableHeader = () => (
+    <View style={[styles.tableRow, styles.tableHeader]}>
+      {headers.map((header, i) => (
+        <Text
+          key={i}
+          style={[
+            styles.tableCell,
+            { flex: header.flex },
+            i === headers.length - 1 ? styles.tableCellLast : {},
+          ]}
+        >
+          {header.label}
+        </Text>
+      ))}
+    </View>
+  );
+
+  // Function to render the table footer with totals
+  const renderTableFooter = () => (
+    <View style={[styles.tableRow, { backgroundColor: '#E8F0FE' }]} wrap={false}>
+      <Text style={[styles.tableCell, { flex: 0.3, fontWeight: 'bold', color: '#1a237e' }]}></Text>
+      <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold', color: '#1a237e' }]}>
+        TOTAL
+      </Text>
+      <Text style={[styles.tableCell, { flex: 4.5 }]}></Text>
+      <Text style={[styles.tableCell, { flex: 1.4 }]}></Text>
+      <Text style={[styles.tableCell, { flex: 0.5, fontWeight: 'bold', color: '#1a237e' }]}>
+        {(int / loans.length).toFixed(2)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 0.8, fontWeight: 'bold', color: '#1a237e' }]}>
+        {(conCharge / loans.length).toFixed(2)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 1.5 }]}></Text>
+      <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}>
+        {loanAmt.toFixed(0)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 1.3 }]}></Text>
+      <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}>
+        {(loanAmt - intLoanAmt).toFixed(0)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}>
+        {intLoanAmt.toFixed(0)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 1.3 }]}></Text>
+      <Text style={[styles.tableCell, { flex: 0.5, fontWeight: 'bold', color: '#1a237e' }]}>
+        {(day / loans.length).toFixed(0)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 1.5, fontWeight: 'bold', color: '#1a237e' }]}>
+        {totalIntPay.toFixed(0)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 0.5, fontWeight: 'bold', color: '#1a237e' }]}>
+        {(pendingDays / loans.length).toFixed(0)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}>
+        {pendingIntAmt.toFixed(0)}
+      </Text>
+      <Text style={[styles.tableCell, { flex: 1.3, borderRight: 0 }]}></Text>
+    </View>
+  );
+
+  // Create first page
+  const firstPageRows = loans
+    .slice(0, rowsPerPageFirst)
+    .map((row, index) =>
+      renderRow(row, index, index === rowsPerPageFirst - 1 && loans.length === rowsPerPageFirst)
+    );
+
+  // Add the first page
+  pages.push(
+    <Page key={0} size="A4" style={styles.page} orientation="landscape">
+      <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
+      <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
+        {dataFilter.map((item, idx) => (
+          <View key={idx} style={styles.row}>
+            <Text style={styles.subHeading2}>{item.label || '-'}</Text>
+            <Text style={styles.colon}>:</Text>
+            <Text style={styles.subText}>{item.value || '-'}</Text>
+          </View>
+        ))}
+      </View>
+      <View
+        style={{
+          textAlign: 'center',
+          fontSize: 18,
+          marginHorizontal: 15,
+          marginTop: 10,
+        }}
+      >
+        <Text style={styles.termsAndConditionsHeaders}>BRANCH WISE LOAN CLOSING REPORT</Text>
+      </View>
+
+      <View style={{ flexGrow: 1, padding: '12px' }}>
+        <View style={styles.table}>
+          {renderTableHeader()}
+          {firstPageRows}
+          {loans.length <= rowsPerPageFirst && renderTableFooter()}
+        </View>
+      </View>
+    </Page>
+  );
+
+  // Create subsequent pages with 20 rows each
+  if (loans.length > rowsPerPageFirst) {
+    for (let pageIndex = 0; pageIndex < additionalPages; pageIndex++) {
+      const startIndex = rowsPerPageFirst + pageIndex * rowsPerPageOther;
+      const endIndex = Math.min(startIndex + rowsPerPageOther, loans.length);
+      const isLastPage = endIndex === loans.length;
+
+      const pageRows = loans.slice(startIndex, endIndex).map((row, index) => {
+        const actualIndex = startIndex + index;
+        return renderRow(row, actualIndex, actualIndex === loans.length - 1);
+      });
+
       pages.push(
-        <Page key={pages.length} size="A4" style={styles.page} orientation="landscape">
-          {isFirstPage && (
-            <>
-              <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
-              <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
-                {dataFilter.map((item, index) => (
-                  <View style={styles.row}>
-                    <Text style={styles.subHeading2}>{item.label || '-'}</Text>
-                    <Text style={styles.colon}>:</Text>
-                    <Text style={styles.subText}>{item.value || '-'}</Text>
-                  </View>
-                ))}
-              </View>
-              <View
-                style={{
-                  textAlign: 'center',
-                  fontSize: 18,
-                  marginHorizontal: 15,
-                  marginTop: 10,
-                }}
-              >
-                <Text style={styles.termsAndConditionsHeaders}>
-                  BRANCH WISE LOAN CLOSING REPORT{' '}
-                </Text>
-              </View>{' '}
-            </>
-          )}
+        <Page key={pageIndex + 1} size="A4" style={styles.page} orientation="landscape">
           <View style={{ flexGrow: 1, padding: '12px' }}>
             <View style={styles.table}>
-              <View style={[styles.tableRow, styles.tableHeader]}>
-                {headers.map((header, i) => (
-                  <Text
-                    key={i}
-                    style={[
-                      styles.tableCell,
-                      { flex: header.flex },
-                      i === headers.length - 1 ? styles.tableCellLast : {},
-                    ]}
-                  >
-                    {header.label}
-                  </Text>
-                ))}
-              </View>
-              {currentPageRows}
+              {renderTableHeader()}
+              {pageRows}
+              {isLastPage && renderTableFooter()}
             </View>
           </View>
         </Page>
       );
-      currentPageRows = [];
     }
-  });
+  }
 
   return <Document>{pages}</Document>;
 }

@@ -27,6 +27,7 @@ export default function AllBranchLoanSummaryTableToolbar({
   dataFilter,
   configs,
   options,
+  total,
 }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -320,6 +321,7 @@ export default function AllBranchLoanSummaryTableToolbar({
                 loans={dataFilter}
                 configs={configs}
                 filterData={filterData}
+                total={total}
               />
             </PDFViewer>
           </Box>

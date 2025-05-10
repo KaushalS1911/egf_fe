@@ -67,29 +67,29 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
   const [tableData, setTableData] = useState(partReleaseDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const loanAmt = partReleaseDetail.reduce(
-    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-    0
-  );
-  const intLoanAmt = partReleaseDetail.reduce(
-    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
-    0
-  );
-  const amountPaid = partReleaseDetail.reduce(
-    (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
-    0
-  );
-  const pendingLoanAmount = partReleaseDetail.reduce(
-    (prev, next) => prev + (Number(next?.pendingLoanAmount) || 0),
-    0
-  );
-
   const dataFiltered = applyFilter({
     inputData: partReleaseDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
     dataFilters,
   });
+
+  const loanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
+    0
+  );
+  const intLoanAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
+    0
+  );
+  const amountPaid = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
+    0
+  );
+  const pendingLoanAmount = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.pendingLoanAmount) || 0),
+    0
+  );
 
   const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,

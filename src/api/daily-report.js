@@ -5,7 +5,7 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetDailyReport(params) {
   const { user } = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/daily-report?${params.toString()}`;
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/daily-report?${params.toLocaleString()}`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
   const memoizedValue = useMemo(
     () => ({
@@ -16,7 +16,7 @@ export function useGetDailyReport(params) {
       reportEmpty: !isLoading && !data?.data?.length,
       mutate,
     }),
-    [data?.data, error, isLoading, isValidating, mutate],
+    [data?.data, error, isLoading, isValidating, mutate]
   );
   return memoizedValue;
 }

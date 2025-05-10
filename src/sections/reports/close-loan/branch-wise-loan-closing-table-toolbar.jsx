@@ -32,6 +32,7 @@ export default function BranchWiseLoanClosingTableToolbar({
   dataFilter,
   configs,
   options,
+  total,
 }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -327,6 +328,7 @@ export default function BranchWiseLoanClosingTableToolbar({
                 loans={dataFilter}
                 configs={configs}
                 filterData={filterData}
+                total={total}
               />
             </PDFViewer>
           </Box>

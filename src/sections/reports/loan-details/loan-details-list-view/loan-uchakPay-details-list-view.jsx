@@ -83,17 +83,14 @@ export default function LoanUchakPayDetailsListView({ uchakInterestDetail, dataF
   const [tableData, setTableData] = useState(uchakInterestDetail);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const amountPaid = uchakInterestDetail.reduce(
-    (prev, next) => prev + (Number(next?.amountPaid) || 0),
-    0
-  );
-
   const dataFiltered = applyFilter({
     inputData: uchakInterestDetail,
     comparator: getComparator(table.order, table.orderBy),
     filters,
     dataFilters,
   });
+
+  const amountPaid = dataFiltered.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,

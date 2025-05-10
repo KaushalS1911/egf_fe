@@ -97,41 +97,50 @@ export default function OtherLoanCloseSummaryListView() {
   const [tableData, setTableData] = useState(otherLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const percentage = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.percentage) || 0),
-    0
-  );
-  const rate = otherLoanReports.reduce((prev, next) => prev + (Number(next?.rate) || 0), 0);
-  const amount = otherLoanReports.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
-  const totalInterestAmt = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.totalInterestAmt) || 0),
-    0
-  );
-  const pendingInterest = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
-    0
-  );
-  const day = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
-    0
-  );
-  const closeAmt = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.closingAmount) || 0),
-    0
-  );
-  const closingCharge = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.closingCharge) || 0),
-    0
-  );
-
-  useEffect(() => {
-    fetchStates();
-  }, [otherLoanReports]);
   const dataFiltered = applyFilter({
     inputData: otherLoanReports,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const percentage = dataFiltered.reduce((prev, next) => prev + (Number(next?.percentage) || 0), 0);
+  const rate = dataFiltered.reduce((prev, next) => prev + (Number(next?.rate) || 0), 0);
+  const amount = dataFiltered.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+  const totalInterestAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.totalInterestAmt) || 0),
+    0
+  );
+  const pendingInterest = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
+    0
+  );
+  const day = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
+    0
+  );
+  const closeAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.closingAmount) || 0),
+    0
+  );
+  const closingCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.closingCharge) || 0),
+    0
+  );
+
+  const total = {
+    percentage,
+    rate,
+    amount,
+    totalInterestAmt,
+    pendingInterest,
+    day,
+    closeAmt,
+    closingCharge,
+  };
+
+  useEffect(() => {
+    fetchStates();
+  }, [dataFiltered]);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -275,6 +284,7 @@ export default function OtherLoanCloseSummaryListView() {
             dataFilter={dataFiltered}
             configs={configs}
             options={options}
+            total={total}
           />
 
           {canReset && (
@@ -374,7 +384,7 @@ export default function OtherLoanCloseSummaryListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(percentage / otherLoanReports.length).toFixed(2)}
+                    {(percentage / dataFiltered.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {rate.toFixed(0)}
@@ -387,7 +397,7 @@ export default function OtherLoanCloseSummaryListView() {
                     {totalInterestAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(day / otherLoanReports.length).toFixed(0)}
+                    {(day / dataFiltered.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {closeAmt.toFixed(0)}

@@ -500,7 +500,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                   px: 2,
                 }}
               >
-                {Number(row.interestLoanAmount) - Number(row.amountPaid)}
+                {(Number(row.interestLoanAmount) - Number(row.amountPaid)).toFixed(2)}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>{fDate(row.date)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>

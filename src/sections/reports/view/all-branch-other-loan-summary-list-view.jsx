@@ -98,30 +98,35 @@ export default function AllBranchLoanSummaryListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(otherLoanReports);
   const [filters, setFilters] = useState(defaultFilters);
-  useEffect(() => {
-    fetchStates();
-  }, [otherLoanReports]);
-
-  const percentage = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.percentage) || 0),
-    0
-  );
-  const rate = otherLoanReports.reduce((prev, next) => prev + (Number(next?.rate) || 0), 0);
-  const amount = otherLoanReports.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
-  const pendingInterest = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
-    0
-  );
-  const day = otherLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
-    0
-  );
 
   const dataFiltered = applyFilter({
     inputData: otherLoanReports,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  useEffect(() => {
+    fetchStates();
+  }, [otherLoanReports]);
+
+  const percentage = dataFiltered.reduce((prev, next) => prev + (Number(next?.percentage) || 0), 0);
+  const rate = dataFiltered.reduce((prev, next) => prev + (Number(next?.rate) || 0), 0);
+  const amount = dataFiltered.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+  const pendingInterest = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.pendingInterest) || 0),
+    0
+  );
+  const day = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
+    0
+  );
+
+  const total = {
+    percentage,
+    rate,
+    amount,
+    pendingInterest,
+  };
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -304,6 +309,7 @@ export default function AllBranchLoanSummaryListView() {
             dataFilter={dataFiltered}
             configs={configs}
             options={options}
+            total={total}
           />
 
           {canReset && (
@@ -402,7 +408,7 @@ export default function AllBranchLoanSummaryListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(percentage / otherLoanReports.length).toFixed(2)}
+                    {(percentage / dataFiltered.length).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {rate.toFixed(0)}
@@ -412,7 +418,7 @@ export default function AllBranchLoanSummaryListView() {
                     {amount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {(day / otherLoanReports.length).toFixed(0)}
+                    {(day / dataFiltered.length).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {pendingInterest.toFixed(0)}

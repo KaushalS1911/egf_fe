@@ -31,6 +31,7 @@ export default function OtherLonaInterestTableToolbar({
   dataFilter,
   configs,
   options,
+  total,
 }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -238,7 +239,12 @@ export default function OtherLonaInterestTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <OtherLoanInterestPdf loans={dataFilter} configs={configs} filterData={filterData} />
+              <OtherLoanInterestPdf
+                loans={dataFilter}
+                configs={configs}
+                filterData={filterData}
+                total={total}
+              />
             </PDFViewer>
           </Box>
         </Box>

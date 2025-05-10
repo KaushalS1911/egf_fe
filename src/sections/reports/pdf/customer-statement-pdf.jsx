@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
-import { TableCell } from '@mui/material';
+// Remove MUI imports as they're not compatible with react-pdf
+import { differenceInDays } from 'date-fns';
 
 // Register fonts
 Font.register({
@@ -56,6 +57,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
+          fontSize: 7,
         },
         numericCell: {
           textAlign: 'right',
@@ -93,22 +95,68 @@ const useStyles = () =>
           fontSize: 10,
           flex: 2,
         },
+        totalRow: {
+          flexDirection: 'row',
+          backgroundColor: '#F4F6F8',
+          minHeight: 22,
+          borderBottomWidth: 0,
+        },
+        totalCell: {
+          padding: 5,
+          borderRightWidth: 0.5,
+          borderRightColor: '#b1b0b0',
+          textAlign: 'center',
+          fontSize: 7,
+          fontWeight: 'bold',
+          color: '#637381',
+        },
       }),
     []
   );
 
-export default function CustomerStatementPdf({ selectedBranch, configs, data, filterData }) {
+// Helper function to format currency values
+const formatCurrency = (value, precision = 2) => {
+  return (value || 0).toFixed(precision);
+};
+
+export default function InterestReportsPdf({ selectedBranch, configs, data, filterData, total }) {
+  const {
+    int,
+    intLoanAmt,
+    consultingCharge,
+    interestAmount,
+    consultingAmount,
+    penaltyAmount,
+    totalPaidInterest,
+    day,
+    pendingDay,
+    pendingInterest,
+    loanAmt,
+  } = total || {};
+
   const styles = useStyles();
   const headers = [
-    { label: '#', flex: 0.3 },
-    { label: 'Loan No', flex: 2 },
+    { label: '#', flex: 0.2 },
+    { label: 'Loan No', flex: 2.2 },
     { label: 'Customer Name', flex: 5 },
-    { label: 'Loan Amt', flex: 1.5 },
-    { label: 'Part Loan Amt ', flex: 1.5 },
-    { label: 'Int. Loan Amt', flex: 1.5 },
-    { label: 'Amt', flex: 1.5 },
+    { label: 'Issue Date', flex: 1.2 },
+    { label: 'Loan Amt', flex: 1 },
+    { label: 'Part Loan Amt ', flex: 1.2 },
+    { label: 'Int. Loan Amt', flex: 1.2 },
+    { label: 'Rate', flex: 0.4 },
+    { label: 'con.', flex: 0.5 },
+    { label: 'Int. Amt', flex: 1.2 },
+    { label: 'Con. Amt', flex: 1 },
+    { label: 'Penalty', flex: 1.1 },
+    { label: 'Day', flex: 0.5 },
+    { label: 'Total Int. Amt', flex: 1.2 },
+    { label: 'Last Int. Pay Date', flex: 1.2 },
+    { label: 'Pen. Day', flex: 0.5 },
+    { label: 'pending Int. Amt', flex: 1.2 },
   ];
   const dataFilter = [
+    // { value: filterData.issuedBy.name, label: 'Issued By' },
+    { value: filterData.branch.name, label: 'Branch' },
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
@@ -130,26 +178,63 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.3 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 2 }]}>{row.loanNo}</Text>
-        <Text style={[styles.tableCell, { flex: 5, fontSize: 7 }]}>{row.customerName}</Text>
-        <Text style={[styles.tableCell, { flex: 1.5 }]}>{row.loanAmount}</Text>
-        <Text style={[styles.tableCell, { flex: 1.5 }]}>{row.partLoanAmount}</Text>
-        <Text style={[styles.tableCell, { flex: 1.5 }]}>{row.interestLoanAmount}</Text>
-        <Text style={[styles.tableCell, { flex: 1.5 }]}>{row.amount}</Text>
+        <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
+
+        <Text style={[styles.tableCell, { flex: 2.2 }]}>{row.loanNo}</Text>
+
+        <Text
+          style={[styles.tableCell, { flex: 5, fontSize: 7 }]}
+        >{`${row.customer.firstName} ${row.customer.middleName || ''} ${row.customer.lastName} `}</Text>
+
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.issueDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{formatCurrency(row.loanAmount)}</Text>
+
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>
+          {formatCurrency(row.loanAmount - row.interestLoanAmount)}
+        </Text>
+
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>
+          {formatCurrency(row.interestLoanAmount)}
+        </Text>
+
+        <Text style={[styles.tableCell, { flex: 0.4 }]}>
+          {row.scheme.interestRate > 1.5 ? 1.5 : row.scheme.interestRate}
+        </Text>
+
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>
+          {formatCurrency(row.consultingCharge)}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{formatCurrency(row.interestAmount)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{formatCurrency(row.consultingAmount)}</Text>
+
+        <Text style={[styles.tableCell, { flex: 1.1 }]}>{formatCurrency(row.penaltyAmount)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>
+          {formatCurrency(row.totalPaidInterest)}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.lastInstallmentDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>
+          {row.pendingDays > 0 ? row.pendingDays : '-'}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{formatCurrency(row.pendingInterest)}</Text>
       </View>
     );
 
     if ((index + 1) % rowsPerPage === 0 || index === data.length - 1) {
       const isFirstPage = pages.length === 0;
       pages.push(
-        <Page key={pages.length} size="A4" style={{ ...styles.page, position: 'relative' }}>
+        <Page
+          key={pages.length}
+          size="A4"
+          style={{ ...styles.page, position: 'relative' }}
+          orientation={'landscape'}
+        >
           {isFirstPage && (
             <>
-              <InvoiceHeader selectedBranch={selectedBranch} configs={configs} />
-              <View style={{ position: 'absolute', top: 20, right: -75, width: 200 }}>
+              <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
+              <View style={{ position: 'absolute', top: 20, right: 5, width: 200 }}>
                 {dataFilter.map((item, index) => (
-                  <View style={styles.row}>
+                  <View key={index} style={styles.row}>
                     <Text style={styles.subHeading2}>{item.label || '-'}</Text>
                     <Text style={styles.colon}>:</Text>
                     <Text style={styles.subText}>{item.value || '-'}</Text>
@@ -163,7 +248,7 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
                   marginHorizontal: 15,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>STATEMENT </Text>
+                <Text style={styles.termsAndConditionsHeaders}>INTEREST REPORTS </Text>
               </View>{' '}
             </>
           )}
@@ -184,6 +269,91 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
                 ))}
               </View>
               {currentPageRows}
+
+              {/* Total Row - using react-pdf components instead of MUI */}
+              {total && (
+                <View
+                  style={[
+                    styles.tableRow,
+                    {
+                      backgroundColor: '#E8F0FE',
+                      minHeight: 25,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[styles.tableCell, { flex: 0.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  ></Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    TOTAL
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 5 }]}></Text>
+                  <Text style={[styles.tableCell, { flex: 1.2 }]}></Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(loanAmt, 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(loanAmt - intLoanAmt, 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(intLoanAmt, 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 0.4, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(int / (data.length || 1), 2)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 0.5, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(consultingCharge / (data.length || 1), 2)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(interestAmount, 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(consultingAmount, 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1.1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(penaltyAmount, 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 0.5, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(day / (data.length || 1), 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(totalPaidInterest, 0)}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1.2 }]}></Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 0.5, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(pendingDay / (data.length || 1), 0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1.2, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {formatCurrency(pendingInterest, 0)}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         </Page>
