@@ -60,6 +60,8 @@ import LoanPartPaymentForm from '../../loanpayhistory/view/loan-part-payment-for
 import LoanCloseForm from '../../loanpayhistory/view/loan-close-form.jsx';
 import GoldLoanPartPaymentListView from '../daily-reports/daily-reports-list-view/gold-loan-part-payment-list-view.jsx';
 import LoanCloseListView from '../daily-reports/daily-reports-list-view/loan-close-list-view.jsx';
+import TotalAllInOutLoanReportsTableFiltersResult from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-filters-result.jsx';
+import DailyReportTableFiltersResult from '../daily-reports/daily-reports-table/daily-report-table-filters-result.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -127,6 +129,10 @@ export default function DailyReportsListView() {
     [table]
   );
 
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
+
   // const loans = Loanissue.map((item) => ({
   //   'Loan No': item.loanNo,
   //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
@@ -186,6 +192,15 @@ export default function DailyReportsListView() {
             configs={configs}
             data={data}
           />
+          {canReset && (
+            <DailyReportTableFiltersResult
+              filters={filters}
+              onFilters={handleFilters}
+              onResetFilters={handleResetFilters}
+              results={dataFiltered.length}
+              sx={{ p: 2.5, pt: 0 }}
+            />
+          )}
           <Grid container spacing={3} sx={{ mt: 1.5 }}>
             <Grid item xs={12} P={0}>
               <Tabs
