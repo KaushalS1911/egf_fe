@@ -9,7 +9,7 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function AppWidget({ title, total, icon, color = 'primary', chart, sx, ...other }) {
+export default function AppWidget2({ title, total, icon, color = 'primary', chart, sx, ...other }) {
   const theme = useTheme();
 
   const { series, options } = chart;
@@ -70,17 +70,8 @@ export default function AppWidget({ title, total, icon, color = 'primary', chart
       }}
       {...other}
     >
-      <Chart
-        dir="ltr"
-        type="radialBar"
-        series={[series]}
-        options={chartOptions}
-        width={86}
-        height={86}
-      />
-
       <ListItemText
-        sx={{ ml: 3 }}
+        sx={{ ml: 1 }}
         primary={fNumber(total)}
         secondary={title}
         primaryTypographyProps={{
@@ -94,11 +85,19 @@ export default function AppWidget({ title, total, icon, color = 'primary', chart
           typography: 'subtitle2',
         }}
       />
+      <Chart
+        dir='ltr'
+        type='radialBar'
+        series={[series]}
+        options={chartOptions}
+        width={86}
+        height={86}
+      />
     </Stack>
   );
 }
 
-AppWidget.propTypes = {
+AppWidget2.propTypes = {
   chart: PropTypes.object,
   color: PropTypes.string,
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),

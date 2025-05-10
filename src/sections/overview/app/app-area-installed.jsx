@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback } from 'react';
-
+import { useCallback, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
 import ButtonBase from '@mui/material/ButtonBase';
-
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -16,34 +14,48 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 export default function AppAreaInstalled({ title, subheader, chart, ...other }) {
   const theme = useTheme();
+  const { series, options } = chart;
 
-  const {
-    colors = [
-      [theme.palette.primary.light, theme.palette.primary.main],
-      [theme.palette.warning.light, theme.palette.warning.main],
-    ],
-    categories,
-    series,
-    options,
-  } = chart;
+  if (!series || series.length === 0) {
+    return (
+      <Card {...other}>
+        <CardHeader title={title} subheader={subheader} />
+        <Box sx={{ p: 3, textAlign: 'center' }}>No data available</Box>
+      </Card>
+    );
+  }
 
   const popover = usePopover();
-
-  const [seriesData, setSeriesData] = useState('2019');
+  const [seriesData, setSeriesData] = useState(series?.[0]?.type || 'Week');
+  const selectedSeries = series.find((item) => item.type === seriesData);
 
   const chartOptions = useChart({
-    colors: colors.map((colr) => colr[1]),
-    fill: {
-      type: 'gradient',
-      gradient: {
-        colorStops: colors.map((colr) => [
-          { offset: 0, color: colr[0], opacity: 1 },
-          { offset: 100, color: colr[1], opacity: 1 },
-        ]),
-      },
-    },
+    colors: selectedSeries?.data.map((_, index) => {
+      const palette = [
+        theme.palette.success.main,
+        theme.palette.error.main,
+        theme.palette.info.main,
+        theme.palette.warning.main,
+        theme.palette.primary.main,
+        theme.palette.secondary.main,
+      ];
+      return palette[index % palette.length];
+    }),
     xaxis: {
-      categories,
+      categories: selectedSeries?.categories || [],
+    },
+    stroke: {
+      width: 3,
+      curve: 'smooth',
+    },
+    legend: {
+      show: true,
+      fontSize: '14px',
+      position: 'top',
+      horizontalAlign: 'right',
+      markers: {
+        radius: 12,
+      },
     },
     ...options,
   });
@@ -75,7 +87,6 @@ export default function AppAreaInstalled({ title, subheader, chart, ...other }) 
               }}
             >
               {seriesData}
-
               <Iconify
                 width={16}
                 icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
@@ -84,31 +95,27 @@ export default function AppAreaInstalled({ title, subheader, chart, ...other }) 
             </ButtonBase>
           }
         />
-
-        {series.map((item) => (
-          <Box key={item.year} sx={{ mt: 3, mx: 3 }}>
-            {item.year === seriesData && (
-              <Chart
-                dir="ltr"
-                type="line"
-                series={item.data}
-                options={chartOptions}
-                width="100%"
-                height={364}
-              />
-            )}
+        {selectedSeries && (
+          <Box sx={{ mt: 3, mx: 3 }}>
+            <Chart
+              dir='ltr'
+              type='line'
+              series={selectedSeries.data}
+              options={chartOptions}
+              width='100%'
+              height={364}
+            />
           </Box>
-        ))}
+        )}
       </Card>
-
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 140 }}>
         {series.map((option) => (
           <MenuItem
-            key={option.year}
-            selected={option.year === seriesData}
-            onClick={() => handleChangeSeries(option.year)}
+            key={option.type}
+            selected={option.type === seriesData}
+            onClick={() => handleChangeSeries(option.type)}
           >
-            {option.year}
+            {option.type}
           </MenuItem>
         ))}
       </CustomPopover>

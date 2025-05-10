@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useFieldArray, useForm } from 'react-hook-form';
-import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import countrystatecity from '../../_mock/map/csc.json';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -15,11 +15,11 @@ import { useRouter } from 'src/routes/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
-  RHFTextField,
   RHFAutocomplete,
-  RHFUploadAvatar,
-  RHFRadioGroup,
   RHFCode,
+  RHFRadioGroup,
+  RHFTextField,
+  RHFUploadAvatar,
 } from 'src/components/hook-form';
 import {
   Button,
@@ -263,7 +263,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       IFSC: '',
       bankName: '',
       branchName: '',
-      isNew: true, // Mark row as new
+      isNew: true,
     });
   };
 
@@ -1062,13 +1062,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   }
                 }}
               />
-              <RHFTextField
-                name="PerArea"
-                label="Area"
+              <RHFAutocomplete
+                disabled={disabledField}
+                name='PerArea'
                 req={'red'}
-                onInput={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                }}
+                label='Area'
+                placeholder='Choose a Area'
+                options={configs?.area?.map((Area) => Area)}
+                isOptionEqualToValue={(option, value) => option === value}
               />
               <RHFAutocomplete
                 disabled={disabledField}
@@ -1176,13 +1177,14 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   }
                 }}
               />
-              <RHFTextField
-                name="tempArea"
-                label="Area"
+              <RHFAutocomplete
+                disabled={disabledField}
+                name='tempArea'
                 req={'red'}
-                onInput={(e) => {
-                  e.target.value = e.target.value.toUpperCase();
-                }}
+                label='Area'
+                placeholder='Choose a Area'
+                options={configs?.area?.map((Area) => Area)}
+                isOptionEqualToValue={(option, value) => option === value}
               />
               <RHFAutocomplete
                 disabled={disabledField}

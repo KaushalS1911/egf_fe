@@ -5,7 +5,6 @@ import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
-import { getResponsibilityValue } from '../../permission/permission.js';
 
 // ----------------------------------------------------------------------
 
@@ -70,6 +69,16 @@ export function useNavData() {
     () => [
       // MASTER
       // ----------------------------------------------------------------------
+      {
+        subheader: t('overview'),
+        items: [
+          {
+            title: t('Dashboard'),
+            path: paths.dashboard.root,
+            icon: ICONS.dashboard,
+          },
+        ],
+      },
       {
         subheader: t('Masters'),
         items: [

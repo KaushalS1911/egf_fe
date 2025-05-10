@@ -1,11 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
 
 import { paths } from 'src/routes/paths';
 
@@ -13,10 +12,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { _files, _folders } from 'src/_mock';
-
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { UploadBox } from 'src/components/upload';
 import { useSettingsContext } from 'src/components/settings';
 
 import FileWidget from '../../../file-manager/file-widget';
@@ -76,41 +72,6 @@ export default function OverviewFileView() {
       setFiles([...files, ...newFiles]);
     },
     [files]
-  );
-
-  const renderStorageOverview = (
-    <FileStorageOverview
-      total={GB}
-      chart={{
-        series: 76,
-      }}
-      data={[
-        {
-          name: 'Images',
-          usedStorage: GB / 2,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_img.svg" />,
-        },
-        {
-          name: 'Media',
-          usedStorage: GB / 5,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_video.svg" />,
-        },
-        {
-          name: 'Documents',
-          usedStorage: GB / 5,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_document.svg" />,
-        },
-        {
-          name: 'Other',
-          usedStorage: GB / 10,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_file.svg" />,
-        },
-      ]}
-    />
   );
 
   return (
@@ -243,29 +204,6 @@ export default function OverviewFileView() {
                 ))}
               </Stack>
             </div>
-          </Grid>
-
-          <Grid xs={12} md={6} lg={4}>
-            <UploadBox
-              onDrop={handleDrop}
-              placeholder={
-                <Stack spacing={0.5} alignItems="center" sx={{ color: 'text.disabled' }}>
-                  <Iconify icon="eva:cloud-upload-fill" width={40} />
-                  <Typography variant="body2">Upload file</Typography>
-                </Stack>
-              }
-              sx={{
-                mb: 3,
-                py: 2.5,
-                width: 'auto',
-                height: 'auto',
-                borderRadius: 1.5,
-              }}
-            />
-
-            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>{renderStorageOverview}</Box>
-
-            <FileUpgrade sx={{ mt: 3 }} />
           </Grid>
         </Grid>
       </Container>

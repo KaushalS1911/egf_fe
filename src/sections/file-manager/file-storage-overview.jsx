@@ -1,110 +1,78 @@
 import PropTypes from 'prop-types';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
-import ListItemText from '@mui/material/ListItemText';
-
-import { fData } from 'src/utils/format-number';
 
 import Chart, { useChart } from 'src/components/chart';
 
-// ----------------------------------------------------------------------
-
-export default function FileStorageOverview({ data, total, chart, ...other }) {
+export default function FileStorageOverview({ cash, bank, total, banks }) {
   const theme = useTheme();
 
-  const { colors = [theme.palette.info.main, theme.palette.info.dark], series, options } = chart;
+  const remaining = Math.max(total - (cash + bank), 0);
 
   const chartOptions = useChart({
-    chart: {
-      offsetY: -16,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    grid: {
-      padding: {
-        top: 24,
-        bottom: 24,
-      },
-    },
-    legend: {
-      show: false,
-    },
+    chart: { sparkline: { enabled: true } },
+    stroke: { lineCap: 'round' },
+    legend: { show: false },
     plotOptions: {
       radialBar: {
-        startAngle: -90,
-        endAngle: 90,
-        hollow: {
-          size: '56%',
-        },
-        dataLabels: {
-          name: {
-            offsetY: 8,
-          },
-          value: {
-            offsetY: -40,
-          },
-          total: {
-            label: `Used of ${fData(total)} / 50GB`,
-            color: theme.palette.text.disabled,
-            fontSize: theme.typography.body2.fontSize,
-            fontWeight: theme.typography.body2.fontWeight,
-          },
-        },
+        startAngle: -120,
+        endAngle: 120,
+        hollow: { size: '60%' },
+        track: { background: '#f0f0f0' },
+        dataLabels: { show: false },
       },
     },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        colorStops: [
-          { offset: 0, color: colors[0], opacity: 1 },
-          { offset: 100, color: colors[1], opacity: 1 },
-        ],
-      },
-    },
-    ...options,
+    colors: ['#FFA500', '#A020F0', '#E0E0E0'], // Orange, Purple, Light Gray
   });
 
   return (
-    <Card {...other}>
-      <Chart
-        dir="ltr"
-        type="radialBar"
-        series={[series]}
-        options={chartOptions}
-        width="100%"
-        height={360}
-      />
+    <Card sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, p: 3, borderRadius: 3, boxShadow: 3 }}>
+      {/* Left: Chart */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minWidth: 200,
+        }}
+      >
+        <Chart
+          type='radialBar'
+          series={[cash, bank, remaining]}
+          options={chartOptions}
+          height={200}
+        />
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Typography variant='subtitle2'>
+            <Box component='span' sx={{ color: '#FFA500', fontWeight: 600 }}>{cash}</Box> /
+            <Box component='span' sx={{ color: '#A020F0', fontWeight: 600, mx: 0.5 }}>{bank}</Box> =
+            <Box component='span' sx={{ color: '#00B050', fontWeight: 600, ml: 0.5 }}>{total}</Box>
+          </Typography>
+          <Typography variant='caption' color='text.secondary'>
+            Total (Cash + Bank)
+          </Typography>
+        </Box>
+      </Box>
 
-      <Stack spacing={3} sx={{ px: 3, pb: 5 }}>
-        {data.map((category) => (
-          <Stack key={category.name} spacing={2} direction="row" alignItems="center">
-            <Box sx={{ width: 40, height: 40 }}>{category.icon}</Box>
-
-            <ListItemText
-              primary={category.name}
-              secondary={`${category.filesCount} files`}
-              secondaryTypographyProps={{
-                mt: 0.5,
-                component: 'span',
-                typography: 'caption',
-                color: 'text.disabled',
-              }}
-            />
-
-            <Box sx={{ typography: 'subtitle2' }}> {fData(category.usedStorage)} </Box>
-          </Stack>
-        ))}
-      </Stack>
+      {/* Right: Bank Cards */}
     </Card>
   );
 }
 
 FileStorageOverview.propTypes = {
-  chart: PropTypes.object,
-  data: PropTypes.array,
-  total: PropTypes.number,
+  cash: PropTypes.number.isRequired,
+  bank: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+  banks: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      amount: PropTypes.number.isRequired,
+      logo: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
 };

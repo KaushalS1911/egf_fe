@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
-
+import { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import Box from '@mui/material/Box';
 import { styled, useTheme } from '@mui/material/styles';
-
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import { fNumber } from 'src/utils/format-number';
-
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
 const CHART_HEIGHT = 400;
-
 const LEGEND_HEIGHT = 72;
 
 const StyledChart = styled(Chart)(({ theme }) => ({
@@ -28,24 +30,39 @@ const StyledChart = styled(Chart)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function AnalyticsCurrentVisits({ title, subheader, chart, ...other }) {
+export default function AnalyticsCurrentVisits({
+                                                 title,
+                                                 subheader,
+                                                 chart,
+                                                 onTimeRangeChange,
+                                                 timeRangeOptions = [],
+                                                 ...other
+                                               }) {
   const theme = useTheme();
+  const [timeRange, setTimeRange] = useState('this_year');
 
-  const { colors, series, options } = chart;
+  const handleChange = (event) => {
+    setTimeRange(event.target.value);
+    if (onTimeRangeChange) {
+      onTimeRangeChange(event.target.value);
+    }
+  };
 
-  const chartSeries = series.map((i) => i.value);
+  const colors = chart?.colors || [];
+  const series = Array.isArray(chart?.series) ? chart.series : [];
+  const chartSeries = series.map((i) => i?.value ?? 0);
+  const chartLabels = series.map((i) => i?.label ?? '');
+
+  const isEmpty = !series.length || chartSeries.every((v) => v === 0);
 
   const chartOptions = useChart({
     chart: {
-      sparkline: {
-        enabled: true,
-      },
+      sparkline: { enabled: true },
+      background: '#fff',
     },
     colors,
-    labels: series.map((i) => i.label),
-    stroke: {
-      colors: [theme.palette.background.paper],
-    },
+    labels: chartLabels,
+    stroke: { colors: [theme.palette.background.paper] },
     legend: {
       floating: true,
       position: 'bottom',
@@ -53,49 +70,111 @@ export default function AnalyticsCurrentVisits({ title, subheader, chart, ...oth
     },
     dataLabels: {
       enabled: true,
-      dropShadow: {
-        enabled: false,
-      },
+      dropShadow: { enabled: false },
     },
     tooltip: {
       fillSeriesColor: false,
       y: {
         formatter: (value) => fNumber(value),
-        title: {
-          formatter: (seriesName) => `${seriesName}`,
-        },
+        title: { formatter: (seriesName) => `${seriesName}` },
       },
     },
     plotOptions: {
       pie: {
-        donut: {
-          labels: {
-            show: false,
-          },
-        },
+        donut: { labels: { show: false } },
       },
     },
-    ...options,
+    noData: {
+      text: 'No data available',
+      align: 'center',
+      verticalAlign: 'middle',
+      style: {
+        color: theme.palette.text.secondary,
+        fontSize: '16px',
+      },
+    },
+    ...(chart?.options || {}),
   });
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
-
-      <StyledChart
-        dir="ltr"
-        type="pie"
-        series={chartSeries}
-        options={chartOptions}
-        width="100%"
-        height={280}
+      <CardHeader
+        title={title}
+        subheader={subheader}
+        sx={{ mb: 5 }}
+        action={
+          <FormControl size='small'>
+            <InputLabel id='time-range-select'>Range</InputLabel>
+            <Select
+              labelId='time-range-select'
+              id='time-range'
+              value={timeRange}
+              label='Range'
+              onChange={handleChange}
+            >
+              {timeRangeOptions.length > 0 ? (
+                timeRangeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem value=''>No options available</MenuItem>
+              )}
+            </Select>
+          </FormControl>
+        }
       />
+      {isEmpty ? (
+        <Box
+          height={280}
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          sx={{ typography: 'body2', color: 'text.disabled' }}
+        >
+          No data available
+        </Box>
+      ) : (
+        <StyledChart
+          dir='ltr'
+          type='pie'
+          series={chartSeries}
+          options={chartOptions}
+          width='100%'
+          height={280}
+        />
+      )}
     </Card>
   );
 }
 
 AnalyticsCurrentVisits.propTypes = {
-  chart: PropTypes.object,
+  chart: PropTypes.shape({
+    colors: PropTypes.array,
+    series: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string,
+        value: PropTypes.number,
+      }),
+    ),
+    options: PropTypes.object,
+  }),
   subheader: PropTypes.string,
   title: PropTypes.string,
+  onTimeRangeChange: PropTypes.func,
+  timeRangeOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      value: PropTypes.string,
+    }),
+  ),
+};
+
+AnalyticsCurrentVisits.defaultProps = {
+  chart: {
+    colors: [],
+    series: [],
+    options: {},
+  },
 };

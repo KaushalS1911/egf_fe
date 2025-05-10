@@ -1,88 +1,90 @@
 import PropTypes from 'prop-types';
-
+import { useState } from 'react';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-
+import CardHeader from '@mui/material/CardHeader';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { useTheme } from '@mui/material/styles';
 import { useResponsive } from 'src/hooks/use-responsive';
+import Box from '@mui/material/Box';
 
-import { fNumber } from 'src/utils/format-number';
-
-import Chart, { useChart } from 'src/components/chart';
+const formatNumberWithCommas = (number) => {
+  if (number == null || isNaN(number)) {
+    return 'No data';
+  }
+  return number.toLocaleString();
+};
 
 // ----------------------------------------------------------------------
 
-export default function BookingCheckInWidgets({ chart, ...other }) {
+export default function BookingCheckInWidgets({
+                                                chart,
+                                                title,
+                                                subheader,
+                                                onTimeRangeChange,
+                                                timeRangeOptions = [],
+                                                chartTitle,
+                                                ...other
+                                              }) {
   const theme = useTheme();
-
   const smUp = useResponsive('up', 'sm');
+  const [timeRange, setTimeRange] = useState('this_year');
 
   const {
-    colors = [
-      [theme.palette.primary.light, theme.palette.primary.main],
-      [theme.palette.warning.light, theme.palette.warning.main],
-    ],
     series,
-    options,
   } = chart;
 
-  const chartOptionsCheckIn = useChart({
-    fill: {
-      type: 'gradient',
-      gradient: {
-        colorStops: [
-          { offset: 0, color: colors[0][0], opacity: 1 },
-          { offset: 100, color: colors[0][1], opacity: 1 },
-        ],
-      },
-    },
-    chart: {
-      sparkline: {
-        enabled: true,
-      },
-    },
-    grid: {
-      padding: {
-        top: -9,
-        bottom: -9,
-      },
-    },
-    legend: {
-      show: false,
-    },
-    plotOptions: {
-      radialBar: {
-        hollow: { size: '64%' },
-        track: { margin: 0 },
-        dataLabels: {
-          name: { show: false },
-          value: {
-            offsetY: 6,
-            fontSize: theme.typography.subtitle2.fontSize,
-          },
-        },
-      },
-    },
-    ...options,
-  });
-
-  const chartOptionsCheckout = {
-    ...chartOptionsCheckIn,
-    fill: {
-      type: 'gradient',
-      gradient: {
-        colorStops: [
-          { offset: 0, color: colors[1][0], opacity: 1 },
-          { offset: 100, color: colors[1][1], opacity: 1 },
-        ],
-      },
-    },
+  const handleChange = (event) => {
+    setTimeRange(event.target.value);
+    if (onTimeRangeChange) {
+      onTimeRangeChange(event.target.value);
+    }
   };
 
   return (
     <Card {...other}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Box sx={{ padding: '24px 24px 0px 24px' }}>
+          <Typography variant={'h4'} color={'black'}>{chartTitle}</Typography>
+        </Box>
+        <Box>
+          <Box>
+            <Typography>{title}</Typography>
+          </Box>
+          <CardHeader
+            title={title}
+            subheader={subheader}
+            sx={{ mb: 2 }}
+            action={
+              <FormControl size='small'>
+                <InputLabel id='time-range-select'>Range</InputLabel>
+                <Select
+                  labelId='time-range-select'
+                  id='time-range'
+                  value={timeRange}
+                  label='Range'
+                  onChange={handleChange}
+                >
+                  {timeRangeOptions.length > 0 ? (
+                    timeRangeOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value=''>No options</MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            }
+          />
+        </Box>
+      </Box>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         divider={
@@ -101,25 +103,16 @@ export default function BookingCheckInWidgets({ chart, ...other }) {
             alignItems="center"
             justifyContent={{ sm: 'center' }}
             sx={{
-              py: 5,
+              py: 2,
               width: 1,
               px: { xs: 3, sm: 0 },
             }}
           >
-            <Chart
-              dir="ltr"
-              type="radialBar"
-              series={[item.percent]}
-              options={index === 1 ? chartOptionsCheckout : chartOptionsCheckIn}
-              width={106}
-              height={106}
-            />
-
+            <Box sx={{ color: 'black' }}>{item.icon}</Box>
             <div>
               <Typography variant="h4" sx={{ mb: 0.5 }}>
-                {fNumber(item.total)}
+                {item.total ? formatNumberWithCommas(item.total) : 'No data'}
               </Typography>
-
               <Typography variant="body2" sx={{ opacity: 0.72 }}>
                 {item.label}
               </Typography>
@@ -133,4 +126,13 @@ export default function BookingCheckInWidgets({ chart, ...other }) {
 
 BookingCheckInWidgets.propTypes = {
   chart: PropTypes.object,
+  title: PropTypes.string,
+  subheader: PropTypes.string,
+  onTimeRangeChange: PropTypes.func,
+  timeRangeOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      value: PropTypes.string,
+    }),
+  ),
 };

@@ -10,7 +10,6 @@ export default function OverviewAppPage() {
       <Helmet>
         <title> Dashboard: App</title>
       </Helmet>
-
       <OverviewAppView />
     </>
   );

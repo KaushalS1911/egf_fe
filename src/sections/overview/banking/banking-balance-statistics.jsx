@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback } from 'react';
-
+import { useCallback, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
-
+import Typography from '@mui/material/Typography';
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -14,21 +13,33 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function BankingBalanceStatistics({ title, subheader, chart, ...other }) {
-  const { categories, colors, series, options } = chart;
+  if (!chart || !Array.isArray(chart.series) || chart.series.length === 0) {
+    return (
+      <Card {...other}>
+        <CardHeader title={title} subheader={subheader} />
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant='body2' color='text.secondary'>
+            No data available
+          </Typography>
+        </Box>
+      </Card>
+    );
+  }
 
+  const { colors, series, options } = chart;
   const popover = usePopover();
-
   const [seriesData, setSeriesData] = useState('Year');
+  const selectedSeries = series.find((item) => item.type === seriesData);
 
   const chartOptions = useChart({
     colors,
     stroke: {
       show: true,
-      width: 2,
+      width: 0.1,
       colors: ['transparent'],
     },
     xaxis: {
-      categories,
+      categories: selectedSeries?.categories || [],
     },
     tooltip: {
       y: {
@@ -65,7 +76,6 @@ export default function BankingBalanceStatistics({ title, subheader, chart, ...o
               }}
             >
               {seriesData}
-
               <Iconify
                 width={16}
                 icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
@@ -74,23 +84,25 @@ export default function BankingBalanceStatistics({ title, subheader, chart, ...o
             </ButtonBase>
           }
         />
-
-        {series.map((item) => (
-          <Box key={item.type} sx={{ mt: 3, mx: 3 }}>
-            {item.type === seriesData && (
-              <Chart
-                dir="ltr"
-                type="bar"
-                series={item.data}
-                options={chartOptions}
-                width="100%"
-                height={364}
-              />
-            )}
+        {selectedSeries ? (
+          <Box sx={{ mt: 3, mx: 3 }}>
+            <Chart
+              dir='ltr'
+              type='bar'
+              series={selectedSeries.data}
+              options={chartOptions}
+              width='100%'
+              height={364}
+            />
           </Box>
-        ))}
+        ) : (
+          <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant='body2' color='text.secondary'>
+              No data available
+            </Typography>
+          </Box>
+        )}
       </Card>
-
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 140 }}>
         {series.map((option) => (
           <MenuItem

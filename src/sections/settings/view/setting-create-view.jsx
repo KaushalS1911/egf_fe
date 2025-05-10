@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import Container from '@mui/material/Container';
@@ -20,6 +20,7 @@ import WhatsappConfigs from './whatsapp-configs.jsx';
 import ExpenseTypeCreteView from './expense-type-crete-view.jsx';
 import OtherIncomeTypeCreteView from './other-income-type-crete-view.jsx';
 import DeviceAccessView from './device-access-view.jsx';
+import AreaCreteView from './area-crete-view.jsx';
 
 const TABS = [
   {
@@ -87,11 +88,15 @@ const TABS = [
     label: 'WhatsApp Configs',
     icon: <Iconify icon="ic:baseline-whatsapp" width={20} />,
   },
-
   {
     value: 'Device Access',
     label: 'Device Access',
     icon: <Iconify icon="rivet-icons:device" width={18} sx={{ color: 'gray' }} />,
+  },
+  {
+    value: 'Area',
+    label: 'Area',
+    icon: <Iconify icon='majesticons:map-marker-area-line' width={18} sx={{ color: 'gray' }} />,
   },
 ];
 
@@ -137,6 +142,7 @@ export default function SettingsPage() {
         {currentTab === 'Month' && <MonthCreateView />}
         {currentTab === 'WhatsApp Configs' && <WhatsappConfigs />}
         {currentTab === 'Device Access' && <DeviceAccessView />}
+        {currentTab === 'Area' && <AreaCreteView />}
       </Container>
     </>
   );
