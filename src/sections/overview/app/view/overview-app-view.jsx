@@ -30,6 +30,7 @@ import { useGetCustomer } from '../../../../api/customer.js';
 import { useGetLoanissue } from '../../../../api/loanissue.js';
 import { useRouter } from '../../../../routes/hooks/index.js';
 import TextField from '@mui/material/TextField';
+import { useSnackbar } from 'notistack';
 
 const timeRangeOptions = [
   { label: 'All', value: 'All' },
@@ -47,6 +48,7 @@ const timeRangeOptions = [
 
 export default function OverviewAppView() {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const { customer } = useGetCustomer();
   const { Loanissue } = useGetLoanissue();
   const settings = useSettingsContext();
@@ -159,13 +161,19 @@ export default function OverviewAppView() {
                   ?.filter((loan) => loan?.customer?._id === value?._id)
                   ?.map((loan) => loan?.loanNo) || [];
 
-                const dataStore = {
-                  customer: value,
-                  filteredLoanNo: loanNumbers,
-                };
+                if (loanNumbers.length === 0) {
+                  enqueueSnackbar('No loan found for this customer.', {
+                    variant: 'error',
+                  });
+                } else {
+                  const dataStore = {
+                    customer: value,
+                    filteredLoanNo: loanNumbers,
+                  };
 
-                sessionStorage.setItem('data', JSON.stringify(dataStore));
-                router.push(paths.dashboard.loanPayHistory.bulk);
+                  sessionStorage.setItem('data', JSON.stringify(dataStore));
+                  router.push(paths.dashboard.loanPayHistory.bulk);
+                }
               }
             }}
             renderInput={(params) => (
@@ -219,13 +227,19 @@ export default function OverviewAppView() {
                   ?.filter((loan) => loan?.customer?._id === value?._id)
                   ?.map((loan) => loan?.loanNo) || [];
 
-                const dataStore = {
-                  customer: value,
-                  filteredLoanNo: loanNumbers,
-                };
+                if (loanNumbers.length === 0) {
+                  enqueueSnackbar('No loan found for this customer.', {
+                    variant: 'error',
+                  });
+                } else {
+                  const dataStore = {
+                    customer: value,
+                    filteredLoanNo: loanNumbers,
+                  };
 
-                sessionStorage.setItem('data', JSON.stringify(dataStore));
-                router.push(paths.dashboard.loanPayHistory.bulk);
+                  sessionStorage.setItem('data', JSON.stringify(dataStore));
+                  router.push(paths.dashboard.loanPayHistory.bulk);
+                }
               }
             }}
             renderInput={(params) => (
