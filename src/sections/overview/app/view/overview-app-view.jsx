@@ -33,7 +33,7 @@ import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
 
 const timeRangeOptions = [
-  { label: 'All', value: 'All' },
+  { label: 'All', value: 'all' },
   { label: 'This Month', value: 'this_month' },
   { label: 'This Year', value: 'this_year' },
   { label: 'Last 2 Years', value: 'last_2_years' },
