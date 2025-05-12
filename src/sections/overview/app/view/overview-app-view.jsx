@@ -57,7 +57,7 @@ export default function OverviewAppView() {
     areaRange: 'this_year',
     referenceRange: 'this_year',
     inquiryRange: 'this_year',
-    schemeLoanSummaryRange: 'this_year',
+    schemeLoanSummaryRange: 'this_month',
     chargeRange: 'this_year',
     interestRange: 'this_year',
   });

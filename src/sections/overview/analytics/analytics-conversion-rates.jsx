@@ -24,7 +24,7 @@ export default function AnalyticsConversionRates({
                                                    timeRangeOptions = [],
                                                    ...other
                                                  }) {
-  const [timeRange, setTimeRange] = useState('this_year');
+  const [timeRange, setTimeRange] = useState('this_month');
 
   const handleTimeRangeChange = (event) => {
     const newValue = event.target.value;

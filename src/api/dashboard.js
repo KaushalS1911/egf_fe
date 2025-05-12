@@ -84,7 +84,7 @@ export function useGetInquirySummary(timeRange = 'this_year') {
   return memoizedValue;
 }
 
-export function useGetSchemeLoanSummary(timeRange = 'this_year') {
+export function useGetSchemeLoanSummary(timeRange = 'this_month') {
   const { user } = useAuthContext();
 
   const timeQuery = `timeRange=${timeRange}`;
