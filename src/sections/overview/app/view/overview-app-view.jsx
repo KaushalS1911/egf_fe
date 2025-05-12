@@ -136,6 +136,25 @@ export default function OverviewAppView() {
     }));
   };
 
+  const customerOptions = customer.flatMap((cust) => {
+    const options = [];
+    if (cust.contact) {
+      options.push({
+        ...cust,
+        label: cust.contact,
+        uniqueKey: `${cust._id}-contact`,
+      });
+    }
+    if (cust.otpContact && cust.otpContact !== cust.contact) {
+      options.push({
+        ...cust,
+        label: cust.otpContact,
+        uniqueKey: `${cust._id}-otp`,
+      });
+    }
+    return options;
+  });
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}
                sx={{ bgcolor: '#eceaea', p: 5, borderRadius: '20px' }}>
@@ -158,7 +177,7 @@ export default function OverviewAppView() {
             onChange={(event, value) => {
               if (value) {
                 const loanNumbers = Loanissue
-                  ?.filter((loan) => loan?.customer?._id === value?._id)
+                  ?.filter((loan) => loan?.customer?._id === value?._id && loan?.status !== 'Closed')
                   ?.map((loan) => loan?.loanNo) || [];
 
                 if (loanNumbers.length === 0) {
@@ -218,13 +237,15 @@ export default function OverviewAppView() {
               },
               'input': { height: 7 },
             }}
-            options={customer}
-            getOptionLabel={(option) => option.contact}
-            isOptionEqualToValue={(option, value) => option._id === value._id}
+            options={customerOptions}
+            getOptionLabel={(option) => option.label || ''}
+            isOptionEqualToValue={(option, value) => option.uniqueKey === value.uniqueKey}
             onChange={(event, value) => {
               if (value) {
+                const customerId = value._id;
+
                 const loanNumbers = Loanissue
-                  ?.filter((loan) => loan?.customer?._id === value?._id)
+                  ?.filter((loan) => loan?.customer?._id === customerId)
                   ?.map((loan) => loan?.loanNo) || [];
 
                 if (loanNumbers.length === 0) {
@@ -243,7 +264,16 @@ export default function OverviewAppView() {
               }
             }}
             renderInput={(params) => (
-              <TextField {...params} label='Search Mobile No' placeholder='Choose a mobile number' />
+              <TextField
+                {...params}
+                label='Search Mobile No'
+                placeholder='Choose a mobile number'
+              />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option.uniqueKey}>
+                {option.label}
+              </li>
             )}
           />
         </Grid>

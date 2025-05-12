@@ -42,7 +42,7 @@ export default function AnalyticsTrafficBySite({ title, list = [] }) {
                 {totalItem.label}
               </Typography>
               <Typography variant='h6'>
-                ${new Intl.NumberFormat().format(totalItem.value)}
+                {new Intl.NumberFormat().format(totalItem.value)}
               </Typography>
             </Box>
           </Stack>
@@ -59,7 +59,7 @@ export default function AnalyticsTrafficBySite({ title, list = [] }) {
               <Typography variant='body2'>{item.label}</Typography>
             </Stack>
             <Typography variant='h6'>
-              ${new Intl.NumberFormat().format(item.value)}
+              {new Intl.NumberFormat().format(item.value)}
             </Typography>
           </Paper>
         ))}
