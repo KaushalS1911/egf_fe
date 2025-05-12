@@ -195,6 +195,10 @@ export function useNavData() {
                 path: paths.dashboard.reports['interest-reports'],
               },
               {
+                title: t('interest entry reports'),
+                path: paths.dashboard.reports['interest-entry-reports'],
+              },
+              {
                 title: t('customer statement'),
                 path: paths.dashboard.reports['customer-statement'],
               },

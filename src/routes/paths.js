@@ -212,6 +212,7 @@ export const paths = {
       'daily-reports': `${ROOTS.DASHBOARD}/reports/daily-reports`,
       'loan-details': `${ROOTS.DASHBOARD}/reports/loan-details`,
       'interest-reports': `${ROOTS.DASHBOARD}/reports/interest-reports`,
+      'interest-entry-reports': `${ROOTS.DASHBOARD}/reports/interest-entry-reports`,
       'customer-statement': `${ROOTS.DASHBOARD}/reports/customer-statement`,
       'loan-issue-reports': `${ROOTS.DASHBOARD}/reports/loan-issue-reports`,
     },

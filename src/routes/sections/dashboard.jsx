@@ -104,6 +104,9 @@ const DailyReportsListView = lazy(
 const InterestReportsListView = lazy(
   () => import(`../../sections/reports/view/interest-reports-list-view.jsx`)
 );
+const InterestEntryReportsListView = lazy(
+  () => import(`../../sections/reports/view/interest-entry-reports-list-view.jsx`)
+);
 const LoanDetailListView = lazy(() => import('../../sections/reports/view/loan-details-list-view'));
 const CustomerStatement = lazy(
   () => import('../../sections/reports/view/customer-statement-list-view.jsx')
@@ -309,6 +312,7 @@ export const dashboardRoutes = [
           { path: 'daily-reports', element: <DailyReportsListView /> },
           { path: 'loan-details', element: <LoanDetailListView /> },
           { path: 'interest-reports', element: <InterestReportsListView /> },
+          { path: 'interest-entry-reports', element: <InterestEntryReportsListView /> },
           { path: 'customer-statement', element: <CustomerStatement /> },
           { path: 'loan-issue-reports', element: <LoanIssueReports /> },
         ],
