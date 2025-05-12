@@ -60,6 +60,7 @@ const defaultFilters = {
   branch: '',
   startDate: null,
   endDate: null,
+  rate: '',
 };
 
 // ----------------------------------------------------------------------
@@ -71,6 +72,7 @@ export default function InterestReportsListView() {
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
+  const [options, setOptions] = useState([]);
 
   const dataFiltered = applyFilter({
     inputData: srData,
@@ -122,8 +124,6 @@ export default function InterestReportsListView() {
     0
   );
 
-  console.log(pendingDay, '0000000');
-
   const total = {
     int,
     intLoanAmt,
@@ -144,7 +144,23 @@ export default function InterestReportsListView() {
       srNo: index + 1,
     }));
     setSrData(updatedData);
-  }, [interestReports]);
+
+    if (updatedData.length > 0) {
+      // Create a Set of existing rates for quick lookup
+      const existingRates = new Set(options.map((opt) => opt.rate));
+      const newOptions = [...options];
+
+      updatedData.forEach((data) => {
+        const rate = data?.scheme?.interestRate;
+        if (!existingRates.has(rate)) {
+          existingRates.add(rate);
+          newOptions.push({ rate });
+        }
+      });
+
+      setOptions(newOptions);
+    }
+  }, [interestReports]); // Runs only when interestReports changes
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
@@ -168,6 +184,32 @@ export default function InterestReportsListView() {
   if (interestReportsLoading) {
     return <LoadingScreen />;
   }
+  // useEffect(() => {
+  //   console.log('hhhhhhhhhhhhhh');
+  //   fetchStates();
+  // }, [srData]);
+  //
+  // function fetchStates() {
+  //   dataFiltered?.map((data) => {
+  //     setOptions((item) => {
+  //       if (
+  //         !item.find((option) => {
+  //           console.log(option, '555555555');
+  //           option.rate === data.scheme.interestRate;
+  //         })
+  //       ) {
+  //         return [
+  //           ...item,
+  //           {
+  //             rate: data.scheme.interestRate,
+  //           },
+  //         ];
+  //       } else {
+  //         return item;
+  //       }
+  //     });
+  //   });
+  // }
 
   return (
     <>
@@ -185,6 +227,7 @@ export default function InterestReportsListView() {
             onFilters={handleFilters}
             data={interestReports}
             total={total}
+            options={options}
           />
           {canReset && (
             <InterestReportsTableFiltersResult
@@ -346,7 +389,7 @@ export default function InterestReportsListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, startDate, endDate, branch } = filters;
+  const { username, startDate, endDate, branch, rate } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -377,6 +420,10 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (branch) {
     inputData = inputData.filter((item) => item.customer.branch._id === branch._id);
+  }
+  if (rate) {
+    console.log(rate);
+    inputData = inputData.filter((item) => item.scheme.interestRate === rate.rate);
   }
 
   if (!dateError && startDate && endDate) {

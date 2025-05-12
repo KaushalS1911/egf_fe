@@ -31,6 +31,7 @@ export default function InterestReportsTableToolbar({
   data,
   dateError,
   total,
+  options,
 }) {
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -95,6 +96,14 @@ export default function InterestReportsTableToolbar({
     },
     [onFilters]
   );
+
+  const handleFilterRate = useCallback(
+    (event) => {
+      onFilters('rate', typeof event.target.value === 'object' && event.target.value);
+    },
+    [onFilters]
+  );
+
   const customStyle = {
     maxWidth: { md: 350 },
     label: {
@@ -128,6 +137,7 @@ export default function InterestReportsTableToolbar({
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
+          {' '}
           <TextField
             sx={{ input: { height: 7 } }}
             fullWidth
@@ -145,7 +155,55 @@ export default function InterestReportsTableToolbar({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 350 },
+              width: { xs: 1, sm: 300 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Rate
+            </InputLabel>
+            <Select
+              value={filters.rate}
+              onChange={handleFilterRate}
+              input={<OutlinedInput label="Rate" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option.rate}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 300 },
             }}
           >
             <InputLabel
