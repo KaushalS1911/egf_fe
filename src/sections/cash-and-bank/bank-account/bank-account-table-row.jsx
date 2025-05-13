@@ -16,6 +16,7 @@ import { getResponsibilityValue } from '../../../permission/permission.js';
 import { fDate } from '../../../utils/format-time.js';
 import { statusColorMap } from '../../../assets/data/index.js';
 import { Box } from '@mui/system';
+import React from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -59,6 +60,18 @@ export default function BankAccountTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.status}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.ref})`}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Label
+            variant="soft"
+            color={
+              (row.category === 'Payment Out' && 'error') ||
+              (row.category === 'Payment In' && 'success') ||
+              'default'
+            }
+          >
+            {row.category}
+          </Label>
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell
           sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}

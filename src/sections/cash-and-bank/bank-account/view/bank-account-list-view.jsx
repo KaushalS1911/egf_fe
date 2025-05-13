@@ -45,22 +45,15 @@ import { getResponsibilityValue } from '../../../../permission/permission.js';
 import Typography from '@mui/material/Typography';
 import AccountsListView from '../accounts/view/accounts-list-view.jsx';
 import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
+import { isBetween } from '../../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
-
-const STATUS_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'true', label: 'Active' },
-  {
-    value: 'false',
-    label: 'In Active',
-  },
-];
 
 const TABLE_HEAD = [
   { id: '#', label: '' },
   { id: 'type', label: 'Type' },
   { id: 'name', label: 'Detail' },
+  { id: 'category', label: 'Category' },
   { id: 'date', label: 'Date' },
   { id: 'Amount', label: 'Amount' },
   { id: '', width: 88 },
@@ -68,7 +61,9 @@ const TABLE_HEAD = [
 
 const defaultFilters = {
   name: '',
-  isActive: 'all',
+  category: '',
+  startDate: null,
+  endDate: null,
 };
 
 // ----------------------------------------------------------------------
@@ -83,10 +78,6 @@ export default function BankAccountListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(bankTransactions);
   const [filters, setFilters] = useState({ ...defaultFilters, account: accountDetails });
-
-  // useEffect(() => {
-  //   setAccountDetails();
-  // }, [bankTransactions]);
 
   useEffect(() => {
     if (bankTransactions?.bankBalances && bankTransactions?.bankBalances.length > 0) {
@@ -143,13 +134,6 @@ export default function BankAccountListView() {
       router.push(paths.dashboard.scheme.edit(id));
     },
     [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters]
   );
 
   if (bankTransactionsLoading) {
@@ -301,8 +285,8 @@ export default function BankAccountListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters }) {
-  const { isActive, name, account } = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { name, account, category, startDate, endDate } = filters;
 
   const stabilizedThis = inputData?.map((el, index) => [el, index]);
   stabilizedThis?.sort((a, b) => {
@@ -319,10 +303,14 @@ function applyFilter({ inputData, comparator, filters }) {
         sch?.detail?.toLowerCase().includes(name?.toLowerCase())
     );
   }
-
+  if (category) {
+    inputData = inputData.filter((item) => item.category === category);
+  }
   if (account) {
     inputData = inputData?.filter((acc) => account.bankName === acc.bankName);
   }
-
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
+  }
   return inputData;
 }

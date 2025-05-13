@@ -95,7 +95,6 @@ export default function AllBranchLoanSummaryTableToolbar({
     input: { height: 7 },
   };
 
-  const sx2 = {};
   const handleFilterBranch = useCallback(
     (event) => {
       setSelectedBranch(event.target.value);

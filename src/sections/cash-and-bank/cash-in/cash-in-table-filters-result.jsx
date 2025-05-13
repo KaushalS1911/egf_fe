@@ -20,6 +20,9 @@ export default function CashInTableFiltersResult({
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
+  const handleRemoveCategory = useCallback(() => {
+    onFilters('category', '');
+  }, [onFilters]);
 
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
   const handleRemoveDate = useCallback(() => {
@@ -46,8 +49,13 @@ export default function CashInTableFiltersResult({
           </Block>
         )}
         {!!filters.name && (
-          <Block label="Scheme Name:">
+          <Block label="key word:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
+          </Block>
+        )}
+        {!!filters.category && (
+          <Block label="Category:">
+            <Chip label={filters.category} size="small" onDelete={handleRemoveCategory} />
           </Block>
         )}
         <Button

@@ -16,6 +16,7 @@ import { getResponsibilityValue } from '../../../permission/permission.js';
 import { fDate } from '../../../utils/format-time.js';
 import { Box } from '@mui/system';
 import { statusColorMap } from '../../../assets/data/index.js';
+import React from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -41,14 +42,25 @@ export default function CashInTableRow({ row, selected, onEditRow, onSelectRow, 
           </TableCell>{' '}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.status}`}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.ref})`}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.ref})`}</TableCell>{' '}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Label
+            variant="soft"
+            color={
+              (row.category === 'Payment Out' && 'error') ||
+              (row.category === 'Payment In' && 'success') ||
+              'default'
+            }
+          >
+            {row.category}
+          </Label>
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell
           sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}
         >
           {row.amount}
         </TableCell>
-
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {getResponsibilityValue('delete_scheme', configs, user) ||
           getResponsibilityValue('update_scheme', configs, user) ? (

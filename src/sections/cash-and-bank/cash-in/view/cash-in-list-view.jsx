@@ -52,7 +52,8 @@ const STATUS_OPTIONS = [
 const TABLE_HEAD = [
   { id: '', label: '' },
   { id: 'type', label: 'Type' },
-  { id: 'name', label: 'Detail' },
+  { id: 'detail', label: 'Detail' },
+  { id: 'category', label: 'Category' },
   { id: 'date', label: 'Date' },
   { id: 'Amount', label: 'Amount' },
   { id: '', width: 88 },
@@ -62,6 +63,7 @@ const defaultFilters = {
   name: '',
   startDate: null,
   endDate: null,
+  category: '',
 };
 
 // ----------------------------------------------------------------------
@@ -78,7 +80,13 @@ export default function CashInListView() {
   const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const amount = (cashTransactions.filter(e => e.category === 'Payment In').reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) - cashTransactions.filter(e => e.category === 'Payment Out').reduce((prev, next) => prev + (Number(next?.amount) || 0), 0));
+  const amount =
+    cashTransactions
+      .filter((e) => e.category === 'Payment In')
+      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
+    cashTransactions
+      .filter((e) => e.category === 'Payment Out')
+      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
 
   const dataFiltered = applyFilter({
     inputData: cashTransactions,
@@ -172,7 +180,7 @@ export default function CashInListView() {
         <CustomBreadcrumbs
           heading={
             <Typography variant="h4" gutterBottom>
-              Cash In Hand :  {' '}
+              Cash In Hand :{' '}
               <strong style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</strong>
             </Typography>
           }
@@ -299,7 +307,7 @@ export default function CashInListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, startDate, endDate } = filters;
+  const { name, startDate, endDate, category } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -310,7 +318,10 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) => sch.detail.toLowerCase().includes(name.toLowerCase()));
+    inputData = inputData.filter((item) => item.detail.toLowerCase().includes(name.toLowerCase()));
+  }
+  if (category) {
+    inputData = inputData.filter((item) => item.category === category);
   }
 
   if (!dateError && startDate && endDate) {
