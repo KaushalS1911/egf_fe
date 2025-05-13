@@ -80,19 +80,18 @@ export default function CashInListView() {
   const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
 
-  const amount =
-    cashTransactions
-      .filter((e) => e.category === 'Payment In')
-      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
-    cashTransactions
-      .filter((e) => e.category === 'Payment Out')
-      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
-
   const dataFiltered = applyFilter({
     inputData: cashTransactions,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  const amount =
+    dataFiltered
+      .filter((e) => e.category === 'Payment In')
+      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
+    dataFiltered
+      .filter((e) => e.category === 'Payment Out')
+      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,

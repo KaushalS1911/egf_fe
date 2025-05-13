@@ -94,6 +94,15 @@ export default function BankAccountListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const amount =
+    dataFiltered
+      ?.filter((e) => e.category === 'Payment In')
+      ?.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
+    dataFiltered
+      ?.filter((e) => e.category === 'Payment Out')
+      ?.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+
   const dataInPage = dataFiltered?.slice(
     table.page * table?.rowsPerPage,
     table.page * table?.rowsPerPage + table?.rowsPerPage
@@ -119,15 +128,6 @@ export default function BankAccountListView() {
     setFilters(defaultFilters);
   }, []);
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      handleDelete([id]);
-
-      table.onUpdatePageDeleteRow(dataInPage?.length);
-    },
-    [dataInPage?.length, enqueueSnackbar, table, tableData]
-  );
-
   const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.scheme.edit(id));
@@ -143,7 +143,12 @@ export default function BankAccountListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Bank Accounts"
+          heading={
+            <Typography variant="h4" gutterBottom>
+              Bank Account :{' '}
+              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</strong>
+            </Typography>
+          }
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Bank Accounts', href: paths.dashboard.scheme.root },
