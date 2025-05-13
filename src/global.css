@@ -29,7 +29,7 @@
 }
 
 ::-webkit-scrollbar {
-  height: 5px;
+  height: 10px;
   transition: opacity 0.3s ease;
   width: 6px;
 }
