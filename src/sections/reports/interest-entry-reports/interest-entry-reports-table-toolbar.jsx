@@ -22,6 +22,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
+import InterestEntryReportsPdf from '../pdf/interest-entry-reports-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -331,7 +332,7 @@ export default function InterestEntryReportsTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InterestReportsPdf
+              <InterestEntryReportsPdf
                 data={data}
                 configs={configs}
                 filterData={filterData}

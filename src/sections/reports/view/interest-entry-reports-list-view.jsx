@@ -419,19 +419,19 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter(
       (item) =>
         (
-          item?.customer?.firstName &&
-          item?.customer?.firstName +
+          item?.loan.customer?.firstName &&
+          item?.loan.customer?.firstName +
             ' ' +
-            item?.customer?.middleName +
+            item?.loan.customer?.middleName +
             ' ' +
-            item?.customer?.lastName
+            item?.loan.customer?.lastName
         )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item.loan.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
+        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
 
