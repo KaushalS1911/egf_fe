@@ -37,6 +37,9 @@ import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../../permission/permission.js';
 import { LoadingScreen } from '../../../../../components/loading-screen/index.js';
+import TableRow from '@mui/material/TableRow';
+import { grey } from '../../../../../theme/palette.js';
+import { TableCell } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -258,6 +261,19 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
             }}
           />
           <TableBody>
+            <TableRow
+              sx={{
+                cursor: 'pointer',
+              }}
+              onClick={() => setAccountDetails({})}
+            >
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                <Button variant={'contained'} sx={{ fontSize: 10 }}>
+                  See All
+                </Button>
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}></TableCell>
+            </TableRow>
             {dataFiltered
               .slice(
                 table.page * table.rowsPerPage,
@@ -322,8 +338,8 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) =>
-      sch?.bankName?.toLowerCase().includes(name.toLowerCase())
+    inputData = inputData.filter((item) =>
+      item?.bankName?.toLowerCase().includes(name.toLowerCase())
     );
   }
 

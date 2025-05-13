@@ -64,6 +64,7 @@ const defaultFilters = {
   category: '',
   startDate: null,
   endDate: null,
+  account: {},
 };
 
 // ----------------------------------------------------------------------
@@ -81,9 +82,7 @@ export default function BankAccountListView() {
 
   useEffect(() => {
     if (bankTransactions?.bankBalances && bankTransactions?.bankBalances.length > 0) {
-      setAccountDetails(
-        bankTransactions?.bankBalances[Number(bankTransactions?.bankBalances?.length) - 1]
-      );
+      setAccountDetails(bankTransactions?.bankBalances[0]);
     }
   }, [bankTransactions.bankBalances]);
 
@@ -306,7 +305,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (category) {
     inputData = inputData.filter((item) => item.category === category);
   }
-  if (account) {
+  if (Object.keys(account).length) {
     inputData = inputData?.filter((acc) => account.bankName === acc.bankName);
   }
   if (!dateError && startDate && endDate) {

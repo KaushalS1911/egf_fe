@@ -46,7 +46,19 @@ export default function AccountsTableRow({
       <TableRow
         hover
         selected={selected}
-        sx={{ cursor:"pointer", backgroundColor: row?._id === accountDetails?._id ? grey[400] : '' }}
+        sx={{
+          cursor: 'pointer',
+          backgroundColor: row?._id === accountDetails?._id ? grey[400] : '',
+        }}
+        onClick={() => setAccountDetails(row)}
+      ></TableRow>
+      <TableRow
+        hover
+        selected={selected}
+        sx={{
+          cursor: 'pointer',
+          backgroundColor: row?._id === accountDetails?._id ? grey[400] : '',
+        }}
         onClick={() => setAccountDetails(row)}
       >
         {/*<TableCell padding="checkbox">*/}
