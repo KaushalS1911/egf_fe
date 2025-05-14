@@ -501,7 +501,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item?.otherName === otherName);
   }
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((item) => isBetween(new Date(item.closeDaTe), startDate, endDate));
+    inputData = inputData.filter((item) => isBetween(new Date(item.closeDate), startDate, endDate));
   }
 
   return inputData;
