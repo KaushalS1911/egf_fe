@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Grid, Box, Card, CardHeader } from '@mui/material';
+import { Box, Button, Card, Grid, TextField, Typography } from '@mui/material';
 import { useGetConfigs } from 'src/api/config';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
@@ -7,30 +7,30 @@ import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import { Stack } from '@mui/system';
 
-export default function OtherIncomeTypeCreteView({ setTab }) {
+export default function ChargeTypeView({ setTab }) {
   const { user } = useAuthContext();
   const { configs, mutate } = useGetConfigs();
   const [inputVal, setInputVal] = useState('');
-  const [otherIncomeType, setOtherIncomeTypes] = useState(configs?.otherIncomeType || []);
+  const [chargeTypes, setChargeTypes] = useState(configs?.chargeType || []);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = () => {
     if (!inputVal) {
-      enqueueSnackbar('Expense type cannot be empty', { variant: 'warning' });
+      enqueueSnackbar('Charge type cannot be empty', { variant: 'warning' });
       return;
     }
 
-    const updatedOtherIncomeTypes = [...otherIncomeType, inputVal.toUpperCase()];
+    const updatedChargeTypes = [...chargeTypes, inputVal.toUpperCase()];
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
-    const payload = { ...configs, otherIncomeType: updatedOtherIncomeTypes };
+    const payload = { ...configs, chargeType: updatedChargeTypes };
 
     axios
       .put(URL, payload)
       .then((res) => {
         if (res.status === 200) {
           setInputVal('');
-          setOtherIncomeTypes(updatedOtherIncomeTypes);
-          enqueueSnackbar('Expense type added successfully', { variant: 'success' });
+          setChargeTypes(updatedChargeTypes);
+          enqueueSnackbar('Charge type added successfully', { variant: 'success' });
           setTab('Permission');
           mutate();
         }
@@ -39,15 +39,15 @@ export default function OtherIncomeTypeCreteView({ setTab }) {
   };
 
   const handleDelete = (type) => {
-    const updatedOtherIncomeTypes = otherIncomeType.filter((bt) => bt !== type);
+    const updatedChargeTypes = chargeTypes.filter((bt) => bt !== type);
     const apiEndpoint = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
-    const payload = { ...configs, otherIncomeType: updatedOtherIncomeTypes };
+    const payload = { ...configs, chargeType: updatedChargeTypes };
 
     axios
       .put(apiEndpoint, payload)
       .then(() => {
-        setOtherIncomeTypes(updatedOtherIncomeTypes);
-        enqueueSnackbar('Expense type deleted successfully', { variant: 'success' });
+        setChargeTypes(updatedChargeTypes);
+        enqueueSnackbar('Charge type deleted successfully', { variant: 'success' });
         mutate();
       })
       .catch((err) => console.log(err));
@@ -58,16 +58,16 @@ export default function OtherIncomeTypeCreteView({ setTab }) {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Add Other Income Type
+            Add Charge Type
           </Typography>
         </Grid>
         <Grid item md={4} xs={12}>
           <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
             <TextField
               fullWidth
-              name="otherIncomeType"
+              name='chargeType'
               variant="outlined"
-              label="Expense Type"
+              label='Charge Type'
               value={inputVal}
               inputProps={{ style: { textTransform: 'uppercase' } }}
               onChange={(e) => setInputVal(e.target.value)}
@@ -92,8 +92,8 @@ export default function OtherIncomeTypeCreteView({ setTab }) {
                   sm: 'repeat(2, 1fr)',
                 }}
               >
-                {otherIncomeType.length !== 0 &&
-                  otherIncomeType.map((type, index) => (
+                {chargeTypes.length !== 0 &&
+                  chargeTypes.map((type, index) => (
                     <Grid
                       container
                       key={index}

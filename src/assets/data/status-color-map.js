@@ -3,6 +3,7 @@ export const statusColorMap = {
   'Customer Interest': 'secondary.main',
   'Part Release': 'warning.light',
   'Payment In': 'success.main',
+  'Payment Out': 'error.main',
   'Loan Part Payment': 'warning.darker',
   'Uchak Interest': 'info.light',
   'Customer Loan Close': 'success.darker',
