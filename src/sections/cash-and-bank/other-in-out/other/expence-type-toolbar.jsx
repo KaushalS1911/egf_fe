@@ -7,13 +7,12 @@ import Iconify from 'src/components/iconify/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function OtherToolbar({ filters, onFilters, schemes }) {
-
+export default function ExpenceTypeToolbar({ filters, onFilters, schemes }) {
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   return (
@@ -29,17 +28,17 @@ export default function OtherToolbar({ filters, onFilters, schemes }) {
           p: 2.5,
         }}
       >
-        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
@@ -50,7 +49,7 @@ export default function OtherToolbar({ filters, onFilters, schemes }) {
   );
 }
 
-OtherToolbar.propTypes = {
+ExpenceTypeToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

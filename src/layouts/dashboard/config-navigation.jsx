@@ -241,7 +241,7 @@ export function useNavData() {
         subheader: t('config'),
         items: [
           {
-            title: t('cash & bank'),
+            title: t('Accounting'),
             path: paths.dashboard.cashAndBank.root,
             icon: ICONS.cashAndBank,
             children: [
@@ -254,25 +254,17 @@ export function useNavData() {
                 path: paths.dashboard.cashAndBank.bankAccount,
               },
               {
-                title: t('payment in out'),
-                path: paths.dashboard.cashAndBank['payment-in-out'].list,
-              },
-              {
-                title: t('expense'),
+                title: t('Expence'),
                 path: paths.dashboard.cashAndBank.expense.list,
               },
               {
-                title: t('other income'),
-                path: paths.dashboard.cashAndBank.otherIncome.list,
+                title: t('payment in out'),
+                path: paths.dashboard.cashAndBank['payment-in-out'].list,
               },
               {
                 title: t('Charge in/out'),
                 path: paths.dashboard.cashAndBank.chargeInOut.list,
               },
-              // {
-              //   title: t('Other in/out'),
-              //   path: paths.dashboard.cashAndBank.otherInOut.list,
-              // },
             ],
           },
           {

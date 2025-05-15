@@ -230,26 +230,6 @@ export default function PartiesListView({
             }}
           />
           <TableBody>
-            <TableRow
-              sx={{
-                cursor: 'pointer',
-              }}
-              onClick={() => setPartyDetails({})}
-            >
-              <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                <Button
-                  variant={'outlined'}
-                  sx={{
-                    fontSize: 12,
-                    fontWeight: 800,
-                    color: (theme) => theme.palette.primary.main,
-                  }}
-                >
-                  See All
-                </Button>
-              </TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap' }}></TableCell>
-            </TableRow>
             {dataFiltered
               .slice(
                 table.page * table.rowsPerPage,

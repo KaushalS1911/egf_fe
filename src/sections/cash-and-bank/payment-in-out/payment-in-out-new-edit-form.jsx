@@ -209,23 +209,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
     }
   }, []);
 
-  // useEffect(() => {
-  //   const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
-  //   const paymentMode = watch('paymentMode');
-  //   const cashAmount = parseFloat(watch('cashAmount')) || 0;
-  //
-  //   if (paymentMode === 'Cash') {
-  //     setValue('cashAmount', totalAmountPaid);
-  //     setValue('bankAmount', 0);
-  //   } else if (paymentMode === 'Bank') {
-  //     setValue('bankAmount', totalAmountPaid);
-  //     setValue('cashAmount', 0);
-  //   } else if (paymentMode === 'Both') {
-  //     const updatedBankAmount = totalAmountPaid - cashAmount;
-  //     setValue('bankAmount', updatedBankAmount >= 0 ? updatedBankAmount.toFixed(2) : 0);
-  //   }
-  // }, [watch('amountPaid'), watch('paymentMode'), watch('cashAmount')]);
-
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -326,7 +309,7 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
                 isOptionEqualToValue={(option, value) => option._id === value._id}
               />
               <RhfDatePicker name="date" control={control} label="Date" req={'red'} />
-              <RHFTextField name="description" label="Description" req={'red'} multiline />
+              <RHFTextField name="description" label="Description" multiline />
             </Box>
 
             <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 600 }}>

@@ -6,29 +6,28 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify/index.js';
-import { shortDateLabel } from '../../../components/custom-date-range-picker/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function ExpenseTableFiltersResult({
+export default function ExpenceTableFiltersResult({
   filters,
   onFilters,
   onResetFilters,
   results,
+  setExpenceDetails,
   ...other
 }) {
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
 
-  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
-  const handleRemoveDate = useCallback(() => {
-    onFilters('startDate', null);
-    onFilters('endDate', null);
+  const handleRemoveCategory = useCallback(() => {
+    onFilters('category', '');
   }, [onFilters]);
 
-  const handleRemoveStatus = useCallback(() => {
-    onFilters('isActive', 'all');
+  const handleRemoveChargeType = useCallback(() => {
+    onFilters('otherInOutType', '');
+    setExpenceDetails('');
   }, [onFilters]);
 
   return (
@@ -40,14 +39,19 @@ export default function ExpenseTableFiltersResult({
         </Box>
       </Box>
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.startDate && filters.endDate && (
-          <Block label="Date:">
-            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
-          </Block>
-        )}
         {!!filters.name && (
-          <Block label="Expance Type:">
+          <Block label="Key Word:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
+          </Block>
+        )}{' '}
+        {!!filters.otherInOutType && (
+          <Block label="Charge Type:">
+            <Chip label={filters.otherInOutType} size="small" onDelete={handleRemoveChargeType} />
+          </Block>
+        )}{' '}
+        {!!filters.category && (
+          <Block label="status:">
+            <Chip label={filters.category} size="small" onDelete={handleRemoveCategory} />
           </Block>
         )}
         <Button
@@ -62,7 +66,7 @@ export default function ExpenseTableFiltersResult({
   );
 }
 
-ExpenseTableFiltersResult.propTypes = {
+ExpenceTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

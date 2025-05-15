@@ -22,9 +22,9 @@ import {
   useTable,
 } from 'src/components/table/index.js';
 import axios from 'axios';
-import OtherToolbar from '../other-toolbar.jsx';
-import OtherTableFiltersResult from '../other-table-filters-result.jsx';
-import OtherTableRow from '../other-table-row.jsx';
+import ExpenceTypeToolbar from '../expence-type-toolbar.jsx';
+import ExpenceTypeTableFiltersResult from '../expence-type-table-filters-result.jsx';
+import ExpenceTypeTableRow from '../expence-type-table-row.jsx';
 import { useGetScheme } from '../../../../../api/scheme.js';
 import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
@@ -35,9 +35,7 @@ import TableCell from '@mui/material/TableCell';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'accountName', label: 'Charges' },
-];
+const TABLE_HEAD = [{ id: 'accountName', label: 'Charges' }];
 
 const defaultFilters = {
   name: '',
@@ -46,7 +44,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function OtherListView({ accounts, setOtherInOutDetails, otherInOutDetails }) {
+export default function ExpenceTypeListView({ setExpenceDetails, expenceDetails }) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { scheme, mutate, schemeLoading } = useGetScheme();
@@ -54,27 +52,23 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
   const table = useTable();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(accounts);
+  const [tableData, setTableData] = useState(configs?.expense);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: configs.otherIncomeType,
+    inputData: configs?.expenseType,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
-  useEffect(() => {
-    setOtherInOutDetails(configs.otherIncomeType[0]);
-  }, [configs]);
-
-  const dataInPage = dataFiltered.slice(
+  const dataInPage = dataFiltered?.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -84,7 +78,7 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -111,9 +105,9 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
-      table.onUpdatePageDeleteRow(dataInPage.length);
+      table.onUpdatePageDeleteRow(dataInPage?.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage?.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -126,13 +120,13 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
+  }, [dataFiltered?.length, dataInPage?.length, enqueueSnackbar, table, tableData]);
 
   const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.scheme.edit(id));
     },
-    [router],
+    [router]
   );
 
   const schemes = scheme.map((item) => ({
@@ -154,9 +148,9 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
 
   return (
     <>
-      <OtherToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
+      <ExpenceTypeToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
       {canReset && (
-        <OtherTableFiltersResult
+        <ExpenceTypeTableFiltersResult
           filters={filters}
           onFilters={handleFilters}
           onResetFilters={handleResetFilters}
@@ -173,18 +167,18 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
       >
         <TableSelectedAction
           dense={table.dense}
-          numSelected={table.selected.length}
-          rowCount={dataFiltered.length}
+          numSelected={table.selected?.length}
+          rowCount={dataFiltered?.length}
           onSelectAllRows={(checked) =>
             table.onSelectAllRows(
               checked,
-              dataFiltered.map((row) => row._id),
+              dataFiltered.map((row) => row._id)
             )
           }
           action={
-            <Tooltip title='Delete'>
-              <IconButton color='primary' onClick={confirm.onTrue}>
-                <Iconify icon='solar:trash-bin-trash-bold' />
+            <Tooltip title="Delete">
+              <IconButton color="primary" onClick={confirm.onTrue}>
+                <Iconify icon="solar:trash-bin-trash-bold" />
               </IconButton>
             </Tooltip>
           }
@@ -194,8 +188,8 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
             order={table.order}
             orderBy={table.orderBy}
             headLabel={TABLE_HEAD}
-            rowCount={dataFiltered.length}
-            numSelected={table.selected.length}
+            rowCount={dataFiltered?.length}
+            numSelected={table.selected?.length}
             onSort={table.onSort}
             sx={{
               position: 'sticky',
@@ -205,47 +199,26 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
             }}
           />
           <TableBody>
-            <TableRow
-              sx={{
-                cursor: 'pointer',
-              }}
-              onClick={() => setOtherInOutDetails('')}
-            >
-              <TableCell>
-
-                <Button variant={'outlined'}
-                        sx={{
-                          fontSize: 12,
-                          fontWeight: 800,
-                          color: (theme) => theme.palette.primary.main,
-
-
-                        }}>
-                  See All
-                </Button>
-              </TableCell>
-            </TableRow>
             {dataFiltered
-              .slice(
+              ?.slice(
                 table.page * table.rowsPerPage,
-                table.page * table.rowsPerPage + table.rowsPerPage,
+                table.page * table.rowsPerPage + table.rowsPerPage
               )
-              .map((row) => (
-                <OtherTableRow
+              ?.map((row) => (
+                <ExpenceTypeTableRow
                   key={row._id}
                   row={row}
                   selected={table.selected.includes(row._id)}
                   onSelectRow={() => table.onSelectRow(row._id)}
                   onDeleteRow={() => handleDeleteRow(row._id)}
                   onEditRow={() => handleEditRow(row._id)}
-                  setOtherInOutDetails={setOtherInOutDetails}
-                  otherInOutDetails={otherInOutDetails}
-
+                  setExpenceDetails={setExpenceDetails}
+                  expenceDetails={expenceDetails}
                 />
               ))}
             <TableEmptyRows
               height={denseHeight}
-              emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+              emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered?.length)}
             />
             <TableNoData notFound={notFound} />
           </TableBody>
@@ -254,7 +227,7 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -262,8 +235,8 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -281,22 +254,16 @@ export default function OtherListView({ accounts, setOtherInOutDetails, otherInO
 function applyFilter({ inputData, comparator, filters }) {
   const { isActive, name } = filters;
 
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
+  const stabilizedThis = inputData?.map((el, index) => [el, index]);
+  stabilizedThis?.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  inputData = stabilizedThis.map((el) => el[0]);
+  inputData = stabilizedThis?.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((item) =>
-      item?.toLowerCase().includes(name.toLowerCase()),
-    );
-  }
-
-  if (isActive !== 'all') {
-    inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
+    inputData = inputData.filter((item) => item?.toLowerCase().includes(name.toLowerCase()));
   }
 
   return inputData;

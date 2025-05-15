@@ -76,7 +76,6 @@ export default function ExpenseNewEditForm({ currentExpense }) {
     category: Yup.string().required('category  is required'),
     paymentMode: Yup.string().required('paymentMode  is required'),
     date: Yup.date().typeError('Please enter a valid date').required('Date is required'),
-    description: Yup.string().required('description Date is required'),
     ...paymentSchema,
   });
   console.log(file);
@@ -125,14 +124,8 @@ export default function ExpenseNewEditForm({ currentExpense }) {
   }, [watch('valuation'), configs.goldRate, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!file) {
-      return enqueueSnackbar('Please select a file', {
-        variant: 'error',
-      });
-    }
     let paymentDetail = {
       paymentMode: data.paymentMode,
-      expectPaymentMode: data.expectPaymentMode,
     };
 
     if (data.paymentMode === 'Cash') {
@@ -158,7 +151,6 @@ export default function ExpenseNewEditForm({ currentExpense }) {
         bankAmount: data.bankAmount,
       };
     }
-
     const formData = new FormData();
 
     formData.append('expenseType', data?.expenseType);
@@ -166,11 +158,17 @@ export default function ExpenseNewEditForm({ currentExpense }) {
     formData.append('category', data?.category);
     formData.append('date', data?.date);
 
-    // Append paymentDetails fields
-
     for (const [key, value] of Object.entries(paymentDetail)) {
-      formData.append(`paymentDetails [${key}]`, value);
+      if (key === 'account' && value) {
+        formData.append('paymentDetails[account][_id]', value._id);
+        formData.append('paymentDetails[account][bankName]', value.bankName);
+        formData.append('paymentDetails[account][accountNumber]', value.accountNumber);
+        formData.append('paymentDetails[account][branchName]', value.branchName);
+      } else {
+        formData.append(`paymentDetails[${key}]`, value);
+      }
     }
+
     if (file) {
       formData.append('invoice', file);
     }
@@ -250,7 +248,7 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                 inputProps={{ style: { textTransform: 'uppercase' } }}
               />
               <RhfDatePicker name="date" control={control} label="Date" req={'red'} />
-              <RHFTextField name="description" label="Description" req={'red'} multiline />
+              <RHFTextField name="description" label="Description" multiline />
             </Box>
 
             <UploadBox
@@ -317,6 +315,7 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                   sx={{ mt: 1 }}
                 >
                   <RHFAutocomplete
+                    req={'red'}
                     name="paymentMode"
                     label="Payment Mode"
                     options={['Cash', 'Bank', 'Both']}
@@ -344,8 +343,8 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
-                          label="Cash Amount"
                           req={'red'}
+                          label="Cash Amount"
                           inputProps={{ min: 0 }}
                           // onChange={(e) => {
                           //   field.onChange(e);

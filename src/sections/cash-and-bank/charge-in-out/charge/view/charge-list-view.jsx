@@ -35,9 +35,7 @@ import TableCell from '@mui/material/TableCell';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'accountName', label: 'Charges' },
-];
+const TABLE_HEAD = [{ id: 'accountName', label: 'Charges' }];
 
 const defaultFilters = {
   name: '',
@@ -69,7 +67,7 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
@@ -84,7 +82,7 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -113,7 +111,7 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
       handleDelete([id]);
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -132,7 +130,7 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
     (id) => {
       router.push(paths.dashboard.scheme.edit(id));
     },
-    [router],
+    [router]
   );
 
   const schemes = scheme.map((item) => ({
@@ -178,13 +176,13 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
           onSelectAllRows={(checked) =>
             table.onSelectAllRows(
               checked,
-              dataFiltered.map((row) => row._id),
+              dataFiltered.map((row) => row._id)
             )
           }
           action={
-            <Tooltip title='Delete'>
-              <IconButton color='primary' onClick={confirm.onTrue}>
-                <Iconify icon='solar:trash-bin-trash-bold' />
+            <Tooltip title="Delete">
+              <IconButton color="primary" onClick={confirm.onTrue}>
+                <Iconify icon="solar:trash-bin-trash-bold" />
               </IconButton>
             </Tooltip>
           }
@@ -205,30 +203,10 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
             }}
           />
           <TableBody>
-            <TableRow
-              sx={{
-                cursor: 'pointer',
-              }}
-              onClick={() => setChargeDetails('')}
-            >
-              <TableCell>
-
-                <Button variant={'outlined'}
-                        sx={{
-                          fontSize: 12,
-                          fontWeight: 800,
-                          color: (theme) => theme.palette.primary.main,
-
-
-                        }}>
-                  See All
-                </Button>
-              </TableCell>
-            </TableRow>
             {dataFiltered
               .slice(
                 table.page * table.rowsPerPage,
-                table.page * table.rowsPerPage + table.rowsPerPage,
+                table.page * table.rowsPerPage + table.rowsPerPage
               )
               .map((row) => (
                 <ChargeTableRow
@@ -253,7 +231,7 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -261,8 +239,8 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -289,9 +267,7 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((item) =>
-      item?.toLowerCase().includes(name.toLowerCase()),
-    );
+    inputData = inputData.filter((item) => item?.toLowerCase().includes(name.toLowerCase()));
   }
 
   if (isActive !== 'all') {

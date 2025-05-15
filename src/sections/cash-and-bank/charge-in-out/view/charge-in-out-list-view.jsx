@@ -80,6 +80,26 @@ export default function ChargeInOutListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  const cashIn = dataFiltered.reduce(
+    (prev, next) =>
+      prev + (Number(next.status === 'Payment In' && next?.paymentDetails?.cashAmount) || 0),
+    0
+  );
+  const bankIn = dataFiltered.reduce(
+    (prev, next) =>
+      prev + (Number(next.status === 'Payment In' && next?.paymentDetails?.bankAmount) || 0),
+    0
+  );
+  const cashOut = dataFiltered.reduce(
+    (prev, next) =>
+      prev + (Number(next.status === 'Payment Out' && next?.paymentDetails?.cashAmount) || 0),
+    0
+  );
+  const bankOut = dataFiltered.reduce(
+    (prev, next) =>
+      prev + (Number(next.status === 'Payment Out' && next?.paymentDetails?.bankAmount) || 0),
+    0
+  );
 
   useEffect(() => {
     setFilters({ ...defaultFilters, chargeType: chargeDetails });
@@ -95,7 +115,7 @@ export default function ChargeInOutListView() {
 
   const dataInPage = dataFiltered?.slice(
     table.page * table?.rowsPerPage,
-    table.page * table?.rowsPerPage + table?.rowsPerPage,
+    table.page * table?.rowsPerPage + table?.rowsPerPage
   );
 
   const denseHeight = table?.dense ? 56 : 56 + 20;
@@ -110,7 +130,7 @@ export default function ChargeInOutListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -120,7 +140,7 @@ export default function ChargeInOutListView() {
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge/${id}`
       );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
@@ -136,14 +156,14 @@ export default function ChargeInOutListView() {
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.cashAndBank.chargeInOut.edit(id));
     },
-    [router],
+    [router]
   );
 
   if (ChargeInOutLoading) {
@@ -155,20 +175,29 @@ export default function ChargeInOutListView() {
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading={
-            <Typography variant='h4' gutterBottom>
-              Charge In/Out
+            <Typography variant="h4" gutterBottom>
+              Charge In/Out :{' '}
+              <strong style={{ marginLeft: 200 }}>
+                Receivable : -
+                <span style={{ color: 'green', marginLeft: 10 }}>
+                  {(Number(cashIn) + Number(bankIn)).toFixed(2)}
+                </span>
+              </strong>
+              <strong style={{ marginLeft: 20 }}>
+                Payable : -
+                <span style={{ color: 'red', marginLeft: 10 }}>
+                  {Number(cashOut) + Number(bankOut).toFixed(2)}
+                </span>
+              </strong>
             </Typography>
           }
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'List' },
-          ]}
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'List' }]}
           action={
             <Button
               component={RouterLink}
               href={paths.dashboard.cashAndBank.chargeInOut.new}
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
             >
               Add Charge in-out
             </Button>
@@ -181,10 +210,7 @@ export default function ChargeInOutListView() {
           <Grid container>
             <Grid md={3}>
               <Card sx={{ height: '100%', p: 2, mr: 2 }}>
-                <ChargeListView
-                  setChargeDetails={setChargeDetails}
-                  chargeDetails={chargeDetails}
-                />
+                <ChargeListView setChargeDetails={setChargeDetails} chargeDetails={chargeDetails} />
               </Card>
             </Grid>
             <Grid md={9}>
@@ -218,13 +244,13 @@ export default function ChargeInOutListView() {
                     onSelectAllRows={(checked) =>
                       table.onSelectAllRows(
                         checked,
-                        dataFiltered.map((row) => row._id),
+                        dataFiltered.map((row) => row._id)
                       )
                     }
                     action={
-                      <Tooltip title='Delete'>
-                        <IconButton color='primary' onClick={confirm.onTrue}>
-                          <Iconify icon='solar:trash-bin-trash-bold' />
+                      <Tooltip title="Delete">
+                        <IconButton color="primary" onClick={confirm.onTrue}>
+                          <Iconify icon="solar:trash-bin-trash-bold" />
                         </IconButton>
                       </Tooltip>
                     }
@@ -248,7 +274,7 @@ export default function ChargeInOutListView() {
                       {dataFiltered
                         .slice(
                           table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
                         )
                         .map((row) => (
                           <ChargeInOutTableRow
@@ -285,7 +311,7 @@ export default function ChargeInOutListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -293,8 +319,8 @@ export default function ChargeInOutListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               confirm.onFalse();
             }}
@@ -323,7 +349,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter(
       (sch) =>
         sch?.chargeType?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.detail?.toLowerCase().includes(name?.toLowerCase()),
+        sch?.detail?.toLowerCase().includes(name?.toLowerCase())
     );
   }
   if (category) {

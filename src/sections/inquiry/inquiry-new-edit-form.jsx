@@ -182,6 +182,8 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/inquiry/${currentInquiry._id}?${queryString}`,
           payload
         );
+        router.push(paths.dashboard.inquiry.list);
+
         enqueueSnackbar(res?.data?.message);
       } else {
         const res = await axios.post(
@@ -199,41 +201,47 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
     }
   });
   const fetchNextInquiry = () => {
-    const nextInquiryIndex = inquiry.indexOf(currentInquiry) + 1;
-    const nextInquiry = inquiry[nextInquiryIndex];
+    const currentIndex = inquiry.indexOf(currentInquiry);
 
-    if (nextInquiry) {
-      router.push(paths.dashboard.inquiry.edit(nextInquiry._id));
+    // Find the next inquiry with status 'Active'
+    const nextActiveInquiry = inquiry.slice(currentIndex + 1).find((i) => i.status === 'Active');
+
+    if (nextActiveInquiry) {
+      router.push(paths.dashboard.inquiry.edit(nextActiveInquiry._id));
       reset({
-        branchId: nextInquiry.branch
+        branchId: nextActiveInquiry.branch
           ? {
-              label: nextInquiry.branch.name,
-              value: nextInquiry.branch._id,
+              label: nextActiveInquiry.branch.name,
+              value: nextActiveInquiry.branch._id,
             }
           : null,
-        assignTo: nextInquiry.assignTo
+        assignTo: nextActiveInquiry.assignTo
           ? {
-              label: `${nextInquiry.assignTo.user.firstName} ${nextInquiry.assignTo.user.lastName}`,
-              value: nextInquiry.assignTo._id,
+              label: `${nextActiveInquiry.assignTo.user.firstName} ${nextActiveInquiry.assignTo.user.lastName}`,
+              value: nextActiveInquiry.assignTo._id,
             }
           : null,
-        response: nextInquiry.status || 'Active',
-        firstName: nextInquiry.firstName || '',
-        lastName: nextInquiry.lastName || '',
-        contact: nextInquiry.contact || '',
-        email: nextInquiry.email || '',
-        date: nextInquiry.date ? new Date(nextInquiry.date) : new Date(),
-        recallingDate: nextInquiry.recallingDate ? new Date(nextInquiry.recallingDate) : null,
-        inquiryFor: checkInquiryFor(nextInquiry.inquiryFor)
+        response: nextActiveInquiry.status || 'Active',
+        firstName: nextActiveInquiry.firstName || '',
+        lastName: nextActiveInquiry.lastName || '',
+        contact: nextActiveInquiry.contact || '',
+        email: nextActiveInquiry.email || '',
+        date: nextActiveInquiry.date ? new Date(nextActiveInquiry.date) : new Date(),
+        recallingDate: nextActiveInquiry.recallingDate
+          ? new Date(nextActiveInquiry.recallingDate)
+          : null,
+        inquiryFor: checkInquiryFor(nextActiveInquiry.inquiryFor)
           ? 'Other'
-          : nextInquiry.inquiryFor || '',
-        other: checkInquiryFor(nextInquiry.inquiryFor) ? nextInquiry.inquiryFor : null || '',
-        remark: checkremark(nextInquiry.remark) ? 'Other' : nextInquiry.remark || '',
-        otherRemark: checkremark(nextInquiry.remark) ? nextInquiry.remark : null || '',
-        address: nextInquiry.address || '',
+          : nextActiveInquiry.inquiryFor || '',
+        other: checkInquiryFor(nextActiveInquiry.inquiryFor)
+          ? nextActiveInquiry.inquiryFor
+          : null || '',
+        remark: checkremark(nextActiveInquiry.remark) ? 'Other' : nextActiveInquiry.remark || '',
+        otherRemark: checkremark(nextActiveInquiry.remark) ? nextActiveInquiry.remark : null || '',
+        address: nextActiveInquiry.address || '',
       });
     } else {
-      enqueueSnackbar('No more inquiries available', { variant: 'info' });
+      enqueueSnackbar('No more active inquiries available', { variant: 'info' });
     }
   };
 
@@ -246,7 +254,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>
-          {currentInquiry && (
+          {currentInquiry?.status === 'Active' && (
             <Box sx={{ display: 'flex', justifyContent: 'end', mb: 2 }}>
               <LoadingButton variant="contained" onClick={fetchNextInquiry}>
                 Next Inquiry

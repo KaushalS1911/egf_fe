@@ -9,7 +9,7 @@ import Iconify from 'src/components/iconify/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function OtherTableFiltersResult({
+export default function ExpenceTypeTableFiltersResult({
   filters,
   onFilters,
   onResetFilters,
@@ -59,7 +59,7 @@ export default function OtherTableFiltersResult({
   );
 }
 
-OtherTableFiltersResult.propTypes = {
+ExpenceTypeTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

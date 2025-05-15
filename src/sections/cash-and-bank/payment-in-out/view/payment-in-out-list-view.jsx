@@ -94,6 +94,16 @@ export default function PaymentInOutListView() {
     filters,
   });
 
+  const receivableAmt = party.reduce(
+    (prev, next) => prev + (Number(next.amount >= 0 && next?.amount) || 0),
+    0
+  );
+
+  const payAbleAmt = party.reduce(
+    (prev, next) => prev + (Number(next.amount <= 0 && next?.amount) || 0),
+    0
+  );
+
   const dataInPage = dataFiltered?.slice(
     table.page * table?.rowsPerPage,
     table.page * table?.rowsPerPage + table?.rowsPerPage
@@ -167,7 +177,21 @@ export default function PaymentInOutListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading={'Payment In/Out'}
+          heading={
+            <Typography variant="h4" gutterBottom>
+              Payment In/Out :{' '}
+              <strong style={{ marginLeft: 200 }}>
+                Receivable : -
+                <span style={{ color: 'green', marginLeft: 10 }}>{receivableAmt.toFixed(2)}</span>
+              </strong>
+              <strong style={{ marginLeft: 20 }}>
+                Payable : -
+                <span style={{ color: 'red', marginLeft: 10 }}>
+                  {Math.abs(payAbleAmt).toFixed(2)}
+                </span>
+              </strong>
+            </Typography>
+          }
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Payment in/out' },

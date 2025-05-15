@@ -19,12 +19,12 @@ import Label from '../../../components/label/index.js';
 // ----------------------------------------------------------------------
 
 export default function ChargeInOutTableRow({
-                                              row,
-                                              selected,
-                                              onEditRow,
-                                              onSelectRow,
-                                              onDeleteRow,
-                                            }) {
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}) {
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -33,7 +33,7 @@ export default function ChargeInOutTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <TableCell sx={{ fontSize: '12px', textAlign: 'center' }}>
             <Box
               sx={{
@@ -47,13 +47,10 @@ export default function ChargeInOutTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.chargeType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {fDate(row.date)}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
-            color: row.status === 'Payment In' ? 'success.main' : 'error.main',
           }}
         >
           {row?.paymentDetails?.cashAmount || 0}
@@ -61,7 +58,6 @@ export default function ChargeInOutTableRow({
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
-            color: row.status === 'Payment In' ? 'success.main' : 'error.main',
           }}
         >
           {row?.paymentDetails?.bankAmount || 0}
@@ -73,24 +69,24 @@ export default function ChargeInOutTableRow({
           <Label
             variant="soft"
             color={
-              (row.status === 'Payment Out' && 'success') ||
-              (row.status === 'Payment In' && 'error') ||
+              (row.status === 'Payment In' && 'success') ||
+              (row.status === 'Payment Out' && 'error') ||
               'default'
             }
           >
             {row.status}
           </Label>
         </TableCell>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -100,7 +96,7 @@ export default function ChargeInOutTableRow({
           }}
           sx={{ color: 'error.main' }}
         >
-          <Iconify icon='solar:trash-bin-trash-bold' />
+          <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
         </MenuItem>
         <MenuItem
@@ -109,17 +105,17 @@ export default function ChargeInOutTableRow({
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:pen-bold' />
+          <Iconify icon="solar:pen-bold" />
           Edit
         </MenuItem>
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

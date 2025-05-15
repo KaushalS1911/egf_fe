@@ -8,20 +8,26 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify/index.js';
 import CustomPopover, { usePopover } from 'src/components/custom-popover/index.js';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel.jsx';
-import { getResponsibilityValue } from '../../../permission/permission.js';
-import { useAuthContext } from '../../../auth/hooks/index.js';
-import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Box, FormControl, Typography } from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
 
 // ----------------------------------------------------------------------
 
-export default function ExpenseTableToolbar({ filters, onFilters, schemes, dateError }) {
+export default function ExpenceTableToolbar({
+  filters,
+  onFilters,
+  schemes,
+  dateError,
+  expenceDetails,
+}) {
   const popover = usePopover();
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -63,6 +69,13 @@ export default function ExpenseTableToolbar({ filters, onFilters, schemes, dateE
     [onFilters]
   );
 
+  const handleFilterCategory = useCallback(
+    (event) => {
+      onFilters('category', event.target.value);
+    },
+    [onFilters]
+  );
+
   const customStyle = {
     maxWidth: { md: 350 },
     label: {
@@ -74,8 +87,14 @@ export default function ExpenseTableToolbar({ filters, onFilters, schemes, dateE
     },
     input: { height: 7 },
   };
+
   return (
     <>
+      <Box sx={{ p: 2.5 }}>
+        <Typography sx={{ color: 'text.secondary' }} variant="subtitle1" component="p">
+          Expence Type : {expenceDetails}
+        </Typography>
+      </Box>
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -102,6 +121,7 @@ export default function ExpenseTableToolbar({ filters, onFilters, schemes, dateE
               ),
             }}
           />
+
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -145,29 +165,27 @@ export default function ExpenseTableToolbar({ filters, onFilters, schemes, dateE
         arrow="right-top"
         sx={{ width: 'auto' }}
       >
-        {getResponsibilityValue('print_scheme_detail', configs, user) && (
-          <>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="ant-design:file-pdf-filled" />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
-            </MenuItem>
-          </>
-        )}
+        <>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="ant-design:file-pdf-filled" />
+            PDF
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
+          </MenuItem>
+        </>
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -181,7 +199,7 @@ export default function ExpenseTableToolbar({ filters, onFilters, schemes, dateE
   );
 }
 
-ExpenseTableToolbar.propTypes = {
+ExpenceTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

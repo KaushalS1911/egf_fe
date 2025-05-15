@@ -8,16 +8,15 @@ import { grey } from '../../../../theme/palette.js';
 
 // ----------------------------------------------------------------------
 
-export default function OtherTableRow({
-                                        row,
-                                        selected,
-                                        onEditRow,
-                                        onSelectRow,
-                                        onDeleteRow,
-                                        setOtherInOutDetails,
-                                        otherInOutDetails,
-                                      }) {
-
+export default function ExpenceTypeTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  setExpenceDetails,
+  expenceDetails,
+}) {
   const confirm = useBoolean();
 
   return (
@@ -27,31 +26,30 @@ export default function OtherTableRow({
         selected={selected}
         sx={{
           cursor: 'pointer',
-          backgroundColor: row === otherInOutDetails ? grey[400] : '',
+          backgroundColor: row === expenceDetails ? grey[400] : '',
         }}
         onClick={() => {
-          setOtherInOutDetails(row);
+          setExpenceDetails(row);
         }}
-      >
-      </TableRow>
+      ></TableRow>
       <TableRow
         hover
         selected={selected}
         sx={{
           cursor: 'pointer',
-          backgroundColor: row === otherInOutDetails ? grey[400] : '',
+          backgroundColor: row === expenceDetails ? grey[400] : '',
         }}
-        onClick={() => setOtherInOutDetails(row)}
+        onClick={() => setExpenceDetails(row)}
       >
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row}</TableCell>
       </TableRow>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }
@@ -60,7 +58,7 @@ export default function OtherTableRow({
   );
 }
 
-OtherTableRow.propTypes = {
+ExpenceTypeTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

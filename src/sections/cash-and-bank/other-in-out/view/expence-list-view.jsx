@@ -27,17 +27,19 @@ import {
   TableSelectedAction,
   useTable,
 } from 'src/components/table/index.js';
-import OtherInOutTableToolbar from '../other-in-out-table-toolbar.jsx';
-import OtherInOutTableRow from '../other-in-out-table-row.jsx';
+import ExpenceTableToolbar from '../expence-table-toolbar.jsx';
+import ExpenceTableRow from '../expence-table-row.jsx';
 import { Grid } from '@mui/material';
 import { LoadingScreen } from '../../../../components/loading-screen/index.js';
 import Typography from '@mui/material/Typography';
 import { isBetween } from '../../../../utils/format-time.js';
-import OtherInOutTableFiltersResult from '../other-in-out-table-filters-result.jsx';
-import OtherListView from '../other/view/other-list-view.jsx';
+import ExpenceTableFiltersResult from '../expence-table-filters-result.jsx';
+import ExpenceTypeListView from '../other/view/expence-type-list-view.jsx';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
-import { useGetOtherInOut } from '../../../../api/other-in-out.js';
+import { useGetExpanse } from '../../../../api/expense.js';
+import { getResponsibilityValue } from '../../../../permission/permission.js';
+import ExpenseTableRow from '../expence-table-row.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -58,32 +60,41 @@ const defaultFilters = {
   category: '',
   startDate: null,
   endDate: null,
-  otherInOutType: '',
+  expenseType: '',
 };
 
 // ----------------------------------------------------------------------
 
-export default function OtherInOutListView() {
-  const { OtherInOut, OtherInOutLoading, mutate } = useGetOtherInOut();
+export default function ExpenceListView() {
+  const { expense, expenseLoading, mutate } = useGetExpanse();
   const { enqueueSnackbar } = useSnackbar();
-  const [otherInOutDetails, setOtherInOutDetails] = useState('');
+  const [expenceDetails, setExpenceDetails] = useState('');
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
   const { user } = useAuthContext();
-  const [tableData, setTableData] = useState(OtherInOut);
+  const [tableData, setTableData] = useState(expense);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: OtherInOut,
+    inputData: expense,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
+  const cash = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetails?.cashAmount) || 0),
+    0
+  );
+  const bank = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetails?.bankAmount) || 0),
+    0
+  );
+
   useEffect(() => {
-    setFilters({ ...defaultFilters, otherInOutType: otherInOutDetails });
-  }, [otherInOutDetails]);
+    setFilters({ ...defaultFilters, expenseType: expenceDetails });
+  }, [expenceDetails]);
 
   const amount =
     dataFiltered
@@ -95,7 +106,7 @@ export default function OtherInOutListView() {
 
   const dataInPage = dataFiltered?.slice(
     table.page * table?.rowsPerPage,
-    table.page * table?.rowsPerPage + table?.rowsPerPage,
+    table.page * table?.rowsPerPage + table?.rowsPerPage
   );
 
   const denseHeight = table?.dense ? 56 : 56 + 20;
@@ -110,7 +121,7 @@ export default function OtherInOutListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -120,7 +131,7 @@ export default function OtherInOutListView() {
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-in-out/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/expense/${id}`
       );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
@@ -136,17 +147,17 @@ export default function OtherInOutListView() {
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.cashAndBank.otherInOut.edit(id));
+      router.push(paths.dashboard.cashAndBank.expense.edit(id));
     },
-    [router],
+    [router]
   );
 
-  if (OtherInOutLoading) {
+  if (expenseLoading) {
     return <LoadingScreen />;
   }
 
@@ -155,22 +166,25 @@ export default function OtherInOutListView() {
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading={
-            <Typography variant='h4' gutterBottom>
-              Other In/Out
+            <Typography variant="h4" gutterBottom>
+              Expence :{' '}
+              <strong style={{ marginLeft: 400 }}>
+                Total Expence : -
+                <span style={{ color: 'red', marginLeft: 10 }}>
+                  {(Number(cash) + Number(bank)).toFixed(2)}
+                </span>
+              </strong>
             </Typography>
           }
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'List' },
-          ]}
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'List' }]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.cashAndBank.otherInOut.new}
-              variant='contained'
-              startIcon={<Iconify icon='mingcute:add-line' />}
+              href={paths.dashboard.cashAndBank.expense.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Add Other in-out
+              Add Expense
             </Button>
           }
           sx={{
@@ -181,26 +195,26 @@ export default function OtherInOutListView() {
           <Grid container>
             <Grid md={3}>
               <Card sx={{ height: '100%', p: 2, mr: 2 }}>
-                <OtherListView
-                  setOtherInOutDetails={setOtherInOutDetails}
-                  otherInOutDetails={otherInOutDetails}
+                <ExpenceTypeListView
+                  setExpenceDetails={setExpenceDetails}
+                  expenceDetails={expenceDetails}
                 />
               </Card>
             </Grid>
             <Grid md={9}>
               <Card>
-                <OtherInOutTableToolbar
+                <ExpenceTableToolbar
                   filters={filters}
                   onFilters={handleFilters}
-                  otherInOutDetails={otherInOutDetails}
+                  expenceDetails={expenceDetails}
                 />
                 {canReset && (
-                  <OtherInOutTableFiltersResult
+                  <ExpenceTableFiltersResult
                     filters={filters}
                     onFilters={handleFilters}
                     onResetFilters={handleResetFilters}
                     results={dataFiltered.length}
-                    setOtherInOutDetails={setOtherInOutDetails}
+                    setExpenceDetails={setExpenceDetails}
                     sx={{ p: 2.5, pt: 0 }}
                   />
                 )}
@@ -218,13 +232,13 @@ export default function OtherInOutListView() {
                     onSelectAllRows={(checked) =>
                       table.onSelectAllRows(
                         checked,
-                        dataFiltered.map((row) => row._id),
+                        dataFiltered.map((row) => row._id)
                       )
                     }
                     action={
-                      <Tooltip title='Delete'>
-                        <IconButton color='primary' onClick={confirm.onTrue}>
-                          <Iconify icon='solar:trash-bin-trash-bold' />
+                      <Tooltip title="Delete">
+                        <IconButton color="primary" onClick={confirm.onTrue}>
+                          <Iconify icon="solar:trash-bin-trash-bold" />
                         </IconButton>
                       </Tooltip>
                     }
@@ -248,16 +262,16 @@ export default function OtherInOutListView() {
                       {dataFiltered
                         .slice(
                           table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
                         )
                         .map((row) => (
-                          <OtherInOutTableRow
+                          <ExpenseTableRow
                             key={row._id}
                             row={row}
                             selected={table.selected.includes(row._id)}
                             onSelectRow={() => table.onSelectRow(row._id)}
-                            onEditRow={() => handleEditRow(row._id)}
                             onDeleteRow={() => handleDeleteRow(row._id)}
+                            onEditRow={() => handleEditRow(row._id)}
                           />
                         ))}
                       <TableEmptyRows
@@ -285,7 +299,7 @@ export default function OtherInOutListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -293,8 +307,8 @@ export default function OtherInOutListView() {
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               confirm.onFalse();
             }}
@@ -309,7 +323,7 @@ export default function OtherInOutListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, otherInOutType, category, startDate, endDate } = filters;
+  const { name, expenseType, category, startDate, endDate } = filters;
 
   const stabilizedThis = inputData?.map((el, index) => [el, index]);
   stabilizedThis?.sort((a, b) => {
@@ -320,18 +334,15 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   inputData = stabilizedThis?.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter(
-      (sch) =>
-        sch?.otherInOutType?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.detail?.toLowerCase().includes(name?.toLowerCase()),
+    inputData = inputData.filter((sch) =>
+      sch?.expenseType?.toLowerCase().includes(name?.toLowerCase())
     );
   }
-  if (category) {
-    inputData = inputData.filter((item) => item.status === category);
+
+  if (expenseType) {
+    inputData = inputData.filter((item) => expenseType === item.expenseType);
   }
-  if (Object.keys(otherInOutType).length) {
-    inputData = inputData?.filter((item) => otherInOutType === item.otherIncomeType);
-  }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
