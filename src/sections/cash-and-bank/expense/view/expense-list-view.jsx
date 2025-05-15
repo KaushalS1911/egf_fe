@@ -184,10 +184,10 @@ export default function ExpenseListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Expanse"
+          heading="Expense"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: `Cash in`, href: paths.dashboard.scheme.root },
+            { name: `Expense`, href: paths.dashboard.cashAndBank.expense.list },
             { name: 'List' },
           ]}
           action={

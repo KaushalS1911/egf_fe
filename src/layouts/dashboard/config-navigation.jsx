@@ -254,6 +254,10 @@ export function useNavData() {
                 path: paths.dashboard.cashAndBank.bankAccount,
               },
               {
+                title: t('payment in out'),
+                path: paths.dashboard.cashAndBank['payment-in-out'].list,
+              },
+              {
                 title: t('expense'),
                 path: paths.dashboard.cashAndBank.expense.list,
               },

@@ -226,6 +226,7 @@ export const modules = [
       { action: 'Bank Account', key: 'bank account' },
       { action: 'Expense', key: 'expense' },
       { action: 'Other Income', key: 'other income' },
+      { action: 'Payment In Out', key: 'payment in out' },
     ],
   },
   {

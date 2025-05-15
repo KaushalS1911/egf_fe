@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -29,9 +29,9 @@ import {
 
 import axios from 'axios';
 
-import AccountsToolbar from '../accounts-toolbar.jsx';
-import AccountsTableFiltersResult from '../accounts-table-filters-result.jsx';
-import AccountsTableRow from '../accounts-table-row.jsx';
+import PartiesToolbar from '../parties-toolbar.jsx';
+import PartiesTableFiltersResult from '../parties-table-filters-result.jsx';
+import PartiesTableRow from '../parties-table-row.jsx';
 import { useGetScheme } from '../../../../../api/scheme.js';
 import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
@@ -39,7 +39,10 @@ import { getResponsibilityValue } from '../../../../../permission/permission.js'
 import { LoadingScreen } from '../../../../../components/loading-screen/index.js';
 import TableRow from '@mui/material/TableRow';
 import { grey } from '../../../../../theme/palette.js';
-import { TableCell } from '@mui/material';
+import { TableCell, Typography } from '@mui/material';
+import { useParams } from 'react-router';
+import { useGetParty } from '../../../../../api/party.js';
+import { useTheme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
@@ -53,8 +56,9 @@ const STATUS_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
-  { id: 'accountName', label: 'Bank Acc.' },
+  { id: 'party', label: 'Party' },
   { id: 'amount', label: 'Balance' },
+  { id: '', label: '' },
 ];
 
 const defaultFilters = {
@@ -62,55 +66,28 @@ const defaultFilters = {
   isActive: 'all',
 };
 
-const data = [
-  {
-    type: 'Payment-in',
-    name: 'Heet kumar timbadiya',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-Out',
-    name: 'sujal kumar paghdal',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-Out',
-    name: 'Darshil kumar Thummar',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-in',
-    name: 'kaushal kumar Sojitra',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-  {
-    type: 'Payment-Out',
-    name: 'Monil kumar kakadiya',
-    date: '01/04/2025',
-    amount: 50000,
-  },
-];
-
 // ----------------------------------------------------------------------
 
-export default function AccountsListView({ accounts, setAccountDetails, accountDetails }) {
+export default function PartiesListView({
+  partyLoading,
+  mutateParty,
+  party,
+  setPartyDetails,
+  partyDetails,
+}) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const { scheme, mutate, schemeLoading } = useGetScheme();
   const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(accounts);
+  const [tableData, setTableData] = useState(party || []);
   const [filters, setFilters] = useState(defaultFilters);
+  const theme = useTheme();
 
   const dataFiltered = applyFilter({
-    inputData: accounts,
+    inputData: party || [],
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -140,33 +117,32 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
   }, []);
 
   const handleDelete = async (id) => {
-    if (!getResponsibilityValue('delete_scheme', configs, user)) {
+    if (!getResponsibilityValue('delete_party', configs, user)) {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
-        data: { ids: id },
-      });
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/party/${id}`
+      );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
-      mutate();
+      mutateParty();
     } catch (err) {
-      enqueueSnackbar('Failed to delete Scheme');
+      enqueueSnackbar('Failed to delete Party');
     }
   };
 
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
+    [dataInPage.length, table]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
+    const deleteRows = party.filter((row) => table.selected.includes(row._id));
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
@@ -175,23 +151,16 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
+  }, [dataFiltered.length, dataInPage.length, party, table]);
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      router.push(paths.dashboard.party.edit(id));
     },
     [router]
   );
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters]
-  );
-
-  const schemes = scheme.map((item) => ({
+  const schemes = party.map((item) => ({
     Name: item.name,
     'Rate per gram': item.ratePerGram,
     'Interest rate': item.interestRate,
@@ -204,15 +173,15 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
     Status: item.isActive === true ? 'Active' : 'inActive',
   }));
 
-  if (schemeLoading) {
+  if (partyLoading) {
     return <LoadingScreen />;
   }
 
   return (
     <>
-      <AccountsToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
+      <PartiesToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
       {canReset && (
-        <AccountsTableFiltersResult
+        <PartiesTableFiltersResult
           filters={filters}
           onFilters={handleFilters}
           onResetFilters={handleResetFilters}
@@ -265,7 +234,7 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
               sx={{
                 cursor: 'pointer',
               }}
-              onClick={() => setAccountDetails({})}
+              onClick={() => setPartyDetails({})}
             >
               <TableCell sx={{ whiteSpace: 'nowrap' }}>
                 <Button
@@ -287,15 +256,16 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
                 table.page * table.rowsPerPage + table.rowsPerPage
               )
               .map((row) => (
-                <AccountsTableRow
+                <PartiesTableRow
                   key={row._id}
                   row={row}
                   selected={table.selected.includes(row._id)}
                   onSelectRow={() => table.onSelectRow(row._id)}
                   onDeleteRow={() => handleDeleteRow(row._id)}
                   onEditRow={() => handleEditRow(row._id)}
-                  setAccountDetails={setAccountDetails}
-                  accountDetails={accountDetails}
+                  setPartyDetails={setPartyDetails}
+                  partyDetails={partyDetails}
+                  mutate={mutateParty}
                 />
               ))}
             <TableEmptyRows
@@ -345,13 +315,11 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((item) =>
-      item?.bankName?.toLowerCase().includes(name.toLowerCase())
-    );
+    inputData = inputData.filter((item) => item?.name?.toLowerCase().includes(name.toLowerCase()));
   }
 
   if (isActive !== 'all') {
-    inputData = inputData.filter((scheme) => scheme.isActive === (isActive == 'true'));
+    inputData = inputData.filter((party) => party.isActive === (isActive === 'true'));
   }
 
   return inputData;

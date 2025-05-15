@@ -9,22 +9,21 @@ import Iconify from 'src/components/iconify/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function BankAccountTableFiltersResult({
+export default function PaymentInOutTableFiltersResult({
   filters,
   onFilters,
   onResetFilters,
   results,
   setAcc,
+  setPartyDetails,
   ...other
 }) {
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
-  const handleRemoveStatus = useCallback(() => {
-    onFilters('category', '');
-  }, [onFilters]);
-  const handleRemoveAcc = useCallback(() => {
-    setAcc({});
+  const handleRemoveParty = useCallback(() => {
+    onFilters('party', {});
+    setPartyDetails({});
   }, [onFilters]);
 
   return (
@@ -36,21 +35,16 @@ export default function BankAccountTableFiltersResult({
         </Box>
       </Box>
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.category && (
-          <Block label="Category">
-            <Chip size="small" label={filters.category} onDelete={handleRemoveStatus} />
-          </Block>
-        )}
         {!!filters.name && (
           <Block label="Key Word:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}{' '}
-        {!!filters.account.bankName && (
-          <Block label="Bank Account:">
-            <Chip label={filters.account.bankName} size="small" onDelete={handleRemoveAcc} />
+        {filters.party.name && (
+          <Block label="party:">
+            <Chip label={filters.party.name} size="small" onDelete={handleRemoveParty} />
           </Block>
-        )}
+        )}{' '}
         <Button
           color="error"
           onClick={onResetFilters}
@@ -63,7 +57,7 @@ export default function BankAccountTableFiltersResult({
   );
 }
 
-BankAccountTableFiltersResult.propTypes = {
+PaymentInOutTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

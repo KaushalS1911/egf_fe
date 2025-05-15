@@ -10,10 +10,8 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths.js';
 import { useRouter } from 'src/routes/hooks/index.js';
-import { RouterLink } from 'src/routes/components/index.js';
 import { useBoolean } from 'src/hooks/use-boolean.js';
 import Iconify from 'src/components/iconify/index.js';
-import Scrollbar from 'src/components/scrollbar/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
 import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
@@ -28,34 +26,37 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table/index.js';
-import BankAccountTableToolbar from '../bank-account-table-toolbar.jsx';
-import BankAccountTableFiltersResult from '../bank-account-table-filters-result.jsx';
-import BankAccountTableRow from '../bank-account-table-row.jsx';
+import PaymentInOutTableToolbar from '../payment-in-out-table-toolbar.jsx';
+import PaymentInOutTableRow from '../payment-in-out-table-row.jsx';
 import { Box, Grid } from '@mui/material';
-import Label from '../../../../components/label/index.js';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { useGetScheme } from '../../../../api/scheme.js';
-import axios from 'axios';
-import { useAuthContext } from '../../../../auth/hooks/index.js';
-import { useGetConfigs } from '../../../../api/config.js';
 import { LoadingScreen } from '../../../../components/loading-screen/index.js';
-import { getResponsibilityValue } from '../../../../permission/permission.js';
 import Typography from '@mui/material/Typography';
-import AccountsListView from '../accounts/view/accounts-list-view.jsx';
 import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
 import { isBetween } from '../../../../utils/format-time.js';
+import PartiesListView from '../parties/view/parties-list-view.jsx';
+import CustomPopover, { usePopover } from '../../../../components/custom-popover/index.js';
+import ReminderRecallingForm from '../../../reminder/reminder-recalling-form.jsx';
+import PartyNewEditForm from '../parties/party-new-edit-form.jsx';
+import RouterLink from '../../../../routes/components/router-link.jsx';
+import { useGetPayment } from '../../../../api/payment-in-out.js';
+import axiosInstance from 'src/utils/axios.js';
+import { useAuthContext } from 'src/auth/hooks';
+import BankAccountTableFiltersResult from '../../bank-account/bank-account-table-filters-result.jsx';
+import PaymentInOutTableFiltersResult from '../payment-in-out-table-filters-result.jsx';
+import { useGetParty } from '../../../../api/party.js';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: '#', label: '' },
-  { id: 'type', label: 'Type' },
-  { id: 'name', label: 'Detail' },
-  { id: 'category', label: 'Category' },
+  { id: 'party', label: 'party' },
+  { id: 'receiptNo', label: 'Receipt no' },
   { id: 'date', label: 'Date' },
-  { id: 'Amount', label: 'Amount' },
+  { id: 'paymentMode', label: 'Payment mode' },
+  { id: 'cashAmount', label: 'Cash amt' },
+  { id: 'bankAmount', label: 'Bank amt' },
+  { id: 'bank', label: 'Bank' },
+  { id: 'status', label: 'satus' },
   { id: '', width: 88 },
 ];
 
@@ -64,38 +65,34 @@ const defaultFilters = {
   category: '',
   startDate: null,
   endDate: null,
-  account: {},
+  party: {},
 };
 
 // ----------------------------------------------------------------------
 
-export default function BankAccountListView() {
-  const { bankTransactions, mutate, bankTransactionsLoading } = useGetBankTransactions();
+export default function PaymentInOutListView() {
   const { enqueueSnackbar } = useSnackbar();
-  const [accountDetails, setAccountDetails] = useState({});
+  const [partyDetails, setPartyDetails] = useState({});
+  const { payment, mutate, paymentLoading } = useGetPayment();
+  const { party, mutate: mutateParty, partyLoading } = useGetParty();
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(bankTransactions);
-  const [filters, setFilters] = useState({ ...defaultFilters, account: accountDetails });
+  const [filters, setFilters] = useState(defaultFilters);
+  const partyPopover = usePopover();
+  const [open, setOpen] = useState(false);
+  const { user } = useAuthContext();
 
   useEffect(() => {
-    setFilters({ ...defaultFilters, account: accountDetails });
-  }, [accountDetails]);
+    setFilters({ ...defaultFilters, party: partyDetails });
+  }, [partyDetails]);
+
   const dataFiltered = applyFilter({
-    inputData: bankTransactions?.transactions,
+    inputData: payment,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
-  const amount =
-    dataFiltered
-      ?.filter((e) => e.category === 'Payment In')
-      ?.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
-    dataFiltered
-      ?.filter((e) => e.category === 'Payment Out')
-      ?.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
 
   const dataInPage = dataFiltered?.slice(
     table.page * table?.rowsPerPage,
@@ -124,12 +121,45 @@ export default function BankAccountListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      router.push(paths.dashboard.cashAndBank['payment-in-out'].edit(id));
     },
     [router]
   );
 
-  if (bankTransactionsLoading) {
+  const handleDelete = async (id) => {
+    try {
+      const res = await axiosInstance.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/payment/${id}`
+      );
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
+      mutate();
+    } catch (err) {
+      enqueueSnackbar('Failed to delete Payment');
+    }
+  };
+
+  const handleDeleteRow = useCallback(
+    (id) => {
+      handleDelete(id);
+      table.onUpdatePageDeleteRow(dataInPage.length);
+    },
+    [dataInPage.length, table]
+  );
+
+  const handleDeleteRows = useCallback(() => {
+    const deleteRows = dataFiltered.filter((row) => table.selected.includes(row._id));
+    const deleteIds = deleteRows.map((row) => row._id);
+
+    deleteIds.forEach((id) => handleDelete(id));
+
+    table.onUpdatePageDeleteRows({
+      totalRowsInPage: dataInPage.length,
+      totalRowsFiltered: dataFiltered.length,
+    });
+  }, [dataFiltered, dataInPage.length, table]);
+
+  if (paymentLoading) {
     return <LoadingScreen />;
   }
 
@@ -137,17 +167,31 @@ export default function BankAccountListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading={
-            <Typography variant="h4" gutterBottom>
-              Bank Account :{' '}
-              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</strong>
-            </Typography>
-          }
+          heading={'Payment In/Out'}
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Bank Accounts', href: paths.dashboard.scheme.root },
+            { name: 'Payment in/out' },
             { name: 'List' },
           ]}
+          action={
+            <>
+              <Button
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={() => setOpen(true)}
+              >
+                Add Party
+              </Button>{' '}
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.cashAndBank['payment-in-out'].new}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                Add Payment
+              </Button>
+            </>
+          }
           sx={{
             mb: { xs: 3, md: 1 },
           }}
@@ -156,27 +200,31 @@ export default function BankAccountListView() {
           <Grid container>
             <Grid md={3}>
               <Card sx={{ height: '100%', p: 2, mr: 2 }}>
-                <AccountsListView
-                  accounts={bankTransactions.bankBalances}
-                  setAccountDetails={setAccountDetails}
-                  accountDetails={accountDetails}
+                <PartiesListView
+                  setPartyDetails={setPartyDetails}
+                  partyDetails={partyDetails}
+                  party={party}
+                  mutateParty={mutateParty}
+                  partyLoading={partyLoading}
                 />
               </Card>
             </Grid>
             <Grid md={9}>
+              <PartyNewEditForm open={open} setOpen={setOpen} mutate={mutateParty} />
               <Card>
-                <BankAccountTableToolbar
+                <PaymentInOutTableToolbar
                   filters={filters}
                   onFilters={handleFilters}
-                  accountDetails={accountDetails}
+                  partyDetails={partyDetails}
+                  mutate={mutate}
                 />
                 {canReset && (
-                  <BankAccountTableFiltersResult
+                  <PaymentInOutTableFiltersResult
                     filters={filters}
                     onFilters={handleFilters}
                     onResetFilters={handleResetFilters}
                     results={dataFiltered.length}
-                    setAcc={setAccountDetails}
+                    setPartyDetails={setPartyDetails}
                     sx={{ p: 2.5, pt: 0 }}
                   />
                 )}
@@ -227,12 +275,13 @@ export default function BankAccountListView() {
                           table.page * table.rowsPerPage + table.rowsPerPage
                         )
                         .map((row) => (
-                          <BankAccountTableRow
+                          <PaymentInOutTableRow
                             key={row._id}
                             row={row}
                             selected={table.selected.includes(row._id)}
                             onSelectRow={() => table.onSelectRow(row._id)}
                             onEditRow={() => handleEditRow(row._id)}
+                            onDeleteRow={() => handleDeleteRow(row._id)}
                           />
                         ))}
                       <TableEmptyRows
@@ -267,24 +316,26 @@ export default function BankAccountListView() {
           </>
         }
         action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              confirm.onFalse();
-            }}
-          >
+          <Button variant="contained" color="error" onClick={handleDeleteRows}>
             Delete
           </Button>
         }
       />
+      {/*<CustomPopover*/}
+      {/*  open={partyPopover.open}*/}
+      {/*  onClose={partyPopover.onClose}*/}
+      {/*  arrow="right-top"*/}
+      {/*  sx={{ width: 400 }}*/}
+      {/*>*/}
+      {/*  /!*<PartyNewEditForm onClose={partyPopover.onClose} />*!/*/}
+      {/*</CustomPopover>*/}
     </>
   );
 }
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, account, category, startDate, endDate } = filters;
+  const { name, party, category, startDate, endDate } = filters;
 
   const stabilizedThis = inputData?.map((el, index) => [el, index]);
   stabilizedThis?.sort((a, b) => {
@@ -294,18 +345,19 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   });
   inputData = stabilizedThis?.map((el) => el[0]);
 
-  if (name && name.trim()) {
+  if (name && name?.trim()) {
     inputData = inputData.filter(
       (sch) =>
-        sch?.ref?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.detail?.toLowerCase().includes(name?.toLowerCase())
+        sch?.party.name?.toLowerCase().includes(name?.toLowerCase()) ||
+        sch?.receiptNo?.toLowerCase().includes(name?.toLowerCase())
     );
   }
   if (category) {
-    inputData = inputData.filter((item) => item.category === category);
+    inputData = inputData.filter((item) => item.status === category);
   }
-  if (Object.keys(account).length) {
-    inputData = inputData?.filter((acc) => account.bankName === acc.bankName);
+  if (Object.keys(party).length) {
+    console.log(party, '00000');
+    inputData = inputData?.filter((item) => party._id === item.party._id);
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));

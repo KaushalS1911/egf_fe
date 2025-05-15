@@ -134,6 +134,15 @@ const CashInListView = lazy(
 const BankAccountListView = lazy(
   () => import('../../sections/cash-and-bank/bank-account/view/bank-account-list-view.jsx')
 );
+const PaymentInOutListView = lazy(
+  () => import('../../sections/cash-and-bank/payment-in-out/view/payment-in-out-list-view.jsx')
+);
+const PaymentInOutCreatetView = lazy(
+  () => import('../../sections/cash-and-bank/payment-in-out/view/payment-in-out-create-view.jsx')
+);
+const PaymentInOutEditView = lazy(
+  () => import('../../sections/cash-and-bank/payment-in-out/view/payment-in-out-edit-view.jsx')
+);
 const ExpenseListView = lazy(
   () => import('../../sections/cash-and-bank/expense/view/expense-list-view.jsx')
 );
@@ -334,6 +343,9 @@ export const dashboardRoutes = [
           { element: <CashInListView />, index: true },
           { path: 'cash-in', element: <CashInListView /> },
           { path: 'bank-account', element: <BankAccountListView /> },
+          { path: 'payment-in-out/list', element: <PaymentInOutListView /> },
+          { path: 'payment-in-out/new', element: <PaymentInOutCreatetView /> },
+          { path: 'payment-in-out/:id/edit', element: <PaymentInOutEditView /> },
           { path: 'expense/list', element: <ExpenseListView /> },
           { path: 'expense/new', element: <ExpenseCreateView /> },
           { path: 'expense/:id/edit', element: <ExpenseEditView /> },

@@ -2,33 +2,33 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
-import ExpenseNewEditForm from '../expense-new-edit-form.jsx';
+import PaymentInOutNewEditForm from '../payment-in-out-new-edit-form.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function ExpenseCreateView() {
+export default function PaymentInOutCreateView() {
   const settings = useSettingsContext();
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new Expense"
+        heading="Create a new Payment"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Expense List',
-            href: paths.dashboard.cashAndBank.expense.list,
+            name: 'Payment List',
+            href: paths.dashboard.cashAndBank['payment-in-out'].list,
           },
-          { name: 'New Expense' },
+          { name: 'New Payment' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
-      <ExpenseNewEditForm />
+      <PaymentInOutNewEditForm />
     </Container>
   );
 }
