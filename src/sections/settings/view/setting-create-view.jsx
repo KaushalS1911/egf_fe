@@ -18,7 +18,7 @@ import MonthCreateView from './month-create-view.jsx';
 import OtherNameCreateView from './other-name-create-view.jsx';
 import WhatsappConfigs from './whatsapp-configs.jsx';
 import ExpenseTypeCreteView from './expense-type-crete-view.jsx';
-import OtherIncomeTypeCreteView from './other-income-type-crete-view.jsx';
+import ChargeTypeView from './charge-type-view.jsx';
 import DeviceAccessView from './device-access-view.jsx';
 import AreaCreteView from './area-crete-view.jsx';
 
@@ -59,8 +59,8 @@ const TABS = [
     icon: <Iconify icon="arcticons:expense-manager-2" width={24} sx={{ color: '#000' }} />,
   },
   {
-    value: 'Other income type',
-    label: 'Other income type',
+    value: 'Charge type',
+    label: 'Charge type',
     icon: <Iconify icon="qlementine-icons:money-16" width={20} />,
   },
   {
@@ -134,7 +134,7 @@ export default function SettingsPage() {
         {currentTab === 'Business type' && <BusinessTypeCreteView />}
         {currentTab === 'Loan type' && <LoanTypeView />}
         {currentTab === 'Expense type' && <ExpenseTypeCreteView />}
-        {currentTab === 'Other income type' && <OtherIncomeTypeCreteView />}
+        {currentTab === 'Charge type' && <ChargeTypeView />}
         {currentTab === 'Branch' && <BranchCreateView />}
         {currentTab === 'Remark type' && <RemarkCreateView />}
         {currentTab === 'Export Policy Config' && <PolicyConfigCreateView />}

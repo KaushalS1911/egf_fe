@@ -309,13 +309,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   }, [currentCustomer, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data, '69856958');
     try {
       if (data?.referenceBy === 'Other' && data.otherReferenceBy === '') {
         enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
         return;
       }
-      console.log(typeof data.joiningDate, typeof data.dob, '2222222222222');
+      l̥;
       const payload = {
         status: data.status,
         isAadharVerified: data.isAadharVerified,

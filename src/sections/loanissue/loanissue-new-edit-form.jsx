@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Webcam from 'react-webcam';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
@@ -9,11 +9,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFTextField,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -106,6 +102,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [selectedBank, setSelectedBank] = useState(null);
   const [selectBankAccount, setSelectBankAccount] = useState(false);
   const [addBankAccount, setAddBankAccount] = useState(false);
+
   useEffect(() => {
     setMultiSchema(scheme);
   }, [scheme]);
@@ -319,6 +316,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     height: 360,
     facingMode: 'user',
   };
+
   const capture = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -1922,4 +1920,5 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     </>
   );
 }
+
 LoanissueNewEditForm.propTypes = { currentLoanIssue: PropTypes.object };

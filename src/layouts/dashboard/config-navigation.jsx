@@ -261,6 +261,14 @@ export function useNavData() {
                 title: t('other income'),
                 path: paths.dashboard.cashAndBank.otherIncome.list,
               },
+              {
+                title: t('Charge in/out'),
+                path: paths.dashboard.cashAndBank.chargeInOut.list,
+              },
+              // {
+              //   title: t('Other in/out'),
+              //   path: paths.dashboard.cashAndBank.otherInOut.list,
+              // },
             ],
           },
           {

@@ -153,6 +153,24 @@ const OtherIncomeCreateView = lazy(
 const OtherIncomeEditView = lazy(
   () => import('../../sections/cash-and-bank/other-income/view/other-income-edit-view.jsx')
 );
+const ChargeInOutListView = lazy(
+  () => import('../../sections/cash-and-bank/charge-in-out/view/charge-in-out-list-view.jsx'),
+);
+const ChargeInOutCreateView = lazy(
+  () => import('../../sections/cash-and-bank/charge-in-out/view/charge-in-out-create-view.jsx'),
+);
+const ChargeInOutEditView = lazy(
+  () => import('../../sections/cash-and-bank/charge-in-out/view/charge-in-out-edit-view.jsx'),
+);
+const OtherInOutListView = lazy(
+  () => import('../../sections/cash-and-bank/other-in-out/view/other-in-out-list-view.jsx'),
+);
+const OtherInOutCreateView = lazy(
+  () => import('../../sections/cash-and-bank/other-in-out/view/other-in-out-create-view.jsx'),
+);
+const OtherInOutEditView = lazy(
+  () => import('../../sections/cash-and-bank/other-in-out/view/other-in-out-edit-view.jsx'),
+);
 
 //MYPROFILE
 const MyProfile = lazy(() => import('src/sections/settings/view/my-profile-create-view'));
@@ -340,6 +358,12 @@ export const dashboardRoutes = [
           { path: 'other-income/list', element: <OtherIncomeListView /> },
           { path: 'other-income/new', element: <OtherIncomeCreateView /> },
           { path: 'other-income/:id/edit', element: <OtherIncomeEditView /> },
+          { path: 'charge-in-out/list', element: <ChargeInOutListView /> },
+          { path: 'charge-in-out/new', element: <ChargeInOutCreateView /> },
+          { path: 'charge-in-out/:id/edit', element: <ChargeInOutEditView /> },
+          { path: 'other-in-out/list', element: <OtherInOutListView /> },
+          { path: 'other-in-out/new', element: <OtherInOutCreateView /> },
+          { path: 'other-in-out/:id/edit', element: <OtherInOutEditView /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },
