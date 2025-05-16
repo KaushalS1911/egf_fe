@@ -32,28 +32,36 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
-        account: Yup.object().required('Account is required').typeError('Account is required'),
-        bankAmount: Yup.string()
-          .required('Bank Amount is required')
-          .test('is-positive', 'Bank Amount must be a positive number', (value) => parseFloat(value) >= 0),
-      }
-      : paymentMode === 'Cash'
-        ? {
-          cashAmount: Yup.number()
-            .typeError('Cash Amount must be a valid number')
-            .required('Cash Amount is required')
-            .min(0, 'Cash Amount must be a positive number'),
-        }
-        : {
-          cashAmount: Yup.number()
-            .typeError('Cash Amount must be a valid number')
-            .required('Cash Amount is required')
-            .min(0, 'Cash Amount must be a positive number'),
+          account: Yup.object().required('Account is required').typeError('Account is required'),
           bankAmount: Yup.string()
             .required('Bank Amount is required')
-            .test('is-positive', 'Bank Amount must be a positive number', (value) => parseFloat(value) >= 0),
-          account: Yup.object().required('Account is required'),
-        };
+            .test(
+              'is-positive',
+              'Bank Amount must be a positive number',
+              (value) => parseFloat(value) >= 0
+            ),
+        }
+      : paymentMode === 'Cash'
+        ? {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+          }
+        : {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+            bankAmount: Yup.string()
+              .required('Bank Amount is required')
+              .test(
+                'is-positive',
+                'Bank Amount must be a positive number',
+                (value) => parseFloat(value) >= 0
+              ),
+            account: Yup.object().required('Account is required'),
+          };
 
   const NewSchema = Yup.object().shape({
     chargeType: Yup.string().required('Charge Type is required'),
@@ -61,7 +69,10 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     paymentType: Yup.string().required('Payment Type is required'),
     date: Yup.date().typeError('Please enter a valid date').required('Date is required'),
-    branchId: user?.role === 'Admin' && storedBranch === 'all' ? Yup.object().required('Branch is required') : Yup.mixed(),
+    branchId:
+      user?.role === 'Admin' && storedBranch === 'all'
+        ? Yup.object().required('Branch is required')
+        : Yup.mixed(),
     ...paymentSchema,
   });
 
@@ -77,13 +88,13 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
       bankAmount: currentCharge?.paymentDetails?.bankAmount || '',
       branchId: currentCharge
         ? {
-          label: currentCharge?.branch?.name,
-          value: currentCharge?.branch?._id,
-        }
+            label: currentCharge?.branch?.name,
+            value: currentCharge?.branch?._id,
+          }
         : null,
       paymentType: currentCharge?.status || '',
     }),
-    [currentCharge],
+    [currentCharge]
   );
 
   const methods = useForm({
@@ -127,9 +138,7 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
       }
 
       const selectedBranchId =
-        parsedBranch === 'all'
-          ? data?.branchId?.value || branch?.[0]?._id
-          : parsedBranch;
+        parsedBranch === 'all' ? data?.branchId?.value || branch?.[0]?._id : parsedBranch;
 
       const paymentDetail = {
         paymentMode: data.paymentMode,
@@ -150,29 +159,33 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
         description: data.description,
         category: data.category,
         date: data.date,
+        branch: data.branchId.value,
         status: data.paymentType,
         paymentDetails: paymentDetail,
       };
 
-      const baseUrl = `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge?branch=${selectedBranchId}`;
+      const baseUrl = `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`;
 
       const res = currentCharge
         ? await axios.put(
-          `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge/${currentCharge._id}?branch=${selectedBranchId}`,
-          payload,
-          { headers: { 'Content-Type': 'application/json' } },
-        )
+            `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge/${currentCharge._id}`,
+            payload,
+            { headers: { 'Content-Type': 'application/json' } }
+          )
         : await axios.post(baseUrl, payload, {
-          headers: { 'Content-Type': 'application/json' },
-        });
+            headers: { 'Content-Type': 'application/json' },
+          });
 
       router.push(paths.dashboard.cashAndBank.chargeInOut.list);
       enqueueSnackbar(res?.data.message);
       reset();
     } catch (error) {
-      enqueueSnackbar(currentCharge ? 'Failed to update charge In/Out' : error.response?.data?.message, {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        currentCharge ? 'Failed to update charge In/Out' : error.response?.data?.message,
+        {
+          variant: 'error',
+        }
+      );
       console.error(error);
     }
   });
@@ -181,7 +194,7 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+          <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: '600' }}>
             Charge in/out Info
           </Typography>
         </Grid>
@@ -190,7 +203,7 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
             <Box
               rowGap={3}
               columnGap={2}
-              display='grid'
+              display="grid"
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',
@@ -198,10 +211,10 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
             >
               {user?.role === 'Admin' && storedBranch === 'all' && (
                 <RHFAutocomplete
-                  name='branchId'
+                  name="branchId"
                   req={'red'}
-                  label='Branch'
-                  placeholder='Choose a Branch'
+                  label="Branch"
+                  placeholder="Choose a Branch"
                   options={
                     branch?.map((branchItem) => ({
                       label: branchItem?.name,
@@ -212,9 +225,9 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
                 />
               )}
               <RHFAutocomplete
-                name='chargeType'
-                label='Charge Type'
-                req='red'
+                name="chargeType"
+                label="Charge Type"
+                req="red"
                 fullWidth
                 options={configs?.chargeType || []}
                 getOptionLabel={(option) => option || ''}
@@ -225,9 +238,9 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
                 )}
               />
               <RHFAutocomplete
-                name='paymentType'
-                label='Payment Type'
-                req='red'
+                name="paymentType"
+                label="Payment Type"
+                req="red"
                 fullWidth
                 options={['Payment In', 'Payment Out']}
                 getOptionLabel={(option) => option || ''}
@@ -238,22 +251,22 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
                 )}
               />
               <RHFTextField
-                name='category'
-                label='Category'
-                req='red'
+                name="category"
+                label="Category"
+                req="red"
                 inputProps={{ style: { textTransform: 'uppercase' } }}
               />
-              <RhfDatePicker name='date' control={control} label='Date' req='red' />
-              <RHFTextField name='description' label='Description' multiline />
+              <RhfDatePicker name="date" control={control} label="Date" req="red" />
+              <RHFTextField name="description" label="Description" multiline />
             </Box>
-            <Typography variant='subtitle1' sx={{ my: 2, fontWeight: 600 }}>
+            <Typography variant="subtitle1" sx={{ my: 2, fontWeight: 600 }}>
               Payment Details
             </Typography>
             <Box>
               <Box
                 rowGap={3}
                 columnGap={2}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(3, 1fr)',
@@ -261,8 +274,8 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
                 sx={{ mt: 1 }}
               >
                 <RHFAutocomplete
-                  name='paymentMode'
-                  label='Payment Mode'
+                  name="paymentMode"
+                  label="Payment Mode"
                   options={['Cash', 'Bank', 'Both']}
                   onChange={(event, value) => {
                     setValue('paymentMode', value);
@@ -282,19 +295,24 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
                 />
                 {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
                   <Controller
-                    name='cashAmount'
+                    name="cashAmount"
                     control={control}
                     render={({ field }) => (
-                      <RHFTextField {...field} label='Cash Amount' req='red' inputProps={{ min: 0 }} />
+                      <RHFTextField
+                        {...field}
+                        label="Cash Amount"
+                        req="red"
+                        inputProps={{ min: 0 }}
+                      />
                     )}
                   />
                 )}
                 {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
                   <>
                     <RHFAutocomplete
-                      name='account'
-                      label='Account'
-                      req='red'
+                      name="account"
+                      label="Account"
+                      req="red"
                       fullWidth
                       options={branch?.flatMap((item) => item.company.bankAccounts)}
                       getOptionLabel={(option) => option.bankName || ''}
@@ -306,10 +324,15 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                     <Controller
-                      name='bankAmount'
+                      name="bankAmount"
                       control={control}
                       render={({ field }) => (
-                        <RHFTextField {...field} label='Bank Amount' req='red' inputProps={{ min: 0 }} />
+                        <RHFTextField
+                          {...field}
+                          label="Bank Amount"
+                          req="red"
+                          inputProps={{ min: 0 }}
+                        />
                       )}
                     />
                   </>
@@ -318,11 +341,15 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
             </Box>
           </Card>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-            <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }} variant='outlined'
-                    onClick={() => reset()}>
+            <Button
+              color="inherit"
+              sx={{ margin: '0px 10px', height: '36px' }}
+              variant="outlined"
+              onClick={() => reset()}
+            >
               Reset
             </Button>
-            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
               {currentCharge ? 'Save' : 'Submit'}
             </LoadingButton>
           </Box>

@@ -19,7 +19,6 @@ import { useGetBranch } from '../../../../api/branch.js';
 // ----------------------------------------------------------------------
 
 export default function PartyNewEditForm({ partyName, currentParty, open, setOpen, mutate }) {
-  console.log(partyName, '0000');
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -69,7 +68,9 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
       reset({
         name: currentParty?.name || '',
         contact: currentParty?.contact || '',
-        branch: currentParty?.branch ? { label: currentParty.branch?.name, value: currentParty?.branch?._id } : null,
+        branch: currentParty?.branch
+          ? { label: currentParty.branch?.name, value: currentParty?.branch?._id }
+          : null,
         isBranchUser: user?.role === 'Admin',
       });
     }
