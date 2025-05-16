@@ -69,10 +69,11 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     paymentType: Yup.string().required('Payment Type is required'),
     date: Yup.date().typeError('Please enter a valid date').required('Date is required'),
-    branchId:
-      user?.role === 'Admin' && storedBranch === 'all'
-        ? Yup.object().required('Branch is required')
-        : Yup.mixed(),
+    branchId: Yup.object().when([], {
+      is: () => user?.role === 'Admin' && storedBranch === 'all',
+      then: (schema) => schema.required('Branch is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
     ...paymentSchema,
   });
 
@@ -131,7 +132,7 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
       let parsedBranch = storedBranch;
       if (storedBranch !== 'all') {
         try {
-          parsedBranch = JSON.parse(storedBranch);
+          parsedBranch = storedBranch;
         } catch (error) {
           console.error('Error parsing storedBranch:', error);
         }
@@ -153,13 +154,14 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
           account: data.account,
         }),
       };
+      console.log(paymentDetail, '333333');
 
       const payload = {
         chargeType: data.chargeType,
         description: data.description,
         category: data.category,
         date: data.date,
-        branch: data.branchId.value,
+        branch: storedBranch || data.branchId.value,
         status: data.paymentType,
         paymentDetails: paymentDetail,
       };
@@ -180,11 +182,10 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
       enqueueSnackbar(res?.data.message);
       reset();
     } catch (error) {
+      alert(error.message);
       enqueueSnackbar(
         currentCharge ? 'Failed to update charge In/Out' : error.response?.data?.message,
-        {
-          variant: 'error',
-        }
+        { variant: 'error' }
       );
       console.error(error);
     }

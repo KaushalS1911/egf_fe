@@ -93,8 +93,8 @@ const TABLE_HEAD = [
 export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   const [otpPopupOpen, setOtpPopupOpen] = useState(false);
   const [isAadhar, setIsAadhar] = useState(false);
-  const [aadharImage, setAadharImage] = useState();
-  const lightbox = useLightBox(aadharImage);
+  const [aadharImage, setAadharImage] = useState('');
+  const lightbox = useLightBox(aadharImage || '');
   const router = useRouter();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
@@ -180,6 +180,11 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     tempZipcode: Yup.string().required('Pincode is required'),
     // profile_pic: Yup.mixed().required('A profile picture is required'),
     referenceBy: Yup.string().required('Other detail is required'),
+    branchId: Yup.object().when([], {
+      is: () => user?.role === 'Admin' && storedBranch === 'all',
+      then: (schema) => schema.required('Branch is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
   });
 
   const defaultValues = useMemo(
@@ -278,7 +283,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     });
   };
   const handleRemove = (index) => {
-    if (fields.length > 1) {
+    if (fields?.length > 1) {
       remove(index);
     }
   };
@@ -314,7 +319,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
         return;
       }
-      l̥;
+
       const payload = {
         status: data.status,
         isAadharVerified: data.isAadharVerified,
@@ -351,6 +356,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         bankDetails: data.bankDetails,
       };
 
+      console.log(payload, '000000');
+
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => {
         if (
@@ -379,9 +386,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       } else if (capturedImage) {
         const base64Data = capturedImage.split(',')[1];
         const binaryData = atob(base64Data);
-        const arrayBuffer = new Uint8Array(binaryData.length);
+        const arrayBuffer = new Uint8Array(binaryData?.length);
 
-        for (let i = 0; i < binaryData.length; i++) {
+        for (let i = 0; i < binaryData?.length; i++) {
           arrayBuffer[i] = binaryData.charCodeAt(i);
         }
         const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
@@ -418,9 +425,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       mutate();
       router.push(paths.dashboard.customer.root);
     } catch (error) {
-      enqueueSnackbar(currentCustomer ? 'Failed To update customer' : error.response.data.message, {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        currentCustomer ? 'Failed To update customer' : error.response?.data?.message,
+        {
+          variant: 'error',
+        }
+      );
       console.error(error);
     }
   });
@@ -574,7 +584,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
   };
 
   const checkIFSC = async (ifscCode, index) => {
-    if (ifscCode.length === 11) {
+    if (ifscCode?.length === 11) {
       try {
         const response = await axios.get(`https://ifsc.razorpay.com/${ifscCode}`);
         if (response.data) {
@@ -650,7 +660,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       try {
         const otpCode = watch('code');
 
-        if (otpCode.length !== 6) {
+        if (otpCode?.length !== 6) {
           enqueueSnackbar('Invalid OTP. Please enter a 6-digit code.', { variant: 'warning' });
         }
 
@@ -766,10 +776,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   label="Branch"
                   placeholder="Choose a Branch"
                   options={
-                    branch?.map((branchItem) => ({
-                      label: branchItem?.name,
-                      value: branchItem?._id,
-                    })) || []
+                    (branch.length &&
+                      branch?.map((branchItem) => ({
+                        label: branchItem?.name,
+                        value: branchItem?._id,
+                      }))) ||
+                    []
                   }
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 />
@@ -982,7 +994,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                         src={aadharImage}
                         alt={aadharImage}
                         ratio="1/1"
-                        onClick={() => lightbox.onOpen(aadharImage)}
+                        onClick={() => lightbox.onOpen(aadharImage || '')}
                         sx={{ cursor: 'zoom-in', height: '100%', width: '100%' }}
                       />
                     </Box>
@@ -1056,18 +1068,18 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 }}
                 onBlur={(event) => {
                   const zip = event.target.value;
-                  if (zip.length === 6) {
+                  if (zip?.length === 6) {
                     checkZipcode(zip, 'permanent');
                   }
                 }}
               />
               <RHFAutocomplete
                 disabled={disabledField}
-                name='PerArea'
+                name="PerArea"
                 req={'red'}
-                label='Area'
-                placeholder='Choose a Area'
-                options={configs?.area?.map((Area) => Area)}
+                label="Area"
+                placeholder="Choose a Area"
+                options={configs?.area?.length > 0 && configs?.area?.map((Area) => Area)}
                 isOptionEqualToValue={(option, value) => option === value}
               />
               <RHFAutocomplete
@@ -1076,7 +1088,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 req={'red'}
                 label="Country"
                 placeholder="Choose a country"
-                options={countrystatecity.map((country) => country.name)}
+                options={countrystatecity?.map((country) => country.name)}
                 isOptionEqualToValue={(option, value) => option === value}
                 defaultValue="India"
                 sx={{ display: 'none' }}
@@ -1090,8 +1102,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 options={
                   watch('PerCountry')
                     ? countrystatecity
-                        .find((country) => country.name === watch('PerCountry'))
-                        ?.states.map((state) => state.name) || []
+                        ?.find((country) => country.name === watch('PerCountry'))
+                        ?.states?.map((state) => state.name) || []
                     : []
                 }
                 defaultValue="Gujarat"
@@ -1106,9 +1118,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 options={
                   watch('PerState')
                     ? countrystatecity
-                        .find((country) => country.name === watch('PerCountry'))
-                        ?.states.find((state) => state.name === watch('PerState'))
-                        ?.cities.map((city) => city.name) || []
+                        ?.find((country) => country.name === watch('PerCountry'))
+                        ?.states?.find((state) => state.name === watch('PerState'))
+                        ?.cities?.map((city) => city.name) || []
                     : []
                 }
                 defaultValue="Surat"
@@ -1171,18 +1183,18 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 }}
                 onBlur={(event) => {
                   const zip = event.target.value;
-                  if (zip.length === 6) {
+                  if (zip?.length === 6) {
                     checkZipcode(zip, 'temporary');
                   }
                 }}
               />
               <RHFAutocomplete
                 disabled={disabledField}
-                name='tempArea'
+                name="tempArea"
                 req={'red'}
-                label='Area'
-                placeholder='Choose a Area'
-                options={configs?.area?.map((Area) => Area)}
+                label="Area"
+                placeholder="Choose a Area"
+                options={configs?.area.length > 0 && configs?.area?.map((Area) => Area)}
                 isOptionEqualToValue={(option, value) => option === value}
               />
               <RHFAutocomplete
@@ -1191,7 +1203,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 name="tempCountry"
                 label="Country"
                 placeholder="Choose a country"
-                options={countrystatecity.map((country) => country.name)}
+                options={countrystatecity?.map((country) => country.name)}
                 isOptionEqualToValue={(option, value) => option === value}
                 defaultValue="India"
                 sx={{ display: 'none' }}
@@ -1206,8 +1218,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 options={
                   watch('tempCountry')
                     ? countrystatecity
-                        .find((country) => country.name === watch('tempCountry'))
-                        ?.states.map((state) => state.name) || []
+                        ?.find((country) => country.name === watch('tempCountry'))
+                        ?.states?.map((state) => state.name) || []
                     : []
                 }
                 defaultValue="Gujarat"
@@ -1222,9 +1234,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 options={
                   watch('tempState')
                     ? countrystatecity
-                        .find((country) => country.name === watch('tempCountry'))
-                        ?.states.find((state) => state.name === watch('tempState'))
-                        ?.cities.map((city) => city.name) || []
+                        ?.find((country) => country.name === watch('tempCountry'))
+                        ?.states?.find((state) => state.name === watch('tempState'))
+                        ?.cities?.map((city) => city.name) || []
                     : []
                 }
                 defaultValue="Surat"
@@ -1524,7 +1536,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           </DialogActions>
         </Dialog>
       </FormProvider>
-      <Lightbox image={aadharImage} open={lightbox.open} close={lightbox.onClose} />
+      <Lightbox image={aadharImage || ''} open={lightbox?.open} close={lightbox?.onClose} />
       <Dialog
         fullWidth
         maxWidth={false}
