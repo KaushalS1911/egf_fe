@@ -665,7 +665,7 @@ function applyFilter({ inputData, comparator, filters }) {
     inputData = inputData.filter((item) => item?.assignTo?.user?._id === assignTo?.value);
   }
   if (startDate && endDate) {
-    inputData = inputData.filter((user) => isBetween(user.date, startDate, endDate));
+    inputData = inputData.filter((user) => isBetween(user.recallingDate, startDate, endDate));
   }
 
   return inputData;
