@@ -382,17 +382,38 @@ export default function SchemeListView() {
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
   const { isActive, name } = filters;
-
   const stabilizedThis = inputData.map((el, index) => [el, index]);
+
   stabilizedThis.sort((a, b) => {
+    // Move inactive items to the end
+    if (a[0].isActive !== b[0].isActive) {
+      return a[0].isActive ? -1 : 1;
+    }
+
+    // Then apply your original sorting
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
+
+    // Maintain original index order if equal
     return a[1] - b[1];
   });
+
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) => sch.name.toLowerCase().includes(name.toLowerCase()));
+    const normalizedName = name.trim().toLowerCase();
+
+    inputData = inputData.filter((sch) => {
+      const schemeName = (sch.name || '').toLowerCase();
+      const interestRate = sch.interestRate?.toString() || '';
+      const valuation = sch.valuation?.toString() || '';
+
+      return (
+        schemeName.includes(normalizedName) ||
+        interestRate.includes(normalizedName) ||
+        valuation.includes(normalizedName)
+      );
+    });
   }
 
   if (isActive !== 'all') {

@@ -61,10 +61,6 @@ export default function ChargeListView({ accounts, setChargeDetails, chargeDetai
     filters,
   });
 
-  useEffect(() => {
-    setChargeDetails(configs.chargeType[0]);
-  }, [configs]);
-
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage

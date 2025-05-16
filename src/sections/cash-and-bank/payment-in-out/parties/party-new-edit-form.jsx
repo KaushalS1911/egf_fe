@@ -19,20 +19,20 @@ import { useGetBranch } from '../../../../api/branch.js';
 // ----------------------------------------------------------------------
 
 export default function PartyNewEditForm({ partyName, currentParty, open, setOpen, mutate }) {
-  console.log(partyName, '0000');
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
 
   const PartySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     contact: Yup.string()
       .required('Contact is required')
       .matches(/^[0-9]{10}$/, 'Contact must be exactly 10 digits'),
-    branch: Yup.object().when('isBranchUser', {
-      is: (val) => val === true,
+    branchId: Yup.object().when([], {
+      is: () => user?.role === 'Admin' && storedBranch === 'all',
       then: (schema) => schema.required('Branch is required'),
-      otherwise: (schema) => schema.nullable().notRequired(),
+      otherwise: (schema) => schema.nullable(),
     }),
   });
 
@@ -69,7 +69,9 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
       reset({
         name: currentParty?.name || '',
         contact: currentParty?.contact || '',
-        branch: currentParty?.branch ? { label: currentParty.branch?.name, value: currentParty?.branch?._id } : null,
+        branch: currentParty?.branch
+          ? { label: currentParty.branch?.name, value: currentParty?.branch?._id }
+          : null,
         isBranchUser: user?.role === 'Admin',
       });
     }
@@ -87,7 +89,7 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
       const payload = {
         name: data.name,
         contact: data.contact,
-        branch: user.role === 'Admin' ? data.branch.value : user.branch._id,
+        branch: storedBranch || data.branch.value,
       };
 
       if (currentParty) {
@@ -146,7 +148,7 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
           >
             <RHFTextField name="name" label="Name" req={'red'} />
             <RHFTextField name="contact" label="Contact" req={'red'} />
-            {user?.role === 'Admin' && (
+            {user?.role === 'Admin' && storedBranch === 'all' && (
               <RHFAutocomplete
                 name="branch"
                 req={'red'}

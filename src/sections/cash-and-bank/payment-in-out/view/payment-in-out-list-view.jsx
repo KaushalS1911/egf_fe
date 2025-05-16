@@ -380,8 +380,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item.status === category);
   }
   if (Object.keys(party).length) {
-    console.log(party, '00000');
-    inputData = inputData?.filter((item) => party._id === item.party._id);
+    inputData = inputData?.filter((item) => party?._id === item?.party?._id);
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
