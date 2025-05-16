@@ -213,3 +213,44 @@ export function useGetLoanChart() {
 
   return memoizedValue;
 }
+
+export function useGetPaymentInOutSummary(timeRange = 'this_year', fields = '') {
+  const { user } = useAuthContext();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+  let parsedBranch = storedBranch;
+
+  if (storedBranch !== 'all') {
+    try {
+      parsedBranch = JSON.parse(storedBranch);
+    } catch (error) {
+      console.error('Error parsing storedBranch:', error);
+    }
+  }
+
+  const timeQuery = `timeRange=${timeRange}`;
+  const fieldsQuery = fields ? `fields=${fields}` : '';
+  const branchQuery =
+    parsedBranch && parsedBranch !== 'all'
+      ? `branchId=${parsedBranch}`
+      : '';
+
+  const queryString = [timeQuery, fieldsQuery, branchQuery].filter(Boolean).join('&');
+
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/dashboard/payment-in-out-summary?${queryString}`;
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      PaymentInOutSummary: data?.data || [],
+      PaymentInOutSummaryLoading: isLoading,
+      PaymentInOutSummaryError: error,
+      PaymentInOutSummaryValidating: isValidating,
+      PaymentInOutSummaryEmpty: !isLoading && !data?.data?.length,
+      mutate,
+    }),
+    [data?.data, error, isLoading, isValidating, mutate],
+  );
+
+  return memoizedValue;
+}
