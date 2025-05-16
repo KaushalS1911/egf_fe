@@ -1188,15 +1188,20 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   }
                 }}
               />
-              <RHFAutocomplete
-                disabled={disabledField}
-                name="tempArea"
-                req={'red'}
-                label="Area"
-                placeholder="Choose a Area"
-                options={configs?.area.length > 0 && configs?.area?.map((Area) => Area)}
-                isOptionEqualToValue={(option, value) => option === value}
-              />
+              {configs && configs?.area?.length > 0 && (
+                <RHFAutocomplete
+                  disabled={disabledField}
+                  name="tempArea"
+                  req={'red'}
+                  label="Area"
+                  placeholder="Choose a Area"
+                  options={
+                    ((configs?.area && configs?.area?.length > 0) || []) &&
+                    configs?.area?.map((Area) => Area)
+                  }
+                  isOptionEqualToValue={(option, value) => option === value}
+                />
+              )}
               <RHFAutocomplete
                 disabled={disabledField}
                 req={'red'}
