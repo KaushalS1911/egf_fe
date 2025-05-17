@@ -180,6 +180,7 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/payment/${currentPayment._id}`,
           formData
         );
+        mutate();
         router.push(paths.dashboard.cashAndBank['payment-in-out'].list);
         enqueueSnackbar(res?.data.message);
         reset();
