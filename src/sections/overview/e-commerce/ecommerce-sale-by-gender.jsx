@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { Avatar, Box, Card, Grid, Stack, Typography } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import { fNumber } from 'src/utils/format-number';
 import Chart, { useChart } from 'src/components/chart';
 import React from 'react';
 
@@ -30,16 +29,20 @@ export default function EcommerceSaleByGender({
       [theme.palette.primary.light, theme.palette.primary.main],
       [theme.palette.warning.light, theme.palette.warning.main],
     ],
-    series,
+    series = [],
     options,
-  } = chart;
+  } = chart || {};
 
-  const chartSeries = series.map((i) => i.value);
+  const rawValues = series.map((i) => i.value);
+  const totalValue = rawValues.reduce((sum, val) => sum + val, 0);
+
+  const chartSeries =
+    totalValue > 0 ? rawValues.map((val) => (val / totalValue) * 100) : [0, 0];
   const labels = series.map((i) => i.label);
 
-  const cash = series[0]?.value || 0;
-  const bank = series[1]?.value || 0;
-  const calculatedTotal = cash + bank;
+  const cash = rawValues[1] || 0;
+  const bank = rawValues[0] || 0;
+  const total = Number((cash + bank).toFixed(2));
 
   const chartOptions = useChart({
     colors: colors.map((colr) => colr[1]),
@@ -60,107 +63,155 @@ export default function EcommerceSaleByGender({
       radialBar: {
         hollow: { size: '70%' },
         dataLabels: {
-          name: { show: false },
+          name: {
+            show: true,
+            fontSize: '16px',
+            fontWeight: 500,
+            offsetY: -10,
+            formatter: () => 'Total',
+          },
           value: {
             offsetY: 0,
-            fontSize: '22px',
+            fontSize: '16px',
             fontWeight: 600,
+            formatter: (val) => `${val.toFixed(1)}%`,
           },
           total: {
             show: true,
             label: 'Total',
             fontSize: '16px',
-            formatter: () => fNumber(calculatedTotal),
+            fontWeight: 600,
+            formatter: () => `${totalValue.toFixed(2)} ₹`,
           },
         },
+      },
+    },
+    tooltip: {
+      enabled: true,
+      custom: ({ series, seriesIndex, w }) => {
+        const label = w.config.labels[seriesIndex];
+        const color = w.config.colors[seriesIndex];
+        const percentage = series[seriesIndex].toFixed(1);
+        const rawValue = rawValues[seriesIndex] || 0;
+        return `
+      <div style='padding:8px; display:flex; align-items:center; font-weight:600; font-size:14px;'>
+        <span style='width:12px; height:12px; border-radius:50%; background:${color}; display:inline-block; margin-right:8px;'></span>
+        <span>${label}: ${percentage}% (${rawValue.toFixed(2)} ₹)</span>
+      </div>
+    `;
       },
     },
     legend: { show: false },
     ...options,
   });
 
+  const isChartEmpty =
+    !chartSeries.length || chartSeries.every((val) => !val);
+  const isBanksEmpty = !Array.isArray(banks) || banks.length === 0;
+
   return (
     <Card {...other} sx={{ p: 3 }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <StyledChart
-            dir='ltr'
-            type='radialBar'
-            series={chartSeries}
-            options={chartOptions}
-            width='100%'
-            height={CHART_HEIGHT}
-          />
-          <Typography variant='subtitle2' align='center' sx={{ mt: 2 }}>
-            <Box component='span' sx={{ color: colors[0][1], fontWeight: 'bold' }}>
-              {fNumber(cash)}
-            </Box>
-            {' + '}
-            <Box component='span' sx={{ color: colors[1][1], fontWeight: 'bold' }}>
-              {fNumber(bank)}
-            </Box>
-            {' = '}
-            <Box component='span' sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-              {fNumber(calculatedTotal)}
-            </Box>
-            {' Total (Cash + Bank)'}
+      {isChartEmpty && isBanksEmpty ? (
+        <Box sx={{ textAlign: 'center', py: 10 }}>
+          <Typography variant='h6' color='text.secondary'>
+            No data available
           </Typography>
-          <Stack direction='row' justifyContent='center' spacing={3} sx={{ mt: 2 }}>
-            {series.map((item, index) => (
-              <Stack key={index} direction='row' alignItems='center' spacing={1}>
-                <Box
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    bgcolor: colors[index][1],
-                  }}
-                />
-                <Typography variant='body2'>{item.label}</Typography>
-              </Stack>
-            ))}
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            {banks.map((bank, index) => (
-              <Grid key={index} item xs={6}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    p: 1.5,
-                    borderRadius: 2,
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                    bgcolor: 'background.paper',
-                  }}
-                >
-                  <Avatar
-                    alt={bank.name}
-                    src={bank.logo}
-                    sx={{ mr: 2, cursor: 'pointer' }}
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <StyledChart
+              dir='ltr'
+              type='radialBar'
+              series={chartSeries}
+              options={chartOptions}
+              width='100%'
+              height={CHART_HEIGHT}
+            />
+            <Typography variant='subtitle2' align='center' sx={{ mt: 2 }}>
+              <Box
+                component='span'
+                sx={{ color: colors[0][1], fontWeight: 'bold' }}
+              >
+                {cash.toFixed(2)}
+              </Box>
+              {' + '}
+              <Box
+                component='span'
+                sx={{ color: colors[1][1], fontWeight: 'bold' }}
+              >
+                {bank.toFixed(2)}
+              </Box>
+              {' = '}
+              <Box
+                component='span'
+                sx={{ color: 'text.primary', fontWeight: 'bold' }}
+              >
+                {total}
+              </Box>
+              {' Total (Cash + Bank)'}
+            </Typography>
+            <Stack direction='row' justifyContent='center' spacing={3} sx={{ mt: 2 }}>
+              {series.map((item, index) => (
+                <Stack key={index} direction='row' alignItems='center' spacing={1}>
+                  <Box
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      bgcolor: colors[index][1],
+                    }}
                   />
-                  <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                    <Typography
-                      variant='subtitle2'
-                      sx={{
-                        wordBreak: 'break-word',
-                        whiteSpace: 'normal',
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {bank.name}
-                    </Typography>
-                    <Typography variant='subtitle1' fontWeight='bold' whiteSpace='nowrap'>
-                      {formatCurrency(bank.amount)}
-                    </Typography>
+                  <Typography variant='body2'>{item.label}</Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Grid container spacing={2}>
+              {banks.map((bank, index) => (
+                <Grid key={index} item xs={6}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      p: 1.5,
+                      borderRadius: 2,
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                      bgcolor: 'background.paper',
+                    }}
+                  >
+                    <Avatar
+                      alt={bank.name}
+                      src={bank.logo}
+                      sx={{ mr: 2, cursor: 'pointer' }}
+                    />
+                    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                      <Typography
+                        variant='subtitle2'
+                        sx={{
+                          wordBreak: 'break-word',
+                          whiteSpace: 'normal',
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {bank.name}
+                      </Typography>
+                      <Typography
+                        variant='subtitle1'
+                        fontWeight='bold'
+                        whiteSpace='nowrap'
+                      >
+                        {formatCurrency(bank.amount)}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </Grid>
-            ))}
+                </Grid>
+              ))}
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      )}
     </Card>
   );
 }
@@ -175,6 +226,6 @@ EcommerceSaleByGender.propTypes = {
       amount: PropTypes.number,
       color: PropTypes.string,
       logo: PropTypes.string,
-    }),
+    })
   ),
 };

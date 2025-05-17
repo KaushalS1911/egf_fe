@@ -102,6 +102,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [selectedBank, setSelectedBank] = useState(null);
   const [selectBankAccount, setSelectBankAccount] = useState(false);
   const [addBankAccount, setAddBankAccount] = useState(false);
+  const [approvalChargeValue, setApprovalChargeValue] = useState(0);
+  const [chargePaymentModeValue, setChargePaymentModeValue] = useState('');
 
   useEffect(() => {
     setMultiSchema(scheme);
@@ -116,6 +118,48 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       };
     }
   }, [imageSrc]);
+
+  const chargePaymentSchema = {
+    ...(approvalChargeValue > 0 && {
+      chargePaymentMode: Yup.string().required('Charge Payment Mode is required'),
+      ...(chargePaymentModeValue === 'Cash' && {
+        chargeCashAmount: Yup.string()
+          .required('Charge Cash Amount is required')
+          .test(
+            'is-positive',
+            'Charge Cash Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+      }),
+      ...(chargePaymentModeValue === 'Bank' && {
+        chargeBankAmount: Yup.string()
+          .required('Charge Bank Amount is required')
+          .test(
+            'is-positive',
+            'Charge Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+        chargeAccount: Yup.object().required('Charge Account is required'),
+      }),
+      ...(chargePaymentModeValue === 'Both' && {
+        chargeCashAmount: Yup.string()
+          .required('Charge Cash Amount is required')
+          .test(
+            'is-positive',
+            'Charge Cash Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+        chargeBankAmount: Yup.string()
+          .required('Charge Bank Amount is required')
+          .test(
+            'is-positive',
+            'Charge Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0,
+          ),
+        chargeAccount: Yup.object().required('Charge Account is required'),
+      }),
+    }),
+  };
 
   const NewLoanissueSchema = Yup.object().shape({
     customer: Yup.object().required('Customer is required'),
@@ -192,6 +236,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       then: (schema) => schema.required('Branch Name is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
+    ...chargePaymentSchema,
   });
 
   const defaultValues = useMemo(() => {
@@ -220,6 +265,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       issueDate: currentLoanIssue ? new Date(currentLoanIssue?.issueDate) : new Date(),
       consultingCharge: currentLoanIssue?.consultingCharge || '',
       approvalCharge: currentLoanIssue?.approvalCharge || 0,
+      chargePaymentMode: currentLoanIssue?.chargePaymentDetail?.mode || null,
+      chargeAccount: currentLoanIssue?.chargePaymentDetail?.chargeAccount || '',
+      chargeCashAmount: currentLoanIssue?.chargePaymentDetail?.chargeCashAmount || '',
+      chargeBankAmount: currentLoanIssue?.chargePaymentDetail?.chargeBankAmount || '',
       nextInstallmentDate: currentLoanIssue
         ? new Date(currentLoanIssue?.nextInstallmentDate)
         : null,
@@ -227,8 +276,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       loanType: currentLoanIssue?.loanType || 'GOLD LOAN',
       loanAmount: currentLoanIssue?.loanAmount || '',
       paymentMode: currentLoanIssue?.paymentMode || '',
-      cashAmount: currentLoanIssue?.cashAmount || 0,
-      bankAmount: currentLoanIssue?.bankAmount || 0,
+      cashAmount: currentLoanIssue?.cashAmount || '',
+      bankAmount: currentLoanIssue?.bankAmount || '',
       accountNumber: currentLoanIssue?.customerBankDetail?.accountNumber || '',
       accountType: currentLoanIssue?.customerBankDetail?.accountType || '',
       accountHolderName: currentLoanIssue?.customerBankDetail?.accountHolderName || '',
@@ -347,6 +396,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     const propertyDetails = watch('propertyDetails');
     const payload = new FormData();
+
     payload.append('series', mainbranchid?.series);
     payload.append('company', user.company);
     payload.append('customer', data.customer.id);
@@ -360,6 +410,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     payload.append('jewellerName', data.jewellerName);
     payload.append('loanType', data.loanType);
     payload.append('savant', configs.savant);
+
     propertyDetails.forEach((field, index) => {
       payload.append(`propertyDetails[${index}][type]`, field.type);
       payload.append(`propertyDetails[${index}][carat]`, field.carat);
@@ -406,14 +457,42 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         bankName: data?.bankName || selectedBank?.bankName,
         branchName: data?.branchName || selectedBank?.branchName,
       };
-
       payload.append('customerBankDetail', JSON.stringify(customerBankDetails));
+    }
+
+    const mode = data.chargePaymentMode;
+    payload.append('chargePaymentDetail[mode]', mode);
+
+    if (mode === 'Cash') {
+      payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeCashAmount);
+    } else if (mode === 'Bank') {
+      payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeBankAmount);
+
+      payload.append('chargePaymentDetail[chargeAccount][accountNumber]', data?.chargeAccount?.accountNumber);
+      payload.append('chargePaymentDetail[chargeAccount][accountType]', data?.chargeAccount?.accountType);
+      payload.append('chargePaymentDetail[chargeAccount][accountHolderName]', data?.chargeAccount?.accountHolderName);
+      payload.append('chargePaymentDetail[chargeAccount][bankName]', data?.chargeAccount?.bankName);
+      payload.append('chargePaymentDetail[chargeAccount][IFSC]', data?.chargeAccount?.IFSC);
+      payload.append('chargePaymentDetail[chargeAccount][branchName]', data?.chargeAccount?.branchName);
+      payload.append('chargePaymentDetail[chargeAccount][_id]', data?.chargeAccount?._id);
+    } else if (mode === 'Both') {
+      payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeCashAmount);
+      payload.append('chargePaymentDetail[chargeBankAmount]', data.chargeBankAmount);
+
+      payload.append('chargePaymentDetail[chargeAccount][accountNumber]', data?.chargeAccount?.accountNumber);
+      payload.append('chargePaymentDetail[chargeAccount][accountType]', data?.chargeAccount?.accountType);
+      payload.append('chargePaymentDetail[chargeAccount][accountHolderName]', data?.chargeAccount?.accountHolderName);
+      payload.append('chargePaymentDetail[chargeAccount][bankName]', data?.chargeAccount?.bankName);
+      payload.append('chargePaymentDetail[chargeAccount][IFSC]', data?.chargeAccount?.IFSC);
+      payload.append('chargePaymentDetail[chargeAccount][branchName]', data?.chargeAccount?.branchName);
+      payload.append('chargePaymentDetail[chargeAccount][_id]', data?.chargeAccount?._id);
     }
 
     try {
       const url = currentLoanIssue
         ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentLoanIssue?._id}`
         : `${import.meta.env.VITE_BASE_URL}/${user?.company}/issue-loan`;
+
       const response = currentLoanIssue
         ? await axios.put(url, payload, {
             headers: {
@@ -538,8 +617,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       name: 'propertyDetails',
       control: methods.control,
     });
+
     if (!propertyDetails || propertyDetails.length === 0) return;
     0;
+
     return propertyDetails
       .reduce((total, item) => {
         const value = parseFloat(item?.[field]) || 0;
@@ -552,6 +633,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
     const paymentMode = watch('paymentMode');
+
     if (paymentMode === 'Cash') {
       setValue('cashAmount', newLoanAmount);
       setValue('bankAmount', 0);
@@ -566,6 +648,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
+
     if (newCashAmount > currentLoanAmount) {
       setValue('cashAmount', currentLoanAmount);
       enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
@@ -574,9 +657,38 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     } else {
       setValue('cashAmount', newCashAmount);
     }
+
     if (watch('paymentMode') === 'Both') {
       const calculatedBankAmount = currentLoanAmount - newCashAmount;
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
+
+  const handleCharge = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || 0;
+    const currentChargeAmount = parseFloat(watch('approvalCharge')) || 0;
+    const paymentMode = watch('chargePaymentMode');
+
+    if (newCashAmount > currentChargeAmount) {
+      setValue('chargeCashAmount', currentChargeAmount);
+      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
+        variant: 'warning',
+      });
+    } else {
+      setValue('chargeCashAmount', newCashAmount);
+    }
+
+    if (paymentMode === 'Both') {
+      const calculatedBankAmount = currentChargeAmount - newCashAmount;
+      setValue('chargeBankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+
+    if (paymentMode === 'Bank') {
+      setValue('chargeBankAmount', currentChargeAmount);
+    }
+
+    if (paymentMode === 'Cash') {
+      setValue('chargeBankAmount', '');
     }
   };
 
@@ -771,16 +883,20 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const validateField = (fieldName, index, value) => {
     const updatedErrors = { ...errors };
     const schemedata = watch('scheme');
+
     if (!schemedata) {
       enqueueSnackbar('Please select a scheme before adding properties.', { variant: 'warning' });
       return;
     }
+
     const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
     const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
+
     const caratValue =
       carat?.find(
         (item) => item?.name == parseFloat(getValues(`propertyDetails[${index}].carat`))
       ) || {};
+
     const typeValue = property?.find((item) => item?.propertyType === value) || {};
     const grossWeight = totalWeight - lossWeight;
     const netWeight = grossWeight * (caratValue?.caratPercentage / 100 || 1);
@@ -893,6 +1009,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       height: 0,
     },
   };
+
+  useEffect(() => {
+    const approvalCharge = Number(watch('approvalCharge')) || 0;
+    setApprovalChargeValue(approvalCharge);
+    if (approvalCharge === 0) {
+      setValue('chargePaymentMode', '');
+      setValue('chargeCashAmount', '');
+      setValue('chargeBankAmount', '');
+      setValue('chargeAccount', null);
+    }
+  }, [watch('approvalCharge')]);
+
+  useEffect(() => {
+    setChargePaymentModeValue(watch('chargePaymentMode') || '');
+  }, [watch('chargePaymentMode')]);
 
   return (
     <>
@@ -1122,7 +1253,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 <RHFTextField
                   name="approvalCharge"
                   label="Approval Charge"
-                  disabled={!isFieldsEnabled}
+                  disabled={true}
                   req={'red'}
                   inputProps={{
                     inputMode: 'numeric',
@@ -1134,6 +1265,74 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     },
                   }}
                 />
+                <RHFAutocomplete
+                  req={'red'}
+                  name='chargePaymentMode'
+                  label='Charge Payment Mode'
+                  disabled={!isFieldsEnabled}
+                  options={['Cash', 'Bank', 'Both']}
+                  getOptionLabel={(option) => option}
+                  onChange={(event, value) => {
+                    setValue('chargePaymentMode', value);
+                    handleCharge({ target: { value: watch('chargeCashAmount') || 0 } });
+                  }}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+                {(watch('chargePaymentMode') === 'Cash' ||
+                  watch('chargePaymentMode') === 'Both') && (
+                  <Controller
+                    name='chargeCashAmount'
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        req={'red'}
+                        {...field}
+                        label='Cash Amount'
+                        inputProps={{ min: 0 }}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleCharge(e);
+                        }}
+                      />
+                    )}
+                  />
+                )}
+                {(watch('chargePaymentMode') === 'Bank' ||
+                  watch('chargePaymentMode') === 'Both') && (
+                  <>
+                    <RHFAutocomplete
+                      req={'red'}
+                      name='chargeAccount'
+                      label='Account'
+                      fullWidth
+                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      getOptionLabel={(option) => option.bankName || ''}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option.id || option.bankName}>
+                          {option.bankName}
+                        </li>
+                      )}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                    />
+                    <Controller
+                      name='chargeBankAmount'
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          req={'red'}
+                          {...field}
+                          label='Bank Amount'
+                          disabled={watch('chargePaymentMode') === 'Bank' ? false : true}
+                          inputProps={{ min: 0 }}
+                        />
+                      )}
+                    />
+                  </>
+                )}
                 <RHFTextField
                   name="periodTime"
                   label="INT. Period Time"
@@ -1697,8 +1896,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: '600' }}>
                     Account Details
                   </Typography>
-
-                  {/* Buttons to toggle sections */}
                   <Box
                     sx={{
                       display: 'flex',
@@ -1713,7 +1910,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         disabled={!isFieldsEnabled}
                         onClick={() => {
                           setSelectBankAccount(true);
-                          setAddBankAccount(false); // Hide other fields
+                          setAddBankAccount(false);
                         }}
                         sx={{ fontWeight: 'bold', textDecoration: 'none' }}
                       >
@@ -1724,7 +1921,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         disabled={!isFieldsEnabled}
                         onClick={() => {
                           setAddBankAccount(true);
-                          setSelectBankAccount(false); // Hide dropdown field
+                          setSelectBankAccount(false);
                         }}
                         sx={{ fontWeight: 'bold', textDecoration: 'none' }}
                       >
@@ -1748,8 +1945,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       </Box>
                     )}
                   </Box>
-
-                  {/* Form Sections */}
                   <Box
                     rowGap={3}
                     columnGap={2}
@@ -1759,7 +1954,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       sm: 'repeat(6, 1fr)',
                     }}
                   >
-                    {/* ✅ Show only Account Dropdown when Select Account is clicked */}
                     {selectBankAccount && (
                       <Controller
                         name="account"
@@ -1788,8 +1982,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         )}
                       />
                     )}
-
-                    {/* ✅ Show only Add Beneficiary fields when clicked */}
                     {addBankAccount && (
                       <>
                         <RHFTextField
