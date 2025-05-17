@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -29,11 +29,11 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
     contact: Yup.string()
       .required('Contact is required')
       .matches(/^[0-9]{10}$/, 'Contact must be exactly 10 digits'),
-    branchId: Yup.object().when([], {
-      is: () => user?.role === 'Admin' && storedBranch === 'all',
+    branch: Yup.object().when(['isBranchUser'], {
+      is: (isBranchUser) => !isBranchUser && storedBranch === 'all',
       then: (schema) => schema.required('Branch is required'),
       otherwise: (schema) => schema.nullable(),
-    }),
+    })
   });
 
   const defaultValues = {
@@ -42,6 +42,7 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
     branch: currentParty?.branch || null,
     isBranchUser: user?.role === 'Admin',
   };
+
   const onClose = () => {
     setOpen(false);
     reset();
@@ -86,16 +87,29 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+
+      let parsedBranch = storedBranch;
+      if (storedBranch !== 'all') {
+        try {
+          parsedBranch = storedBranch;
+        } catch (error) {
+          console.error('Error parsing storedBranch:', error);
+        }
+      }
+
+      const selectedBranchId =
+        parsedBranch === 'all' ? data?.branch?.value || branch?.[0]?._id : parsedBranch;
+
       const payload = {
         name: data.name,
         contact: data.contact,
-        branch: storedBranch || data.branch.value,
+        branch: selectedBranchId,
       };
 
       if (currentParty) {
         const res = await axios.put(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/party/${currentParty._id}`,
-          payload
+          payload,
         );
         mutate();
         onClose();
@@ -103,7 +117,7 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
       } else {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/${user?.company}/party`,
-          payload
+          payload,
         );
         mutate();
         onClose();
@@ -125,7 +139,7 @@ export default function PartyNewEditForm({ partyName, currentParty, open, setOpe
       open={open}
       onClose={(event, reason) => {
         if (reason === 'backdropClick') {
-          return; // Prevent closing on backdrop click
+          return;
         }
         onClose();
       }}
