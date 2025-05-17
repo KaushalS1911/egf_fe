@@ -110,7 +110,6 @@ export default function AllBranchLoanSummaryListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-  console.log(table.page, '3222222');
 
   const int = dataFiltered.reduce(
     (prev, next) =>

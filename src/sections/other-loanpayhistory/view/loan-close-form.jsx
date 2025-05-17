@@ -42,7 +42,6 @@ const TABLE_HEAD = [
   { id: 'bankAmt', label: 'Bank Amt' },
   { id: 'bank', label: 'Bank' },
   { id: 'remark', label: 'Remark' },
-  { id: 'PDF', label: 'PDF' },
 ];
 
 function LoanCloseForm({ currentOtherLoan, mutate }) {
@@ -253,35 +252,6 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               }}
             />
             <RHFTextField name="paidLoanAmount" label="Paid Loan Amount" />
-            {/*<RHFTextField*/}
-            {/*  name="pendingLoanAmount"*/}
-            {/*  label="Pending Loan Amount"*/}
-            {/*  req={'red'}*/}
-            {/*  onKeyPress={(e) => {*/}
-            {/*    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
-            {/*      e.preventDefault();*/}
-            {/*    }*/}
-            {/*  }}*/}
-            {/*/>*/}
-            {/*<RHFTextField*/}
-            {/*  name="closingCharge"*/}
-            {/*  label="Closing Charge"*/}
-            {/*  onKeyPress={(e) => {*/}
-            {/*    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
-            {/*      e.preventDefault();*/}
-            {/*    }*/}
-            {/*  }}*/}
-            {/*/>*/}
-            {/*<RHFTextField*/}
-            {/*  name="netAmount"*/}
-            {/*  label="Net Amount"*/}
-            {/*  onKeyPress={(e) => {*/}
-            {/*    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {*/}
-            {/*      e.preventDefault();*/}
-            {/*    }*/}
-            {/*  }}*/}
-            {/*  InputProps={{ readOnly: true }}*/}
-            {/*/>*/}
             <RHFTextField
               name="closingCharge"
               label="Closing charge"
@@ -425,27 +395,6 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.remark || '-'}
               </TableCell>
-              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
-                <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0.5, px: 2 }}>
-                  {
-                    <Typography
-                      onClick={() => {
-                        view.onTrue();
-                        setData(row);
-                      }}
-                      sx={{
-                        cursor: 'pointer',
-                        color: 'inherit',
-                        pointerEvents: 'auto',
-                      }}
-                    >
-                      <Iconify icon="basil:document-solid" />
-                    </Typography>
-                  }
-                </TableCell>
-              ) : (
-                <TableCell>'-'</TableCell>
-              )}
             </TableRow>
           ))}
         </TableBody>

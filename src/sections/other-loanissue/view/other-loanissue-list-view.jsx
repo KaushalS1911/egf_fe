@@ -49,7 +49,10 @@ const TABLE_HEAD = [
   { id: '#', label: '#' },
   { id: 'LoanNo', label: 'Loan No.' },
   { id: 'CustomerName', label: 'Customer name' },
-  { id: 'createdAt', label: 'Entry Date' },
+  { id: 'otherName', label: 'Other name' },
+  { id: 'otherNo', label: 'Other no' },
+  { id: 'openDate', label: 'Open date' },
+  { id: 'createdAt', label: 'Entry date' },
   { id: 'ContactNo', label: 'Contact' },
   { id: 'InterestLoanAmount', label: 'Int. loan amt' },
   { id: 'InterestRate', label: 'Int. rate' },
@@ -353,14 +356,21 @@ function applyFilter({ inputData, comparator, filters }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+        (
+          item?.loan?.customer?.firstName +
+          ' ' +
+          item?.loan?.customer?.middleName +
+          ' ' +
+          item?.loan?.customer?.lastName
+        )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.customer?.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.customer?.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.loanNo?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.customer?.contact.toLowerCase().includes(username.toLowerCase()) ||
+        item?.otherNumber.includes(username)
     );
   }
   return inputData;

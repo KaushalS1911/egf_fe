@@ -16,7 +16,6 @@ function PayTabs({ mutate, currentOtherLoan }) {
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
   return (
     <>
       <Grid container spacing={3} sx={{ mt: 1.5 }}>
@@ -35,9 +34,6 @@ function PayTabs({ mutate, currentOtherLoan }) {
               sx={{ mb: 1.5, '.css-1obiyde-MuiTabs-indicator': { bottom: 8 } }}
             >
               <Tab label="Interest Pay Details" />
-              {/*<Tab label='Part Release' />*/}
-              {/*<Tab label='Uchak Interest Pay Details' />*/}
-              {/*<Tab label='Loan Part Payment' />*/}
               <Tab label="Loan Close" />
             </Tabs>
             {activeTab === 0 && currentOtherLoan && (
@@ -47,10 +43,6 @@ function PayTabs({ mutate, currentOtherLoan }) {
                 configs={configs}
               />
             )}
-            {/*{(activeTab === 1 && currentLoan) &&*/}
-            {/*<PartReleaseForm currentLoan={currentLoan} mutate={mutate} configs={configs} />}*/}
-            {/*{(activeTab === 2 && currentLoan) && <UchakInterestPayForm currentLoan={currentLoan} mutate={mutate} />}*/}
-            {/*{(activeTab === 3 && currentLoan) && <LoanPartPaymentForm currentLoan={currentLoan} mutate={mutate} />}*/}
             {activeTab === 1 && currentOtherLoan && (
               <LoanCloseForm currentOtherLoan={currentOtherLoan} mutate={mutate} />
             )}

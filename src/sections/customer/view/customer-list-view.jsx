@@ -40,7 +40,7 @@ import { useGetCustomer } from '../../../api/customer';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { fDate } from '../../../utils/format-time';
+import { fDate, isBetween } from '../../../utils/format-time';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetConfigs } from '../../../api/config';
 
@@ -59,6 +59,7 @@ const TABLE_HEAD = [
   { id: 'isAadharVerified', label: 'Aadhar verified', width: 180 },
   { id: 'contact', label: 'Contact', width: 180 },
   { id: 'customerCode', label: 'Customer code', width: 220 },
+  { id: 'joiningDate', label: 'Joining date', width: 220 },
   { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 120 },
 ];
@@ -67,6 +68,9 @@ const defaultFilters = {
   name: '',
   role: [],
   status: 'all',
+  isAadharVerified: '',
+  startDate: null,
+  endDate: null,
 };
 
 // ----------------------------------------------------------------------
@@ -373,8 +377,8 @@ export default function CustomerListView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters }) {
-  const { name, status, role } = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { name, status, role, isAadharVerified, startDate, endDate } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -386,20 +390,27 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) =>
-        (user.firstName && user.firstName + ' ' + user.middleName + ' ' + user.lastName)
+      (item) =>
+        (item.firstName && item.firstName + ' ' + item.middleName + ' ' + item.lastName)
           .toLowerCase()
-          .indexOf(name.toLowerCase()) !== -1
+          .indexOf(name.toLowerCase()) !== -1 || item.contact.trim().includes(name)
     );
   }
-
   if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
+    inputData = inputData.filter((item) => item.status === status);
   }
-
+  if (isAadharVerified) {
+    inputData = inputData.filter(
+      (item) => item.isAadharVerified === (isAadharVerified === 'Verified' ? true : false)
+    );
+  }
   if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
+    inputData = inputData.filter((item) => role.includes(item.role));
   }
-
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((loan) =>
+      isBetween(new Date(loan.joiningDate), startDate, endDate)
+    );
+  }
   return inputData;
 }

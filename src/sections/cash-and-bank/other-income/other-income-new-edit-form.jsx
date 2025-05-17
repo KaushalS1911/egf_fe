@@ -114,7 +114,6 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
-  console.log(watch('branch'));
   //
   // useEffect(() => {
   //   if (currentOtherIncome && currentOtherIncome.invoice) {

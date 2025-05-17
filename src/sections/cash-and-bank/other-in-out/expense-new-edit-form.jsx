@@ -78,7 +78,6 @@ export default function ExpenseNewEditForm({ currentExpense }) {
     date: Yup.date().typeError('Please enter a valid date').required('Date is required'),
     ...paymentSchema,
   });
-  console.log(file);
   const defaultValues = useMemo(
     () => ({
       expenseType: currentExpense?.expenseType || '',

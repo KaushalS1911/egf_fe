@@ -51,7 +51,7 @@ const TABLE_HEAD = [
 const defaultFilters = {
   name: '',
   day: '',
-  Status: 'All',
+  status: 'All',
   startDate: null,
   endDate: null,
   nextInstallmentDay: [],
@@ -60,6 +60,7 @@ const defaultFilters = {
 };
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
+  { value: 'Disbursed', label: 'Disbursed' },
   {
     value: 'Overdue',
     label: 'Overdue',
@@ -85,9 +86,15 @@ export default function ReminderListView() {
     setSrData(updatedData);
   }, [Loanissue]);
 
+  const calculateDateDifference = (date1, date2) => {
+    const diffTime = Math.abs(new Date(date1) - new Date(date2));
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
   const dataFiltered = applyFilter({
     inputData: srData,
     comparator: getComparator(table.order, table.orderBy),
+    calculateDateDifference: calculateDateDifference,
     filters,
   });
 
@@ -161,6 +168,7 @@ export default function ReminderListView() {
           'Next Interest Pay Date': fDate(loan?.nextInstallmentDate) || '',
           'Issue Date': fDate(loan?.issueDate) || '',
           'Last Interest Date': fDate(loan?.lastInstallmentDate) || '',
+          Days: calculateDateDifference(new Date(), loan.nextInstallmentDate) || '',
           'Next Recalling Date': '',
           Remark: '',
         };
@@ -184,6 +192,7 @@ export default function ReminderListView() {
             'Next Interest Pay Date': '',
             'Issue Date': '',
             'Last Interest Date': '',
+            Days: '',
             'Next Recalling Date': fDate(reminderData?.nextRecallingDate) || '',
             Remark: reminderData?.remark || '',
           };
@@ -199,6 +208,7 @@ export default function ReminderListView() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reminders');
     XLSX.writeFile(workbook, 'Reminders.xlsx');
   };
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -239,11 +249,10 @@ export default function ReminderListView() {
                         (tab.value === 'Regular' && 'success') ||
                         (tab.value === 'Overdue' && 'error') ||
                         (tab.value === 'Disbursed' && 'info') ||
-                        (tab.value === 'Closed' && 'warning') ||
                         'default'
                       }
                     >
-                      {['Overdue', 'Regular'].includes(tab.value)
+                      {['Disbursed', 'Overdue', 'Regular'].includes(tab.value)
                         ? Loanissue.filter((item) => item.status === tab.value).length
                         : Loanissue.length}
                     </Label>
@@ -257,15 +266,15 @@ export default function ReminderListView() {
             onFilters={handleFilters}
             exportToExcel={exportToExcel}
           />
-          {/*{canReset && (*/}
-          {/*  <ReminderTableFiltersResult*/}
-          {/*    filters={filters}*/}
-          {/*    onFilters={handleFilters}*/}
-          {/*    onResetFilters={handleResetFilters}*/}
-          {/*    results={dataFiltered.length}*/}
-          {/*    sx={{ p: 2.5, pt: 0 }}*/}
-          {/*  />*/}
-          {/*)}*/}
+          {canReset && (
+            <ReminderTableFiltersResult
+              filters={filters}
+              onFilters={handleFilters}
+              onResetFilters={handleResetFilters}
+              results={dataFiltered.length}
+              sx={{ p: 2.5, pt: 0 }}
+            />
+          )}
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -288,34 +297,27 @@ export default function ReminderListView() {
                 }}
               />
               <TableBody>
-                {(filters.startDate && filters.endDate) || filters.name || filters.endDay ? (
-                  dataFiltered.length > 0 ? (
-                    <>
-                      {dataFiltered
-                        .slice(
-                          table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage
-                        )
-                        .map((row, index) => (
-                          <ReminderTableRow
-                            index={row.srNo}
-                            key={row._id}
-                            row={row}
-                            handleClick={() => handleClick(row._id)}
-                            mutate={mutate}
-                          />
-                        ))}
-                      <TableEmptyRows
-                        height={denseHeight}
-                        emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                <>
+                  {dataFiltered
+                    .slice(
+                      table.page * table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
+                    )
+                    .map((row, index) => (
+                      <ReminderTableRow
+                        index={row.srNo}
+                        key={row._id}
+                        row={row}
+                        handleClick={() => handleClick(row._id)}
+                        mutate={mutate}
                       />
-                    </>
-                  ) : (
-                    <TableNoData notFound={notFound} />
-                  )
-                ) : (
-                  <TableNoData notFound={true} />
-                )}
+                    ))}
+                  <TableEmptyRows
+                    height={denseHeight}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                  />
+                  <TableNoData notFound={notFound} />
+                </>
               </TableBody>
             </Table>
           </TableContainer>
@@ -335,8 +337,9 @@ export default function ReminderListView() {
 }
 
 // ----------------------------------------------------------------------
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { startDate, endDate, name, nextInstallmentDay, status, startDay, endDay } = filters;
+
+function applyFilter({ inputData, comparator, filters, dateError, calculateDateDifference }) {
+  const { startDate, endDate, name, day, status } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -354,16 +357,19 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         rem.customer.firstName.toLowerCase().includes(name.toLowerCase()) ||
         rem.customer.middleName.toLowerCase().includes(name.toLowerCase()) ||
         rem.customer.lastName.toLowerCase().includes(name.toLowerCase()) ||
-        rem.loanNo.includes(name.toLowerCase())
+        rem.loanNo.includes(name.toLowerCase()) ||
+        rem.customer.contact.includes(name)
     );
   }
-  if (nextInstallmentDay.length) {
-    inputData = inputData.filter((rem) => nextInstallmentDay.includes(rem.nextInstallmentDate));
-  }
 
-  if (!dateError && startDate && endDate) {
+  if (dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>
       isBetween(new Date(order.nextInstallmentDate), startDate, endDate)
+    );
+  }
+  if (day) {
+    inputData = inputData.filter(
+      (item) => calculateDateDifference(new Date(), item.nextInstallmentDate) >= day
     );
   }
   if (status && status !== 'All') {

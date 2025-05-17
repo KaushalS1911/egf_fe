@@ -294,11 +294,25 @@ function applyFilter({ inputData, comparator, filters }) {
   const { username } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
+
   stabilizedThis.sort((a, b) => {
+    const aStatus = (a[0].status || '').toLowerCase();
+    const bStatus = (b[0].status || '').toLowerCase();
+
+    // Bring 'issued' rows to the top
+    if (aStatus === 'issued' && bStatus !== 'issued') return -1;
+    if (aStatus !== 'issued' && bStatus === 'issued') return 1;
+
+    // Apply your original sorting
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
+
+    // Maintain original index order
     return a[1] - b[1];
   });
+
+  inputData = stabilizedThis.map((el) => el[0]);
+
   inputData = stabilizedThis.map((el) => el[0]);
   if (username && username.trim()) {
     inputData = inputData.filter(

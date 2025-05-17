@@ -21,6 +21,7 @@ import ExpenseTypeCreteView from './expense-type-crete-view.jsx';
 import ChargeTypeView from './charge-type-view.jsx';
 import DeviceAccessView from './device-access-view.jsx';
 import AreaCreteView from './area-crete-view.jsx';
+import PercentageCreateView from './percentage-create-view.jsx';
 
 const TABS = [
   {
@@ -51,6 +52,11 @@ const TABS = [
   {
     value: 'Loan type',
     label: 'Loan type',
+    icon: <Iconify icon="mdi:cash-sync" width={24} />,
+  },
+  {
+    value: 'Percentage',
+    label: 'Percentage',
     icon: <Iconify icon="mdi:cash-sync" width={24} />,
   },
   {
@@ -96,7 +102,7 @@ const TABS = [
   {
     value: 'Area',
     label: 'Area',
-    icon: <Iconify icon='majesticons:map-marker-area-line' width={18} sx={{ color: 'gray' }} />,
+    icon: <Iconify icon="majesticons:map-marker-area-line" width={18} sx={{ color: 'gray' }} />,
   },
 ];
 
@@ -133,6 +139,7 @@ export default function SettingsPage() {
         {currentTab === 'Permission' && <PermissionView />}
         {currentTab === 'Business type' && <BusinessTypeCreteView />}
         {currentTab === 'Loan type' && <LoanTypeView />}
+        {currentTab === 'Percentage' && <PercentageCreateView />}
         {currentTab === 'Expense type' && <ExpenseTypeCreteView />}
         {currentTab === 'Charge type' && <ChargeTypeView />}
         {currentTab === 'Branch' && <BranchCreateView />}

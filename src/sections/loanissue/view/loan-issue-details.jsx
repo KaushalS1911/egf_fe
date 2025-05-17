@@ -332,7 +332,14 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Name</Text>
                     <Text style={styles.colon}>:</Text>
-                    <Text style={{ ...styles.subText, wordWrap: 'break-word', textWrap: 'wrap' }}>
+                    <Text
+                      style={{
+                        ...styles.subText,
+                        wordWrap: 'break-word',
+                        textWrap: 'wrap',
+                        fontSize: 8,
+                      }}
+                    >
                       {`${selectedRow.customer.firstName || ''} ${selectedRow.customer.middleName || ''} \n${selectedRow.customer.lastName || ''}`.trim()}
                     </Text>
                   </View>
@@ -343,10 +350,10 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       style={{
                         ...styles.subText,
                         textWrap: 'wrap',
-                        fontSize: 9,
+                        fontSize: 8,
                       }}
                     >
-                      {`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`.toUpperCase()}
+                      {`${selectedRow.customer.temporaryAddress.street} , ${selectedRow.customer.temporaryAddress.landmark} , ${selectedRow.customer.temporaryAddress.city} , ${selectedRow.customer.temporaryAddress.zipcode}`.toUpperCase()}
                     </Text>
                   </View>
                   <View style={styles.row}>

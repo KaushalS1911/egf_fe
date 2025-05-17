@@ -26,12 +26,14 @@ import LoanIssueDetails from '../loanissue/view/loan-issue-details.jsx';
 import Sansaction11 from './sansaction-11.jsx';
 import { value } from 'lodash/seq.js';
 import { useGetConfigs } from '../../api/config.js';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'propertyName', label: 'Property Name' },
   { id: 'ornaments', label: 'Ornament' },
+  { id: 'carat', label: 'Carat' },
   { id: 'totalWeight', label: 'Total Weight' },
   { id: 'loseWeight', label: 'Lose Weight' },
   { id: 'grossWeight', label: 'Gross Weight' },
@@ -48,6 +50,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   const [cashPendingAmt, setCashPendingAmt] = useState(0);
   const [bankPendingAmt, setBankPendingAmt] = useState(0);
   const { user } = useAuthContext();
+  const [chargePaymentModeValue, setChargePaymentModeValue] = useState('');
+  const [approvalChargeValue, setApprovalChargeValue] = useState(0);
   const paymentSchema =
     currentDisburse.paymentMode === 'Bank'
       ? {
@@ -76,6 +80,48 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
             }),
           };
 
+  const chargePaymentSchema = {
+    ...(approvalChargeValue > 0 && {
+      chargePaymentMode: Yup.string().required('Charge Payment Mode is required'),
+      ...(chargePaymentModeValue === 'Cash' && {
+        chargeCashAmount: Yup.string()
+          .required('Charge Cash Amount is required')
+          .test(
+            'is-positive',
+            'Charge Cash Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+      }),
+      ...(chargePaymentModeValue === 'Bank' && {
+        chargeBankAmount: Yup.string()
+          .required('Charge Bank Amount is required')
+          .test(
+            'is-positive',
+            'Charge Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+        chargeAccount: Yup.object().required('Charge Account is required'),
+      }),
+      ...(chargePaymentModeValue === 'Both' && {
+        chargeCashAmount: Yup.string()
+          .required('Charge Cash Amount is required')
+          .test(
+            'is-positive',
+            'Charge Cash Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+        chargeBankAmount: Yup.string()
+          .required('Charge Bank Amount is required')
+          .test(
+            'is-positive',
+            'Charge Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+        chargeAccount: Yup.object().required('Charge Account is required'),
+      }),
+    }),
+  };
+
   const NewDisburse = Yup.object().shape({
     loanNo: Yup.string().required('Loan No is required'),
     customerName: Yup.string().required('Customer Name is required'),
@@ -85,6 +131,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
     ...paymentSchema,
+    ...chargePaymentSchema,
   });
 
   const defaultValues = useMemo(
@@ -95,7 +142,13 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       interest: currentDisburse?.scheme?.interestRate || '',
       scheme: currentDisburse?.scheme?.name || '',
       valuation: currentDisburse?.valuation || '',
-      address: currentDisburse?.customer?.permanentAddress?.street || '',
+      address:
+        (
+          currentDisburse?.customer?.permanentAddress?.street +
+          ' ,' +
+          currentDisburse?.customer?.permanentAddress?.city
+        ).toUpperCase() || '',
+      landmark: currentDisburse?.customer?.permanentAddress?.landmark || '',
       branch: currentDisburse?.customer?.branch?.name || '',
       approvalCharge: currentDisburse?.approvalCharge || 0,
       bankNetAmount: currentDisburse?.bankAmount || 0,
@@ -111,6 +164,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         currentDisburse?.propertyDetails?.map((item) => ({
           propertyName: item.type || '',
           pcs: item.pcs || '',
+          carat: item.carat || '',
           totalWeight: item.totalWeight || '',
           loseWeight: item.lossWeight || '',
           grossWeight: item.grossWeight || '',
@@ -151,13 +205,43 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     setBankPendingAmt(watch('bankNetAmount') - watch('payingBankAmount'));
   }, [watch('bankNetAmount'), watch('payingBankAmount')]);
 
-  console.log(currentDisburse.scheme);
+  useEffect(() => {
+    const approvalCharge = Number(watch('approvalCharge')) || 0;
+    setApprovalChargeValue(approvalCharge);
+    if (approvalCharge === 0) {
+      setValue('chargePaymentMode', '');
+      setValue('chargeCashAmount', '');
+      setValue('chargeBankAmount', '');
+      setValue('chargeAccount', null);
+    }
+  }, [watch('approvalCharge')]);
+
+  useEffect(() => {
+    setChargePaymentModeValue(watch('chargePaymentMode') || '');
+  }, [watch('chargePaymentMode')]);
+
+  useEffect(() => {
+    const approvalCharge = Number(watch('approvalCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Cash') {
+      setValue('chargeCashAmount', approvalCharge);
+      setValue('chargeBankAmount', '');
+    } else if (chargePaymentMode === 'Bank') {
+      setValue('chargeBankAmount', approvalCharge);
+      setValue('chargeCashAmount', '');
+    } else if (chargePaymentMode === 'Both') {
+      const halfAmount = approvalCharge / 2;
+      setValue('chargeCashAmount', halfAmount);
+      setValue('chargeBankAmount', halfAmount);
+    }
+  }, [watch('chargePaymentMode'), watch('approvalCharge')]);
+
   const sendPdfToWhatsApp = async (item) => {
     try {
       // Generate the first PDF
       const blob1 = await pdf(<LoanIssueDetails selectedRow={item} configs={configs} />).toBlob();
       const file1 = new File([blob1], `LoanIssueDetailsPdf.pdf`, { type: 'application/pdf' });
-
 
       const payload = {
         firstName: item.customer.firstName,
@@ -207,7 +291,61 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    if (!configs.chargeType.includes('APPROVAL CHARGE')) {
+      return enqueueSnackbar('APPROVAL CHARGE is not including in charge type', {
+        variant: 'error',
+      });
+    }
+
     try {
+      let paymentDetail = {
+        paymentMode: data.paymentMode,
+      };
+
+      if (data.paymentMode === 'Cash') {
+        paymentDetail = {
+          ...paymentDetail,
+          cashAmount: data.cashAmount,
+        };
+      } else if (data.paymentMode === 'Bank') {
+        paymentDetail = {
+          ...paymentDetail,
+          ...data.companyBankDetail.account,
+          bankAmount: data.bankAmount,
+        };
+      } else if (data.paymentMode === 'Both') {
+        paymentDetail = {
+          ...paymentDetail,
+          cashAmount: data.cashAmount,
+          bankAmount: data.bankAmount,
+          ...data.companyBankDetail.account,
+        };
+      }
+
+      let chargePaymentDetail = {
+        chargePaymentMode: data.chargePaymentMode,
+      };
+
+      if (data.chargePaymentMode === 'Cash') {
+        chargePaymentDetail = {
+          ...chargePaymentDetail,
+          chargeCashAmount: data.chargeCashAmount,
+        };
+      } else if (data.chargePaymentMode === 'Bank') {
+        chargePaymentDetail = {
+          ...chargePaymentDetail,
+          ...data.chargeAccount,
+          chargeBankAmount: data.chargeBankAmount,
+        };
+      } else if (data.chargePaymentMode === 'Both') {
+        chargePaymentDetail = {
+          ...chargePaymentDetail,
+          chargeCashAmount: data.chargeCashAmount,
+          chargeBankAmount: data.chargeBankAmount,
+          ...data.chargeAccount,
+        };
+      }
+
       const payload = {
         loan: currentDisburse._id,
         companyBankDetail: data.companyBankDetail,
@@ -219,6 +357,8 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         payingCashAmount: data.payingCashAmount,
         approvalCharge: data.approvalCharge,
         issueDate: data.issueDate,
+        paymentDetail,
+        chargePaymentDetail,
       };
 
       const url =
@@ -230,6 +370,14 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
       requestMethod(url, payload)
         .then((res) => {
+          if (
+            data.approvalCharge > 0 &&
+            currentDisburse.status === 'Issued' &&
+            configs.chargeType.includes('APPROVAL CHARGE')
+          ) {
+            alert('00002');
+            handleChargeIn(data);
+          }
           router.push(paths.dashboard.disburse.list);
           enqueueSnackbar(res?.data?.message);
           if (currentDisburse.status !== 'Disbursed') {
@@ -284,6 +432,76 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     return total.toFixed(2); // Apply toFixed(2) only at the end
   };
 
+  const handleChargeCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || 0;
+    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Both') {
+      if (newCashAmount > approvalCharge) {
+        setValue('chargeCashAmount', approvalCharge);
+        setValue('chargeBankAmount', 0);
+        enqueueSnackbar('Cash amount cannot be greater than approval charge', {
+          variant: 'warning',
+        });
+      } else {
+        setValue('chargeCashAmount', newCashAmount);
+        setValue('chargeBankAmount', approvalCharge - newCashAmount);
+      }
+    } else {
+      setValue('chargeCashAmount', newCashAmount);
+    }
+  };
+
+  const handleChargeBankAmountChange = (event) => {
+    const newBankAmount = parseFloat(event.target.value) || 0;
+    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Both') {
+      if (newBankAmount > approvalCharge) {
+        setValue('chargeBankAmount', approvalCharge);
+        setValue('chargeCashAmount', 0);
+        enqueueSnackbar('Bank amount cannot be greater than approval charge', {
+          variant: 'warning',
+        });
+      } else {
+        setValue('chargeBankAmount', newBankAmount);
+        setValue('chargeCashAmount', approvalCharge - newBankAmount);
+      }
+    } else {
+      setValue('chargeBankAmount', newBankAmount);
+    }
+  };
+
+  const handleChargeIn = (data) => {
+    try {
+      const chargePaymentDetail = {
+        paymentMode: data.chargePaymentMode,
+        ...(data.chargePaymentMode === 'Cash' && { cashAmount: data.chargeCashAmount }),
+        ...(data.chargePaymentMode === 'Bank' && {
+          bankAmount: data.chargeBankAmount,
+          account: data.chargeAccount,
+        }),
+        ...(data.chargePaymentMode === 'Both' && {
+          cashAmount: data.chargeCashAmount,
+          bankAmount: data.chargeBankAmount,
+          account: data.chargeAccount,
+        }),
+      };
+      const payload = {
+        chargeType: 'APPROVAL CHARGE',
+        date: new Date(),
+        branch: currentDisburse.customer.branch._id,
+        status: 'Payment In',
+        paymentDetails: chargePaymentDetail,
+      };
+      const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -301,14 +519,15 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                 sm: 'repeat(4, 1fr)',
               }}
             >
-              <RHFTextField name="loanNo" label="Loan No" req={'red'} />
-              <RHFTextField name="customerName" label="Customer Name" req={'red'} />
-              <RHFTextField name="loanAmount" label="Loan Amount" req={'red'} />
-              <RHFTextField name="interest" label="Interest" req={'red'} />
-              <RHFTextField name="scheme" label="Scheme Name" req={'red'} />
-              <RHFTextField name="address" label="Address" req={'red'} />
-              <RHFTextField name="branch" label="Branch" req={'red'} />
-              <RHFTextField name="approvalCharge" label="Approval Charge" req={'red'} />
+              <RHFTextField name="loanNo" label="Loan No" disabled={true} />
+              <RHFTextField name="customerName" label="Customer Name" disabled={true} />
+              <RHFTextField name="loanAmount" label="Loan Amount" disabled={true} />
+              <RHFTextField name="interest" label="Interest" disabled={true} />
+              <RHFTextField name="scheme" label="Scheme Name" disabled={true} />
+              <RHFTextField name="address" label="Address" readonly={true} />
+              <RHFTextField name="landmark" label="Landmark" disabled={true} />
+              <RHFTextField name="branch" label="Branch" disabled={true} />
+              <RHFTextField name="approvalCharge" label="Approval Charge" />
               <RhfDatePicker name="issueDate" control={control} label="issueDate" />
             </Box>
           </Card>
@@ -343,6 +562,14 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                             name={`propertyDetails.${index}.pcs`}
                             label="Ornament"
                             defaultValue={row.pcs || ''}
+                            disabled={true}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ px: 0.5 }}>
+                          <RHFTextField
+                            name={`propertyDetails.${index}.carat`}
+                            label="carat"
+                            defaultValue={row.carat || ''}
                             disabled={true}
                           />
                         </TableCell>
@@ -402,6 +629,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                         <strong>Total:</strong>
                       </TableCell>
                       <TableCell sx={{ padding: '8px 18px' }}>{calculateTotal('pcs')}</TableCell>
+                      <TableCell sx={{ padding: '8px 18px' }}>{calculateTotal('carat')}</TableCell>
                       <TableCell sx={{ padding: '8px 18px' }}>
                         {calculateTotal('totalWeight')}
                       </TableCell>
@@ -450,7 +678,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       name="bankNetAmount"
                       label="Net Amount"
                       req={'red'}
-                      // value={watch('bankNetAmount') - watch('approvalCharge') || 0}
                       onKeyPress={(e) => {
                         if (
                           !/[0-9.]/.test(e.key) ||
@@ -520,7 +747,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
               {(currentDisburse.paymentMode === 'Cash' ||
                 currentDisburse.paymentMode === 'Both') && (
                 <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: '600' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: '600' }}>
                     Cash Amount
                   </Typography>
                   <Box
@@ -536,7 +763,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                       name="cashNetAmount"
                       label="Net Amount"
                       req={'red'}
-                      // value={watch('cashNetAmount') - watch('approvalCharge') || 0}
                       onKeyPress={(e) => {
                         if (
                           !/[0-9.]/.test(e.key) ||
@@ -589,6 +815,87 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                   </Box>
                 </>
               )}
+
+              {/* Charge Payment Details Section */}
+              <Typography variant="subtitle2" sx={{ fontWeight: '600' }}>
+                Charge Payment Details
+              </Typography>
+              <Box
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(4, 1fr)',
+                }}
+              >
+                <RHFAutocomplete
+                  name="chargePaymentMode"
+                  label="Payment Mode"
+                  options={['Cash', 'Bank', 'Both']}
+                  getOptionLabel={(option) => option}
+                  onChange={(event, value) => {
+                    setValue('chargePaymentMode', value);
+                  }}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                />
+                {(watch('chargePaymentMode') === 'Cash' ||
+                  watch('chargePaymentMode') === 'Both') && (
+                  <Controller
+                    name="chargeCashAmount"
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label="Cash Amount"
+                        inputProps={{ min: 0 }}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleChargeCashAmountChange(e);
+                        }}
+                      />
+                    )}
+                  />
+                )}
+                {(watch('chargePaymentMode') === 'Bank' ||
+                  watch('chargePaymentMode') === 'Both') && (
+                  <>
+                    <RHFAutocomplete
+                      name="chargeAccount"
+                      label="Account"
+                      fullWidth
+                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      getOptionLabel={(option) => option.bankName || ''}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option.id || option.bankName}>
+                          {option.bankName}
+                        </li>
+                      )}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                    />
+                    <Controller
+                      name="chargeBankAmount"
+                      control={control}
+                      render={({ field }) => (
+                        <RHFTextField
+                          {...field}
+                          label="Bank Amount"
+                          disabled={watch('chargePaymentMode') === 'Bank' ? false : true}
+                          inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleChargeBankAmountChange(e);
+                          }}
+                        />
+                      )}
+                    />
+                  </>
+                )}
+              </Box>
             </Stack>
           </Card>
           {currentDisburse.status === 'Issued' || currentDisburse.status === 'Disbursed' ? (

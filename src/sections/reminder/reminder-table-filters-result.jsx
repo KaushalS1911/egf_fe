@@ -11,12 +11,12 @@ import { shortDateLabel } from '../../components/custom-date-range-picker';
 // ----------------------------------------------------------------------
 
 export default function ReminderTableFiltersResult({
-                                                     filters,
-                                                     onFilters,
-                                                     onResetFilters,
-                                                     results,
-                                                     ...other
-                                                   }) {
+  filters,
+  onFilters,
+  onResetFilters,
+  results,
+  ...other
+}) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
   const DayLabel = shortDateLabel(filters.startDay, filters.endDay);
   const handleRemoveKeyword = useCallback(() => {
@@ -27,38 +27,48 @@ export default function ReminderTableFiltersResult({
     onFilters('startDate', null);
     onFilters('endDate', null);
   }, [onFilters]);
+
   const handleRemoveDay = useCallback(() => {
-    onFilters('day', 'Next Week');
+    onFilters('day', '');
   }, [onFilters]);
 
+  const handleRemoveStatus = useCallback(() => {
+    onFilters('status', 'All');
+  }, [onFilters]);
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
-        <Box component='span' sx={{ color: 'text.secondary', ml: 0.25 }}>
+        <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
           results found
         </Box>
       </Box>
-      <Stack flexGrow={1} spacing={1} direction='row' flexWrap='wrap' alignItems='center'>
+      <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.startDate && filters.endDate && (
-          <Block label='Date:'>
-            <Chip size='small' label={shortLabel} onDelete={handleRemoveDate} />
+          <Block label="Date:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
+          </Block>
+        )}
+        {filters.status !== 'All' && (
+          <Block label="Status:">
+            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
         {!!filters.name && (
-          <Block label='Customer Name:'>
-            <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
+          <Block label="Key Word:">
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
-        {filters.day  && (
-          <Block label='Day:'>
-            <Chip size='small' label={DayLabel} onDelete={handleRemoveDay} />
+        {filters.day && (
+          <Block label="Day:">
+            <Chip size="small" label={filters.day} onDelete={handleRemoveDay} />
           </Block>
         )}
+
         <Button
-          color='error'
+          color="error"
           onClick={onResetFilters}
-          startIcon={<Iconify icon='solar:trash-bin-trash-bold' />}
+          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
           Clear
         </Button>
@@ -80,9 +90,9 @@ function Block({ label, children, sx, ...other }) {
   return (
     <Stack
       component={Paper}
-      variant='outlined'
+      variant="outlined"
       spacing={1}
-      direction='row'
+      direction="row"
       sx={{
         p: 1,
         borderRadius: 1,
@@ -92,10 +102,10 @@ function Block({ label, children, sx, ...other }) {
       }}
       {...other}
     >
-      <Box component='span' sx={{ typography: 'subtitle2' }}>
+      <Box component="span" sx={{ typography: 'subtitle2' }}>
         {label}
       </Box>
-      <Stack spacing={1} direction='row' flexWrap='wrap'>
+      <Stack spacing={1} direction="row" flexWrap="wrap">
         {children}
       </Stack>
     </Stack>

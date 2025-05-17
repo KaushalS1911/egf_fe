@@ -203,8 +203,9 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   const fetchNextInquiry = () => {
     const currentIndex = inquiry.indexOf(currentInquiry);
 
-    // Find the next inquiry with status 'Active'
-    const nextActiveInquiry = inquiry.slice(currentIndex + 1).find((i) => i.status === 'Active');
+    const nextActiveInquiry = inquiry
+      .slice(currentIndex + 1)
+      .find((i) => i.status === currentInquiry.status);
 
     if (nextActiveInquiry) {
       router.push(paths.dashboard.inquiry.edit(nextActiveInquiry._id));
@@ -241,7 +242,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
         address: nextActiveInquiry.address || '',
       });
     } else {
-      enqueueSnackbar('No more active inquiries available', { variant: 'info' });
+      enqueueSnackbar(`No more ${currentInquiry.status} inquiries available`, { variant: 'info' });
     }
   };
 
@@ -254,7 +255,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
           </Typography>
         </Grid>
         <Grid xs={12} md={8}>
-          {currentInquiry?.status === 'Active' && (
+          {currentInquiry && (
             <Box sx={{ display: 'flex', justifyContent: 'end', mb: 2 }}>
               <LoadingButton variant="contained" onClick={fetchNextInquiry}>
                 Next Inquiry
@@ -348,7 +349,12 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 }}
               />
               <RHFTextField name="email" label="Email" />
-              <RhfDatePicker name="date" control={control} label="Date" />
+              <RhfDatePicker
+                name="date"
+                control={control}
+                label="Date"
+                maxDate={user.role === 'Employee' ? new Date() : undefined}
+              />
               <RhfDatePicker name="recallingDate" control={control} label="Recalling Date" />
               {configs?.loanTypes && (
                 <RHFAutocomplete

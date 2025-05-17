@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -38,9 +38,19 @@ import { LoadingScreen } from '../../../components/loading-screen';
 import { fDate } from '../../../utils/format-time';
 import { useGetConfigs } from '../../../api/config';
 import { getResponsibilityValue } from '../../../permission/permission';
+import Tabs from '@mui/material/Tabs';
+import { alpha } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import Label from '../../../components/label/index.js';
 
 // ----------------------------------------------------------------------
 
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'Active', label: 'Active' },
+  { value: 'In Active', label: 'In Active' },
+  { value: 'Blocked', label: 'Blocked' },
+];
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'branchname', label: 'Branch' },
@@ -53,6 +63,8 @@ const TABLE_HEAD = [
 
 const defaultFilters = {
   name: '',
+  role: '',
+  status: 'all',
 };
 
 // ----------------------------------------------------------------------
@@ -68,12 +80,16 @@ export default function EmployeeListView() {
   const [tableData, setTableData] = useState(employee);
   const [filters, setFilters] = useState(defaultFilters);
   const { configs } = useGetConfigs();
+  const [options, setOptions] = useState([]);
 
   const dataFiltered = applyFilter({
     inputData: employee,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  useEffect(() => {
+    fetchStates();
+  }, [employee]);
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -144,7 +160,12 @@ export default function EmployeeListView() {
     },
     [router]
   );
-
+  const handleFilterStatus = useCallback(
+    (event, newValue) => {
+      handleFilters('status', newValue);
+    },
+    [handleFilters]
+  );
   const employees = employee?.map((item) => ({
     Name: `${item?.user?.firstName} ${item?.user?.middleName} ${item?.user?.lastName}`,
     Email: item?.user?.email,
@@ -165,6 +186,18 @@ export default function EmployeeListView() {
 
   if (employeeLoading) {
     return <LoadingScreen />;
+  }
+
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option?.role === data?.user.role)) {
+          return [...item, data.user.role];
+        } else {
+          return item;
+        }
+      });
+    });
   }
 
   return (
@@ -194,7 +227,46 @@ export default function EmployeeListView() {
           }}
         />
         <Card>
-          <EmployeeTableToolbar filters={filters} onFilters={handleFilters} employees={employees} />
+          <Tabs
+            value={filters.status}
+            onChange={handleFilterStatus}
+            sx={{
+              px: 2.5,
+              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+            }}
+          >
+            {STATUS_OPTIONS.map((tab) => (
+              <Tab
+                key={tab.value}
+                iconPosition="end"
+                value={tab.value}
+                label={tab.label}
+                icon={
+                  <Label
+                    variant={
+                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                    }
+                    color={
+                      (tab.value === 'Active' && 'success') ||
+                      (tab.value === 'In Active' && 'warning') ||
+                      (tab.value === 'Blocked' && 'error') ||
+                      'default'
+                    }
+                  >
+                    {['Active', 'In Active', 'Blocked'].includes(tab.value)
+                      ? employee.filter((user) => user.status === tab.value).length
+                      : employee.length}
+                  </Label>
+                }
+              />
+            ))}
+          </Tabs>
+          <EmployeeTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            employees={employees}
+            options={options}
+          />
           {canReset && (
             <EmployeeTableFiltersResult
               filters={filters}
@@ -314,7 +386,7 @@ export default function EmployeeListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-  const { name } = filters;
+  const { name, role, status } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -337,6 +409,12 @@ function applyFilter({ inputData, comparator, filters }) {
         item.user.middleName.toLowerCase().includes(name.toLowerCase()) ||
         item.user.lastName.toLowerCase().includes(name.toLowerCase())
     );
+  }
+  if (role) {
+    inputData = inputData.filter((item) => item?.user?.role === role);
+  }
+  if (status !== 'all') {
+    inputData = inputData.filter((item) => item.status === status);
   }
   return inputData;
 }

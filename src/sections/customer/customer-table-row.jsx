@@ -18,6 +18,7 @@ import { useAuthContext } from '../../auth/hooks';
 import { getResponsibilityValue } from '../../permission/permission';
 import Lightbox, { useLightBox } from '../../components/lightbox';
 import React from 'react';
+import { fDate } from '../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
     status,
     isAadharVerified,
     branch,
+    joiningDate,
   } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -79,6 +81,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerCode}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(joiningDate) || '-'}</TableCell>
         <TableCell>
           <Label
             variant="soft"

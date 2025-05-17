@@ -33,14 +33,12 @@ export default function InquiryTableToolbar({
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
     [onFilters]
   );
-
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -78,6 +76,12 @@ export default function InquiryTableToolbar({
   const handleFilterAssignTo = useCallback(
     (event) => {
       onFilters('assignTo', typeof event.target.value === 'object' && event.target.value);
+    },
+    [onFilters]
+  );
+  const handleFilterInquiryFor = useCallback(
+    (event) => {
+      onFilters('inquiryFor', typeof event.target.value === 'object' && event.target.value);
     },
     [onFilters]
   );
@@ -164,6 +168,55 @@ export default function InquiryTableToolbar({
                 </MenuItem>
               ))}
             </Select>
+          </FormControl>{' '}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 200 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Inquiry For
+            </InputLabel>
+
+            <Select
+              value={filters.inquiryFor}
+              onChange={handleFilterInquiryFor}
+              input={<OutlinedInput label="Inquiry For" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option.inquiryFor}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
           <DatePicker
             label="Start date"
@@ -221,7 +274,6 @@ export default function InquiryTableToolbar({
               input: { height: 7 },
             }}
           />
-
           <IconButton onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>

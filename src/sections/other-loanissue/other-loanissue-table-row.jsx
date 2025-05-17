@@ -12,6 +12,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
+import { fDate } from '../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -22,7 +23,8 @@ export default function OtherLoanissueTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  const { loan, cashAmount, bankAmount, srNo } = row;
+  const { loan, cashAmount, bankAmount, srNo, otherNumber, amount, percentage, otherName, date } =
+    row;
   const { loanNo, customer, scheme, loanAmount, createdAt } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -37,12 +39,13 @@ export default function OtherLoanissueTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {new Date(createdAt).toLocaleDateString('en-GB')}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{otherNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date)}</TableCell>{' '}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{customer?.contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme?.interestRate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{percentage}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount || 0}</TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>

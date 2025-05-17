@@ -79,6 +79,7 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   assignTo: '',
+  inquiryFor: '',
 };
 
 // ----------------------------------------------------------------------
@@ -296,6 +297,7 @@ export default function InquiryListView() {
             {
               name: `${data?.assignTo?.user?.firstName} ${data?.assignTo?.user?.middleName} ${data?.assignTo?.user?.lastName}`,
               value: data?.assignTo?.user?._id,
+              inquiryFor: data.inquiryFor,
             },
           ];
         } else {
@@ -638,7 +640,7 @@ export default function InquiryListView() {
 }
 
 function applyFilter({ inputData, comparator, filters }) {
-  const { status, name, startDate, endDate, assignTo } = filters;
+  const { status, name, startDate, endDate, assignTo, inquiryFor } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -654,15 +656,21 @@ function applyFilter({ inputData, comparator, filters }) {
     inputData = inputData.filter((user) => user.status === status);
   }
 
-  if (name) {
-    inputData = inputData.filter((user) =>
-      (user.firstName && user.firstName + ' ' + user.lastName)
-        .toLowerCase()
-        .includes(name.toLowerCase())
+  if (name && name.trim()) {
+    inputData = inputData.filter(
+      (item) =>
+        (item.firstName && item.firstName + ' ' + item.lastName)
+          .toLowerCase()
+          .includes(name.toLowerCase()) ||
+        item.remark.toLowerCase().includes(name.toLowerCase()) ||
+        item.contact.trim().includes(name)
     );
   }
   if (assignTo) {
     inputData = inputData.filter((item) => item?.assignTo?.user?._id === assignTo?.value);
+  }
+  if (inquiryFor) {
+    inputData = inputData.filter((item) => item?.inquiryFor === inquiryFor.inquiryFor);
   }
   if (startDate && endDate) {
     inputData = inputData.filter((user) => isBetween(user.recallingDate, startDate, endDate));

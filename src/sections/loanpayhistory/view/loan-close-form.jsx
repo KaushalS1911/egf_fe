@@ -41,6 +41,9 @@ const TABLE_HEAD = [
   { id: 'payDate', label: 'Pay Date' },
   { id: 'closinDate', label: 'Closing Date' },
   { id: 'closinCharge', label: 'Closing charge' },
+  { id: 'chargeCashAmount', label: 'Charge cash amt' },
+  { id: 'chargeBankAmount', label: 'Charge bank amt' },
+  { id: 'chargeBank', label: 'Charge bank' },
   { id: 'netAmt', label: 'Net amt' },
   { id: 'cashAmt', label: 'Cash Amt' },
   { id: 'bankAmt', label: 'Bank Amt' },
@@ -54,6 +57,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
   const { branch } = useGetBranch();
   const { loanInterest, refetchLoanInterest } = useGetAllInterest(currentLoan._id);
   const [paymentMode, setPaymentMode] = useState('');
+  const [closingChargeValue, setClosingChargeValue] = useState(0);
+  const [chargePaymentModeValue, setChargePaymentModeValue] = useState('');
   const { loanClose, refetchLoanClose } = useGetCloseLoan(currentLoan._id);
   const view = useBoolean();
   const confirm = useBoolean();
@@ -100,9 +105,50 @@ function LoanCloseForm({ currentLoan, mutate }) {
             account: Yup.object().required('Account is required'),
           };
 
+  const chargePaymentSchema = {
+    ...(closingChargeValue > 0 && {
+      chargePaymentMode: Yup.string().required('Charge Payment Mode is required'),
+      ...(chargePaymentModeValue === 'Cash' && {
+        chargeCashAmount: Yup.string()
+          .required('Charge Cash Amount is required')
+          .test(
+            'is-positive',
+            'Charge Cash Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+      }),
+      ...(chargePaymentModeValue === 'Bank' && {
+        chargeBankAmount: Yup.string()
+          .required('Charge Bank Amount is required')
+          .test(
+            'is-positive',
+            'Charge Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+        chargeAccount: Yup.object().required('Charge Account is required'),
+      }),
+      ...(chargePaymentModeValue === 'Both' && {
+        chargeCashAmount: Yup.string()
+          .required('Charge Cash Amount is required')
+          .test(
+            'is-positive',
+            'Charge Cash Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+        chargeBankAmount: Yup.string()
+          .required('Charge Bank Amount is required')
+          .test(
+            'is-positive',
+            'Charge Bank Amount must be a positive number',
+            (value) => parseFloat(value) >= 0
+          ),
+        chargeAccount: Yup.object().required('Charge Account is required'),
+      }),
+    }),
+  };
+
   const NewLoanCloseSchema = Yup.object().shape({
     expectPaymentMode: Yup.string().required('Expected Payment Mode is required'),
-
     totalLoanAmount: Yup.number()
       .min(1, 'Total Loan Amount must be greater than 0')
       .required('Total Loan Amount is required')
@@ -115,6 +161,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
     paymentMode: Yup.string().required('Payment Mode is required'),
     netAmount: Yup.string().required('Net Amount is required'),
     ...paymentSchema,
+    ...chargePaymentSchema,
   });
 
   const defaultValues = {
@@ -130,6 +177,10 @@ function LoanCloseForm({ currentLoan, mutate }) {
     cashAmount: '',
     account: null,
     bankAmount: null,
+    chargePaymentMode: '',
+    chargeCashAmount: '',
+    chargeAccount: null,
+    chargeBankAmount: null,
   };
 
   const methods = useForm({
@@ -155,7 +206,114 @@ function LoanCloseForm({ currentLoan, mutate }) {
 
   useEffect(() => {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
+    const chargeValue = Number(watch('closingCharge')) || 0;
+    setClosingChargeValue(chargeValue);
+    if (chargeValue === 0) {
+      setValue('chargePaymentMode', '');
+      setValue('chargeCashAmount', '');
+      setValue('chargeBankAmount', '');
+      setValue('chargeAccount', null);
+    }
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
+
+  useEffect(() => {
+    setChargePaymentModeValue(watch('chargePaymentMode') || '');
+  }, [watch('chargePaymentMode')]);
+
+  useEffect(() => {
+    const closingCharge = Number(watch('closingCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Cash') {
+      setValue('chargeCashAmount', closingCharge);
+      setValue('chargeBankAmount', '');
+    } else if (chargePaymentMode === 'Bank') {
+      setValue('chargeBankAmount', closingCharge);
+      setValue('chargeCashAmount', '');
+    } else if (chargePaymentMode === 'Both') {
+      const halfAmount = closingCharge / 2;
+      setValue('chargeCashAmount', halfAmount);
+      setValue('chargeBankAmount', halfAmount);
+    }
+  }, [watch('chargePaymentMode'), watch('closingCharge')]);
+
+  const handleLoanAmountChange = (event) => {
+    const newLoanAmount = parseFloat(event.target.value) || '';
+    setValue('loanAmount', newLoanAmount);
+    const paymentMode = watch('paymentMode');
+
+    if (paymentMode === 'Cash') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    } else if (paymentMode === 'Bank') {
+      setValue('bankAmount', newLoanAmount);
+      setValue('cashAmount', 0);
+    } else if (paymentMode === 'Both') {
+      setValue('cashAmount', newLoanAmount);
+      setValue('bankAmount', 0);
+    }
+  };
+
+  const handleChargeCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || 0;
+    const closingCharge = parseFloat(watch('closingCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Both') {
+      if (newCashAmount > closingCharge) {
+        setValue('chargeCashAmount', closingCharge);
+        setValue('chargeBankAmount', 0);
+        enqueueSnackbar('Cash amount cannot be greater than closing charge', {
+          variant: 'warning',
+        });
+      } else {
+        setValue('chargeCashAmount', newCashAmount);
+        setValue('chargeBankAmount', closingCharge - newCashAmount);
+      }
+    } else {
+      setValue('chargeCashAmount', newCashAmount);
+    }
+  };
+
+  const handleChargeBankAmountChange = (event) => {
+    const newBankAmount = parseFloat(event.target.value) || 0;
+    const closingCharge = parseFloat(watch('closingCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Both') {
+      if (newBankAmount > closingCharge) {
+        setValue('chargeBankAmount', closingCharge);
+        setValue('chargeCashAmount', 0);
+        enqueueSnackbar('Bank amount cannot be greater than closing charge', {
+          variant: 'warning',
+        });
+      } else {
+        setValue('chargeBankAmount', newBankAmount);
+        setValue('chargeCashAmount', closingCharge - newBankAmount);
+      }
+    } else {
+      setValue('chargeBankAmount', newBankAmount);
+    }
+  };
+
+  const handlePaymentCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || '';
+    const currentLoanAmount = parseFloat(watch('netAmount')) || '';
+
+    if (newCashAmount > currentLoanAmount) {
+      setValue('cashAmount', currentLoanAmount);
+      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
+        variant: 'warning',
+      });
+    } else {
+      setValue('cashAmount', newCashAmount);
+    }
+    if (watch('paymentMode') === 'Both') {
+      const calculatedBankAmount = currentLoanAmount - newCashAmount;
+      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
+    }
+  };
+
   const sendPdfToWhatsApp = async (item) => {
     try {
       const blob = await pdf(<Noc nocData={currentLoan} configs={configs} />).toBlob();
@@ -197,6 +355,35 @@ function LoanCloseForm({ currentLoan, mutate }) {
     }
   };
 
+  const handleChargeIn = (data) => {
+    try {
+      const chargePaymentDetail = {
+        paymentMode: data.chargePaymentMode,
+        ...(data.chargePaymentMode === 'Cash' && { cashAmount: data.chargeCashAmount }),
+        ...(data.chargePaymentMode === 'Bank' && {
+          bankAmount: data.chargeBankAmount,
+          account: data.chargeAccount,
+        }),
+        ...(data.chargePaymentMode === 'Both' && {
+          cashAmount: data.chargeCashAmount,
+          bankAmount: data.chargeBankAmount,
+          account: data.chargeAccount,
+        }),
+      };
+      const payload = {
+        chargeType: 'CLOSING CHARGE',
+        date: new Date(),
+        branch: currentLoan.customer.branch._id,
+        status: 'Payment In',
+        paymentDetails: chargePaymentDetail,
+      };
+      console.log(payload, '00000000');
+      const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     const loanToDate = loanInterest[0]?.to;
     const selectedDate = watch('date');
@@ -208,6 +395,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
       return enqueueSnackbar('Please pay interest till today before close the loan.', {
         variant: 'info',
       });
+    }
+    if (!configs.chargeType.includes('CLOSING CHARGE')) {
+      enqueueSnackbar('CLOSING CHARGE is not including in charge type', { variant: 'error' });
     }
 
     let paymentDetail = {
@@ -234,6 +424,29 @@ function LoanCloseForm({ currentLoan, mutate }) {
         ...data.account,
       };
     }
+    let chargePaymentDetail = {
+      chargePaymentMode: data.chargePaymentMode,
+    };
+
+    if (data.chargePaymentMode === 'Cash') {
+      chargePaymentDetail = {
+        ...chargePaymentDetail,
+        chargeCashAmount: data.chargeCashAmount,
+      };
+    } else if (data.chargePaymentMode === 'Bank') {
+      chargePaymentDetail = {
+        ...chargePaymentDetail,
+        ...data.chargeAccount,
+        chargeBankAmount: data.chargeBankAmount,
+      };
+    } else if (data.chargePaymentMode === 'Both') {
+      chargePaymentDetail = {
+        ...chargePaymentDetail,
+        chargeCashAmount: data.chargeCashAmount,
+        chargeBankAmount: data.chargeBankAmount,
+        ...data.chargeAccount,
+      };
+    }
 
     const payload = {
       entryBy: user.firstName + ' ' + user.middleName + ' ' + user.lastName,
@@ -243,6 +456,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       date: data.date,
       remark: data.remark,
       paymentDetail: paymentDetail,
+      chargePaymentDetail: chargePaymentDetail,
       closedBy: user._id,
     };
 
@@ -253,55 +467,22 @@ function LoanCloseForm({ currentLoan, mutate }) {
         url,
         data: payload,
       };
-
       const response = await axios(config);
       const responseData = response?.data?.data;
       sendPdfToWhatsApp(responseData);
+      if (data.closingCharge > 0 && configs.chargeType.includes('CLOSING CHARGE')) {
+        handleChargeIn(data);
+      }
       reset();
       confirm.onFalse();
       refetchLoanClose();
       mutate();
-      enqueueSnackbar(response?.data.message, { variant: 'success' });
+      // enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to close Loan', { variant: 'error' });
     }
   });
-
-  const handleCashAmountChange = (event) => {
-    const newCashAmount = parseFloat(event.target.value) || '';
-    const currentLoanAmount = parseFloat(watch('netAmount')) || '';
-
-    if (newCashAmount > currentLoanAmount) {
-      setValue('cashAmount', currentLoanAmount);
-      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
-        variant: 'warning',
-      });
-    } else {
-      setValue('cashAmount', newCashAmount);
-    }
-    if (watch('paymentMode') === 'Both') {
-      const calculatedBankAmount = currentLoanAmount - newCashAmount;
-      setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
-    }
-  };
-
-  const handleLoanAmountChange = (event) => {
-    const newLoanAmount = parseFloat(event.target.value) || '';
-    setValue('loanAmount', newLoanAmount);
-    const paymentMode = watch('paymentMode');
-
-    if (paymentMode === 'Cash') {
-      setValue('cashAmount', newLoanAmount);
-      setValue('bankAmount', 0);
-    } else if (paymentMode === 'Bank') {
-      setValue('bankAmount', newLoanAmount);
-      setValue('cashAmount', 0);
-    } else if (paymentMode === 'Both') {
-      setValue('cashAmount', newLoanAmount);
-      setValue('bankAmount', 0);
-    }
-  };
 
   return (
     <>
@@ -399,6 +580,89 @@ function LoanCloseForm({ currentLoan, mutate }) {
             <Typography variant="subtitle1" my={1}>
               Payment Details
             </Typography>
+            <Box
+              width={'100%'}
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(5, 1fr)',
+              }}
+            >
+              <RHFAutocomplete
+                name="paymentMode"
+                label="Payment Mode"
+                req="red"
+                options={['Cash', 'Bank', 'Both']}
+                getOptionLabel={(option) => option}
+                onChange={(event, value) => {
+                  setValue('paymentMode', value);
+                  handleLoanAmountChange({ target: { value: watch('netAmount') } });
+                }}
+                renderOption={(props, option) => (
+                  <li {...props} key={option}>
+                    {option}
+                  </li>
+                )}
+              />
+              {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+                <Controller
+                  name="cashAmount"
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label="Cash Amount"
+                      req={'red'}
+                      inputProps={{ min: 0 }}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handlePaymentCashAmountChange(e);
+                      }}
+                    />
+                  )}
+                />
+              )}
+              {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+                <>
+                  <RHFAutocomplete
+                    name="account"
+                    label="Account"
+                    req={'red'}
+                    fullWidth
+                    options={branch.flatMap((item) => item.company.bankAccounts)}
+                    getOptionLabel={(option) => option.bankName || ''}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id || option.bankName}>
+                        {option.bankName}
+                      </li>
+                    )}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                  />
+                  <Controller
+                    name="bankAmount"
+                    control={control}
+                    render={({ field }) => (
+                      <RHFTextField
+                        {...field}
+                        label="Bank Amount"
+                        req={'red'}
+                        disabled={watch('paymentMode') === 'Bank' ? false : true}
+                        inputProps={{ min: 0 }}
+                      />
+                    )}
+                  />
+                </>
+              )}
+            </Box>
+          </Grid>
+        </Grid>{' '}
+        <Grid pb={2}>
+          <Grid item xs={4}>
+            <Typography variant="subtitle1" my={1}>
+              Charge Payment Details
+            </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box
                 width={'100%'}
@@ -411,14 +675,13 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 }}
               >
                 <RHFAutocomplete
-                  name="paymentMode"
+                  name="chargePaymentMode"
                   label="Payment Mode"
-                  req="red"
                   options={['Cash', 'Bank', 'Both']}
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
-                    setValue('paymentMode', value);
-                    handleLoanAmountChange({ target: { value: watch('netAmount') } });
+                    setValue('chargePaymentMode', value);
+                    handleLoanAmountChange({ target: { value: watch('closingCharge') } });
                   }}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -426,30 +689,30 @@ function LoanCloseForm({ currentLoan, mutate }) {
                     </li>
                   )}
                 />
-                {(watch('paymentMode') === 'Cash' || watch('paymentMode') === 'Both') && (
+                {(watch('chargePaymentMode') === 'Cash' ||
+                  watch('chargePaymentMode') === 'Both') && (
                   <Controller
-                    name="cashAmount"
+                    name="chargeCashAmount"
                     control={control}
                     render={({ field }) => (
                       <RHFTextField
                         {...field}
                         label="Cash Amount"
-                        req={'red'}
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
-                          handleCashAmountChange(e);
+                          handleChargeCashAmountChange(e);
                         }}
                       />
                     )}
                   />
                 )}
-                {(watch('paymentMode') === 'Bank' || watch('paymentMode') === 'Both') && (
+                {(watch('chargePaymentMode') === 'Bank' ||
+                  watch('chargePaymentMode') === 'Both') && (
                   <>
                     <RHFAutocomplete
-                      name="account"
+                      name="chargeAccount"
                       label="Account"
-                      req={'red'}
                       fullWidth
                       options={branch.flatMap((item) => item.company.bankAccounts)}
                       getOptionLabel={(option) => option.bankName || ''}
@@ -461,15 +724,18 @@ function LoanCloseForm({ currentLoan, mutate }) {
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                     <Controller
-                      name="bankAmount"
+                      name="chargeBankAmount"
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           {...field}
                           label="Bank Amount"
-                          req={'red'}
-                          disabled={watch('paymentMode') === 'Bank' ? false : true}
+                          disabled={watch('chargePaymentMode') === 'Bank' ? false : true}
                           inputProps={{ min: 0 }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleChargeBankAmountChange(e);
+                          }}
                         />
                       )}
                     />
@@ -510,6 +776,15 @@ function LoanCloseForm({ currentLoan, mutate }) {
               <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.closingCharge}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.chargePaymentDetail.chargeCashAmount || 0}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.chargePaymentDetail.chargeBankAmount || 0}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
+                {row.chargePaymentDetail?.chargeAccount?.bankName || '-'}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>

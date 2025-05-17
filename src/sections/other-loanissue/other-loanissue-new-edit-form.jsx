@@ -1,7 +1,6 @@
 import * as Yup from 'yup';
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Webcam from 'react-webcam';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -15,23 +14,11 @@ import FormProvider, {
   RHFUploadAvatar,
 } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
-import {
-  Alert,
-  CardActions,
-  Dialog,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from '@mui/material';
+import { Alert } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetScheme } from '../../api/scheme';
-import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
-import Iconify from '../../components/iconify';
 import { useGetCustomer } from '../../api/customer';
 import { ACCOUNT_TYPE_OPTIONS } from '../../_mock';
 import { useGetAllProperty } from '../../api/property';
@@ -39,18 +26,15 @@ import { useGetCarat } from '../../api/carat';
 import { useRouter } from '../../routes/hooks';
 import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
-import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
-import { TableHeadCustom, useTable } from '../../components/table';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import ReactCrop from 'react-image-crop';
+import { useTable } from '../../components/table';
 import 'react-image-crop/dist/ReactCrop.css';
 import { useGetConfigs } from '../../api/config';
 import { useGetLoanissue } from '../../api/loanissue.js';
 import Image from '../../components/image/index.js';
 import Lightbox, { useLightBox } from '../../components/lightbox/index.js';
+import { useGetOtherLoanissue } from '../../api/other-loan-issue.js';
 
 //----------------------------------------------------------------------
 
@@ -68,8 +52,8 @@ const TABLE_HEAD = [
 ];
 
 export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
+  const { otherLoanissue } = useGetOtherLoanissue();
   const router = useRouter();
-  const table = useTable();
   const [loanId, setLoanID] = useState();
   const [customerData, setCustomerData] = useState();
   const [schemeId, setSchemeID] = useState();
@@ -126,23 +110,11 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     netWt: Yup.string().required('NetWas wt'),
     month: Yup.string().required('Month is required'),
     renewalDate: Yup.date().required('Renewaldate is required'),
-    // closeDate: Yup.string().required('Colse Date is required'),
     otherCharge: Yup.string().required('OtherCharge is required'),
     closingCharge: Yup.string().required('ClosingCharge is required'),
     interestAmount: Yup.string().required('Interest Amount is required'),
     totalOrnament: Yup.string().required('Total Ornament is required'),
     ornamentDetail: Yup.string().required('Ornament Detail is required'),
-    // propertyDetails: Yup.array().of(
-    //   Yup.object().shape({
-    //     type: Yup.string().required('Type is required'),
-    //     carat: Yup.string().required('Carat is required'),
-    //     pcs: Yup.string().required('Pieces are required'),
-    //     grossWeight: Yup.string().required('Gross Weight is required'),
-    //     netWeight: Yup.string().required('Net Weight is required'),
-    //     grossAmount: Yup.string().required('Gross Amount is required'),
-    //     netAmount: Yup.string().required('Net Amount is required'),
-    //   })
-    // ),
     account: Yup.object().when('paymentMode', {
       is: (val) => val === 'Bank' || val === 'Both',
       then: (schema) => schema.required('Account is required'),
@@ -217,6 +189,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       jewellerName: currentOtherLoanIssue?.loan?.jewellerName || '',
       loanType: currentOtherLoanIssue?.loan?.loanType || '',
       loanAmount: '',
+      loanTotalWt: '',
+      loanNetWt: '',
       totalLoanAmount: currentOtherLoanIssue?.loan?.loanAmount || '',
       partLoanAmount: currentOtherLoanIssue?.loan?.partLoanAmount || '',
       intLoanAmount: currentOtherLoanIssue?.loan?.intLoanAmount || '',
@@ -248,20 +222,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       closingCharge: currentOtherLoanIssue?.closingCharge || 0,
       interestAmount: currentOtherLoanIssue?.interestAmount || 0,
       remark: currentOtherLoanIssue?.remark || '',
-      // propertyDetails: currentOtherLoanIssue?.propertyDetails || [
-      //   {
-      //     type: '',
-      //     carat: '',
-      //     pcs: '',
-      //     totalWeight: '',
-      //     lossWeight: '',
-      //     grossWeight: '',
-      //     netWeight: '',
-      //     grossAmount: '',
-      //     netAmount: '',
-      //     id: uuid,
-      //   },
-      // ],
     };
     return baseValues;
   }, [currentOtherLoanIssue]);
@@ -282,6 +242,18 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
   } = methods;
 
   useEffect(() => {
+    const loan = watch('loan');
+    if (loan) {
+      const otherLoan = otherLoanissue.filter((item) => item.loan._id === loan?.id);
+      otherLoan.length > 0 &&
+        !currentOtherLoanIssue &&
+        enqueueSnackbar(`${otherLoan?.length} loans already exists for the selected loan`, {
+          variant: 'warning',
+        });
+    }
+  }, [watch('loan')]);
+
+  useEffect(() => {
     setValue('loanAmount', watch('amount'));
   }, [watch('amount'), watch('loanAmount')]);
   const { fields, append, remove } = useFieldArray({
@@ -292,49 +264,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     const rate = (watch('amount') / watch('netWt')).toFixed(2);
     setValue('rate', rate);
   }, [watch('amount'), watch('netWt')]);
-  //
-  // useEffect(() => {
-  //   const loanType = watch('loanType');
-  //   if (loanType && configs?.loanTypes?.length > 0) {
-  //     const selectedLoan = configs.loanTypes.find((loan) => loan.loanType === loanType);
-  //     setValue('approvalCharge', selectedLoan?.approvalCharge || '');
-  //   }
-  // }, [watch('loanType'), configs.loanTypes]);
-
-  const handleAdd = () => {
-    append({
-      type: '',
-      carat: '',
-      pcs: '',
-      totalWeight: '',
-      lossWeight: '',
-      grossWeight: '',
-      netWeight: '',
-      grossAmount: '',
-      netAmount: '',
-      id: uuid,
-    });
-  };
-
-  const handleReset = (index) => {
-    methods.setValue(`propertyDetails[${index}]`, {
-      type: '',
-      carat: '',
-      pcs: '',
-      totalWeight: '',
-      lossWeight: '',
-      grossWeight: '',
-      netWeight: '',
-      grossAmount: '',
-      netAmount: '',
-    });
-  };
-
-  const videoConstraints = {
-    width: 640,
-    height: 360,
-    facingMode: 'user',
-  };
 
   const onSubmit = handleSubmit(async (data) => {
     const payload = {
@@ -351,7 +280,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       rate: data.rate,
       month: data.month,
       renewalDate: data.renewalDate,
-      // closeDate: data.closeDate,
       otherCharge: data.otherCharge,
       remark: data.remark,
       paymentMode: data.paymentMode,
@@ -472,17 +400,19 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       setValue('totalLoanAmount', findLoan?.loanAmount);
       setValue('partLoanAmount', findLoan?.loanAmount - findLoan?.interestLoanAmount);
       setValue('intLoanAmount', findLoan?.interestLoanAmount);
-      // setValue('paymentMode', findLoan?.paymentMode);
-      // setValue('cashAmount', findLoan?.cashAmount);
+      if (findLoan.propertyDetails) {
+        const totalWt = findLoan.propertyDetails.reduce(
+          (prev, next) => prev + (Number(next?.totalWeight) || 0),
+          0
+        );
+        const netWt = findLoan.propertyDetails.reduce(
+          (prev, next) => prev + (Number(next?.netWeight) || 0),
+          0
+        );
 
-      // if (!currentOtherLoanIssue) {
-      //   setValue('accountNumber', findLoan?.customer?.bankDetails?.accountNumber);
-      //   setValue('accountType', findLoan?.customer?.bankDetails?.accountType);
-      //   setValue('accountHolderName', findLoan?.customer?.bankDetails?.accountHolderName);
-      //   setValue('IFSC', findLoan?.customer?.bankDetails?.IFSC);
-      //   setValue('bankName', findLoan?.customer?.bankDetails?.bankName);
-      //   setValue('branchName', findLoan?.customer?.bankDetails?.branchName);
-      // }
+        setValue('loanTotalWt', totalWt);
+        setValue('loanNetWt', netWt);
+      }
     } else {
       setValue('customerCode', '');
       setValue('customerName', '');
@@ -500,47 +430,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       }
     }
   }, [loanId, Loanissue, setValue]);
-
-  // useEffect(() => {
-  //   if (scheme && scheme.length > 0 && schemeId) {
-  //     if (schemeId) {
-  //       setValue('periodTime', schemeId?.interestPeriod);
-  //       setValue('renewalTime', schemeId?.renewalTime);
-  //       setValue('loanCloseTime', schemeId?.minLoanTime);
-  //     } else {
-  //       setValue('periodTime', '');
-  //       setValue('renewalTime', '');
-  //       setValue('loanCloseTime', '');
-  //     }
-  //     if (schemeId && schemeId?.interestRate) {
-  //       const interestRate = parseFloat(schemeId?.interestRate);
-  //       if (interestRate <= 1.5) {
-  //         methods.setValue('consultingCharge', 0);
-  //         methods.setValue('interestRate', interestRate);
-  //       } else {
-  //         methods.setValue('consultingCharge', (interestRate - '1.5').toFixed(2));
-  //         methods.setValue('interestRate', '1.5');
-  //       }
-  //     } else {
-  //       methods.setValue('consultingCharge', '');
-  //     }
-  //   }
-  // }, [schemeId, scheme, setValue, reset, getValues, watch('scheme')]);
-
-  const calculateTotal = (field) => {
-    const propertyDetails = useWatch({
-      name: 'propertyDetails',
-      control: methods.control,
-    });
-    if (!propertyDetails || propertyDetails.length === 0) return;
-    0;
-    return propertyDetails
-      .reduce((total, item) => {
-        const value = parseFloat(item?.[field]) || 0;
-        return total + value;
-      }, 0)
-      .toFixed(field === 'pcs' ? 0 : 2);
-  };
 
   useEffect(() => {
     const accountDetails = watch('account');
@@ -611,48 +500,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     }
   };
 
-  const saveCustomerBankDetails = async () => {
-    const payload = {
-      bankDetails: {
-        branchName: watch('branchName'),
-        accountHolderName: watch('accountHolderName'),
-        accountNumber: watch('accountNumber'),
-        accountType: watch('accountType'),
-        IFSC: watch('IFSC'),
-        bankName: watch('bankName'),
-      },
-    };
-
-    const mainbranchid = branch?.find((e) => e?._id === customerData?.branch?._id);
-    let parsedBranch = storedBranch;
-
-    if (storedBranch !== 'all') {
-      try {
-        parsedBranch = JSON.parse(storedBranch);
-      } catch (error) {
-        console.error('Error parsing storedBranch:', error);
-      }
-    }
-
-    const branchQuery =
-      parsedBranch && parsedBranch === 'all'
-        ? `&branch=${mainbranchid?._id}`
-        : `&branch=${parsedBranch}`;
-
-    try {
-      const url = `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer/${customerData?._id}?${branchQuery}`;
-      const response = await axios.put(url, JSON.stringify(payload), {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      enqueueSnackbar(response.message, { variant: 'success' });
-    } catch (error) {
-      console.error(error);
-      enqueueSnackbar(error, { variant: 'error' });
-    }
-  };
-
   const checkIFSC = async (ifscCode) => {
     if (ifscCode.length === 11) {
       try {
@@ -672,264 +519,10 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     }
   };
 
-  const handleDropSingleFile = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-        setFile(file);
-        resetCrop();
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const resetCrop = () => {
-    setCrop({ unit: '%', width: 50, aspect: 1 });
-    setCompletedCrop(null);
-  };
-  const rotateImage = (angle) => {
-    setRotation((prevRotation) => prevRotation + angle);
-  };
-  const showCroppedImage = async () => {
-    try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const image = document.getElementById('cropped-image');
-
-      if (!image) {
-        console.error('Image element not found!');
-        return;
-      }
-
-      const scaleX = image.naturalWidth / image.width;
-      const scaleY = image.naturalHeight / image.height;
-
-      const angleRadians = (rotation * Math.PI) / 180;
-
-      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        // No cropping, save the entire rotated image
-        const rotatedCanvasWidth =
-          Math.abs(image.naturalWidth * Math.cos(angleRadians)) +
-          Math.abs(image.naturalHeight * Math.sin(angleRadians));
-        const rotatedCanvasHeight =
-          Math.abs(image.naturalWidth * Math.sin(angleRadians)) +
-          Math.abs(image.naturalHeight * Math.cos(angleRadians));
-
-        canvas.width = rotatedCanvasWidth;
-        canvas.height = rotatedCanvasHeight;
-
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(angleRadians);
-        ctx.drawImage(
-          image,
-          -image.naturalWidth / 2,
-          -image.naturalHeight / 2,
-          image.naturalWidth,
-          image.naturalHeight
-        );
-        ctx.restore();
-      } else {
-        // Cropping is required
-        const cropX = completedCrop.x * scaleX;
-        const cropY = completedCrop.y * scaleY;
-        const cropWidth = completedCrop.width * scaleX;
-        const cropHeight = completedCrop.height * scaleY;
-
-        const rotatedCanvasWidth =
-          Math.abs(cropWidth * Math.cos(angleRadians)) +
-          Math.abs(cropHeight * Math.sin(angleRadians));
-        const rotatedCanvasHeight =
-          Math.abs(cropWidth * Math.sin(angleRadians)) +
-          Math.abs(cropHeight * Math.cos(angleRadians));
-
-        canvas.width = rotatedCanvasWidth;
-        canvas.height = rotatedCanvasHeight;
-
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(angleRadians);
-        ctx.drawImage(
-          image,
-          cropX,
-          cropY,
-          cropWidth,
-          cropHeight,
-          -cropWidth / 2,
-          -cropHeight / 2,
-          cropWidth,
-          cropHeight
-        );
-        ctx.restore();
-      }
-
-      // Convert canvas to Blob and handle it
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          console.error('Failed to create blob');
-          return;
-        }
-        const fileName = !completedCrop ? 'rotated-image.jpg' : 'cropped-rotated-image.jpg';
-        const file = new File([blob], fileName, { type: 'image/jpeg' });
-        const fileURL = URL.createObjectURL(file);
-
-        setCroppedImage(fileURL);
-        setFile(file);
-        setValue('property_image', file);
-        setImageSrc(null);
-        setOpen(false);
-      }, 'image/jpeg');
-    } catch (error) {
-      console.error('Error handling image upload:', error);
-    }
-  };
-
-  const handleCancel = () => {
-    setImageSrc(null);
-    setOpen(false);
-  };
-
-  const validateField = (fieldName, index, value) => {
-    const updatedErrors = { ...errors };
-    const schemedata = watch('scheme');
-    if (!schemedata) {
-      enqueueSnackbar('Please select a scheme before adding properties.', { variant: 'warning' });
-      return;
-    }
-    const totalWeight = parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;
-    const lossWeight = parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;
-    const caratValue =
-      carat?.find(
-        (item) => item?.name === parseFloat(getValues(`propertyDetails[${index}].carat`))
-      ) || {};
-    const typeValue = property?.find((item) => item?.propertyType === value) || {};
-    const grossWeight = totalWeight - lossWeight;
-    const netWeight = grossWeight * (caratValue?.caratPercentage / 100 || 1);
-    switch (fieldName) {
-      case 'totalWeight':
-        if (!value) {
-          updatedErrors[`propertyDetails[${index}].totalWeight`] = 'Total weight cannot be empty.';
-        } else if (!/^-?\d*\.?\d*$/.test(value)) {
-          updatedErrors[`propertyDetails[${index}].totalWeight`] = 'Please enter a valid number.';
-        } else if (lossWeight > parseFloat(value)) {
-          updatedErrors[`propertyDetails[${index}].totalWeight`] =
-            'Loss weight cannot exceed total weight.';
-        } else {
-          delete updatedErrors[`propertyDetails[${index}].totalWeight`];
-          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
-          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-          setValue(
-            `propertyDetails[${index}].grossAmount`,
-            (grossWeight * schemedata?.ratePerGram).toFixed(2)
-          );
-          setValue(
-            `propertyDetails[${index}].netAmount`,
-            (netWeight * schemedata?.ratePerGram).toFixed(2)
-          );
-        }
-        break;
-      case 'lossWeight':
-        if (!value) {
-          updatedErrors[`propertyDetails[${index}].lossWeight`] = 'Loss weight cannot be empty.';
-        } else if (!/^-?\d*\.?\d*$/.test(value)) {
-          updatedErrors[`propertyDetails[${index}].lossWeight`] = 'Please enter a valid number.';
-        } else if (parseFloat(value) > totalWeight) {
-          updatedErrors[`propertyDetails[${index}].lossWeight`] =
-            'Loss weight cannot exceed total weight.';
-        } else {
-          delete updatedErrors[`propertyDetails[${index}].lossWeight`];
-          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));
-          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-          setValue(
-            `propertyDetails[${index}].grossAmount`,
-            (grossWeight * schemedata?.ratePerGram).toFixed(2)
-          );
-          setValue(
-            `propertyDetails[${index}].netAmount`,
-            (netWeight * schemedata?.ratePerGram).toFixed(2)
-          );
-        }
-        break;
-      case 'type':
-        if (!value) {
-          updatedErrors[`propertyDetails[${index}].type`] = 'Type is required.';
-        } else {
-          delete updatedErrors[`propertyDetails[${index}].type`];
-          if (typeValue) {
-            const { quantity, isQtyEdit } = typeValue;
-            setValue(`propertyDetails[${index}].pcs`, quantity || 0);
-            setValue(`propertyDetails[${index}].isPcsEditable`, isQtyEdit);
-            if (!isQtyEdit && (!quantity || quantity <= 0)) {
-              updatedErrors[`propertyDetails[${index}].pcs`] =
-                'Invalid quantity for selected type.';
-            }
-          } else {
-            updatedErrors[`propertyDetails[${index}].type`] = 'Invalid type selected.';
-          }
-        }
-        break;
-      case 'carat':
-        if (!value) {
-          updatedErrors[`propertyDetails[${index}].carat`] = 'Carat is required.';
-        } else {
-          delete updatedErrors[`propertyDetails[${index}].carat`];
-          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));
-          setValue(
-            `propertyDetails[${index}].grossAmount`,
-            (grossWeight * schemedata?.ratePerGram).toFixed(2)
-          );
-          setValue(
-            `propertyDetails[${index}].netAmount`,
-            (netWeight * schemedata?.ratePerGram).toFixed(2)
-          );
-        }
-        break;
-      case 'pcs':
-        if (!value || parseInt(value) <= 0) {
-          updatedErrors[`propertyDetails[${index}].pcs`] = 'Pcs must be a positive number.';
-        } else {
-          delete updatedErrors[`propertyDetails[${index}].pcs`];
-          const grossAmount = (grossWeight * schemedata?.ratePerGram).toFixed(2);
-          setValue(`propertyDetails[${index}].grossAmount`, grossAmount);
-          const netAmount = (netWeight * schemedata?.ratePerGram).toFixed(2);
-          setValue(`propertyDetails[${index}].netAmount`, netAmount);
-        }
-        break;
-      default:
-        break;
-    }
-    setErrors(updatedErrors);
-  };
-
-  const sx = {
-    label: {
-      mt: -1.4,
-      fontSize: '14px',
-    },
-    '& .MuiInputLabel-shrink': {
-      mt: 0,
-    },
-    input: {
-      height: 0,
-    },
-  };
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Grid container spacing={2}>
-          {!isFieldsEnabled && (
-            <>
-              {/*<Grid item xs={12} md={4}>*/}
-              {/*  <Typography variant='h6' sx={{ mb: 3 }}>*/}
-              {/*  </Typography>*/}
-              {/*</Grid>*/}
-              {/*<Grid item xs={12} md={8}>*/}
-              {/*  <Alert severity='warning'>Please select acustomer to proceed with the loan issuance.</Alert>*/}
-              {/*</Grid>*/}
-            </>
-          )}
           <Grid item xs={12} md={4}>
             <Box>
               <RHFUploadAvatar disabled={true} name="customer_url" maxSize={3145728} />
@@ -1064,6 +657,20 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   disabled
                 />
                 <RHFTextField
+                  name="loanTotalWt"
+                  label="Total Wt"
+                  req={'red'}
+                  InputProps={{ readOnly: true }}
+                  disabled
+                />{' '}
+                <RHFTextField
+                  name="loanNetWt"
+                  label="Net Wt"
+                  req={'red'}
+                  InputProps={{ readOnly: true }}
+                  disabled
+                />{' '}
+                <RHFTextField
                   name="totalLoanAmount"
                   label="Total Loan Amount"
                   req={'red'}
@@ -1099,127 +706,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   disabled
                 />
                 <RHFTextField name="approvalCharge" label="Approval Charge" disabled req={'red'} />
-                {/*<RHFAutocomplete*/}
-                {/*  name="scheme"*/}
-                {/*  label="Scheme"*/}
-                {/*  req="red"*/}
-                {/*  disabled*/}
-                {/*  fullWidth*/}
-                {/*  options={scheme?.filter((item) => item.isActive)}*/}
-                {/*  getOptionLabel={(option) => option?.name || ''}*/}
-                {/*  renderOption={(props, option) => (*/}
-                {/*    <li {...props} key={option?.id}>*/}
-                {/*      {option?.name}*/}
-                {/*    </li>*/}
-                {/*  )}*/}
-                {/*  onChange={(e, selectedScheme) => {*/}
-                {/*    setValue('scheme', selectedScheme);*/}
-                {/*    const schemedata = selectedScheme;*/}
-                {/*    if (schemedata?.ratePerGram) {*/}
-                {/*      fields.forEach((_, index) => {*/}
-                {/*        const totalWeight =*/}
-                {/*          parseFloat(getValues(`propertyDetails[${index}].totalWeight`)) || 0;*/}
-                {/*        const lossWeight =*/}
-                {/*          parseFloat(getValues(`propertyDetails[${index}].lossWeight`)) || 0;*/}
-                {/*        const caratValue =*/}
-                {/*          carat?.find(*/}
-                {/*            (item) =>*/}
-                {/*              item?.name ===*/}
-                {/*              parseFloat(getValues(`propertyDetails[${index}].carat`))*/}
-                {/*          ) || {};*/}
-                {/*        const caratPercentage = caratValue?.caratPercentage || 100;*/}
-                {/*        const grossWeight = totalWeight - lossWeight;*/}
-                {/*        const netWeight = grossWeight * (caratPercentage / 100);*/}
-                {/*        const grossAmount = grossWeight * schemedata?.ratePerGram;*/}
-                {/*        const netAmount = netWeight * schemedata?.ratePerGram;*/}
-                {/*        if (!isNaN(grossWeight))*/}
-                {/*          setValue(`propertyDetails[${index}].grossWeight`, grossWeight.toFixed(2));*/}
-                {/*        if (!isNaN(netWeight))*/}
-                {/*          setValue(`propertyDetails[${index}].netWeight`, netWeight.toFixed(2));*/}
-                {/*        if (!isNaN(grossAmount))*/}
-                {/*          setValue(`propertyDetails[${index}].grossAmount`, grossAmount.toFixed(2));*/}
-                {/*        if (!isNaN(netAmount))*/}
-                {/*          setValue(`propertyDetails[${index}].netAmount`, netAmount.toFixed(2));*/}
-                {/*      });*/}
-                {/*    }*/}
-                {/*  }}*/}
-                {/*/>*/}
-                {/*<RHFTextField*/}
-                {/*  name="interestRate"*/}
-                {/*  label="InstrestRate"*/}
-                {/*  InputProps={{ readOnly: true }}*/}
-                {/*  disabled*/}
-                {/*/>*/}
-                {/*<Controller*/}
-                {/*  name="consultingCharge"*/}
-                {/*  control={control}*/}
-                {/*  render={({ field }) => (*/}
-                {/*    <RHFTextField*/}
-                {/*      {...field}*/}
-                {/*      disabled={true}*/}
-                {/*      label="Consulting Charge"*/}
-                {/*      req={'red'}*/}
-                {/*    />*/}
-                {/*  )}*/}
-                {/*/>*/}
-
-                {/*<RHFTextField*/}
-                {/*  name="periodTime"*/}
-                {/*  label="INT. Period Time"*/}
-                {/*  InputProps={{ readOnly: true }}*/}
-                {/*  disabled*/}
-                {/*/>*/}
-                {/*<RHFTextField*/}
-                {/*  name="renewalTime"*/}
-                {/*  label="Renewal Time"*/}
-                {/*  InputProps={{ readOnly: true }}*/}
-                {/*  disabled*/}
-                {/*/>*/}
-                {/*<RHFTextField*/}
-                {/*  name="loanCloseTime"*/}
-                {/*  label="Minimun Loan Close Time"*/}
-                {/*  InputProps={{ readOnly: true }}*/}
-                {/*  disabled*/}
-                {/*/>*/}
-                {/*{currentOtherLoanIssue && (*/}
-                {/*  <RHFTextField*/}
-                {/*    name="loanAmount"*/}
-                {/*    label="Loan AMT."*/}
-                {/*    req={'red'}*/}
-                {/*    disabled*/}
-                {/*    type="number"*/}
-                {/*    inputProps={{ min: 0 }}*/}
-                {/*  />*/}
-                {/*)}*/}
-                {/*{currentOtherLoanIssue && (*/}
-                {/*  <RHFDatePicker*/}
-                {/*    name="nextInstallmentDate"*/}
-                {/*    control={control}*/}
-                {/*    label="Next Installment Date"*/}
-                {/*    req={'red'}*/}
-                {/*    disabled*/}
-                {/*  />*/}
-                {/*)}*/}
-                {/*<RHFTextField name="jewellerName" label="JewellerName" req={'red'} disabled />*/}
-                {/*<RHFAutocomplete*/}
-                {/*  disabled*/}
-                {/*  name="loanType"*/}
-                {/*  label="Loan Type"*/}
-                {/*  req="red"*/}
-                {/*  fullWidth*/}
-                {/*  options={*/}
-                {/*    configs?.loanTypes?.length > 0*/}
-                {/*      ? configs.loanTypes.map((loan) => loan.loanType)*/}
-                {/*      : []*/}
-                {/*  }*/}
-                {/*  getOptionLabel={(option) => option || ''}*/}
-                {/*  onChange={(event, value) => setValue('loanType', value || '')}*/}
-                {/*  renderOption={(props, option) => (*/}
-                {/*    <li {...props} key={option}>*/}
-                {/*      {option}*/}
-                {/*    </li>*/}
-                {/*  )}*/}
-                {/*/>*/}
                 {isFieldsEnabled && (
                   <Box pb={0}>
                     <Box
@@ -1257,374 +743,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
               </Box>
             </Card>
           </Grid>
-          {/*<Grid item xs={12} md={2}>*/}
-          {/*  <Box sx={{ textAlign: 'center', mb: 1 }}>*/}
-          {/*    <Typography variant="subtitle1" component={'span'} sx={{ fontWeight: 600 }}>*/}
-          {/*      Property Image*/}
-          {/*    </Typography>*/}
-          {/*  </Box>*/}
-          {/*  <Card>*/}
-          {/*    <CardContent sx={{ height: '156px', p: 1.5 }}>*/}
-          {/*      <Box*/}
-          {/*        sx={{*/}
-          {/*          display: 'flex',*/}
-          {/*          justifyContent: 'space-between',*/}
-          {/*          alignItems: 'center',*/}
-          {/*        }}*/}
-          {/*      >*/}
-          {/*        <Typography*/}
-          {/*          variant="subtitle1"*/}
-          {/*          sx={{*/}
-          {/*            display: 'inline-block',*/}
-          {/*            fontWeight: 600,*/}
-          {/*          }}*/}
-          {/*        ></Typography>*/}
-          {/*      </Box>*/}
-          {/*      <Box mt={0.2}>*/}
-          {/*        /!*{(croppedImage || capturedImage) ? (*!/*/}
-          {/*        <RHFUploadAvatar*/}
-          {/*          radius={true}*/}
-          {/*          name="property_image"*/}
-          {/*          camera={true}*/}
-          {/*          setOpen2={setOpen2}*/}
-          {/*          setOpen={setOpen}*/}
-          {/*          setImageSrc={setImageSrc}*/}
-          {/*          setFile={setFile}*/}
-          {/*          file={*/}
-          {/*            croppedImage || capturedImage || imageSrc || currentOtherLoanIssue?.propertyImage*/}
-          {/*          }*/}
-          {/*          maxSize={3145728}*/}
-          {/*          accept="image/*"*/}
-          {/*          onDrop={handleDropSingleFile}*/}
-          {/*        />*/}
-          {/*        /!*)}*!/*/}
-          {/*      </Box>*/}
-          {/*      <Dialog open={Boolean(open)} onClose={handleCancel}>*/}
-          {/*        /!*{imageSrc && (*!/*/}
-          {/*        <ReactCrop*/}
-          {/*          crop={crop}*/}
-          {/*          onChange={(newCrop) => setCrop(newCrop)}*/}
-          {/*          onComplete={(newCrop) => setCompletedCrop(newCrop)}*/}
-          {/*          aspect={1}*/}
-          {/*        >*/}
-          {/*          <img*/}
-          {/*            id="cropped-image"*/}
-          {/*            src={imageSrc || capturedImage}*/}
-          {/*            alt="Crop preview"*/}
-          {/*            onLoad={resetCrop}*/}
-          {/*            style={{ transform: `rotate(${rotation}deg)` }}*/}
-          {/*          />*/}
-          {/*        </ReactCrop>*/}
-          {/*        /!*)}*!/*/}
-          {/*        <Box*/}
-          {/*          style={{*/}
-          {/*            display: 'flex',*/}
-          {/*            justifyContent: 'space-between',*/}
-          {/*            padding: '1rem',*/}
-          {/*          }}*/}
-          {/*        >*/}
-          {/*          <Button variant="outlined" onClick={handleCancel}>*/}
-          {/*            Cancel*/}
-          {/*          </Button>*/}
-          {/*          <Box sx={{ display: 'flex' }}>*/}
-          {/*            <IconButton*/}
-          {/*              onClick={() => rotateImage(-90)} // Rotate left by 90 degrees*/}
-          {/*              style={{ marginRight: '10px' }}*/}
-          {/*            >*/}
-          {/*              <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />*/}
-          {/*            </IconButton>*/}
-          {/*            <IconButton*/}
-          {/*              onClick={() => rotateImage(90)} // Rotate right by 90 degrees*/}
-          {/*            >*/}
-          {/*              <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />*/}
-          {/*            </IconButton>*/}
-          {/*          </Box>*/}
-          {/*          <Button variant="contained" color="primary" onClick={showCroppedImage}>*/}
-          {/*            Save Image*/}
-          {/*          </Button>*/}
-          {/*        </Box>*/}
-          {/*      </Dialog>*/}
-          {/*    </CardContent>*/}
-          {/*  </Card>*/}
-          {/*</Grid>*/}
-          {/*<Grid item xs={12} md={12}>*/}
-          {/*  <Card>*/}
-          {/*    <CardContent sx={{ p: 2 }}>*/}
-          {/*      <Typography*/}
-          {/*        variant="subtitle1"*/}
-          {/*        sx={{*/}
-          {/*          mb: 1,*/}
-          {/*          fontWeight: '600',*/}
-          {/*        }}*/}
-          {/*      >*/}
-          {/*        Property Details*/}
-          {/*      </Typography>*/}
-          {/*      <TableContainer>*/}
-          {/*        <Table>*/}
-          {/*          <TableHeadCustom*/}
-          {/*            order={table.order}*/}
-          {/*            orderBy={table.orderBy}*/}
-          {/*            headLabel={TABLE_HEAD}*/}
-          {/*            onSort={table.onSort}*/}
-          {/*          />*/}
-          {/*          <TableBody>*/}
-          {/*            {fields.map((row, index) => (*/}
-          {/*              <TableRow*/}
-          {/*                key={row.id}*/}
-          {/*                sx={{*/}
-          {/*                  '&:hover': { backgroundColor: 'inherit' },*/}
-          {/*                  height: '10px',*/}
-          {/*                }}*/}
-          {/*              >*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '200px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFAutocomplete*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].type`}*/}
-          {/*                    label="Type"*/}
-          {/*                    disabled={!isFieldsEnabled}*/}
-          {/*                    options={property*/}
-          {/*                      ?.filter((e) => e.isActive === true)*/}
-          {/*                      ?.map((item) => ({*/}
-          {/*                        label: item.propertyType,*/}
-          {/*                        value: item.propertyType,*/}
-          {/*                      }))}*/}
-          {/*                    onChange={(e, value) => {*/}
-          {/*                      setValue(`propertyDetails[${index}].type`, value?.value || '');*/}
-          {/*                      validateField('type', index, value?.value);*/}
-          {/*                    }}*/}
-          {/*                    helperText={errors[`propertyDetails[${index}].type`] || ''}*/}
-          {/*                    error={!!errors[`propertyDetails[${index}].type`]}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '40px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFAutocomplete*/}
-          {/*                    sx={{*/}
-          {/*                      label: {*/}
-          {/*                        mt: -1.4,*/}
-          {/*                        fontSize: '14px',*/}
-          {/*                      },*/}
-          {/*                      '& .MuiInputLabel-shrink': {*/}
-          {/*                        mt: 0,*/}
-          {/*                      },*/}
-          {/*                      input: { height: 0 },*/}
-          {/*                    }}*/}
-          {/*                    name={`propertyDetails[${index}].carat`}*/}
-          {/*                    label="Carat"*/}
-          {/*                    disabled={!isFieldsEnabled}*/}
-          {/*                    options={carat*/}
-          {/*                      ?.filter((e) => e.isActive === true)*/}
-          {/*                      ?.map((e) => e?.name)}*/}
-          {/*                    onChange={(e, value) => {*/}
-          {/*                      setValue(`propertyDetails[${index}].carat`, value);*/}
-          {/*                      validateField('carat', index, value);*/}
-          {/*                    }}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '80px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFTextField*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].pcs`}*/}
-          {/*                    label="PCS"*/}
-          {/*                    type="number"*/}
-          {/*                    disabled={*/}
-          {/*                      !watch(`propertyDetails[${index}].isPcsEditable`) &&*/}
-          {/*                      !isFieldsEnabled*/}
-          {/*                    }*/}
-          {/*                    helperText={errors[`propertyDetails[${index}].pcs`] || ''}*/}
-          {/*                    error={!!errors[`propertyDetails[${index}].pcs`]}*/}
-          {/*                    onChange={(e) => {*/}
-          {/*                      setValue(`propertyDetails[${index}].pcs`, e.target.value);*/}
-          {/*                      validateField('pcs', index, e.target.value);*/}
-          {/*                    }}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '100px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFTextField*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].totalWeight`}*/}
-          {/*                    label="Total Weight"*/}
-          {/*                    type="number"*/}
-          {/*                    disabled={!isFieldsEnabled}*/}
-          {/*                    helperText={errors[`propertyDetails[${index}].totalWeight`] || ''}*/}
-          {/*                    error={!!errors[`propertyDetails[${index}].totalWeight`]}*/}
-          {/*                    onChange={(e) => {*/}
-          {/*                      setValue(`propertyDetails[${index}].totalWeight`, e.target.value);*/}
-          {/*                      validateField('totalWeight', index, e.target.value);*/}
-          {/*                    }}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '100px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFTextField*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].lossWeight`}*/}
-          {/*                    label="Loss Weight"*/}
-          {/*                    disabled={!isFieldsEnabled}*/}
-          {/*                    type="number"*/}
-          {/*                    helperText={errors[`propertyDetails[${index}].lossWeight`] || ''}*/}
-          {/*                    error={!!errors[`propertyDetails[${index}].lossWeight`]}*/}
-          {/*                    onChange={(e) => {*/}
-          {/*                      const value = e.target.value;*/}
-          {/*                      setValue(`propertyDetails[${index}].lossWeight`, value);*/}
-          {/*                      validateField('lossWeight', index, value);*/}
-          {/*                    }}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '120px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFTextField*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].grossWeight`}*/}
-          {/*                    label="GW"*/}
-          {/*                    disabled={true}*/}
-          {/*                    value={getValues(`propertyDetails[${index}].grossWeight`) || ''}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '120px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFTextField*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].netWeight`}*/}
-          {/*                    label="NW"*/}
-          {/*                    disabled={true}*/}
-          {/*                    value={getValues(`propertyDetails[${index}].netWeight`) || ''}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '120px',*/}
-          {/*                    padding: '06px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFTextField*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].grossAmount`}*/}
-          {/*                    label="GA"*/}
-          {/*                    disabled={true}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '120px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <RHFTextField*/}
-          {/*                    sx={sx}*/}
-          {/*                    name={`propertyDetails[${index}].netAmount`}*/}
-          {/*                    label="NA"*/}
-          {/*                    disabled={true}*/}
-          {/*                  />*/}
-          {/*                </TableCell>*/}
-          {/*                <TableCell*/}
-          {/*                  sx={{*/}
-          {/*                    width: '100px',*/}
-          {/*                    padding: '0px 8px',*/}
-          {/*                  }}*/}
-          {/*                >*/}
-          {/*                  <IconButton*/}
-          {/*                    onClick={() => handleReset(index)}*/}
-          {/*                    disabled={!isFieldsEnabled}*/}
-          {/*                  >*/}
-          {/*                    <Iconify icon="ic:baseline-refresh" />*/}
-          {/*                  </IconButton>*/}
-          {/*                  <IconButton*/}
-          {/*                    color="error"*/}
-          {/*                    onClick={() => handleRemove(index)}*/}
-          {/*                    disabled={!isFieldsEnabled || fields.length === 1}*/}
-          {/*                  >*/}
-          {/*                    <Iconify icon="solar:trash-bin-trash-bold" />*/}
-          {/*                  </IconButton>*/}
-          {/*                </TableCell>*/}
-          {/*              </TableRow>*/}
-          {/*            ))}*/}
-          {/*            <TableRow*/}
-          {/*              sx={{*/}
-          {/*                backgroundColor: (theme) =>*/}
-          {/*                  theme.palette.mode === 'light' ? '#e0f7fa' : '#2f3944',*/}
-          {/*              }}*/}
-          {/*            >*/}
-          {/*              <TableCell*/}
-          {/*                colSpan={2}*/}
-          {/*                sx={{*/}
-          {/*                  padding: '8px',*/}
-          {/*                }}*/}
-          {/*              >*/}
-          {/*                <strong>Total:</strong>*/}
-          {/*              </TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}>{calculateTotal('pcs')}</TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}>*/}
-          {/*                {calculateTotal('totalWeight')}*/}
-          {/*              </TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}>*/}
-          {/*                {calculateTotal('lossWeight')}*/}
-          {/*              </TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}>*/}
-          {/*                {calculateTotal('grossWeight')}*/}
-          {/*              </TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}>{calculateTotal('netWeight')}</TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}>*/}
-          {/*                {calculateTotal('grossAmount')}*/}
-          {/*              </TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}>{calculateTotal('netAmount')}</TableCell>*/}
-          {/*              <TableCell sx={{ padding: '8px' }}></TableCell>*/}
-          {/*            </TableRow>*/}
-          {/*          </TableBody>*/}
-          {/*        </Table>*/}
-          {/*      </TableContainer>*/}
-          {/*    </CardContent>*/}
-          {/*    <CardActions*/}
-          {/*      sx={{*/}
-          {/*        margin: '0px 16px 10px 16px',*/}
-          {/*        justifyContent: 'flex-end',*/}
-          {/*        p: 0,*/}
-          {/*      }}*/}
-          {/*    >*/}
-          {/*      <Button*/}
-          {/*        size="small"*/}
-          {/*        disabled={!isFieldsEnabled}*/}
-          {/*        variant="contained"*/}
-          {/*        color="primary"*/}
-          {/*        startIcon={<Iconify icon="mingcute:add-line" />}*/}
-          {/*        onClick={handleAdd}*/}
-          {/*      >*/}
-          {/*        Add Property*/}
-          {/*      </Button>*/}
-          {/*    </CardActions>*/}
-          {/*  </Card>*/}
-          {/*</Grid>*/}
           <Grid xs={12}>
             <Card sx={{ p: 2 }}>
               <Typography
@@ -1676,7 +794,8 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   name="otherNumber"
                   label="Other Number"
                   req={'red'}
-                  disabled={!isFieldsEnabled}/>
+                  disabled={!isFieldsEnabled}
+                />
                 <RHFTextField
                   name="amount"
                   label="Amount"
@@ -1688,16 +807,22 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     }
                   }}
                 />
-                <RHFTextField
-                  name="percentage"
-                  label="Percentage"
-                  req={'red'}
+
+                <RHFAutocomplete
                   disabled={!isFieldsEnabled}
-                  onKeyPress={(e) => {
-                    if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
-                      e.preventDefault();
-                    }
-                  }}
+                  name="percentage"
+                  label="percentage"
+                  req="red"
+                  fullWidth
+                  options={
+                    configs?.percentage?.length > 0 ? configs.percentage.map((item) => item) : []
+                  }
+                  getOptionLabel={(option) => option || ''}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
                 />
                 <RhfDatePicker
                   name="date"
@@ -1740,13 +865,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                   req={'red'}
                   disabled={!isFieldsEnabled}
                 />
-                {/*<RHFDatePicker*/}
-                {/*  name="closeDate"*/}
-                {/*  control={control}*/}
-                {/*  label="Close Date"*/}
-                {/*  req={'red'}*/}
-                {/*  disabled={!isFieldsEnabled}*/}
-                {/*/>*/}
                 <RHFTextField
                   name="otherCharge"
                   label="Other Charge"
@@ -1941,26 +1059,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     >
                       Account Details
                     </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        pb: 1.5,
-                      }}
-                    >
-                      {/*<Button*/}
-                      {/*  variant={'outlined'}*/}
-                      {/*  disabled={!isFieldsEnabled}*/}
-                      {/*  onClick={() => saveCustomerBankDetails()}*/}
-                      {/*  style={{*/}
-                      {/*    fontWeight: 'bold',*/}
-                      {/*    textDecoration: 'none',*/}
-                      {/*    color: 'inherit',*/}
-                      {/*  }}*/}
-                      {/*>*/}
-                      {/*  Add beneficiary*/}
-                      {/*</Button>*/}
-                    </Box>
                   </Box>
                   <Box
                     rowGap={3}
@@ -2066,42 +1164,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
         </Box>
       </FormProvider>
       <Lightbox image={propertImg} open={lightbox.open} close={lightbox.onClose} />
-
-      {/*<Dialog*/}
-      {/*  fullWidth*/}
-      {/*  maxWidth={false}*/}
-      {/*  open={open2}*/}
-      {/*  onClose={() => setOpen2(false)}*/}
-      {/*  PaperProps={{*/}
-      {/*    sx: { maxWidth: 720 },*/}
-      {/*  }}*/}
-      {/*>*/}
-      {/*  <DialogTitle>Camera</DialogTitle>*/}
-      {/*  <Box*/}
-      {/*    sx={{*/}
-      {/*      display: 'flex',*/}
-      {/*      justifyContent: 'center',*/}
-      {/*      alignItems: 'center',*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    <Webcam*/}
-      {/*      audio={false}*/}
-      {/*      ref={webcamRef}*/}
-      {/*      screenshotFormat="image/jpeg"*/}
-      {/*      width={'90%'}*/}
-      {/*      height={'100%'}*/}
-      {/*      videoConstraints={videoConstraints}*/}
-      {/*    />*/}
-      {/*  </Box>*/}
-      {/*  <DialogActions>*/}
-      {/*    <Button variant="outlined" onClick={capture}>*/}
-      {/*      Capture Photo*/}
-      {/*    </Button>*/}
-      {/*    <Button variant="contained" onClick={() => setOpen2(false)}>*/}
-      {/*      Close Camera*/}
-      {/*    </Button>*/}
-      {/*  </DialogActions>*/}
-      {/*</Dialog>*/}
     </>
   );
 }

@@ -27,9 +27,9 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
   // const days = ['Next Day', 'Next Week', 'Next Month'];
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  useEffect(() => {
-    onFilters('day', 'Next Month');
-  }, []);
+  // useEffect(() => {
+  //   onFilters('day', 'Next Month');
+  // }, []);
 
   const handleFilterName = useCallback(
     (event) => {
@@ -38,10 +38,10 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
     [onFilters]
   );
 
-  useEffect(() => {
-    const lastDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-    onFilters('endDay', lastDate);
-  }, []);
+  // useEffect(() => {
+  //   const lastDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+  //   onFilters('endDay', lastDate);
+  // }, []);
   // const dayManage = (day) => {
   //   const currentDate = new Date();
   //   const nextDay = new Date(new Date().setDate(new Date().getDate() + 1));
@@ -142,49 +142,54 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
               ),
             }}
           />
-          {/*<FormControl*/}
-          {/*  sx={{*/}
-          {/*    flexShrink: 0,*/}
-          {/*    width: { xs: 1, sm: 200 },*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <InputLabel sx={{*/}
-          {/*    mt: -1, '&.MuiInputLabel-shrink': {*/}
-          {/*      mt: 0,*/}
-          {/*    },*/}
-          {/*  }}>Filter by Day</InputLabel>*/}
-          {/*  <Select*/}
-          {/*    value={filters.day}*/}
-          {/*    onChange={handleFilterDays}*/}
-          {/*    input={<OutlinedInput label='Filter by Day' sx={{ height: '40px' }} />}*/}
-          {/*    MenuProps={{*/}
-          {/*      PaperProps: {*/}
-          {/*        sx: {*/}
-          {/*          maxHeight: 240,*/}
-          {/*          '&::-webkit-scrollbar': {*/}
-          {/*            width: '5px',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-track': {*/}
-          {/*            backgroundColor: '#f1f1f1',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-thumb': {*/}
-          {/*            backgroundColor: '#888',*/}
-          {/*            borderRadius: '4px',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-thumb:hover': {*/}
-          {/*            backgroundColor: '#555',*/}
-          {/*          },*/}
-          {/*        },*/}
-          {/*      },*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    {days.map((option) => (*/}
-          {/*      <MenuItem key={option} value={option}>*/}
-          {/*        {option}*/}
-          {/*      </MenuItem>*/}
-          {/*    ))}*/}
-          {/*  </Select>*/}
-          {/*</FormControl>*/}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 200 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -1,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Filter by Day
+            </InputLabel>
+            <Select
+              value={filters.day}
+              onChange={handleFilterDays}
+              input={<OutlinedInput label="Filter by Day" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {[30, 60, 90, 121, 151, 181, 211, 300, 355].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

@@ -146,7 +146,6 @@ export default function InterestReportsListView() {
     setSrData(updatedData);
 
     if (updatedData.length > 0) {
-      // Create a Set of existing rates for quick lookup
       const existingRates = new Set(options.map((opt) => opt.rate));
       const newOptions = [...options];
 
@@ -184,32 +183,6 @@ export default function InterestReportsListView() {
   if (interestReportsLoading) {
     return <LoadingScreen />;
   }
-  // useEffect(() => {
-  //   console.log('hhhhhhhhhhhhhh');
-  //   fetchStates();
-  // }, [srData]);
-  //
-  // function fetchStates() {
-  //   dataFiltered?.map((data) => {
-  //     setOptions((item) => {
-  //       if (
-  //         !item.find((option) => {
-  //           console.log(option, '555555555');
-  //           option.rate === data.scheme.interestRate;
-  //         })
-  //       ) {
-  //         return [
-  //           ...item,
-  //           {
-  //             rate: data.scheme.interestRate,
-  //           },
-  //         ];
-  //       } else {
-  //         return item;
-  //       }
-  //     });
-  //   });
-  // }
 
   return (
     <>
@@ -307,9 +280,6 @@ export default function InterestReportsListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {loanAmt.toFixed(0)}
                   </TableCell>
-                  {/*<TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>*/}
-                  {/*  /!*{(loanAmt - intLoanAmt).toFixed(0)}*!/*/}
-                  {/*</TableCell>*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {intLoanAmt.toFixed(0)}
                   </TableCell>{' '}
@@ -422,7 +392,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item.customer.branch._id === branch._id);
   }
   if (rate) {
-    console.log(rate);
     inputData = inputData.filter((item) => item.scheme.interestRate === rate.rate);
   }
 

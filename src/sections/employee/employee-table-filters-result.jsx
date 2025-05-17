@@ -9,10 +9,18 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
-
+export default function EmployeeTableFiltersResult({
+  filters,
+  onFilters,
+  onResetFilters,
+  results,
+  ...other
+}) {
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
+  }, [onFilters]);
+  const handleRemoveStatus = useCallback(() => {
+    onFilters('status', 'all');
   }, [onFilters]);
 
   const handleRemoveService = useCallback(
@@ -20,39 +28,54 @@ export default function EmployeeTableFiltersResult({ filters, onFilters, onReset
       const newValue = filters.service.filter((item) => item !== inputValue);
       onFilters('service', newValue);
     },
-    [filters.service, onFilters],
+    [filters.service, onFilters]
   );
-
+  const handleRemoveRole = useCallback(
+    (inputValue) => {
+      onFilters('role', '');
+    },
+    [onFilters]
+  );
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
-        <Box component='span' sx={{ color: 'text.secondary', ml: 0.25 }}>
+        <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
           results found
         </Box>
       </Box>
-      <Stack flexGrow={1} spacing={1} direction='row' flexWrap='wrap' alignItems='center'>
+      <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {!!filters.service && (
-          <Block label='Service:'>
+          <Block label="Service:">
             {filters.service.map((item) => (
               <Chip
                 key={item}
                 label={item}
-                size='small'
+                size="small"
                 onDelete={() => handleRemoveService(item)}
               />
             ))}
           </Block>
         )}
         {!!filters.name && (
-          <Block label='Keyword:'>
-            <Chip label={filters.name} size='small' onDelete={handleRemoveKeyword} />
+          <Block label="Keyword:">
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
+          </Block>
+        )}{' '}
+        {filters.status !== 'all' && (
+          <Block label="Status:">
+            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+          </Block>
+        )}
+        {!!filters.role && (
+          <Block label="Role:">
+            <Chip label={filters.role} size="small" onDelete={handleRemoveRole} />
           </Block>
         )}
         <Button
-          color='error'
+          color="error"
           onClick={onResetFilters}
-          startIcon={<Iconify icon='solar:trash-bin-trash-bold' />}
+          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
           Clear
         </Button>
@@ -74,9 +97,9 @@ function Block({ label, children, sx, ...other }) {
   return (
     <Stack
       component={Paper}
-      variant='outlined'
+      variant="outlined"
       spacing={1}
-      direction='row'
+      direction="row"
       sx={{
         p: 1,
         borderRadius: 1,
@@ -86,10 +109,10 @@ function Block({ label, children, sx, ...other }) {
       }}
       {...other}
     >
-      <Box component='span' sx={{ typography: 'subtitle2' }}>
+      <Box component="span" sx={{ typography: 'subtitle2' }}>
         {label}
       </Box>
-      <Stack spacing={1} direction='row' flexWrap='wrap'>
+      <Stack spacing={1} direction="row" flexWrap="wrap">
         {children}
       </Stack>
     </Stack>

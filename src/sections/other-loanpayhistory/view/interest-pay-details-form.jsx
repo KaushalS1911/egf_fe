@@ -12,7 +12,7 @@ import TableCell from '@mui/material/TableCell';
 import { fDate } from '../../../utils/format-time';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Dialog, DialogActions, IconButton } from '@mui/material';
+import { Dialog, DialogActions, IconButton, Paper, TableContainer } from '@mui/material';
 import { useGetPenalty } from '../../../api/penalty';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
@@ -35,20 +35,18 @@ const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
   { id: 'to', label: 'To Date' },
   { id: 'days', label: 'Days' },
+  { id: 'interestAmount', label: 'Int. amt' },
+  { id: 'charge', label: 'Charge' },
   { id: 'amountPaid', label: 'Amount Paid' },
   { id: 'cashAmt', label: 'Cash Amt' },
   { id: 'BankAmt', label: 'Bank Amt' },
   { id: 'Bank', label: 'Bank' },
   { id: 'EntryDate', label: 'Entry Date' },
   { id: 'action', label: 'Action' },
-  // { id: 'pdf', label: 'PDF' },
 ];
 
 function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
-  const { penalty } = useGetPenalty();
   const [paymentMode, setPaymentMode] = useState('');
-  const [data, setData] = useState(null);
-  const view = useBoolean();
   const { branch } = useGetBranch();
   const confirm = useBoolean();
   const [deleteId, setDeleteId] = useState('');
@@ -70,6 +68,11 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
   );
+  const interestAmount = otherLoanInterest.reduce(
+    (prev, next) => prev + (Number(next?.interestAmount) || 0),
+    0
+  );
+  const charge = otherLoanInterest.reduce((prev, next) => prev + (Number(next?.charge) || 0), 0);
 
   const day = otherLoanInterest.reduce(
     (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
@@ -139,6 +142,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     interest: currentOtherLoan?.percentage,
     interestAmount: '',
     payAfterAdjusted: '',
+    charge: '',
     cr_dr: '',
     totalPay: '',
     paymentMode: '',
@@ -197,60 +201,9 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     setValue('amountPaid', totalAmount);
   }, [currentOtherLoan?.amount, watch('interestAmount')]);
 
-  // useEffect(() => {
-  //   const endDate = new Date(to).setHours(0, 0, 0, 0);
-  //   const differenceInDays =
-  //     moment(to).startOf('day').diff(moment(from).startOf('day'), 'days', true) + 1;
-  //   const nextInstallmentDate = moment(currentOtherLoan?.loan?.nextInstallmentDate);
-  //   const differenceInDays2 = moment(to)
-  //     .startOf('day')
-  //     .diff(nextInstallmentDate.startOf('day'), 'days', true);
-  //   setValue('days', differenceInDays.toString());
-  //   let penaltyPer = 0;
-  //   penalty.forEach((penaltyItem) => {
-  //     if (
-  //       differenceInDays2 >= penaltyItem.afterDueDateFromDate &&
-  //       differenceInDays2 <= penaltyItem.afterDueDateToDate &&
-  //       penaltyItem.isActive === true &&
-  //       nextInstallmentDate < endDate
-  //     ) {
-  //       penaltyPer = calculatePenalty(
-  //         currentOtherLoan?.loan?.interestLoanAmount,
-  //         penaltyItem.penaltyInterest,
-  //         differenceInDays
-  //       );
-  //     }
-  //   });
-  // setValue(
-  //   'interestAmount',
-  //   (
-  //     (((currentOtherLoan?.loan?.interestLoanAmount *
-  //       currentOtherLoan?.loan?.scheme.interestRate) /
-  //       100) *
-  //       (12 * differenceInDays)) /
-  //     365
-  //   ).toFixed(2)
-  // );
-  //   setValue('penalty', penaltyPer);
-  //   setValue(
-  //     'totalPay',
-  //     (
-  //       Number(watch('interestAmount')) + Number(watch('penalty') - Number(watch('uchakAmount')))
-  //     ).toFixed(2)
-  //   );
-  //   setValue(
-  //     'payAfterAdjusted1',
-  //     (Number(watch('totalPay')) + Number(watch('oldCrDr'))).toFixed(2)
-  //   );
-  //   setValue(
-  //     'cr_dr',
-  //     (Number(watch('payAfterAdjusted1')) - Number(watch('amountPaid'))).toFixed(2)
-  //   );
-  // }, [from, to, setValue, penalty, watch('amountPaid'), watch('oldCrDr')]);
   const updateRenewalDate = (id) => {
     const date = currentOtherLoan.date;
     const fromDate = watch('to');
-    console.log(fromDate, 'tttttttttttt');
     const month = currentOtherLoan.month;
 
     const monthsToAdd =
@@ -325,6 +278,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       amountPaid: data.amountPaid,
       interestAmount: data.interestAmount,
       payAfterAdjust: data.payAfterAdjusted,
+      charge: data.charge,
       remark: data.remark,
       paymentDetail,
     };
@@ -398,6 +352,11 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     }
   };
 
+  const handleCharge = () => {
+    const charge = watch('payAfterAdjusted') - watch('interestAmount');
+    setValue('charge', watch('payAfterAdjusted') && charge >= 0 ? charge.toFixed(2) : 0);
+  };
+
   return (
     <Box sx={{ py: 0 }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -415,12 +374,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
           <RhfDatePicker name="to" control={control} label="To Date" req={'red'} />
           <RHFTextField name="days" label="Days" req={'red'} InputProps={{ readOnly: true }} />
           <RHFTextField name="interest" label="Interest" req={'red'} />
-          {/*<RHFTextField name='consultingCharge' label='Consult Charge' req={'red'} InputProps={{ readOnly: true }} />*/}
-          {/*<RHFTextField name='uchakAmount' label='Uchak Amount' req={'red'} InputProps={{ readOnly: true }} />*/}
-          {/*<RHFTextField name='penalty' label='Penalty' req={'red'} InputProps={{ readOnly: true }} />*/}
-          {/*<RHFTextField name='totalPay' label='Total Pay' req={'red'} InputProps={{ readOnly: true }} />*/}
-          {/*<RHFTextField name='oldCrDr' label='Old CR/DR' req={'red'} InputProps={{ readOnly: true }} />*/}
-          {/*<RHFTextField name='cr_dr' label='New CR/DR' req={'red'} InputProps={{ readOnly: true }} />*/}
           <RHFTextField
             name="interestAmount"
             label="Interest Amount"
@@ -444,6 +397,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
             }}
           />
           <RHFTextField name="payAfterAdjusted" label="Pay After Adjusted" req={'red'} />
+          <RHFTextField name="charge" label="Charge" req={'red'} onChange={handleCharge()} />
         </Box>
         <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 600 }}>
           Payment Details
@@ -566,26 +520,40 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
             },
           }}
         >
-          <Table sx={{ borderRadius: '16px', my: 2.5, minWidth: '1500px' }}>
-            <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
-              headLabel={TABLE_HEAD}
-              onSort={table.onSort}
-            />
-            <TableBody>
-              {otherLoanInterest.map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.from)}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.to)}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{row.days > 0 ? row.days : 0}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankName || '-'}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
-                  <TableCell sx={{ py: 0, px: 2 }}>
-                    {
+          <TableContainer
+            component={Paper}
+            sx={{
+              maxHeight: 500,
+              overflow: 'auto',
+              borderRadius: 2,
+              mt: 2,
+            }}
+          >
+            <Table stickyHeader sx={{ minWidth: 1500 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                onSort={table.onSort}
+                sx={{
+                  backgroundColor: '#2f3944',
+                  zIndex: 1000,
+                }}
+              />
+              <TableBody>
+                {otherLoanInterest.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.from)}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.to)}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.days > 0 ? row.days : 0}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.interestAmount}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.charge}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankName || '-'}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>
                       <IconButton
                         color="error"
                         onClick={() => {
@@ -602,55 +570,41 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                       >
                         <Iconify icon="eva:trash-2-outline" />
                       </IconButton>
-                    }
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow
+                  sx={{ backgroundColor: '#F4F6F8', bottom: 0, position: 'sticky', zIndex: 1000 }}
+                >
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    TOTAL
                   </TableCell>
-                  {/*{getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (*/}
-                  {/*  <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>*/}
-                  {/*    {*/}
-                  {/*      <Typography*/}
-                  {/*        onClick={() => {*/}
-                  {/*          view.onTrue();*/}
-                  {/*          setData(row);*/}
-                  {/*        }}*/}
-                  {/*        sx={{*/}
-                  {/*          cursor: 'pointer',*/}
-                  {/*          color: 'inherit',*/}
-                  {/*          pointerEvents: 'auto',*/}
-                  {/*        }}*/}
-                  {/*      >*/}
-                  {/*        <Iconify icon="basil:document-solid" />*/}
-                  {/*      </Typography>*/}
-                  {/*    }*/}
-                  {/*  </TableCell>*/}
-                  {/*) : (*/}
-                  {/*  <TableCell>'-'</TableCell>*/}
-                  {/*)}*/}
+                  <TableCell />
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {day}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {interestAmount.toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {charge.toFixed(0)}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {payAmt}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {cahAmt}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {bankAmt}
+                  </TableCell>
+                  <TableCell />
+                  <TableCell />
+                  <TableCell />
                 </TableRow>
-              ))}
-              <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
-                {/*<TableCell padding="checkbox" />*/}
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  TOTAL
-                </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {day}
-                </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {payAmt}
-                </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {cahAmt}
-                </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                  {bankAmt}
-                </TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </Box>
       <ConfirmDialog
@@ -664,25 +618,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
           </Button>
         }
       />
-      <Dialog fullScreen open={view.value}>
-        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-          <DialogActions
-            sx={{
-              p: 1.5,
-            }}
-          >
-            <Button color="inherit" variant="contained" onClick={view.onFalse}>
-              Close
-            </Button>
-          </DialogActions>
-
-          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
-            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InterestPdf data={data} configs={configs} />
-            </PDFViewer>
-          </Box>
-        </Box>
-      </Dialog>
     </Box>
   );
 }
