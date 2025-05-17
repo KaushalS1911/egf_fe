@@ -154,14 +154,13 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
           account: data.account,
         }),
       };
-      console.log(paymentDetail, '333333');
 
       const payload = {
         chargeType: data.chargeType,
         description: data.description,
         category: data.category,
         date: data.date,
-        branch: storedBranch || data.branchId.value,
+        branch: selectedBranchId,
         status: data.paymentType,
         paymentDetails: paymentDetail,
       };
