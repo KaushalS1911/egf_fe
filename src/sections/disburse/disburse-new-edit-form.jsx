@@ -80,48 +80,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
             }),
           };
 
-  const chargePaymentSchema = {
-    ...(approvalChargeValue > 0 && {
-      chargePaymentMode: Yup.string().required('Charge Payment Mode is required'),
-      ...(chargePaymentModeValue === 'Cash' && {
-        chargeCashAmount: Yup.string()
-          .required('Charge Cash Amount is required')
-          .test(
-            'is-positive',
-            'Charge Cash Amount must be a positive number',
-            (value) => parseFloat(value) >= 0
-          ),
-      }),
-      ...(chargePaymentModeValue === 'Bank' && {
-        chargeBankAmount: Yup.string()
-          .required('Charge Bank Amount is required')
-          .test(
-            'is-positive',
-            'Charge Bank Amount must be a positive number',
-            (value) => parseFloat(value) >= 0
-          ),
-        chargeAccount: Yup.object().required('Charge Account is required'),
-      }),
-      ...(chargePaymentModeValue === 'Both' && {
-        chargeCashAmount: Yup.string()
-          .required('Charge Cash Amount is required')
-          .test(
-            'is-positive',
-            'Charge Cash Amount must be a positive number',
-            (value) => parseFloat(value) >= 0
-          ),
-        chargeBankAmount: Yup.string()
-          .required('Charge Bank Amount is required')
-          .test(
-            'is-positive',
-            'Charge Bank Amount must be a positive number',
-            (value) => parseFloat(value) >= 0
-          ),
-        chargeAccount: Yup.object().required('Charge Account is required'),
-      }),
-    }),
-  };
-
   const NewDisburse = Yup.object().shape({
     loanNo: Yup.string().required('Loan No is required'),
     customerName: Yup.string().required('Customer Name is required'),
@@ -131,7 +89,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     address: Yup.string().required('Address is required'),
     branch: Yup.string().required('Branch is required'),
     ...paymentSchema,
-    ...chargePaymentSchema,
   });
 
   const defaultValues = useMemo(
@@ -296,12 +253,10 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         variant: 'error',
       });
     }
-
     try {
       let paymentDetail = {
         paymentMode: data.paymentMode,
       };
-
       if (data.paymentMode === 'Cash') {
         paymentDetail = {
           ...paymentDetail,
@@ -321,31 +276,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
           ...data.companyBankDetail.account,
         };
       }
-
-      let chargePaymentDetail = {
-        chargePaymentMode: data.chargePaymentMode,
-      };
-
-      if (data.chargePaymentMode === 'Cash') {
-        chargePaymentDetail = {
-          ...chargePaymentDetail,
-          chargeCashAmount: data.chargeCashAmount,
-        };
-      } else if (data.chargePaymentMode === 'Bank') {
-        chargePaymentDetail = {
-          ...chargePaymentDetail,
-          ...data.chargeAccount,
-          chargeBankAmount: data.chargeBankAmount,
-        };
-      } else if (data.chargePaymentMode === 'Both') {
-        chargePaymentDetail = {
-          ...chargePaymentDetail,
-          chargeCashAmount: data.chargeCashAmount,
-          chargeBankAmount: data.chargeBankAmount,
-          ...data.chargeAccount,
-        };
-      }
-
+      // Set chargePaymentDetail from currentDisburse
       const payload = {
         loan: currentDisburse._id,
         companyBankDetail: data.companyBankDetail,
@@ -358,26 +289,15 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         approvalCharge: data.approvalCharge,
         issueDate: data.issueDate,
         paymentDetail,
-        chargePaymentDetail,
+        chargePaymentDetail: currentDisburse.chargePaymentDetail,
       };
-
       const url =
         currentDisburse.status === 'Disbursed'
           ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`
           : `${import.meta.env.VITE_BASE_URL}/disburse-loan`;
-
       const requestMethod = currentDisburse.status === 'Disbursed' ? axios.put : axios.post;
-
       requestMethod(url, payload)
         .then((res) => {
-          if (
-            data.approvalCharge > 0 &&
-            currentDisburse.status === 'Issued' &&
-            configs.chargeType.includes('APPROVAL CHARGE')
-          ) {
-            alert('00002');
-            handleChargeIn(data);
-          }
           router.push(paths.dashboard.disburse.list);
           enqueueSnackbar(res?.data?.message);
           if (currentDisburse.status !== 'Disbursed') {
@@ -385,11 +305,9 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
           }
         })
         .catch((err) => enqueueSnackbar(err.response?.data?.message));
-
       if (currentDisburse.status === 'Disbursed') {
         mutate();
       }
-
       reset();
     } catch (error) {
       enqueueSnackbar(currentDisburse ? 'Failed to update disbursed' : 'Failed to disburse loan');
@@ -430,76 +348,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     );
 
     return total.toFixed(2); // Apply toFixed(2) only at the end
-  };
-
-  const handleChargeCashAmountChange = (event) => {
-    const newCashAmount = parseFloat(event.target.value) || 0;
-    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
-    const chargePaymentMode = watch('chargePaymentMode');
-
-    if (chargePaymentMode === 'Both') {
-      if (newCashAmount > approvalCharge) {
-        setValue('chargeCashAmount', approvalCharge);
-        setValue('chargeBankAmount', 0);
-        enqueueSnackbar('Cash amount cannot be greater than approval charge', {
-          variant: 'warning',
-        });
-      } else {
-        setValue('chargeCashAmount', newCashAmount);
-        setValue('chargeBankAmount', approvalCharge - newCashAmount);
-      }
-    } else {
-      setValue('chargeCashAmount', newCashAmount);
-    }
-  };
-
-  const handleChargeBankAmountChange = (event) => {
-    const newBankAmount = parseFloat(event.target.value) || 0;
-    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
-    const chargePaymentMode = watch('chargePaymentMode');
-
-    if (chargePaymentMode === 'Both') {
-      if (newBankAmount > approvalCharge) {
-        setValue('chargeBankAmount', approvalCharge);
-        setValue('chargeCashAmount', 0);
-        enqueueSnackbar('Bank amount cannot be greater than approval charge', {
-          variant: 'warning',
-        });
-      } else {
-        setValue('chargeBankAmount', newBankAmount);
-        setValue('chargeCashAmount', approvalCharge - newBankAmount);
-      }
-    } else {
-      setValue('chargeBankAmount', newBankAmount);
-    }
-  };
-
-  const handleChargeIn = (data) => {
-    try {
-      const chargePaymentDetail = {
-        paymentMode: data.chargePaymentMode,
-        ...(data.chargePaymentMode === 'Cash' && { cashAmount: data.chargeCashAmount }),
-        ...(data.chargePaymentMode === 'Bank' && {
-          bankAmount: data.chargeBankAmount,
-          account: data.chargeAccount,
-        }),
-        ...(data.chargePaymentMode === 'Both' && {
-          cashAmount: data.chargeCashAmount,
-          bankAmount: data.chargeBankAmount,
-          account: data.chargeAccount,
-        }),
-      };
-      const payload = {
-        chargeType: 'APPROVAL CHARGE',
-        date: new Date(),
-        branch: currentDisburse.customer.branch._id,
-        status: 'Payment In',
-        paymentDetails: chargePaymentDetail,
-      };
-      const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
@@ -815,87 +663,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                   </Box>
                 </>
               )}
-
-              {/* Charge Payment Details Section */}
-              <Typography variant="subtitle2" sx={{ fontWeight: '600' }}>
-                Charge Payment Details
-              </Typography>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(4, 1fr)',
-                }}
-              >
-                <RHFAutocomplete
-                  name="chargePaymentMode"
-                  label="Payment Mode"
-                  options={['Cash', 'Bank', 'Both']}
-                  getOptionLabel={(option) => option}
-                  onChange={(event, value) => {
-                    setValue('chargePaymentMode', value);
-                  }}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option}>
-                      {option}
-                    </li>
-                  )}
-                />
-                {(watch('chargePaymentMode') === 'Cash' ||
-                  watch('chargePaymentMode') === 'Both') && (
-                  <Controller
-                    name="chargeCashAmount"
-                    control={control}
-                    render={({ field }) => (
-                      <RHFTextField
-                        {...field}
-                        label="Cash Amount"
-                        inputProps={{ min: 0 }}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          handleChargeCashAmountChange(e);
-                        }}
-                      />
-                    )}
-                  />
-                )}
-                {(watch('chargePaymentMode') === 'Bank' ||
-                  watch('chargePaymentMode') === 'Both') && (
-                  <>
-                    <RHFAutocomplete
-                      name="chargeAccount"
-                      label="Account"
-                      fullWidth
-                      options={branch.flatMap((item) => item.company.bankAccounts)}
-                      getOptionLabel={(option) => option.bankName || ''}
-                      renderOption={(props, option) => (
-                        <li {...props} key={option.id || option.bankName}>
-                          {option.bankName}
-                        </li>
-                      )}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                    />
-                    <Controller
-                      name="chargeBankAmount"
-                      control={control}
-                      render={({ field }) => (
-                        <RHFTextField
-                          {...field}
-                          label="Bank Amount"
-                          disabled={watch('chargePaymentMode') === 'Bank' ? false : true}
-                          inputProps={{ min: 0 }}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            handleChargeBankAmountChange(e);
-                          }}
-                        />
-                      )}
-                    />
-                  </>
-                )}
-              </Box>
             </Stack>
           </Card>
           {currentDisburse.status === 'Issued' || currentDisburse.status === 'Disbursed' ? (
