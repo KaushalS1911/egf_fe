@@ -4,15 +4,20 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 import { MenuItem, Select } from '@mui/material';
-import { fShortenNumber } from 'src/utils/format-number';
+import { useEffect, useState } from 'react';
+
+function fShortenNumber(number) {
+  if (number == null) return '';
+  return number.toLocaleString('en-IN');
+}
 
 export default function AnalyticsWidgetSummary({
                                                  title,
                                                  total,
-                                                 average,
+                                                 days,
                                                  icon,
-                                                 filter = 'This Month',
-                                                 filterOptions = ['This Month', 'Last Month', 'This Year'],
+                                                 filter = 'this_month',
+                                                 filterOptions = [],
                                                  onFilterChange = () => {
                                                  },
                                                  color = 'success',
@@ -20,6 +25,18 @@ export default function AnalyticsWidgetSummary({
                                                  ...other
                                                }) {
   const theme = useTheme();
+
+  const [selectedFilter, setSelectedFilter] = useState(filter);
+
+  useEffect(() => {
+    setSelectedFilter(filter);
+  }, [filter]);
+
+  const handleChange = (event) => {
+    const newValue = event.target.value;
+    setSelectedFilter(newValue);
+    onFilterChange(newValue);
+  };
 
   return (
     <Stack
@@ -41,9 +58,9 @@ export default function AnalyticsWidgetSummary({
           </Typography>
         </Stack>
         <Select
-          value={filter}
+          value={selectedFilter}
           size='small'
-          onChange={(e) => onFilterChange(e.target.value)}
+          onChange={handleChange}
           sx={{
             bgcolor: alpha(theme.palette[color].main, 0.1),
             fontSize: 12,
@@ -52,8 +69,8 @@ export default function AnalyticsWidgetSummary({
           }}
         >
           {filterOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
             </MenuItem>
           ))}
         </Select>
@@ -64,7 +81,7 @@ export default function AnalyticsWidgetSummary({
           Total
         </Typography>
         <Box sx={{ width: 1, height: 32, borderLeft: '1px solid', borderColor: 'divider', mx: 2 }} />
-        <Typography variant='h4'>{fShortenNumber(average)}</Typography>
+        <Typography variant='h4'>{fShortenNumber(days)}</Typography>
         <Typography variant='body2' sx={{ opacity: 0.7 }}>
           Day Average
         </Typography>
@@ -76,10 +93,15 @@ export default function AnalyticsWidgetSummary({
 AnalyticsWidgetSummary.propTypes = {
   title: PropTypes.string.isRequired,
   total: PropTypes.number.isRequired,
-  average: PropTypes.number.isRequired,
+  days: PropTypes.number.isRequired,
   icon: PropTypes.element,
   filter: PropTypes.string,
-  filterOptions: PropTypes.arrayOf(PropTypes.string),
+  filterOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    }),
+  ),
   onFilterChange: PropTypes.func,
   color: PropTypes.string,
   sx: PropTypes.object,

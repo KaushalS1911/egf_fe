@@ -22,6 +22,7 @@ import {
   useGetInquirySummary,
   useGetLoanChart,
   useGetOtherLoanChart,
+  useGetPaymentInOutSummary,
   useGetPortfolioSummary,
   useGetReferenceAreaSummary,
   useGetSchemeLoanSummary,
@@ -60,6 +61,10 @@ export default function OverviewAppView() {
     schemeLoanSummaryRange: 'this_month',
     chargeRange: 'this_year',
     interestRange: 'this_year',
+    paymentInRange: 'this_month',
+    paymentOutRange: 'this_month',
+    expenseRange: 'this_month',
+    differenceRange: 'this_month',
   });
 
   const { SchemeLoanSummary } = useGetSchemeLoanSummary(ranges?.schemeLoanSummaryRange);
@@ -91,6 +96,26 @@ export default function OverviewAppView() {
   const { CombinedLoanStats: interest } = useGetCombinedLoanStats(
     ranges?.interestRange,
     'interest',
+  );
+
+  const { PaymentInOutSummary: paymentIn } = useGetPaymentInOutSummary(
+    ranges?.paymentInRange,
+    'paymentintotal',
+  );
+
+  const { PaymentInOutSummary: paymentOut } = useGetPaymentInOutSummary(
+    ranges?.paymentOutRange,
+    'paymentouttotal',
+  );
+
+  const { PaymentInOutSummary: difference } = useGetPaymentInOutSummary(
+    ranges?.differenceRange,
+    'difference',
+  );
+
+  const { PaymentInOutSummary: expense } = useGetPaymentInOutSummary(
+    ranges?.expenseRange,
+    'totalexpense',
   );
 
   const renderStorageOverview = (
@@ -292,49 +317,52 @@ export default function OverviewAppView() {
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Expense'
-            total={10000}
-            average={200}
+            total={expense?.totalExpense}
+            days={expense?.days}
             icon={<Iconify icon='arcticons:expense' width={30} />}
-            filter='This Month'
-            filterOptions={['This Month', 'Last Month', 'This Year']}
-            onFilterChange={(val) => console.log('Filter changed:', val)}
+            filter='this_month'
+            filterOptions={timeRangeOptions}
+            onFilterChange={(val) => {
+              console.log(val);
+              handleRangeChange('expenseRange', val);
+            }}
             color='error'
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment In'
-            total={10000}
-            average={200}
+            total={paymentIn?.paymentInTotal}
+            days={paymentIn?.days}
             icon={<Iconify icon='zondicons:arrow-thin-down'
                            width={30} />}
-            filter='This Month'
-            filterOptions={['This Month', 'Last Month', 'This Year']}
-            onFilterChange={(val) => console.log('Filter changed:', val)}
+            filter='this_month'
+            filterOptions={timeRangeOptions}
+            onFilterChange={(val) => handleRangeChange('paymentInRange', val)}
             color='success'
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment Out'
-            total={10000}
-            average={200}
+            total={paymentOut?.paymentOutTotal}
+            days={paymentOut?.days}
             icon={<Iconify icon='zondicons:arrow-thin-up' width={30} />}
-            filter='This Month'
-            filterOptions={['This Month', 'Last Month', 'This Year']}
-            onFilterChange={(val) => console.log('Filter changed:', val)}
+            filter='this_month'
+            filterOptions={timeRangeOptions}
+            onFilterChange={(val) => handleRangeChange('paymentOutRange', val)}
             color='warning'
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment Diff'
-            total={10000}
-            average={200}
+            total={difference.difference}
+            days={difference.days}
             icon={<Iconify icon='tabler:arrows-diff' width={30} />}
-            filter='This Month'
-            filterOptions={['This Month', 'Last Month', 'This Year']}
-            onFilterChange={(val) => console.log('Filter changed:', val)}
+            filter='this_month'
+            filterOptions={timeRangeOptions}
+            onFilterChange={(val) => handleRangeChange('differenceRange', val)}
             color='secondary'
           />
         </Grid>
