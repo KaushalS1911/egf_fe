@@ -345,7 +345,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       0
     );
 
-    return total.toFixed(2);
+    return total.toFixed(2); // Apply toFixed(2) only at the end
   };
 
   const handleChargeCashAmountChange = (event) => {
