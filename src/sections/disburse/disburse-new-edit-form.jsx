@@ -50,8 +50,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   const [cashPendingAmt, setCashPendingAmt] = useState(0);
   const [bankPendingAmt, setBankPendingAmt] = useState(0);
   const { user } = useAuthContext();
-  const [chargePaymentModeValue, setChargePaymentModeValue] = useState('');
-  const [approvalChargeValue, setApprovalChargeValue] = useState(0);
+
   const paymentSchema =
     currentDisburse.paymentMode === 'Bank'
       ? {
@@ -164,21 +163,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
   useEffect(() => {
     const approvalCharge = Number(watch('approvalCharge')) || 0;
-    setApprovalChargeValue(approvalCharge);
-    if (approvalCharge === 0) {
-      setValue('chargePaymentMode', '');
-      setValue('chargeCashAmount', '');
-      setValue('chargeBankAmount', '');
-      setValue('chargeAccount', null);
-    }
-  }, [watch('approvalCharge')]);
-
-  useEffect(() => {
-    setChargePaymentModeValue(watch('chargePaymentMode') || '');
-  }, [watch('chargePaymentMode')]);
-
-  useEffect(() => {
-    const approvalCharge = Number(watch('approvalCharge')) || 0;
     const chargePaymentMode = watch('chargePaymentMode');
 
     if (chargePaymentMode === 'Cash') {
@@ -248,15 +232,17 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!configs.chargeType.includes('APPROVAL CHARGE')) {
-      return enqueueSnackbar('APPROVAL CHARGE is not including in charge type', {
-        variant: 'error',
-      });
-    }
+    // if (!configs.chargeType.includes('APPROVAL CHARGE')) {
+    //   return enqueueSnackbar('APPROVAL CHARGE is not including in charge type', {
+    //     variant: 'error',
+    //   });
+    // }
+
     try {
       let paymentDetail = {
         paymentMode: data.paymentMode,
       };
+
       if (data.paymentMode === 'Cash') {
         paymentDetail = {
           ...paymentDetail,
@@ -276,7 +262,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
           ...data.companyBankDetail.account,
         };
       }
-      // Set chargePaymentDetail from currentDisburse
+
       const payload = {
         loan: currentDisburse._id,
         companyBankDetail: data.companyBankDetail,
@@ -289,25 +275,37 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         approvalCharge: data.approvalCharge,
         issueDate: data.issueDate,
         paymentDetail,
-        chargePaymentDetail: currentDisburse.chargePaymentDetail,
       };
+
       const url =
         currentDisburse.status === 'Disbursed'
           ? `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${currentDisburse?._id}`
           : `${import.meta.env.VITE_BASE_URL}/disburse-loan`;
+
       const requestMethod = currentDisburse.status === 'Disbursed' ? axios.put : axios.post;
+
       requestMethod(url, payload)
         .then((res) => {
+          if (
+            data.approvalCharge > 0 &&
+            currentDisburse.status === 'Issued' &&
+            configs.chargeType.includes('APPROVAL CHARGE')
+          ) {
+            alert('00002');
+            handleChargeIn(data);
+          }
           router.push(paths.dashboard.disburse.list);
           enqueueSnackbar(res?.data?.message);
-          if (currentDisburse.status !== 'Disbursed') {
+          if (currentDisburse.approvalCharge > 0) {
             sendPdfToWhatsApp(res.data.data);
           }
         })
         .catch((err) => enqueueSnackbar(err.response?.data?.message));
+
       if (currentDisburse.status === 'Disbursed') {
         mutate();
       }
+
       reset();
     } catch (error) {
       enqueueSnackbar(currentDisburse ? 'Failed to update disbursed' : 'Failed to disburse loan');
@@ -347,7 +345,64 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       0
     );
 
-    return total.toFixed(2); // Apply toFixed(2) only at the end
+    return total.toFixed(2);
+  };
+
+  const handleChargeCashAmountChange = (event) => {
+    const newCashAmount = parseFloat(event.target.value) || 0;
+    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Both') {
+      if (newCashAmount > approvalCharge) {
+        setValue('chargeCashAmount', approvalCharge);
+        setValue('chargeBankAmount', 0);
+        enqueueSnackbar('Cash amount cannot be greater than approval charge', {
+          variant: 'warning',
+        });
+      } else {
+        setValue('chargeCashAmount', newCashAmount);
+        setValue('chargeBankAmount', approvalCharge - newCashAmount);
+      }
+    } else {
+      setValue('chargeCashAmount', newCashAmount);
+    }
+  };
+
+  const handleChargeBankAmountChange = (event) => {
+    const newBankAmount = parseFloat(event.target.value) || 0;
+    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
+    const chargePaymentMode = watch('chargePaymentMode');
+
+    if (chargePaymentMode === 'Both') {
+      if (newBankAmount > approvalCharge) {
+        setValue('chargeBankAmount', approvalCharge);
+        setValue('chargeCashAmount', 0);
+        enqueueSnackbar('Bank amount cannot be greater than approval charge', {
+          variant: 'warning',
+        });
+      } else {
+        setValue('chargeBankAmount', newBankAmount);
+        setValue('chargeCashAmount', approvalCharge - newBankAmount);
+      }
+    } else {
+      setValue('chargeBankAmount', newBankAmount);
+    }
+  };
+
+  const handleChargeIn = (data) => {
+    try {
+      const payload = {
+        chargeType: 'APPROVAL CHARGE',
+        date: new Date(),
+        branch: currentDisburse?.customer?.branch?._id,
+        status: 'Payment In',
+        paymentDetails: data?.chargePaymentDetail,
+      };
+      const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
