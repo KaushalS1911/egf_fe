@@ -1103,7 +1103,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                       )}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
-                    sss
                     <RHFTextField
                       name="accountNumber"
                       label="Account No."

@@ -1994,13 +1994,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         label="Account"
                         req="red"
                         fullWidth
-                        options={Array.from(
-                          new Map(
-                            branch
-                              .flatMap((item) => item.company.bankAccounts)
-                              .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
-                          ).values()
-                        )}
+                        options={customerData.bankDetails || []}
                         getOptionLabel={(option) => option.bankName || ''}
                         renderOption={(props, option) => (
                           <li {...props} key={option.id || option.bankName}>

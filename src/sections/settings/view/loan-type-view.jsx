@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Grid, Box, Card, CardHeader } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Typography,
+  Grid,
+  Box,
+  Card,
+  CardHeader,
+  IconButton,
+} from '@mui/material';
 import { useGetConfigs } from 'src/api/config';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
@@ -12,6 +21,11 @@ export default function LoanTypeView() {
   const { configs, mutate } = useGetConfigs();
   const { enqueueSnackbar } = useSnackbar();
   const [inputVal, setInputVal] = useState({
+    loanType: '',
+    approvalCharge: '',
+  });
+  const [editingId, setEditingId] = useState(null);
+  const [editValues, setEditValues] = useState({
     loanType: '',
     approvalCharge: '',
   });
@@ -60,11 +74,48 @@ export default function LoanTypeView() {
       });
   };
 
+  const handleEdit = (loan) => {
+    setEditingId(loan);
+    setEditValues({
+      loanType: loan.loanType,
+      approvalCharge: loan.approvalCharge,
+    });
+  };
+
+  const handleUpdate = () => {
+    if (!editValues.loanType || !editValues.approvalCharge) {
+      enqueueSnackbar('Fields cannot be empty', { variant: 'warning' });
+      return;
+    }
+
+    const updatedLoanTypes = configs.loanTypes.map((loan) =>
+      loan === editingId ? editValues : loan
+    );
+    const apiEndpoint = `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`;
+    const payload = { ...configs, loanTypes: updatedLoanTypes };
+
+    axios
+      .put(apiEndpoint, payload)
+      .then(() => {
+        enqueueSnackbar('Loan Type updated successfully', { variant: 'success' });
+        setEditingId(null);
+        mutate();
+      })
+      .catch((err) => {
+        enqueueSnackbar('Failed to update Loan Type', { variant: 'error' });
+        console.log(err);
+      });
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+  };
+
   return (
     <Box sx={{ width: '100%', padding: '10px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant='h5' sx={{ fontWeight: 600 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
             Add Loan Type
           </Typography>
         </Grid>
@@ -72,16 +123,16 @@ export default function LoanTypeView() {
           <Box sx={{ width: '100%', maxWidth: '600px', padding: '10px' }}>
             <TextField
               fullWidth
-              variant='outlined'
-              label='Loan Type'
+              variant="outlined"
+              label="Loan Type"
               value={inputVal.loanType}
               onChange={(e) => setInputVal({ ...inputVal, loanType: e.target.value.toUpperCase() })}
               sx={{ fontSize: '16px' }}
             />
             <TextField
               fullWidth
-              variant='outlined'
-              label='Approval Charge'
+              variant="outlined"
+              label="Approval Charge"
               value={inputVal.approvalCharge}
               onChange={(e) => {
                 const value = e.target.value;
@@ -92,7 +143,7 @@ export default function LoanTypeView() {
               sx={{ fontSize: '16px', mt: 2 }}
             />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: '20px' }}>
-              <Button variant='contained' onClick={handleClick}>
+              <Button variant="contained" onClick={handleClick}>
                 Add
               </Button>
             </Box>
@@ -104,7 +155,7 @@ export default function LoanTypeView() {
               <Box
                 columnGap={2}
                 rowGap={2}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
                   sm: 'repeat(2, 1fr)',
@@ -128,18 +179,73 @@ export default function LoanTypeView() {
                     >
                       <Grid item>
                         <Typography sx={{ fontSize: '14px' }}>
-                          <strong>Loan Type : </strong> {loan.loanType}
+                          {editingId === loan ? (
+                            <TextField
+                              size="small"
+                              value={editValues.loanType}
+                              onChange={(e) =>
+                                setEditValues({
+                                  ...editValues,
+                                  loanType: e.target.value.toUpperCase(),
+                                })
+                              }
+                              sx={{ width: '150px' }}
+                            />
+                          ) : (
+                            <>
+                              <strong>Loan Type : </strong> {loan.loanType}
+                            </>
+                          )}
                         </Typography>
                         <Typography sx={{ fontSize: '14px' }}>
-                          <strong>Approval Charge : </strong> {loan.approvalCharge}
+                          {editingId === loan ? (
+                            <TextField
+                              size="small"
+                              value={editValues.approvalCharge}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (/^\d*\.?\d*$/.test(value)) {
+                                  setEditValues({ ...editValues, approvalCharge: value });
+                                }
+                              }}
+                              sx={{ width: '150px' }}
+                            />
+                          ) : (
+                            <>
+                              <strong>Approval Charge : </strong> {loan.approvalCharge}
+                            </>
+                          )}
                         </Typography>
                       </Grid>
                       <Grid item>
-                        <Box
-                          sx={{ color: 'error.main', cursor: 'pointer' }}
-                          onClick={() => handleDelete(loan)}
-                        >
-                          <Iconify icon='solar:trash-bin-trash-bold' />
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          {editingId === loan ? (
+                            <>
+                              <IconButton color="success" onClick={handleUpdate}>
+                                <Iconify icon="solar:check-circle-bold" />
+                              </IconButton>
+                              <IconButton color="error" onClick={handleCancel} size="small">
+                                <Iconify icon="solar:close-circle-bold" />
+                              </IconButton>
+                            </>
+                          ) : (
+                            <>
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleEdit(loan)}
+                                size="small"
+                              >
+                                <Iconify icon="solar:pen-bold" />
+                              </IconButton>
+                              <IconButton
+                                color="error"
+                                onClick={() => handleDelete(loan)}
+                                size="small"
+                              >
+                                <Iconify icon="solar:trash-bin-trash-bold" />
+                              </IconButton>
+                            </>
+                          )}
                         </Box>
                       </Grid>
                     </Grid>
