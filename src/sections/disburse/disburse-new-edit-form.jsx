@@ -232,12 +232,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!configs.chargeType.includes('APPROVAL CHARGE')) {
-      return enqueueSnackbar('APPROVAL CHARGE is not including in charge type', {
-        variant: 'error',
-      });
-    }
-
     try {
       let paymentDetail = {
         paymentMode: data.paymentMode,

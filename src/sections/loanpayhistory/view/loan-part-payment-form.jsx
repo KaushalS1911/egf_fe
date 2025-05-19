@@ -429,7 +429,13 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                       label="Account"
                       req="red"
                       fullWidth
-                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      options={Array.from(
+                        new Map(
+                          branch
+                            .flatMap((item) => item.company.bankAccounts)
+                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                        ).values()
+                      )}
                       getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
                         <li {...props} key={option.id || option.bankName}>

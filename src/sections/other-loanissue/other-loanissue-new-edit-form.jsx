@@ -1086,9 +1086,15 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     <RHFAutocomplete
                       name="account"
                       label="Account"
-                      req={'red'}
+                      req="red"
                       fullWidth
-                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      options={Array.from(
+                        new Map(
+                          branch
+                            .flatMap((item) => item.company.bankAccounts)
+                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                        ).values()
+                      )}
                       getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
                         <li {...props} key={option.id || option.bankName}>
@@ -1097,6 +1103,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                       )}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
+                    sss
                     <RHFTextField
                       name="accountNumber"
                       label="Account No."

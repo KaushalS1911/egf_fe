@@ -85,7 +85,7 @@ export default function ExpenseNewEditForm({ currentExpense }) {
       date: currentExpense?.date ? new Date(currentExpense?.date) : new Date(),
       description: currentExpense?.description || '',
       paymentMode: currentExpense?.paymentDetails?.paymentMode || '',
-      account: currentExpense?.paymentDetails?.account?.bankName || null,
+      account: currentExpense?.paymentDetails?.account || null,
       cashAmount: currentExpense?.paymentDetails?.cashAmount || '',
       bankAmount: currentExpense?.paymentDetails?.bankAmount || '',
     }),
@@ -358,9 +358,15 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                       <RHFAutocomplete
                         name="account"
                         label="Account"
-                        req={'red'}
+                        req="red"
                         fullWidth
-                        options={branch.flatMap((item) => item.company.bankAccounts)}
+                        options={Array.from(
+                          new Map(
+                            branch
+                              .flatMap((item) => item.company.bankAccounts)
+                              .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                          ).values()
+                        )}
                         getOptionLabel={(option) => option.bankName || ''}
                         renderOption={(props, option) => (
                           <li {...props} key={option.id || option.bankName}>

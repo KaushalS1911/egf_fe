@@ -9,7 +9,11 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
+import FormProvider, {
+  RHFAutocomplete,
+  RHFTextField,
+  RHFUploadAvatar,
+} from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -128,7 +132,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           .test(
             'is-positive',
             'Charge Cash Amount must be a positive number',
-            (value) => parseFloat(value) >= 0,
+            (value) => parseFloat(value) >= 0
           ),
       }),
       ...(chargePaymentModeValue === 'Bank' && {
@@ -137,7 +141,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           .test(
             'is-positive',
             'Charge Bank Amount must be a positive number',
-            (value) => parseFloat(value) >= 0,
+            (value) => parseFloat(value) >= 0
           ),
         chargeAccount: Yup.object().required('Charge Account is required'),
       }),
@@ -147,14 +151,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
           .test(
             'is-positive',
             'Charge Cash Amount must be a positive number',
-            (value) => parseFloat(value) >= 0,
+            (value) => parseFloat(value) >= 0
           ),
         chargeBankAmount: Yup.string()
           .required('Charge Bank Amount is required')
           .test(
             'is-positive',
             'Charge Bank Amount must be a positive number',
-            (value) => parseFloat(value) >= 0,
+            (value) => parseFloat(value) >= 0
           ),
         chargeAccount: Yup.object().required('Charge Account is required'),
       }),
@@ -468,23 +472,47 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     } else if (mode === 'Bank') {
       payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeBankAmount);
 
-      payload.append('chargePaymentDetail[chargeAccount][accountNumber]', data?.chargeAccount?.accountNumber);
-      payload.append('chargePaymentDetail[chargeAccount][accountType]', data?.chargeAccount?.accountType);
-      payload.append('chargePaymentDetail[chargeAccount][accountHolderName]', data?.chargeAccount?.accountHolderName);
+      payload.append(
+        'chargePaymentDetail[chargeAccount][accountNumber]',
+        data?.chargeAccount?.accountNumber
+      );
+      payload.append(
+        'chargePaymentDetail[chargeAccount][accountType]',
+        data?.chargeAccount?.accountType
+      );
+      payload.append(
+        'chargePaymentDetail[chargeAccount][accountHolderName]',
+        data?.chargeAccount?.accountHolderName
+      );
       payload.append('chargePaymentDetail[chargeAccount][bankName]', data?.chargeAccount?.bankName);
       payload.append('chargePaymentDetail[chargeAccount][IFSC]', data?.chargeAccount?.IFSC);
-      payload.append('chargePaymentDetail[chargeAccount][branchName]', data?.chargeAccount?.branchName);
+      payload.append(
+        'chargePaymentDetail[chargeAccount][branchName]',
+        data?.chargeAccount?.branchName
+      );
       payload.append('chargePaymentDetail[chargeAccount][_id]', data?.chargeAccount?._id);
     } else if (mode === 'Both') {
       payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeCashAmount);
       payload.append('chargePaymentDetail[chargeBankAmount]', data.chargeBankAmount);
 
-      payload.append('chargePaymentDetail[chargeAccount][accountNumber]', data?.chargeAccount?.accountNumber);
-      payload.append('chargePaymentDetail[chargeAccount][accountType]', data?.chargeAccount?.accountType);
-      payload.append('chargePaymentDetail[chargeAccount][accountHolderName]', data?.chargeAccount?.accountHolderName);
+      payload.append(
+        'chargePaymentDetail[chargeAccount][accountNumber]',
+        data?.chargeAccount?.accountNumber
+      );
+      payload.append(
+        'chargePaymentDetail[chargeAccount][accountType]',
+        data?.chargeAccount?.accountType
+      );
+      payload.append(
+        'chargePaymentDetail[chargeAccount][accountHolderName]',
+        data?.chargeAccount?.accountHolderName
+      );
       payload.append('chargePaymentDetail[chargeAccount][bankName]', data?.chargeAccount?.bankName);
       payload.append('chargePaymentDetail[chargeAccount][IFSC]', data?.chargeAccount?.IFSC);
-      payload.append('chargePaymentDetail[chargeAccount][branchName]', data?.chargeAccount?.branchName);
+      payload.append(
+        'chargePaymentDetail[chargeAccount][branchName]',
+        data?.chargeAccount?.branchName
+      );
       payload.append('chargePaymentDetail[chargeAccount][_id]', data?.chargeAccount?._id);
     }
 
@@ -1267,8 +1295,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 />
                 <RHFAutocomplete
                   req={'red'}
-                  name='chargePaymentMode'
-                  label='Charge Payment Mode'
+                  name="chargePaymentMode"
+                  label="Charge Payment Mode"
                   disabled={!isFieldsEnabled}
                   options={['Cash', 'Bank', 'Both']}
                   getOptionLabel={(option) => option}
@@ -1285,13 +1313,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 {(watch('chargePaymentMode') === 'Cash' ||
                   watch('chargePaymentMode') === 'Both') && (
                   <Controller
-                    name='chargeCashAmount'
+                    name="chargeCashAmount"
                     control={control}
                     render={({ field }) => (
                       <RHFTextField
                         req={'red'}
                         {...field}
-                        label='Cash Amount'
+                        label="Cash Amount"
                         inputProps={{ min: 0 }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -1305,11 +1333,17 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   watch('chargePaymentMode') === 'Both') && (
                   <>
                     <RHFAutocomplete
-                      req={'red'}
-                      name='chargeAccount'
-                      label='Account'
+                      name="chargeAccount"
+                      label="Account"
+                      req="red"
                       fullWidth
-                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      options={Array.from(
+                        new Map(
+                          branch
+                            .flatMap((item) => item.company.bankAccounts)
+                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                        ).values()
+                      )}
                       getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
                         <li {...props} key={option.id || option.bankName}>
@@ -1319,13 +1353,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                     <Controller
-                      name='chargeBankAmount'
+                      name="chargeBankAmount"
                       control={control}
                       render={({ field }) => (
                         <RHFTextField
                           req={'red'}
                           {...field}
-                          label='Bank Amount'
+                          label="Bank Amount"
                           disabled={watch('chargePaymentMode') === 'Bank' ? false : true}
                           inputProps={{ min: 0 }}
                         />
@@ -1955,31 +1989,25 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     }}
                   >
                     {selectBankAccount && (
-                      <Controller
+                      <RHFAutocomplete
                         name="account"
-                        control={control}
-                        render={({ field }) => (
-                          <RHFAutocomplete
-                            {...field}
-                            label="Account"
-                            req={'red'}
-                            disabled={!isFieldsEnabled}
-                            fullWidth
-                            options={customerData.bankDetails || []}
-                            getOptionLabel={(option) => option.bankName}
-                            isOptionEqualToValue={(option, value) => option._id === value?._id}
-                            value={field.value || null}
-                            onChange={(_, newValue) => {
-                              field.onChange(newValue);
-                              setSelectedBank(newValue);
-                            }}
-                            renderOption={(props, option) => (
-                              <li {...props} key={option._id}>
-                                {option.bankName}
-                              </li>
-                            )}
-                          />
+                        label="Account"
+                        req="red"
+                        fullWidth
+                        options={Array.from(
+                          new Map(
+                            branch
+                              .flatMap((item) => item.company.bankAccounts)
+                              .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                          ).values()
                         )}
+                        getOptionLabel={(option) => option.bankName || ''}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.id || option.bankName}>
+                            {option.bankName}
+                          </li>
+                        )}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
                       />
                     )}
                     {addBankAccount && (
