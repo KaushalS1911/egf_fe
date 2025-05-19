@@ -5,25 +5,28 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
 // ----------------------------------------------------------------------
 
 export default function GoldpriceTableToolbar({
                                                 filters,
                                                 onFilters,
-                                                //
                                                 roleOptions,
                                                 goldRate,
                                               }) {
   const popover = usePopover();
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
     [onFilters],
   );
+
   useEffect(() => {
     onFilters('name', goldRate);
   }, [goldRate]);
+
   return (
     <>
       <Stack
@@ -50,11 +53,8 @@ export default function GoldpriceTableToolbar({
             }}
             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restricts input to numbers
           />
-
-
         </Stack>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -69,7 +69,6 @@ export default function GoldpriceTableToolbar({
           <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -78,7 +77,6 @@ export default function GoldpriceTableToolbar({
           <Iconify icon='solar:import-bold' />
           Import
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             popover.onClose();

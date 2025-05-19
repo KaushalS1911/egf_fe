@@ -15,8 +15,8 @@ export default function SchemeEditView() {
   const settings = useSettingsContext();
   const { scheme } = useGetScheme();
   const { id } = useParams();
-
   const currentScheme = scheme.find((scheme) => scheme._id === id);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs

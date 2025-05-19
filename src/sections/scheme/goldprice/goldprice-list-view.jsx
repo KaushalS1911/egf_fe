@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -8,14 +8,9 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -23,14 +18,14 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { useGetScheme } from '../../../api/scheme';
 import axios from 'axios';
@@ -59,23 +54,18 @@ export default function GoldpriceListView() {
   const { user } = useAuthContext();
   const table = useTable();
   const {configs} = useGetConfigs()
-const defaultFilters = {
-  name: '',
-  isActive: 'all',
-};
+
+  const defaultFilters = {
+    name: '',
+    isActive: 'all',
+  };
 
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
   const {scheme,mutate} = useGetScheme()
-
   const [tableData, setTableData] = useState(scheme);
-
   const [filters, setFilters] = useState(defaultFilters);
-
 
   const dataFiltered = applyFilter({
     inputData: scheme,
@@ -89,10 +79,9 @@ const defaultFilters = {
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
-
   const canReset = !isEqual(defaultFilters, filters);
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
   const
     handleFilters = useCallback(
     (name, value) => {
@@ -105,9 +94,6 @@ const defaultFilters = {
     [table],
   );
 
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
 const handleDelete = (id) =>{
   axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
     .then((res)=> {
@@ -116,6 +102,7 @@ const handleDelete = (id) =>{
       enqueueSnackbar(res.data.message)
     }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
 }
+
   const handleDeleteRow = useCallback(
     (id) => {
     handleDelete([id])
@@ -125,6 +112,7 @@ const handleDelete = (id) =>{
     },
     [dataInPage.length, enqueueSnackbar, table, tableData],
   );
+
   const handleDeleteRows = useCallback(() => {
     const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
      const deleteIds = deleteRows.map((row) => row._id);
@@ -144,13 +132,6 @@ const handleDelete = (id) =>{
     [router],
   );
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters],
-  );
-
   const handleSave = async ()=>{
     const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.valuation) * parseFloat(filters.name)/100}));
     try {
@@ -164,6 +145,7 @@ const handleDelete = (id) =>{
       enqueueSnackbar("Failed to Update schemes",{variant:'error'});
     }
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -182,7 +164,6 @@ const handleDelete = (id) =>{
           <GoldpriceTableToolbar
             filters={filters} onFilters={handleFilters} goldRate={configs?.goldRate}
           />
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -202,7 +183,6 @@ const handleDelete = (id) =>{
                 </Tooltip>
               }
             />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -212,9 +192,7 @@ const handleDelete = (id) =>{
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-
                 />
-
                 <TableBody>
                   {dataFiltered
                     .slice(
@@ -233,18 +211,15 @@ const handleDelete = (id) =>{
                         onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
-
                   <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
-
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -261,7 +236,6 @@ const handleDelete = (id) =>{
           </LoadingButton>
         </Stack>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -283,10 +257,7 @@ const handleDelete = (id) =>{
             Delete
           </Button>
         }
-
       />
-
-
     </>
   );
 };
@@ -301,7 +272,6 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
-
 
   return inputData;
 }

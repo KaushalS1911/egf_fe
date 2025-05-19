@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -13,20 +13,19 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import SchemeTableToolbar from '../scheme-table-toolbar';
 import SchemeTableFiltersResult from '../scheme-table-filters-result';
@@ -78,6 +77,7 @@ export default function SchemeListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { scheme, mutate, schemeLoading } = useGetScheme();
+  console.log(scheme);
   const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
@@ -88,7 +88,7 @@ export default function SchemeListView() {
 
   const dataFiltered = applyFilter({
     inputData: scheme,
-    comparator: getComparator(table.order, table.orderBy),
+    comparator: getComparator("desc", table.orderBy),
     filters,
   });
 
@@ -103,7 +103,6 @@ export default function SchemeListView() {
 
   const handleFilters = useCallback(
     (name, value) => {
-      console.log('name', value);
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -385,16 +384,13 @@ function applyFilter({ inputData, comparator, filters }) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
-    // Move inactive items to the end
     if (a[0].isActive !== b[0].isActive) {
       return a[0].isActive ? -1 : 1;
     }
 
-    // Then apply your original sorting
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
 
-    // Maintain original index order if equal
     return a[1] - b[1];
   });
 
