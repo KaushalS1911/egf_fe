@@ -38,6 +38,8 @@ import ChargeInOutTableFiltersResult from '../charge-in-out-table-filters-result
 import ChargeListView from '../charge/view/charge-list-view.jsx';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
+import { useGetConfigs } from '../../../../api/config.js';
+import { Box } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -46,9 +48,11 @@ const TABLE_HEAD = [
   { id: 'type', label: 'Type' },
   { id: 'category', label: 'Category' },
   { id: 'date', label: 'Date' },
+  { id: 'paymentMode', label: 'Payment mode' },
   { id: 'Cash amt', label: 'Cash amt' },
   { id: 'Bank amt', label: 'Bank amt' },
   { id: 'Bank', label: 'Bank' },
+  { id: 'des', label: 'Des' },
   { id: 'status', label: 'status' },
   { id: '', width: 88 },
 ];
@@ -59,6 +63,7 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   chargeType: '',
+  transactions: '',
 };
 
 // ----------------------------------------------------------------------
@@ -66,7 +71,7 @@ const defaultFilters = {
 export default function ChargeInOutListView() {
   const { ChargeInOut, ChargeInOutLoading, mutate } = useGetChargeInOut();
   const { enqueueSnackbar } = useSnackbar();
-  const [chargeDetails, setChargeDetails] = useState('');
+  const [chargeDetails, setChargeDetails] = useState({});
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
@@ -74,9 +79,22 @@ export default function ChargeInOutListView() {
   const { user } = useAuthContext();
   const [tableData, setTableData] = useState(ChargeInOut);
   const [filters, setFilters] = useState(defaultFilters);
+  console.log(filters, '000000000000000000000000');
+  const [options, setOptions] = useState([]);
+  const { configs } = useGetConfigs();
+
+  useEffect(() => {
+    if (ChargeInOut) {
+      setTableData(ChargeInOut);
+    }
+  }, [ChargeInOut]);
+
+  useEffect(() => {
+    setFilters({ ...defaultFilters, chargeType: chargeDetails });
+  }, [chargeDetails]);
 
   const dataFiltered = applyFilter({
-    inputData: ChargeInOut,
+    inputData: tableData || [],
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -101,9 +119,36 @@ export default function ChargeInOutListView() {
     0
   );
 
+  const calculateChargeTypeTotals = (data) => {
+    const totals = {};
+    data.forEach((item) => {
+      const chargeType = item.chargeType;
+      if (!totals[chargeType]) {
+        totals[chargeType] = 0;
+      }
+      if (item.status === 'Payment In') {
+        totals[chargeType] +=
+          Number(item?.paymentDetails?.cashAmount || 0) +
+          Number(item?.paymentDetails?.bankAmount || 0);
+      } else if (item.status === 'Payment Out') {
+        totals[chargeType] -=
+          Number(item?.paymentDetails?.cashAmount || 0) +
+          Number(item?.paymentDetails?.bankAmount || 0);
+      }
+    });
+    return Object.entries(totals).map(([chargeType, amount]) => ({
+      chargeType,
+      amount: Number(amount.toFixed(2)),
+    }));
+  };
+
+  const chargeTypeTotals = calculateChargeTypeTotals(ChargeInOut);
+
   useEffect(() => {
-    setFilters({ ...defaultFilters, chargeType: chargeDetails });
-  }, [chargeDetails]);
+    {
+      dataFiltered.length > 0 && fetchStates();
+    }
+  }, [ChargeInOut]);
 
   const amount =
     dataFiltered
@@ -170,6 +215,31 @@ export default function ChargeInOutListView() {
     return <LoadingScreen />;
   }
 
+  function fetchStates() {
+    const accountMap = new Map();
+
+    accountMap.set('cash', { transactionsType: 'Cash' });
+
+    dataFiltered?.forEach((data) => {
+      const account = data?.paymentDetails?.account;
+      if (account && account._id && !accountMap.has(account._id)) {
+        accountMap.set(account._id, account);
+      }
+    });
+
+    const newOptions = Array.from(accountMap.values());
+
+    setOptions((prevOptions) => {
+      const isSame =
+        prevOptions.length === newOptions.length &&
+        prevOptions.every((item) => newOptions.some((opt) => opt._id === item._id));
+
+      return isSame ? prevOptions : newOptions;
+    });
+
+    setOptions(newOptions);
+  }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -186,7 +256,7 @@ export default function ChargeInOutListView() {
               <strong style={{ marginLeft: 20 }}>
                 Payable : -
                 <span style={{ color: 'red', marginLeft: 10 }}>
-                  {Number(cashOut) + Number(bankOut).toFixed(2)}
+                  {(Number(cashOut) + Number(bankOut)).toFixed(2)}
                 </span>
               </strong>
             </Typography>
@@ -210,7 +280,11 @@ export default function ChargeInOutListView() {
           <Grid container>
             <Grid md={3}>
               <Card sx={{ height: '100%', p: 2, mr: 2 }}>
-                <ChargeListView setChargeDetails={setChargeDetails} chargeDetails={chargeDetails} />
+                <ChargeListView
+                  setChargeDetails={setChargeDetails}
+                  chargeDetails={chargeDetails}
+                  chargeTypeTotals={chargeTypeTotals}
+                />
               </Card>
             </Grid>
             <Grid md={9}>
@@ -219,6 +293,7 @@ export default function ChargeInOutListView() {
                   filters={filters}
                   onFilters={handleFilters}
                   chargeDetails={chargeDetails}
+                  options={options}
                 />
                 {canReset && (
                   <ChargeInOutTableFiltersResult
@@ -335,28 +410,37 @@ export default function ChargeInOutListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, chargeType, category, startDate, endDate } = filters;
+  const { name, chargeType, category, startDate, endDate, transactions } = filters;
 
-  const stabilizedThis = inputData?.map((el, index) => [el, index]);
-  stabilizedThis?.sort((a, b) => {
+  if (!inputData) return [];
+
+  const stabilizedThis = inputData.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  inputData = stabilizedThis?.map((el) => el[0]);
+  inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
     inputData = inputData.filter(
       (sch) =>
         sch?.chargeType?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.detail?.toLowerCase().includes(name?.toLowerCase())
+        sch?.category?.toLowerCase().includes(name?.toLowerCase()) ||
+        sch?.description?.toLowerCase().includes(name?.toLowerCase())
     );
   }
   if (category) {
     inputData = inputData.filter((item) => item.status === category);
   }
-  if (chargeType) {
-    inputData = inputData?.filter((item) => chargeType === item.chargeType);
+  if (transactions) {
+    inputData = inputData.filter(
+      (item) => item?.paymentDetails?.account?._id === transactions?._id
+    );
+  }
+  if (Object.keys(chargeType).length > 0) {
+    console.log(chargeType);
+    inputData = inputData.filter((item) => chargeType.chargeType === item.chargeType);
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));

@@ -48,6 +48,7 @@ export default function ChargeInOutTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.chargeType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetails?.paymentMode}</TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
@@ -65,6 +66,7 @@ export default function ChargeInOutTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.paymentDetails?.account?.bankName || '-'}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label
             variant="soft"

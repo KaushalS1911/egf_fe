@@ -20,7 +20,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 
 // ----------------------------------------------------------------------
 
-export default function CashInTableToolbar({ filters, onFilters, schemes, dateError }) {
+export default function CashInTableToolbar({ filters, onFilters, schemes, dateError, options }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -72,6 +72,12 @@ export default function CashInTableToolbar({ filters, onFilters, schemes, dateEr
     },
     [onFilters]
   );
+  const handleFilterStatus = useCallback(
+    (event) => {
+      onFilters('status', event.target.value);
+    },
+    [onFilters]
+  );
   const customStyle = {
     maxWidth: { md: 350 },
     label: {
@@ -114,7 +120,7 @@ export default function CashInTableToolbar({ filters, onFilters, schemes, dateEr
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 350 },
+              width: { xs: 1, sm: 250 },
             }}
           >
             <InputLabel
@@ -153,6 +159,54 @@ export default function CashInTableToolbar({ filters, onFilters, schemes, dateEr
               }}
             >
               {['Payment In', 'Payment Out'].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>{' '}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 250 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Status
+            </InputLabel>
+            <Select
+              value={filters.status}
+              onChange={handleFilterStatus}
+              input={<OutlinedInput label="Status" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options.map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>

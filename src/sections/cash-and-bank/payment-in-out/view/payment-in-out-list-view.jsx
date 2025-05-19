@@ -56,6 +56,8 @@ const TABLE_HEAD = [
   { id: 'cashAmount', label: 'Cash amt' },
   { id: 'bankAmount', label: 'Bank amt' },
   { id: 'bank', label: 'Bank' },
+  { id: 'des', label: 'Des' },
+  { id: 'invoice', label: 'Invoice' },
   { id: 'status', label: 'satus' },
   { id: '', width: 88 },
 ];
@@ -65,6 +67,7 @@ const defaultFilters = {
   category: '',
   startDate: null,
   endDate: null,
+  transactions: '',
   party: {},
 };
 
@@ -83,6 +86,7 @@ export default function PaymentInOutListView() {
   const partyPopover = usePopover();
   const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
+  const [options, setOptions] = useState([]);
 
   useEffect(() => {
     setFilters({ ...defaultFilters, party: partyDetails });
@@ -93,16 +97,29 @@ export default function PaymentInOutListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  useEffect(() => {
+    {
+      dataFiltered.length > 0 && fetchStates();
+    }
+  }, [payment]);
 
-  const receivableAmt = party.reduce(
-    (prev, next) => prev + (Number(next.amount >= 0 && next?.amount) || 0),
-    0
-  );
+  const receivable = dataFiltered.reduce((prev, next) => {
+    if (next.status === 'Payment In') {
+      const cash = Number(next?.paymentDetails?.cashAmount || 0);
+      const bank = Number(next?.paymentDetails?.bankAmount || 0);
+      return prev + cash + bank;
+    }
+    return prev;
+  }, 0);
 
-  const payAbleAmt = party.reduce(
-    (prev, next) => prev + (Number(next.amount <= 0 && next?.amount) || 0),
-    0
-  );
+  const payable = dataFiltered.reduce((prev, next) => {
+    if (next.status === 'Payment Out') {
+      const cash = Number(next?.paymentDetails?.cashAmount || 0);
+      const bank = Number(next?.paymentDetails?.bankAmount || 0);
+      return prev + cash + bank;
+    }
+    return prev;
+  }, 0);
 
   const dataInPage = dataFiltered?.slice(
     table.page * table?.rowsPerPage,
@@ -173,6 +190,31 @@ export default function PaymentInOutListView() {
     return <LoadingScreen />;
   }
 
+  function fetchStates() {
+    const accountMap = new Map();
+
+    accountMap.set('cash', { transactionsType: 'Cash' });
+
+    dataFiltered?.forEach((data) => {
+      const account = data?.paymentDetails?.account;
+      if (account && account._id && !accountMap.has(account._id)) {
+        accountMap.set(account._id, account);
+      }
+    });
+
+    const newOptions = Array.from(accountMap.values());
+
+    setOptions((prevOptions) => {
+      const isSame =
+        prevOptions.length === newOptions.length &&
+        prevOptions.every((item) => newOptions.some((opt) => opt._id === item._id));
+
+      return isSame ? prevOptions : newOptions;
+    });
+
+    setOptions(newOptions);
+  }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -182,13 +224,13 @@ export default function PaymentInOutListView() {
               Payment In/Out :{' '}
               <strong style={{ marginLeft: 200 }}>
                 Receivable : -
-                <span style={{ color: 'green', marginLeft: 10 }}>{receivableAmt.toFixed(2)}</span>
+                <span style={{ color: 'green', marginLeft: 10 }}>
+                  {Number(receivable).toFixed(2)}
+                </span>
               </strong>
               <strong style={{ marginLeft: 20 }}>
                 Payable : -
-                <span style={{ color: 'red', marginLeft: 10 }}>
-                  {Math.abs(payAbleAmt).toFixed(2)}
-                </span>
+                <span style={{ color: 'red', marginLeft: 10 }}>{Number(payable).toFixed(2)}</span>
               </strong>
             </Typography>
           }
@@ -241,6 +283,7 @@ export default function PaymentInOutListView() {
                   onFilters={handleFilters}
                   partyDetails={partyDetails}
                   mutate={mutate}
+                  options={options}
                 />
                 {canReset && (
                   <PaymentInOutTableFiltersResult
@@ -359,7 +402,7 @@ export default function PaymentInOutListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, party, category, startDate, endDate } = filters;
+  const { name, party, category, startDate, endDate, transactions } = filters;
 
   const stabilizedThis = inputData?.map((el, index) => [el, index]);
   stabilizedThis?.sort((a, b) => {
@@ -371,13 +414,19 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (name && name?.trim()) {
     inputData = inputData.filter(
-      (sch) =>
-        sch?.party.name?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.receiptNo?.toLowerCase().includes(name?.toLowerCase())
+      (item) =>
+        item?.party.name?.toLowerCase().includes(name?.toLowerCase()) ||
+        item?.receiptNo?.toLowerCase().includes(name?.toLowerCase()) ||
+        item?.description?.toLowerCase().includes(name?.toLowerCase())
     );
   }
   if (category) {
     inputData = inputData.filter((item) => item.status === category);
+  }
+  if (transactions) {
+    inputData = inputData.filter(
+      (item) => item?.paymentDetails?.account?._id === transactions?._id
+    );
   }
   if (Object.keys(party).length) {
     inputData = inputData?.filter((item) => party?._id === item?.party?._id);

@@ -18,12 +18,13 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 // ----------------------------------------------------------------------
 
 export default function ChargeInOutTableToolbar({
-                                                  filters,
-                                                  onFilters,
-                                                  schemes,
-                                                  dateError,
-                                                  chargeDetails,
-                                                }) {
+  filters,
+  onFilters,
+  schemes,
+  dateError,
+  chargeDetails,
+  options,
+}) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function ChargeInOutTableToolbar({
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterStartDate = useCallback(
@@ -49,7 +50,7 @@ export default function ChargeInOutTableToolbar({
         onFilters('startDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterEndDate = useCallback(
@@ -66,18 +67,18 @@ export default function ChargeInOutTableToolbar({
         onFilters('endDate', null);
       }
     },
-    [onFilters],
+    [onFilters]
   );
 
   const handleFilterCategory = useCallback(
     (event) => {
       onFilters('category', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   const customStyle = {
-    maxWidth: { md: 350 },
+    maxWidth: { md: 150 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -87,12 +88,17 @@ export default function ChargeInOutTableToolbar({
     },
     input: { height: 7 },
   };
-
+  const handleFilterTransactions = useCallback(
+    (event) => {
+      onFilters('transactions', typeof event.target.value === 'object' ? event.target.value : null);
+    },
+    [onFilters]
+  );
   return (
     <>
       <Box sx={{ p: 2.5 }}>
-        <Typography sx={{ color: 'text.secondary' }} variant='subtitle1' component='p'>
-          Charge Name : {chargeDetails}
+        <Typography sx={{ color: 'text.secondary' }} variant="subtitle1" component="p">
+          Charge Name : {chargeDetails.chargeType}
         </Typography>
       </Box>
       <Stack
@@ -106,17 +112,17 @@ export default function ChargeInOutTableToolbar({
           p: 2.5,
         }}
       >
-        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
@@ -124,7 +130,55 @@ export default function ChargeInOutTableToolbar({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 250 },
+              width: { xs: 1, sm: 220 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Cash & Bank Transactions
+            </InputLabel>
+            <Select
+              value={filters.transactions || ''}
+              onChange={handleFilterTransactions}
+              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options?.map((option) => (
+                <MenuItem key={option._id} value={option}>
+                  {option.bankName || option.transactionsType || 'Unnamed Account'}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>{' '}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 150 },
             }}
           >
             <InputLabel
@@ -140,7 +194,7 @@ export default function ChargeInOutTableToolbar({
             <Select
               value={filters.category}
               onChange={handleFilterCategory}
-              input={<OutlinedInput label='Category' sx={{ height: '40px' }} />}
+              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {
@@ -170,12 +224,12 @@ export default function ChargeInOutTableToolbar({
             </Select>
           </FormControl>
           <DatePicker
-            label='Start date'
+            label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
             open={startDateOpen}
             onClose={() => setStartDateOpen(false)}
             onChange={handleFilterStartDate}
-            format='dd/MM/yyyy'
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
@@ -185,12 +239,12 @@ export default function ChargeInOutTableToolbar({
             sx={{ ...customStyle }}
           />
           <DatePicker
-            label='End date'
+            label="End date"
             value={filters.endDate}
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
             onChange={handleFilterEndDate}
-            format='dd/MM/yyyy'
+            format="dd/MM/yyyy"
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
@@ -203,13 +257,13 @@ export default function ChargeInOutTableToolbar({
           />
         </Stack>
         <IconButton onClick={popover.onOpen}>
-          <Iconify icon='eva:more-vertical-fill' />
+          <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 'auto' }}
       >
         <>
@@ -218,7 +272,7 @@ export default function ChargeInOutTableToolbar({
               popover.onClose();
             }}
           >
-            <Iconify icon='solar:printer-minimalistic-bold' />
+            <Iconify icon="solar:printer-minimalistic-bold" />
             Print
           </MenuItem>
           <MenuItem
@@ -226,11 +280,11 @@ export default function ChargeInOutTableToolbar({
               popover.onClose();
             }}
           >
-            <Iconify icon='ant-design:file-pdf-filled' />
+            <Iconify icon="ant-design:file-pdf-filled" />
             PDF
           </MenuItem>
           <MenuItem>
-            <RHFExportExcel data={schemes} fileName='SchemeData' sheetName='SchemeDetails' />
+            <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
           </MenuItem>
         </>
         <MenuItem
@@ -238,7 +292,7 @@ export default function ChargeInOutTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon='ic:round-whatsapp' />
+          <Iconify icon="ic:round-whatsapp" />
           whatsapp share
         </MenuItem>
       </CustomPopover>

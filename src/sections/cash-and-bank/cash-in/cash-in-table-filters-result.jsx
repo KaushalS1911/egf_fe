@@ -23,15 +23,14 @@ export default function CashInTableFiltersResult({
   const handleRemoveCategory = useCallback(() => {
     onFilters('category', '');
   }, [onFilters]);
+  const handleRemoveStatus = useCallback(() => {
+    onFilters('status', '');
+  }, [onFilters]);
 
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
   const handleRemoveDate = useCallback(() => {
     onFilters('startDate', null);
     onFilters('endDate', null);
-  }, [onFilters]);
-
-  const handleRemoveStatus = useCallback(() => {
-    onFilters('isActive', 'all');
   }, [onFilters]);
 
   return (
@@ -56,6 +55,11 @@ export default function CashInTableFiltersResult({
         {!!filters.category && (
           <Block label="Category:">
             <Chip label={filters.category} size="small" onDelete={handleRemoveCategory} />
+          </Block>
+        )}{' '}
+        {!!filters.status && (
+          <Block label="Type:">
+            <Chip label={filters.status} size="small" onDelete={handleRemoveStatus} />
           </Block>
         )}
         <Button

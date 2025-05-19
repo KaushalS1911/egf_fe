@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -40,15 +40,6 @@ import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'true', label: 'Active' },
-  {
-    value: 'false',
-    label: 'In Active',
-  },
-];
-
 const TABLE_HEAD = [
   { id: '', label: '' },
   { id: 'type', label: 'Type' },
@@ -64,6 +55,7 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   category: '',
+  status: '',
 };
 
 // ----------------------------------------------------------------------
@@ -79,12 +71,18 @@ export default function CashInListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
+  const [options, setOptions] = useState([]);
 
   const dataFiltered = applyFilter({
     inputData: cashTransactions,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  useEffect(() => {
+    fetchStates();
+  }, [dataFiltered]);
+
   const amount =
     dataFiltered
       .filter((e) => e.category === 'Payment In')
@@ -173,6 +171,18 @@ export default function CashInListView() {
     return <LoadingScreen />;
   }
 
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option === data.status)) {
+          return [...item, data.status];
+        } else {
+          return item;
+        }
+      });
+    });
+  }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -180,7 +190,11 @@ export default function CashInListView() {
           heading={
             <Typography variant="h4" gutterBottom>
               Cash In Hand :{' '}
-              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</strong>
+              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>
+                {Object.values(filters).some(Boolean)
+                  ? Math.abs(amount).toFixed(2)
+                  : amount.toFixed(2)}
+              </strong>
             </Typography>
           }
           links={[
@@ -193,7 +207,7 @@ export default function CashInListView() {
           }}
         />
         <Card>
-          <CashInTableToolbar filters={filters} onFilters={handleFilters} />
+          <CashInTableToolbar filters={filters} onFilters={handleFilters} options={options} />
           {canReset && (
             <CashInTableFiltersResult
               filters={filters}
@@ -306,7 +320,7 @@ export default function CashInListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, startDate, endDate, category } = filters;
+  const { name, startDate, endDate, category, status } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -317,10 +331,17 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((item) => item.detail.toLowerCase().includes(name.toLowerCase()));
+    inputData = inputData.filter(
+      (item) =>
+        item.detail.toLowerCase().includes(name.toLowerCase()) ||
+        item.ref.toLowerCase().includes(name.toLowerCase())
+    );
   }
   if (category) {
     inputData = inputData.filter((item) => item.category === category);
+  }
+  if (status) {
+    inputData = inputData.filter((item) => item.status === status);
   }
 
   if (!dateError && startDate && endDate) {

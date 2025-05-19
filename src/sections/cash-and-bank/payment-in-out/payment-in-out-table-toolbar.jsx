@@ -28,6 +28,7 @@ export default function PaymentInOutTableToolbar({
   dateError,
   partyDetails,
   mutate,
+  options,
 }) {
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -81,8 +82,15 @@ export default function PaymentInOutTableToolbar({
     },
     [onFilters]
   );
+  const handleFilterTransactions = useCallback(
+    (event) => {
+      onFilters('transactions', typeof event.target.value === 'object' ? event.target.value : null);
+    },
+    [onFilters]
+  );
+
   const customStyle = {
-    maxWidth: { md: 350 },
+    maxWidth: { md: 150 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -139,7 +147,55 @@ export default function PaymentInOutTableToolbar({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 250 },
+              width: { xs: 1, sm: 220 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Cash & Bank Transactions
+            </InputLabel>
+            <Select
+              value={filters.transactions || ''}
+              onChange={handleFilterTransactions}
+              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options?.map((option) => (
+                <MenuItem key={option._id} value={option}>
+                  {option.bankName || option.transactionsType || 'Unnamed Account'}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>{' '}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 150 },
             }}
           >
             <InputLabel

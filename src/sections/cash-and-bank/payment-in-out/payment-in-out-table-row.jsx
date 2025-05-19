@@ -17,6 +17,9 @@ import { fDate } from '../../../utils/format-time.js';
 import { statusColorMap } from '../../../assets/data/index.js';
 import { Box } from '@mui/system';
 import React from 'react';
+import Avatar from '@mui/material/Avatar';
+import Lightbox, { useLightBox } from '../../../components/lightbox/index.js';
+import ListItemText from '@mui/material/ListItemText';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +45,7 @@ export default function PaymentInOutTableRow({
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const lightbox = useLightBox(row.invoice);
 
   return (
     <>
@@ -59,7 +63,7 @@ export default function PaymentInOutTableRow({
           </TableCell>{' '}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.party?.name}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.receiptNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.receiptNo.split('/')[2]}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetails?.paymentMode}</TableCell>
         <TableCell
@@ -78,6 +82,13 @@ export default function PaymentInOutTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.paymentDetails?.account?.bankName || '-'}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <IconButton onClick={() => lightbox.onOpen(row.invoice)} sx={{ mr: 2 }}>
+            <Iconify icon="tabler:file-invoice" width="24" height="24" />
+          </IconButton>
+          <Lightbox image={row.invoice} open={lightbox.open} close={lightbox.onClose} />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label

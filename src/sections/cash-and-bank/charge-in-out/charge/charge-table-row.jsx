@@ -9,15 +9,14 @@ import { grey } from '../../../../theme/palette.js';
 // ----------------------------------------------------------------------
 
 export default function ChargeTableRow({
-                                         row,
-                                         selected,
-                                         onEditRow,
-                                         onSelectRow,
-                                         onDeleteRow,
-                                         setChargeDetails,
-                                         chargeDetails,
-                                       }) {
-
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  setChargeDetails,
+  chargeDetails,
+}) {
   const confirm = useBoolean();
 
   return (
@@ -27,31 +26,35 @@ export default function ChargeTableRow({
         selected={selected}
         sx={{
           cursor: 'pointer',
-          backgroundColor: row === chargeDetails ? grey[400] : '',
+          backgroundColor: row.chargeType === chargeDetails.chargeType ? grey[400] : '',
         }}
         onClick={() => {
           setChargeDetails(row);
         }}
-      >
-      </TableRow>
+      ></TableRow>
       <TableRow
         hover
         selected={selected}
         sx={{
           cursor: 'pointer',
-          backgroundColor: row === chargeDetails ? grey[400] : '',
+          backgroundColor: row.chargeType === chargeDetails.chargeType ? grey[400] : '',
         }}
         onClick={() => setChargeDetails(row)}
       >
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.chargeType}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap', color: row.amount >= 0 ? 'success.main' : 'error.main' }}
+        >
+          {Math.abs(row.amount)}
+        </TableCell>
       </TableRow>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

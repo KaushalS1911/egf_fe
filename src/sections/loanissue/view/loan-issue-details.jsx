@@ -5,6 +5,7 @@ import { fDate } from 'src/utils/format-time';
 import Qr from 'src/assets/icon/qr.png';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
 import InvoiceFooter from '../../../components/invoise/invoice-footer.jsx';
+import customerImages from '../../../assets/icon/customer.png';
 
 // ----------------------------------------------------------------------
 
@@ -278,6 +279,8 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 export default function LoanIssueDetails({ selectedRow, configs }) {
+  console.log(selectedRow, '+++++++++++++++++++++');
+  console.log(configs, '---------------------');
   const styles = useStyles();
   const renewDate = () => {
     if (!selectedRow?.issueDate) return null;
@@ -422,7 +425,10 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                 <View style={{ marginRight: '24px' }}>
                   {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                   <View>
-                    <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
+                    <Image
+                      style={styles.propertyImage}
+                      src={selectedRow.customer.avatar_url || customerImages}
+                    />
                   </View>
                   <View style={{ marginTop: 5 }}>
                     <Image style={styles.propertyImage} src={selectedRow.propertyImage} />
