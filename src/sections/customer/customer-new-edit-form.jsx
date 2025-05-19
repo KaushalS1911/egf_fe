@@ -680,9 +680,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           const nameParts = fullName.split(' ');
 
           setAadharImage('data:image/jpeg;base64,' + apidata?.photo_link);
-          setValue('firstName', nameParts[0], { shouldValidate: true });
-          setValue('middleName', nameParts[1] || '', { shouldValidate: true });
-          setValue('lastName', nameParts.slice(2).join(' '), { shouldValidate: true });
+          setValue('firstName', nameParts[1], { shouldValidate: true });
+          setValue('middleName', nameParts[2] || '', { shouldValidate: true });
+          setValue('lastName', nameParts[0] || '', { shouldValidate: true });
           setValue('dob', apidata?.dob ? new Date(apidata?.dob) : null, { shouldValidate: true });
           setValue('PerStreet', apidata.split_address.house + ' ' + apidata.split_address.street, {
             shouldValidate: true,
@@ -836,7 +836,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               <RHFTextField
                 disabled={disabledField}
                 name="contact"
-                label="Contact"
+                label="Whatsapp No"
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',
@@ -859,7 +859,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
               <RHFTextField
                 disabled={disabledField}
                 name="otpContact"
-                label="OTP Mobile"
+                label="Contact"
                 inputProps={{
                   maxLength: 10,
                   inputMode: 'numeric',

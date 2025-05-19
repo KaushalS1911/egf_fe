@@ -32,7 +32,9 @@ export default function InquiryTableToolbar({
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
+  const [startRecallingDateOpen, setStartRecallingDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [endRecallingDateOpen, setEndRecallingDateOpen] = useState(false);
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -55,7 +57,6 @@ export default function InquiryTableToolbar({
     },
     [onFilters]
   );
-
   const handleFilterEndDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -72,6 +73,38 @@ export default function InquiryTableToolbar({
     },
     [onFilters]
   );
+  const handleFilterEndRecallingDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('endRecallingDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('endRecallingDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('endRecallingDate', null);
+      }
+    },
+    [onFilters]
+  );
+  const handleFilterStartRecallingDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('startRecallingDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('startRecallingDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('startRecallingDate', null);
+      }
+    },
+    [onFilters]
+  );
 
   const handleFilterAssignTo = useCallback(
     (event) => {
@@ -81,7 +114,7 @@ export default function InquiryTableToolbar({
   );
   const handleFilterInquiryFor = useCallback(
     (event) => {
-      onFilters('inquiryFor', typeof event.target.value === 'object' && event.target.value);
+      onFilters('inquiryFor', event.target.value);
     },
     [onFilters]
   );
@@ -211,9 +244,9 @@ export default function InquiryTableToolbar({
                 },
               }}
             >
-              {options.map((option) => (
+              {options[0]?.inquiryFor?.map((option) => (
                 <MenuItem key={option} value={option}>
-                  {option.inquiryFor}
+                  {option}
                 </MenuItem>
               ))}
             </Select>
@@ -253,6 +286,62 @@ export default function InquiryTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
+                fullWidth: true,
+                error: dateError,
+                helperText: dateError && 'End date must be later than start date',
+              },
+            }}
+            sx={{
+              maxWidth: { md: 200 },
+              [`& .${formHelperTextClasses.root}`]: {
+                position: { md: 'absolute' },
+                bottom: { md: -40 },
+              },
+              label: {
+                mt: -0.8,
+                fontSize: '14px',
+              },
+              '& .MuiInputLabel-shrink': {
+                mt: 0,
+              },
+              input: { height: 7 },
+            }}
+          />{' '}
+          <DatePicker
+            label="Start recalling date"
+            value={filters.startRecallingDate ? moment(filters.startRecallingDate).toDate() : null}
+            open={startRecallingDateOpen}
+            onClose={() => setStartRecallingDateOpen(false)}
+            onChange={handleFilterStartRecallingDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setStartRecallingDateOpen(true),
+                fullWidth: true,
+              },
+            }}
+            sx={{
+              maxWidth: { md: 200 },
+              label: {
+                mt: -0.8,
+                fontSize: '14px',
+              },
+              '& .MuiInputLabel-shrink': {
+                mt: 0,
+              },
+              input: { height: 7 },
+            }}
+          />
+          <DatePicker
+            label="End recalling date"
+            value={filters.endRecallingDate}
+            open={endRecallingDateOpen}
+            onClose={() => setEndRecallingDateOpen(false)}
+            onChange={handleFilterEndRecallingDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setEndRecallingDateOpen(true),
                 fullWidth: true,
                 error: dateError,
                 helperText: dateError && 'End date must be later than start date',

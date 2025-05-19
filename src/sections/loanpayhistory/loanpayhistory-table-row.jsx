@@ -287,7 +287,10 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
           { key: 'authority', label: 'Authority', icon: 'material-symbols:verified-user-outline' },
           ...(row.status === 'Closed'
             ? [{ key: 'noc', label: 'NOC', icon: 'mdi:certificate-outline' }]
-            : [{ key: 'notice', label: 'Notice', icon: 'gridicons:notice' }]),
+            : [
+                { key: 'notice', label: 'Final Notice', icon: 'gridicons:notice' },
+                { key: 'notice', label: 'Notice', icon: 'gridicons:notice' },
+              ]),
         ].map((item) => {
           const isDisabled = isButtonDisabled(item?.key, row?._id);
 

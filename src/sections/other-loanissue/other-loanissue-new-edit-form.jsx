@@ -252,6 +252,20 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
         });
     }
   }, [watch('loan')]);
+  useEffect(() => {
+    const otherNo = watch('otherNumber');
+    if (otherNo) {
+      const otherNumber = otherLoanissue.filter((item) => item.otherNumber === otherNo);
+      otherNumber.length > 0 &&
+        !currentOtherLoanIssue &&
+        enqueueSnackbar(
+          `${otherNumber?.length} loans already exists for the selected other number`,
+          {
+            variant: 'warning',
+          }
+        );
+    }
+  }, [watch('otherNumber')]);
 
   useEffect(() => {
     setValue('loanAmount', watch('amount'));

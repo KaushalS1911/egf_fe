@@ -78,6 +78,8 @@ const defaultFilters = {
   status: 'all',
   startDate: null,
   endDate: null,
+  startRecallingDate: null,
+  endRecallingDate: null,
   assignTo: '',
   inquiryFor: '',
 };
@@ -101,7 +103,6 @@ export default function InquiryListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const storedBranch = sessionStorage.getItem('selectedBranch');
   const [options, setOptions] = useState([]);
-
   useEffect(() => {
     fetchStates();
   }, [inquiry]);
@@ -289,22 +290,29 @@ export default function InquiryListView() {
   }
 
   function fetchStates() {
-    dataFiltered?.map((data) => {
-      setOptions((item) => {
-        if (!item.find((option) => option?.value === data?.assignTo?.user?._id)) {
-          return [
-            ...item,
-            {
-              name: `${data?.assignTo?.user?.firstName} ${data?.assignTo?.user?.middleName} ${data?.assignTo?.user?.lastName}`,
-              value: data?.assignTo?.user?._id,
-              inquiryFor: data.inquiryFor,
-            },
-          ];
-        } else {
-          return item;
+    const updatedOptions = [];
+
+    dataFiltered?.forEach((data) => {
+      const userId = data?.assignTo?.user?._id;
+      const inquiryFor = data?.inquiryFor;
+
+      const existingIndex = updatedOptions.findIndex((opt) => opt.value === userId);
+
+      if (existingIndex !== -1) {
+        const existingOption = updatedOptions[existingIndex];
+        if (!existingOption.inquiryFor.includes(inquiryFor)) {
+          existingOption.inquiryFor.push(inquiryFor);
         }
-      });
+      } else {
+        updatedOptions.push({
+          name: `${data?.assignTo?.user?.firstName} ${data?.assignTo?.user?.middleName} ${data?.assignTo?.user?.lastName}`,
+          value: userId,
+          inquiryFor: [inquiryFor],
+        });
+      }
     });
+
+    setOptions(updatedOptions);
   }
 
   return (
@@ -640,7 +648,16 @@ export default function InquiryListView() {
 }
 
 function applyFilter({ inputData, comparator, filters }) {
-  const { status, name, startDate, endDate, assignTo, inquiryFor } = filters;
+  const {
+    status,
+    name,
+    startDate,
+    endDate,
+    assignTo,
+    inquiryFor,
+    endRecallingDate,
+    startRecallingDate,
+  } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -670,10 +687,15 @@ function applyFilter({ inputData, comparator, filters }) {
     inputData = inputData.filter((item) => item?.assignTo?.user?._id === assignTo?.value);
   }
   if (inquiryFor) {
-    inputData = inputData.filter((item) => item?.inquiryFor === inquiryFor.inquiryFor);
+    inputData = inputData.filter((item) => item?.inquiryFor === inquiryFor);
   }
   if (startDate && endDate) {
-    inputData = inputData.filter((user) => isBetween(user.recallingDate, startDate, endDate));
+    inputData = inputData.filter((user) => isBetween(user.date, startDate, endDate));
+  }
+  if (startRecallingDate && endRecallingDate) {
+    inputData = inputData.filter((user) =>
+      isBetween(user.recallingDate, startRecallingDate, endRecallingDate)
+    );
   }
 
   return inputData;

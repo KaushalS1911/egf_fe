@@ -35,7 +35,7 @@ function BulkInterestModel({ open, setOpen }) {
       customer: null,
       loans: [],
     }),
-    [],
+    []
   );
 
   const onClose = () => {
@@ -85,45 +85,53 @@ function BulkInterestModel({ open, setOpen }) {
           <Box
             rowGap={3}
             columnGap={2}
-            display='grid'
+            display="grid"
             gridTemplateColumns={{
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(2, 1fr)',
             }}
             mt={1}
           >
-            {customer && <RHFAutocomplete
-              name='customer'
-              label='Customer'
-              options={customer}
-              getOptionLabel={(option) => option.firstName + ' ' + option.middleName + ' ' + option.lastName}
-              isOptionEqualToValue={(option, value) => option._id === value._id}
-              renderOption={(props, option) => (
-                <li {...props} key={option._id}>
-                  {option.firstName + ' ' + option.middleName + ' ' + option.lastName}
-                </li>
-              )}
-            />}
-            {Loanissue && <RHFAutocomplete
-              name='loans'
-              label='Loans'
-              options={Loanissue.filter((item) => item.customer._id === watch('customer')?._id)}
-              multiple
-              getOptionLabel={(option) => option.loanNo}
-              isOptionEqualToValue={(option, value) => option.loanNo === value.loanNo}
-              renderOption={(props, option) => (
-                <li {...props} key={option.loanNo}>
-                  {option.loanNo}
-                </li>
-              )}
-            />}
+            {customer && (
+              <RHFAutocomplete
+                name="customer"
+                label="Customer"
+                options={customer}
+                getOptionLabel={(option) =>
+                  option.firstName + ' ' + option.middleName + ' ' + option.lastName
+                }
+                isOptionEqualToValue={(option, value) => option._id === value._id}
+                renderOption={(props, option) => (
+                  <li {...props} key={option._id}>
+                    {option.firstName + ' ' + option.middleName + ' ' + option.lastName}
+                  </li>
+                )}
+              />
+            )}
+            {Loanissue && (
+              <RHFAutocomplete
+                name="loans"
+                label="Loans"
+                options={Loanissue.filter(
+                  (item) => item.status !== 'Closed' && item.customer._id === watch('customer')?._id
+                )}
+                multiple
+                getOptionLabel={(option) => option.loanNo}
+                isOptionEqualToValue={(option, value) => option.loanNo === value.loanNo}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.loanNo}>
+                    {option.loanNo}
+                  </li>
+                )}
+              />
+            )}
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button variant='outlined' onClick={onClose}>
+          <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
-          <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             Submit
           </LoadingButton>
         </DialogActions>
@@ -131,6 +139,5 @@ function BulkInterestModel({ open, setOpen }) {
     </Dialog>
   );
 }
-
 
 export default BulkInterestModel;

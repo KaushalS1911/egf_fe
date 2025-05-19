@@ -407,7 +407,8 @@ function applyFilter({ inputData, comparator, filters }) {
           .includes(name.toLowerCase()) ||
         item.user.firstName.toLowerCase().includes(name.toLowerCase()) ||
         item.user.middleName.toLowerCase().includes(name.toLowerCase()) ||
-        item.user.lastName.toLowerCase().includes(name.toLowerCase())
+        item.user.lastName.toLowerCase().includes(name.toLowerCase()) ||
+        item.user.contact.includes(name)
     );
   }
   if (role) {

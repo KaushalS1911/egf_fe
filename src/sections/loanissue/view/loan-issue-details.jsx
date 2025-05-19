@@ -159,7 +159,7 @@ const useStyles = () =>
         subHeading: {
           fontWeight: '600',
           fontSize: 10,
-          flex: 1.2,
+          flex: 0.9,
         },
         colon: {
           fontSize: 10,
@@ -317,8 +317,8 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
               >
                 <Text style={styles.termsAndConditionsHeaders}>SANCTION LETTER</Text>
               </View>
-              <View style={{ ...styles.flexContainer, gap: 20 }}>
-                <View style={{ width: '48%' }}>
+              <View style={{ ...styles.flexContainer, gap: 10 }}>
+                <View style={{ width: '60%' }}>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Loan No</Text>
                     <Text style={styles.colon}>:</Text>
@@ -337,7 +337,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                         ...styles.subText,
                         wordWrap: 'break-word',
                         textWrap: 'wrap',
-                        fontSize: 8,
+                        fontSize: 10,
                       }}
                     >
                       {`${selectedRow.customer.firstName || ''} ${selectedRow.customer.middleName || ''} \n${selectedRow.customer.lastName || ''}`.trim()}
@@ -350,7 +350,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       style={{
                         ...styles.subText,
                         textWrap: 'wrap',
-                        fontSize: 8,
+                        fontSize: 10,
                       }}
                     >
                       {`${selectedRow.customer.temporaryAddress.street} , ${selectedRow.customer.temporaryAddress.landmark} , ${selectedRow.customer.temporaryAddress.city} , ${selectedRow.customer.temporaryAddress.zipcode}`.toUpperCase()}
@@ -372,7 +372,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                     <Text style={styles.subText}>{selectedRow.customer.contact}</Text>
                   </View>
                 </View>
-                <View style={{ width: '46%' }}>
+                <View style={{ width: '35%' }}>
                   <View style={styles.row}>
                     <Text style={{ ...styles.subHeading, flex: 2.5 }}>Loan Amount</Text>
                     <Text style={styles.colon}>:</Text>
