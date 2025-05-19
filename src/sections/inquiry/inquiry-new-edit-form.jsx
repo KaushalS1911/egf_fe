@@ -353,7 +353,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                 name="date"
                 control={control}
                 label="Date"
-                maxDate={user.role === 'Employee' ? new Date() : undefined}
+                maxDate={user.role !== 'Admin' ? new Date() : undefined}
               />
               <RhfDatePicker name="recallingDate" control={control} label="Recalling Date" />
               {configs?.loanTypes && (

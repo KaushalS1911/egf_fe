@@ -41,7 +41,7 @@ export default function ReminderTableRow({
   const { configs } = useGetConfigs();
 
   const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
+    const diffTime = new Date(date1) - new Date(date2);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
   const statusColors = {
@@ -61,7 +61,7 @@ export default function ReminderTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {calculateDateDifference(new Date(), nextInstallmentDate)}
+          {calculateDateDifference(new Date(), lastInstallmentDate || issueDate)}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(nextInstallmentDate)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(issueDate)}</TableCell>

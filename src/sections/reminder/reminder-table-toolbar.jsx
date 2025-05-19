@@ -100,9 +100,15 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
     [onFilters]
   );
 
-  const handleFilterDays = useCallback(
+  const handleStartDay = useCallback(
     (event) => {
-      onFilters('day', event.target.value);
+      onFilters('startDay', event.target.value);
+    },
+    [onFilters]
+  );
+  const handleEndDays = useCallback(
+    (event) => {
+      onFilters('endDay', event.target.value);
     },
     [onFilters]
   );
@@ -129,8 +135,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
           sx={{ width: 1, pr: 1.5 }}
         >
           <TextField
-            sx={{ input: { height: 7 } }}
-            fullWidth
+            sx={{ input: { height: 7 }, width: '40%' }}
             value={filters.name}
             onChange={handleFilterName}
             placeholder="Search..."
@@ -142,54 +147,18 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 200 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -1,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Filter by Day
-            </InputLabel>
-            <Select
-              value={filters.day}
-              onChange={handleFilterDays}
-              input={<OutlinedInput label="Filter by Day" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {[30, 60, 90, 121, 151, 181, 211, 300, 355].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            sx={{ input: { height: 7 } }}
+            value={filters.startDay}
+            onChange={handleStartDay}
+            placeholder="Start Day"
+          />
+          <TextField
+            sx={{ input: { height: 7 } }}
+            value={filters.endDay}
+            onChange={handleEndDays}
+            placeholder="End Day"
+          />
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

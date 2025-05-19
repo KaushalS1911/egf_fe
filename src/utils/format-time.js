@@ -42,6 +42,13 @@ export function isBetween(inputDate, startDate, endDate) {
   return results;
 }
 
+export function isBetweenDay(inputDay, startDay, endDay) {
+  const day = inputDay;
+  const results = Number(day) >= Number(startDay) && Number(day) <= Number(endDay);
+  console.log(results, '8888888888');
+  return results;
+}
+
 export function isAfter(startDate, endDate) {
   const results =
     startDate && endDate ? new Date(startDate).getTime() > new Date(endDate).getTime() : false;

@@ -22,7 +22,7 @@ import {
 import ReminderTableToolbar from '../reminder-table-toolbar';
 import ReminderTableFiltersResult from '../reminder-table-filters-result';
 import ReminderTableRow from '../reminder-table-row';
-import { fDate, isAfter, isBetween } from '../../../utils/format-time';
+import { fDate, isAfter, isBetween, isBetweenDay } from '../../../utils/format-time';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanissue } from '../../../api/loanissue';
 import { useGetReminder } from '../../../api/reminder';
@@ -55,8 +55,8 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   nextInstallmentDay: [],
-  startDay: null,
-  endDay: null,
+  startDay: '',
+  endDay: '',
 };
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
@@ -87,7 +87,7 @@ export default function ReminderListView() {
   }, [Loanissue]);
 
   const calculateDateDifference = (date1, date2) => {
-    const diffTime = Math.abs(new Date(date1) - new Date(date2));
+    const diffTime = new Date(date1) - new Date(date2);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
@@ -168,7 +168,8 @@ export default function ReminderListView() {
           'Next Interest Pay Date': fDate(loan?.nextInstallmentDate) || '',
           'Issue Date': fDate(loan?.issueDate) || '',
           'Last Interest Date': fDate(loan?.lastInstallmentDate) || '',
-          Days: calculateDateDifference(new Date(), loan.nextInstallmentDate) || '',
+          Days:
+            calculateDateDifference(new Date(), loan.lastInstallmentDate || loan.issueDate) || '',
           'Next Recalling Date': '',
           Remark: '',
         };
@@ -339,7 +340,7 @@ export default function ReminderListView() {
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters, dateError, calculateDateDifference }) {
-  const { startDate, endDate, name, day, status } = filters;
+  const { startDate, endDate, name, day, status, startDay, endDay } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -367,9 +368,20 @@ function applyFilter({ inputData, comparator, filters, dateError, calculateDateD
       isBetween(new Date(order.nextInstallmentDate), startDate, endDate)
     );
   }
+  if (startDay && endDay) {
+    console.log(startDay, endDay);
+    inputData = inputData.filter((item) =>
+      isBetweenDay(
+        calculateDateDifference(new Date(), item.lastInstallmentDate || item.issueDate),
+        startDay,
+        endDay
+      )
+    );
+  }
   if (day) {
     inputData = inputData.filter(
-      (item) => calculateDateDifference(new Date(), item.nextInstallmentDate) >= day
+      (item) =>
+        calculateDateDifference(new Date(), item.lastInstallmentDate || item.issueDate) >= day
     );
   }
   if (status && status !== 'All') {

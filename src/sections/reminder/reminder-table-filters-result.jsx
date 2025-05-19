@@ -18,7 +18,7 @@ export default function ReminderTableFiltersResult({
   ...other
 }) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
-  const DayLabel = shortDateLabel(filters.startDay, filters.endDay);
+  // const DayLabel = shortDateLabel(filters.startDay, filters.endDay);
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
