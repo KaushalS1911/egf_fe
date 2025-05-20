@@ -4,10 +4,10 @@ import TextField from '@mui/material/TextField';
 
 // ----------------------------------------------------------------------
 
-export default function RHFTextField({ name, helperText, type, req, ...other }) {
+export default function RHFTextField({ name, helperText, type, req, sx, ...other }) {
   const { control } = useFormContext();
 
-  const customStyle = req ? { borderLeft: `2px solid ${req}`,borderRadius:'8px' } : {};
+  const customStyle = req ? { borderLeft: `2px solid ${req}`, borderRadius: '8px' } : {};
 
   return (
     <Controller
@@ -19,14 +19,15 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
           fullWidth
           sx={{
             ':not(:focus-within) label ~ div:first-of-type': customStyle,
-            "label": {
+            label: {
               mt: -0.8,
-              fontSize: "14px",
+              fontSize: '14px',
             },
-            "& .MuiInputLabel-shrink": {
+            '& .MuiInputLabel-shrink': {
               mt: 0,
             },
-            "input": { height: 7 },
+            input: { height: 7 },
+            ...sx,
           }}
           type={type}
           value={type === 'number' && field.value === 0 ? '' : field.value}
@@ -44,7 +45,7 @@ export default function RHFTextField({ name, helperText, type, req, ...other }) 
       )}
     />
   );
-};
+}
 
 RHFTextField.propTypes = {
   helperText: PropTypes.string,

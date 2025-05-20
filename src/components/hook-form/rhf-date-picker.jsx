@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import enGB from 'date-fns/locale/en-GB'; // for UK style date formatting
 
-const RhfDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }) => {
+const RhfDatePicker = ({ name, control, label, req, InputLabelShrink, sx, ...props }) => {
   const customStyle = req ? { borderLeft: `2px solid ${req}`, borderRadius: '8px' } : {};
 
   return (
@@ -26,6 +26,7 @@ const RhfDatePicker = ({ name, control, label, req, InputLabelShrink, ...props }
                 mt: 0,
               },
               input: { height: 7 },
+              ...sx,
             }}
             label={label || 'Date'}
             value={field.value}

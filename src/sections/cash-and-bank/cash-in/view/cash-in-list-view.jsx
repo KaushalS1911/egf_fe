@@ -37,6 +37,18 @@ import { getResponsibilityValue } from '../../../../permission/permission.js';
 import { useGetCashTransactions } from '../../../../api/cash-transactions.js';
 import { isBetween } from '../../../../utils/format-time.js';
 import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import MenuItem from '@mui/material/MenuItem';
+import { useForm } from 'react-hook-form';
+import FormProvider from 'src/components/hook-form/form-provider.jsx';
+import RHFTextField from 'src/components/hook-form/rhf-text-field.jsx';
+import RHFDatePicker from 'src/components/hook-form/rhf-date-picker.jsx';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import RHFAutocomplete from 'src/components/hook-form/rhf-autocomplete.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +84,7 @@ export default function CashInListView() {
   const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
   const [options, setOptions] = useState([]);
+  const [openAdjustDialog, setOpenAdjustDialog] = useState(false);
 
   const dataFiltered = applyFilter({
     inputData: cashTransactions,
@@ -167,6 +180,62 @@ export default function CashInListView() {
     [handleFilters]
   );
 
+  // Form setup for Adjust Cash
+  const adjustDefaultValues = {
+    adjustmentType: null,
+    amount: '',
+    adjustmentDate: new Date(),
+    desc: '',
+  };
+  const adjustSchema = Yup.object().shape({
+    adjustmentType: Yup.string().required('Adjustment type is required'),
+    amount: Yup.number()
+      .typeError('Amount must be a number')
+      .required('Amount is required')
+      .positive('Amount must be greater than 0'),
+    adjustmentDate: Yup.date().required('Adjustment date is required'),
+    desc: Yup.string(),
+  });
+  const adjustForm = useForm({
+    defaultValues: adjustDefaultValues,
+    resolver: yupResolver(adjustSchema),
+    mode: 'onTouched',
+  });
+  const { handleSubmit: handleAdjustSubmit, reset: resetAdjustForm, control } = adjustForm;
+
+  const adjustmentTypeOptions = ['Add Cash', 'Reduce Cash'];
+
+  const handleOpenAdjustDialog = () => {
+    setOpenAdjustDialog(true);
+    resetAdjustForm(adjustDefaultValues);
+  };
+  const handleCloseAdjustDialog = () => {
+    setOpenAdjustDialog(false);
+    resetAdjustForm(adjustDefaultValues);
+  };
+  const onAdjustCash = async (values) => {
+    try {
+      const payload = {
+        transferType: 'Cash In Hand',
+        paymentDetails: {
+          amount: Number(values.amount),
+          adjustmentType: values.adjustmentType,
+        },
+      };
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/${user.company}/transfer`,
+        payload
+      );
+      mutate();
+      setOpenAdjustDialog(false);
+      enqueueSnackbar(res.data.message);
+    } catch (error) {
+      enqueueSnackbar(error?.response?.data?.message || error?.message, {
+        variant: 'error',
+      });
+    }
+  };
+
   if (cashTransactionsLoading) {
     return <LoadingScreen />;
   }
@@ -202,6 +271,11 @@ export default function CashInListView() {
             { name: `Cash in`, href: paths.dashboard.scheme.root },
             { name: 'List' },
           ]}
+          action={
+            <Button variant="contained" onClick={handleOpenAdjustDialog} sx={{ mb: 2 }}>
+              Adjust Cash
+            </Button>
+          }
           sx={{
             mb: { xs: 3, md: 1 },
           }}
@@ -314,6 +388,52 @@ export default function CashInListView() {
           </Button>
         }
       />
+      {/* Adjust Cash Dialog */}
+      <Dialog open={openAdjustDialog} onClose={handleCloseAdjustDialog} fullWidth maxWidth="xs">
+        <DialogTitle>Cash In Hand</DialogTitle>
+        <FormProvider methods={adjustForm} onSubmit={handleAdjustSubmit(onAdjustCash)}>
+          <DialogContent>
+            <RHFAutocomplete
+              name="adjustmentType"
+              label="Adjustment"
+              options={adjustmentTypeOptions}
+              req="red"
+              fullWidth
+              getOptionLabel={(option) => option || ''}
+              renderOption={(props, option, { index }) => (
+                <li {...props} key={index}>
+                  {option}
+                </li>
+              )}
+              isOptionEqualToValue={(option, value) => option === value}
+              sx={{ my: 2 }}
+            />
+            <RHFTextField
+              name="amount"
+              label="Amount"
+              type="number"
+              fullWidth
+              sx={{ mb: 2 }}
+              req="red"
+            />
+            <RHFDatePicker
+              name="adjustmentDate"
+              label="Enter Adjustment Date"
+              sx={{ mb: 2 }}
+              req="red"
+            />
+            <RHFTextField name="desc" label="Description" fullWidth sx={{ mb: 2 }} />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseAdjustDialog} color="inherit" type="button">
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </FormProvider>
+      </Dialog>
     </>
   );
 }
