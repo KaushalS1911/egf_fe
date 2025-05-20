@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
@@ -214,10 +214,10 @@ export default function BranchWiseLoanClosingPdf({
         <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.consultingCharge || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(row.issueDate) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
-          {((row.loanAmount || 0) - (row.interestLoanAmount || 0)).toFixed(2)}
+          {(row.loanAmount || 0).toFixed(2)}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.3 }]}>
-          {(row.partLoanAmount || 0).toFixed(2)}
+          {(row.loanAmount - row.interestLoanAmount || 0).toFixed(2)}
         </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {(row.interestLoanAmount || 0).toFixed(2)}
@@ -231,7 +231,7 @@ export default function BranchWiseLoanClosingPdf({
         <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : 0}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.closedDate) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{(row.closeCharge || 0).toFixed(2)}</Text>
-        <Text style={[styles.tableCell, { flex: 1.3 }]}>{(row.closeAmt || 0).toFixed(2)}</Text>
+        <Text style={[styles.tableCell, { flex: 1.3 }]}>{(row?.loanAmount || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1.3 }]}>
           {(row.pendingInterest || 0).toFixed(2)}
         </Text>
@@ -361,7 +361,7 @@ export default function BranchWiseLoanClosingPdf({
                   <Text
                     style={[styles.tableCell, { flex: 1.3, fontWeight: 'bold', color: '#1a237e' }]}
                   >
-                    {(closeAmt - closeCharge).toFixed(0)}
+                    {(loanAmt).toFixed(0)}
                   </Text>
                   <Text
                     style={[styles.tableCell, { flex: 1.3, fontWeight: 'bold', color: '#1a237e' }]}

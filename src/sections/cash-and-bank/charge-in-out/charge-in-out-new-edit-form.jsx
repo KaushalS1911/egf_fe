@@ -318,7 +318,7 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                            .map((item) => [item.bankName + item.id, item])
                         ).values()
                       )}
                       getOptionLabel={(option) => option.bankName || ''}
