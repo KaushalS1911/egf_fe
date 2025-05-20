@@ -21,13 +21,9 @@ export default function ExpenceTableFiltersResult({
     onFilters('name', '');
   }, [onFilters]);
 
-  const handleRemoveCategory = useCallback(() => {
-    onFilters('category', '');
-  }, [onFilters]);
-
-  const handleRemoveChargeType = useCallback(() => {
-    onFilters('otherInOutType', '');
-    setExpenceDetails('');
+  const handleRemoveExpenceType = useCallback(() => {
+    onFilters('expenceType', '');
+    setExpenceDetails({});
   }, [onFilters]);
 
   return (
@@ -44,16 +40,15 @@ export default function ExpenceTableFiltersResult({
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}{' '}
-        {!!filters.otherInOutType && (
-          <Block label="Charge Type:">
-            <Chip label={filters.otherInOutType} size="small" onDelete={handleRemoveChargeType} />
+        {!!filters.expenseType.expenseType && (
+          <Block label="Expence Type:">
+            <Chip
+              label={filters.expenseType.expenseType}
+              size="small"
+              onDelete={handleRemoveExpenceType}
+            />
           </Block>
         )}{' '}
-        {!!filters.category && (
-          <Block label="status:">
-            <Chip label={filters.category} size="small" onDelete={handleRemoveCategory} />
-          </Block>
-        )}
         <Button
           color="error"
           onClick={onResetFilters}

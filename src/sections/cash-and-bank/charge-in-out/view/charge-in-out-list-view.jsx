@@ -62,7 +62,7 @@ const defaultFilters = {
   category: '',
   startDate: null,
   endDate: null,
-  chargeType: '',
+  chargeType: {},
   transactions: '',
 };
 

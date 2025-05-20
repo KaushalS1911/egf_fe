@@ -92,7 +92,7 @@ export default function ExpenceTableToolbar({
     <>
       <Box sx={{ p: 2.5 }}>
         <Typography sx={{ color: 'text.secondary' }} variant="subtitle1" component="p">
-          Expence Type : {expenceDetails}
+          Expence Type : {expenceDetails.chargeType}
         </Typography>
       </Box>
       <Stack

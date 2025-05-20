@@ -35,7 +35,10 @@ import TableCell from '@mui/material/TableCell';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [{ id: 'accountName', label: 'Charges' }];
+const TABLE_HEAD = [
+  { id: 'type', label: 'Type' },
+  { id: 'amount', label: 'Amount' },
+];
 
 const defaultFilters = {
   name: '',
@@ -44,7 +47,11 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function ExpenceTypeListView({ setExpenceDetails, expenceDetails }) {
+export default function ExpenceTypeListView({
+  expenceTypeTotals,
+  setExpenceDetails,
+  expenceDetails,
+}) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { scheme, mutate, schemeLoading } = useGetScheme();
@@ -52,11 +59,11 @@ export default function ExpenceTypeListView({ setExpenceDetails, expenceDetails 
   const table = useTable();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(configs?.expense);
+  const [tableData, setTableData] = useState(expenceTypeTotals);
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: configs?.expenseType,
+    inputData: expenceTypeTotals,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });

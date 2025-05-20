@@ -26,7 +26,7 @@ export default function ExpenceTypeTableRow({
         selected={selected}
         sx={{
           cursor: 'pointer',
-          backgroundColor: row === expenceDetails ? grey[400] : '',
+          backgroundColor: row.expenseType === expenceDetails.expenseType ? grey[400] : '',
         }}
         onClick={() => {
           setExpenceDetails(row);
@@ -37,11 +37,12 @@ export default function ExpenceTypeTableRow({
         selected={selected}
         sx={{
           cursor: 'pointer',
-          backgroundColor: row === expenceDetails ? grey[400] : '',
+          backgroundColor: row.expenseType === expenceDetails.expenseType ? grey[400] : '',
         }}
         onClick={() => setExpenceDetails(row)}
       >
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.expenseType}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amount}</TableCell>
       </TableRow>
       <ConfirmDialog
         open={confirm.value}

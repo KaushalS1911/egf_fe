@@ -40,6 +40,7 @@ import { useAuthContext } from '../../../../auth/hooks/index.js';
 import { useGetExpanse } from '../../../../api/expense.js';
 import { getResponsibilityValue } from '../../../../permission/permission.js';
 import ExpenseTableRow from '../expence-table-row.jsx';
+import { useGetConfigs } from '../../../../api/config.js';
 
 // ----------------------------------------------------------------------
 
@@ -60,7 +61,7 @@ const defaultFilters = {
   category: '',
   startDate: null,
   endDate: null,
-  expenseType: '',
+  expenseType: {},
 };
 
 // ----------------------------------------------------------------------
@@ -68,7 +69,7 @@ const defaultFilters = {
 export default function ExpenceListView() {
   const { expense, expenseLoading, mutate } = useGetExpanse();
   const { enqueueSnackbar } = useSnackbar();
-  const [expenceDetails, setExpenceDetails] = useState('');
+  const [expenceDetails, setExpenceDetails] = useState({});
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
@@ -76,6 +77,7 @@ export default function ExpenceListView() {
   const { user } = useAuthContext();
   const [tableData, setTableData] = useState(expense);
   const [filters, setFilters] = useState(defaultFilters);
+  const { configs } = useGetConfigs();
 
   const dataFiltered = applyFilter({
     inputData: expense,
@@ -91,6 +93,27 @@ export default function ExpenceListView() {
     (prev, next) => prev + (Number(next?.paymentDetails?.bankAmount) || 0),
     0
   );
+
+  // Calculate total by expense type
+  const calculateExpenceTypeTotals = (data) => {
+    const totals = {};
+    data.forEach((item) => {
+      const expenseType = item.expenseType;
+      if (!totals[expenseType]) {
+        totals[expenseType] = 0;
+      }
+      if (item.expenseType) {
+        totals[expenseType] +=
+          Number(item?.paymentDetails?.cashAmount || 0) +
+          Number(item?.paymentDetails?.bankAmount || 0);
+      }
+    });
+    return Object.entries(totals).map(([expenseType, amount]) => ({
+      expenseType,
+      amount: Number(amount.toFixed(2)),
+    }));
+  };
+  const expenceTypeTotals = calculateExpenceTypeTotals(expense);
 
   useEffect(() => {
     setFilters({ ...defaultFilters, expenseType: expenceDetails });
@@ -198,6 +221,7 @@ export default function ExpenceListView() {
                 <ExpenceTypeListView
                   setExpenceDetails={setExpenceDetails}
                   expenceDetails={expenceDetails}
+                  expenceTypeTotals={expenceTypeTotals}
                 />
               </Card>
             </Grid>
@@ -339,8 +363,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     );
   }
 
-  if (expenseType) {
-    inputData = inputData.filter((item) => expenseType === item.expenseType);
+  if (Object.keys(expenseType).length > 0) {
+    inputData = inputData.filter((item) => expenseType.expenseType === item.expenseType);
   }
 
   if (!dateError && startDate && endDate) {
