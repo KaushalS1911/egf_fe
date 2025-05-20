@@ -1,20 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
-  Typography,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  Grid,
+  IconButton,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Checkbox,
-  Button,
-  Grid,
-  Dialog,
-  IconButton,
-  DialogActions,
+  Typography,
 } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import * as Yup from 'yup';
@@ -39,7 +39,6 @@ import { ConfirmDialog } from '../../../components/custom-dialog';
 import { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
-import LoanPartPaymentDetailsPdf from '../PDF/loan-part-payment-details-pdf.jsx';
 import { useGetAllInterest } from '../../../api/interest-pay.js';
 
 const tableHeaders = [
@@ -867,7 +866,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                             getOptionLabel={(option) => option.bankName || ''}
                             renderOption={(props, option) => (
                               <li {...props} key={option.id || option.bankName}>
-                                {option.bankName}
+                                {`${option.bankName}(${option.accountHolderName})`}
                               </li>
                             )}
                             isOptionEqualToValue={(option, value) => option.id === value.id}

@@ -12,15 +12,11 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { paths } from 'src/routes/paths.js';
 import { useRouter } from 'src/routes/hooks/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFSwitch,
-  RHFTextField,
-} from 'src/components/hook-form/index.js';
+import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form/index.js';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Button } from '@mui/material';
 import { useGetBranch } from '../../../api/branch.js';
 import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../../components/iconify/index.js';
@@ -377,7 +373,7 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
                         getOptionLabel={(option) => option.bankName || ''}
                         renderOption={(props, option) => (
                           <li {...props} key={option.id || option.bankName}>
-                            {option.bankName}
+                            {`${option.bankName}(${option.accountHolderName})`}
                           </li>
                         )}
                         isOptionEqualToValue={(option, value) => option.id === value.id}

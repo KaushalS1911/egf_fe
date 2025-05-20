@@ -618,19 +618,22 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
                     <RHFAutocomplete
                       name="companyBankDetail.account"
                       label="Account"
-                      req={'red'}
+                      req='red'
                       fullWidth
-                      options={branch.flatMap((item) => item.company.bankAccounts)}
+                      options={Array.from(
+                        new Map(
+                          branch
+                            .flatMap((item) => item.company.bankAccounts)
+                            .map((item) => [item.bankName + item.id, item]),
+                        ).values(),
+                      )}
                       getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
                         <li {...props} key={option.id || option.bankName}>
-                          {option.bankName}
+                          {`${option.bankName}(${option.accountHolderName})`}
                         </li>
                       )}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
-                      onChange={(event, value) => {
-                        setValue('companyBankDetail.account', value);
-                      }}
                     />
                     <RhfDatePicker
                       name="bankDate"

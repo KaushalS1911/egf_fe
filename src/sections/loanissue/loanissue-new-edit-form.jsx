@@ -9,11 +9,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFTextField,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -1341,13 +1337,13 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                            .map((item) => [item.bankName + item.id, item])
                         ).values()
                       )}
                       getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
                         <li {...props} key={option.id || option.bankName}>
-                          {option.bankName}
+                          {`${option.bankName}(${option.accountHolderName})`}
                         </li>
                       )}
                       isOptionEqualToValue={(option, value) => option.id === value.id}

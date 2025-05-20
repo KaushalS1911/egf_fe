@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean.js';
@@ -27,17 +26,6 @@ export default function BankAccountTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  const {
-    name,
-    ratePerGram,
-    interestRate,
-    valuation,
-    interestPeriod,
-    renewalTime,
-    minLoanTime,
-    schemeType,
-    isActive,
-  } = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -59,7 +47,7 @@ export default function BankAccountTableRow({
           </TableCell>{' '}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.status}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.bankName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.bankName}(${row?.bankHolderName})`}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.ref ? `${row.detail} (${row.ref})` : row.detail}
         </TableCell>
@@ -81,7 +69,6 @@ export default function BankAccountTableRow({
         >
           {row.amount}
         </TableCell>
-
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {getResponsibilityValue('delete_scheme', configs, user) ||
           getResponsibilityValue('update_scheme', configs, user) ? (

@@ -466,7 +466,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                     getOptionLabel={(option) => option.bankName || ''}
                     renderOption={(props, option) => (
                       <li {...props} key={option.id || option.bankName}>
-                        {option.bankName}
+                        {`${option.bankName}(${option.accountHolderName})`}
                       </li>
                     )}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
