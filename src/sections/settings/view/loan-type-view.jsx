@@ -218,14 +218,24 @@ export default function LoanTypeView() {
                         </Typography>
                       </Grid>
                       <Grid item>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Box
+                          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                        >
                           {editingId === loan ? (
                             <>
-                              <IconButton color="success" onClick={handleUpdate}>
-                                <Iconify icon="solar:check-circle-bold" />
+                              <IconButton
+                                color="success"
+                                onClick={handleUpdate}
+                                sx={{ fontSize: 32, p: 1.5 }}
+                              >
+                                <Iconify icon="solar:check-circle-bold" width={32} height={32} />
                               </IconButton>
-                              <IconButton color="error" onClick={handleCancel} size="small">
-                                <Iconify icon="solar:close-circle-bold" />
+                              <IconButton
+                                color="error"
+                                onClick={handleCancel}
+                                sx={{ fontSize: 32, p: 1.5 }}
+                              >
+                                <Iconify icon="solar:close-circle-bold" width={32} height={32} />
                               </IconButton>
                             </>
                           ) : (

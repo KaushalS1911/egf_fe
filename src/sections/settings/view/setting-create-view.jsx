@@ -57,7 +57,7 @@ const TABS = [
   {
     value: 'Percentage',
     label: 'Percentage',
-    icon: <Iconify icon="mdi:cash-sync" width={24} />,
+    icon: <Iconify icon="mynaui:percentage-octagon" width={24} />,
   },
   {
     value: 'Expense type',
