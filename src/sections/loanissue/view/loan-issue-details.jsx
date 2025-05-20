@@ -279,8 +279,6 @@ const useStyles = () =>
 // ----------------------------------------------------------------------
 
 export default function LoanIssueDetails({ selectedRow, configs }) {
-  console.log(selectedRow, '+++++++++++++++++++++');
-  console.log(configs, '---------------------');
   const styles = useStyles();
   const renewDate = () => {
     if (!selectedRow?.issueDate) return null;

@@ -230,7 +230,11 @@ export default function PaymentInOutListView() {
               </strong>
               <strong style={{ marginLeft: 20 }}>
                 Payable : -
-                <span style={{ color: 'red', marginLeft: 10 }}>{Number(payable).toFixed(2)}</span>
+                <span style={{ color: 'red', marginLeft: 10 }}>
+                  {Object.values(filters).some(Boolean)
+                    ? Math.abs(payable).toFixed(2)
+                    : payable.toFixed(2)}
+                </span>
               </strong>
             </Typography>
           }

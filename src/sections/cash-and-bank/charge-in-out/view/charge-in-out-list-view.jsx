@@ -254,7 +254,9 @@ export default function ChargeInOutListView() {
               <strong style={{ marginLeft: 20 }}>
                 Payable : -
                 <span style={{ color: 'red', marginLeft: 10 }}>
-                  {(Number(cashOut) + Number(bankOut)).toFixed(2)}
+                  {Object.values(filters).some(Boolean)
+                    ? Math.abs(Number(cashOut) + Number(bankOut)).toFixed(2)
+                    : Number(cashOut) + Number(bankOut).toFixed(2)}
                 </span>
               </strong>
             </Typography>
