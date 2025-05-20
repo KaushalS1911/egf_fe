@@ -79,9 +79,7 @@ export default function ChargeInOutListView() {
   const { user } = useAuthContext();
   const [tableData, setTableData] = useState(ChargeInOut);
   const [filters, setFilters] = useState(defaultFilters);
-  console.log(filters, '000000000000000000000000');
   const [options, setOptions] = useState([]);
-  const { configs } = useGetConfigs();
 
   useEffect(() => {
     if (ChargeInOut) {

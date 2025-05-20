@@ -20,6 +20,12 @@ export default function ExpenceTableFiltersResult({
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
+  const handleRemoveCategory = useCallback(() => {
+    onFilters('category', '');
+  }, [onFilters]);
+  const handleRemoveTransactions = useCallback(() => {
+    onFilters('transactions', '');
+  }, [onFilters]);
 
   const handleRemoveExpenceType = useCallback(() => {
     onFilters('expenceType', '');
@@ -38,6 +44,24 @@ export default function ExpenceTableFiltersResult({
         {!!filters.name && (
           <Block label="Key Word:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
+          </Block>
+        )}{' '}
+        {!!filters.category && (
+          <Block label="Category:">
+            <Chip label={filters.category} size="small" onDelete={handleRemoveCategory} />
+          </Block>
+        )}{' '}
+        {!!filters.transactions && (
+          <Block label={filters.transactions.transactionsType === 'Cash' ? 'Cash' : 'Bank'}>
+            <Chip
+              label={
+                filters.transactions.transactionsType === 'Cash'
+                  ? 'Cash'
+                  : filters.transactions.bankName
+              }
+              size="small"
+              onDelete={handleRemoveTransactions}
+            />
           </Block>
         )}{' '}
         {!!filters.expenseType.expenseType && (

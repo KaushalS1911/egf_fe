@@ -179,12 +179,12 @@ export default function CashInTableToolbar({ filters, onFilters, schemes, dateEr
                 },
               }}
             >
-              Status
+              Type
             </InputLabel>
             <Select
               value={filters.status}
               onChange={handleFilterStatus}
-              input={<OutlinedInput label="Status" sx={{ height: '40px' }} />}
+              input={<OutlinedInput label="Type" sx={{ height: '40px' }} />}
               MenuProps={{
                 PaperProps: {
                   sx: {

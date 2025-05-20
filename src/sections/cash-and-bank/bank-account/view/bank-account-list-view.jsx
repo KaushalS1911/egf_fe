@@ -10,11 +10,8 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths.js';
 import { useRouter } from 'src/routes/hooks/index.js';
-import { RouterLink } from 'src/routes/components/index.js';
 import { useBoolean } from 'src/hooks/use-boolean.js';
 import Iconify from 'src/components/iconify/index.js';
-import Scrollbar from 'src/components/scrollbar/index.js';
-import { useSnackbar } from 'src/components/snackbar/index.js';
 import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
@@ -31,17 +28,8 @@ import {
 import BankAccountTableToolbar from '../bank-account-table-toolbar.jsx';
 import BankAccountTableFiltersResult from '../bank-account-table-filters-result.jsx';
 import BankAccountTableRow from '../bank-account-table-row.jsx';
-import { Box, Grid } from '@mui/material';
-import Label from '../../../../components/label/index.js';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import { useGetScheme } from '../../../../api/scheme.js';
-import axios from 'axios';
-import { useAuthContext } from '../../../../auth/hooks/index.js';
-import { useGetConfigs } from '../../../../api/config.js';
+import { Grid } from '@mui/material';
 import { LoadingScreen } from '../../../../components/loading-screen/index.js';
-import { getResponsibilityValue } from '../../../../permission/permission.js';
 import Typography from '@mui/material/Typography';
 import AccountsListView from '../accounts/view/accounts-list-view.jsx';
 import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
@@ -52,6 +40,7 @@ import { isBetween } from '../../../../utils/format-time.js';
 const TABLE_HEAD = [
   { id: '#', label: '' },
   { id: 'type', label: 'Type' },
+  { id: 'bankName', label: 'Bank name' },
   { id: 'name', label: 'Detail' },
   { id: 'category', label: 'Category' },
   { id: 'date', label: 'Date' },
@@ -65,29 +54,33 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   account: {},
+  status: '',
 };
 
 // ----------------------------------------------------------------------
 
 export default function BankAccountListView() {
   const { bankTransactions, mutate, bankTransactionsLoading } = useGetBankTransactions();
-  const { enqueueSnackbar } = useSnackbar();
   const [accountDetails, setAccountDetails] = useState({});
   const table = useTable();
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(bankTransactions);
-  const [filters, setFilters] = useState({ ...defaultFilters, account: accountDetails });
+  const [filters, setFilters] = useState(defaultFilters);
+  const [options, setOptions] = useState([]);
 
-  useEffect(() => {
-    setFilters({ ...defaultFilters, account: accountDetails });
-  }, [accountDetails]);
   const dataFiltered = applyFilter({
     inputData: bankTransactions?.transactions,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  useEffect(() => {
+    setFilters({ ...defaultFilters, account: accountDetails });
+  }, [accountDetails]);
+
+  useEffect(() => {
+    fetchStates();
+  }, [dataFiltered]);
 
   const amount =
     dataFiltered
@@ -104,6 +97,8 @@ export default function BankAccountListView() {
 
   const denseHeight = table?.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
+  console.log(filters, '-------------');
+  console.log(canReset, '++++++++++++');
   const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
 
   const handleFilters = useCallback(
@@ -131,6 +126,18 @@ export default function BankAccountListView() {
 
   if (bankTransactionsLoading) {
     return <LoadingScreen />;
+  }
+
+  function fetchStates() {
+    dataFiltered?.map((data) => {
+      setOptions((item) => {
+        if (!item.find((option) => option === data.status)) {
+          return [...item, data.status];
+        } else {
+          return item;
+        }
+      });
+    });
   }
 
   return (
@@ -169,6 +176,7 @@ export default function BankAccountListView() {
                   filters={filters}
                   onFilters={handleFilters}
                   accountDetails={accountDetails}
+                  options={options}
                 />
                 {canReset && (
                   <BankAccountTableFiltersResult
@@ -284,7 +292,7 @@ export default function BankAccountListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, account, category, startDate, endDate } = filters;
+  const { name, account, category, startDate, endDate, status } = filters;
 
   const stabilizedThis = inputData?.map((el, index) => [el, index]);
   stabilizedThis?.sort((a, b) => {
@@ -303,6 +311,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (category) {
     inputData = inputData.filter((item) => item.category === category);
+  }
+  if (status) {
+    inputData = inputData.filter((item) => item.status === status);
   }
   if (Object.keys(account).length) {
     inputData = inputData?.filter((acc) => account.bankName === acc.bankName);

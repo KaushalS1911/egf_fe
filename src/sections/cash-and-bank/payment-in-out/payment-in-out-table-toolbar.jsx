@@ -106,17 +106,6 @@ export default function PaymentInOutTableToolbar({
         <Typography sx={{ color: 'text.secondary' }} variant="subtitle1" component="p">
           {partyDetails?.name}
         </Typography>
-        {/*<IconButton*/}
-        {/*  size="small"*/}
-        {/*  onClick={() => setOpenEditForm(true)}*/}
-        {/*  sx={{*/}
-        {/*    '&:hover': {*/}
-        {/*      backgroundColor: 'action.hover',*/}
-        {/*    },*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  <Iconify icon="solar:pen-bold" width={18} />*/}
-        {/*</IconButton>*/}
       </Box>
       <Stack
         spacing={2}

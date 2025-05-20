@@ -26,12 +26,15 @@ export default function BankAccountTableToolbar({
   schemes,
   dateError,
   accountDetails,
+  options,
 }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+
+  console.log(accountDetails, '*********');
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -78,8 +81,14 @@ export default function BankAccountTableToolbar({
     },
     [onFilters]
   );
+  const handleFilterStatus = useCallback(
+    (event) => {
+      onFilters('status', event.target.value);
+    },
+    [onFilters]
+  );
   const customStyle = {
-    maxWidth: { md: 350 },
+    maxWidth: { md: 150 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -91,15 +100,21 @@ export default function BankAccountTableToolbar({
   };
   return (
     <>
-      <Box sx={{ p: 2.5 }}>
-        <Typography sx={{ color: 'text.secondary' }} variant="subtitle1" component="p">
-          Bank Name : {accountDetails.bankName}
+      <Box sx={{ p: 2.5, pb: 0 }}>
+        <Typography sx={{ color: 'text.secondary', fontSize: 12, fontWeight: 600 }} component="p">
+          Bank Name : {filters.account.bankName}
         </Typography>
-        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }} component="p">
-          Account Number : {accountDetails.accountNumber}
+        <Typography sx={{ color: 'text.secondary', fontSize: 12, fontWeight: 600 }} component="p">
+          Account Number : {filters.account.accountNumber}
+        </Typography>{' '}
+        <Typography sx={{ color: 'text.secondary', fontSize: 12, fontWeight: 600 }} component="p">
+          Account Holder : {filters.account.accountHolderName}
+        </Typography>{' '}
+        <Typography sx={{ color: 'text.secondary', fontSize: 12, fontWeight: 600 }} component="p">
+          Branch : {filters.account.branchName}
         </Typography>
-        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }} component="p">
-          IFSC Code : {accountDetails.IFSC}
+        <Typography sx={{ color: 'text.secondary', fontSize: 12, fontWeight: 600 }} component="p">
+          IFSC Code : {filters.account.IFSC}
         </Typography>
       </Box>
       <Stack
@@ -131,7 +146,55 @@ export default function BankAccountTableToolbar({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 250 },
+              width: { xs: 1, sm: 200 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Type
+            </InputLabel>
+            <Select
+              value={filters.status}
+              onChange={handleFilterStatus}
+              input={<OutlinedInput label="Type" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 150 },
             }}
           >
             <InputLabel
@@ -175,7 +238,7 @@ export default function BankAccountTableToolbar({
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl>{' '}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
