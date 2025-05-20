@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -13,6 +12,7 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 import { fDate } from '../../utils/format-time.js';
+import React from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -74,6 +74,18 @@ export default function OtherLoanissueTableRow({
           >
             <Iconify icon="solar:pen-bold" />
             Edit
+          </MenuItem>
+        )}
+        {getResponsibilityValue('delete_other_loanIssue', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon='solar:trash-bin-trash-bold' />
+            Delete
           </MenuItem>
         )}
       </CustomPopover>

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Container from '@mui/material/Container';
@@ -7,17 +7,16 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
+  TableNoData,
   TablePaginationCustom,
+  useTable,
 } from 'src/components/table';
 import ReminderTableToolbar from '../reminder-table-toolbar';
 import ReminderTableFiltersResult from '../reminder-table-filters-result';
@@ -58,6 +57,7 @@ const defaultFilters = {
   startDay: '',
   endDay: '',
 };
+
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
   { value: 'Disbursed', label: 'Disbursed' },
@@ -67,6 +67,7 @@ const STATUS_OPTIONS = [
   },
   { value: 'Regular', label: 'Regular' },
 ];
+
 // ----------------------------------------------------------------------
 
 export default function ReminderListView() {
@@ -118,12 +119,14 @@ export default function ReminderListView() {
     },
     [table]
   );
+
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
     },
     [handleFilters]
   );
+
   const handleResetFilters = useCallback(() => {
     setFilters({ ...defaultFilters, day: '' });
   }, []);
@@ -363,13 +366,13 @@ function applyFilter({ inputData, comparator, filters, dateError, calculateDateD
     );
   }
 
-  if (dateError && startDate && endDate) {
+  if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) =>
-      isBetween(new Date(order.nextInstallmentDate), startDate, endDate)
+      isBetween(new Date(order?.nextInstallmentDate), startDate, endDate)
     );
   }
+
   if (startDay && endDay) {
-    console.log(startDay, endDay);
     inputData = inputData.filter((item) =>
       isBetweenDay(
         calculateDateDifference(new Date(), item.lastInstallmentDate || item.issueDate),
@@ -378,12 +381,14 @@ function applyFilter({ inputData, comparator, filters, dateError, calculateDateD
       )
     );
   }
+
   if (day) {
     inputData = inputData.filter(
       (item) =>
         calculateDateDifference(new Date(), item.lastInstallmentDate || item.issueDate) >= day
     );
   }
+
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }

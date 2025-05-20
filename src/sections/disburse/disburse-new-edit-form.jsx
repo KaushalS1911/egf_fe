@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useForm, Controller, useFieldArray, useWatch } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -21,12 +21,8 @@ import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import { TableHeadCustom, useTable } from '../../components/table';
 import { useAuthContext } from '../../auth/hooks/index.js';
 import { pdf } from '@react-pdf/renderer';
-import LoanPartPaymentDetailsPdf from '../loanpayhistory/PDF/loan-part-payment-details-pdf.jsx';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details.jsx';
-import Sansaction11 from './sansaction-11.jsx';
-import { value } from 'lodash/seq.js';
 import { useGetConfigs } from '../../api/config.js';
-import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -100,11 +96,11 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       valuation: currentDisburse?.valuation || '',
       address:
         (
-          currentDisburse?.customer?.permanentAddress?.street +
+          currentDisburse?.customer?.temporaryAddress?.street +
           ' ,' +
-          currentDisburse?.customer?.permanentAddress?.city
+          currentDisburse?.customer?.temporaryAddress?.city
         ).toUpperCase() || '',
-      landmark: currentDisburse?.customer?.permanentAddress?.landmark || '',
+      landmark: currentDisburse?.customer?.temporaryAddress?.landmark || '',
       branch: currentDisburse?.customer?.branch?.name || '',
       approvalCharge: currentDisburse?.approvalCharge || 0,
       bankNetAmount: currentDisburse?.bankAmount || 0,
@@ -180,7 +176,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
   const sendPdfToWhatsApp = async (item) => {
     try {
-      // Generate the first PDF
       const blob1 = await pdf(<LoanIssueDetails selectedRow={item} configs={configs} />).toBlob();
       const file1 = new File([blob1], `LoanIssueDetailsPdf.pdf`, { type: 'application/pdf' });
 
@@ -210,9 +205,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         formData1.append(key, value);
       });
 
-      // Send the first PDF
       await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData1);
-      console.log('First PDF sent successfully');
 
       // Generate the second PDF
       // const blob2 = await pdf(<Sansaction11 sansaction={item} configs={configs} />).toBlob();
@@ -226,6 +219,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       // // Send the second PDF
       // await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData2);
       // console.log('Second PDF sent successfully');
+
     } catch (error) {
       console.error('Error generating or sending PDFs:', error);
     }
@@ -345,7 +339,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
       0
     );
 
-    return total.toFixed(2); // Apply toFixed(2) only at the end
+    return total.toFixed(2);
   };
 
   const handleChargeCashAmountChange = (event) => {

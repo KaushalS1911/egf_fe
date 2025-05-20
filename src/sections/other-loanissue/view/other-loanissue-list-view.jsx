@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -13,34 +13,28 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
-import LoanissueTableRow from '../other-loanissue-table-row';
-import LoanissueTableToolbar from '../other-loanissue-table-toolbar';
-import LoanissueTableFiltersResult from '../other-loanissue-table-filters-result';
-import axios from 'axios';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetLoanissue } from '../../../api/loanissue';
-import { LoadingScreen } from '../../../components/loading-screen';
-import { fDate } from '../../../utils/format-time';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
-import OtherLoanissueTableFiltersResult from '../other-loanissue-table-filters-result';
 import OtherLoanissueTableRow from '../other-loanissue-table-row';
 import OtherLoanissueTableToolbar from '../other-loanissue-table-toolbar';
+import OtherLoanissueTableFiltersResult from '../other-loanissue-table-filters-result';
+import axios from 'axios';
+import { useAuthContext } from '../../../auth/hooks';
+import { LoadingScreen } from '../../../components/loading-screen';
+import { useGetConfigs } from '../../../api/config';
+import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
 
 // ----------------------------------------------------------------------
@@ -125,10 +119,7 @@ export default function OtherLoanissueListView() {
     }
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loans`,
-        {
-          data: { ids: id },
-        }
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan/${id}`,
       );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
@@ -352,6 +343,7 @@ function applyFilter({ inputData, comparator, filters }) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+
   inputData = stabilizedThis.map((el) => el[0]);
   if (username && username.trim()) {
     inputData = inputData.filter(
