@@ -83,13 +83,19 @@ export default function PaymentInOutTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.paymentDetails?.account?.bankName || '-'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton onClick={() => lightbox.onOpen(row.invoice)} sx={{ mr: 2 }}>
-            <Iconify icon="tabler:file-invoice" width="24" height="24" />
-          </IconButton>
-          <Lightbox image={row.invoice} open={lightbox.open} close={lightbox.onClose} />
+        <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '200px', textWrap: 'wrap' }}>
+          {row?.description || '-'}
         </TableCell>
+        {row.invoice ? (
+          <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton onClick={() => lightbox.onOpen(row.invoice)} sx={{ mr: 2 }}>
+              <Iconify icon="tabler:file-invoice" width="24" height="24" />
+            </IconButton>
+            <Lightbox image={row.invoice} open={lightbox.open} close={lightbox.onClose} />
+          </TableCell>
+        ) : (
+          <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>-</TableCell>
+        )}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label
             variant="soft"

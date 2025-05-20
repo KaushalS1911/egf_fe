@@ -23,6 +23,8 @@ export default function ExpenceTableToolbar({
   schemes,
   dateError,
   expenceDetails,
+  options,
+  categoryOptions,
 }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -69,6 +71,12 @@ export default function ExpenceTableToolbar({
     [onFilters]
   );
 
+  const handleFilterTransactions = useCallback(
+    (event) => {
+      onFilters('transactions', typeof event.target.value === 'object' ? event.target.value : null);
+    },
+    [onFilters]
+  );
   const handleFilterCategory = useCallback(
     (event) => {
       onFilters('category', event.target.value);
@@ -121,7 +129,102 @@ export default function ExpenceTableToolbar({
               ),
             }}
           />
-
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 220 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Cash & Bank Transactions
+            </InputLabel>
+            <Select
+              value={filters.transactions || ''}
+              onChange={handleFilterTransactions}
+              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options?.map((option) => (
+                <MenuItem key={option._id} value={option}>
+                  {option.bankName || option.transactionsType || 'Unnamed Account'}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>{' '}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 220 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Category{' '}
+            </InputLabel>
+            <Select
+              value={filters.category || ''}
+              onChange={handleFilterCategory}
+              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {categoryOptions?.map((option) => (
+                <MenuItem key={option._id} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>{' '}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

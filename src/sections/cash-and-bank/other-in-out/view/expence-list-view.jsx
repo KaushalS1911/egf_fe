@@ -41,6 +41,7 @@ import { useGetExpanse } from '../../../../api/expense.js';
 import { getResponsibilityValue } from '../../../../permission/permission.js';
 import ExpenseTableRow from '../expence-table-row.jsx';
 import { useGetConfigs } from '../../../../api/config.js';
+import { useLightBox } from '../../../../components/lightbox/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -49,10 +50,12 @@ const TABLE_HEAD = [
   { id: 'type', label: 'Type' },
   { id: 'category', label: 'Category' },
   { id: 'date', label: 'Date' },
+  { id: 'paymentMode', label: 'Payment mode' },
   { id: 'Cash amt', label: 'Cash amt' },
   { id: 'Bank amt', label: 'Bank amt' },
   { id: 'Bank', label: 'Bank' },
-  { id: 'status', label: 'status' },
+  { id: 'des', label: 'Des' },
+  { id: 'invoice', label: 'Invoice' },
   { id: '', width: 88 },
 ];
 
@@ -62,6 +65,7 @@ const defaultFilters = {
   startDate: null,
   endDate: null,
   expenseType: {},
+  transactions: '',
 };
 
 // ----------------------------------------------------------------------
@@ -77,14 +81,20 @@ export default function ExpenceListView() {
   const { user } = useAuthContext();
   const [tableData, setTableData] = useState(expense);
   const [filters, setFilters] = useState(defaultFilters);
-  const { configs } = useGetConfigs();
+  const [options, setOptions] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
 
   const dataFiltered = applyFilter({
     inputData: expense,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
+  useEffect(() => {
+    {
+      dataFiltered.length > 0 && fetchStates();
+      fetchCategoryStates();
+    }
+  }, [expense]);
   const cash = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.paymentDetails?.cashAmount) || 0),
     0
@@ -184,6 +194,43 @@ export default function ExpenceListView() {
     return <LoadingScreen />;
   }
 
+  function fetchStates() {
+    const accountMap = new Map();
+
+    accountMap.set('cash', { transactionsType: 'Cash' });
+
+    dataFiltered?.forEach((data) => {
+      const account = data?.paymentDetails?.account;
+      if (account && account._id && !accountMap.has(account._id)) {
+        accountMap.set(account._id, account);
+      }
+    });
+
+    const newOptions = Array.from(accountMap.values());
+
+    setOptions((prevOptions) => {
+      const isSame =
+        prevOptions.length === newOptions.length &&
+        prevOptions.every((item) => newOptions.some((opt) => opt._id === item._id));
+
+      return isSame ? prevOptions : newOptions;
+    });
+
+    setOptions(newOptions);
+  }
+
+  function fetchCategoryStates() {
+    dataFiltered?.map((data) => {
+      setCategoryOptions((item) => {
+        if (!item.find((option) => option === data.category)) {
+          return [...item, data.category];
+        } else {
+          return item;
+        }
+      });
+    });
+  }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -231,6 +278,8 @@ export default function ExpenceListView() {
                   filters={filters}
                   onFilters={handleFilters}
                   expenceDetails={expenceDetails}
+                  options={options}
+                  categoryOptions={categoryOptions}
                 />
                 {canReset && (
                   <ExpenceTableFiltersResult
@@ -347,7 +396,7 @@ export default function ExpenceListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, expenseType, category, startDate, endDate } = filters;
+  const { name, expenseType, category, startDate, endDate, transactions } = filters;
 
   const stabilizedThis = inputData?.map((el, index) => [el, index]);
   stabilizedThis?.sort((a, b) => {
@@ -358,11 +407,21 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   inputData = stabilizedThis?.map((el) => el[0]);
 
   if (name && name.trim()) {
-    inputData = inputData.filter((sch) =>
-      sch?.expenseType?.toLowerCase().includes(name?.toLowerCase())
+    inputData = inputData.filter(
+      (sch) =>
+        sch?.expenseType?.toLowerCase().includes(name?.toLowerCase()) ||
+        sch?.category?.toLowerCase().includes(name?.toLowerCase()) ||
+        sch?.description?.toLowerCase().includes(name?.toLowerCase())
     );
   }
-
+  if (transactions) {
+    inputData = inputData.filter(
+      (item) => item?.paymentDetails?.account?._id === transactions?._id
+    );
+  }
+  if (category) {
+    inputData = inputData.filter((item) => item?.category === category);
+  }
   if (Object.keys(expenseType).length > 0) {
     inputData = inputData.filter((item) => expenseType.expenseType === item.expenseType);
   }

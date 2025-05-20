@@ -20,10 +20,14 @@ export default function BankAccountTableFiltersResult({
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
-  const handleRemoveStatus = useCallback(() => {
+  const handleRemoveCetagory = useCallback(() => {
     onFilters('category', '');
   }, [onFilters]);
+  const handleRemoveType = useCallback(() => {
+    onFilters('status', '');
+  }, [onFilters]);
   const handleRemoveAcc = useCallback(() => {
+    onFilters('account', {});
     setAcc({});
   }, [onFilters]);
 
@@ -38,7 +42,12 @@ export default function BankAccountTableFiltersResult({
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.category && (
           <Block label="Category">
-            <Chip size="small" label={filters.category} onDelete={handleRemoveStatus} />
+            <Chip size="small" label={filters.category} onDelete={handleRemoveCetagory} />
+          </Block>
+        )}{' '}
+        {filters.status && (
+          <Block label="Type">
+            <Chip size="small" label={filters.status} onDelete={handleRemoveType} />
           </Block>
         )}
         {!!filters.name && (
