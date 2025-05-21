@@ -205,7 +205,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
   }, [watch('paymentMode')]);
 
   useEffect(() => {
-    setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
+    setValue('netAmount', Number(watch('pendingLoanAmount')));
     const chargeValue = Number(watch('closingCharge')) || 0;
     setClosingChargeValue(chargeValue);
     if (chargeValue === 0) {
@@ -687,7 +687,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
                     setValue('chargePaymentMode', value);
-                    handleLoanAmountChange({ target: { value: watch('closingCharge') } });
+                    // handleLoanAmountChange({ target: { value: watch('closingCharge') } });
                   }}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -797,9 +797,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 {row.chargePaymentDetail.chargeBankAmount || 0}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
-                {row.chargePaymentDetail?.chargeAccount?.bankName || '-'}
+                {row.chargePaymentDetail?.bankName || '-'}
               </TableCell>
-              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row.netAmount}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>{row?.netAmount}</TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.paymentDetail.cashAmount || 0}
               </TableCell>
