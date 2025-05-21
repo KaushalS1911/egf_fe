@@ -34,6 +34,10 @@ import Typography from '@mui/material/Typography';
 import AccountsListView from '../accounts/view/accounts-list-view.jsx';
 import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
 import { isBetween } from '../../../../utils/format-time.js';
+import TransferDialog from './TransferDialog.jsx';
+import axios from 'axios';
+import { useSnackbar } from 'notistack';
+import { useAuthContext } from '../../../../auth/hooks/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -64,10 +68,14 @@ export default function BankAccountListView() {
   const [accountDetails, setAccountDetails] = useState({});
   const table = useTable();
   const settings = useSettingsContext();
-  const router = useRouter();
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
   const [options, setOptions] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthContext();
+  const [currentTransferId, setCurrentTransferId] = useState('');
 
   const dataFiltered = applyFilter({
     inputData: bankTransactions?.transactions,
@@ -97,8 +105,6 @@ export default function BankAccountListView() {
 
   const denseHeight = table?.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  console.log(filters, '-------------');
-  console.log(canReset, '++++++++++++');
   const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
 
   const handleFilters = useCallback(
@@ -118,11 +124,49 @@ export default function BankAccountListView() {
   }, []);
 
   const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+    async (id) => {
+      try {
+        if (id) {
+          setDialogOpen(true);
+          setCurrentTransferId(id);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
-    [router]
+    [user]
   );
+
+  const handleDelete = async (id) => {
+    // if (!getResponsibilityValue('delete_scheme', configs, user)) {
+    //   enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+    //   return;
+    // }
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/transfer/${id}`
+      );
+      enqueueSnackbar(res.data.message);
+      confirm.onFalse();
+      mutate();
+    } catch (err) {
+      enqueueSnackbar('Failed to delete Entry');
+    }
+  };
+
+  const handleDeleteRow = useCallback(
+    (id) => {
+      handleDelete(id);
+
+      table.onUpdatePageDeleteRow(dataInPage.length);
+    },
+    [dataInPage?.length, enqueueSnackbar, table]
+  );
+
+  const handleTransferTypeSelect = (type) => {
+    setSelectedType(type);
+    setDialogOpen(true);
+  };
 
   if (bankTransactionsLoading) {
     return <LoadingScreen />;
@@ -147,7 +191,11 @@ export default function BankAccountListView() {
           heading={
             <Typography variant="h4" gutterBottom>
               Bank Account :{' '}
-              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>{amount.toFixed(2)}</strong>
+              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>
+                {Object.values(filters).some(Boolean)
+                  ? Math.abs(amount).toFixed(2)
+                  : amount.toFixed(2)}
+              </strong>
             </Typography>
           }
           links={[
@@ -158,6 +206,14 @@ export default function BankAccountListView() {
           sx={{
             mb: { xs: 3, md: 1 },
           }}
+        />
+        <TransferDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          transferType={selectedType}
+          mutate={mutate}
+          currentTransferId={currentTransferId}
+          setCurrentTransferId={setCurrentTransferId}
         />
         <Card sx={{ p: 2 }}>
           <Grid container>
@@ -177,6 +233,7 @@ export default function BankAccountListView() {
                   onFilters={handleFilters}
                   accountDetails={accountDetails}
                   options={options}
+                  onTransferTypeSelect={handleTransferTypeSelect}
                 />
                 {canReset && (
                   <BankAccountTableFiltersResult
@@ -241,6 +298,7 @@ export default function BankAccountListView() {
                             selected={table.selected.includes(row._id)}
                             onSelectRow={() => table.onSelectRow(row._id)}
                             onEditRow={() => handleEditRow(row._id)}
+                            onDeleteRow={() => handleDeleteRow(row._id)}
                           />
                         ))}
                       <TableEmptyRows

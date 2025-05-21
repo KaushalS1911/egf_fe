@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -49,6 +49,8 @@ import RHFDatePicker from 'src/components/hook-form/rhf-date-picker.jsx';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import RHFAutocomplete from 'src/components/hook-form/rhf-autocomplete.jsx';
+import { useGetTransfer } from '../../../../api/transfer.js';
+import { useGetBranch } from '../../../../api/branch.js';
 
 // ----------------------------------------------------------------------
 
@@ -85,6 +87,10 @@ export default function CashInListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const [options, setOptions] = useState([]);
   const [openAdjustDialog, setOpenAdjustDialog] = useState(false);
+  const { transfer, mutate: transferMutate } = useGetTransfer();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+  const [currentTransfer, setCurrentTransfer] = useState(null);
+  const { branch } = useGetBranch();
 
   const dataFiltered = applyFilter({
     inputData: cashTransactions,
@@ -134,9 +140,9 @@ export default function CashInListView() {
       return;
     }
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
-        data: { ids: id },
-      });
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/transfer/${id}`
+      );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
@@ -168,7 +174,9 @@ export default function CashInListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.scheme.edit(id));
+      const currentTransfer = transfer?.find((item) => item?._id === id);
+      setCurrentTransfer(currentTransfer);
+      setOpenAdjustDialog(true);
     },
     [router]
   );
@@ -182,9 +190,15 @@ export default function CashInListView() {
 
   // Form setup for Adjust Cash
   const adjustDefaultValues = {
-    adjustmentType: null,
-    amount: '',
-    adjustmentDate: new Date(),
+    branch: currentTransfer
+      ? {
+          label: currentTransfer?.branch?.name,
+          value: currentTransfer?.branch?._id,
+        }
+      : null,
+    adjustmentType: currentTransfer?.adjustmentType || null,
+    amount: currentTransfer?.paymentDetail?.amount || '',
+    adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
     desc: '',
   };
   const adjustSchema = Yup.object().shape({
@@ -194,7 +208,11 @@ export default function CashInListView() {
       .required('Amount is required')
       .positive('Amount must be greater than 0'),
     adjustmentDate: Yup.date().required('Adjustment date is required'),
-    desc: Yup.string(),
+    branch: Yup.object().when([], {
+      is: () => user?.role === 'Admin' && storedBranch === 'all',
+      then: (schema) => schema.required('Branch is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
   });
   const adjustForm = useForm({
     defaultValues: adjustDefaultValues,
@@ -215,17 +233,38 @@ export default function CashInListView() {
   };
   const onAdjustCash = async (values) => {
     try {
+      let parsedBranch = storedBranch;
+      if (storedBranch !== 'all') {
+        try {
+          parsedBranch = storedBranch;
+        } catch (error) {
+          console.error('Error parsing storedBranch:', error);
+        }
+      }
+
+      const selectedBranchId =
+        parsedBranch === 'all' ? values?.branch?.value || branch?.[0]?._id : parsedBranch;
       const payload = {
-        transferType: 'Cash In Hand',
+        branch: selectedBranchId,
+        transferType: 'Adjustment',
         paymentDetails: {
           amount: Number(values.amount),
           adjustmentType: values.adjustmentType,
         },
       };
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/${user.company}/transfer`,
-        payload
-      );
+      const apiUrl = currentTransfer
+        ? `${import.meta.env.VITE_BASE_URL}/${user.company}/transfer/${currentTransfer._id}`
+        : `${import.meta.env.VITE_BASE_URL}/${user.company}/transfer`;
+
+      let res;
+
+      if (currentTransfer) {
+        res = await axios.put(apiUrl, payload);
+        setCurrentTransfer(null);
+      } else {
+        res = await axios.post(apiUrl, payload);
+      }
+      transferMutate();
       mutate();
       setOpenAdjustDialog(false);
       enqueueSnackbar(res.data.message);
@@ -393,6 +432,22 @@ export default function CashInListView() {
         <DialogTitle>Cash In Hand</DialogTitle>
         <FormProvider methods={adjustForm} onSubmit={handleAdjustSubmit(onAdjustCash)}>
           <DialogContent>
+            {user?.role === 'Admin' && storedBranch === 'all' && (
+              <RHFAutocomplete
+                sx={{ my: 2 }}
+                name="branch"
+                req={'red'}
+                label="Branch"
+                placeholder="Choose a Branch"
+                options={
+                  branch?.map((branchItem) => ({
+                    label: branchItem?.name,
+                    value: branchItem?._id,
+                  })) || []
+                }
+                isOptionEqualToValue={(option, value) => option?.value === value?.value}
+              />
+            )}
             <RHFAutocomplete
               name="adjustmentType"
               label="Adjustment"
@@ -429,7 +484,7 @@ export default function CashInListView() {
               Cancel
             </Button>
             <Button type="submit" variant="contained">
-              Save
+              {currentTransfer ? 'Save' : 'Submit'}
             </Button>
           </DialogActions>
         </FormProvider>

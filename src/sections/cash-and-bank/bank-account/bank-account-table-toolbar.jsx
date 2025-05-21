@@ -27,14 +27,13 @@ export default function BankAccountTableToolbar({
   dateError,
   accountDetails,
   options,
+  onTransferTypeSelect,
 }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-
-  console.log(accountDetails, '*********');
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -282,36 +281,41 @@ export default function BankAccountTableToolbar({
         arrow="right-top"
         sx={{ width: 'auto' }}
       >
-        {getResponsibilityValue('print_scheme_detail', configs, user) && (
-          <>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="ant-design:file-pdf-filled" />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
-            </MenuItem>
-          </>
-        )}
         <MenuItem
           onClick={() => {
+            onTransferTypeSelect('Bank To Bank');
             popover.onClose();
           }}
         >
-          <Iconify icon="ic:round-whatsapp" />
-          whatsapp share
+          <Iconify icon="mdi:bank-transfer" />
+          Bank to Bank Transfer
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            onTransferTypeSelect('Bank To Cash');
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="mdi:bank-transfer-out" />
+          Bank to Cash Transfer
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            onTransferTypeSelect('Cash To Bank');
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="mdi:bank-transfer-in" />
+          Cash to Bank Transfer
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            onTransferTypeSelect('Adjust Bank Balance');
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="mdi:bank-outline" />
+          Adjust Bank Balance
         </MenuItem>
       </CustomPopover>
     </>
@@ -322,4 +326,5 @@ BankAccountTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  onTransferTypeSelect: PropTypes.func,
 };

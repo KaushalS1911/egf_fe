@@ -77,7 +77,6 @@ export default function SchemeListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { scheme, mutate, schemeLoading } = useGetScheme();
-  console.log(scheme);
   const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
@@ -88,7 +87,7 @@ export default function SchemeListView() {
 
   const dataFiltered = applyFilter({
     inputData: scheme,
-    comparator: getComparator("desc", table.orderBy),
+    comparator: getComparator('desc', table.orderBy),
     filters,
   });
 
