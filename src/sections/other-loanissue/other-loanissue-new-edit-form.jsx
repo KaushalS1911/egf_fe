@@ -115,6 +115,17 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     interestAmount: Yup.string().required('Interest Amount is required'),
     totalOrnament: Yup.string().required('Total Ornament is required'),
     ornamentDetail: Yup.string().required('Ornament Detail is required'),
+    paymentMode: Yup.string().required('Payment Mode is required'),
+    cashAmount: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Cash' || val === 'Both',
+      then: (schema) => schema.required('Cash Amount is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    bankAmount: Yup.string().when('paymentMode', {
+      is: (val) => val === 'Bank' || val === 'Both',
+      then: (schema) => schema.required('Bank Amount is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
     account: Yup.object().when('paymentMode', {
       is: (val) => val === 'Bank' || val === 'Both',
       then: (schema) => schema.required('Account is required'),
