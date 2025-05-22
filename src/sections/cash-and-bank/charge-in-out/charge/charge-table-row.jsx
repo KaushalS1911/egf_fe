@@ -45,7 +45,7 @@ export default function ChargeTableRow({
         <TableCell
           sx={{ whiteSpace: 'nowrap', color: row.amount >= 0 ? 'success.main' : 'error.main' }}
         >
-          {Math.abs(row.amount)}
+          {Math.abs(row.amount).toFixed(2)}
         </TableCell>
       </TableRow>
       <ConfirmDialog

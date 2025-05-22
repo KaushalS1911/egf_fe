@@ -37,11 +37,13 @@ export default function AccountsTableRow({
         }}
         onClick={() => setAccountDetails(row)}
       >
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.bankName}(${row?.accountHolderName})`}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}
+        >{`${row.bankName}(${row?.accountHolderName})`}</TableCell>
         <TableCell
           sx={{ whiteSpace: 'nowrap', color: row.balance <= 0 ? 'error.main' : 'success.main' }}
         >
-          {row.balance}
+          {row.balance.toFixed(2)}
         </TableCell>
       </TableRow>
 

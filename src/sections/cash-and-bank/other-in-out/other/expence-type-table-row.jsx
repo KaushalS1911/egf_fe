@@ -42,7 +42,7 @@ export default function ExpenceTypeTableRow({
         onClick={() => setExpenceDetails(row)}
       >
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.expenseType}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amount}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.amount.toFixed(2)}</TableCell>
       </TableRow>
       <ConfirmDialog
         open={confirm.value}
