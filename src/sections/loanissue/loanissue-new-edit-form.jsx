@@ -185,37 +185,42 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     selectBankAccount: Yup.boolean(),
     addBankAccount: Yup.boolean(),
 
-    account: Yup.mixed().when(['paymentMode', 'selectBankAccount'], {
-      is: (paymentMode, selectBankAccount) =>
-        selectBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+    account: Yup.mixed().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
+      is: (paymentMode, selectBankAccount, addBankAccount) => {
+        return selectBankAccount === true && addBankAccount === false && (paymentMode === 'Bank' || paymentMode === 'Both');
+      },
       then: (schema) => schema.required('Account is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
 
-    accountNumber: Yup.string().when(['paymentMode', 'addBankAccount'], {
-      is: (paymentMode, addBankAccount) =>
-        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+    accountNumber: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
+      is: (paymentMode, selectBankAccount, addBankAccount) => {
+        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+      },
       then: (schema) => schema.required('Account Number is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
 
-    accountType: Yup.string().when(['paymentMode', 'addBankAccount'], {
-      is: (paymentMode, addBankAccount) =>
-        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+    accountType: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
+      is: (paymentMode, selectBankAccount, addBankAccount) => {
+        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+      },
       then: (schema) => schema.required('Account Type is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
 
-    accountHolderName: Yup.string().when(['paymentMode', 'addBankAccount'], {
-      is: (paymentMode, addBankAccount) =>
-        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+    accountHolderName: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
+      is: (paymentMode, selectBankAccount, addBankAccount) => {
+        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+      },
       then: (schema) => schema.required('Account Holder Name is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
 
-    IFSC: Yup.string().when(['paymentMode', 'addBankAccount'], {
-      is: (paymentMode, addBankAccount) =>
-        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+    IFSC: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
+      is: (paymentMode, selectBankAccount, addBankAccount) => {
+        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+      },
       then: (schema) =>
         schema
           .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC Code')
@@ -223,16 +228,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       otherwise: (schema) => schema.notRequired(),
     }),
 
-    bankName: Yup.string().when(['paymentMode', 'addBankAccount'], {
-      is: (paymentMode, addBankAccount) =>
-        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+    bankName: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
+      is: (paymentMode, selectBankAccount, addBankAccount) => {
+        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+      },
       then: (schema) => schema.required('Bank Name is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
 
-    branchName: Yup.string().when(['paymentMode', 'addBankAccount'], {
-      is: (paymentMode, addBankAccount) =>
-        addBankAccount && (paymentMode === 'Bank' || paymentMode === 'Both'),
+    branchName: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
+      is: (paymentMode, selectBankAccount, addBankAccount) => {
+        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+      },
       then: (schema) => schema.required('Branch Name is required'),
       otherwise: (schema) => schema.notRequired(),
     }),
@@ -1941,6 +1948,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         onClick={() => {
                           setSelectBankAccount(true);
                           setAddBankAccount(false);
+                          setValue('selectBankAccount', true);
+                          setValue('addBankAccount', false);
                         }}
                         sx={{ fontWeight: 'bold', textDecoration: 'none' }}
                       >
@@ -1952,6 +1961,8 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         onClick={() => {
                           setAddBankAccount(true);
                           setSelectBankAccount(false);
+                          setValue('selectBankAccount', false);
+                          setValue('addBankAccount', true);
                         }}
                         sx={{ fontWeight: 'bold', textDecoration: 'none' }}
                       >
