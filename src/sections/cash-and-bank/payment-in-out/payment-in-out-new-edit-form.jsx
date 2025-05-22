@@ -16,13 +16,15 @@ import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
-import { Button } from '@mui/material';
+import { Button, Dialog, IconButton } from '@mui/material';
 import { useGetBranch } from '../../../api/branch.js';
 import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../../components/iconify/index.js';
 import { UploadBox } from '../../../components/upload/index.js';
 import { useGetParty } from '../../../api/party.js';
 import PartyNewEditForm from './parties/party-new-edit-form.jsx';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +40,12 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
   const [inputValue, setInputValue] = useState('');
   const [openEditForm, setOpenEditForm] = useState(false);
   const [partyNameToAdd, setPartyNameToAdd] = useState('');
+  const [croppedImage, setCroppedImage] = useState(currentPayment?.invoice || null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ unit: '%', width: 50 });
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const [rotation, setRotation] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const paymentSchema =
     paymentMode === 'Bank'
@@ -201,10 +209,124 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
     const uploadedFile = acceptedFiles[0];
 
     if (uploadedFile) {
-      uploadedFile.preview = URL.createObjectURL(uploadedFile);
-      setFile(uploadedFile);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        setOpen(true);
+      };
+      reader.readAsDataURL(uploadedFile);
     }
   }, []);
+
+  const resetCrop = () => {
+    setCrop({ unit: '%', width: 50, aspect: 1 });
+    setCompletedCrop(null);
+  };
+
+  const rotateImage = (angle) => {
+    setRotation((prevRotation) => prevRotation + angle);
+  };
+
+  const showCroppedImage = async () => {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const image = document.getElementById('cropped-image');
+
+      if (!image) {
+        console.error('Image element not found!');
+        return;
+      }
+
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+      const angleRadians = (rotation * Math.PI) / 180;
+
+      if (!completedCrop || !completedCrop.width || !completedCrop.height) {
+        // No cropping, save the entire rotated image
+        const rotatedCanvasWidth =
+          Math.abs(image.naturalWidth * Math.cos(angleRadians)) +
+          Math.abs(image.naturalHeight * Math.sin(angleRadians));
+        const rotatedCanvasHeight =
+          Math.abs(image.naturalWidth * Math.sin(angleRadians)) +
+          Math.abs(image.naturalHeight * Math.cos(angleRadians));
+
+        canvas.width = rotatedCanvasWidth;
+        canvas.height = rotatedCanvasHeight;
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(angleRadians);
+        ctx.drawImage(
+          image,
+          -image.naturalWidth / 2,
+          -image.naturalHeight / 2,
+          image.naturalWidth,
+          image.naturalHeight
+        );
+        ctx.restore();
+      } else {
+        // Cropping is required
+        const cropX = completedCrop.x * scaleX;
+        const cropY = completedCrop.y * scaleY;
+        const cropWidth = completedCrop.width * scaleX;
+        const cropHeight = completedCrop.height * scaleY;
+
+        const rotatedCanvasWidth =
+          Math.abs(cropWidth * Math.cos(angleRadians)) +
+          Math.abs(cropHeight * Math.sin(angleRadians));
+        const rotatedCanvasHeight =
+          Math.abs(cropWidth * Math.sin(angleRadians)) +
+          Math.abs(cropHeight * Math.cos(angleRadians));
+
+        canvas.width = rotatedCanvasWidth;
+        canvas.height = rotatedCanvasHeight;
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(angleRadians);
+        ctx.drawImage(
+          image,
+          cropX,
+          cropY,
+          cropWidth,
+          cropHeight,
+          -cropWidth / 2,
+          -cropHeight / 2,
+          cropWidth,
+          cropHeight
+        );
+        ctx.restore();
+      }
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error('Failed to create blob');
+          return;
+        }
+        const fileName = !completedCrop ? 'rotated-image.jpg' : 'cropped-rotated-image.jpg';
+        const file = new File([blob], fileName, { type: 'image/jpeg' });
+        const fileURL = URL.createObjectURL(file);
+
+        setCroppedImage(fileURL);
+        setFile(file);
+        setImageSrc(null);
+        setOpen(false);
+      }, 'image/jpeg');
+    } catch (error) {
+      console.error('Error handling image upload:', error);
+    }
+  };
+
+  const handleCancel = () => {
+    setImageSrc(null);
+    setOpen(false);
+  };
+
+  const handleDeleteImage = () => {
+    setCroppedImage(null);
+    setFile(null);
+    setImageSrc(null);
+  };
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -398,8 +520,9 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
 
             <UploadBox
               onDrop={handleDrop}
+              onDelete={handleDeleteImage}
               placeholder={
-                !file ? (
+                !file && !croppedImage ? (
                   <Stack spacing={0.5} alignItems="center" sx={{ color: 'text.disabled' }}>
                     <Iconify icon="eva:cloud-upload-fill" width={40} />
                     <Typography variant="body2">Upload file</Typography>
@@ -414,28 +537,27 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
                       overflow: 'hidden',
                     }}
                   >
-                    {file.type === 'application/pdf' ? (
+                    {file?.type === 'application/pdf' ? (
                       <iframe
                         src={file.preview || currentPayment?.invoice}
                         width="100%"
                         height="100%"
                         title="pdf-preview"
                       />
-                    ) : file.type?.startsWith('image/') ? (
+                    ) : file?.type?.startsWith('image/') ? (
                       <img
-                        src={currentPayment?.invoice || file.preview}
+                        src={croppedImage || file.preview}
                         alt={file.path}
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                       />
-                    ) : (
-                      <Typography variant="body2">{file.path}</Typography>
-                    )}
-                    {currentPayment?.invoice && (
+                    ) : croppedImage ? (
                       <img
-                        src={currentPayment?.invoice || file.preview}
-                        alt={'ccc'}
+                        src={croppedImage}
+                        alt="uploaded"
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                       />
+                    ) : (
+                      <Typography variant="body2">{file?.path}</Typography>
                     )}
                   </Box>
                 )
@@ -471,6 +593,40 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
         mutate={mutate}
         partyName={partyNameToAdd}
       />
+      <Dialog open={open} onClose={handleCancel}>
+        {imageSrc && (
+          <ReactCrop
+            crop={crop}
+            onChange={(newCrop) => setCrop(newCrop)}
+            onComplete={(newCrop) => setCompletedCrop(newCrop)}
+            aspect={1}
+          >
+            <img
+              id="cropped-image"
+              src={imageSrc}
+              alt="Crop preview"
+              onLoad={resetCrop}
+              style={{ transform: `rotate(${rotation}deg)` }}
+            />
+          </ReactCrop>
+        )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+          <Button variant="outlined" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Box sx={{ display: 'flex' }}>
+            <IconButton onClick={() => rotateImage(-90)} style={{ marginRight: '10px' }}>
+              <Iconify icon="material-symbols:rotate-90-degrees-cw-rounded" />
+            </IconButton>
+            <IconButton onClick={() => rotateImage(90)}>
+              <Iconify icon="material-symbols:rotate-90-degrees-ccw-rounded" />
+            </IconButton>
+          </Box>
+          <Button variant="contained" color="primary" onClick={showCroppedImage}>
+            Save Image
+          </Button>
+        </div>
+      </Dialog>
     </FormProvider>
   );
 }
