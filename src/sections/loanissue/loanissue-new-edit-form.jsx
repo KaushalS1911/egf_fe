@@ -1298,7 +1298,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
                     setValue('chargePaymentMode', value);
-                    handleCharge({ target: { value: watch('chargeCashAmount') || 0 } });
+                    handleCharge({ target: { value: watch('approvalCharge') || 0 } });
                   }}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -1329,16 +1329,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   watch('chargePaymentMode') === 'Both') && (
                   <>
                     <RHFAutocomplete
-                      name="chargeAccount"
-                      label="Account"
-                      req="red"
+                      name='chargeAccount'
+                      label='Account'
+                      req='red'
                       fullWidth
                       options={Array.from(
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item])
-                        ).values()
+                            .map((item) => [item.bankName + item.id, item]),
+                        ).values(),
                       )}
                       getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
