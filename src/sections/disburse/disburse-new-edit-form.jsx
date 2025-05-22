@@ -16,13 +16,13 @@ import { useGetBranch } from '../../api/branch';
 import CardContent from '@mui/material/CardContent';
 import { Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 import axios from 'axios';
-import { paths } from '../../routes/paths';
 import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import { TableHeadCustom, useTable } from '../../components/table';
 import { useAuthContext } from '../../auth/hooks/index.js';
 import { pdf } from '@react-pdf/renderer';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details.jsx';
 import { useGetConfigs } from '../../api/config.js';
+import { paths } from '../../routes/paths.js';
 
 // ----------------------------------------------------------------------
 
@@ -286,7 +286,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
             configs.chargeType.includes('APPROVAL CHARGE')
           ) {
             alert('00002');
-            handleChargeIn(data);
+      handleChargeIn(currentDisburse);
           }
           router.push(paths.dashboard.disburse.list);
           enqueueSnackbar(res?.data?.message);
