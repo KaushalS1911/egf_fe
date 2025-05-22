@@ -319,6 +319,9 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         enqueueSnackbar('ReferanceBy is required', { variant: 'error' });
         return;
       }
+      const cleanedBankDetails = Array.isArray(data.bankDetails)
+        ? data.bankDetails.filter((obj) => Object.values(obj).some((value) => value !== ''))
+        : [];
 
       const payload = {
         status: data.status,
@@ -353,7 +356,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           city: data.tempCity,
           zipcode: data.tempZipcode,
         },
-        bankDetails: data.bankDetails,
+        bankDetails: cleanedBankDetails,
       };
 
       console.log(payload, '000000');

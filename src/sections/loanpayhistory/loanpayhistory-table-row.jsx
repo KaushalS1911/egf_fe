@@ -238,7 +238,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{scheme.interestRate}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.approvalCharge || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.closingCharge || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label
             variant="soft"

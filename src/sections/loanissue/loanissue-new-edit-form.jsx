@@ -9,7 +9,11 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
+import FormProvider, {
+  RHFAutocomplete,
+  RHFTextField,
+  RHFUploadAvatar,
+} from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -100,8 +104,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [rotation, setRotation] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
-  const [selectBankAccount, setSelectBankAccount] = useState(false);
-  const [addBankAccount, setAddBankAccount] = useState(false);
+  const [selectBankAccount, setSelectBankAccount] = useState(
+    customerData?.bankDetails?.length > 0 ? true : false
+  );
+  const [addBankAccount, setAddBankAccount] = useState(
+    customerData?.bankDetails?.length > 0 ? false : true
+  );
   const [approvalChargeValue, setApprovalChargeValue] = useState(0);
   const [chargePaymentModeValue, setChargePaymentModeValue] = useState('');
 
@@ -187,7 +195,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     account: Yup.mixed().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
       is: (paymentMode, selectBankAccount, addBankAccount) => {
-        return selectBankAccount === true && addBankAccount === false && (paymentMode === 'Bank' || paymentMode === 'Both');
+        return (
+          selectBankAccount === true &&
+          addBankAccount === false &&
+          (paymentMode === 'Bank' || paymentMode === 'Both')
+        );
       },
       then: (schema) => schema.required('Account is required'),
       otherwise: (schema) => schema.notRequired(),
@@ -195,7 +207,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     accountNumber: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
       is: (paymentMode, selectBankAccount, addBankAccount) => {
-        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+        return (
+          selectBankAccount === false &&
+          addBankAccount === true &&
+          (paymentMode === 'Bank' || paymentMode === 'Both')
+        );
       },
       then: (schema) => schema.required('Account Number is required'),
       otherwise: (schema) => schema.notRequired(),
@@ -203,7 +219,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     accountType: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
       is: (paymentMode, selectBankAccount, addBankAccount) => {
-        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+        return (
+          selectBankAccount === false &&
+          addBankAccount === true &&
+          (paymentMode === 'Bank' || paymentMode === 'Both')
+        );
       },
       then: (schema) => schema.required('Account Type is required'),
       otherwise: (schema) => schema.notRequired(),
@@ -211,7 +231,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     accountHolderName: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
       is: (paymentMode, selectBankAccount, addBankAccount) => {
-        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+        return (
+          selectBankAccount === false &&
+          addBankAccount === true &&
+          (paymentMode === 'Bank' || paymentMode === 'Both')
+        );
       },
       then: (schema) => schema.required('Account Holder Name is required'),
       otherwise: (schema) => schema.notRequired(),
@@ -219,7 +243,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     IFSC: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
       is: (paymentMode, selectBankAccount, addBankAccount) => {
-        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+        return (
+          selectBankAccount === false &&
+          addBankAccount === true &&
+          (paymentMode === 'Bank' || paymentMode === 'Both')
+        );
       },
       then: (schema) =>
         schema
@@ -230,7 +258,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     bankName: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
       is: (paymentMode, selectBankAccount, addBankAccount) => {
-        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+        return (
+          selectBankAccount === false &&
+          addBankAccount === true &&
+          (paymentMode === 'Bank' || paymentMode === 'Both')
+        );
       },
       then: (schema) => schema.required('Bank Name is required'),
       otherwise: (schema) => schema.notRequired(),
@@ -238,7 +270,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
 
     branchName: Yup.string().when(['paymentMode', 'selectBankAccount', 'addBankAccount'], {
       is: (paymentMode, selectBankAccount, addBankAccount) => {
-        return selectBankAccount === false && addBankAccount === true && (paymentMode === 'Bank' || paymentMode === 'Both');
+        return (
+          selectBankAccount === false &&
+          addBankAccount === true &&
+          (paymentMode === 'Bank' || paymentMode === 'Both')
+        );
       },
       then: (schema) => schema.required('Branch Name is required'),
       otherwise: (schema) => schema.notRequired(),
@@ -1336,16 +1372,16 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   watch('chargePaymentMode') === 'Both') && (
                   <>
                     <RHFAutocomplete
-                      name='chargeAccount'
-                      label='Account'
-                      req='red'
+                      name="chargeAccount"
+                      label="Account"
+                      req="red"
                       fullWidth
                       options={Array.from(
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item]),
-                        ).values(),
+                            .map((item) => [item.bankName + item.id, item])
+                        ).values()
                       )}
                       getOptionLabel={(option) => option.bankName || ''}
                       renderOption={(props, option) => (
@@ -1942,19 +1978,21 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                     }}
                   >
                     <Box>
-                      <Button
-                        variant="contained"
-                        disabled={!isFieldsEnabled}
-                        onClick={() => {
-                          setSelectBankAccount(true);
-                          setAddBankAccount(false);
-                          setValue('selectBankAccount', true);
-                          setValue('addBankAccount', false);
-                        }}
-                        sx={{ fontWeight: 'bold', textDecoration: 'none' }}
-                      >
-                        Select Account
-                      </Button>{' '}
+                      {customerData.bankDetails.length > 0 && (
+                        <Button
+                          variant="contained"
+                          disabled={!isFieldsEnabled}
+                          onClick={() => {
+                            setSelectBankAccount(true);
+                            setAddBankAccount(false);
+                            setValue('selectBankAccount', true);
+                            setValue('addBankAccount', false);
+                          }}
+                          sx={{ fontWeight: 'bold', textDecoration: 'none', mx: 1 }}
+                        >
+                          Select Account
+                        </Button>
+                      )}
                       <Button
                         variant="contained"
                         disabled={!isFieldsEnabled}
