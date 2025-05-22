@@ -89,7 +89,7 @@ export default function CashInListView() {
   const [openAdjustDialog, setOpenAdjustDialog] = useState(false);
   const { transfer, mutate: transferMutate } = useGetTransfer();
   const storedBranch = sessionStorage.getItem('selectedBranch');
-  const [currentTransfer, setCurrentTransfer] = useState({});
+  const [currentTransfer, setCurrentTransfer] = useState(null);
   const { branch } = useGetBranch();
 
   const dataFiltered = applyFilter({
@@ -283,7 +283,7 @@ export default function CashInListView() {
 
       if (currentTransfer) {
         res = await axios.put(apiUrl, payload);
-        setCurrentTransfer({});
+        setCurrentTransfer(null);
       } else {
         res = await axios.post(apiUrl, payload);
       }
