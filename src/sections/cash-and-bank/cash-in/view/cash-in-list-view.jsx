@@ -199,7 +199,7 @@ export default function CashInListView() {
     adjustmentType: currentTransfer?.adjustmentType || null,
     amount: currentTransfer?.paymentDetail?.amount || '',
     adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
-    desc: '',
+    desc: currentTransfer?.desc || '',
   };
   const adjustSchema = Yup.object().shape({
     adjustmentType: Yup.string().required('Adjustment type is required'),
@@ -247,6 +247,7 @@ export default function CashInListView() {
       const payload = {
         branch: selectedBranchId,
         transferType: 'Adjustment',
+        desc: values.desc,
         paymentDetails: {
           amount: Number(values.amount),
           adjustmentType: values.adjustmentType,
