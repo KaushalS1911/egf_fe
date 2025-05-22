@@ -5,24 +5,17 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import { useForm } from 'react-hook-form';
-import FormProvider, { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form';
 import RHFDatePicker from 'src/components/hook-form/rhf-date-picker';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useGetBranch } from '../../../../api/branch.js';
 import axios from 'axios';
-import { mutate } from 'swr';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
 import { useSnackbar } from '../../../../components/snackbar/index.js';
 import { useGetTransfer } from '../../../../api/transfer.js';
-
-const accountList = [
-  { label: 'CROSS VISION TECHNOLOGY', value: 'bank1' },
-  { label: 'ANOTHER BANK', value: 'bank2' },
-];
 
 export default function TransferDialog({
   open,
@@ -50,7 +43,7 @@ export default function TransferDialog({
     to: currentTransfer?.paymentDetails?.to || null,
     amount: currentTransfer?.paymentDetails?.amount || 0,
     desc: currentTransfer?.desc || '',
-    adjustmentType: currentTransfer?.adjustmentType || '',
+    adjustmentType: currentTransfer?.paymentDetails?.adjustmentType || '',
     adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
     transferType: currentTransfer?.transferType || transferType,
   };
@@ -125,6 +118,7 @@ export default function TransferDialog({
 
     const selectedBranchId =
       parsedBranch === 'all' ? values?.branch?.value || branch?.[0]?._id : parsedBranch;
+
     let payload = {
       branch: selectedBranchId,
       company: user.company,
@@ -172,7 +166,7 @@ export default function TransferDialog({
       } else {
         res = await axios.post(apiUrl, payload);
       }
-      bankTransactionsMutate;
+      bankTransactionsMutate();
       mutate();
       reset();
       enqueueSnackbar(res.data.message);
@@ -249,8 +243,8 @@ export default function TransferDialog({
                   new Map(
                     branch
                       ?.flatMap((item) => item.company.bankAccounts || [])
-                      .filter((account) => account._id !== watch('from')?._id) // ✅ exclude selected 'from'
-                      .map((account) => [account._id, account]) // ✅ ensure uniqueness
+                      .filter((account) => account._id !== watch('from')?._id)
+                      .map((account) => [account._id, account])
                   ).values()
                 )}
                 getOptionLabel={(option) => option?.bankName || ''}
@@ -262,7 +256,6 @@ export default function TransferDialog({
                 isOptionEqualToValue={(option, value) => option._id === value?._id}
               />
             )}
-
             {watchTransferType === 'Bank To Cash' && (
               <RHFTextField
                 name="to"

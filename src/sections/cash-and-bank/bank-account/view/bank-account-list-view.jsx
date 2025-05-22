@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -9,21 +9,20 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths.js';
-import { useRouter } from 'src/routes/hooks/index.js';
 import { useBoolean } from 'src/hooks/use-boolean.js';
 import Iconify from 'src/components/iconify/index.js';
 import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table/index.js';
 import BankAccountTableToolbar from '../bank-account-table-toolbar.jsx';
 import BankAccountTableFiltersResult from '../bank-account-table-filters-result.jsx';
@@ -82,6 +81,7 @@ export default function BankAccountListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
   useEffect(() => {
     setFilters({ ...defaultFilters, account: accountDetails });
   }, [accountDetails]);
@@ -109,7 +109,6 @@ export default function BankAccountListView() {
 
   const handleFilters = useCallback(
     (name, value) => {
-      console.log('name', value);
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -157,7 +156,6 @@ export default function BankAccountListView() {
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete(id);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage?.length, enqueueSnackbar, table]
@@ -211,7 +209,7 @@ export default function BankAccountListView() {
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
           transferType={selectedType}
-          mutate={mutate}
+          bankTransactionsMutate={mutate}
           currentTransferId={currentTransferId}
           setCurrentTransferId={setCurrentTransferId}
         />
