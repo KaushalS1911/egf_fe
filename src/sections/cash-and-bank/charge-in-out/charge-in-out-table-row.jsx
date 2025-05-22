@@ -64,7 +64,7 @@ export default function ChargeInOutTableRow({
           {row?.paymentDetails?.bankAmount || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetails?.account?.bankName || '-'}
+          {row?.paymentDetails?.account?.bankName || row?.paymentDetails?.account?.accountHolderName ? `${row?.paymentDetails?.account?.bankName}(${row?.paymentDetails?.account?.accountHolderName})` : '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
