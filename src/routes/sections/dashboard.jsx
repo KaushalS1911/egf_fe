@@ -9,6 +9,7 @@ import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 import GoldLoanCalculator from '../../sections/goldloancalculator/gold-loan-calculator';
 import Notice from '../../sections/reminder/view/notice';
 import OtherDailyReportsListView from 'src/sections/reports/view/other-loan-daily-report';
+import DayBookListView from '../../sections/cash-and-bank/day-book/view/day-book-list-view.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -349,10 +350,10 @@ export const dashboardRoutes = [
           { path: 'expense/list', element: <ExpenseListView /> },
           { path: 'expense/new', element: <ExpenseCreateView /> },
           { path: 'expense/:id/edit', element: <ExpenseEditView /> },
-
           { path: 'charge-in-out/list', element: <ChargeInOutListView /> },
           { path: 'charge-in-out/new', element: <ChargeInOutCreateView /> },
           { path: 'charge-in-out/:id/edit', element: <ChargeInOutEditView /> },
+          { path: 'day-book/list', element: <DayBookListView /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },

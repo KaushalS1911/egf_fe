@@ -265,6 +265,10 @@ export function useNavData() {
                 title: t('Charge in/out'),
                 path: paths.dashboard.cashAndBank.chargeInOut.list,
               },
+              {
+                title: t('day book'),
+                path: paths.dashboard.cashAndBank['day-book'].list,
+              },
             ],
           },
           {

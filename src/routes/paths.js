@@ -238,10 +238,8 @@ export const paths = {
         new: `${ROOTS.DASHBOARD}/cash-and-bank/payment-in-out/new`,
         edit: (id) => `${ROOTS.DASHBOARD}/cash-and-bank/payment-in-out/${id}/edit`,
       },
-      otherIncome: {
-        list: `${ROOTS.DASHBOARD}/cash-and-bank/other-income/list`,
-        new: `${ROOTS.DASHBOARD}/cash-and-bank/other-income/new`,
-        edit: (id) => `${ROOTS.DASHBOARD}/cash-and-bank/other-income/${id}/edit`,
+      'day-book': {
+        list: `${ROOTS.DASHBOARD}/cash-and-bank/day-book/list`,
       },
       chargeInOut: {
         list: `${ROOTS.DASHBOARD}/cash-and-bank/charge-in-out/list`,
