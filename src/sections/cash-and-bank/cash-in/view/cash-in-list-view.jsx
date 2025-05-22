@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -81,7 +81,6 @@ export default function CashInListView() {
   const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
-  const router = useRouter();
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
@@ -172,14 +171,32 @@ export default function CashInListView() {
     });
   }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
 
-  const handleEditRow = useCallback(
-    (id) => {
-      const currentTransfer = transfer?.find((item) => item?._id === id);
-      setCurrentTransfer(currentTransfer);
-      setOpenAdjustDialog(true);
-    },
-    [router]
-  );
+  const handleEditRow = (id) => {
+    const currentTransfer = transfer?.find((item) => item?._id === id);
+    console.log('Found transfer:', currentTransfer);
+    setCurrentTransfer(currentTransfer);
+    setOpenAdjustDialog(true);
+  };
+
+  // Add this useEffect to handle form reset when currentTransfer changes
+  useEffect(() => {
+    if (currentTransfer && openAdjustDialog) {
+      const newValues = {
+        branch: currentTransfer?.branch
+          ? {
+              label: currentTransfer?.branch?.name,
+              value: currentTransfer?.branch?._id,
+            }
+          : null,
+        adjustmentType: currentTransfer?.paymentDetails?.adjustmentType || null,
+        amount: currentTransfer?.paymentDetails?.amount || '',
+        adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
+        desc: currentTransfer?.desc || '',
+      };
+      console.log('Resetting form with values:', newValues);
+      resetAdjustForm(newValues);
+    }
+  }, [currentTransfer, openAdjustDialog]);
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
@@ -189,18 +206,22 @@ export default function CashInListView() {
   );
 
   // Form setup for Adjust Cash
-  const adjustDefaultValues = {
-    branch: currentTransfer
-      ? {
-          label: currentTransfer?.branch?.name,
-          value: currentTransfer?.branch?._id,
-        }
-      : null,
-    adjustmentType: currentTransfer?.adjustmentType || null,
-    amount: currentTransfer?.paymentDetail?.amount || '',
-    adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
-    desc: currentTransfer?.desc || '',
-  };
+  const adjustDefaultValues = useMemo(
+    () => ({
+      branch: currentTransfer
+        ? {
+            label: currentTransfer?.branch?.name,
+            value: currentTransfer?.branch?._id,
+          }
+        : null,
+      adjustmentType: currentTransfer?.paymentDetails?.adjustmentType || null,
+      amount: currentTransfer?.paymentDetails?.amount || '',
+      adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
+      desc: currentTransfer?.desc || '',
+    }),
+    [currentTransfer]
+  );
+
   const adjustSchema = Yup.object().shape({
     adjustmentType: Yup.string().required('Adjustment type is required'),
     amount: Yup.number()
