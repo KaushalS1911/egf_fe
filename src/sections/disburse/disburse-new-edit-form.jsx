@@ -22,7 +22,6 @@ import { useAuthContext } from '../../auth/hooks/index.js';
 import { pdf } from '@react-pdf/renderer';
 import LoanIssueDetails from '../loanissue/view/loan-issue-details.jsx';
 import { useGetConfigs } from '../../api/config.js';
-import { paths } from '../../routes/paths.js';
 
 // ----------------------------------------------------------------------
 
@@ -278,23 +277,22 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
       const requestMethod = currentDisburse.status === 'Disbursed' ? axios.put : axios.post;
 
-      requestMethod(url, payload)
-        .then((res) => {
-          if (
-            data.approvalCharge > 0 &&
-            currentDisburse.status === 'Issued' &&
-            configs.chargeType.includes('APPROVAL CHARGE')
-          ) {
-            alert('00002');
+      // requestMethod(url, payload)
+      //   .then((res) => {
+      //     if (
+      //       data.approvalCharge > 0 &&
+      //       currentDisburse.status === 'Issued' &&
+      //       configs.chargeType.includes('APPROVAL CHARGE')
+      //     ) {
       handleChargeIn(currentDisburse);
-          }
-          router.push(paths.dashboard.disburse.list);
-          enqueueSnackbar(res?.data?.message);
-          if (currentDisburse.approvalCharge > 0) {
-            sendPdfToWhatsApp(res.data.data);
-          }
-        })
-        .catch((err) => enqueueSnackbar(err.response?.data?.message));
+      //   }
+      //   router.push(paths.dashboard.disburse.list);
+      //   enqueueSnackbar(res?.data?.message);
+      //   if (currentDisburse.approvalCharge > 0) {
+      //     sendPdfToWhatsApp(res.data.data);
+      //   }
+      // })
+      // .catch((err) => enqueueSnackbar(err.response?.data?.message));
 
       if (currentDisburse.status === 'Disbursed') {
         mutate();
@@ -391,6 +389,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         date: new Date(),
         branch: currentDisburse?.customer?.branch?._id,
         status: 'Payment In',
+        category: 'charge',
         paymentDetails: data?.chargePaymentDetail,
       };
       const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);

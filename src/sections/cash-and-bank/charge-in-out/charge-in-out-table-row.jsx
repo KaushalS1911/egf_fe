@@ -25,6 +25,7 @@ export default function ChargeInOutTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
+  console.log(row);
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -48,23 +49,24 @@ export default function ChargeInOutTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.chargeType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetails?.paymentMode}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetails?.paymentMode || row?.paymentDetails?.mode}</TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
           }}
         >
-          {row?.paymentDetails?.cashAmount || 0}
+          {row?.paymentDetails?.cashAmount || row?.paymentDetails?.mode == 'Cash' ? row?.paymentDetails?.chargeCashAmount : 0 || 0}
         </TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
           }}
         >
-          {row?.paymentDetails?.bankAmount || 0}
+          {row?.paymentDetails?.bankAmount || row?.paymentDetails?.mode == 'Bank' ? row?.paymentDetails?.chargeCashAmount : 0 || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetails?.account?.bankName || row?.paymentDetails?.account?.accountHolderName ? `${row?.paymentDetails?.account?.bankName}(${row?.paymentDetails?.account?.accountHolderName})` : '-'}
+          {row?.paymentDetails?.account?.bankName || row?.paymentDetails?.bankName || row?.paymentDetails?.mode == 'Bank' ? `${row?.paymentDetails?.chargeAccount?.bankName}(${row?.paymentDetails?.chargeAccount?.accountHolderName})` : '' || row?.paymentDetails?.account?.accountHolderName ? `${row?.paymentDetails?.account?.bankName}(${row?.paymentDetails?.account?.accountHolderName})` : '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
