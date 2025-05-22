@@ -81,7 +81,6 @@ export default function CashInListView() {
   const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
-  const router = useRouter();
   const confirm = useBoolean();
   const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
