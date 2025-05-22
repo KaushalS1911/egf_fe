@@ -42,7 +42,9 @@ export default function DayBookTableRow({ row, selected, onEditRow, onSelectRow,
           </TableCell>{' '}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.status}`}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.detail} (${row.ref})`}</TableCell>{' '}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.ref ? `${row.detail} (${row.ref})` : row.detail}
+        </TableCell>{' '}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label
             variant="soft"

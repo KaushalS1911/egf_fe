@@ -192,7 +192,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     ...(selectBankAccount && {
       account: Yup.mixed().required('Account is required'),
     }),
-    ...(!selectBankAccount && {
+    ...(addBankAccount && {
       accountNumber: Yup.string().required('Account Number is required'),
       accountType: Yup.string().required('Account Type is required'),
       accountHolderName: Yup.string().required('Account Holder Name is required'),
@@ -1811,6 +1811,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   )}
                   onChange={(event, value) => {
                     setValue('paymentMode', value);
+                    if (value == 'Cash') {
+                      setAddBankAccount(false);
+                      setSelectBankAccount(false);
+                    }
                     handleLoanAmountChange({
                       target: {
                         value: getValues('loanAmount'),
