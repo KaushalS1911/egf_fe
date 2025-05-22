@@ -47,7 +47,9 @@ export default function BankAccountTableRow({
           </TableCell>{' '}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.status}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{`${row.bankName}(${row?.bankHolderName})`}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap' }}
+        >{`${row.bankName}(${row?.bankHolderName})`}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.ref ? `${row.detail} (${row.ref})` : row.detail}
         </TableCell>
@@ -69,16 +71,20 @@ export default function BankAccountTableRow({
         >
           {row.amount}
         </TableCell>
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('delete_scheme', configs, user) ||
-          getResponsibilityValue('update_scheme', configs, user) ? (
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          ) : (
-            ''
-          )}
-        </TableCell>
+        {['Bank To Bank', 'Bank To Cash', 'Cash To Bank', 'Adjust Bank Balance'].includes(
+          row.status
+        ) ? (
+          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+            {getResponsibilityValue('delete_scheme', configs, user) ||
+            getResponsibilityValue('update_scheme', configs, user) ? (
+              <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+                <Iconify icon="eva:more-vertical-fill" />
+              </IconButton>
+            ) : null}
+          </TableCell>
+        ) : (
+          <TableCell></TableCell>
+        )}
       </TableRow>
       <CustomPopover
         open={popover.open}

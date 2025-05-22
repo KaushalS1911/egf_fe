@@ -36,6 +36,8 @@ export default function ExpenseNewEditForm({ currentExpense }) {
   const [paymentMode, setPaymentMode] = useState('');
   const { branch } = useGetBranch();
   const [file, setFile] = useState(currentExpense ? currentExpense?.invoice : null);
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -76,10 +78,22 @@ export default function ExpenseNewEditForm({ currentExpense }) {
     category: Yup.string().required('category  is required'),
     paymentMode: Yup.string().required('paymentMode  is required'),
     date: Yup.date().typeError('Please enter a valid date').required('Date is required'),
+    branch: Yup.object().when([], {
+      is: () => user?.role === 'Admin' && storedBranch === 'all',
+      then: (schema) => schema.required('Branch is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
+
     ...paymentSchema,
   });
   const defaultValues = useMemo(
     () => ({
+      branch: currentExpense
+        ? {
+            label: currentExpense?.branch?.name,
+            value: currentExpense?.branch?._id,
+          }
+        : null,
       expenseType: currentExpense?.expenseType || '',
       category: currentExpense?.category || '',
       date: currentExpense?.date ? new Date(currentExpense?.date) : new Date(),
@@ -123,6 +137,17 @@ export default function ExpenseNewEditForm({ currentExpense }) {
   }, [watch('valuation'), configs.goldRate, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
+    let parsedBranch = storedBranch;
+    if (storedBranch !== 'all') {
+      try {
+        parsedBranch = storedBranch;
+      } catch (error) {
+        console.error('Error parsing storedBranch:', error);
+      }
+    }
+    const selectedBranchId =
+      parsedBranch === 'all' ? data?.branchId?.value || branch?.[0]?._id : parsedBranch;
+
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
@@ -152,6 +177,7 @@ export default function ExpenseNewEditForm({ currentExpense }) {
     }
     const formData = new FormData();
 
+    formData.append('branch', selectedBranchId);
     formData.append('expenseType', data?.expenseType);
     formData.append('description', data?.description);
     formData.append('category', data?.category);
@@ -226,6 +252,21 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              {user?.role === 'Admin' && storedBranch === 'all' && (
+                <RHFAutocomplete
+                  name="branch"
+                  req={'red'}
+                  label="Branch"
+                  placeholder="Choose a Branch"
+                  options={
+                    branch?.map((branchItem) => ({
+                      label: branchItem?.name,
+                      value: branchItem?._id,
+                    })) || []
+                  }
+                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                />
+              )}
               <RHFAutocomplete
                 name="expenseType"
                 label="Expense Type"

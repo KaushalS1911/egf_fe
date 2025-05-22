@@ -61,16 +61,20 @@ export default function CashInTableRow({ row, selected, onEditRow, onSelectRow, 
         >
           {row.amount}
         </TableCell>
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('delete_scheme', configs, user) ||
-          getResponsibilityValue('update_scheme', configs, user) ? (
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          ) : (
-            ''
-          )}
-        </TableCell>
+        {row.status === 'Adjustment' ? (
+          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+            {getResponsibilityValue('delete_scheme', configs, user) ||
+            getResponsibilityValue('update_scheme', configs, user) ? (
+              <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+                <Iconify icon="eva:more-vertical-fill" />
+              </IconButton>
+            ) : (
+              ''
+            )}
+          </TableCell>
+        ) : (
+          <TableCell></TableCell>
+        )}
       </TableRow>
       <CustomPopover
         open={popover.open}

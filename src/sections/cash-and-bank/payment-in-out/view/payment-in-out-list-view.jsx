@@ -102,7 +102,15 @@ export default function PaymentInOutListView() {
       dataFiltered.length > 0 && fetchStates();
     }
   }, [payment]);
+  const receivableAmt = party.reduce(
+    (prev, next) => prev + (Number(next.amount >= 0 && next?.amount) || 0),
+    0
+  );
 
+  const payableAmt = party.reduce(
+    (prev, next) => prev + (Number(next.amount <= 0 && next?.amount) || 0),
+    0
+  );
   const receivable = dataFiltered.reduce((prev, next) => {
     if (next.status === 'Payment In') {
       const cash = Number(next?.paymentDetails?.cashAmount || 0);
@@ -161,6 +169,7 @@ export default function PaymentInOutListView() {
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
       mutate();
+      mutateParty();
     } catch (err) {
       enqueueSnackbar('Failed to delete Payment');
     }
@@ -224,16 +233,37 @@ export default function PaymentInOutListView() {
               Payment In/Out :{' '}
               <strong style={{ marginLeft: 200 }}>
                 Receivable : -
-                <span style={{ color: 'green', marginLeft: 10 }}>
-                  {Number(receivable).toFixed(2)}
+                <span
+                  style={{
+                    color: 'green',
+                    marginLeft: 10,
+                  }}
+                >
+                  {Object.entries(filters).some(([key, val]) => {
+                    if (val === null || val === '') return false;
+                    if (typeof val === 'object') {
+                      // Check if it's a non-empty object (like party) or a Date object
+                      return val instanceof Date || Object.keys(val).length > 0;
+                    }
+                    return true;
+                  })
+                    ? receivable.toFixed(2)
+                    : receivableAmt.toFixed(2)}
                 </span>
               </strong>
               <strong style={{ marginLeft: 20 }}>
                 Payable : -
                 <span style={{ color: 'red', marginLeft: 10 }}>
-                  {Object.values(filters).some(Boolean)
-                    ? Math.abs(payable).toFixed(2)
-                    : payable.toFixed(2)}
+                  {Object.entries(filters).some(([key, val]) => {
+                    if (val === null || val === '') return false;
+                    if (typeof val === 'object') {
+                      // Check if it's a non-empty object (like party) or a Date object
+                      return val instanceof Date || Object.keys(val).length > 0;
+                    }
+                    return true;
+                  })
+                    ? payable.toFixed(2)
+                    : Math.abs(payableAmt).toFixed(2)}
                 </span>
               </strong>
             </Typography>
@@ -419,7 +449,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name && name?.trim()) {
     inputData = inputData.filter(
       (item) =>
-        item?.party.name?.toLowerCase().includes(name?.toLowerCase()) ||
+        item?.party?.name?.toLowerCase().includes(name?.toLowerCase()) ||
         item?.receiptNo?.toLowerCase().includes(name?.toLowerCase()) ||
         item?.description?.toLowerCase().includes(name?.toLowerCase())
     );
