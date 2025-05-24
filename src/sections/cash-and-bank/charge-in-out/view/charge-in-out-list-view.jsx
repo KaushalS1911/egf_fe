@@ -126,12 +126,12 @@ export default function ChargeInOutListView() {
       }
       if (item.status === 'Payment In') {
         totals[chargeType] +=
-          Number(item?.paymentDetails?.cashAmount || 0) +
-          Number(item?.paymentDetails?.bankAmount || 0);
+          Number(item?.paymentDetails?.cashAmount || item?.paymentDetails?.chargeCashAmount || 0) +
+          Number(item?.paymentDetails?.bankAmount || item?.paymentDetails?.chargeBankAmount || 0);
       } else if (item.status === 'Payment Out') {
         totals[chargeType] -=
-          Number(item?.paymentDetails?.cashAmount || 0) +
-          Number(item?.paymentDetails?.bankAmount || 0);
+          Number(item?.paymentDetails?.cashAmount || item?.paymentDetails?.chargeCashAmount || 0) +
+          Number(item?.paymentDetails?.bankAmount || item?.paymentDetails?.chargeBankAmount || 0);
       }
     });
     return Object.entries(totals).map(([chargeType, amount]) => ({
