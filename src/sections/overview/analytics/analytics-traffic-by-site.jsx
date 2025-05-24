@@ -9,6 +9,12 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
+const formatCurrency = (value) =>
+  `₹ ${Number(value).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+
 export default function AnalyticsTrafficBySite({ title, list = [] }) {
   const [totalItem, ...averages] = list;
 
@@ -42,7 +48,7 @@ export default function AnalyticsTrafficBySite({ title, list = [] }) {
                 {totalItem.label}
               </Typography>
               <Typography variant='h6'>
-                {new Intl.NumberFormat().format(totalItem.value)}
+                {formatCurrency(totalItem.value)}
               </Typography>
             </Box>
           </Stack>
@@ -59,7 +65,7 @@ export default function AnalyticsTrafficBySite({ title, list = [] }) {
               <Typography variant='body2'>{item.label}</Typography>
             </Stack>
             <Typography variant='h6'>
-              {new Intl.NumberFormat().format(item.value)}
+              {formatCurrency(item.value)}
             </Typography>
           </Paper>
         ))}

@@ -29,6 +29,12 @@ export default function AppAreaInstalled({ title, subheader, chart, ...other }) 
   const [seriesData, setSeriesData] = useState(series?.[0]?.type || 'Week');
   const selectedSeries = series.find((item) => item.type === seriesData);
 
+  const formatCurrency = (value) =>
+    `₹ ${Number(value).toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+
   const chartOptions = useChart({
     colors: selectedSeries?.data.map((_, index) => {
       const palette = [
@@ -55,6 +61,16 @@ export default function AppAreaInstalled({ title, subheader, chart, ...other }) 
       horizontalAlign: 'right',
       markers: {
         radius: 12,
+      },
+    },
+    tooltip: {
+      y: {
+        formatter: formatCurrency,
+      },
+    },
+    yaxis: {
+      labels: {
+        formatter: formatCurrency,
       },
     },
     ...options,

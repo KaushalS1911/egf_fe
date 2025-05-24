@@ -10,8 +10,15 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import { fNumber } from 'src/utils/format-number';
 import Chart, { useChart } from 'src/components/chart';
+
+// ----------------------------------------------------------------------
+
+const formatCurrency = (value) =>
+  `₹ ${Number(value).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +48,7 @@ export default function AnalyticsConversionRates({
       shared: true,
       intersect: false,
       y: {
-        formatter: (value) => fNumber(value),
+        formatter: (value) => formatCurrency(value),
         title: {
           formatter: (seriesName) => seriesName,
         },
@@ -144,14 +151,14 @@ AnalyticsConversionRates.propTypes = {
   }),
   footer: PropTypes.shape({
     interestRate: PropTypes.string,
-    amount: PropTypes.string,
+    amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }),
   onTimeRangeChange: PropTypes.func,
   timeRangeOptions: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string,
       value: PropTypes.string,
-    }),
+    })
   ),
 };
 

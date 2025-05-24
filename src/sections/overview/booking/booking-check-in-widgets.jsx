@@ -17,7 +17,14 @@ const formatNumberWithCommas = (number) => {
   if (number == null || isNaN(number)) {
     return 'No data';
   }
-  return number.toLocaleString();
+
+  const [whole, decimal] = number.toString().split('.');
+
+  const lastThree = whole.slice(-3);
+  const otherNumbers = whole.slice(0, -3);
+
+  const formattedWhole = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + (otherNumbers ? ',' : '') + lastThree;
+  return decimal ? `${formattedWhole}.${decimal}` : formattedWhole;
 };
 
 // ----------------------------------------------------------------------
@@ -27,7 +34,7 @@ export default function BookingCheckInWidgets({
                                                 title,
                                                 subheader,
                                                 onTimeRangeChange,
-                                                timeRangeOptions = [],
+                                                timeRangeOptions,
                                                 chartTitle,
                                                 ...other
                                               }) {
@@ -61,26 +68,30 @@ export default function BookingCheckInWidgets({
             subheader={subheader}
             sx={{ mb: 2 }}
             action={
-              <FormControl size='small'>
-                <InputLabel id='time-range-select'>Range</InputLabel>
-                <Select
-                  labelId='time-range-select'
-                  id='time-range'
-                  value={timeRange}
-                  label='Range'
-                  onChange={handleChange}
-                >
-                  {timeRangeOptions.length > 0 ? (
-                    timeRangeOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem value=''>No options</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
+              timeRangeOptions && (
+                <Box>
+                  <FormControl size='small'>
+                    <InputLabel id='time-range-select'>Range</InputLabel>
+                    <Select
+                      labelId='time-range-select'
+                      id='time-range'
+                      value={timeRange}
+                      label='Range'
+                      onChange={handleChange}
+                    >
+                      {timeRangeOptions.length > 0 ? (
+                        timeRangeOptions.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem value=''>No options</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                </Box>
+              )
             }
           />
         </Box>

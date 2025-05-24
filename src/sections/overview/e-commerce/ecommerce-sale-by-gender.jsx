@@ -13,7 +13,11 @@ const StyledChart = styled(Chart)(({ theme }) => ({
   },
 }));
 
-const formatCurrency = (value) => `${parseFloat(value).toFixed(2)} ₹`;
+const formatCurrency = (value) =>
+  `₹ ${Number(value).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 
 export default function EcommerceSaleByGender({
                                                 title,
@@ -81,7 +85,7 @@ export default function EcommerceSaleByGender({
             label: 'Total',
             fontSize: '16px',
             fontWeight: 600,
-            formatter: () => `${totalValue.toFixed(2)} ₹`,
+            formatter: () => formatCurrency(totalValue),
           },
         },
       },
@@ -94,11 +98,11 @@ export default function EcommerceSaleByGender({
         const percentage = series[seriesIndex].toFixed(1);
         const rawValue = rawValues[seriesIndex] || 0;
         return `
-      <div style='padding:8px; display:flex; align-items:center; font-weight:600; font-size:14px;'>
-        <span style='width:12px; height:12px; border-radius:50%; background:${color}; display:inline-block; margin-right:8px;'></span>
-        <span>${label}: ${percentage}% (${rawValue.toFixed(2)} ₹)</span>
-      </div>
-    `;
+          <div style='padding:8px; display:flex; align-items:center; font-weight:600; font-size:14px;'>
+            <span style='width:12px; height:12px; border-radius:50%; background:${color}; display:inline-block; margin-right:8px;'></span>
+            <span>${label}: ${percentage}% (${formatCurrency(rawValue)})</span>
+          </div>
+        `;
       },
     },
     legend: { show: false },
@@ -133,27 +137,37 @@ export default function EcommerceSaleByGender({
                 component='span'
                 sx={{ color: colors[0][1], fontWeight: 'bold' }}
               >
-                {cash.toFixed(2)}
+                {formatCurrency(cash)}
               </Box>
               {' + '}
               <Box
                 component='span'
                 sx={{ color: colors[1][1], fontWeight: 'bold' }}
               >
-                {bank.toFixed(2)}
+                {formatCurrency(bank)}
               </Box>
               {' = '}
               <Box
                 component='span'
                 sx={{ color: 'text.primary', fontWeight: 'bold' }}
               >
-                {total}
+                {formatCurrency(total)}
               </Box>
               {' Total (Cash + Bank)'}
             </Typography>
-            <Stack direction='row' justifyContent='center' spacing={3} sx={{ mt: 2 }}>
+            <Stack
+              direction='row'
+              justifyContent='center'
+              spacing={3}
+              sx={{ mt: 2 }}
+            >
               {series.map((item, index) => (
-                <Stack key={index} direction='row' alignItems='center' spacing={1}>
+                <Stack
+                  key={index}
+                  direction='row'
+                  alignItems='center'
+                  spacing={1}
+                >
                   <Box
                     sx={{
                       width: 12,

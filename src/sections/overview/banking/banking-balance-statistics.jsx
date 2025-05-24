@@ -12,6 +12,12 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
+const formatCurrency = (value) =>
+  `₹ ${Number(value).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+
 export default function BankingBalanceStatistics({ title, subheader, chart, ...other }) {
   if (!chart || !Array.isArray(chart.series) || chart.series.length === 0) {
     return (
@@ -43,7 +49,7 @@ export default function BankingBalanceStatistics({ title, subheader, chart, ...o
     },
     tooltip: {
       y: {
-        formatter: (value) => `$${value}`,
+        formatter: (value) => formatCurrency(value),
       },
     },
     ...options,

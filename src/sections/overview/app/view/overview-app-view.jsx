@@ -32,6 +32,8 @@ import { useGetLoanissue } from '../../../../api/loanissue.js';
 import { useRouter } from '../../../../routes/hooks/index.js';
 import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
+import { useGetCashTransactions } from '../../../../api/cash-transactions.js';
+import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
 
 const timeRangeOptions = [
   { label: 'All', value: 'all' },
@@ -67,11 +69,47 @@ export default function OverviewAppView() {
     differenceRange: 'this_month',
   });
 
+  const getTotalSummary = (cashTransactions = [], bankTransactions = {}) => {
+    const allTransactions = [
+      ...cashTransactions,
+      ...(bankTransactions.transactions ?? []),
+    ];
+
+    const summary = allTransactions.reduce(
+      (acc, tx) => {
+        const amount = Number(tx.amount) || 0;
+        if (tx.category === 'Payment In') {
+          acc.paymentIn += amount;
+        } else if (tx.category === 'Payment Out') {
+          acc.paymentOut += amount;
+        }
+        return acc;
+      },
+      { paymentIn: 0, paymentOut: 0 },
+    );
+
+    const difference = summary.paymentIn - summary.paymentOut;
+    return {
+      paymentIn: summary.paymentIn.toFixed(2),
+      paymentOut: summary.paymentOut.toFixed(2),
+      difference: difference.toFixed(2),
+    };
+  };
+
   const { SchemeLoanSummary } = useGetSchemeLoanSummary(ranges?.schemeLoanSummaryRange);
   const { InquirySummary } = useGetInquirySummary(ranges?.inquiryRange);
   const { PortfolioSummary } = useGetPortfolioSummary();
   const { OtherLoanChart } = useGetOtherLoanChart();
   const { LoanChart } = useGetLoanChart();
+  const { cashTransactions } = useGetCashTransactions();
+  const { bankTransactions } = useGetBankTransactions();
+
+  const totalPaymentSummary = React.useMemo(() => {
+    if (!cashTransactions || !bankTransactions) {
+      return { paymentIn: 0, paymentOut: 0, difference: 0 };
+    }
+    return getTotalSummary(cashTransactions, bankTransactions);
+  }, [cashTransactions, bankTransactions]);
 
   const { ReferenceAreaSummary: customerData } = useGetReferenceAreaSummary(
     ranges?.customerRange,
@@ -122,7 +160,7 @@ export default function OverviewAppView() {
     <EcommerceSaleByGender
       chart={{
         series: [
-          { label: 'Bank', value: 4000 },
+          { label: 'Bank', value: 40000 },
           { label: 'Cash', value: 5000 },
         ],
       }}
@@ -464,18 +502,28 @@ export default function OverviewAppView() {
               <AnalyticsTrafficBySite title='Traffic by Site' list={analyticsData} />
             </Grid>
             <Grid item xs={12} md={12} lg={12}>
-              <AppAreaInstalled
-                title='Loan Graph'
-                chart={LoanChart}
+              <BookingCheckInWidgets
+                chartTitle={'All In/Out Summary'}
+                chart={{
+                  series: [
+                    {
+                      label: 'All Entry In',
+                      icon: <Iconify icon='mynaui:percentage-waves-solid' width={40} />,
+                      total: totalPaymentSummary?.paymentIn,
+                    },
+                    {
+                      label: 'All Entry Out',
+                      icon: <Iconify icon='iconamoon:zoom-out-fill' width={40} />,
+                      total: totalPaymentSummary?.paymentOut,
+                    },
+                    {
+                      label: 'Differance',
+                      icon: <Iconify icon='ph:scales-fill' width={40} />,
+                      total: totalPaymentSummary?.difference,
+                    },
+                  ],
+                }}
               />
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
-              <Stack spacing={3}>
-                <BankingBalanceStatistics
-                  title='Other Loan'
-                  chart={OtherLoanChart}
-                />
-              </Stack>
             </Grid>
             <Grid item xs={12} md={12} lg={12}>
               <BookingCheckInWidgets
@@ -504,6 +552,20 @@ export default function OverviewAppView() {
                   handleRangeChange('chargeRange', range);
                 }}
               />
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <AppAreaInstalled
+                title='Loan Graph'
+                chart={LoanChart}
+              />
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <Stack spacing={3}>
+                <BankingBalanceStatistics
+                  title='Other Loan'
+                  chart={OtherLoanChart}
+                />
+              </Stack>
             </Grid>
             <Grid item xs={12} md={12} lg={12}>
               <AnalyticsCurrentVisits
