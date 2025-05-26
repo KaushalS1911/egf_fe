@@ -376,8 +376,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
         branch: currentLoan.customer.branch._id,
         status: 'Payment In',
         paymentDetails: chargePaymentDetail,
+        category: currentLoan.loanNo,
       };
-      console.log(payload, '00000000');
       const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
     } catch (error) {
       console.log(error);
