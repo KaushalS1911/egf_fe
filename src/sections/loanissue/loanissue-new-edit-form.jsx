@@ -9,7 +9,11 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
+import FormProvider, {
+  RHFAutocomplete,
+  RHFTextField,
+  RHFUploadAvatar,
+} from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -100,7 +104,9 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [rotation, setRotation] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
-  const [selectBankAccount, setSelectBankAccount] = useState(!currentLoanIssue?.customerBankDetail);
+  const [selectBankAccount, setSelectBankAccount] = useState(
+    !!currentLoanIssue?.customerBankDetail
+  );
   const [addBankAccount, setAddBankAccount] = useState(!!currentLoanIssue?.customerBankDetail);
   const [approvalChargeValue, setApprovalChargeValue] = useState(0);
   const [chargePaymentModeValue, setChargePaymentModeValue] = useState('');
@@ -1807,9 +1813,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                   )}
                   onChange={(event, value) => {
                     setValue('paymentMode', value);
-                    if (value == 'Cash') {
+                    if (value === 'Cash') {
                       setAddBankAccount(false);
                       setSelectBankAccount(false);
+                    } else {
+                      setSelectBankAccount(true);
                     }
                     handleLoanAmountChange({
                       target: {
