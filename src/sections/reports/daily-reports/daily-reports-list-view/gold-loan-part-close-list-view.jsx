@@ -91,7 +91,10 @@ export default function GoldLoanPartCloseListView({ partClose }) {
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
-  const amountPaid = dataFiltered.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+  const adjustedAmount = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
+    0
+  );
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
@@ -270,7 +273,7 @@ export default function GoldLoanPartCloseListView({ partClose }) {
                     {intLoanAmt.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {amountPaid.toFixed(0)}
+                    {adjustedAmount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                 </TableRow>

@@ -23,7 +23,7 @@ export default function GoldLoanPartCloseDetailsTableRow({
   onDeleteRow,
   handleClick,
 }) {
-  const { loan, amountPaid } = row;
+  const { loan, amountPaid, adjustedAmount } = row;
   const { loanNo, customer, loanAmount, issueDate, interestLoanAmount, scheme } = loan;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -51,7 +51,7 @@ export default function GoldLoanPartCloseDetailsTableRow({
         <TableCell sx={{ padding: '6px' }}>{loan.consultingCharge}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(issueDate)}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{interestLoanAmount.toFixed(2)}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{amountPaid}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{adjustedAmount}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(row.createdAt)}</TableCell>
       </TableRow>
       <CustomPopover

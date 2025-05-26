@@ -243,7 +243,7 @@ export default function DailyReportsListView() {
                     <>
                       Loan Part Payment{' '}
                       <strong style={{ marginLeft: '8px' }}>
-                        ({report?.partReleaseDetail.length || 0})
+                        ({report?.partPaymentDetail.length || 0})
                       </strong>
                     </>
                   }

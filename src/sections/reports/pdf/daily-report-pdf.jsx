@@ -458,7 +458,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   <Text style={[styles.tableCell, { flex: 1 }]}>
                     {fDate(item.loan.interestLoanAmount)}
                   </Text>
-                  <Text style={[styles.tableCell, { flex: 1 }]}>{item.amountPaid}</Text>
+                  <Text style={[styles.tableCell, { flex: 1 }]}>{item.adjustedAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}>
                     {fDate(item.createdAt)}
                   </Text>
@@ -488,7 +488,7 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                 </Text>
                 <Text style={[styles.tableCell, { flex: 1 }]}>
                   {partReleaseDetails
-                    .reduce((sum, item) => sum + (parseFloat(item.amountPaid) || 0), 0)
+                    .reduce((sum, item) => sum + (parseFloat(item.adjustedAmount) || 0), 0)
                     .toFixed(0)}
                 </Text>
                 <Text style={[styles.tableCell, { flex: 1.1, borderRightWidth: 0 }]}></Text>

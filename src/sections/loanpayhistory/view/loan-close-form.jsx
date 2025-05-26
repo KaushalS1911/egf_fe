@@ -791,10 +791,10 @@ function LoanCloseForm({ currentLoan, mutate }) {
                 {row.closingCharge}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
-                {row.chargePaymentDetail.chargeCashAmount || 0}
+                {row.chargePaymentDetail?.chargeCashAmount || 0}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
-                {row.chargePaymentDetail.chargeBankAmount || 0}
+                {row.chargePaymentDetail?.chargeBankAmount || 0}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0.5, px: 2 }}>
                 {row.chargePaymentDetail?.bankName || '-'}
