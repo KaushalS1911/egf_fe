@@ -25,11 +25,8 @@ export default function ChargeInOutTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  console.log(row);
   const confirm = useBoolean();
   const popover = usePopover();
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
 
   return (
     <>

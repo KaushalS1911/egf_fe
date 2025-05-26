@@ -82,20 +82,20 @@ export default function ChargeInOutListView() {
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
-    if (ChargeInOut) {
-      setTableData(ChargeInOut);
-    }
-  }, [ChargeInOut]);
-
-  useEffect(() => {
     setFilters({ ...defaultFilters, chargeType: chargeDetails });
   }, [chargeDetails]);
 
   const dataFiltered = applyFilter({
-    inputData: tableData || [],
+    inputData: ChargeInOut,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  useEffect(() => {
+    {
+      dataFiltered.length > 0 && fetchStates();
+    }
+  }, [ChargeInOut]);
+
   const cashIn = dataFiltered.reduce(
     (prev, next) =>
       prev + (Number(next.status === 'Payment In' && next?.paymentDetails?.cashAmount) || 0),
@@ -141,12 +141,6 @@ export default function ChargeInOutListView() {
   };
 
   const chargeTypeTotals = calculateChargeTypeTotals(ChargeInOut);
-
-  useEffect(() => {
-    {
-      dataFiltered.length > 0 && fetchStates();
-    }
-  }, [ChargeInOut]);
 
   const amount =
     dataFiltered
@@ -439,7 +433,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     );
   }
   if (Object.keys(chargeType).length > 0) {
-    console.log(chargeType);
     inputData = inputData.filter((item) => chargeType.chargeType === item.chargeType);
   }
   if (!dateError && startDate && endDate) {
