@@ -356,7 +356,7 @@ export default function OverviewAppView() {
           <AnalyticsWidgetSummary
             title='Expense'
             total={expense?.totalExpense}
-            days={expense?.days}
+            days={expense?.avgExpensePerDay}
             icon={<Iconify icon='arcticons:expense' width={30} />}
             filter='this_month'
             filterOptions={timeRangeOptions}
@@ -371,7 +371,7 @@ export default function OverviewAppView() {
           <AnalyticsWidgetSummary
             title='Payment In'
             total={paymentIn?.paymentInTotal}
-            days={paymentIn?.days}
+            days={paymentIn?.avgPaymentInPerDay}
             icon={<Iconify icon='zondicons:arrow-thin-down'
                            width={30} />}
             filter='this_month'
@@ -384,7 +384,7 @@ export default function OverviewAppView() {
           <AnalyticsWidgetSummary
             title='Payment Out'
             total={paymentOut?.paymentOutTotal}
-            days={paymentOut?.days}
+            days={paymentOut?.avgPaymentOutPerDay}
             icon={<Iconify icon='zondicons:arrow-thin-up' width={30} />}
             filter='this_month'
             filterOptions={timeRangeOptions}
@@ -396,7 +396,7 @@ export default function OverviewAppView() {
           <AnalyticsWidgetSummary
             title='Payment Diff'
             total={difference.difference}
-            days={difference.days}
+            days={difference.avgDifferencePerDay}
             icon={<Iconify icon='tabler:arrows-diff' width={30} />}
             filter='this_month'
             filterOptions={timeRangeOptions}

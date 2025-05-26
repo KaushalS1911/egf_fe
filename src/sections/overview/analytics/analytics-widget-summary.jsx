@@ -75,16 +75,37 @@ export default function AnalyticsWidgetSummary({
           ))}
         </Select>
       </Stack>
-      <Stack direction='row' spacing={2} alignItems='center'>
-        <Typography variant='h4'>{fShortenNumber(total)}</Typography>
-        <Typography variant='body2' sx={{ opacity: 0.7 }}>
-          Total
-        </Typography>
-        <Box sx={{ width: 1, height: 32, borderLeft: '1px solid', borderColor: 'divider', mx: 2 }} />
-        <Typography variant='h4'>{fShortenNumber(days)}</Typography>
-        <Typography variant='body2' sx={{ opacity: 0.7 }}>
-          Day Average
-        </Typography>
+      <Stack direction='row' spacing={2} alignItems='center' justifyContent='space-between'>
+        <Box display='flex' flexDirection='column' alignItems='center'>
+          <Typography variant='body2' sx={{ opacity: 0.7 }}>
+            Total
+          </Typography>
+          <Typography
+            variant='h4'
+            sx={{
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+              textAlign: 'center',
+            }}
+          >
+            {fShortenNumber(total)}
+          </Typography>
+        </Box>
+        <Box display='flex' flexDirection='column' alignItems='center'>
+          <Typography variant='body2' sx={{ opacity: 0.7 }}>
+            Day Average
+          </Typography>
+          <Typography
+            variant='h4'
+            sx={{
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+              textAlign: 'center',
+            }}
+          >
+            {fShortenNumber(days)}
+          </Typography>
+        </Box>
       </Stack>
     </Stack>
   );
