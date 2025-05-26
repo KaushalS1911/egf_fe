@@ -98,12 +98,20 @@ export default function ChargeInOutListView() {
 
   const cashIn = dataFiltered.reduce(
     (prev, next) =>
-      prev + (Number(next.status === 'Payment In' && next?.paymentDetails?.cashAmount) || 0),
+      prev +
+      (Number(
+        (next.status === 'Payment In' && next?.paymentDetails?.cashAmount) ||
+          next?.paymentDetails?.chargeCashAmount
+      ) || 0),
     0
   );
   const bankIn = dataFiltered.reduce(
     (prev, next) =>
-      prev + (Number(next.status === 'Payment In' && next?.paymentDetails?.bankAmount) || 0),
+      prev +
+      (Number(
+        (next.status === 'Payment In' && next?.paymentDetails?.bankAmount) ||
+          next?.paymentDetails?.chargeBankAmount
+      ) || 0),
     0
   );
   const cashOut = dataFiltered.reduce(
