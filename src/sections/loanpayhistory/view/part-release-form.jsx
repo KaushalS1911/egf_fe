@@ -188,7 +188,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       .required('Pay amount is required')
       .typeError('Pay amount must be a number'),
     adjustAmount: Yup.number()
-      .min(1, 'Adjust amount must be greater than 0')
       .required('Adjust amount is required')
       .typeError('Adjust amount must be a number'),
     paymentMode: Yup.string().required('Payment Mode is required'),
@@ -291,16 +290,16 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     //   });
     //   return;
     // }
-    if (adjustAmt < amountPaid - 500) {
-      enqueueSnackbar(`Amount Paid must be grater than ${netAmount - 500}.`, {
-        variant: 'error',
-      });
-      return;
-    }
-    if (amountPaid < netAmount - 500) {
-      enqueueSnackbar(`Amount Paid must be less than ${netAmount - 500}.`, { variant: 'error' });
-      return;
-    }
+    // if (adjustAmt < amountPaid - 500) {
+    //   enqueueSnackbar(`Amount Paid must be grater than ${netAmount - 500}.`, {
+    //     variant: 'error',
+    //   });
+    //   return;
+    // }
+    // if (amountPaid < netAmount - 500) {
+    //   enqueueSnackbar(`Amount Paid must be less than ${netAmount - 500}.`, { variant: 'error' });
+    //   return;
+    // }
 
     if (selectedRows.length === 0) {
       enqueueSnackbar('At least one property must be selected', { variant: 'error' });
