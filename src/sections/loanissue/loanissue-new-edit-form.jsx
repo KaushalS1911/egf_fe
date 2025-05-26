@@ -9,11 +9,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFTextField,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -164,7 +160,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       }),
     }),
   };
-  console.log(selectBankAccount, 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
+
   const NewLoanissueSchema = Yup.object().shape({
     customer: Yup.object().required('Customer is required'),
     scheme: Yup.object().required('Scheme is required'),
@@ -439,7 +435,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     if (mode === 'Cash') {
       payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeCashAmount);
     } else if (mode === 'Bank') {
-      payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeBankAmount);
+      payload.append('chargePaymentDetail[chargeBankAmount]', data.chargeBankAmount);
 
       payload.append(
         'chargePaymentDetail[chargeAccount][accountNumber]',
