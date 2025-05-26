@@ -399,17 +399,19 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   }, [watch('paymentMode'), selectedTotals]);
 
   const handleCashAmountChange = (event) => {
-    const newCashAmount = parseFloat(event.target.value) || 0;
+    const newCashAmount = parseFloat(watch('cashAmount')) || 0;
     const adjustAmount = parseFloat(watch('adjustAmount')) || 0;
-    if (newCashAmount > adjustAmount) {
-      setValue('cashAmount', adjustAmount);
-      enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
-        variant: 'warning',
-      });
-    } else {
-      // setValue('cashAmount', adjustAmount.toFixed(2));
+    // if (newCashAmount > adjustAmount) {
+    // setValue('cashAmount', adjustAmount);
+    // enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
+    //   variant: 'warning',
+    // });
+    // } else {
+    // setValue('cashAmount', adjustAmount.toFixed(2));
+    if (watch('paymentMode') === 'Both') {
       setValue('bankAmount', (adjustAmount - newCashAmount).toFixed(2));
     }
+    // }
   };
 
   useEffect(() => {
