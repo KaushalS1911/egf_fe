@@ -49,24 +49,27 @@ export default function ChargeInOutTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.chargeType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
-        <TableCell
-          sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetails?.paymentMode || row?.paymentDetails?.mode}</TableCell>
-        <TableCell
-          sx={{
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {row?.paymentDetails?.cashAmount || row?.paymentDetails?.mode == 'Cash' ? row?.paymentDetails?.chargeCashAmount : 0 || 0}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row?.paymentDetails?.paymentMode || row?.paymentDetails?.mode}
         </TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
           }}
         >
-          {row?.paymentDetails?.bankAmount || row?.paymentDetails?.mode == 'Bank' ? row?.paymentDetails?.chargeCashAmount : 0 || 0}
+          {row?.paymentDetails?.cashAmount || row?.paymentDetails?.chargeCashAmount || 0}
+        </TableCell>
+        <TableCell
+          sx={{
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {row?.paymentDetails?.bankAmount || row?.paymentDetails?.chargeBankAmount || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetails?.account?.bankName || row?.paymentDetails?.bankName || row?.paymentDetails?.mode == 'Bank' ? `${row?.paymentDetails?.chargeAccount?.bankName}(${row?.paymentDetails?.chargeAccount?.accountHolderName})` : '' || row?.paymentDetails?.account?.accountHolderName ? `${row?.paymentDetails?.account?.bankName}(${row?.paymentDetails?.account?.accountHolderName})` : '-'}
+          {row?.paymentDetails?.paymentMode || row?.paymentDetails?.mode === 'Bank'
+            ? `${row?.paymentDetails?.account?.bankName || row?.paymentDetails?.chargeAccount?.bankName} (${row?.paymentDetails?.account?.accountHolderName || row?.paymentDetails?.chargeAccount?.accountHolderName})`
+            : '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
