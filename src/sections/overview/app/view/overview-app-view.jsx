@@ -138,17 +138,17 @@ export default function OverviewAppView() {
 
   const { PaymentInOutSummary: paymentIn } = useGetPaymentInOutSummary(
     ranges?.paymentInRange,
-    'paymentintotal',
+    'receivableamt',
   );
 
   const { PaymentInOutSummary: paymentOut } = useGetPaymentInOutSummary(
     ranges?.paymentOutRange,
-    'paymentouttotal',
+    'payableamt',
   );
 
   const { PaymentInOutSummary: difference } = useGetPaymentInOutSummary(
     ranges?.differenceRange,
-    'difference',
+    'receivablepayabledifference',
   );
 
   const { PaymentInOutSummary: expense } = useGetPaymentInOutSummary(
@@ -370,8 +370,8 @@ export default function OverviewAppView() {
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment In'
-            total={paymentIn?.paymentInTotal}
-            days={paymentIn?.avgPaymentInPerDay}
+            total={paymentIn?.receivableAmt}
+            days={paymentIn?.avgReceivablePerDay}
             icon={<Iconify icon='zondicons:arrow-thin-down'
                            width={30} />}
             filter='this_month'
@@ -383,8 +383,8 @@ export default function OverviewAppView() {
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment Out'
-            total={paymentOut?.paymentOutTotal}
-            days={paymentOut?.avgPaymentOutPerDay}
+            total={paymentOut?.payableAmt}
+            days={paymentOut?.avgPayablePerDay}
             icon={<Iconify icon='zondicons:arrow-thin-up' width={30} />}
             filter='this_month'
             filterOptions={timeRangeOptions}
@@ -395,8 +395,8 @@ export default function OverviewAppView() {
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment Diff'
-            total={difference.difference}
-            days={difference.avgDifferencePerDay}
+            total={difference.receivablePayableDifference}
+            days={difference.avgReceivablePayablePerDay}
             icon={<Iconify icon='tabler:arrows-diff' width={30} />}
             filter='this_month'
             filterOptions={timeRangeOptions}
