@@ -103,12 +103,12 @@ export default function PaymentInOutListView() {
     }
   }, [payment]);
   const receivableAmt = party.reduce(
-    (prev, next) => prev + (Number(next.amount >= 0 && next?.amount) || 0),
+    (prev, next) => prev + (Number(next.amount <= 0 && next?.amount) || 0),
     0
   );
 
   const payableAmt = party.reduce(
-    (prev, next) => prev + (Number(next.amount <= 0 && next?.amount) || 0),
+    (prev, next) => prev + (Number(next.amount >= 0 && next?.amount) || 0),
     0
   );
   const receivable = dataFiltered.reduce((prev, next) => {
@@ -248,7 +248,7 @@ export default function PaymentInOutListView() {
                     return true;
                   })
                     ? receivable.toFixed(2)
-                    : receivableAmt.toFixed(2)}
+                    : Math.abs(receivableAmt).toFixed(2)}
                 </span>
               </strong>
               <strong style={{ marginLeft: 20 }}>

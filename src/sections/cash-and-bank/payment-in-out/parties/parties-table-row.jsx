@@ -53,7 +53,7 @@ export default function PartiesTableRow({
       >
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.name}</TableCell>
         <TableCell
-          sx={{ whiteSpace: 'nowrap', color: row.amount < 0 ? 'error.main' : 'success.main' }}
+          sx={{ whiteSpace: 'nowrap', color: row.amount <= 0 ? 'success.main' : 'error.main' }}
         >
           {Math.abs(row.amount).toFixed(2)}
         </TableCell>
