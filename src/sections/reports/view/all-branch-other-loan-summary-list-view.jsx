@@ -60,6 +60,7 @@ const TABLE_HEAD = [
   { id: 'fund', label: 'Fund' },
   { id: 'date', label: 'Open date' },
   { id: 'otherLoanAmount', label: 'Other loan amt' },
+  { id: 'charge', label: 'Charge' },
   { id: 'day', label: ' Day' },
   { id: 'pendingAmt', label: 'Pending int.' },
   { id: 'renewalDate', label: 'Renew date' },
@@ -112,6 +113,10 @@ export default function AllBranchLoanSummaryListView() {
   const percentage = dataFiltered.reduce((prev, next) => prev + (Number(next?.percentage) || 0), 0);
   const rate = dataFiltered.reduce((prev, next) => prev + (Number(next?.rate) || 0), 0);
   const amount = dataFiltered.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+  const totalCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.totalCharge) || 0),
+    0
+  );
   const pendingInterest = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.pendingInterest) || 0),
     0
@@ -126,6 +131,7 @@ export default function AllBranchLoanSummaryListView() {
     rate,
     amount,
     pendingInterest,
+    totalCharge,
   };
 
   const dataInPage = dataFiltered.slice(
@@ -416,6 +422,9 @@ export default function AllBranchLoanSummaryListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {amount.toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalCharge.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(day / dataFiltered.length).toFixed(0)}

@@ -81,17 +81,10 @@ export default function BranchWiseLoanClosingTableRow({
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(closedDate)}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.approvalCharge || 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.closeCharge || 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {(loanAmount).toFixed(2) || 0}
-        </TableCell>
-        <TableCell
-          sx={{
-            fontSize: '12px',
-            padding: '6px',
-          }}
-        >
-          {Number(pendingInterest).toFixed(2) || 0}
+          {loanAmount.toFixed(2) || 0}
         </TableCell>
         <TableCell
           sx={{ fontSize: '12px', padding: '6px' }}

@@ -131,7 +131,7 @@ export default function BranchWiseLoanClosingPdf({
     closeAmt,
     loanAmt,
     intLoanAmt,
-    pendingIntAmt,
+    approvalCharge,
     day,
   } = total || {
     int: 0,
@@ -141,7 +141,7 @@ export default function BranchWiseLoanClosingPdf({
     closeAmt: 0,
     loanAmt: 0,
     intLoanAmt: 0,
-    pendingIntAmt: 0,
+    approvalCharge: 0,
     day: 0,
   };
 
@@ -160,9 +160,9 @@ export default function BranchWiseLoanClosingPdf({
     { label: 'Total Int. pay', flex: 1.3 },
     { label: 'Day', flex: 0.5 },
     { label: 'Close date', flex: 1.2 },
+    { label: 'Approval Charge', flex: 1 },
     { label: 'Close charge', flex: 1 },
     { label: 'Close amt', flex: 1.3 },
-    { label: 'Pending Int.', flex: 1.3 },
     { label: 'Close By', flex: 2.2 },
   ];
 
@@ -213,9 +213,7 @@ export default function BranchWiseLoanClosingPdf({
         <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.scheme?.interestRate || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.4 }]}>{row.consultingCharge || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.5 }]}>{fDate(row.issueDate) || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>
-          {(row.loanAmount || 0).toFixed(2)}
-        </Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{(row.loanAmount || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1.3 }]}>
           {(row.loanAmount - row.interestLoanAmount || 0).toFixed(2)}
         </Text>
@@ -230,11 +228,9 @@ export default function BranchWiseLoanClosingPdf({
         </Text>
         <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.day > 0 ? row.day : 0}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.closedDate) || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{(row.approvalCharge || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{(row.closeCharge || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1.3 }]}>{(row?.loanAmount || 0).toFixed(2)}</Text>
-        <Text style={[styles.tableCell, { flex: 1.3 }]}>
-          {(row.pendingInterest || 0).toFixed(2)}
-        </Text>
         <Text style={[styles.tableCell, styles.tableCellLast, { flex: 2.2 }]}>
           {`${row.closedBy?.firstName || ''} ${row.closedBy?.middleName || ''} ${row.closedBy?.lastName || ''}`}
         </Text>
@@ -356,17 +352,17 @@ export default function BranchWiseLoanClosingPdf({
                   <Text
                     style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
                   >
+                    {approvalCharge.toFixed(0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
                     {closeCharge.toFixed(0)}
                   </Text>
                   <Text
                     style={[styles.tableCell, { flex: 1.3, fontWeight: 'bold', color: '#1a237e' }]}
                   >
-                    {(loanAmt).toFixed(0)}
-                  </Text>
-                  <Text
-                    style={[styles.tableCell, { flex: 1.3, fontWeight: 'bold', color: '#1a237e' }]}
-                  >
-                    {pendingIntAmt.toFixed(0)}
+                    {loanAmt.toFixed(0)}
                   </Text>
                   <Text style={[styles.tableCell, styles.tableCellLast, { flex: 2.2 }]}></Text>
                 </View>

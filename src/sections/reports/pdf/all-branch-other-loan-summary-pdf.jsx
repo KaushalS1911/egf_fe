@@ -57,6 +57,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
+          fontSize: 7,
         },
         numericCell: {
           textAlign: 'right',
@@ -119,7 +120,7 @@ export default function AllBranchOtherLoanSummaryPdf({
 }) {
   const styles = useStyles();
 
-  const { percentage, rate, amount, pendingInterest, day } = total;
+  const { percentage, rate, amount, pendingInterest, day, totalCharge } = total;
 
   // Define dataFiltered for calculations
   const dataFiltered = loans;
@@ -134,6 +135,7 @@ export default function AllBranchOtherLoanSummaryPdf({
     { label: 'Fund', flex: 1 },
     { label: 'Open date', flex: 0.85 },
     { label: 'Other loan amt', flex: 1 },
+    { label: 'Charge', flex: 1 },
     { label: 'Day', flex: 0.3 },
     { label: 'Pending int.', flex: 1 },
     { label: 'Renew date', flex: 0.85 },
@@ -172,9 +174,12 @@ export default function AllBranchOtherLoanSummaryPdf({
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.rate}</Text>
         <Text style={[styles.tableCell, { flex: 0.85 }]}>{fDate(row.date)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.amount}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.totalCharge}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.pendingInterest.toFixed(2)}</Text>
-        <Text style={[styles.tableCell, { flex: 0.85 }]}>{fDate(row.renewalDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.85, borderRight: 0 }]}>
+          {fDate(row.renewalDate)}
+        </Text>
       </View>
     );
 
@@ -259,6 +264,11 @@ export default function AllBranchOtherLoanSummaryPdf({
                     style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
                   >
                     {amount.toFixed(0)}
+                  </Text>
+                  <Text
+                    style={[styles.tableCell, { flex: 1, fontWeight: 'bold', color: '#1a237e' }]}
+                  >
+                    {totalCharge.toFixed(0)}
                   </Text>
                   <Text
                     style={[styles.tableCell, { flex: 0.3, fontWeight: 'bold', color: '#1a237e' }]}

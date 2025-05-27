@@ -48,6 +48,7 @@ export default function AllBranchOtherLoanSummaryTableRow({
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.totalCharge}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {row.pendingDay > 0 ? row.pendingDay : 0}
         </TableCell>

@@ -48,7 +48,6 @@ const useStyles = () =>
         tableHeader: {
           backgroundColor: '#5B9BD4',
           fontWeight: 'bold',
-          color: '#fff',
           textAlign: 'center',
         },
         tableCell: {
@@ -56,7 +55,7 @@ const useStyles = () =>
           borderRightWidth: 0.5,
           borderRightColor: '#b1b0b0',
           textAlign: 'center',
-          fontSize: 8,
+          fontSize: 7,
         },
         numericCell: {
           textAlign: 'right',
@@ -133,6 +132,7 @@ export default function OtherLoanCloseSummaryPdf({
     day,
     closeAmt,
     closingCharge,
+    totalCharge,
   } = total;
 
   const headers = [
@@ -151,6 +151,7 @@ export default function OtherLoanCloseSummaryPdf({
     { label: 'Pending amt', flex: 1 },
     { label: 'Close date', flex: 1 },
     { label: 'Charge', flex: 0.8 },
+    { label: 'Closing Charge', flex: 0.8 },
     { label: 'Total close amt', flex: 1 },
   ];
   const dataFilter = [
@@ -194,6 +195,7 @@ export default function OtherLoanCloseSummaryPdf({
           {(row.amount - row.closingAmount || 0).toFixed(2)}
         </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.closeDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>{(row.closingCharge || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 0.8 }]}>{(row.closingCharge || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {(row.totalInterestAmt + row.closingAmount + row.closingCharge || 0).toFixed(2)}
@@ -266,6 +268,7 @@ export default function OtherLoanCloseSummaryPdf({
                   <Text style={[styles.totalCell, { flex: 1 }]}>{closeAmt.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>{pendingInterest.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}></Text>
+                  <Text style={[styles.totalCell, { flex: 0.8 }]}>{totalCharge.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 0.8 }]}>{closingCharge.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>
                     {(totalInterestAmt + closeAmt + closingCharge).toFixed(0)}

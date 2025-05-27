@@ -69,6 +69,7 @@ const TABLE_HEAD = [
   { id: 'pendingAmt', label: 'Pending amt' },
   { id: 'closeDate', label: 'Close date' },
   { id: 'charge', label: 'Charge' },
+  { id: 'closingCharge', label: 'Closing charge' },
   { id: 'totalCloseamt', label: 'Total close amt' },
   { id: 'status', label: 'Status' },
 ];
@@ -126,6 +127,10 @@ export default function OtherLoanCloseSummaryListView() {
     (prev, next) => prev + (Number(next?.closingCharge) || 0),
     0
   );
+  const totalCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.totalCharge) || 0),
+    0
+  );
 
   const total = {
     percentage,
@@ -136,6 +141,7 @@ export default function OtherLoanCloseSummaryListView() {
     day,
     closeAmt,
     closingCharge,
+    totalCharge,
   };
 
   useEffect(() => {
@@ -406,6 +412,9 @@ export default function OtherLoanCloseSummaryListView() {
                     {pendingInterest.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
+                    {totalCharge.toFixed(0)}
+                  </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {closingCharge.toFixed(0)}
                   </TableCell>{' '}

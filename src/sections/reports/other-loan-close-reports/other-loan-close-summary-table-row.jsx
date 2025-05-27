@@ -73,6 +73,9 @@ export default function OtherLoanCloseSummaryTableRow({
           {fDate(row.closeDate) || '-'}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {(row.totalCharge || 0).toFixed(2)}
+        </TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {(row.closingCharge || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
