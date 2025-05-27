@@ -10,6 +10,7 @@ import GoldLoanCalculator from '../../sections/goldloancalculator/gold-loan-calc
 import Notice from '../../sections/reminder/view/notice';
 import OtherDailyReportsListView from 'src/sections/reports/view/other-loan-daily-report';
 import DayBookListView from '../../sections/cash-and-bank/day-book/view/day-book-list-view.jsx';
+import CustomerRefReportListView from '../../sections/reports/view/customer-ref-report-list-view.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -325,6 +326,7 @@ export const dashboardRoutes = [
           { path: 'interest-entry-reports', element: <InterestEntryReportsListView /> },
           { path: 'customer-statement', element: <CustomerStatement /> },
           { path: 'loan-issue-reports', element: <LoanIssueReports /> },
+          { path: 'customer-refrance-reports', element: <CustomerRefReportListView /> },
         ],
       },
       {

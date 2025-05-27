@@ -203,6 +203,10 @@ export function useNavData() {
                 path: paths.dashboard.reports['customer-statement'],
               },
               {
+                title: t('customer refrance report'),
+                path: paths.dashboard.reports['customer-refrance-report'],
+              },
+              {
                 title: t('loan issue reports'),
                 path: paths.dashboard.reports['loan-issue-reports'],
               },

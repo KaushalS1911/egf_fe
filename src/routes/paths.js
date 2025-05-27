@@ -215,6 +215,7 @@ export const paths = {
       'interest-entry-reports': `${ROOTS.DASHBOARD}/reports/interest-entry-reports`,
       'customer-statement': `${ROOTS.DASHBOARD}/reports/customer-statement`,
       'loan-issue-reports': `${ROOTS.DASHBOARD}/reports/loan-issue-reports`,
+      'customer-refrance-report': `${ROOTS.DASHBOARD}/reports/customer-refrance-reports`,
     },
     otherReports: {
       root: `${ROOTS.DASHBOARD}/other-reports`,
