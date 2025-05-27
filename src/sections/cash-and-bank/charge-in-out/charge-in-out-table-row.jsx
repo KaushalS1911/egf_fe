@@ -64,7 +64,10 @@ export default function ChargeInOutTableRow({
           {row?.paymentDetails?.bankAmount || row?.paymentDetails?.chargeBankAmount || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetails?.paymentMode || row?.paymentDetails?.mode === 'Bank'
+          {row?.paymentDetails?.paymentMode === 'Bank' ||
+          row?.paymentDetails?.paymentMode === 'Both' ||
+          row?.paymentDetails?.mode === 'Bank' ||
+          row?.paymentDetails?.mode === 'Both'
             ? `${row?.paymentDetails?.account?.bankName || row?.paymentDetails?.chargeAccount?.bankName} (${row?.paymentDetails?.account?.accountHolderName || row?.paymentDetails?.chargeAccount?.accountHolderName})`
             : '-'}
         </TableCell>

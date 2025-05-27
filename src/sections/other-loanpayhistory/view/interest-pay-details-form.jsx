@@ -213,7 +213,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     const calculatedDateRenewalDate = new Date(fromDate);
 
     if (id) {
-      alert('heet');
       calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() - monthsToAdd);
     } else {
       calculatedDateRenewalDate.setMonth(calculatedDateRenewalDate.getMonth() + monthsToAdd);
@@ -247,7 +246,28 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     }
   }, [watch('paymentMode')]);
 
+  const handleChargeIn = (data, paymentDetail) => {
+    try {
+      const payload = {
+        chargeType: 'OTHER INTEREST CHARGE',
+        date: new Date(),
+        branch: currentOtherLoan.loan.customer.branch._id,
+        status: 'Payment Out',
+        paymentDetails: paymentDetail,
+        category: currentOtherLoan.loan.loanNo,
+      };
+      const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
+    if (!configs.chargeType.includes('OTHER INTEREST CHARGE')) {
+      return enqueueSnackbar('OTHER INTEREST CHARGE is not including in charge type', {
+        variant: 'error',
+      });
+    }
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
@@ -285,9 +305,10 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
 
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/${user._id}/other-loans/${currentOtherLoan?._id}/interest`;
-
       const response = await axios.post(url, payload);
-
+      if (data.charge > 0 && configs.chargeType.includes('OTHER INTEREST CHARGE')) {
+        handleChargeIn(data, paymentDetail);
+      }
       reset();
       mutate();
       refetchOtherLoanInterest();

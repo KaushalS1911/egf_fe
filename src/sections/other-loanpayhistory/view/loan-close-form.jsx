@@ -141,7 +141,30 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
 
+  console.log(currentOtherLoan, '0000000');
+  const handleChargeIn = (data, paymentDetail) => {
+    try {
+      const payload = {
+        chargeType: 'OTHER CLOSE CHARGE',
+        date: new Date(),
+        branch: currentOtherLoan.loan.customer.branch._id,
+        status: 'Payment Out',
+        paymentDetails: paymentDetail,
+        category: currentOtherLoan.loan.loanNo,
+      };
+      const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
+    if (!configs.chargeType.includes('OTHER CLOSE CHARGE')) {
+      return enqueueSnackbar('OTHER CLOSE CHARGE is not including in charge type', {
+        variant: 'error',
+      });
+    }
+
     let paymentDetail = {
       paymentMode: data.paymentMode,
     };
@@ -183,6 +206,9 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
       };
 
       const response = await axios(config);
+      if (data.closingCharge > 0 && configs.chargeType.includes('OTHER CLOSE CHARGE')) {
+        handleChargeIn(data, paymentDetail);
+      }
       reset();
       refetchOtherLoanClose();
       mutate();

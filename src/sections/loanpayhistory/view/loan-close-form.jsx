@@ -355,21 +355,8 @@ function LoanCloseForm({ currentLoan, mutate }) {
     }
   };
 
-  const handleChargeIn = (data) => {
+  const handleChargeIn = (data, chargePaymentDetail) => {
     try {
-      const chargePaymentDetail = {
-        paymentMode: data.chargePaymentMode,
-        ...(data.chargePaymentMode === 'Cash' && { cashAmount: data.chargeCashAmount }),
-        ...(data.chargePaymentMode === 'Bank' && {
-          bankAmount: data.chargeBankAmount,
-          account: data.chargeAccount,
-        }),
-        ...(data.chargePaymentMode === 'Both' && {
-          cashAmount: data.chargeCashAmount,
-          bankAmount: data.chargeBankAmount,
-          account: data.chargeAccount,
-        }),
-      };
       const payload = {
         chargeType: 'CLOSING CHARGE',
         date: new Date(),
@@ -397,7 +384,9 @@ function LoanCloseForm({ currentLoan, mutate }) {
       });
     }
     if (!configs.chargeType.includes('CLOSING CHARGE')) {
-      enqueueSnackbar('CLOSING CHARGE is not including in charge type', { variant: 'error' });
+      return enqueueSnackbar('CLOSING CHARGE is not including in charge type', {
+        variant: 'error',
+      });
     }
 
     let paymentDetail = {
@@ -471,7 +460,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       const responseData = response?.data?.data;
       sendPdfToWhatsApp(responseData);
       if (data.closingCharge > 0 && configs.chargeType.includes('CLOSING CHARGE')) {
-        handleChargeIn(data);
+        handleChargeIn(data, chargePaymentDetail);
       }
       reset();
       confirm.onFalse();
