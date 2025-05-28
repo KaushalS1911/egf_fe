@@ -14,7 +14,6 @@ import AnalyticsTrafficBySite from '../../analytics/analytics-traffic-by-site.js
 import React, { useState } from 'react';
 import EcommerceSaleByGender from '../../e-commerce/ecommerce-sale-by-gender.jsx';
 import { Autocomplete, Grid } from '@mui/material';
-import sbi from '../../../../assets/logo/download.png';
 import Iconify from '../../../../components/iconify/index.js';
 import { paths } from '../../../../routes/paths.js';
 import {
@@ -33,6 +32,8 @@ import { useGetLoanissue } from '../../../../api/loanissue.js';
 import { useRouter } from '../../../../routes/hooks/index.js';
 import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
+import { useGetCashTransactions } from '../../../../api/cash-transactions.js';
+import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
 
 const timeRangeOptions = [
   { label: 'All', value: 'all' },
@@ -74,6 +75,39 @@ export default function OverviewAppView() {
   const { OtherLoanChart } = useGetOtherLoanChart();
   const { LoanChart } = useGetLoanChart();
   const { AllInOutSummary } = useGetAllInOutSummary();
+  const { cashTransactions } = useGetCashTransactions();
+  const { bankTransactions } = useGetBankTransactions();
+
+  let cashamount = 0;
+  let bankamount = 0;
+  const bankMap = {};
+
+  cashTransactions.forEach((tx) => {
+    const amount = Number(tx.amount) || 0;
+    if (tx.category === 'Payment In') {
+      cashamount += amount;
+    } else if (tx.category === 'Payment Out') {
+      cashamount -= amount;
+    }
+  });
+
+  bankTransactions?.transactions?.forEach((tx) => {
+    const amount = Number(tx.amount) || 0;
+    const key = tx.bankName;
+
+    const sign = tx.category === 'Payment In' ? 1 : -1;
+    bankamount += sign * amount;
+
+    if (!bankMap[key]) {
+      bankMap[key] = 0;
+    }
+    bankMap[key] += sign * amount;
+  });
+
+  const banks = Object.entries(bankMap).map(([name, amount]) => ({
+    name,
+    amount,
+  }));
 
   const { ReferenceAreaSummary: customerData } = useGetReferenceAreaSummary(
     ranges?.customerRange,
@@ -124,20 +158,11 @@ export default function OverviewAppView() {
     <EcommerceSaleByGender
       chart={{
         series: [
-          { label: 'Bank', value: 40000 },
-          { label: 'Cash', value: 5000 },
+          { label: 'Bank', value: bankamount },
+          { label: 'Cash', value: cashamount },
         ],
       }}
-      banks={[
-        { name: 'SBI', amount: 11.18, logo: sbi },
-        { name: 'Kotak', amount: 4.47, logo: sbi },
-        { name: 'Axis Bank', amount: 4.47, logo: sbi },
-        { name: 'IndusInd Bank', amount: 2.24, logo: sbi },
-        { name: 'IndusInd Bank', amount: 2.24, logo: sbi },
-        { name: 'IndusInd Bank', amount: 2.24, logo: sbi },
-        { name: 'IndusInd Bank', amount: 2.24, logo: sbi },
-        { name: 'IndusInd Bank', amount: 2.24, logo: sbi },
-      ]}
+      banks={banks}
     />
   );
 

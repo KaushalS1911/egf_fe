@@ -195,11 +195,11 @@ export default function EcommerceSaleByGender({
                       bgcolor: 'background.paper',
                     }}
                   >
-                    <Avatar
-                      alt={bank.name}
-                      src={bank.logo}
-                      sx={{ mr: 2, cursor: 'pointer' }}
-                    />
+                    {/*<Avatar*/}
+                    {/*  alt={bank.name}*/}
+                    {/*  src={bank.logo}*/}
+                    {/*  sx={{ mr: 2, cursor: 'pointer' }}*/}
+                    {/*/>*/}
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                       <Typography
                         variant='subtitle2'
