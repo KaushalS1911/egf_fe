@@ -281,7 +281,7 @@ export default function InterestEntryReportsTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-          {getResponsibilityValue('print_Interest_Reports', configs, user) && (
+          {getResponsibilityValue('print_Interest_Entry_Reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
