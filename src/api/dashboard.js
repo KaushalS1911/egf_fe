@@ -254,3 +254,42 @@ export function useGetPaymentInOutSummary(timeRange = 'this_year', fields = '') 
 
   return memoizedValue;
 }
+
+export function useGetAllInOutSummary() {
+  const { user } = useAuthContext();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+  let parsedBranch = storedBranch;
+
+  if (storedBranch !== 'all') {
+    try {
+      parsedBranch = JSON.parse(storedBranch);
+    } catch (error) {
+      console.error('Error parsing storedBranch:', error);
+    }
+  }
+
+  const branchQuery =
+    parsedBranch && parsedBranch !== 'all'
+      ? `branchId=${parsedBranch}`
+      : '';
+
+  const queryString = branchQuery ? `?${branchQuery}` : '';
+
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/dashboard/total-in-out${queryString}`;
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      AllInOutSummary: data || [],
+      AllInOutSummaryLoading: isLoading,
+      AllInOutSummaryError: error,
+      AllInOutSummaryValidating: isValidating,
+      AllInOutSummaryEmpty: !isLoading && !data?.length,
+      mutate,
+    }),
+    [data, error, isLoading, isValidating, mutate],
+  );
+
+  return memoizedValue;
+}
