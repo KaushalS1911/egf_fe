@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Card, Grid, IconButton, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Card, CardHeader, Grid, Typography, IconButton } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
@@ -33,7 +33,6 @@ const bankDetailsSchema = yup.object().shape({
   bankName: yup.string().required('Bank Name is required'),
   IFSC: yup.string().required('IFSC Code is required'),
   branchName: yup.string().required('Branch Name is required'),
-  bankLogo: yup.mixed().required('Bank Logo is required'),
 });
 
 export default function CompanyProfile() {
@@ -70,7 +69,6 @@ export default function CompanyProfile() {
       bankName: editingBankDetail?.bankName || '',
       IFSC: editingBankDetail?.IFSC || '',
       branchName: editingBankDetail?.branchName || '',
-      bankLogo: editingBankDetail?.bankLogo || null,
     },
     resolver: yupResolver(bankDetailsSchema),
   });
@@ -137,18 +135,14 @@ export default function CompanyProfile() {
 
   const onSubmitBankDetails = async (data) => {
     setLoading2(true);
-    const formData = new FormData();
-    formData.append('accountNumber', data.accountNumber);
-    formData.append('accountType', data.accountType);
-    formData.append('accountHolderName', data.accountHolderName);
-    formData.append('bankName', data.bankName);
-    formData.append('IFSC', data.IFSC);
-    formData.append('branchName', data.branchName);
-    if (data.bankLogo instanceof File) {
-      formData.append('bankLogo', data.bankLogo);
-    }
-
-    const newBankAccount = Object.fromEntries(formData.entries());
+    const newBankAccount = {
+      accountNumber: data.accountNumber,
+      accountType: data.accountType,
+      accountHolderName: data.accountHolderName,
+      bankName: data.bankName,
+      IFSC: data.IFSC,
+      branchName: data.branchName,
+    };
 
     const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}`;
 
@@ -156,23 +150,15 @@ export default function CompanyProfile() {
       const response = await axios.get(URL);
       const existingBankAccounts = response.data.data.bankAccounts || [];
 
-      let updatedBankAccounts;
       if (editingBankDetail) {
-        updatedBankAccounts = existingBankAccounts.map((acc) =>
-          acc._id === editingBankDetail._id ? newBankAccount : acc,
+        const updatedBankAccounts = existingBankAccounts.map((account) =>
+          account._id === editingBankDetail._id ? newBankAccount : account
         );
+        await axios.put(URL, { bankAccounts: updatedBankAccounts });
       } else {
-        updatedBankAccounts = [...existingBankAccounts, newBankAccount];
+        const updatedBankAccounts = [...existingBankAccounts, newBankAccount];
+        await axios.put(URL, { bankAccounts: updatedBankAccounts });
       }
-
-      const updateFormData = new FormData();
-      updatedBankAccounts.forEach((acc, idx) => {
-        for (const key in acc) {
-          updateFormData.append(`bankAccounts[${idx}][${key}]`, acc[key]);
-        }
-      });
-
-      await axios.put(URL, updateFormData);
       companyMutate();
       enqueueSnackbar(
         editingBankDetail ? 'Bank details updated successfully' : 'Bank details added successfully',
@@ -206,19 +192,6 @@ export default function CompanyProfile() {
       }
     },
     [personalDetailsMethods]
-  );
-
-  const handleBankLogoDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      if (file) {
-        const newFile = Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        });
-        bankDetailsMethods.setValue('bankLogo', newFile, { shouldValidate: true });
-      }
-    },
-    [bankDetailsMethods],
   );
 
   const handleEditBankDetail = (detail) => {
@@ -336,7 +309,6 @@ export default function CompanyProfile() {
           <Grid item md={4} xs={12}>
             <Box sx={{ width: '100%', maxWidth: '600px', marginBottom: '10px', padding: '10px' }}>
               <Box display="flex" flexDirection="column" gap={2}>
-                <RHFUploadAvatar name='bankLogo' onDrop={handleBankLogoDrop} />
                 <RHFTextField
                   name="accountNumber"
                   label="Account Number"
