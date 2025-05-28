@@ -50,7 +50,7 @@ const STATUS_OPTIONS = [
   { value: 'true', label: 'Active' },
   {
     value: 'false',
-    label: 'In Active',
+    label: 'Inactive',
   },
 ];
 
@@ -240,7 +240,12 @@ export default function CaratListView() {
               />
             ))}
           </Tabs>
-          <CaratTableToolbar filters={filters} onFilters={handleFilters} carats={carats} />
+          <CaratTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            carats={carats}
+            caratData={dataFiltered}
+          />
           {canReset && (
             <CaratTableFiltersResult
               filters={filters}

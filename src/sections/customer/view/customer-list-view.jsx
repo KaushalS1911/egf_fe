@@ -257,6 +257,7 @@ export default function CustomerListView() {
             filters={filters}
             onFilters={handleFilters}
             customers={customers}
+            customerData={dataFiltered}
             roleOptions={_roles}
           />
           {canReset && (

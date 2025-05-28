@@ -26,7 +26,7 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{name}</TableCell>
@@ -34,56 +34,60 @@ export default function CaratTableRow({ row, selected, onEditRow, onSelectRow, o
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
         <TableCell>
           <Label
-            variant='soft'
-            color={
-              (isActive == true && 'success') ||
-              (isActive == false && 'error') ||
-              'default'
-            }
+            variant="soft"
+            color={(isActive == true && 'success') || (isActive == false && 'error') || 'default'}
           >
-            {isActive ? 'Active' : 'In Active'}
+            {isActive ? 'Active' : 'Inactive'}
           </Label>
         </TableCell>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('delete_carat', configs, user) || getResponsibilityValue('update_carat', configs, user) ?
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {getResponsibilityValue('delete_carat', configs, user) ||
+          getResponsibilityValue('update_carat', configs, user) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : ''}
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('delete_carat', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
-        {getResponsibilityValue('update_carat', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
+        {getResponsibilityValue('delete_carat', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
+        {getResponsibilityValue('update_carat', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

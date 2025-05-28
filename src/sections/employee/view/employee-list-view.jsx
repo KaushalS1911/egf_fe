@@ -265,6 +265,7 @@ export default function EmployeeListView() {
             filters={filters}
             onFilters={handleFilters}
             employees={employees}
+            employeeData={dataFiltered}
             options={options}
           />
           {canReset && (

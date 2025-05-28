@@ -14,11 +14,17 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 
-
 // ----------------------------------------------------------------------
 
 export default function PenaltyTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { penaltyCode, afterDueDateFromDate, afterDueDateToDate, penaltyInterest, remark, isActive } = row;
+  const {
+    penaltyCode,
+    afterDueDateFromDate,
+    afterDueDateToDate,
+    penaltyInterest,
+    remark,
+    isActive,
+  } = row;
   const confirm = useBoolean();
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -27,7 +33,7 @@ export default function PenaltyTableRow({ row, selected, onEditRow, onSelectRow,
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{penaltyCode}</TableCell>
@@ -37,56 +43,60 @@ export default function PenaltyTableRow({ row, selected, onEditRow, onSelectRow,
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark ? remark : '-'}</TableCell>
         <TableCell>
           <Label
-            variant='soft'
-            color={
-              (isActive == true && 'success') ||
-              (isActive == false && 'error') ||
-              'default'
-            }
+            variant="soft"
+            color={(isActive == true && 'success') || (isActive == false && 'error') || 'default'}
           >
-            {isActive ? 'Active' : 'in Active'}
+            {isActive ? 'Active' : 'inactive'}
           </Label>
         </TableCell>
-        <TableCell align='right' sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('delete_penalty', configs, user) || getResponsibilityValue('update_penalty', configs, user) ?
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {getResponsibilityValue('delete_penalty', configs, user) ||
+          getResponsibilityValue('update_penalty', configs, user) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon='eva:more-vertical-fill' />
-            </IconButton> : ''}
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('delete_penalty', configs, user) && <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon='solar:trash-bin-trash-bold' />
-          Delete
-        </MenuItem>}
-        {getResponsibilityValue('update_penalty', configs, user) && <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:pen-bold' />
-          Edit
-        </MenuItem>}
+        {getResponsibilityValue('delete_penalty', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
+        {getResponsibilityValue('update_penalty', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
-        content='Are you sure want to delete?'
+        title="Delete"
+        content="Are you sure want to delete?"
         action={
-          <Button variant='contained' color='error' onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete
           </Button>
         }

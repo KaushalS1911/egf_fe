@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -17,6 +17,11 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
+import Button from '@mui/material/Button';
+import { PDFViewer } from '@react-pdf/renderer';
+import AllBranchLoanSummaryPdf from '../reports/pdf/all-branch-loan-summary-pdf.jsx';
+import { useBoolean } from '../../hooks/use-boolean.js';
+import InqiryPdf from './view/inqiry-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +32,7 @@ export default function InquiryTableToolbar({
   roleOptions,
   dateError,
   inquiries,
+  inquiriesDate,
 }) {
   const popover = usePopover();
   const { user } = useAuthContext();
@@ -35,6 +41,17 @@ export default function InquiryTableToolbar({
   const [startRecallingDateOpen, setStartRecallingDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [endRecallingDateOpen, setEndRecallingDateOpen] = useState(false);
+  const view = useBoolean();
+
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    startRecallingDate: filters.startRecallingDate,
+    endRecallingDate: filters.endRecallingDate,
+    assignTo: filters.assignTo,
+    inquiryFor: filters.inquiryFor,
+  };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -379,18 +396,11 @@ export default function InquiryTableToolbar({
               <MenuItem
                 onClick={() => {
                   popover.onClose();
+                  view.onTrue();
                 }}
               >
                 <Iconify icon="solar:printer-minimalistic-bold" />
                 Print
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="ant-design:file-pdf-filled" />
-                PDF
               </MenuItem>
               <MenuItem>
                 <RHFExportExcel
@@ -401,16 +411,22 @@ export default function InquiryTableToolbar({
               </MenuItem>
             </>
           )}
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="ic:round-whatsapp" />
-            whatsapp share
-          </MenuItem>
         </CustomPopover>
       </Stack>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <InqiryPdf inquiries={inquiriesDate} configs={configs} filterData={filterData} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }
