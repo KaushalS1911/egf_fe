@@ -18,6 +18,7 @@ import sbi from '../../../../assets/logo/download.png';
 import Iconify from '../../../../components/iconify/index.js';
 import { paths } from '../../../../routes/paths.js';
 import {
+  useGetAllInOutSummary,
   useGetCombinedLoanStats,
   useGetInquirySummary,
   useGetLoanChart,
@@ -32,8 +33,6 @@ import { useGetLoanissue } from '../../../../api/loanissue.js';
 import { useRouter } from '../../../../routes/hooks/index.js';
 import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
-import { useGetCashTransactions } from '../../../../api/cash-transactions.js';
-import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
 
 const timeRangeOptions = [
   { label: 'All', value: 'all' },
@@ -69,47 +68,12 @@ export default function OverviewAppView() {
     differenceRange: 'this_month',
   });
 
-  const getTotalSummary = (cashTransactions = [], bankTransactions = {}) => {
-    const allTransactions = [
-      ...cashTransactions,
-      ...(bankTransactions.transactions ?? []),
-    ];
-
-    const summary = allTransactions.reduce(
-      (acc, tx) => {
-        const amount = Number(tx.amount) || 0;
-        if (tx.category === 'Payment In') {
-          acc.paymentIn += amount;
-        } else if (tx.category === 'Payment Out') {
-          acc.paymentOut += amount;
-        }
-        return acc;
-      },
-      { paymentIn: 0, paymentOut: 0 },
-    );
-
-    const difference = summary.paymentIn - summary.paymentOut;
-    return {
-      paymentIn: summary.paymentIn.toFixed(2),
-      paymentOut: summary.paymentOut.toFixed(2),
-      difference: difference.toFixed(2),
-    };
-  };
-
   const { SchemeLoanSummary } = useGetSchemeLoanSummary(ranges?.schemeLoanSummaryRange);
   const { InquirySummary } = useGetInquirySummary(ranges?.inquiryRange);
   const { PortfolioSummary } = useGetPortfolioSummary();
   const { OtherLoanChart } = useGetOtherLoanChart();
   const { LoanChart } = useGetLoanChart();
-  const { cashTransactions } = useGetCashTransactions();
-  const { bankTransactions } = useGetBankTransactions();
-
-  const totalPaymentSummary = React.useMemo(() => {
-    if (!cashTransactions || !bankTransactions) {
-      return { paymentIn: 0, paymentOut: 0, difference: 0 };
-    }
-    return getTotalSummary(cashTransactions, bankTransactions);
-  }, [cashTransactions, bankTransactions]);
+  const { AllInOutSummary } = useGetAllInOutSummary();
 
   const { ReferenceAreaSummary: customerData } = useGetReferenceAreaSummary(
     ranges?.customerRange,
@@ -509,17 +473,17 @@ export default function OverviewAppView() {
                     {
                       label: 'All Entry In',
                       icon: <Iconify icon='mynaui:percentage-waves-solid' width={40} />,
-                      total: totalPaymentSummary?.paymentIn,
+                      total: AllInOutSummary?.allInAmount,
                     },
                     {
                       label: 'All Entry Out',
                       icon: <Iconify icon='iconamoon:zoom-out-fill' width={40} />,
-                      total: totalPaymentSummary?.paymentOut,
+                      total: AllInOutSummary?.allOutAmount,
                     },
                     {
                       label: 'Differance',
                       icon: <Iconify icon='ph:scales-fill' width={40} />,
-                      total: totalPaymentSummary?.difference,
+                      total: AllInOutSummary?.netAmount,
                     },
                   ],
                 }}
