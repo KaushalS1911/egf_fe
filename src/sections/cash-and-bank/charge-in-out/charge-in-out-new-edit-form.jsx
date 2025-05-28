@@ -83,10 +83,10 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
       category: currentCharge?.category || '',
       date: currentCharge?.date ? new Date(currentCharge?.date) : new Date(),
       description: currentCharge?.description || '',
-      paymentMode: currentCharge?.paymentDetails?.paymentMode || '',
-      account: currentCharge?.paymentDetails?.account || null,
-      cashAmount: currentCharge?.paymentDetails?.cashAmount || '',
-      bankAmount: currentCharge?.paymentDetails?.bankAmount || '',
+      paymentMode: currentCharge?.paymentDetail?.paymentMode || '',
+      account: currentCharge?.paymentDetail?.account || null,
+      cashAmount: currentCharge?.paymentDetail?.cashAmount || '',
+      bankAmount: currentCharge?.paymentDetail?.bankAmount || '',
       branchId: currentCharge
         ? {
             label: currentCharge?.branch?.name,
@@ -162,7 +162,7 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
         date: data.date,
         branch: selectedBranchId,
         status: data.paymentType,
-        paymentDetails: paymentDetail,
+        paymentDetail: paymentDetail,
       };
 
       const baseUrl = `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`;

@@ -365,17 +365,22 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         sch?.detail?.toLowerCase().includes(name?.toLowerCase())
     );
   }
+
   if (category) {
     inputData = inputData.filter((item) => item.category === category);
   }
+
   if (status) {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   if (Object.keys(account).length) {
     inputData = inputData?.filter((acc) => account.bankName === acc.bankName);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
+
   return inputData;
 }

@@ -389,7 +389,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
         branch: currentDisburse?.customer?.branch?._id,
         status: 'Payment In',
         category: currentDisburse?.loanNo,
-        paymentDetails: data?.chargePaymentDetail,
+        paymentDetail: data?.chargePaymentDetail,
       };
       const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
     } catch (error) {

@@ -12,11 +12,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { paths } from 'src/routes/paths.js';
 import { useRouter } from 'src/routes/hooks/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFSwitch,
-  RHFTextField,
-} from 'src/components/hook-form/index.js';
+import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form/index.js';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
@@ -83,9 +79,9 @@ export default function ExpenseNewEditForm({ currentExpense }) {
       then: (schema) => schema.required('Branch is required'),
       otherwise: (schema) => schema.nullable(),
     }),
-
     ...paymentSchema,
   });
+
   const defaultValues = useMemo(
     () => ({
       branch: currentExpense
@@ -98,10 +94,10 @@ export default function ExpenseNewEditForm({ currentExpense }) {
       category: currentExpense?.category || '',
       date: currentExpense?.date ? new Date(currentExpense?.date) : new Date(),
       description: currentExpense?.description || '',
-      paymentMode: currentExpense?.paymentDetails?.paymentMode || '',
-      account: currentExpense?.paymentDetails?.account || null,
-      cashAmount: currentExpense?.paymentDetails?.cashAmount || '',
-      bankAmount: currentExpense?.paymentDetails?.bankAmount || '',
+      paymentMode: currentExpense?.paymentDetail?.paymentMode || '',
+      account: currentExpense?.paymentDetail?.account || null,
+      cashAmount: currentExpense?.paymentDetail?.cashAmount || '',
+      bankAmount: currentExpense?.paymentDetail?.bankAmount || '',
     }),
     [currentExpense]
   );
@@ -145,6 +141,7 @@ export default function ExpenseNewEditForm({ currentExpense }) {
         console.error('Error parsing storedBranch:', error);
       }
     }
+
     const selectedBranchId =
       parsedBranch === 'all' ? data?.branchId?.value || branch?.[0]?._id : parsedBranch;
 
@@ -185,12 +182,12 @@ export default function ExpenseNewEditForm({ currentExpense }) {
 
     for (const [key, value] of Object.entries(paymentDetail)) {
       if (key === 'account' && value) {
-        formData.append('paymentDetails[account][_id]', value._id);
-        formData.append('paymentDetails[account][bankName]', value.bankName);
-        formData.append('paymentDetails[account][accountNumber]', value.accountNumber);
-        formData.append('paymentDetails[account][branchName]', value.branchName);
+        formData.append('paymentDetail[account][_id]', value._id);
+        formData.append('paymentDetail[account][bankName]', value.bankName);
+        formData.append('paymentDetail[account][accountNumber]', value.accountNumber);
+        formData.append('paymentDetail[account][branchName]', value.branchName);
       } else {
-        formData.append(`paymentDetails[${key}]`, value);
+        formData.append(`paymentDetail[${key}]`, value);
       }
     }
 
@@ -280,7 +277,6 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                   </li>
                 )}
               />
-
               <RHFTextField
                 name="category"
                 label="Category"
@@ -290,7 +286,6 @@ export default function ExpenseNewEditForm({ currentExpense }) {
               <RhfDatePicker name="date" control={control} label="Date" req={'red'} />
               <RHFTextField name="description" label="Description" multiline />
             </Box>
-
             <UploadBox
               onDrop={handleDrop}
               placeholder={
@@ -337,7 +332,6 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                 mt: 3,
               }}
             />
-
             <Typography variant="subtitle1" sx={{ my: 2, fontWeight: 600 }}>
               Payment Details
             </Typography>
@@ -405,7 +399,7 @@ export default function ExpenseNewEditForm({ currentExpense }) {
                           new Map(
                             branch
                               .flatMap((item) => item.company.bankAccounts)
-                              .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                              .map((item) => [item.bankName + item.id, item])
                           ).values()
                         )}
                         getOptionLabel={(option) => option.bankName || ''}

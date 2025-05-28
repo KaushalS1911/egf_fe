@@ -1,30 +1,23 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { paths } from 'src/routes/paths.js';
 import { useRouter } from 'src/routes/hooks/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFSwitch,
-  RHFTextField,
-} from 'src/components/hook-form/index.js';
+import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form/index.js';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import { Button } from '@mui/material';
 import { useGetBranch } from '../../../api/branch.js';
 import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
-import Iconify from '../../../components/iconify/index.js';
-import { UploadBox } from '../../../components/upload/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -36,8 +29,8 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
   const [paymentMode, setPaymentMode] = useState('');
   const { branch } = useGetBranch();
   const storedBranch = sessionStorage.getItem('selectedBranch');
-
   // const [file, setFile] = useState(currentOtherIncome ? currentOtherIncome?.invoice : null);
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -81,16 +74,17 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
     description: Yup.string().required('description Date is required'),
     ...paymentSchema,
   });
+
   const defaultValues = useMemo(
     () => ({
       otherIncomeType: currentOtherIncome?.otherIncomeType || '',
       category: currentOtherIncome?.category || '',
       date: currentOtherIncome?.date ? new Date(currentOtherIncome?.date) : new Date(),
       description: currentOtherIncome?.description || '',
-      paymentMode: currentOtherIncome?.paymentDetails?.paymentMode || '',
-      account: currentOtherIncome?.paymentDetails?.account?.bankName || null,
-      cashAmount: currentOtherIncome?.paymentDetails?.cashAmount || '',
-      bankAmount: currentOtherIncome?.paymentDetails?.bankAmount || '',
+      paymentMode: currentOtherIncome?.paymentDetail?.paymentMode || '',
+      account: currentOtherIncome?.paymentDetail?.account?.bankName || null,
+      cashAmount: currentOtherIncome?.paymentDetail?.cashAmount || '',
+      bankAmount: currentOtherIncome?.paymentDetail?.bankAmount || '',
       branch: currentOtherIncome
         ? {
             label: currentOtherIncome?.branch?.name,
@@ -114,7 +108,7 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
-  //
+
   // useEffect(() => {
   //   if (currentOtherIncome && currentOtherIncome.invoice) {
   //     const blob = new Blob([currentOtherIncome.invoice], { type: 'application/pdf' }); // Change MIME type as needed
@@ -174,8 +168,9 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
       category: data?.category || '',
       date: data?.date,
       description: data?.description,
-      paymentDetails: paymentDetail,
+      paymentDetail: paymentDetail,
     };
+
     // const formData = new FormData();
     //
     // formData.append('otherIncomeType', data?.otherIncomeType);
@@ -183,7 +178,7 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
     // formData.append('category', data?.category);
     // formData.append('date', data?.date);
 
-    // Append paymentDetails fields
+    // Append paymentDetail fields
 
     // for (const [key, value] of Object.entries(paymentDetail)) {
     //   formData.append(`paymentDetail[${key}]`, value);
@@ -220,7 +215,7 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
       console.error(error);
     }
   });
-  //
+
   // const handleDrop = useCallback((acceptedFiles) => {
   //   const uploadedFile = acceptedFiles[0];
   //
@@ -277,7 +272,6 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
                   </li>
                 )}
               />
-
               <RHFTextField
                 name="category"
                 label="Category"
@@ -287,7 +281,6 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
               <RhfDatePicker name="date" control={control} label="Date" req={'red'} />
               <RHFTextField name="description" label="Description" req={'red'} multiline />
             </Box>
-
             {/*<UploadBox*/}
             {/*  onDrop={handleDrop}*/}
             {/*  placeholder={*/}
@@ -334,7 +327,6 @@ export default function OtherIncomeNewEditForm({ currentOtherIncome }) {
             {/*    mt: 3,*/}
             {/*  }}*/}
             {/*/>*/}
-
             <Typography variant="subtitle1" sx={{ my: 2, fontWeight: 600 }}>
               Payment Details
             </Typography>

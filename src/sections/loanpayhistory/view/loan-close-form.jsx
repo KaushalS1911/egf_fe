@@ -2,17 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
@@ -26,7 +16,6 @@ import { pdf, PDFViewer } from '@react-pdf/renderer';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { useGetConfigs } from '../../../api/config';
 import { useGetCloseLoan } from '../../../api/loan-close';
-import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { fDate } from '../../../utils/format-time.js';
 import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
@@ -65,6 +54,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
   const totalDays = loanInterest.reduce((prev, next) => prev + (Number(next?.days) || 0), 0);
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -362,7 +352,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
         date: new Date(),
         branch: currentLoan.customer.branch._id,
         status: 'Payment In',
-        paymentDetails: chargePaymentDetail,
+        paymentDetail: chargePaymentDetail,
         category: currentLoan.loanNo,
       };
       const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
@@ -624,7 +614,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                       new Map(
                         branch
                           .flatMap((item) => item.company.bankAccounts)
-                          .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                          .map((item) => [item.bankName + item.id, item])
                       ).values()
                     )}
                     getOptionLabel={(option) => option.bankName || ''}
@@ -714,7 +704,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                            .map((item) => [item.bankName + item.id, item])
                         ).values()
                       )}
                       getOptionLabel={(option) => option.bankName || ''}
@@ -851,7 +841,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
               Share
             </Button>
           </DialogActions>
-
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <Noc nocData={currentLoan} configs={configs} />

@@ -12,24 +12,18 @@ import TableCell from '@mui/material/TableCell';
 import { fDate } from '../../../utils/format-time';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Dialog, DialogActions, IconButton, Paper, TableContainer } from '@mui/material';
-import { useGetPenalty } from '../../../api/penalty';
+import { IconButton, Paper, TableContainer } from '@mui/material';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
-import { useGetAllInterest } from '../../../api/interest-pay';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
 import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
 import Iconify from '../../../components/iconify';
-import moment from 'moment';
-import { PDFViewer } from '@react-pdf/renderer';
-import InterestPdf from '../PDF/interest-pdf';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { ConfirmDialog } from '../../../components/custom-dialog';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetOtherLoanInterestPay } from '../../../api/other-loan-interest-pay.js';
-import { formatDate } from '@fullcalendar/core';
 
 const TABLE_HEAD = [
   { id: 'from', label: 'From Date' },
@@ -129,6 +123,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     payAfterAdjusted: Yup.string().required('pay After Adjusted is required'),
     ...paymentSchema,
   });
+
   const defaultValues = {
     from: otherLoanInterest[0]?.to
       ? new Date(otherLoanInterest[0].to)
@@ -164,6 +159,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
   useEffect(() => {
     if (currentOtherLoan.status !== 'Closed') {
       const days = watch('days');
@@ -253,7 +249,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
         date: new Date(),
         branch: currentOtherLoan.loan.customer.branch._id,
         status: 'Payment Out',
-        paymentDetails: paymentDetail,
+        paymentDetail: paymentDetail,
         category: currentOtherLoan.loan.loanNo,
       };
       const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);

@@ -3,17 +3,7 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
@@ -22,11 +12,9 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useGetBranch } from '../../../api/branch';
 import Button from '@mui/material/Button';
-import Iconify from '../../../components/iconify';
 import { PDFViewer } from '@react-pdf/renderer';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { useGetConfigs } from '../../../api/config';
-import { useGetCloseLoan } from '../../../api/loan-close';
 import LoanCloseDetailsPdf from '../PDF/loan-close-details-pdf';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetOtherCloseLoan } from '../../../api/other-loan-close.js';
@@ -141,7 +129,6 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
 
-  console.log(currentOtherLoan, '0000000');
   const handleChargeIn = (data, paymentDetail) => {
     try {
       const payload = {
@@ -149,7 +136,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
         date: new Date(),
         branch: currentOtherLoan.loan.customer.branch._id,
         status: 'Payment Out',
-        paymentDetails: paymentDetail,
+        paymentDetail: paymentDetail,
         category: currentOtherLoan.loan.loanNo,
       };
       const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
@@ -197,6 +184,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
       closingCharge: data.closingCharge,
       payDate: data.payDate,
     };
+
     try {
       const url = `${import.meta.env.VITE_BASE_URL}/${user.company}/other-loans/${currentOtherLoan._id}/loan-close`;
       const config = {
@@ -351,7 +339,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                            .map((item) => [item.bankName + item.id, item])
                         ).values()
                       )}
                       getOptionLabel={(option) => option.bankName || ''}
@@ -442,7 +430,6 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
               Close
             </Button>
           </DialogActions>
-
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <LoanCloseDetailsPdf data={data} configs={configs} />

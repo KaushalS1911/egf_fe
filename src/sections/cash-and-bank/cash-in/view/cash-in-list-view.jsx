@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -9,7 +9,6 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths.js';
-import { useRouter } from 'src/routes/hooks/index.js';
 import { useBoolean } from 'src/hooks/use-boolean.js';
 import Iconify from 'src/components/iconify/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
@@ -17,14 +16,14 @@ import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table/index.js';
 import CashInTableToolbar from '../cash-in-table-toolbar.jsx';
 import CashInTableFiltersResult from '../cash-in-table-filters-result.jsx';
@@ -41,7 +40,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import MenuItem from '@mui/material/MenuItem';
 import { useForm } from 'react-hook-form';
 import FormProvider from 'src/components/hook-form/form-provider.jsx';
 import RHFTextField from 'src/components/hook-form/rhf-text-field.jsx';
@@ -153,7 +151,6 @@ export default function CashInListView() {
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
@@ -173,12 +170,10 @@ export default function CashInListView() {
 
   const handleEditRow = (id) => {
     const currentTransfer = transfer?.find((item) => item?._id === id);
-    console.log('Found transfer:', currentTransfer);
     setCurrentTransfer(currentTransfer);
     setOpenAdjustDialog(true);
   };
 
-  // Add this useEffect to handle form reset when currentTransfer changes
   useEffect(() => {
     if (currentTransfer && openAdjustDialog) {
       const newValues = {
@@ -188,24 +183,15 @@ export default function CashInListView() {
               value: currentTransfer?.branch?._id,
             }
           : null,
-        adjustmentType: currentTransfer?.paymentDetails?.adjustmentType || null,
-        amount: currentTransfer?.paymentDetails?.amount || '',
+        adjustmentType: currentTransfer?.paymentDetail?.adjustmentType || null,
+        amount: currentTransfer?.paymentDetail?.amount || '',
         adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
         desc: currentTransfer?.desc || '',
       };
-      console.log('Resetting form with values:', newValues);
       resetAdjustForm(newValues);
     }
   }, [currentTransfer, openAdjustDialog]);
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters]
-  );
-
-  // Form setup for Adjust Cash
   const adjustDefaultValues = useMemo(
     () => ({
       branch: currentTransfer
@@ -214,8 +200,8 @@ export default function CashInListView() {
             value: currentTransfer?.branch?._id,
           }
         : null,
-      adjustmentType: currentTransfer?.paymentDetails?.adjustmentType || null,
-      amount: currentTransfer?.paymentDetails?.amount || '',
+      adjustmentType: currentTransfer?.paymentDetail?.adjustmentType || null,
+      amount: currentTransfer?.paymentDetail?.amount || '',
       adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
       desc: currentTransfer?.desc || '',
     }),
@@ -235,11 +221,13 @@ export default function CashInListView() {
       otherwise: (schema) => schema.nullable(),
     }),
   });
+
   const adjustForm = useForm({
     defaultValues: adjustDefaultValues,
     resolver: yupResolver(adjustSchema),
     mode: 'onTouched',
   });
+
   const { handleSubmit: handleAdjustSubmit, reset: resetAdjustForm, control } = adjustForm;
 
   const adjustmentTypeOptions = ['Add Cash', 'Reduce Cash'];
@@ -248,10 +236,12 @@ export default function CashInListView() {
     setOpenAdjustDialog(true);
     resetAdjustForm(adjustDefaultValues);
   };
+
   const handleCloseAdjustDialog = () => {
     setOpenAdjustDialog(false);
     resetAdjustForm(adjustDefaultValues);
   };
+
   const onAdjustCash = async (values) => {
     try {
       let parsedBranch = storedBranch;
@@ -265,15 +255,17 @@ export default function CashInListView() {
 
       const selectedBranchId =
         parsedBranch === 'all' ? values?.branch?.value || branch?.[0]?._id : parsedBranch;
+
       const payload = {
         branch: selectedBranchId,
         transferType: 'Adjustment',
         desc: values.desc,
-        paymentDetails: {
+        paymentDetail: {
           amount: Number(values.amount),
           adjustmentType: values.adjustmentType,
         },
       };
+
       const apiUrl = currentTransfer
         ? `${import.meta.env.VITE_BASE_URL}/${user.company}/transfer/${currentTransfer._id}`
         : `${import.meta.env.VITE_BASE_URL}/${user.company}/transfer`;
@@ -286,6 +278,7 @@ export default function CashInListView() {
       } else {
         res = await axios.post(apiUrl, payload);
       }
+
       transferMutate();
       mutate();
       setOpenAdjustDialog(false);
@@ -449,7 +442,6 @@ export default function CashInListView() {
           </Button>
         }
       />
-      {/* Adjust Cash Dialog */}
       <Dialog open={openAdjustDialog} onClose={handleCloseAdjustDialog} fullWidth maxWidth="xs">
         <DialogTitle>Cash In Hand</DialogTitle>
         <FormProvider methods={adjustForm} onSubmit={handleAdjustSubmit(onAdjustCash)}>
@@ -534,9 +526,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.ref.toLowerCase().includes(name.toLowerCase())
     );
   }
+
   if (category) {
     inputData = inputData.filter((item) => item.category === category);
   }
+
   if (status) {
     inputData = inputData.filter((item) => item.status === status);
   }
@@ -544,5 +538,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
+
   return inputData;
 }

@@ -15,7 +15,6 @@ import { useSnackbar } from 'src/components/snackbar/index.js';
 import FormProvider, { RHFAutocomplete, RHFTextField } from 'src/components/hook-form/index.js';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
-import { useGetConfigs } from '../../../api/config.js';
 import { Button, Dialog, IconButton } from '@mui/material';
 import { useGetBranch } from '../../../api/branch.js';
 import RhfDatePicker from '../../../components/hook-form/rhf-date-picker.jsx';
@@ -32,7 +31,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
   const [paymentMode, setPaymentMode] = useState('');
   const { branch } = useGetBranch();
   const [file, setFile] = useState(currentPayment ? currentPayment?.invoice : null);
@@ -96,13 +94,14 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
       party: currentPayment?.party || '',
       date: currentPayment?.date ? new Date(currentPayment?.date) : new Date(),
       description: currentPayment?.description || '',
-      paymentMode: currentPayment?.paymentDetails?.paymentMode || '',
-      cashAmount: currentPayment?.paymentDetails?.cashAmount || 0,
-      bankAmount: currentPayment?.paymentDetails?.bankAmount || 0,
-      account: currentPayment?.paymentDetails?.account || null,
+      paymentMode: currentPayment?.paymentDetail?.paymentMode || '',
+      cashAmount: currentPayment?.paymentDetail?.cashAmount || 0,
+      bankAmount: currentPayment?.paymentDetail?.bankAmount || 0,
+      account: currentPayment?.paymentDetail?.account || null,
     }),
     [currentPayment]
   );
+
   const methods = useForm({
     resolver: yupResolver(NewSchema),
     defaultValues,
@@ -162,15 +161,14 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
     formData.append('description', data.description);
     formData.append('status', data.paymentType);
 
-    // Append paymentDetails fields
     for (const [key, value] of Object.entries(paymentDetail)) {
       if (key === 'account' && value) {
-        formData.append('paymentDetails[account][_id]', value._id);
-        formData.append('paymentDetails[account][bankName]', value.bankName);
-        formData.append('paymentDetails[account][accountNumber]', value.accountNumber);
-        formData.append('paymentDetails[account][branchName]', value.branchName);
+        formData.append('paymentDetail[account][_id]', value._id);
+        formData.append('paymentDetail[account][bankName]', value.bankName);
+        formData.append('paymentDetail[account][accountNumber]', value.accountNumber);
+        formData.append('paymentDetail[account][branchName]', value.branchName);
       } else {
-        formData.append(`paymentDetails[${key}]`, value);
+        formData.append(`paymentDetail[${key}]`, value);
       }
     }
 
@@ -243,7 +241,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
       const angleRadians = (rotation * Math.PI) / 180;
 
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        // No cropping, save the entire rotated image
         const rotatedCanvasWidth =
           Math.abs(image.naturalWidth * Math.cos(angleRadians)) +
           Math.abs(image.naturalHeight * Math.sin(angleRadians));
@@ -265,7 +262,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
         );
         ctx.restore();
       } else {
-        // Cropping is required
         const cropX = completedCrop.x * scaleX;
         const cropY = completedCrop.y * scaleY;
         const cropWidth = completedCrop.width * scaleX;
@@ -365,7 +361,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
                   </li>
                 )}
               />
-
               <RHFAutocomplete
                 name="party"
                 label="Party"
@@ -430,7 +425,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
               <RhfDatePicker name="date" control={control} label="Date" req={'red'} />
               <RHFTextField name="description" label="Description" multiline />
             </Box>
-
             <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 600 }}>
               Payment Details
             </Typography>
@@ -517,7 +511,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
                 </Box>
               </Box>
             </Box>
-
             <UploadBox
               onDrop={handleDrop}
               onDelete={handleDeleteImage}

@@ -39,11 +39,11 @@ export default function TransferDialog({
           value: currentTransfer?.branch?._id,
         }
       : null,
-    from: currentTransfer?.paymentDetails?.from || null,
-    to: currentTransfer?.paymentDetails?.to || null,
-    amount: currentTransfer?.paymentDetails?.amount || 0,
+    from: currentTransfer?.paymentDetail?.from || null,
+    to: currentTransfer?.paymentDetail?.to || null,
+    amount: currentTransfer?.paymentDetail?.amount || 0,
     desc: currentTransfer?.desc || '',
-    adjustmentType: currentTransfer?.paymentDetails?.adjustmentType || '',
+    adjustmentType: currentTransfer?.paymentDetail?.adjustmentType || '',
     adjustmentDate: currentTransfer?.adjustmentDate || new Date(),
     transferType: currentTransfer?.transferType || transferType,
   };
@@ -125,28 +125,28 @@ export default function TransferDialog({
       transferType: watchTransferType,
       transferDate: values.adjustmentDate,
       desc: values.desc,
-      paymentDetails: {},
+      paymentDetail: {},
     };
     if (watchTransferType === 'Bank To Bank') {
-      payload.paymentDetails = {
+      payload.paymentDetail = {
         from: values.from,
         to: values.to,
         amount: Number(values.amount),
       };
     } else if (watchTransferType === 'Bank To Cash') {
-      payload.paymentDetails = {
+      payload.paymentDetail = {
         from: values.from,
         to: 'Cash',
         amount: Number(values.amount),
       };
     } else if (watchTransferType === 'Cash To Bank') {
-      payload.paymentDetails = {
+      payload.paymentDetail = {
         from: values.from,
         to: values.to,
         amount: Number(values.amount),
       };
     } else if (watchTransferType === 'Adjust Bank Balance') {
-      payload.paymentDetails = {
+      payload.paymentDetail = {
         from: values.from,
         amount: Number(values.amount),
         adjustmentType: values.adjustmentType,
