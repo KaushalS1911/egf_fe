@@ -7,7 +7,7 @@ import { CustomerCreateView, CustomerListView } from '../../sections/customer/vi
 import { SettingsPage } from '../../sections/settings/view';
 import CustomerEditView from '../../sections/customer/view/customer-edit-view';
 import GoldLoanCalculator from '../../sections/goldloancalculator/gold-loan-calculator';
-import Notice from '../../sections/reminder/view/notice';
+import Notice from '../../sections/loanpayhistory/PDF/notice.jsx';
 import OtherDailyReportsListView from 'src/sections/reports/view/other-loan-daily-report';
 import DayBookListView from '../../sections/cash-and-bank/day-book/view/day-book-list-view.jsx';
 import CustomerRefReportListView from '../../sections/reports/view/customer-ref-report-list-view.jsx';

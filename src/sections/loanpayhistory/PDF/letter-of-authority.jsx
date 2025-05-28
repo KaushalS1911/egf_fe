@@ -101,7 +101,7 @@ export default function LetterOfAuthority({ loan }) {
               <Text style={styles.bold}>From:</Text>
             </Text>
             <Text>{`${loan.customer.firstName} ${loan.customer.middleName} ${loan.customer.lastName}`}</Text>
-            <Text>{`${loan.customer.permanentAddress.street} , ${loan.customer.permanentAddress.landmark} , ${loan.customer.permanentAddress.city} , ${loan.customer.permanentAddress.zipcode}`}</Text>
+            <Text>{`${loan.customer.temporaryAddress.street} , ${loan.customer.temporaryAddress.landmark} , ${loan.customer.temporaryAddress.city} , ${loan.customer.temporaryAddress.zipcode}`}</Text>
           </View>
           <View style={styles.section}>
             <Text>

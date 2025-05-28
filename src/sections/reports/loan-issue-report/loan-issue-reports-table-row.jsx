@@ -23,9 +23,9 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import { fDate } from '../../../utils/format-time';
-import Notice from '../../reminder/view/notice';
+import Notice from '../../loanpayhistory/PDF/notice.jsx';
 import { paths } from '../../../routes/paths';
-import LoanIssueDetails from '../../loanissue/view/loan-issue-details.jsx';
+import LoanIssueDetails from '../../loanpayhistory/PDF/loan-issue-details.jsx';
 import InitialLoanDetails from '../pdf/initial-loan-details.jsx';
 import { getResponsibilityValue } from '../../../permission/permission';
 

@@ -15,12 +15,12 @@ import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 import { Box, Dialog, DialogActions, IconButton } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
-import Notice from '../reminder/view/notice';
+import Notice from '../loanpayhistory/PDF/notice.jsx';
 import Noc from './PDF/noc';
 import React, { useState } from 'react';
-import LetterOfAuthority from '../disburse/letter-of-authority';
-import Sansaction11 from '../disburse/sansaction-11.jsx';
-import LoanIssueDetails from '../loanissue/view/loan-issue-details';
+import LetterOfAuthority from '../loanpayhistory/PDF/letter-of-authority.jsx';
+import Sansaction11 from '../loanpayhistory/PDF/sansaction-11.jsx';
+import LoanIssueDetails from '../loanpayhistory/PDF/loan-issue-details.jsx';
 import { fDate } from '../../utils/format-time';
 
 // ----------------------------------------------------------------------

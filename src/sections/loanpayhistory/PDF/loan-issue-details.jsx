@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
-import { fDate } from 'src/utils/format-time';
+import { fDate } from 'src/utils/format-time.js';
 import Qr from 'src/assets/icon/qr.png';
-import InvoiceHeader from '../../../components/invoise/invoice-header';
+import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 import InvoiceFooter from '../../../components/invoise/invoice-footer.jsx';
 import customerImages from '../../../assets/icon/customer.png';
 

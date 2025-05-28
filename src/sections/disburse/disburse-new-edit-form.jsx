@@ -20,7 +20,7 @@ import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
 import { TableHeadCustom, useTable } from '../../components/table';
 import { useAuthContext } from '../../auth/hooks/index.js';
 import { pdf } from '@react-pdf/renderer';
-import LoanIssueDetails from '../loanissue/view/loan-issue-details.jsx';
+import LoanIssueDetails from '../loanpayhistory/PDF/loan-issue-details.jsx';
 import { useGetConfigs } from '../../api/config.js';
 import { paths } from '../../routes/paths.js';
 

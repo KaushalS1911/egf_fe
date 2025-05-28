@@ -236,7 +236,7 @@ function Noc({ nocData, configs }) {
                   style={styles.topDetails}
                 >{`${nocData.customer.firstName} ${nocData.customer.middleName} ${nocData.customer.lastName}`}</Text>
                 <Text style={styles.topDetails}>
-                  {`${nocData.customer.permanentAddress.street},\n${nocData.customer.permanentAddress.landmark}\n${nocData.customer.permanentAddress.city} - ${nocData.customer.permanentAddress.zipcode}\n${nocData.customer.permanentAddress.state}`}
+                  {`${nocData.customer.temporaryAddress.street},\n${nocData.customer.temporaryAddress.landmark}\n${nocData.customer.temporaryAddress.city} - ${nocData.customer.temporaryAddress.zipcode}\n${nocData.customer.temporaryAddress.state}`}
                 </Text>
 
                 <Text style={styles.topDetails}>{nocData.customer.contact}</Text>

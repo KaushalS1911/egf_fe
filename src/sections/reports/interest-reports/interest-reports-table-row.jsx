@@ -24,7 +24,7 @@ import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { fDate } from '../../../utils/format-time';
-import Notice from '../../reminder/view/notice';
+import Notice from '../../loanpayhistory/PDF/notice.jsx';
 import { paths } from '../../../routes/paths';
 
 // ----------------------------------------------------------------------

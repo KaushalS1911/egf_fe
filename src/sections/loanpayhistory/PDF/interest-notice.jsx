@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
-import { fDate } from 'src/utils/format-time';
-import InvoiceHeader from '../../../components/invoise/invoice-header';
+import { fDate } from 'src/utils/format-time.js';
+import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -211,7 +211,7 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function Notice({ noticeData, configs }) {
+export default function InterestNotice({ interestNoticeData, configs }) {
   const styles = useStyles();
   const date = new Date(new Date().setDate(new Date().getDate() + 10));
   return (
@@ -221,7 +221,7 @@ export default function Notice({ noticeData, configs }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={noticeData} configs={configs} />
+          <InvoiceHeader selectedRow={interestNoticeData} configs={configs} />
           <View style={styles.pagePadding}>
             <View>
               <Text
@@ -240,34 +240,40 @@ export default function Notice({ noticeData, configs }) {
             <View>
               <Text
                 style={styles.topDetails}
-              >{`${noticeData.customer.firstName} ${noticeData.customer.middleName} ${noticeData.customer.lastName}`}</Text>
+              >{`${interestNoticeData.customer.firstName} ${interestNoticeData.customer.middleName} ${interestNoticeData.customer.lastName}`}</Text>
               <Text style={styles.topDetails}>
-                {`${noticeData.customer.permanentAddress.street},\n`}
-                {`${noticeData.customer.permanentAddress.landmark},\n`}
-                {`${noticeData.customer.permanentAddress.city} - ${noticeData.customer.permanentAddress.zipcode},\n`}
-                {`${noticeData.customer.permanentAddress.state}`}
+                {`${interestNoticeData.customer.temporaryAddress.street},\n`}
+                {`${interestNoticeData.customer.temporaryAddress.landmark},\n`}
+                {`${interestNoticeData.customer.temporaryAddress.city} - ${interestNoticeData.customer.temporaryAddress.zipcode},\n`}
+                {`${interestNoticeData.customer.temporaryAddress.state}`}
               </Text>
-              <Text style={styles.topDetails}>Mo : {noticeData?.customer?.contact}</Text>
+              <Text style={styles.topDetails}>Mo : {interestNoticeData?.customer?.contact}</Text>
             </View>
             <View>
-              <Text style={styles.noticeTitle}>વિષય : ગોલ્ડ જપ્ત કરવા બાબત</Text>
+              <Text style={styles.noticeTitle}>વિષય : ગોલ્ડ લોનનું વ્યાજ ભરપાઈ કરવા બાબત</Text>
             </View>
             <View style={styles.bottomDetails}>
-              <Text style={styles.bottomDetails}>આદરણીય શ્રી,</Text>
               <Text style={styles.bottomDetails}>
                 {' '}
                 <Text>{'                     '}</Text>
-                આથી, જણાવવાનું કે તમે આ EASY GOLD FINCORP માંથી તારીખ {fDate(
-                  noticeData?.issueDate
-                )}{' '}
-                ના રોજ લીધેલી ગોલ્ડ લોન અંકે રૂપિયા {(noticeData?.loanAmount).toFixed(2)}/- નું
-                વ્યાજ કંપનીના નિયમ પ્રમાણે નિયત મુદત સુધીમાં ભરપાય કરેલ નથી. આથી નોટીસ આપવામાં આવે
-                છે કે તારીખ {fDate(date)} સુધીમાં બાકી નીકળતી વ્યાજની રકમ ભરપાય કરી જવી.અગર કંપનીએ
-                આપેલી મુદત સુધીમાં તમે હાજર ન થતા કંપની પોતાના ધારા-ધોરણ પ્રમાણે તમારા ગોલ્ડની હરાજી
-                કરશે અને બદલામાં મળેલ જે-તે રકમ તમારા ખાતે જમા કે ઉધાર કરી બાકી નીકળતી રકમની
-                લેવડ-દેવડ કાયદેસરની કાર્યવાહી કરવામાં આવશે. જેની દરેકે ખાતરીપૂર્વક નોંધ લેવી. નિયત
-                મુદત સુધીમાં મળવા ન આવનાર વ્યક્તિઓએ ગોલ્ડ બાબતની કોઈ પણ પ્રકારની તકરાર કરવી નહિ તેમજ
-                એના માટે EASY GOLD FINCORP જવાબદાર રહેશે નહિ તેની દરેક ગ્રાહક મિત્રએ ખાસ નોંધ લેવી.
+                આથી જણાવવાનું કે તમે EASY GOLD FINCORP માુંથી તારીખ{' '}
+                <Text style={{ fontWeight: 'bold' }}>
+                  {fDate(interestNoticeData.issueDate)}{' '}
+                </Text>{' '}
+                ના રોજ લીધેલી ગોલ્ડ લોન જેનો લોન અકાઉન્ટ નં{' '}
+                <Text style={{ fontWeight: 'bold' }}>{interestNoticeData.loanNo}</Text> છે. જે લોન
+                ની રકમ અંકે રૂપિયા{' '}
+                <Text style={{ fontWeight: 'bold' }}>{interestNoticeData.loanAmount}</Text> છે,
+                જેમાં આપશ્રીએ કંપનીના નિયમોનુસાર રેગ્યુલર વ્યાજ ની ભરવાપાત્ર રકમ આજ દિન સઘી ભરપાય
+                કરેલ નથી. જેથી આપને આ નોટિસ આપવામાં આવે છે કે તારીખ{' '}
+                <Text style={{ fontWeight: 'bold' }}>
+                  {fDate(interestNoticeData.nextInstallmentDate)}
+                </Text>{' '}
+                સુઘી માં આજ દિન સઘી ની વ્યાજની બાકી રકમ નિયમ મદુત સઘી માં વ્યાજ ની બાકી રકમ ભરપાય
+                નહી કરે અથવા કંપનીએ આપેલી મદુત સઘી માં રૂબરૂ ઓફીસ પર હાજર ન થતા કંપનીએ પોતાના
+                નિયમોનુસાર વ્યાજ સાથેની બાકી {'\n'}નીકળતી રકમની વસુલાત કરવા માટે આગળ કાયદેસર ની
+                કાર્યવાહી કરશે, જેમાં આપશ્રીએ કોઈ પણ પ્રકાર ની દલીલ કે તર-તકરાર કરવી નહિ , જે બાબતે
+                આપશ્રીએ ખાસ નોંધ લેવી.
               </Text>
               <View style={styles.d_flex}>
                 <Text style={styles.wriitenBy}>લી. મેનેજમેન્ટ</Text>

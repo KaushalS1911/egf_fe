@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/logo.png';
-import { fDate } from 'src/utils/format-time';
-import InvoiceHeader from '../../components/invoise/invoice-header';
+import { fDate } from 'src/utils/format-time.js';
+import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -462,7 +462,7 @@ export default function Sansaction11({ sansaction, configs }) {
                         flex: 2,
                       }}
                     >
-                      {`${sansaction.customer.permanentAddress.street}, ${sansaction.customer.permanentAddress.landmark}, ${sansaction.customer.permanentAddress.city}, ${sansaction.customer.permanentAddress.zipcode}`.toUpperCase()}
+                      {`${sansaction.customer.temporaryAddress.street}, ${sansaction.customer.temporaryAddress.landmark}, ${sansaction.customer.temporaryAddress.city}, ${sansaction.customer.temporaryAddress.zipcode}`.toUpperCase()}
                     </Text>
                   </View>
 

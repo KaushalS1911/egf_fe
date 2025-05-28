@@ -22,13 +22,14 @@ import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
 import { fDate } from '../../utils/format-time';
-import Notice from '../reminder/view/notice';
+import Notice from './PDF/notice.jsx';
 import Noc from './PDF/noc';
-import LetterOfAuthority from '../disburse/letter-of-authority';
-import Sansaction11 from '../disburse/sansaction-11.jsx';
-import LoanIssueDetails from '../loanissue/view/loan-issue-details';
-import Sansaction8 from '../disburse/sansaction-8.jsx';
+import LetterOfAuthority from './PDF/letter-of-authority.jsx';
+import Sansaction11 from './PDF/sansaction-11.jsx';
+import LoanIssueDetails from './PDF/loan-issue-details.jsx';
+import Sansaction8 from './PDF/sansaction-8.jsx';
 import { paths } from '../../routes/paths';
+import InterestNotice from './PDF/interest-notice.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +73,9 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       : [],
     notice: Array.isArray(user?.attemptToDownload?.notice)
       ? [...user?.attemptToDownload?.notice]
+      : [],
+    'interest-notice': Array.isArray(user?.attemptToDownload?.interestNotice)
+      ? [...user?.attemptToDownload?.interestNotice]
       : [],
     noc: Array.isArray(user?.attemptToDownload?.noc) ? [...user?.attemptToDownload?.noc] : [],
   });
@@ -191,7 +195,15 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
   const handleDialogOpen = async (content) => {
     setDialogContent(content);
     if (
-      ['loanDetails', 'sanction-8', 'sanction-11', 'authority', 'notice', 'noc'].includes(content)
+      [
+        'loanDetails',
+        'sanction-8',
+        'sanction-11',
+        'authority',
+        'notice',
+        'interest-notice',
+        'noc',
+      ].includes(content)
     )
       // {
       //   await sendPdfToWhatsApp(content);
@@ -206,6 +218,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       'sanction-11': <Sansaction11 sansaction={row} configs={configs} />,
       authority: <LetterOfAuthority loan={row} />,
       notice: <Notice noticeData={row} configs={configs} />,
+      'interest-notice': <InterestNotice interestNoticeData={row} configs={configs} />,
       noc: <Noc nocData={row} configs={configs} />,
     };
     return contentMap[dialogContent] || null;
@@ -279,7 +292,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
-        sx={{ width: 140 }}
+        sx={{ width: 160 }}
       >
         {[
           { key: 'loanDetails', label: 'Loan Details', icon: 'clarity:details-line' },
@@ -290,7 +303,11 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             ? [{ key: 'noc', label: 'NOC', icon: 'mdi:certificate-outline' }]
             : [
                 { key: 'notice', label: 'Final Notice', icon: 'gridicons:notice' },
-                { key: 'notice', label: 'Notice', icon: 'gridicons:notice' },
+                {
+                  key: 'interest-notice',
+                  label: 'Interest Notice',
+                  icon: 'uis:exclamation-octagon',
+                },
               ]),
         ].map((item) => {
           const isDisabled = isButtonDisabled(item?.key, row?._id);
