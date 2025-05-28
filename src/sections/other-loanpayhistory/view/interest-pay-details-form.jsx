@@ -54,7 +54,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.payAfterAdjust) || 0),
     0
   );
-  const cahAmt = otherLoanInterest.reduce(
+  const cashAmt = otherLoanInterest.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
@@ -616,7 +616,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                     {payAmt}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {cahAmt}
+                    {cashAmt}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {bankAmt}

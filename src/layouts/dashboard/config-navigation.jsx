@@ -230,6 +230,10 @@ export function useNavData() {
                 path: paths.dashboard.otherReports['other-loan-interest-reports'],
               },
               {
+                title: t('other interest entry reports'),
+                path: paths.dashboard.otherReports['other-interest-entry-reports'],
+              },
+              {
                 title: t('other loan daily reports'),
                 path: paths.dashboard.otherReports['other-loan-daily-reports'],
               },

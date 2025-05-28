@@ -35,31 +35,25 @@ import InterestEntryReportsTableToolbar from '../interest-entry-reports/interest
 import InterestEntryReportsTableFiltersResult from '../interest-entry-reports/interest-entry-reports-table-filters-result.jsx';
 import InterestEntryReportsTableRow from '../interest-entry-reports/interest-entry-reports-table-row.jsx';
 import { useGetInterestEntryReports } from '../../../api/interest-entry-reports.js';
+import OtherInterestEntryReportsTableToolbar from '../other-interest-entry-reports/other-interest-entry-reports-table-toolbar.jsx';
+import OtherInterestEntryReportsTableFiltersResult from '../other-interest-entry-reports/other-interest-entry-reports-table-filters-result.jsx';
+import OtherInterestEntryReportsTableRow from '../other-interest-entry-reports/other-interest-entry-reports-table-row.jsx';
+import { useGetOtherInterestEntryReports } from '../../../api/other-interest-entry-reports.js';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: '#', label: '#' },
-  { id: 'loanNo', label: 'Loan no' },
+  { id: 'otherLoanNumber', label: 'Loan No' },
   { id: 'from', label: 'From Date' },
   { id: 'to', label: 'To Date' },
-  { id: 'loanAmount', label: 'Loan Amt' },
-  { id: 'interestLoanAmount', label: 'Int Loan Amt' },
-  { id: 'interestRate', label: 'Int. + con. Rate' },
-  { id: 'int+concharge', label: 'Int. amt' },
-  { id: 'concharge', label: 'con. charge ' },
-  { id: 'penaltyAmount', label: 'Penalty Amt' },
-  { id: 'totalpay', label: 'Total pay' },
-  { id: 'uchakAmt', label: 'Uchak Amt' },
-  { id: 'oldcr/dr', label: 'Old cr/dr' },
-  { id: 'payAfterAdjust', label: 'Pay After Adjust' },
   { id: 'days', label: 'Days' },
-  { id: 'entryDate', label: 'Entry Date' },
-  { id: 'cashamt', label: 'Cash amt' },
-  { id: 'bankamt', label: 'Bank amt' },
-  { id: 'bank', label: 'Bank' },
-  { id: 'totalPay', label: 'Total Pay Amt' },
-  { id: 'entryBy', label: 'Entry By' },
+  { id: 'interestAmount', label: 'Int. amt' },
+  { id: 'charge', label: 'Charge' },
+  { id: 'amountPaid', label: 'Amount Paid' },
+  { id: 'cashAmt', label: 'Cash Amt' },
+  { id: 'BankAmt', label: 'Bank Amt' },
+  { id: 'Bank', label: 'Bank' },
+  { id: 'EntryDate', label: 'Entry Date' },
 ];
 
 const defaultFilters = {
@@ -72,9 +66,10 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function interestEntryReportsListView() {
+export default function OtherInterestEntryReportsListView() {
   const table = useTable();
-  const { interestEntryReports, interestEntryReportsLoading } = useGetInterestEntryReports();
+  const { otherInterestEntryReports, otherInterestEntryReportsLoading } =
+    useGetOtherInterestEntryReports();
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
@@ -87,22 +82,7 @@ export default function interestEntryReportsListView() {
     filters,
   });
 
-  const penaltyAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
-
-  const payAfterAdjustAmt = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.adjustedPay) || 0),
-    0
-  );
-
-  const uchakAmt = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.uchakInterestAmount) || 0),
-    0
-  );
-
-  const totalPayAmt = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.amountPaid) || 0),
-    0
-  );
+  const payAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.payAfterAdjust) || 0), 0);
   const cashAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
@@ -111,28 +91,28 @@ export default function interestEntryReportsListView() {
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
   );
-
-  const intAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.interestAmount) || 0), 0);
-  const oldCrDr = dataFiltered.reduce((prev, next) => prev + (Number(next?.old_cr_dr) || 0), 0);
-  const totalPay = dataFiltered.reduce((prev, next) => prev + (Number(next?.totalPay) || 0), 0);
-  const conCharge = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.consultingCharge) || 0),
+  const interestAmount = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
+  const charge = dataFiltered.reduce((prev, next) => prev + (Number(next?.charge) || 0), 0);
+
+  const day = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
+    0
+  );
+
   const total = {
-    penaltyAmt,
-    payAfterAdjustAmt,
-    totalPayAmt,
-    intAmt,
-    oldCrDr,
-    totalPay,
-    conCharge,
     bankAmt,
     cashAmt,
+    interestAmount,
+    charge,
+    day,
+    payAmt,
   };
 
   useEffect(() => {
-    const updatedData = interestEntryReports.map((item, index) => ({
+    const updatedData = otherInterestEntryReports?.map((item, index) => ({
       ...item,
       srNo: index + 1,
     }));
@@ -153,7 +133,7 @@ export default function interestEntryReportsListView() {
 
       setOptions(newOptions);
     }
-  }, [interestEntryReports]); // Runs only when interestReports changes
+  }, [otherInterestEntryReports]); // Runs only when interestReports changes
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
@@ -174,7 +154,7 @@ export default function interestEntryReportsListView() {
     setFilters(defaultFilters);
   }, []);
 
-  if (interestEntryReportsLoading) {
+  if (otherInterestEntryReportsLoading) {
     return <LoadingScreen />;
   }
   return (
@@ -191,7 +171,7 @@ export default function interestEntryReportsListView() {
           }}
         />
         <Card>
-          <InterestEntryReportsTableToolbar
+          <OtherInterestEntryReportsTableToolbar
             filters={filters}
             onFilters={handleFilters}
             data={dataFiltered}
@@ -199,7 +179,7 @@ export default function interestEntryReportsListView() {
             options={options}
           />
           {canReset && (
-            <InterestEntryReportsTableFiltersResult
+            <OtherInterestEntryReportsTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               onResetFilters={handleResetFilters}
@@ -253,83 +233,40 @@ export default function interestEntryReportsListView() {
                     table.page * table.rowsPerPage,
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
-                  .map((row, index) => (
-                    <InterestEntryReportsTableRow key={row?._id} index={index} row={row} />
+                  ?.map((row, index) => (
+                    <OtherInterestEntryReportsTableRow key={row?._id} index={index} row={row} />
                   ))}
                 <TableNoData notFound={notFound} />
 
-                <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
+                <TableRow
+                  sx={{ backgroundColor: '#F4F6F8', bottom: 0, position: 'sticky', zIndex: 1000 }}
+                >
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
                   <TableCell />
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: '600',
-                      color: '#637381',
-                      py: 1,
-                      px: 2,
-                    }}
-                  >
-                    {intAmt.toFixed(0)}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: '600',
-                      color: '#637381',
-                      py: 1,
-                      px: 2,
-                    }}
-                  >
-                    {conCharge.toFixed(0)}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: '600',
-                      color: '#637381',
-                      py: 1,
-                      px: 2,
-                    }}
-                  >
-                    {penaltyAmt.toFixed(0)}
-                  </TableCell>
+                  <TableCell />
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(intAmt + penaltyAmt + conCharge).toFixed(2)}{' '}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {uchakAmt.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {oldCrDr.toFixed(0)}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontWeight: '600',
-                      color: '#637381',
-                      py: 1,
-                      px: 2,
-                    }}
-                  >
-                    {payAfterAdjustAmt.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {cashAmt.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {bankAmt.toFixed(0)}
+                    {day}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {totalPayAmt.toFixed(0)}
+                    {interestAmount.toFixed(0)}
+                  </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {charge.toFixed(0)}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {payAmt}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {cashAmt}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {bankAmt}
+                  </TableCell>
+                  <TableCell />
+                  <TableCell />
+                  <TableCell />
                 </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
@@ -388,22 +325,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   inputData = stabilizedThis.map((el) => el[0]);
   if (username && username.trim()) {
-    inputData = inputData.filter(
-      (item) =>
-        (
-          item?.loan.customer?.firstName &&
-          item?.loan.customer?.firstName +
-            ' ' +
-            item?.loan.customer?.middleName +
-            ' ' +
-            item?.loan.customer?.lastName
-        )
-          .toLowerCase()
-          .includes(username.toLowerCase()) ||
-        item.loan.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
+    inputData = inputData.filter((item) =>
+      item.otherLoan.otherLoanNumber.toLowerCase().includes(username.toLowerCase())
     );
   }
 
