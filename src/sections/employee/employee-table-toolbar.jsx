@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 import { useGetConfigs } from '../../api/config';
@@ -13,13 +13,26 @@ import { getResponsibilityValue } from '../../permission/permission';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Button from '@mui/material/Button';
+import { PDFViewer } from '@react-pdf/renderer';
+import CustomerPdf from '../customer/view/customer-pdf.jsx';
+import { useBoolean } from '../../hooks/use-boolean.js';
+import EmployeePdf from './view/employee-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeTableToolbar({ filters, onFilters, employees, options }) {
+export default function EmployeeTableToolbar({
+  filters,
+  onFilters,
+  employees,
+  options,
+  employeeData,
+}) {
   const popover = usePopover();
   const { configs } = useGetConfigs();
   const { user } = useAuthContext();
+  const view = useBoolean();
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -134,18 +147,11 @@ export default function EmployeeTableToolbar({ filters, onFilters, employees, op
               <MenuItem
                 onClick={() => {
                   popover.onClose();
+                  view.onTrue();
                 }}
               >
                 <Iconify icon="solar:printer-minimalistic-bold" />
                 Print
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="ant-design:file-pdf-filled" />
-                PDF
               </MenuItem>
               <MenuItem>
                 <RHFExportExcel
@@ -156,16 +162,22 @@ export default function EmployeeTableToolbar({ filters, onFilters, employees, op
               </MenuItem>
             </>
           )}
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="ic:round-whatsapp" />
-            whatsapp share
-          </MenuItem>
         </CustomPopover>
       </Stack>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <EmployeePdf employee={employeeData} configs={configs} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

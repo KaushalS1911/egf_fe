@@ -37,7 +37,7 @@ export default function SchemeTableFiltersResult({
           <Block label="Status">
             <Chip
               size="small"
-              label={filters.isActive === 'true' ? 'Active' : 'In Active'}
+              label={filters.isActive === 'true' ? 'Active' : 'Inactive'}
               onDelete={handleRemoveStatus}
             />
           </Block>

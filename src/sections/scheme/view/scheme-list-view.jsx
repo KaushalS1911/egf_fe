@@ -49,7 +49,7 @@ const STATUS_OPTIONS = [
   { value: 'true', label: 'Active' },
   {
     value: 'false',
-    label: 'In Active',
+    label: 'Inactive',
   },
 ];
 
@@ -260,7 +260,12 @@ export default function SchemeListView() {
               />
             ))}
           </Tabs>
-          <SchemeTableToolbar filters={filters} onFilters={handleFilters} schemes={schemes} />
+          <SchemeTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            schemes={schemes}
+            schemeData={dataFiltered}
+          />
           {canReset && (
             <SchemeTableFiltersResult
               filters={filters}

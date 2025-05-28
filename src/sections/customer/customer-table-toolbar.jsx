@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
@@ -12,20 +12,37 @@ import { getResponsibilityValue } from '../../permission/permission';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { FormControl } from '@mui/material';
+import { Box, Dialog, DialogActions, FormControl } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import Button from '@mui/material/Button';
+import { PDFViewer } from '@react-pdf/renderer';
+import InqiryPdf from '../inquiry/view/inqiry-pdf.jsx';
+import { useBoolean } from '../../hooks/use-boolean.js';
+import CustomerPdf from './view/customer-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function CustomerTableToolbar({ filters, onFilters, customers, dateError }) {
+export default function CustomerTableToolbar({
+  filters,
+  onFilters,
+  customers,
+  dateError,
+  customerData,
+}) {
   const popover = usePopover();
   const { configs } = useGetConfigs();
   const { user } = useAuthContext();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const view = useBoolean();
+
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  };
 
   const handleFilterName = useCallback(
     (event) => {
@@ -210,18 +227,11 @@ export default function CustomerTableToolbar({ filters, onFilters, customers, da
             <MenuItem
               onClick={() => {
                 popover.onClose();
+                view.onTrue();
               }}
             >
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="ant-design:file-pdf-filled" />
-              PDF
             </MenuItem>
             <MenuItem>
               <RHFExportExcel
@@ -232,15 +242,21 @@ export default function CustomerTableToolbar({ filters, onFilters, customers, da
             </MenuItem>
           </>
         )}
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="ic:round-whatsapp" />
-          whatsapp share
-        </MenuItem>
       </CustomPopover>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <CustomerPdf customer={customerData} configs={configs} filterData={filterData} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

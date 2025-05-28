@@ -535,6 +535,7 @@ export default function InquiryListView() {
             onFilters={handleFilters}
             dateError={dateError}
             inquiries={inquiries}
+            inquiriesDate={inquiry}
             options={options}
           />
           {canReset && (

@@ -50,7 +50,7 @@ const STATUS_OPTIONS = [
   { value: 'true', label: 'Active' },
   {
     value: 'false',
-    label: 'In Active',
+    label: 'Inactive',
   },
 ];
 
@@ -244,7 +244,12 @@ export default function PenaltyListView() {
               />
             ))}
           </Tabs>
-          <PenaltyTableToolbar filters={filters} onFilters={handleFilters} penalties={penalties} />
+          <PenaltyTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            penalties={penalties}
+            penaltyData={dataFiltered}
+          />
           {canReset && (
             <PenaltyTableFiltersResult
               filters={filters}

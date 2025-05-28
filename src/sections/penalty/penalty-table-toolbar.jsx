@@ -6,27 +6,31 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { IconButton } from '@mui/material';
+import { Dialog, IconButton } from '@mui/material';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
+import { useBoolean } from '../../hooks/use-boolean.js';
+import { Box } from '@mui/system';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import { PDFViewer } from '@react-pdf/renderer';
+import PenaltyPdf from './view/penalty-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function PenaltyTableToolbar({
-                                              filters,
-                                              onFilters, penalties,
-                                            }) {
+export default function PenaltyTableToolbar({ filters, onFilters, penalties, penaltyData }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const view = useBoolean();
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   return (
@@ -42,66 +46,64 @@ export default function PenaltyTableToolbar({
           p: 2.5,
         }}
       >
-        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            sx={{ 'input': { height: 7 } }}
-
+            sx={{ input: { height: 7 } }}
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder='Search...'
+            placeholder="Search..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
-                  <Iconify icon='eva:search-fill' sx={{ color: 'text.disabled' }} />
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
           />
           <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
+            <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
       </Stack>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 155 }}
       >
-        {getResponsibilityValue('print_penalty_detail', configs, user) && (<>  <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:printer-minimalistic-bold' />
-          Print
-        </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:import-bold' />
-            Import
-          </MenuItem>
-          <MenuItem
-          >
-            <RHFExportExcel
-              data={penalties}
-              fileName='PenaltyData'
-              sheetName='PenaltyDetails'
-            />
-          </MenuItem></>)}
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon='solar:export-bold' />
-          Export
-        </MenuItem>
+        {getResponsibilityValue('print_penalty_detail', configs, user) && (
+          <>
+            {' '}
+            <MenuItem
+              onClick={() => {
+                view.onTrue();
+                popover.onClose();
+              }}
+            >
+              <Iconify icon="solar:printer-minimalistic-bold" />
+              Print
+            </MenuItem>
+            <MenuItem>
+              <RHFExportExcel data={penalties} fileName="PenaltyData" sheetName="PenaltyDetails" />
+            </MenuItem>
+          </>
+        )}
       </CustomPopover>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <PenaltyPdf penalty={penaltyData} configs={configs} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

@@ -50,7 +50,7 @@ const STATUS_OPTIONS = [
   { value: 'true', label: 'Active' },
   {
     value: 'false',
-    label: 'In Active',
+    label: 'Inactive',
   },
 ];
 
@@ -246,6 +246,7 @@ export default function PropertyListView() {
             filters={filters}
             onFilters={handleFilters}
             propertise={propertise}
+            propertyData={dataFiltered}
           />
           {canReset && (
             <PropertyTableFiltersResult
