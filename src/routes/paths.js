@@ -222,6 +222,7 @@ export const paths = {
       'other-loan-all-branch-reports': `${ROOTS.DASHBOARD}/other-reports/other-loan-all-branch-reports`,
       'other-loan-close-reports': `${ROOTS.DASHBOARD}/other-reports/other-loan-close-reports`,
       'other-loan-interest-reports': `${ROOTS.DASHBOARD}/other-reports/other-loan-interest-reports`,
+      'other-interest-entry-reports': `${ROOTS.DASHBOARD}/other-reports/other-interest-entry-reports`,
       'other-loan-daily-reports': `${ROOTS.DASHBOARD}/other-reports/other-loan-daily-reports`,
       'total-all-in-out-loan-reports': `${ROOTS.DASHBOARD}/other-reports/total-all-in-out-loan-reports`,
     },

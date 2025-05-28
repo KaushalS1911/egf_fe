@@ -23,10 +23,11 @@ import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
 import InterestEntryReportsPdf from '../pdf/interest-entry-reports-pdf.jsx';
+import OtherInterestEntryReportsPdf from '../pdf/other-interest-entry-reports-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function InterestEntryReportsTableToolbar({
+export default function OtherInterestEntryReportsTableToolbar({
   filters,
   onFilters,
   data,
@@ -44,7 +45,6 @@ export default function InterestEntryReportsTableToolbar({
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
-    branch: filters.branch,
   };
   const handleFilterName = useCallback(
     (event) => {
@@ -153,102 +153,6 @@ export default function InterestEntryReportsTableToolbar({
               ),
             }}
           />
-          {/*<FormControl*/}
-          {/*  sx={{*/}
-          {/*    flexShrink: 0,*/}
-          {/*    width: { xs: 1, sm: 300 },*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <InputLabel*/}
-          {/*    sx={{*/}
-          {/*      mt: -0.8,*/}
-          {/*      '&.MuiInputLabel-shrink': {*/}
-          {/*        mt: 0,*/}
-          {/*      },*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    Rate*/}
-          {/*  </InputLabel>*/}
-          {/*  <Select*/}
-          {/*    value={filters.rate}*/}
-          {/*    onChange={handleFilterRate}*/}
-          {/*    input={<OutlinedInput label="Rate" sx={{ height: '40px' }} />}*/}
-          {/*    MenuProps={{*/}
-          {/*      PaperProps: {*/}
-          {/*        sx: {*/}
-          {/*          maxHeight: 240,*/}
-          {/*          '&::-webkit-scrollbar': {*/}
-          {/*            width: '5px',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-track': {*/}
-          {/*            backgroundColor: '#f1f1f1',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-thumb': {*/}
-          {/*            backgroundColor: '#888',*/}
-          {/*            borderRadius: '4px',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-thumb:hover': {*/}
-          {/*            backgroundColor: '#555',*/}
-          {/*          },*/}
-          {/*        },*/}
-          {/*      },*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    {options.map((option) => (*/}
-          {/*      <MenuItem key={option} value={option}>*/}
-          {/*        {option.rate}*/}
-          {/*      </MenuItem>*/}
-          {/*    ))}*/}
-          {/*  </Select>*/}
-          {/*</FormControl>*/}
-          {/*<FormControl*/}
-          {/*  sx={{*/}
-          {/*    flexShrink: 0,*/}
-          {/*    width: { xs: 1, sm: 300 },*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <InputLabel*/}
-          {/*    sx={{*/}
-          {/*      mt: -0.8,*/}
-          {/*      '&.MuiInputLabel-shrink': {*/}
-          {/*        mt: 0,*/}
-          {/*      },*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    Branch*/}
-          {/*  </InputLabel>*/}
-          {/*  <Select*/}
-          {/*    value={filters.branch}*/}
-          {/*    onChange={handleFilterBranch}*/}
-          {/*    input={<OutlinedInput label="Branch" sx={{ height: '40px' }} />}*/}
-          {/*    MenuProps={{*/}
-          {/*      PaperProps: {*/}
-          {/*        sx: {*/}
-          {/*          maxHeight: 240,*/}
-          {/*          '&::-webkit-scrollbar': {*/}
-          {/*            width: '5px',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-track': {*/}
-          {/*            backgroundColor: '#f1f1f1',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-thumb': {*/}
-          {/*            backgroundColor: '#888',*/}
-          {/*            borderRadius: '4px',*/}
-          {/*          },*/}
-          {/*          '&::-webkit-scrollbar-thumb:hover': {*/}
-          {/*            backgroundColor: '#555',*/}
-          {/*          },*/}
-          {/*        },*/}
-          {/*      },*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    {branch.map((option) => (*/}
-          {/*      <MenuItem key={option} value={option}>*/}
-          {/*        {option.name}*/}
-          {/*      </MenuItem>*/}
-          {/*    ))}*/}
-          {/*  </Select>*/}
-          {/*</FormControl>*/}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -281,7 +185,7 @@ export default function InterestEntryReportsTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-          {getResponsibilityValue('print_Interest_Entry_Reports', configs, user) && (
+          {getResponsibilityValue('print_Other_Interest_Entry_Reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
@@ -293,34 +197,15 @@ export default function InterestEntryReportsTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                view.onTrue();
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              view.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
@@ -332,7 +217,7 @@ export default function InterestEntryReportsTableToolbar({
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InterestEntryReportsPdf
+              <OtherInterestEntryReportsPdf
                 data={data}
                 configs={configs}
                 filterData={filterData}
@@ -346,7 +231,7 @@ export default function InterestEntryReportsTableToolbar({
   );
 }
 
-InterestEntryReportsTableToolbar.propTypes = {
+OtherInterestEntryReportsTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,

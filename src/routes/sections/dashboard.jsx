@@ -11,6 +11,7 @@ import Notice from '../../sections/loanpayhistory/PDF/notice.jsx';
 import OtherDailyReportsListView from 'src/sections/reports/view/other-loan-daily-report';
 import DayBookListView from '../../sections/cash-and-bank/day-book/view/day-book-list-view.jsx';
 import CustomerRefReportListView from '../../sections/reports/view/customer-ref-report-list-view.jsx';
+import OtherInterestEntryReportsListView from '../../sections/reports/view/other-interest-entry-reports-list-view.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -336,6 +337,7 @@ export const dashboardRoutes = [
           { path: 'other-loan-all-branch-reports', element: <OtherLoanAllBranchReports /> },
           { path: 'other-loan-close-reports', element: <OtherLoanCloseReports /> },
           { path: 'other-loan-interest-reports', element: <OtherLoanInterestReports /> },
+          { path: 'other-interest-entry-reports', element: <OtherInterestEntryReportsListView /> },
           { path: 'other-loan-daily-reports', element: <OtherDailyReportsListView /> },
           { path: 'total-all-in-out-loan-reports', element: <TotalAllinOutLoanReports /> },
         ],

@@ -1,26 +1,37 @@
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { Box, Dialog, DialogActions } from '@mui/material';
+import Button from '@mui/material/Button';
+import { PDFViewer } from '@react-pdf/renderer';
+import SchemePdf from '../view/scheme-pdf.jsx';
+import { useBoolean } from '../../../hooks/use-boolean.js';
+import { useGetConfigs } from '../../../api/config.js';
+import GoldpricePdf from './goldprice-pdf.jsx';
+import IconButton from '@mui/material/IconButton';
 
 // ----------------------------------------------------------------------
 
 export default function GoldpriceTableToolbar({
-                                                filters,
-                                                onFilters,
-                                                roleOptions,
-                                                goldRate,
-                                              }) {
+  filters,
+  onFilters,
+  roleOptions,
+  goldRate,
+  schemeData,
+}) {
   const popover = usePopover();
+  const view = useBoolean();
+  const { configs } = useGetConfigs();
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
-    [onFilters],
+    [onFilters]
   );
 
   useEffect(() => {
@@ -41,8 +52,9 @@ export default function GoldpriceTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <Stack direction='row' alignItems='center' spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
+            sx={{ input: { height: 7 } }}
             defaultValue={goldRate || ''}
             fullWidth
             value={filters.name}
@@ -54,19 +66,23 @@ export default function GoldpriceTableToolbar({
             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restricts input to numbers
           />
         </Stack>
+        <IconButton onClick={popover.onOpen}>
+          <Iconify icon="eva:more-vertical-fill" />
+        </IconButton>
       </Stack>
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow='right-top'
+        arrow="right-top"
         sx={{ width: 140 }}
       >
         <MenuItem
           onClick={() => {
+            view.onTrue();
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:printer-minimalistic-bold' />
+          <Iconify icon="solar:printer-minimalistic-bold" />
           Print
         </MenuItem>
         <MenuItem
@@ -74,7 +90,7 @@ export default function GoldpriceTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:import-bold' />
+          <Iconify icon="solar:import-bold" />
           Import
         </MenuItem>
         <MenuItem
@@ -82,10 +98,24 @@ export default function GoldpriceTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon='solar:export-bold' />
+          <Iconify icon="solar:export-bold" />
           Export
         </MenuItem>
       </CustomPopover>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <GoldpricePdf scheme={schemeData} configs={configs} goldRate={goldRate} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

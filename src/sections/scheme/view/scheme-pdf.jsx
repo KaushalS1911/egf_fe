@@ -137,14 +137,14 @@ export default function SchemePdf({ configs, scheme }) {
         <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
         <Text style={[styles.tableCell, { flex: 0.6 }]}>{row?.name || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.6 }]}>{row?.ratePerGram || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row?.ratePerGram || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row?.interestRate || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.5 }]}>{row?.valuation || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.8 }]}>{row?.interestPeriod || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.8 }]}>{row?.renewalTime || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.5 }]}>{row?.minLoanTime || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.8 }]}>{row?.schemeType || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.5, borderRight: 0 }]}>
-          {row?.status ? 'Active' : 'Inactive' || '-'}
+          {row?.isActive ? 'Active' : 'Inactive' || '-'}
         </Text>
       </View>
     );

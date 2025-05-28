@@ -96,24 +96,26 @@ const useStyles = () =>
     []
   );
 
-export default function PropertyPdf({ configs, property }) {
+export default function GoldpricePdf({ configs, scheme, goldRate }) {
   const styles = useStyles();
 
   const headers = [
-    { label: '#', flex: 0.2 },
-    { label: 'property', flex: 1 },
-    { label: 'Loan Type', flex: 1 },
-    { label: 'Quantity', flex: 1 },
-    { label: 'Remark', flex: 1 },
-    { label: 'Status', flex: 1 },
+    { label: '#', flex: 0.1 },
+    { label: 'Name', flex: 0.6 },
+    { label: 'Int. Rate', flex: 0.5 },
+    { label: 'Valuation (%)', flex: 0.5 },
+    { label: 'Rate / gm', flex: 0.6 },
   ];
 
-  const dataFilter = [{ value: fDate(new Date()), label: 'Date' }];
+  const dataFilter = [
+    { value: fDate(new Date()), label: 'Date' },
+    { value: goldRate, label: 'Gold Rate' },
+  ];
 
   const rowsPerPageFirst = 28;
   const rowsPerPageOther = 34;
 
-  const remainingRows = property.length - rowsPerPageFirst;
+  const remainingRows = scheme.length - rowsPerPageFirst;
   const additionalPages = Math.ceil(Math.max(0, remainingRows) / rowsPerPageOther);
 
   const pages = [];
@@ -130,14 +132,11 @@ export default function PropertyPdf({ configs, property }) {
         ]}
         wrap={false}
       >
-        <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row?.propertyType || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row?.loanType || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row?.quantity || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row?.remark || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1, borderRight: 0 }]}>
-          {row?.isActive ? 'Active' : 'Inactive' || '-'}
-        </Text>
+        <Text style={[styles.tableCell, { flex: 0.1 }]}>{index + 1}</Text>
+        <Text style={[styles.tableCell, { flex: 0.6 }]}>{row?.name || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row?.interestRate || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row?.valuation || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.6 }]}>{row?.ratePerGram || '-'}</Text>
       </View>
     );
   };
@@ -159,10 +158,10 @@ export default function PropertyPdf({ configs, property }) {
     </View>
   );
 
-  const firstPageRows = property
+  const firstPageRows = scheme
     .slice(0, rowsPerPageFirst)
     .map((row, index) =>
-      renderRow(row, index, index === rowsPerPageFirst - 1 && property.length === rowsPerPageFirst)
+      renderRow(row, index, index === rowsPerPageFirst - 1 && scheme.length === rowsPerPageFirst)
     );
 
   // Add the first page
@@ -174,7 +173,7 @@ export default function PropertyPdf({ configs, property }) {
           <View key={idx} style={styles.row}>
             <Text style={styles.subHeading2}>{item.label || '-'}</Text>
             <Text style={styles.colon}>:</Text>
-            <Text style={styles.subText}>{item.value || '-'}</Text>
+            <Text style={[styles.subText, { marginTop: 1 }]}>{item.value || '-'}</Text>
           </View>
         ))}
       </View>
@@ -186,7 +185,7 @@ export default function PropertyPdf({ configs, property }) {
           marginTop: 10,
         }}
       >
-        <Text style={styles.termsAndConditionsHeaders}>PROPERTIES</Text>
+        <Text style={styles.termsAndConditionsHeaders}>GOLD PRICE</Text>
       </View>
 
       <View style={{ flexGrow: 1, padding: '12px' }}>
@@ -198,15 +197,15 @@ export default function PropertyPdf({ configs, property }) {
     </Page>
   );
 
-  if (property.length > rowsPerPageFirst) {
+  if (scheme.length > rowsPerPageFirst) {
     for (let pageIndex = 0; pageIndex < additionalPages; pageIndex++) {
       const startIndex = rowsPerPageFirst + pageIndex * rowsPerPageOther;
-      const endIndex = Math.min(startIndex + rowsPerPageOther, property.length);
-      const isLastPage = endIndex === property.length;
+      const endIndex = Math.min(startIndex + rowsPerPageOther, scheme.length);
+      const isLastPage = endIndex === scheme.length;
 
-      const pageRows = property.slice(startIndex, endIndex).map((row, index) => {
+      const pageRows = scheme.slice(startIndex, endIndex).map((row, index) => {
         const actualIndex = startIndex + index;
-        return renderRow(row, actualIndex, actualIndex === property.length - 1);
+        return renderRow(row, actualIndex, actualIndex === scheme.length - 1);
       });
 
       pages.push(
