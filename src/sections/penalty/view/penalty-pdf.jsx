@@ -138,7 +138,7 @@ export default function PenaltyPdf({ configs, penalty }) {
         <Text style={[styles.tableCell, { flex: 1 }]}>{row?.penaltyInterest || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row?.remark || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.5, borderRight: 0 }]}>
-          {row?.status ? 'Active' : 'Inactive' || '-'}
+          {row?.isActive ? 'Active' : 'Inactive' || '-'}
         </Text>
       </View>
     );

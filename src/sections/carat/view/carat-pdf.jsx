@@ -134,7 +134,7 @@ export default function CaratPdf({ configs, carat }) {
         <Text style={[styles.tableCell, { flex: 1 }]}>{row?.caratPercentage || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.5 }]}>{row?.remark || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1, borderRight: 0 }]}>
-          {row?.status ? 'Active' : 'Inactive' || '-'}
+          {row?.isActive ? 'Active' : 'Inactive' || '-'}
         </Text>
       </View>
     );

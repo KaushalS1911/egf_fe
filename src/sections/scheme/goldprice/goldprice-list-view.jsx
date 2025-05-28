@@ -53,7 +53,7 @@ export default function GoldpriceListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const table = useTable();
-  const {configs} = useGetConfigs()
+  const { configs } = useGetConfigs();
 
   const defaultFilters = {
     name: '',
@@ -63,7 +63,7 @@ export default function GoldpriceListView() {
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const {scheme,mutate} = useGetScheme()
+  const { scheme, mutate } = useGetScheme();
   const [tableData, setTableData] = useState(scheme);
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -75,15 +75,14 @@ export default function GoldpriceListView() {
 
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
   );
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const
-    handleFilters = useCallback(
+  const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
@@ -91,32 +90,37 @@ export default function GoldpriceListView() {
         [name]: value,
       }));
     },
-    [table],
+    [table]
   );
 
-const handleDelete = (id) =>{
-  axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, { data: { ids: id } })
-    .then((res)=> {
-      mutate();
-      confirm.onFalse();
-      enqueueSnackbar(res.data.message)
-    }).catch((err)=>enqueueSnackbar("Failed To Delete Scheme"))
-}
+  const handleDelete = (id) => {
+    axios
+      .delete(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`,
+        { data: { ids: id } }
+      )
+      .then((res) => {
+        mutate();
+        confirm.onFalse();
+        enqueueSnackbar(res.data.message);
+      })
+      .catch((err) => enqueueSnackbar('Failed To Delete Scheme'));
+  };
 
   const handleDeleteRow = useCallback(
     (id) => {
-    handleDelete([id])
+      handleDelete([id]);
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, enqueueSnackbar, table, tableData],
+    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = scheme.filter((row) => table.selected.includes(row._id));
-     const deleteIds = deleteRows.map((row) => row._id);
-     handleDelete(deleteIds)
+    const deleteIds = deleteRows.map((row) => row._id);
+    handleDelete(deleteIds);
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -129,28 +133,35 @@ const handleDelete = (id) =>{
     (id) => {
       router.push(paths.dashboard.scheme.edit(id));
     },
-    [router],
+    [router]
   );
 
-  const handleSave = async ()=>{
-    const payload = dataFiltered.map((item) => ({...item, ratePerGram: parseFloat(item.valuation) * parseFloat(filters.name)/100}));
+  const handleSave = async () => {
+    const payload = dataFiltered.map((item) => ({
+      ...item,
+      ratePerGram: (parseFloat(item.valuation) * parseFloat(filters.name)) / 100,
+    }));
     try {
-    const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,{goldRate : filters.name})
-    const resScheme = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/update-schemes?branch=66ea5ebb0f0bdc8062c13a64`,{schemes:payload})
+      const res = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/config/${configs?._id}`,
+        { goldRate: filters.name }
+      );
+      const resScheme = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/update-schemes?branch=66ea5ebb0f0bdc8062c13a64`,
+        { schemes: payload }
+      );
       enqueueSnackbar(resScheme?.data.message);
-    router.push(paths.dashboard.scheme.list);
-
+      router.push(paths.dashboard.scheme.list);
+    } catch (error) {
+      enqueueSnackbar('Failed to Update schemes', { variant: 'error' });
     }
-    catch (error) {
-      enqueueSnackbar("Failed to Update schemes",{variant:'error'});
-    }
-  }
+  };
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading='Change Golg Price'
+          heading="Change Golg Price"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Scheme', href: paths.dashboard.scheme.root },
@@ -162,7 +173,10 @@ const handleDelete = (id) =>{
         />
         <Card>
           <GoldpriceTableToolbar
-            filters={filters} onFilters={handleFilters} goldRate={configs?.goldRate}
+            filters={filters}
+            onFilters={handleFilters}
+            goldRate={configs?.goldRate}
+            schemeData={dataFiltered}
           />
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -172,13 +186,13 @@ const handleDelete = (id) =>{
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id),
+                  dataFiltered.map((row) => row.id)
                 )
               }
               action={
-                <Tooltip title='Delete'>
-                  <IconButton color='primary' onClick={confirm.onTrue}>
-                    <Iconify icon='solar:trash-bin-trash-bold' />
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
               }
@@ -197,11 +211,11 @@ const handleDelete = (id) =>{
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row,index) => (
+                    .map((row, index) => (
                       <GoldpriceTableRow
-                        goldRate = {filters.name}
+                        goldRate={filters.name}
                         key={row._id}
                         index={index}
                         row={row}
@@ -230,8 +244,8 @@ const handleDelete = (id) =>{
             onChangeDense={table.onChangeDense}
           />
         </Card>
-        <Stack  alignItems="flex-end" sx={{mt:3}}>
-          <LoadingButton type='submit' variant='contained' onClick={handleSave}>
+        <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+          <LoadingButton type="submit" variant="contained" onClick={handleSave}>
             Save
           </LoadingButton>
         </Stack>
@@ -239,7 +253,7 @@ const handleDelete = (id) =>{
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title='Delete'
+        title="Delete"
         content={
           <>
             Are you sure want to delete <strong> {table.selected.length} </strong> items?
@@ -247,8 +261,8 @@ const handleDelete = (id) =>{
         }
         action={
           <Button
-            variant='contained'
-            color='error'
+            variant="contained"
+            color="error"
             onClick={() => {
               handleDeleteRows();
               confirm.onFalse();
@@ -260,11 +274,10 @@ const handleDelete = (id) =>{
       />
     </>
   );
-};
+}
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters }) {
-
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -275,4 +288,3 @@ function applyFilter({ inputData, comparator, filters }) {
 
   return inputData;
 }
-
