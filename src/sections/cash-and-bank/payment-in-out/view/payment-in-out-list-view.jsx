@@ -113,8 +113,8 @@ export default function PaymentInOutListView() {
   );
   const receivable = dataFiltered.reduce((prev, next) => {
     if (next.status === 'Payment In') {
-      const cash = Number(next?.paymentDetails?.cashAmount || 0);
-      const bank = Number(next?.paymentDetails?.bankAmount || 0);
+      const cash = Number(next?.paymentDetail?.cashAmount || 0);
+      const bank = Number(next?.paymentDetail?.bankAmount || 0);
       return prev + cash + bank;
     }
     return prev;
@@ -122,8 +122,8 @@ export default function PaymentInOutListView() {
 
   const payable = dataFiltered.reduce((prev, next) => {
     if (next.status === 'Payment Out') {
-      const cash = Number(next?.paymentDetails?.cashAmount || 0);
-      const bank = Number(next?.paymentDetails?.bankAmount || 0);
+      const cash = Number(next?.paymentDetail?.cashAmount || 0);
+      const bank = Number(next?.paymentDetail?.bankAmount || 0);
       return prev + cash + bank;
     }
     return prev;
@@ -205,7 +205,7 @@ export default function PaymentInOutListView() {
     accountMap.set('cash', { transactionsType: 'Cash' });
 
     dataFiltered?.forEach((data) => {
-      const account = data?.paymentDetails?.account;
+      const account = data?.paymentDetail?.account;
       if (account && account._id && !accountMap.has(account._id)) {
         accountMap.set(account._id, account);
       }
@@ -458,9 +458,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item.status === category);
   }
   if (transactions) {
-    inputData = inputData.filter(
-      (item) => item?.paymentDetails?.account?._id === transactions?._id
-    );
+    inputData = inputData.filter((item) => item?.paymentDetail?.account?._id === transactions?._id);
   }
   if (Object.keys(party).length) {
     inputData = inputData?.filter((item) => party?._id === item?.party?._id);

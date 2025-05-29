@@ -100,8 +100,8 @@ export default function ChargeInOutListView() {
     (prev, next) =>
       prev +
       (Number(
-        (next.status === 'Payment In' && next?.paymentDetails?.cashAmount) ||
-          next?.paymentDetails?.chargeCashAmount
+        (next.status === 'Payment In' && next?.paymentDetail?.cashAmount) ||
+          next?.paymentDetail?.chargeCashAmount
       ) || 0),
     0
   );
@@ -109,19 +109,19 @@ export default function ChargeInOutListView() {
     (prev, next) =>
       prev +
       (Number(
-        (next.status === 'Payment In' && next?.paymentDetails?.bankAmount) ||
-          next?.paymentDetails?.chargeBankAmount
+        (next.status === 'Payment In' && next?.paymentDetail?.bankAmount) ||
+          next?.paymentDetail?.chargeBankAmount
       ) || 0),
     0
   );
   const cashOut = dataFiltered.reduce(
     (prev, next) =>
-      prev + (Number(next.status === 'Payment Out' && next?.paymentDetails?.cashAmount) || 0),
+      prev + (Number(next.status === 'Payment Out' && next?.paymentDetail?.cashAmount) || 0),
     0
   );
   const bankOut = dataFiltered.reduce(
     (prev, next) =>
-      prev + (Number(next.status === 'Payment Out' && next?.paymentDetails?.bankAmount) || 0),
+      prev + (Number(next.status === 'Payment Out' && next?.paymentDetail?.bankAmount) || 0),
     0
   );
 
@@ -134,12 +134,12 @@ export default function ChargeInOutListView() {
       }
       if (item.status === 'Payment In') {
         totals[chargeType] +=
-          Number(item?.paymentDetails?.cashAmount || item?.paymentDetails?.chargeCashAmount || 0) +
-          Number(item?.paymentDetails?.bankAmount || item?.paymentDetails?.chargeBankAmount || 0);
+          Number(item?.paymentDetail?.cashAmount || item?.paymentDetail?.chargeCashAmount || 0) +
+          Number(item?.paymentDetail?.bankAmount || item?.paymentDetail?.chargeBankAmount || 0);
       } else if (item.status === 'Payment Out') {
         totals[chargeType] -=
-          Number(item?.paymentDetails?.cashAmount || item?.paymentDetails?.chargeCashAmount || 0) +
-          Number(item?.paymentDetails?.bankAmount || item?.paymentDetails?.chargeBankAmount || 0);
+          Number(item?.paymentDetail?.cashAmount || item?.paymentDetail?.chargeCashAmount || 0) +
+          Number(item?.paymentDetail?.bankAmount || item?.paymentDetail?.chargeBankAmount || 0);
       }
     });
     return Object.entries(totals).map(([chargeType, amount]) => ({
@@ -221,7 +221,7 @@ export default function ChargeInOutListView() {
     accountMap.set('cash', { transactionsType: 'Cash' });
 
     dataFiltered?.forEach((data) => {
-      const account = data?.paymentDetails?.account;
+      const account = data?.paymentDetail?.account;
       if (account && account._id && !accountMap.has(account._id)) {
         accountMap.set(account._id, account);
       }
@@ -436,9 +436,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item.status === category);
   }
   if (transactions) {
-    inputData = inputData.filter(
-      (item) => item?.paymentDetails?.account?._id === transactions?._id
-    );
+    inputData = inputData.filter((item) => item?.paymentDetail?.account?._id === transactions?._id);
   }
   if (Object.keys(chargeType).length > 0) {
     inputData = inputData.filter((item) => chargeType.chargeType === item.chargeType);

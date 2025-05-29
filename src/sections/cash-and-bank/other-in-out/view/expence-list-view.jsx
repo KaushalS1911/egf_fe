@@ -96,11 +96,11 @@ export default function ExpenceListView() {
     }
   }, [expense]);
   const cash = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.paymentDetails?.cashAmount) || 0),
+    (prev, next) => prev + (Number(next?.paymentDetail?.cashAmount) || 0),
     0
   );
   const bank = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.paymentDetails?.bankAmount) || 0),
+    (prev, next) => prev + (Number(next?.paymentDetail?.bankAmount) || 0),
     0
   );
 
@@ -114,8 +114,8 @@ export default function ExpenceListView() {
       }
       if (item.expenseType) {
         totals[expenseType] +=
-          Number(item?.paymentDetails?.cashAmount || 0) +
-          Number(item?.paymentDetails?.bankAmount || 0);
+          Number(item?.paymentDetail?.cashAmount || 0) +
+          Number(item?.paymentDetail?.bankAmount || 0);
       }
     });
     return Object.entries(totals).map(([expenseType, amount]) => ({
@@ -200,7 +200,7 @@ export default function ExpenceListView() {
     accountMap.set('cash', { transactionsType: 'Cash' });
 
     dataFiltered?.forEach((data) => {
-      const account = data?.paymentDetails?.account;
+      const account = data?.paymentDetail?.account;
       if (account && account._id && !accountMap.has(account._id)) {
         accountMap.set(account._id, account);
       }
@@ -415,9 +415,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     );
   }
   if (transactions) {
-    inputData = inputData.filter(
-      (item) => item?.paymentDetails?.account?._id === transactions?._id
-    );
+    inputData = inputData.filter((item) => item?.paymentDetail?.account?._id === transactions?._id);
   }
   if (category) {
     inputData = inputData.filter((item) => item?.category === category);
