@@ -133,8 +133,8 @@ export default function OtherLoanInterestListView() {
     (prev, next) => prev + (Number(next?.pendingDay > 0 ? next.pendingDay : 0) || 0),
     0
   );
-  const closingCharge = dataFiltered.reduce(
-    (prev, next) => prev + (Number(next?.closingCharge) || 0),
+  const totalCharge = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.totalCharge) || 0),
     0
   );
 
@@ -145,7 +145,7 @@ export default function OtherLoanInterestListView() {
     pendingInterest,
     day,
     penDay,
-    closingCharge,
+    totalCharge,
   };
 
   // useEffect(() => {
@@ -448,13 +448,13 @@ export default function OtherLoanInterestListView() {
                     {amount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {closingCharge.toFixed(0)}
+                    {totalCharge.toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(day / dataFiltered.length).toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalInterestAmt.toFixed(0)}
+                    {(totalInterestAmt - totalCharge).toFixed(0)}
                   </TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>{' '}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>

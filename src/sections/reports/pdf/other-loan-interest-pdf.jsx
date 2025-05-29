@@ -121,8 +121,7 @@ export default function OtherLoanInterestPdf({
 }) {
   const styles = useStyles();
 
-  const { percentage, amount, totalInterestAmt, pendingInterest, day, penDay, closingCharge } =
-    total;
+  const { percentage, amount, totalInterestAmt, pendingInterest, day, penDay, totalCharge } = total;
 
   const headers = [
     { label: '#', flex: 0.2 },
@@ -243,12 +242,12 @@ export default function OtherLoanInterestPdf({
                 </Text>
                 <Text style={[styles.footerCell, { flex: 1 }]}></Text>
                 <Text style={[styles.footerCell, { flex: 1 }]}>{amount.toFixed(0)}</Text>
-                <Text style={[styles.footerCell, { flex: 1 }]}>{closingCharge.toFixed(0)}</Text>
+                <Text style={[styles.footerCell, { flex: 1 }]}>{totalCharge.toFixed(0)}</Text>
                 <Text style={[styles.footerCell, { flex: 0.3 }]}>
                   {loans.length > 0 ? (day / loans.length).toFixed(0) : '0'}
                 </Text>
                 <Text style={[styles.footerCell, { flex: 0.3 }]}>
-                  {totalInterestAmt.toFixed(0)}
+                  {(totalInterestAmt - totalCharge).toFixed(0)}
                 </Text>
                 <Text style={[styles.footerCell, { flex: 1 }]}></Text>
                 <Text style={[styles.footerCell, { flex: 0.3 }]}>

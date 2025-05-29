@@ -46,10 +46,12 @@ export default function OtherLonaInterestTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {(row.otherCharge || 0).toFixed(2)}
+          {(row.totalCharge || 0).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
-        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.totalInterestAmt}</TableCell>
+        <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
+          {(row.totalInterestAmt - row.totalCharge).toFixed(2)}
+        </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {fDate(loan.lastInstallmentDate) || '-'}
         </TableCell>
