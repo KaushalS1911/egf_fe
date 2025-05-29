@@ -175,7 +175,9 @@ export default function OtherInterestEntryReportsPdf({
         <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.days || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.interestAmount || '-'}</Text>{' '}
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.charge || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.payAfterAdjust || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>
+          {(row?.payAfterAdjust - row.charge).toFixed(2) || '-'}
+        </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
           {row?.paymentDetail?.paymentMode || '-'}
         </Text>
@@ -256,7 +258,9 @@ export default function OtherInterestEntryReportsPdf({
                   <Text style={[styles.totalCell, { flex: 0.5 }]}>{day}</Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}>{interestAmount}</Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}>{charge}</Text>
-                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{payAmt}</Text>
+                  <Text style={[styles.totalCell, { flex: 1.2 }]}>
+                    {(payAmt - charge).toFixed(0)}
+                  </Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}>{cashAmt}</Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}>{bankAmt}</Text>
