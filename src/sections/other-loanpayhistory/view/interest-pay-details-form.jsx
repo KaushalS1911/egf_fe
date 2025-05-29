@@ -594,7 +594,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days > 0 ? row.days : 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.interestAmount}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.charge}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust - row.charge}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankName || '-'}</TableCell>
