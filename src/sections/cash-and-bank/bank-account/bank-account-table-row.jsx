@@ -69,7 +69,7 @@ export default function BankAccountTableRow({
         <TableCell
           sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}
         >
-          {row.amount}
+          {row.amount.toFixed(2)}
         </TableCell>
         {['Bank To Bank', 'Bank To Cash', 'Cash To Bank', 'Adjust Bank Balance'].includes(
           row.status
