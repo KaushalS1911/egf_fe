@@ -65,23 +65,23 @@ export default function PaymentInOutTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.party?.name}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.receiptNo.split('/')[2]}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetails?.paymentMode}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetail?.paymentMode}</TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
           }}
         >
-          {row?.paymentDetails?.cashAmount || 0}
+          {row?.paymentDetail?.cashAmount || 0}
         </TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
           }}
         >
-          {row?.paymentDetails?.bankAmount || 0}
+          {row?.paymentDetail?.bankAmount || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetails?.account?.bankName || '-'}
+          {row?.paymentDetail?.account?.bankName || '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '200px', textWrap: 'wrap' }}>
           {row?.description || '-'}

@@ -335,7 +335,19 @@ export default function CashInListView() {
           }}
         />
         <Card>
-          <CashInTableToolbar filters={filters} onFilters={handleFilters} options={options} />
+          <CashInTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            options={options}
+            cashData={dataFiltered}
+            totalAmount={
+              <strong style={{ color: amount > 0 ? 'green' : 'red' }}>
+                {Object.values(filters).some(Boolean)
+                  ? Math.abs(amount).toFixed(2)
+                  : amount.toFixed(2)}
+              </strong>
+            }
+          />
           {canReset && (
             <CashInTableFiltersResult
               filters={filters}

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
@@ -13,19 +13,41 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { FormControl } from '@mui/material';
+import { Box, Dialog, DialogActions, FormControl } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Button from '@mui/material/Button';
+import { PDFViewer } from '@react-pdf/renderer';
+import InqiryPdf from '../../inquiry/view/inqiry-pdf.jsx';
+import { useBoolean } from '../../../hooks/use-boolean.js';
+import CashInPdf from './view/cash-in-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function CashInTableToolbar({ filters, onFilters, schemes, dateError, options }) {
+export default function CashInTableToolbar({
+  filters,
+  onFilters,
+  schemes,
+  dateError,
+  options,
+  cashData,
+  totalAmount,
+}) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const view = useBoolean();
+
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    category: filters.category,
+    status: filters.status,
+  };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -260,6 +282,7 @@ export default function CashInTableToolbar({ filters, onFilters, schemes, dateEr
           <>
             <MenuItem
               onClick={() => {
+                view.onTrue();
                 popover.onClose();
               }}
             >
@@ -288,6 +311,20 @@ export default function CashInTableToolbar({ filters, onFilters, schemes, dateEr
           whatsapp share
         </MenuItem>
       </CustomPopover>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <CashInPdf cashData={cashData} configs={configs} filterData={filterData} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

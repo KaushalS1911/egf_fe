@@ -47,28 +47,28 @@ export default function ChargeInOutTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.category}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetails?.paymentMode || row?.paymentDetails?.mode}
+          {row?.paymentDetail?.paymentMode || row?.paymentDetail?.mode}
         </TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
           }}
         >
-          {row?.paymentDetails?.cashAmount || row?.paymentDetails?.chargeCashAmount || 0}
+          {row?.paymentDetail?.cashAmount || row?.paymentDetail?.chargeCashAmount || 0}
         </TableCell>
         <TableCell
           sx={{
             whiteSpace: 'nowrap',
           }}
         >
-          {row?.paymentDetails?.bankAmount || row?.paymentDetails?.chargeBankAmount || 0}
+          {row?.paymentDetail?.bankAmount || row?.paymentDetail?.chargeBankAmount || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetails?.paymentMode === 'Bank' ||
-          row?.paymentDetails?.paymentMode === 'Both' ||
-          row?.paymentDetails?.mode === 'Bank' ||
-          row?.paymentDetails?.mode === 'Both'
-            ? `${row?.paymentDetails?.account?.bankName || row?.paymentDetails?.chargeAccount?.bankName} (${row?.paymentDetails?.account?.accountHolderName || row?.paymentDetails?.chargeAccount?.accountHolderName})`
+          {row?.paymentDetail?.paymentMode === 'Bank' ||
+          row?.paymentDetail?.paymentMode === 'Both' ||
+          row?.paymentDetail?.mode === 'Bank' ||
+          row?.paymentDetail?.mode === 'Both'
+            ? `${row?.paymentDetail?.account?.bankName || row?.paymentDetail?.chargeAccount?.bankName} (${row?.paymentDetail?.account?.accountHolderName || row?.paymentDetail?.chargeAccount?.accountHolderName})`
             : '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
