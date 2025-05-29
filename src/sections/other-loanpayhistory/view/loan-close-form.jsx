@@ -3,7 +3,17 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Dialog, DialogActions, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
@@ -129,8 +139,31 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
     setValue('netAmount', Number(watch('pendingLoanAmount')) + Number(watch('closingCharge')));
   }, [watch('closingCharge'), watch('pendingLoanAmount')]);
 
-  const handleChargeIn = (data, paymentDetail) => {
+  const handleChargeIn = (data) => {
     try {
+      let paymentDetail = {
+        paymentMode: data.paymentMode,
+      };
+
+      if (data.paymentMode === 'Cash') {
+        paymentDetail = {
+          ...paymentDetail,
+          cashAmount: data.cashAmount,
+        };
+      } else if (data.paymentMode === 'Bank') {
+        paymentDetail = {
+          ...paymentDetail,
+          account: data.account,
+          bankAmount: data.bankAmount,
+        };
+      } else if (data.paymentMode === 'Both') {
+        paymentDetail = {
+          ...paymentDetail,
+          cashAmount: data.cashAmount,
+          bankAmount: data.bankAmount,
+          account: data.account,
+        };
+      }
       const payload = {
         chargeType: 'OTHER CLOSE CHARGE',
         date: new Date(),
@@ -195,7 +228,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
 
       const response = await axios(config);
       if (data.closingCharge > 0 && configs.chargeType.includes('OTHER CLOSE CHARGE')) {
-        handleChargeIn(data, paymentDetail);
+        handleChargeIn(data);
       }
       reset();
       refetchOtherLoanClose();

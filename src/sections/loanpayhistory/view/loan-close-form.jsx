@@ -2,7 +2,17 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Dialog, DialogActions, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
@@ -345,8 +355,31 @@ function LoanCloseForm({ currentLoan, mutate }) {
     }
   };
 
-  const handleChargeIn = (data, chargePaymentDetail) => {
+  const handleChargeIn = (data) => {
     try {
+      let chargePaymentDetail = {
+        paymentMode: data.chargePaymentMode,
+      };
+
+      if (data.chargePaymentMode === 'Cash') {
+        chargePaymentDetail = {
+          ...chargePaymentDetail,
+          cashAmount: data.chargeCashAmount,
+        };
+      } else if (data.chargePaymentMode === 'Bank') {
+        chargePaymentDetail = {
+          ...chargePaymentDetail,
+          account: data.chargeAccount,
+          bankAmount: data.chargeBankAmount,
+        };
+      } else if (data.chargePaymentMode === 'Both') {
+        chargePaymentDetail = {
+          ...chargePaymentDetail,
+          cashAmount: data.chargeCashAmount,
+          bankAmount: data.chargeBankAmount,
+          account: data.chargeAccount,
+        };
+      }
       const payload = {
         chargeType: 'CLOSING CHARGE',
         date: new Date(),
@@ -450,7 +483,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       const responseData = response?.data?.data;
       sendPdfToWhatsApp(responseData);
       if (data.closingCharge > 0 && configs.chargeType.includes('CLOSING CHARGE')) {
-        handleChargeIn(data, chargePaymentDetail);
+        handleChargeIn(data);
       }
       reset();
       confirm.onFalse();

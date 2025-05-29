@@ -159,6 +159,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+  console.log(watch('account'));
 
   useEffect(() => {
     if (currentOtherLoan.status !== 'Closed') {
@@ -242,8 +243,30 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     }
   }, [watch('paymentMode')]);
 
-  const handleChargeIn = (data, paymentDetail) => {
+  const handleChargeIn = (data) => {
     try {
+      let paymentDetail = {
+        paymentMode: data.paymentMode,
+      };
+      if (data.paymentMode === 'Cash') {
+        paymentDetail = {
+          ...paymentDetail,
+          cashAmount: data.cashAmount,
+        };
+      } else if (data.paymentMode === 'Bank') {
+        paymentDetail = {
+          ...paymentDetail,
+          account: data.account,
+          bankAmount: data.bankAmount,
+        };
+      } else if (data.paymentMode === 'Both') {
+        paymentDetail = {
+          ...paymentDetail,
+          cashAmount: data.cashAmount,
+          account: data.account,
+          bankAmount: data.bankAmount,
+        };
+      }
       const payload = {
         chargeType: 'OTHER INTEREST CHARGE',
         date: new Date(),
@@ -303,7 +326,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       const url = `${import.meta.env.VITE_BASE_URL}/${user._id}/other-loans/${currentOtherLoan?._id}/interest`;
       const response = await axios.post(url, payload);
       if (data.charge > 0 && configs.chargeType.includes('OTHER INTEREST CHARGE')) {
-        handleChargeIn(data, paymentDetail);
+        handleChargeIn(data);
       }
       reset();
       mutate();
@@ -571,7 +594,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.days > 0 ? row.days : 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.interestAmount}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.charge}</TableCell>
-                    <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust}</TableCell>
+                    <TableCell sx={{ py: 0, px: 2 }}>{row.payAfterAdjust - row.charge}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankName || '-'}</TableCell>
