@@ -51,7 +51,8 @@ function BulkInterestPay() {
         </Tabs>
         {data && data.loans && data.loans[currentTab] && (
           <div>
-            <LoanpayhistoryNewEditForm currentLoan={data.loans[currentTab]} mutate={mutate} />
+            <LoanpayhistoryNewEditForm tabloanNo={data.loans[currentTab]?.loanNo} currentLoan={data.loans[currentTab]}
+                                       mutate={mutate} />
             <PayTabs currentLoan={data.loans[currentTab]} mutate={mutate} />
           </div>
         )}

@@ -14,10 +14,14 @@ import Image from '../../components/image';
 
 // ----------------------------------------------------------------------
 
-function LoanpayhistoryNewEditForm({ currentLoan, mutate }) {
+function LoanpayhistoryNewEditForm({ currentLoan, mutate, tabloanNo }) {
   const { user } = useAuthContext();
   const [file, setFile] = useState(currentLoan.propertyImage);
   const lightbox = useLightBox(file);
+
+  useEffect(() => {
+    setFile(currentLoan.propertyImage);
+  }, [tabloanNo]);
 
   const renewDate = () => {
     if (!currentLoan?.issueDate) return null;

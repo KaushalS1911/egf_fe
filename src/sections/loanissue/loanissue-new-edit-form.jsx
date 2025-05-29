@@ -436,55 +436,55 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     }
 
     const mode = data.chargePaymentMode;
-    payload.append('chargePaymentDetail[mode]', mode);
+    payload.append('chargePaymentDetail[paymentMode]', mode);
 
     if (mode === 'Cash') {
-      payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeCashAmount);
+      payload.append('chargePaymentDetail[cashAmount]', data.chargeCashAmount);
     } else if (mode === 'Bank') {
-      payload.append('chargePaymentDetail[chargeBankAmount]', data.chargeBankAmount);
+      payload.append('chargePaymentDetail[bankAmount]', data.chargeBankAmount);
 
       payload.append(
-        'chargePaymentDetail[chargeAccount][accountNumber]',
+        'chargePaymentDetail[account][accountNumber]',
         data?.chargeAccount?.accountNumber
       );
       payload.append(
-        'chargePaymentDetail[chargeAccount][accountType]',
+        'chargePaymentDetail[account][accountType]',
         data?.chargeAccount?.accountType
       );
       payload.append(
-        'chargePaymentDetail[chargeAccount][accountHolderName]',
+        'chargePaymentDetail[account][accountHolderName]',
         data?.chargeAccount?.accountHolderName
       );
-      payload.append('chargePaymentDetail[chargeAccount][bankName]', data?.chargeAccount?.bankName);
-      payload.append('chargePaymentDetail[chargeAccount][IFSC]', data?.chargeAccount?.IFSC);
+      payload.append('chargePaymentDetail[account][bankName]', data?.chargeAccount?.bankName);
+      payload.append('chargePaymentDetail[account][IFSC]', data?.chargeAccount?.IFSC);
       payload.append(
-        'chargePaymentDetail[chargeAccount][branchName]',
+        'chargePaymentDetail[account][branchName]',
         data?.chargeAccount?.branchName
       );
-      payload.append('chargePaymentDetail[chargeAccount][_id]', data?.chargeAccount?._id);
+      payload.append('chargePaymentDetail[account][_id]', data?.chargeAccount?._id);
     } else if (mode === 'Both') {
-      payload.append('chargePaymentDetail[chargeCashAmount]', data.chargeCashAmount);
-      payload.append('chargePaymentDetail[chargeBankAmount]', data.chargeBankAmount);
+      payload.append('chargePaymentDetail[cashAmount]', data.chargeCashAmount);
+      payload.append('chargePaymentDetail[bankAmount]', data.chargeBankAmount);
 
       payload.append(
-        'chargePaymentDetail[chargeAccount][accountNumber]',
+        'chargePaymentDetail[account][accountNumber]',
         data?.chargeAccount?.accountNumber
       );
       payload.append(
-        'chargePaymentDetail[chargeAccount][accountType]',
+        'chargePaymentDetail[account][accountType]',
         data?.chargeAccount?.accountType
       );
       payload.append(
-        'chargePaymentDetail[chargeAccount][accountHolderName]',
+        'chargePaymentDetail[account][accountHolderName]',
         data?.chargeAccount?.accountHolderName
       );
-      payload.append('chargePaymentDetail[chargeAccount][bankName]', data?.chargeAccount?.bankName);
-      payload.append('chargePaymentDetail[chargeAccount][IFSC]', data?.chargeAccount?.IFSC);
+      payload.append('chargePaymentDetail[account][bankName]', data?.chargeAccount?.bankName);
+      payload.append('chargePaymentDetail[account][IFSC]', data?.chargeAccount?.IFSC);
       payload.append(
-        'chargePaymentDetail[chargeAccount][branchName]',
+        'chargePaymentDetail[account][branchName]',
         data?.chargeAccount?.branchName
       );
-      payload.append('chargePaymentDetail[chargeAccount][_id]', data?.chargeAccount?._id);
+      payload.append('chargePaymentDetail[account][_id]', data?.chargeAccount?._id);
     }
 
     try {

@@ -8,8 +8,6 @@ import { useBoolean } from 'src/hooks/use-boolean.js';
 import Iconify from 'src/components/iconify/index.js';
 import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import CustomPopover, { usePopover } from 'src/components/custom-popover/index.js';
-import { useAuthContext } from '../../../auth/hooks/index.js';
-import { useGetConfigs } from '../../../api/config.js';
 import { fDate } from '../../../utils/format-time.js';
 import { statusColorMap } from '../../../assets/data/index.js';
 import { Box } from '@mui/system';
@@ -64,12 +62,7 @@ export default function ChargeInOutTableRow({
           {row?.paymentDetail?.bankAmount || row?.paymentDetail?.chargeBankAmount || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetail?.paymentMode === 'Bank' ||
-          row?.paymentDetail?.paymentMode === 'Both' ||
-          row?.paymentDetail?.mode === 'Bank' ||
-          row?.paymentDetail?.mode === 'Both'
-            ? `${row?.paymentDetail?.account?.bankName || row?.paymentDetail?.chargeAccount?.bankName} (${row?.paymentDetail?.account?.accountHolderName || row?.paymentDetail?.chargeAccount?.accountHolderName})`
-            : '-'}
+          {`${row?.paymentDetail?.account?.bankName}(${row?.paymentDetail?.account?.accountHolderName})` || '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.description || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
