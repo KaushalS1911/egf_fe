@@ -251,20 +251,13 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       if (data.paymentMode === 'Cash') {
         paymentDetail = {
           ...paymentDetail,
-          cashAmount: data.cashAmount,
+          cashAmount: data.charge,
         };
-      } else if (data.paymentMode === 'Bank') {
+      } else {
         paymentDetail = {
           ...paymentDetail,
           account: data.account,
-          bankAmount: data.bankAmount,
-        };
-      } else if (data.paymentMode === 'Both') {
-        paymentDetail = {
-          ...paymentDetail,
-          cashAmount: data.cashAmount,
-          account: data.account,
-          bankAmount: data.bankAmount,
+          bankAmount: data.charge,
         };
       }
       const payload = {
