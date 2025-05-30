@@ -262,11 +262,11 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
       }
       const payload = {
         chargeType: 'OTHER INTEREST CHARGE',
-        date: new Date(),
+        date: new Date(data.to),
         branch: currentOtherLoan.loan.customer.branch._id,
         status: 'Payment Out',
         paymentDetail: paymentDetail,
-        category: currentOtherLoan.loan.loanNo,
+        category: currentOtherLoan.otherNumber,
       };
       const res = axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/charge`, payload);
     } catch (error) {
