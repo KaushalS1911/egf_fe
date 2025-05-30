@@ -1036,18 +1036,18 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     filteredData = filteredData.filter(
       (item) =>
         (
-          item.loan.customer.firstName +
+          item?.loan?.customer?.firstName +
           ' ' +
-          item.loan.customer.middleName +
+          item?.loan?.customer?.middleName +
           ' ' +
-          item.loan.customer.lastName
+          item?.loan?.customer?.lastName
         )
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.loan.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.loan.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.loan?.customer?.firstName?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.customer.lastName?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loan?.loanNo.includes(username) ||
+        item?.loan?.customer?.contact?.includes(username)
     );
   }
 
