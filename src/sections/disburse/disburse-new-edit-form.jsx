@@ -288,7 +288,7 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
           }
           router.push(paths.dashboard.disburse.list);
           enqueueSnackbar(res?.data?.message);
-          if (currentDisburse.approvalCharge > 0) {
+          if (currentDisburse.status === 'Issued') {
             sendPdfToWhatsApp(res.data.data);
           }
           reset();
