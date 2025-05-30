@@ -26,7 +26,7 @@ import { fDate } from '../../../utils/format-time';
 import Notice from '../../loanpayhistory/PDF/notice.jsx';
 import { paths } from '../../../routes/paths';
 import LoanIssueDetails from '../../loanpayhistory/PDF/loan-issue-details.jsx';
-import InitialLoanDetails from '../pdf/initial-loan-details.jsx';
+import InitialLoanDetailsPdf from '../pdf/initial-loan-details-pdf.jsx';
 import { getResponsibilityValue } from '../../../permission/permission';
 
 // ----------------------------------------------------------------------
@@ -119,7 +119,7 @@ export default function LoanIssueReportsTableRow({ row }) {
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InitialLoanDetails selectedRow={row} configs={configs} />
+              <InitialLoanDetailsPdf selectedRow={row} configs={configs} />
             </PDFViewer>
           </Box>
         </Box>

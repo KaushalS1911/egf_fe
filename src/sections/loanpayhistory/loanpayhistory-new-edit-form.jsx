@@ -83,7 +83,7 @@ function LoanpayhistoryNewEditForm({ currentLoan, mutate, tabloanNo }) {
           ' ' +
           currentLoan?.customer.lastName || '',
       address:
-        `${currentLoan.customer.permanentAddress.street || ''} ${currentLoan.customer.permanentAddress.landmark || ''}, ${currentLoan.customer.permanentAddress.city || ''}, ${currentLoan.customer.permanentAddress.state || ''}, ${currentLoan.customer.permanentAddress.zipcode || ''}, ${currentLoan.customer.permanentAddress.country || ''}` ||
+        `${currentLoan.customer.temporaryAddress.street || ''} ${currentLoan.customer.temporaryAddress.landmark || ''}, ${currentLoan.customer.temporaryAddress.city || ''}, ${currentLoan.customer.temporaryAddress.state || ''}, ${currentLoan.customer.permanentAddress.zipcode || ''}, ${currentLoan.customer.permanentAddress.country || ''}` ||
         '',
       contact: currentLoan?.customer.contact || '',
       issueDate: currentLoan?.issueDate ? new Date(currentLoan?.issueDate) : new Date(),

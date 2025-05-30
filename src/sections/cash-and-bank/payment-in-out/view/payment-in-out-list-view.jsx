@@ -242,7 +242,6 @@ export default function PaymentInOutListView() {
                   {Object.entries(filters).some(([key, val]) => {
                     if (val === null || val === '') return false;
                     if (typeof val === 'object') {
-                      // Check if it's a non-empty object (like party) or a Date object
                       return val instanceof Date || Object.keys(val).length > 0;
                     }
                     return true;
@@ -257,7 +256,6 @@ export default function PaymentInOutListView() {
                   {Object.entries(filters).some(([key, val]) => {
                     if (val === null || val === '') return false;
                     if (typeof val === 'object') {
-                      // Check if it's a non-empty object (like party) or a Date object
                       return val instanceof Date || Object.keys(val).length > 0;
                     }
                     return true;
@@ -318,6 +316,8 @@ export default function PaymentInOutListView() {
                   partyDetails={partyDetails}
                   mutate={mutate}
                   options={options}
+                  paymentData={dataFiltered}
+                  party={party}
                 />
                 {canReset && (
                   <PaymentInOutTableFiltersResult

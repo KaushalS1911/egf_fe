@@ -61,6 +61,10 @@ const TABLE_HEAD = [
   { id: 'detail', label: 'Detail' },
   { id: 'category', label: 'Category' },
   { id: 'date', label: 'Date' },
+  { id: 'paymentMode', label: 'payment mode' },
+  { id: 'cashAmount', label: 'Cash amt' },
+  { id: 'bankAmount', label: 'Bank amt' },
+  { id: 'bankName', label: 'Bank' },
   { id: 'Amount', label: 'Amount' },
 ];
 
@@ -69,25 +73,21 @@ const defaultFilters = {
   startDate: new Date(),
   endDate: null,
   category: '',
+  transactions: '',
   status: '',
 };
 
 // ----------------------------------------------------------------------
 
 export default function DayBookListView() {
-  const { enqueueSnackbar } = useSnackbar();
-  const { user } = useAuthContext();
   const { cashTransactions, mutate, cashTransactionsLoading } = useGetCashTransactions();
   const { bankTransactions, bankTransactionsLoading } = useGetBankTransactions();
-
-  const { configs } = useGetConfigs();
   const table = useTable();
   const settings = useSettingsContext();
-  const router = useRouter();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(cashTransactions);
   const [filters, setFilters] = useState(defaultFilters);
   const [options, setOptions] = useState([]);
+  const [typeOptions, setTypeOptions] = useState([]);
 
   const dataFiltered = applyFilter({
     inputData: [
@@ -97,11 +97,12 @@ export default function DayBookListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
   useEffect(() => {
-    fetchStates();
+    {
+      dataFiltered.length > 0 && fetchStates();
+      fetchType();
+    }
   }, [dataFiltered]);
-
   const amount =
     dataFiltered
       .filter((e) => e.category === 'Payment In')
@@ -138,9 +139,9 @@ export default function DayBookListView() {
     return <LoadingScreen />;
   }
 
-  function fetchStates() {
+  function fetchType() {
     dataFiltered?.map((data) => {
-      setOptions((item) => {
+      setTypeOptions((item) => {
         if (!item.find((option) => option === data.status)) {
           return [...item, data.status];
         } else {
@@ -148,6 +149,31 @@ export default function DayBookListView() {
         }
       });
     });
+  }
+
+  function fetchStates() {
+    const accountMap = new Map();
+
+    accountMap.set('cash', { transactionsType: 'Cash' });
+
+    dataFiltered?.forEach((data) => {
+      const account = data?.paymentDetail?.account;
+      if (account && account._id && !accountMap.has(account._id)) {
+        accountMap.set(account._id, account);
+      }
+    });
+
+    const newOptions = Array.from(accountMap.values());
+
+    setOptions((prevOptions) => {
+      const isSame =
+        prevOptions.length === newOptions.length &&
+        prevOptions.every((item) => newOptions.some((opt) => opt._id === item._id));
+
+      return isSame ? prevOptions : newOptions;
+    });
+
+    setOptions(newOptions);
   }
 
   return (
@@ -174,7 +200,13 @@ export default function DayBookListView() {
           }}
         />
         <Card>
-          <DayBookToolbar filters={filters} onFilters={handleFilters} options={options} />
+          <DayBookToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            options={options}
+            typeOptions={typeOptions}
+            daybookData={dataFiltered}
+          />
           {canReset && (
             <DayBookTableFiltersResult
               filters={filters}
@@ -263,7 +295,7 @@ export default function DayBookListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, startDate, endDate, category, status } = filters;
+  const { name, startDate, endDate, category, status, transactions } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -282,6 +314,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (category) {
     inputData = inputData.filter((item) => item.category === category);
+  }
+  if (transactions) {
+    inputData = inputData.filter((item) => item?.paymentDetail?.account?._id === transactions?._id);
   }
   if (status) {
     inputData = inputData.filter((item) => item.status === status);

@@ -13,11 +13,17 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, FormControl, Typography } from '@mui/material';
+import { Box, Dialog, FormControl, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import PartyNewEditForm from './parties/party-new-edit-form.jsx';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import { PDFViewer } from '@react-pdf/renderer';
+import ExpencePdf from '../other-in-out/view/expence-pdf.jsx';
+import { useBoolean } from '../../../hooks/use-boolean.js';
+import PaymentInOutPdf from './view/payment-in-out-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -29,13 +35,25 @@ export default function PaymentInOutTableToolbar({
   partyDetails,
   mutate,
   options,
+  paymentData,
+  party,
 }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  // const [openEditForm, setOpenEditForm] = useState(false);
+  const view = useBoolean();
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    category: filters.category,
+    party: filters?.party?.name,
+    transactions:
+      filters?.transactions?.bankName && filters?.transactions?.accountHolderName
+        ? `${filters.transactions.bankName} (${filters.transactions.accountHolderName})`
+        : filters?.transactions?.transactionsType || '-',
+  };
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -276,6 +294,7 @@ export default function PaymentInOutTableToolbar({
           <>
             <MenuItem
               onClick={() => {
+                view.onTrue();
                 popover.onClose();
               }}
             >
@@ -304,14 +323,25 @@ export default function PaymentInOutTableToolbar({
           whatsapp share
         </MenuItem>
       </CustomPopover>
-      {/*{partyDetails && (*/}
-      {/*  <PartyNewEditForm*/}
-      {/*    open={openEditForm}*/}
-      {/*    setOpen={setOpenEditForm}*/}
-      {/*    currentParty={partyDetails}*/}
-      {/*    mutate={mutate}*/}
-      {/*  />*/}
-      {/*)}*/}
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <PaymentInOutPdf
+                paymentData={paymentData}
+                configs={configs}
+                filterData={filterData}
+                party={party}
+              />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

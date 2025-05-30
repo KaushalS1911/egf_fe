@@ -8,7 +8,7 @@ import { useParams } from '../../../../routes/hooks/index.js';
 import { LoadingScreen } from '../../../../components/loading-screen/index.js';
 import { Box } from '@mui/material';
 import { useGetExpanse } from '../../../../api/expense.js';
-import ExpenseNewEditForm from '../expense-new-edit-form.jsx';
+import ExpenceNewEditForm from '../expence-new-edit-form.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ export default function ExpenseEditView() {
         }}
       />
       {currentExpense ? (
-        <ExpenseNewEditForm currentExpense={currentExpense} />
+        <ExpenceNewEditForm currentExpense={currentExpense} />
       ) : (
         <Box
           sx={{ height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}

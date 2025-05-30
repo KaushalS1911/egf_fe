@@ -232,6 +232,7 @@ export default function BankAccountListView() {
                   accountDetails={accountDetails}
                   options={options}
                   onTransferTypeSelect={handleTransferTypeSelect}
+                  bankData={dataFiltered}
                 />
                 {canReset && (
                   <BankAccountTableFiltersResult

@@ -24,7 +24,7 @@ import { UploadBox } from '../../../components/upload/index.js';
 
 // ----------------------------------------------------------------------
 
-export default function ExpenseNewEditForm({ currentExpense }) {
+export default function ExpenceNewEditForm({ currentExpense }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
@@ -186,6 +186,7 @@ export default function ExpenseNewEditForm({ currentExpense }) {
         formData.append('paymentDetail[account][bankName]', value.bankName);
         formData.append('paymentDetail[account][accountNumber]', value.accountNumber);
         formData.append('paymentDetail[account][branchName]', value.branchName);
+        formData.append('paymentDetail[account][accountHolderName]', value.accountHolderName);
       } else {
         formData.append(`paymentDetail[${key}]`, value);
       }
@@ -446,6 +447,6 @@ export default function ExpenseNewEditForm({ currentExpense }) {
     </FormProvider>
   );
 }
-ExpenseNewEditForm.propTypes = {
+ExpenceNewEditForm.propTypes = {
   currentExpense: PropTypes.object,
 };

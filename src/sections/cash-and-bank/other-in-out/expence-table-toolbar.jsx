@@ -10,10 +10,16 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover/index.j
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel.jsx';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, FormControl, Typography } from '@mui/material';
+import { Box, Dialog, FormControl, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import { useBoolean } from '../../../hooks/use-boolean.js';
+import { PDFViewer } from '@react-pdf/renderer';
+import ExpencePdf from './view/expence-pdf.jsx';
+import { useGetConfigs } from '../../../api/config.js';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 
 // ----------------------------------------------------------------------
 
@@ -25,10 +31,20 @@ export default function ExpenceTableToolbar({
   expenceDetails,
   options,
   categoryOptions,
+  expenceData,
 }) {
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const view = useBoolean();
+  const { configs } = useGetConfigs();
+
+  const filterData = {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    category: filters.category,
+    expenceType: filters?.expenceType?.expenseType,
+  };
 
   const handleFilterName = useCallback(
     (event) => {
@@ -271,6 +287,7 @@ export default function ExpenceTableToolbar({
         <>
           <MenuItem
             onClick={() => {
+              view.onTrue();
               popover.onClose();
             }}
           >
@@ -298,6 +315,20 @@ export default function ExpenceTableToolbar({
           whatsapp share
         </MenuItem>
       </CustomPopover>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <ExpencePdf expenceData={expenceData} configs={configs} filterData={filterData} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

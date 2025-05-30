@@ -81,7 +81,9 @@ export default function PaymentInOutTableRow({
           {row?.paymentDetail?.bankAmount || 0}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetail?.account?.bankName || '-'}
+          {row?.paymentDetail?.account?.bankName && row?.paymentDetail?.account?.accountHolderName
+            ? `${row.paymentDetail.account.bankName} (${row.paymentDetail.account.accountHolderName})`
+            : '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '200px', textWrap: 'wrap' }}>
           {row?.description || '-'}

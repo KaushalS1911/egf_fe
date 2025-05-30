@@ -352,7 +352,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
 
     if (!month) {
       // Handle empty month value
-      setValue('renewalDate', new Date()); // Reset or clear the renewal date
       return;
     }
 
@@ -402,7 +401,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       );
       setValue(
         'customerAddress',
-        `${findLoan?.customer?.permanentAddress?.street} ${findLoan?.customer?.permanentAddress?.landmark} ${findLoan?.customer.permanentAddress?.city}`
+        `${findLoan?.customer?.temporaryAddress?.street} ${findLoan?.customer?.temporaryAddress?.landmark} ${findLoan?.customer.temporaryAddress?.city}`
       );
       setValue('contact', findLoan?.customer?.contact);
       setValue('contactOtp', findLoan?.customer?.otpContact);

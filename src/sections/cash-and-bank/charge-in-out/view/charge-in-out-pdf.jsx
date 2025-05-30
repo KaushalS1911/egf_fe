@@ -83,7 +83,7 @@ const useStyles = () =>
         subHeading2: {
           fontWeight: '600',
           fontSize: 9,
-          flex: 0.6,
+          flex: 0.9,
         },
         colon: {
           fontSize: 10,
@@ -98,30 +98,35 @@ const useStyles = () =>
     []
   );
 
-export default function CashInPdf({ configs, cashData, filterData }) {
+export default function ChargeInOutPdf({ configs, chargeData, filterData }) {
   const styles = useStyles();
 
   const headers = [
     { label: '#', flex: 0.2 },
-    { label: 'Type', flex: 1 },
-    { label: 'Detail', flex: 4 },
-    { label: 'Category', flex: 1 },
-    { label: 'Date', flex: 1 },
-    { label: 'Amount', flex: 1 },
+    { label: 'Type', flex: 2 },
+    { label: 'Category', flex: 2 },
+    { label: 'Date', flex: 0.6 },
+    { label: 'Payment Mode', flex: 0.5 },
+    { label: 'Cash Amt', flex: 0.6 },
+    { label: 'Bank Amt', flex: 0.6 },
+    { label: 'Bank', flex: 2 },
+    { label: 'Des', flex: 1.5 },
+    { label: 'Status', flex: 0.7 },
   ];
 
   const dataFilter = [
-    { value: filterData.status, label: 'Status' },
+    { value: filterData.chargeType, label: 'Charge Type' },
     { value: filterData.category, label: 'Category' },
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
+    { value: filterData.transactions, label: 'Transactions' },
     { value: fDate(new Date()), label: 'Date' },
   ];
 
-  const rowsPerPageFirst = 16;
+  const rowsPerPageFirst = 14;
   const rowsPerPageOther = 22;
 
-  const remainingRows = cashData.length - rowsPerPageFirst;
+  const remainingRows = chargeData.length - rowsPerPageFirst;
   const additionalPages = Math.ceil(Math.max(0, remainingRows) / rowsPerPageOther);
 
   const pages = [];
@@ -138,20 +143,25 @@ export default function CashInPdf({ configs, cashData, filterData }) {
         wrap={false}
       >
         <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.status || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 4 }]}>
-          {row.ref ? `${row.detail} (${row.ref})` : row.detail || '-'}
+        <Text style={[styles.tableCell, { flex: 2 }]}>{row?.chargeType || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 2 }]}>{row?.category || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.6 }]}>{fDate(row.date) || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>
+          {row?.paymentDetail?.paymentMode || '-'}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.category || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.date) || '-'}</Text>
-        <Text
-          style={[
-            styles.tableCell,
-            { flex: 1, color: row.category === 'Payment Out' ? 'red' : 'green' },
-          ]}
-        >
-          {row.amount || '-'}
+        <Text style={[styles.tableCell, { flex: 0.6 }]}>
+          {row?.paymentDetail?.cashAmount || '-'}
         </Text>
+        <Text style={[styles.tableCell, { flex: 0.6 }]}>
+          {row?.paymentDetail?.bankAmount || '-'}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 2 }]}>
+          {row?.paymentDetail?.account?.bankName && row?.paymentDetail?.account?.accountHolderName
+            ? `${row.paymentDetail.account.bankName} (${row.paymentDetail.account.accountHolderName})`
+            : '-'}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 1.5 }]}>{row.description || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.7 }]}>{row.status || '-'}</Text>
       </View>
     );
   };
@@ -173,20 +183,32 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     </View>
   );
 
-  const firstPageRows = cashData
+  const firstPageRows = chargeData
     .slice(0, rowsPerPageFirst)
     .map((row, index) =>
-      renderRow(row, index, index === rowsPerPageFirst - 1 && cashData.length === rowsPerPageFirst)
+      renderRow(
+        row,
+        index,
+        index === rowsPerPageFirst - 1 && chargeData.length === rowsPerPageFirst
+      )
     );
-  const amount =
-    cashData
-      .filter((e) => e.category === 'Payment In')
-      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
-    cashData
-      .filter((e) => e.category === 'Payment Out')
-      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+  const receivable = chargeData.reduce((prev, next) => {
+    if (next.status === 'Payment In') {
+      const cash = Number(next?.paymentDetail?.cashAmount || 0);
+      const bank = Number(next?.paymentDetail?.bankAmount || 0);
+      return prev + cash + bank;
+    }
+    return prev;
+  }, 0);
 
-  // Add the first page
+  const payable = chargeData.reduce((prev, next) => {
+    if (next.status === 'Payment Out') {
+      const cash = Number(next?.paymentDetail?.cashAmount || 0);
+      const bank = Number(next?.paymentDetail?.bankAmount || 0);
+      return prev + cash + bank;
+    }
+    return prev;
+  }, 0);
   pages.push(
     <Page key={0} size="A4" style={styles.page} orientation="landscape">
       <InvoiceHeader configs={configs} landscape={true} />
@@ -198,15 +220,37 @@ export default function CashInPdf({ configs, cashData, filterData }) {
             <Text style={styles.subText}>{item.value || '-'}</Text>
           </View>
         ))}
-
-        <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 15 }}>
-          Cash In Hand :{' '}
-          <Text style={{ color: amount >= 0 ? 'green' : 'red' }}>
-            {Object.values(filterData).some(Boolean)
-              ? Math.abs(amount).toFixed(2)
-              : amount.toFixed(2)}
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 10,
+          marginTop: 10,
+        }}
+      >
+        <View>
+          <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+            Receivable : <Text style={{ color: 'green' }}>{Number(receivable).toFixed(2)}</Text>
           </Text>
-        </Text>
+        </View>
+        <View>
+          <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+            Payable :{' '}
+            <Text style={{ color: 'red' }}>
+              {Object.entries(filterData).some(([key, val]) => {
+                if (val === null || val === '') return false;
+                if (typeof val === 'object') {
+                  return val instanceof Date || Object.keys(val).length > 0;
+                }
+                return true;
+              })
+                ? payable.toFixed(2)
+                : Math.abs(payableAmt).toFixed(2)}
+            </Text>
+          </Text>
+        </View>
       </View>
       <View
         style={{
@@ -216,7 +260,7 @@ export default function CashInPdf({ configs, cashData, filterData }) {
           marginTop: 10,
         }}
       >
-        <Text style={styles.termsAndConditionsHeaders}>CASH IN HAND</Text>
+        <Text style={styles.termsAndConditionsHeaders}>CHARGE IN OUT</Text>
       </View>
 
       <View style={{ flexGrow: 1, padding: '12px' }}>
@@ -228,15 +272,15 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     </Page>
   );
 
-  if (cashData.length > rowsPerPageFirst) {
+  if (chargeData.length > rowsPerPageFirst) {
     for (let pageIndex = 0; pageIndex < additionalPages; pageIndex++) {
       const startIndex = rowsPerPageFirst + pageIndex * rowsPerPageOther;
-      const endIndex = Math.min(startIndex + rowsPerPageOther, cashData.length);
-      const isLastPage = endIndex === cashData.length;
+      const endIndex = Math.min(startIndex + rowsPerPageOther, chargeData.length);
+      const isLastPage = endIndex === chargeData.length;
 
-      const pageRows = cashData.slice(startIndex, endIndex).map((row, index) => {
+      const pageRows = chargeData.slice(startIndex, endIndex).map((row, index) => {
         const actualIndex = startIndex + index;
-        return renderRow(row, actualIndex, actualIndex === cashData.length - 1);
+        return renderRow(row, actualIndex, actualIndex === chargeData.length - 1);
       });
 
       pages.push(

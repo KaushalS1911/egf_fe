@@ -2,7 +2,7 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
-import ExpenseNewEditForm from '../expense-new-edit-form.jsx';
+import ExpenceNewEditForm from '../expence-new-edit-form.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ export default function ExpenseCreateView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      <ExpenseNewEditForm />
+      <ExpenceNewEditForm />
     </Container>
   );
 }

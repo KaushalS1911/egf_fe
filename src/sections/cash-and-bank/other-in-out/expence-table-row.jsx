@@ -33,11 +33,12 @@ export default function ExpenseTableRow({ row, selected, onEditRow, onSelectRow,
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.expenseType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.category}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.date)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetail.paymentMode}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetail?.paymentMode}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail?.cashAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail?.bankAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.paymentDetail?.account?.bankName || '-'}
+          {`${row?.paymentDetail?.account?.bankName} (${row?.paymentDetail?.account?.accountHolderName})` ||
+            '-'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.description || '-'}</TableCell>
         {row.invoice ? (

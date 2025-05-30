@@ -159,7 +159,7 @@ const useStyles = () =>
         subHeading: {
           fontWeight: '600',
           fontSize: 10,
-          flex: 1.2,
+          flex: 0.8,
         },
         colon: {
           fontSize: 10,
@@ -277,7 +277,7 @@ const useStyles = () =>
 
 // ----------------------------------------------------------------------
 
-export default function InitialLoanDetails({ selectedRow, configs }) {
+export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
   const styles = useStyles();
   const renewDate = () => {
     if (!selectedRow?.issueDate) return null;
@@ -317,8 +317,8 @@ export default function InitialLoanDetails({ selectedRow, configs }) {
               >
                 <Text style={styles.termsAndConditionsHeaders}>SANCTION LETTER</Text>
               </View>
-              <View style={{ ...styles.flexContainer, gap: 20 }}>
-                <View style={{ width: '48%' }}>
+              <View style={{ ...styles.flexContainer, gap: 10 }}>
+                <View style={{ width: '60%' }}>
                   <View style={styles.row}>
                     <Text style={styles.subHeading}>Loan No</Text>
                     <Text style={styles.colon}>:</Text>
@@ -346,7 +346,7 @@ export default function InitialLoanDetails({ selectedRow, configs }) {
                         fontSize: 9,
                       }}
                     >
-                      {`${selectedRow.customer.permanentAddress.street} , ${selectedRow.customer.permanentAddress.landmark} , ${selectedRow.customer.permanentAddress.city} , ${selectedRow.customer.permanentAddress.zipcode}`.toUpperCase()}
+                      {`${selectedRow.customer.temporaryAddress.street} , ${selectedRow.customer.temporaryAddress.landmark} , ${selectedRow.customer.temporaryAddress.city} , ${selectedRow.customer.temporaryAddress.zipcode}`.toUpperCase()}
                     </Text>
                   </View>
                   <View style={styles.row}>
@@ -365,7 +365,7 @@ export default function InitialLoanDetails({ selectedRow, configs }) {
                     <Text style={styles.subText}>{selectedRow.customer.contact}</Text>
                   </View>
                 </View>
-                <View style={{ width: '46%' }}>
+                <View style={{ width: '35%' }}>
                   <View style={styles.row}>
                     <Text style={{ ...styles.subHeading, flex: 2.5 }}>Loan Amount</Text>
                     <Text style={styles.colon}>:</Text>

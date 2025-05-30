@@ -13,18 +13,40 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { FormControl } from '@mui/material';
+import { Box, Dialog, FormControl } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import { useBoolean } from '../../../hooks/use-boolean.js';
+import { PDFViewer } from '@react-pdf/renderer';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import DayBookPdf from './view/day-book-pdf.jsx';
 
 // ----------------------------------------------------------------------
 
-export default function DayBookToolbar({ filters, onFilters, schemes, dateError, options }) {
+export default function DayBookToolbar({
+  filters,
+  onFilters,
+  schemes,
+  daybookData,
+  options,
+  typeOptions,
+}) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
+
+  const view = useBoolean();
+  const filterData = {
+    startDate: filters.startDate,
+    category: filters.status,
+    transactions:
+      filters?.transactions?.bankName && filters?.transactions?.accountHolderName
+        ? `${filters.transactions.bankName} (${filters.transactions.accountHolderName})`
+        : filters?.transactions?.transactionsType || '-',
+  };
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -58,6 +80,12 @@ export default function DayBookToolbar({ filters, onFilters, schemes, dateError,
   const handleFilterStatus = useCallback(
     (event) => {
       onFilters('status', event.target.value);
+    },
+    [onFilters]
+  );
+  const handleFilterTransactions = useCallback(
+    (event) => {
+      onFilters('transactions', typeof event.target.value === 'object' ? event.target.value : null);
     },
     [onFilters]
   );
@@ -100,6 +128,54 @@ export default function DayBookToolbar({ filters, onFilters, schemes, dateError,
               ),
             }}
           />
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 220 },
+            }}
+          >
+            <InputLabel
+              sx={{
+                mt: -0.8,
+                '&.MuiInputLabel-shrink': {
+                  mt: 0,
+                },
+              }}
+            >
+              Cash & Bank Transactions
+            </InputLabel>
+            <Select
+              value={filters.transactions || ''}
+              onChange={handleFilterTransactions}
+              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 240,
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  },
+                },
+              }}
+            >
+              {options?.map((option) => (
+                <MenuItem key={option._id} value={option}>
+                  {option.bankName || option.transactionsType || 'Unnamed Account'}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>{' '}
           <FormControl
             sx={{
               flexShrink: 0,
@@ -189,7 +265,7 @@ export default function DayBookToolbar({ filters, onFilters, schemes, dateError,
                 },
               }}
             >
-              {options.map((option) => (
+              {typeOptions.map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
@@ -226,6 +302,7 @@ export default function DayBookToolbar({ filters, onFilters, schemes, dateError,
           <>
             <MenuItem
               onClick={() => {
+                view.onTrue();
                 popover.onClose();
               }}
             >
@@ -254,6 +331,20 @@ export default function DayBookToolbar({ filters, onFilters, schemes, dateError,
           whatsapp share
         </MenuItem>
       </CustomPopover>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+        <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
+          <DialogActions sx={{ p: 1.5 }}>
+            <Button color="inherit" variant="contained" onClick={view.onFalse}>
+              Close
+            </Button>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <DayBookPdf dayBookData={daybookData} configs={configs} filterData={filterData} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 }

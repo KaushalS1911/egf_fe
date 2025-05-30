@@ -96,35 +96,22 @@ export default function ChargeInOutListView() {
     }
   }, [ChargeInOut]);
 
-  const cashIn = dataFiltered.reduce(
-    (prev, next) =>
-      prev +
-      (Number(
-        (next.status === 'Payment In' && next?.paymentDetail?.cashAmount) ||
-          next?.paymentDetail?.chargeCashAmount
-      ) || 0),
-    0
-  );
-  const bankIn = dataFiltered.reduce(
-    (prev, next) =>
-      prev +
-      (Number(
-        (next.status === 'Payment In' && next?.paymentDetail?.bankAmount) ||
-          next?.paymentDetail?.chargeBankAmount
-      ) || 0),
-    0
-  );
-  const cashOut = dataFiltered.reduce(
-    (prev, next) =>
-      prev + (Number(next.status === 'Payment Out' && next?.paymentDetail?.cashAmount) || 0),
-    0
-  );
-  const bankOut = dataFiltered.reduce(
-    (prev, next) =>
-      prev + (Number(next.status === 'Payment Out' && next?.paymentDetail?.bankAmount) || 0),
-    0
-  );
-
+  const receivable = dataFiltered.reduce((prev, next) => {
+    if (next.status === 'Payment In') {
+      const cash = Number(next?.paymentDetail?.cashAmount || 0);
+      const bank = Number(next?.paymentDetail?.bankAmount || 0);
+      return prev + cash + bank;
+    }
+    return prev;
+  }, 0);
+  const payable = dataFiltered.reduce((prev, next) => {
+    if (next.status === 'Payment Out') {
+      const cash = Number(next?.paymentDetail?.cashAmount || 0);
+      const bank = Number(next?.paymentDetail?.bankAmount || 0);
+      return prev + cash + bank;
+    }
+    return prev;
+  }, 0);
   const calculateChargeTypeTotals = (data) => {
     const totals = {};
     data.forEach((item) => {
@@ -134,12 +121,12 @@ export default function ChargeInOutListView() {
       }
       if (item.status === 'Payment In') {
         totals[chargeType] +=
-          Number(item?.paymentDetail?.cashAmount || item?.paymentDetail?.chargeCashAmount || 0) +
-          Number(item?.paymentDetail?.bankAmount || item?.paymentDetail?.chargeBankAmount || 0);
+          Number(item?.paymentDetail?.cashAmount || 0) +
+          Number(item?.paymentDetail?.bankAmount || 0);
       } else if (item.status === 'Payment Out') {
         totals[chargeType] -=
-          Number(item?.paymentDetail?.cashAmount || item?.paymentDetail?.chargeCashAmount || 0) +
-          Number(item?.paymentDetail?.bankAmount || item?.paymentDetail?.chargeBankAmount || 0);
+          Number(item?.paymentDetail?.cashAmount || 0) +
+          Number(item?.paymentDetail?.bankAmount || 0);
       }
     });
     return Object.entries(totals).map(([chargeType, amount]) => ({
@@ -166,7 +153,6 @@ export default function ChargeInOutListView() {
   const denseHeight = table?.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
-
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -250,15 +236,21 @@ export default function ChargeInOutListView() {
               <strong style={{ marginLeft: 200 }}>
                 Receivable : -
                 <span style={{ color: 'green', marginLeft: 10 }}>
-                  {(Number(cashIn) + Number(bankIn)).toFixed(2)}
+                  {Number(receivable).toFixed(2)}
                 </span>
               </strong>
               <strong style={{ marginLeft: 20 }}>
                 Payable : -
                 <span style={{ color: 'red', marginLeft: 10 }}>
-                  {Object.values(filters).some(Boolean)
-                    ? Math.abs(Number(cashOut) + Number(bankOut)).toFixed(2)
-                    : Number(cashOut) + Number(bankOut).toFixed(2)}
+                  {Object.entries(filters).some(([key, val]) => {
+                    if (val === null || val === '') return false;
+                    if (typeof val === 'object') {
+                      return val instanceof Date || Object.keys(val).length > 0;
+                    }
+                    return true;
+                  })
+                    ? payable.toFixed(2)
+                    : Math.abs(payable).toFixed(2)}
                 </span>
               </strong>
             </Typography>
@@ -296,6 +288,7 @@ export default function ChargeInOutListView() {
                   onFilters={handleFilters}
                   chargeDetails={chargeDetails}
                   options={options}
+                  chargeData={dataFiltered}
                 />
                 {canReset && (
                   <ChargeInOutTableFiltersResult

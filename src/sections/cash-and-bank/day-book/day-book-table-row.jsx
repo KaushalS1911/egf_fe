@@ -58,6 +58,14 @@ export default function DayBookTableRow({ row, selected, onEditRow, onSelectRow,
           </Label>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail?.paymentMode || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail?.cashAmount || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail?.bankAmount || 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row?.paymentDetail?.account?.bankName && row?.paymentDetail?.account?.accountHolderName
+            ? `${row.paymentDetail.account.bankName} (${row.paymentDetail.account.accountHolderName})`
+            : '-'}{' '}
+        </TableCell>
         <TableCell
           sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}
         >

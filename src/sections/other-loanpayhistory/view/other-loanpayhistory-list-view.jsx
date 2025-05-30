@@ -94,11 +94,11 @@ const defaultFilters = {
 export default function LoanpayhistoryListView() {
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
-  const table = useTable();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
   const loanPayHistory = true;
   const { otherLoanissue, mutate, otherLoanissueLoading } = useGetOtherLoanissue();
+  const table = useTable({ defaultRowsPerPage: otherLoanissue.length });
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
@@ -261,7 +261,7 @@ export default function LoanpayhistoryListView() {
           )}
           <TableContainer
             sx={{
-              maxHeight: 500,
+              maxHeight: '500px',
               overflow: 'auto',
               position: 'relative',
             }}
@@ -284,49 +284,47 @@ export default function LoanpayhistoryListView() {
                 </Tooltip>
               }
             />
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  sx={{
-                    ' th': { padding: '8px' },
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 1000,
-                    backgroundColor: '#2f3944',
-                  }}
+            <Table size={table.dense ? 'small' : 'medium'}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                sx={{
+                  ' th': { padding: '8px' },
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1000,
+                  backgroundColor: '#2f3944',
+                }}
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
+                  )
+                  .map((row, index) => (
+                    <OtherLoanpayhistoryTableRow
+                      key={row._id}
+                      index={index}
+                      row={row}
+                      loanStatus={filters.status}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row, index) => (
-                      <OtherLoanpayhistoryTableRow
-                        key={row._id}
-                        index={index}
-                        row={row}
-                        loanStatus={filters.status}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
           </TableContainer>
           <TablePaginationCustom
             count={dataFiltered.length}

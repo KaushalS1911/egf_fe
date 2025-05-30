@@ -98,15 +98,16 @@ const useStyles = () =>
     []
   );
 
-export default function CashInPdf({ configs, cashData, filterData }) {
+export default function BankAccountPdf({ configs, bankData, filterData }) {
   const styles = useStyles();
 
   const headers = [
     { label: '#', flex: 0.2 },
-    { label: 'Type', flex: 1 },
-    { label: 'Detail', flex: 4 },
-    { label: 'Category', flex: 1 },
-    { label: 'Date', flex: 1 },
+    { label: 'Type', flex: 1.5 },
+    { label: 'Bank Name', flex: 2 },
+    { label: 'Detail', flex: 3.5 },
+    { label: 'Category', flex: 0.8 },
+    { label: 'Date', flex: 0.8 },
     { label: 'Amount', flex: 1 },
   ];
 
@@ -116,12 +117,13 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
+    { value: filterData.bank, label: 'Bank' },
   ];
 
   const rowsPerPageFirst = 16;
   const rowsPerPageOther = 22;
 
-  const remainingRows = cashData.length - rowsPerPageFirst;
+  const remainingRows = bankData.length - rowsPerPageFirst;
   const additionalPages = Math.ceil(Math.max(0, remainingRows) / rowsPerPageOther);
 
   const pages = [];
@@ -138,13 +140,23 @@ export default function CashInPdf({ configs, cashData, filterData }) {
         wrap={false}
       >
         <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.status || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 4 }]}>
+        <Text style={[styles.tableCell, { flex: 1.5 }]}>{row.status || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 2 }]}>
+          {`${row.bankName} (${row.bankHolderName})` || '-'}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 3.5 }]}>
           {row.ref ? `${row.detail} (${row.ref})` : row.detail || '-'}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.category || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.date) || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.amount || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>{row.category || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(row.date) || '-'}</Text>
+        <Text
+          style={[
+            styles.tableCell,
+            { flex: 1, color: row.category === 'Payment Out' ? 'red' : 'green' },
+          ]}
+        >
+          {row.amount.toFixed(2) || '-'}
+        </Text>
       </View>
     );
   };
@@ -166,16 +178,16 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     </View>
   );
 
-  const firstPageRows = cashData
+  const firstPageRows = bankData
     .slice(0, rowsPerPageFirst)
     .map((row, index) =>
-      renderRow(row, index, index === rowsPerPageFirst - 1 && cashData.length === rowsPerPageFirst)
+      renderRow(row, index, index === rowsPerPageFirst - 1 && bankData.length === rowsPerPageFirst)
     );
   const amount =
-    cashData
+    bankData
       .filter((e) => e.category === 'Payment In')
       .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
-    cashData
+    bankData
       .filter((e) => e.category === 'Payment Out')
       .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
 
@@ -193,7 +205,7 @@ export default function CashInPdf({ configs, cashData, filterData }) {
         ))}
 
         <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 15 }}>
-          Cash In Hand :{' '}
+          Bank account :{' '}
           <Text style={{ color: amount >= 0 ? 'green' : 'red' }}>
             {Object.values(filterData).some(Boolean)
               ? Math.abs(amount).toFixed(2)
@@ -209,7 +221,7 @@ export default function CashInPdf({ configs, cashData, filterData }) {
           marginTop: 10,
         }}
       >
-        <Text style={styles.termsAndConditionsHeaders}>CASH IN HAND</Text>
+        <Text style={styles.termsAndConditionsHeaders}>BANK ACCOUNT</Text>
       </View>
 
       <View style={{ flexGrow: 1, padding: '12px' }}>
@@ -221,15 +233,15 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     </Page>
   );
 
-  if (cashData.length > rowsPerPageFirst) {
+  if (bankData.length > rowsPerPageFirst) {
     for (let pageIndex = 0; pageIndex < additionalPages; pageIndex++) {
       const startIndex = rowsPerPageFirst + pageIndex * rowsPerPageOther;
-      const endIndex = Math.min(startIndex + rowsPerPageOther, cashData.length);
-      const isLastPage = endIndex === cashData.length;
+      const endIndex = Math.min(startIndex + rowsPerPageOther, bankData.length);
+      const isLastPage = endIndex === bankData.length;
 
-      const pageRows = cashData.slice(startIndex, endIndex).map((row, index) => {
+      const pageRows = bankData.slice(startIndex, endIndex).map((row, index) => {
         const actualIndex = startIndex + index;
-        return renderRow(row, actualIndex, actualIndex === cashData.length - 1);
+        return renderRow(row, actualIndex, actualIndex === bankData.length - 1);
       });
 
       pages.push(

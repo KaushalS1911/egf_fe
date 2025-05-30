@@ -280,6 +280,7 @@ export default function ExpenceListView() {
                   expenceDetails={expenceDetails}
                   options={options}
                   categoryOptions={categoryOptions}
+                  expenceData={dataFiltered}
                 />
                 {canReset && (
                   <ExpenceTableFiltersResult

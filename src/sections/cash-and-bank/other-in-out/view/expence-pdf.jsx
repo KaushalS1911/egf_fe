@@ -98,16 +98,19 @@ const useStyles = () =>
     []
   );
 
-export default function CashInPdf({ configs, cashData, filterData }) {
+export default function ExpencePdf({ configs, expenceData, filterData }) {
   const styles = useStyles();
 
   const headers = [
     { label: '#', flex: 0.2 },
-    { label: 'Type', flex: 1 },
-    { label: 'Detail', flex: 4 },
-    { label: 'Category', flex: 1 },
-    { label: 'Date', flex: 1 },
-    { label: 'Amount', flex: 1 },
+    { label: 'Type', flex: 1.5 },
+    { label: 'Category', flex: 0.8 },
+    { label: 'Date', flex: 0.8 },
+    { label: 'Payment Mode', flex: 0.8 },
+    { label: 'Cash Amt', flex: 0.8 },
+    { label: 'Bank Amt', flex: 0.8 },
+    { label: 'Bank', flex: 1.5 },
+    { label: 'Des', flex: 2 },
   ];
 
   const dataFilter = [
@@ -116,12 +119,13 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
+    { value: filterData.bank, label: 'Bank' },
   ];
 
   const rowsPerPageFirst = 16;
   const rowsPerPageOther = 22;
 
-  const remainingRows = cashData.length - rowsPerPageFirst;
+  const remainingRows = expenceData.length - rowsPerPageFirst;
   const additionalPages = Math.ceil(Math.max(0, remainingRows) / rowsPerPageOther);
 
   const pages = [];
@@ -138,20 +142,23 @@ export default function CashInPdf({ configs, cashData, filterData }) {
         wrap={false}
       >
         <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.status || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 4 }]}>
-          {row.ref ? `${row.detail} (${row.ref})` : row.detail || '-'}
+        <Text style={[styles.tableCell, { flex: 1.5 }]}>{row.expenseType || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>{row.category || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>{fDate(row.date) || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>
+          {row?.paymentDetail?.paymentMode || '-'}
         </Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{row.category || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.date) || '-'}</Text>
-        <Text
-          style={[
-            styles.tableCell,
-            { flex: 1, color: row.category === 'Payment Out' ? 'red' : 'green' },
-          ]}
-        >
-          {row.amount || '-'}
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>
+          {row?.paymentDetail?.cashAmount || '-'}
         </Text>
+        <Text style={[styles.tableCell, { flex: 0.8 }]}>
+          {row?.paymentDetail?.bankAmount || '-'}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 1.5 }]}>
+          {`${row?.paymentDetail?.account?.bankName} (${row?.paymentDetail?.account?.accountHolderName})` ||
+            '-'}
+        </Text>
+        <Text style={[styles.tableCell, { flex: 2 }]}>{row.description || '-'}</Text>
       </View>
     );
   };
@@ -173,19 +180,23 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     </View>
   );
 
-  const firstPageRows = cashData
+  const firstPageRows = expenceData
     .slice(0, rowsPerPageFirst)
     .map((row, index) =>
-      renderRow(row, index, index === rowsPerPageFirst - 1 && cashData.length === rowsPerPageFirst)
+      renderRow(
+        row,
+        index,
+        index === rowsPerPageFirst - 1 && expenceData.length === rowsPerPageFirst
+      )
     );
-  const amount =
-    cashData
-      .filter((e) => e.category === 'Payment In')
-      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0) -
-    cashData
-      .filter((e) => e.category === 'Payment Out')
-      .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
-
+  const cash = expenceData.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail?.cashAmount) || 0),
+    0
+  );
+  const bank = expenceData.reduce(
+    (prev, next) => prev + (Number(next?.paymentDetail?.bankAmount) || 0),
+    0
+  );
   // Add the first page
   pages.push(
     <Page key={0} size="A4" style={styles.page} orientation="landscape">
@@ -200,12 +211,8 @@ export default function CashInPdf({ configs, cashData, filterData }) {
         ))}
 
         <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 15 }}>
-          Cash In Hand :{' '}
-          <Text style={{ color: amount >= 0 ? 'green' : 'red' }}>
-            {Object.values(filterData).some(Boolean)
-              ? Math.abs(amount).toFixed(2)
-              : amount.toFixed(2)}
-          </Text>
+          Total Expence :{' '}
+          <Text style={{ color: 'red' }}>{(Number(cash) + Number(bank)).toFixed(2)}</Text>
         </Text>
       </View>
       <View
@@ -216,7 +223,7 @@ export default function CashInPdf({ configs, cashData, filterData }) {
           marginTop: 10,
         }}
       >
-        <Text style={styles.termsAndConditionsHeaders}>CASH IN HAND</Text>
+        <Text style={styles.termsAndConditionsHeaders}>EXPENCE</Text>
       </View>
 
       <View style={{ flexGrow: 1, padding: '12px' }}>
@@ -228,15 +235,15 @@ export default function CashInPdf({ configs, cashData, filterData }) {
     </Page>
   );
 
-  if (cashData.length > rowsPerPageFirst) {
+  if (expenceData.length > rowsPerPageFirst) {
     for (let pageIndex = 0; pageIndex < additionalPages; pageIndex++) {
       const startIndex = rowsPerPageFirst + pageIndex * rowsPerPageOther;
-      const endIndex = Math.min(startIndex + rowsPerPageOther, cashData.length);
-      const isLastPage = endIndex === cashData.length;
+      const endIndex = Math.min(startIndex + rowsPerPageOther, expenceData.length);
+      const isLastPage = endIndex === expenceData.length;
 
-      const pageRows = cashData.slice(startIndex, endIndex).map((row, index) => {
+      const pageRows = expenceData.slice(startIndex, endIndex).map((row, index) => {
         const actualIndex = startIndex + index;
-        return renderRow(row, actualIndex, actualIndex === cashData.length - 1);
+        return renderRow(row, actualIndex, actualIndex === expenceData.length - 1);
       });
 
       pages.push(

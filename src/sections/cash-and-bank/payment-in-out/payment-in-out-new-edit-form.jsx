@@ -167,6 +167,7 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
         formData.append('paymentDetail[account][bankName]', value.bankName);
         formData.append('paymentDetail[account][accountNumber]', value.accountNumber);
         formData.append('paymentDetail[account][branchName]', value.branchName);
+        formData.append('paymentDetail[account][accountHolderName]', value.accountHolderName);
       } else {
         formData.append(`paymentDetail[${key}]`, value);
       }
