@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Avatar, Box, Card, Grid, Stack, Typography } from '@mui/material';
+import { Box, Card, Grid, Stack, Typography } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import Chart, { useChart } from 'src/components/chart';
 import React from 'react';
@@ -29,10 +29,6 @@ export default function EcommerceSaleByGender({
   const theme = useTheme();
 
   const {
-    colors = [
-      [theme.palette.primary.light, theme.palette.primary.main],
-      [theme.palette.warning.light, theme.palette.warning.main],
-    ],
     series = [],
     options,
   } = chart || {};
@@ -44,9 +40,19 @@ export default function EcommerceSaleByGender({
     totalValue > 0 ? rawValues.map((val) => (val / totalValue) * 100) : [0, 0];
   const labels = series.map((i) => i.label);
 
-  const cash = rawValues[1] || 0;
-  const bank = rawValues[0] || 0;
+  const cashIndex = labels.findIndex(label => label.toLowerCase() === 'cash');
+  const bankIndex = labels.findIndex(label => label.toLowerCase() === 'bank');
+
+  const cash = rawValues[cashIndex] || 0;
+  const bank = rawValues[bankIndex] || 0;
   const total = Number((cash + bank).toFixed(2));
+
+  // Assign colors based on label
+  const labelColorMap = {
+    Cash: [theme.palette.warning.light, theme.palette.warning.main],
+    Bank: [theme.palette.primary.light, theme.palette.primary.main],
+  };
+  const colors = labels.map((label) => labelColorMap[label] || ['#ccc', '#999']);
 
   const chartOptions = useChart({
     colors: colors.map((colr) => colr[1]),
@@ -135,14 +141,14 @@ export default function EcommerceSaleByGender({
             <Typography variant='subtitle2' align='center' sx={{ mt: 2 }}>
               <Box
                 component='span'
-                sx={{ color: colors[0][1], fontWeight: 'bold' }}
+                sx={{ color: labelColorMap['Cash'][1], fontWeight: 'bold' }}
               >
                 {formatCurrency(cash)}
               </Box>
               {' + '}
               <Box
                 component='span'
-                sx={{ color: colors[1][1], fontWeight: 'bold' }}
+                sx={{ color: labelColorMap['Bank'][1], fontWeight: 'bold' }}
               >
                 {formatCurrency(bank)}
               </Box>
@@ -195,11 +201,8 @@ export default function EcommerceSaleByGender({
                       bgcolor: 'background.paper',
                     }}
                   >
-                    {/*<Avatar*/}
-                    {/*  alt={bank.name}*/}
-                    {/*  src={bank.logo}*/}
-                    {/*  sx={{ mr: 2, cursor: 'pointer' }}*/}
-                    {/*/>*/}
+                    {/* Optional Avatar if logos are available */}
+                    {/* <Avatar alt={bank.name} src={bank.logo} sx={{ mr: 2 }} /> */}
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                       <Typography
                         variant='subtitle2'
