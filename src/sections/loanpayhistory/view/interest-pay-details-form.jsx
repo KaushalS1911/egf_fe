@@ -689,8 +689,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {`${row?.paymentDetail?.account?.bankName} (${row?.paymentDetail?.account?.accountHolderName})}` ||
-                        '-'}
+                      {row?.paymentDetail?.account?.bankName && row?.paymentDetail?.account?.accountHolderName
+                        ? `${row.paymentDetail.account.bankName} (${row.paymentDetail.account.accountHolderName})`
+                        : '-'}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (

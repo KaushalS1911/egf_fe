@@ -12,7 +12,6 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useRouter } from '../../routes/hooks';
 import { useGetConfigs } from '../../api/config';
 import { useAuthContext } from '../../auth/hooks';
 import { getResponsibilityValue } from '../../permission/permission';
@@ -35,6 +34,7 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
     isAadharVerified,
     branch,
     joiningDate,
+    isLoan,
   } = row;
   const confirm = useBoolean();
   const popover = usePopover();
@@ -93,6 +93,18 @@ export default function CustomerTableRow({ row, selected, onEditRow, onSelectRow
             }
           >
             {status}
+          </Label>
+        </TableCell>
+        <TableCell>
+          <Label
+            variant='soft'
+            color={
+              (isLoan === true && 'success') ||
+              (isLoan === false && 'warning') ||
+              'default'
+            }
+          >
+            {isLoan ? 'Active' : 'Inactive'}
           </Label>
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>

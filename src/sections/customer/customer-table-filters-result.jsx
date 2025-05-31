@@ -44,7 +44,7 @@ export default function CustomerTableFiltersResult({
       <Stack flexGrow={1} spacing={1} direction='row' flexWrap='wrap' alignItems='center'>
         {filters.status !== 'all' && (
           <Block label='Status:'>
-            <Chip size='small' label={filters.status} onDelete={handleRemoveStatus} />
+            <Chip size='small' label={filters.status || filters.status === true ? 'Loan Active Cus.' : 'Loan inActive Cus.' } onDelete={handleRemoveStatus} />
           </Block>
         )}
         {!!filters.role.length && (

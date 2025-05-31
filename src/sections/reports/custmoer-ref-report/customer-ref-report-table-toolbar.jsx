@@ -16,13 +16,26 @@ import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { useGetBranch } from '../../../api/branch.js';
 import { useBoolean } from '../../../hooks/use-boolean.js';
-import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
 import { PDFViewer } from '@react-pdf/renderer';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
 import CustomerRefReportPdf from '../pdf/customer-ref-report-pdf.jsx';
+
+const INQUIRY_REFERENCE_BY = [
+  { value: 'Google', label: 'Google' },
+  {
+    value: 'Just Dial',
+    label: 'Just Dial',
+  },
+  { value: 'Social Media', label: 'Social Media' },
+  {
+    value: 'Board Banner',
+    label: 'Board Banner',
+  },
+  { value: 'Brochure', label: 'Brochure' },
+  { value: 'Other', label: 'Other' },
+];
 
 // ----------------------------------------------------------------------
 
@@ -46,6 +59,7 @@ export default function CustomerRefReportTableToolbar({
     area: filters.area,
     ref: filters.ref,
   };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -87,23 +101,13 @@ export default function CustomerRefReportTableToolbar({
     [onFilters]
   );
 
-  const handleFilterBranch = useCallback(
-    (event) => {
-      // setSelectedBranch(event.target.value);
-      onFilters(
-        'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
-    },
-    [onFilters]
-  );
-
   const handleFilterArea = useCallback(
     (event) => {
       onFilters('area', event.target.value);
     },
     [onFilters]
   );
+
   const handleFilterRef = useCallback(
     (event) => {
       onFilters('ref', event.target.value);
@@ -248,9 +252,9 @@ export default function CustomerRefReportTableToolbar({
                 },
               }}
             >
-              {options?.ref?.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {INQUIRY_REFERENCE_BY.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
                 </MenuItem>
               ))}
             </Select>

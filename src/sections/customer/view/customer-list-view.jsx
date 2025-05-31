@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
@@ -18,20 +18,19 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { _roles } from 'src/_mock';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import CustomerTableFiltersResult from '../customer-table-filters-result';
 import CustomerTableToolbar from '../customer-table-toolbar';
@@ -51,6 +50,8 @@ const STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
   { value: 'In Active', label: 'In Active' },
   { value: 'Blocked', label: 'Blocked' },
+  { value: 'true', label: 'Loan Active Cus.' },
+  { value: 'false', label: 'Loan Inactive Cus.' },
 ];
 
 const TABLE_HEAD = [
@@ -61,6 +62,7 @@ const TABLE_HEAD = [
   { id: 'customerCode', label: 'Customer code', width: 220 },
   { id: 'joiningDate', label: 'Joining date', width: 220 },
   { id: 'status', label: 'Status', width: 100 },
+  { id: 'isLoan', label: 'IsLoan', width: 100 },
   { id: '', width: 120 },
 ];
 
@@ -227,31 +229,42 @@ export default function CustomerListView() {
               boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
             }}
           >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={
-                      (tab.value === 'Active' && 'success') ||
-                      (tab.value === 'In Active' && 'warning') ||
-                      (tab.value === 'Blocked' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {['Active', 'In Active', 'Blocked'].includes(tab.value)
-                      ? customer.filter((user) => user.status === tab.value).length
-                      : customer.length}
-                  </Label>
-                }
-              />
-            ))}
+            {STATUS_OPTIONS.map((tab) => {
+              let count;
+              if (tab.value === 'true') {
+                count = customer.filter(user => user.isLoan === true).length;
+              } else if (tab.value === 'false') {
+                count = customer.filter(user => user.isLoan === false).length;
+              } else if (['Active', 'In Active', 'Blocked',true,false].includes(tab.value)) {
+                count = customer.filter(user => user.status  && user.isLoan === tab.value).length;
+              } else {
+                count = customer.length;
+              }
+
+              return (
+                <Tab
+                  key={tab.value}
+                  iconPosition='end'
+                  value={tab.value}
+                  label={tab.label}
+                  icon={
+                    <Label
+                      variant={(tab.value === 'all' || tab.value === filters.status) ? 'filled' : 'soft'}
+                      color={
+                        (tab.value === 'Active' && 'success') ||
+                        (tab.value === 'In Active' && 'warning') ||
+                        (tab.value === 'Blocked' && 'error') ||
+                        (tab.value === 'true' && 'info') ||
+                        (tab.value === 'false' && 'secondary') ||
+                        'default'
+                      }
+                    >
+                      {count}
+                    </Label>
+                  }
+                />
+              );
+            })}
           </Tabs>
           <CustomerTableToolbar
             filters={filters}
@@ -397,8 +410,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
           .indexOf(name.toLowerCase()) !== -1 || item.contact.trim().includes(name)
     );
   }
-  if (status !== 'all') {
-    inputData = inputData.filter((item) => item.status === status);
+ if (status !== 'all') {
+    inputData = inputData.filter((item) => item.status === status || (item.isLoan === true ? 'true' : 'false') === status
+    );
   }
   if (isAadharVerified) {
     inputData = inputData.filter(

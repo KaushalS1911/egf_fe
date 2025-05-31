@@ -1,57 +1,42 @@
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  IconButton,
-  MenuItem,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
-import { PDFViewer, pdf } from '@react-pdf/renderer';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { useState } from 'react';
-import { useBoolean } from 'src/hooks/use-boolean';
-import Iconify from 'src/components/iconify';
-import Label from 'src/components/label';
-import { differenceInDays } from 'date-fns';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
+import { TableCell, TableRow } from '@mui/material';
 import { fDate } from '../../../utils/format-time';
-import Notice from '../../loanpayhistory/PDF/notice.jsx';
-import { paths } from '../../../routes/paths';
 
 // ----------------------------------------------------------------------
 
+const INQUIRY_REFERENCE_BY = [
+  { value: 'Google', label: 'Google' },
+  { value: 'Just Dial', label: 'Just Dial' },
+  { value: 'Social Media', label: 'Social Media' },
+  { value: 'Board Banner', label: 'Board Banner' },
+  { value: 'Brochure', label: 'Brochure' },
+  { value: 'Other', label: 'Other' },
+];
+
 export default function CustomerRefReportTableRow({ row }) {
-  const { user, initialize } = useAuthContext();
-  const { configs } = useGetConfigs();
+  const matchedReference = INQUIRY_REFERENCE_BY.find(
+    (item) => item.value === row.referenceBy,
+  );
+
+  const getReferenceLabel = () => matchedReference?.label || 'Other';
+  const getOtherReferenceLabel = () =>
+    row.referenceBy === 'Other' ? row.referenceBy || '-' : matchedReference ? '-' : row.referenceBy;
 
   return (
-    <>
-      <TableRow hover>
-        <TableCell>{row.srNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {`${row.firstName} ${row.middleName} ${row.lastName}`}
-        </TableCell>{' '}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.contact}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.joiningDate) || '-'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.referenceBy}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.permanentAddress.area}</TableCell>
-      </TableRow>
-    </>
+    <TableRow hover>
+      <TableCell>{row.srNo}</TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        {`${row.firstName} ${row.middleName} ${row.lastName}`}
+      </TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.contact}</TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.joiningDate) || '-'}</TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>{getReferenceLabel()}</TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>{getOtherReferenceLabel()}</TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.permanentAddress?.area || '-'}</TableCell>
+    </TableRow>
   );
 }
 
 CustomerRefReportTableRow.propTypes = {
-  onDeleteRow: PropTypes.func,
-  row: PropTypes.object,
-  selected: PropTypes.bool,
-  loanStatus: PropTypes.string,
+  row: PropTypes.object.isRequired,
 };

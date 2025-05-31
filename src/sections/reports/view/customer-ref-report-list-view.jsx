@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -15,26 +15,22 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { LoadingScreen } from '../../../components/loading-screen';
-import InterestReportsTableRow from '../interest-reports/interest-reports-table-row.jsx';
-import InterestReportsTableFiltersResult from '../interest-reports/interest-reports-table-filters-result.jsx';
-import InterestReportsTableToolbar from '../interest-reports/interest-reports-table-toolbar.jsx';
-import { useGetInterestReports } from '../../../api/interest-reports.js';
 import { isBetween } from '../../../utils/format-time.js';
-import { TableCell, TableRow } from '@mui/material';
 import CustomerRefReportTableToolbar from '../custmoer-ref-report/customer-ref-report-table-toolbar.jsx';
 import CustomerRefReportTableFiltersResult from '../custmoer-ref-report/customer-ref-report-table-filters-result.jsx';
 import CustomerRefReportTableRow from '../custmoer-ref-report/customer-ref-report-table-row.jsx';
 import { useGetCustomer } from '../../../api/customer.js';
+// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +40,7 @@ const TABLE_HEAD = [
   { id: 'contact', label: 'Contact' },
   { id: 'joiningDate', label: 'joining date' },
   { id: 'refrance', label: 'Ref' },
+  { id: 'Other Ref', label: 'Other Ref' },
   { id: 'area', label: 'area' },
 ];
 
@@ -55,6 +52,21 @@ const defaultFilters = {
   area: '',
   ref: '',
 };
+
+const INQUIRY_REFERENCE_BY = [
+  { value: 'Google', label: 'Google' },
+  {
+    value: 'Just Dial',
+    label: 'Just Dial',
+  },
+  { value: 'Social Media', label: 'Social Media' },
+  {
+    value: 'Board Banner',
+    label: 'Board Banner',
+  },
+  { value: 'Brochure', label: 'Brochure' },
+  { value: 'Other', label: 'Other' },
+];
 
 // ----------------------------------------------------------------------
 
@@ -248,9 +260,9 @@ export default function CustomerRefReportListView() {
   );
 }
 
-// ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, startDate, endDate, area, ref } = filters;
+
   const stabilizedThis = inputData?.map((el, index) => [el, index]);
 
   stabilizedThis?.sort((a, b) => {
@@ -260,31 +272,36 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   });
 
   inputData = stabilizedThis?.map((el) => el[0]);
-  if (username && username?.trim()) {
-    inputData = inputData?.filter(
-      (item) =>
-        (
-          item?.customer?.firstName &&
-          item?.customer?.firstName +
-            ' ' +
-            item?.customer?.middleName +
-            ' ' +
-            item?.customer?.lastName
-        )
-          .toLowerCase()
-          .includes(username.toLowerCase()) ||
+
+  if (username && username.trim()) {
+    inputData = inputData?.filter((item) => {
+      const fullName =
+        `${item?.customer?.firstName || ''} ${item?.customer?.middleName || ''} ${item?.customer?.lastName || ''}`.toLowerCase();
+
+      return (
+        fullName.includes(username.toLowerCase()) ||
         item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
         item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
         item.customer.contact.toLowerCase().includes(username.toLowerCase())
-    );
+      );
+    });
   }
+
   if (area) {
-    console.log(area, '00000');
-    inputData = inputData.filter((item) => item.permanentAddress.area === area);
+    inputData = inputData.filter((item) => item.permanentAddress?.area === area);
   }
+
   if (ref) {
-    inputData = inputData.filter((item) => item.referenceBy === ref);
+    const isPredefined = INQUIRY_REFERENCE_BY.some((r) => r.value === ref);
+
+    inputData = inputData.filter((item) => {
+      const matched = INQUIRY_REFERENCE_BY.find((r) => r.value === item.referenceBy);
+      if (ref === 'Other') {
+        return !matched;
+      }
+      return item.referenceBy === ref;
+    });
   }
 
   if (!dateError && startDate && endDate) {
