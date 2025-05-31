@@ -67,6 +67,8 @@ const defaultFilters = {
   status: 'All',
   startDate: null,
   endDate: null,
+  startCloseDate: null,
+  endCloseDate: null,
   branch: '',
   closedBy: '',
 };
@@ -471,7 +473,8 @@ export default function BranchViseLoanClosingListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch, closedBy } = filters;
+  const { username, status, startDate, startCloseDate, endDate, endCloseDate, branch, closedBy } =
+    filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -503,6 +506,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
+  }
+  if (!dateError && startCloseDate && endCloseDate) {
+    inputData = inputData.filter((loan) =>
+      isBetween(new Date(loan.closedDate), startCloseDate, endCloseDate)
+    );
   }
 
   return inputData;
