@@ -169,7 +169,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     payAfterAdjusted1: '',
     oldCrDr: loanInterest[0]?.cr_dr || 0,
     paymentMode: '',
-    account: '',
+    account: null,
     cashAmount: '',
     bankAmount: '',
   };
@@ -579,7 +579,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                           .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
                       ).values()
                     )}
-                    getOptionLabel={(option) => option.bankName || ''}
+                    getOptionLabel={(option) =>
+                      `${option.bankName} (${option.accountHolderName})` || ''
+                    }
                     renderOption={(props, option) => (
                       <li {...props} key={option.id || option.bankName}>
                         {`${option.bankName}(${option.accountHolderName})`}
@@ -687,7 +689,8 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {row?.paymentDetail?.account?.bankName || '-'}
+                      {`${row?.paymentDetail?.account?.bankName} (${row?.paymentDetail?.account?.accountHolderName})}` ||
+                        '-'}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
