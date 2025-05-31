@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
@@ -16,6 +16,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { Button } from '@mui/material';
+import { useGetBranch } from '../../api/branch.js';
 
 // ----------------------------------------------------------------------
 
@@ -24,8 +25,15 @@ export default function SchemeNewEditForm({ currentScheme }) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
+  const { branch } = useGetBranch();
+  const storedBranch = sessionStorage.getItem('selectedBranch');
 
   const NewSchema = Yup.object().shape({
+    branch: Yup.object().when([], {
+      is: () => user?.role === 'Admin' && storedBranch === 'all',
+      then: (schema) => schema.required('Branch is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
     name: Yup.string().required('Scheme Name is required'),
     interestRate: Yup.number()
       .required('Interest Rate is required')
@@ -46,20 +54,25 @@ export default function SchemeNewEditForm({ currentScheme }) {
   });
 
   const defaultValues = useMemo(
-    () => (
-      {
-        name: currentScheme?.name || '',
-        ratePerGram: currentScheme?.ratePerGram || 0,
-        interestRate: currentScheme?.interestRate || '',
-        interestPeriod: currentScheme?.interestPeriod || '',
-        schemeType: currentScheme?.schemeType || '',
-        valuation: currentScheme?.valuation || '',
-        renewalTime: currentScheme?.renewalTime || '',
-        minLoanTime: currentScheme?.minLoanTime || '',
-        remark: currentScheme?.remark || '',
-        isActive: currentScheme?.isActive || '',
-      }),
-    [currentScheme],
+    () => ({
+      branch: currentScheme
+        ? {
+            label: currentScheme?.branch?.name,
+            value: currentScheme?.branch?._id,
+          }
+        : null,
+      name: currentScheme?.name || '',
+      ratePerGram: currentScheme?.ratePerGram || 0,
+      interestRate: currentScheme?.interestRate || '',
+      interestPeriod: currentScheme?.interestPeriod || '',
+      schemeType: currentScheme?.schemeType || '',
+      valuation: currentScheme?.valuation || '',
+      renewalTime: currentScheme?.renewalTime || '',
+      minLoanTime: currentScheme?.minLoanTime || '',
+      remark: currentScheme?.remark || '',
+      isActive: currentScheme?.isActive || '',
+    }),
+    [currentScheme]
   );
 
   const methods = useForm({
@@ -87,19 +100,40 @@ export default function SchemeNewEditForm({ currentScheme }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      let parsedBranch = storedBranch;
+      if (storedBranch !== 'all') {
+        try {
+          parsedBranch = storedBranch;
+        } catch (error) {
+          console.error('Error parsing storedBranch:', error);
+        }
+      }
+      const selectedBranchId =
+        parsedBranch === 'all' ? data?.branchId?.value || branch?.[0]?._id : parsedBranch;
+
+      const payload = { ...data, branch: selectedBranchId };
+
       if (currentScheme) {
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/${currentScheme._id}?branch=66ea5ebb0f0bdc8062c13a64`, data);
+        const res = await axios.put(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/${currentScheme._id}`,
+          payload
+        );
         router.push(paths.dashboard.scheme.list);
         enqueueSnackbar(res?.data.message);
         reset();
       } else {
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme/?branch=66ea5ebb0f0bdc8062c13a64`, data);
+        const res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`,
+          payload
+        );
         router.push(paths.dashboard.scheme.list);
         enqueueSnackbar(res?.data.message);
         reset();
       }
     } catch (error) {
-      enqueueSnackbar(currentScheme ? 'Failed To update scheme' : error.response.data.message, { variant: 'error' });
+      enqueueSnackbar(currentScheme ? 'Failed To update scheme' : error.response.data.message, {
+        variant: 'error',
+      });
       console.error(error);
     }
   });
@@ -108,7 +142,7 @@ export default function SchemeNewEditForm({ currentScheme }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Typography variant='subtitle1' sx={{ mb: 0.5, fontWeight: '600' }}>
+          <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: '600' }}>
             Scheme Info
           </Typography>
         </Grid>
@@ -117,21 +151,36 @@ export default function SchemeNewEditForm({ currentScheme }) {
             <Box
               rowGap={3}
               columnGap={2}
-              display='grid'
+              display="grid"
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              {user?.role === 'Admin' && storedBranch === 'all' && (
+                <RHFAutocomplete
+                  name="branch"
+                  req={'red'}
+                  label="Branch"
+                  placeholder="Choose a Branch"
+                  options={
+                    branch?.map((branchItem) => ({
+                      label: branchItem?.name,
+                      value: branchItem?._id,
+                    })) || []
+                  }
+                  isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                />
+              )}
               <RHFTextField
-                name='name'
-                label='Scheme Name'
+                name="name"
+                label="Scheme Name"
                 req={'red'}
                 inputProps={{ style: { textTransform: 'uppercase' } }}
               />
               <RHFTextField
-                name='interestRate'
-                label='Interest Rate'
+                name="interestRate"
+                label="Interest Rate"
                 req={'red'}
                 onKeyPress={(e) => {
                   if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -140,8 +189,8 @@ export default function SchemeNewEditForm({ currentScheme }) {
                 }}
               />
               <RHFAutocomplete
-                name='interestPeriod'
-                label='Interest Period'
+                name="interestPeriod"
+                label="Interest Period"
                 req={'red'}
                 fullWidth
                 options={['Monthly', '3 Months', '6 Months', '9 Months', 'Yearly']}
@@ -153,8 +202,8 @@ export default function SchemeNewEditForm({ currentScheme }) {
                 )}
               />
               <RHFAutocomplete
-                name='schemeType'
-                label='Scheme Type'
+                name="schemeType"
+                label="Scheme Type"
                 req={'red'}
                 fullWidth
                 options={['Limited', 'Regular']}
@@ -166,8 +215,8 @@ export default function SchemeNewEditForm({ currentScheme }) {
                 )}
               />
               <RHFTextField
-                name='valuation'
-                label='Valuation %'
+                name="valuation"
+                label="Valuation %"
                 req={'red'}
                 onKeyPress={(e) => {
                   if (!/[0-9.]/.test(e.key) || (e.key === '.' && e.target.value.includes('.'))) {
@@ -176,8 +225,8 @@ export default function SchemeNewEditForm({ currentScheme }) {
                 }}
               />
               <RHFAutocomplete
-                name='renewalTime'
-                label='Renewal Time'
+                name="renewalTime"
+                label="Renewal Time"
                 req={'red'}
                 fullWidth
                 options={['Monthly', '3 Months', '6 Months', '9 Months', 'Yearly']}
@@ -189,8 +238,8 @@ export default function SchemeNewEditForm({ currentScheme }) {
                 )}
               />
               <RHFAutocomplete
-                name='minLoanTime'
-                label='Minimum Loan Time '
+                name="minLoanTime"
+                label="Minimum Loan Time "
                 req={'red'}
                 fullWidth
                 options={[10, 45, 60]}
@@ -201,20 +250,28 @@ export default function SchemeNewEditForm({ currentScheme }) {
                   </li>
                 )}
               />
-              <RHFTextField name='ratePerGram' label='Rate Per Gram' req={'red'} InputProps={{ readOnly: true }} />
-              <RHFTextField name='remark' label='Remark' />
+              <RHFTextField
+                name="ratePerGram"
+                label="Rate Per Gram"
+                req={'red'}
+                InputProps={{ readOnly: true }}
+              />
+              <RHFTextField name="remark" label="Remark" />
             </Box>
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
-              {
-                currentScheme &&
-                <RHFSwitch name='isActive' label={'is Active'} sx={{ m: 0 }} />
-              }
+              {currentScheme && <RHFSwitch name="isActive" label={'is Active'} sx={{ m: 0 }} />}
             </Box>
           </Card>
           <Box xs={12} md={8} sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-            <Button color='inherit' sx={{ margin: '0px 10px', height: '36px' }}
-                    variant='outlined' onClick={() => reset()}>Reset</Button>
-            <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+            <Button
+              color="inherit"
+              sx={{ margin: '0px 10px', height: '36px' }}
+              variant="outlined"
+              onClick={() => reset()}
+            >
+              Reset
+            </Button>
+            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
               {currentScheme ? 'Save' : 'Submit'}
             </LoadingButton>
           </Box>

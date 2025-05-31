@@ -5,8 +5,24 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetScheme() {
   const { user } = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`;
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+  let parsedBranch = storedBranch;
+
+  if (storedBranch !== 'all') {
+    try {
+      parsedBranch = JSON.parse(storedBranch);
+    } catch (error) {
+      console.error('Error parsing storedBranch:', error);
+    }
+  }
+
+  const branchQuery = parsedBranch && parsedBranch !== 'all' ? `branchId=${parsedBranch}` : '';
+
+  const queryString = [branchQuery].filter(Boolean).join('&');
+
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme${queryString ? `?${queryString}` : ''}`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
+
   const memoizedValue = useMemo(
     () => ({
       scheme: data?.data || [],
@@ -18,5 +34,6 @@ export function useGetScheme() {
     }),
     [data?.data, error, isLoading, isValidating, mutate]
   );
+
   return memoizedValue;
 }

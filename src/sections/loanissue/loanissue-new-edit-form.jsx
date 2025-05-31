@@ -447,20 +447,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         'chargePaymentDetail[account][accountNumber]',
         data?.chargeAccount?.accountNumber
       );
-      payload.append(
-        'chargePaymentDetail[account][accountType]',
-        data?.chargeAccount?.accountType
-      );
+      payload.append('chargePaymentDetail[account][accountType]', data?.chargeAccount?.accountType);
       payload.append(
         'chargePaymentDetail[account][accountHolderName]',
         data?.chargeAccount?.accountHolderName
       );
       payload.append('chargePaymentDetail[account][bankName]', data?.chargeAccount?.bankName);
       payload.append('chargePaymentDetail[account][IFSC]', data?.chargeAccount?.IFSC);
-      payload.append(
-        'chargePaymentDetail[account][branchName]',
-        data?.chargeAccount?.branchName
-      );
+      payload.append('chargePaymentDetail[account][branchName]', data?.chargeAccount?.branchName);
       payload.append('chargePaymentDetail[account][_id]', data?.chargeAccount?._id);
     } else if (mode === 'Both') {
       payload.append('chargePaymentDetail[cashAmount]', data.chargeCashAmount);
@@ -470,20 +464,14 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
         'chargePaymentDetail[account][accountNumber]',
         data?.chargeAccount?.accountNumber
       );
-      payload.append(
-        'chargePaymentDetail[account][accountType]',
-        data?.chargeAccount?.accountType
-      );
+      payload.append('chargePaymentDetail[account][accountType]', data?.chargeAccount?.accountType);
       payload.append(
         'chargePaymentDetail[account][accountHolderName]',
         data?.chargeAccount?.accountHolderName
       );
       payload.append('chargePaymentDetail[account][bankName]', data?.chargeAccount?.bankName);
       payload.append('chargePaymentDetail[account][IFSC]', data?.chargeAccount?.IFSC);
-      payload.append(
-        'chargePaymentDetail[account][branchName]',
-        data?.chargeAccount?.branchName
-      );
+      payload.append('chargePaymentDetail[account][branchName]', data?.chargeAccount?.branchName);
       payload.append('chargePaymentDetail[account][_id]', data?.chargeAccount?._id);
     }
 
@@ -1029,17 +1017,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Grid container spacing={2}>
-          {!isFieldsEnabled && (
-            <>
-              {/*<Grid item xs={12} md={4}>*/}
-              {/*  <Typography variant='h6' sx={{ mb: 3 }}>*/}
-              {/*  </Typography>*/}
-              {/*</Grid>*/}
-              {/*<Grid item xs={12} md={8}>*/}
-              {/*  <Alert severity='warning'>Please select acustomer to proceed with the loan issuance.</Alert>*/}
-              {/*</Grid>*/}
-            </>
-          )}
           <Grid item xs={12} md={4}>
             <Box>
               <RHFUploadAvatar disabled={true} name="customer_url" maxSize={3145728} />
@@ -1316,10 +1293,12 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                             .map((item) => [item.bankName + item.id, item])
                         ).values()
                       )}
-                      getOptionLabel={(option) => option.bankName || ''}
+                      getOptionLabel={(option) =>
+                        `${option.bankName} (${option.accountHolderName})` || ''
+                      }
                       renderOption={(props, option) => (
                         <li {...props} key={option.id || option.bankName}>
-                          {`${option.bankName}(${option.accountHolderName})`}
+                          {`${option.bankName} (${option.accountHolderName})`}
                         </li>
                       )}
                       isOptionEqualToValue={(option, value) => option.id === value.id}

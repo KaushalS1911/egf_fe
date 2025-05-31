@@ -194,7 +194,9 @@ export default function PaymentInOutTableToolbar({
             >
               {options?.map((option) => (
                 <MenuItem key={option._id} value={option}>
-                  {option.bankName || option.transactionsType || 'Unnamed Account'}
+                  {option.bankName && option.accountHolderName
+                    ? `${option.bankName} (${option.accountHolderName})`
+                    : option.transactionsType || 'Unnamed Account'}
                 </MenuItem>
               ))}
             </Select>

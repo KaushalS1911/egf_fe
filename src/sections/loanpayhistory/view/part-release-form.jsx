@@ -864,10 +864,12 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                                   .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
                               ).values()
                             )}
-                            getOptionLabel={(option) => option.bankName || ''}
+                            getOptionLabel={(option) =>
+                              `${option.bankName} (${option.accountHolderName})` || ''
+                            }
                             renderOption={(props, option) => (
                               <li {...props} key={option.id || option.bankName}>
-                                {`${option.bankName}(${option.accountHolderName})`}
+                                {`${option.bankName} (${option.accountHolderName})`}
                               </li>
                             )}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
