@@ -39,12 +39,9 @@ import { TableCell, TableRow } from '@mui/material';
 const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
-  { id: 'customerName', label: 'Customer name' },
-  { id: 'loanAmount', label: 'Loan amt' },
-  { id: 'partLoanAmount', label: 'Part loan amt' },
-  { id: 'interestLoanAmount', label: 'Int. loan amt' },
-  { id: 'amount', label: 'amount' },
-  { id: 'createdAt', label: 'Entry date' },
+  { id: 'date', label: 'Date' },
+  { id: 'credit', label: 'Credit' },
+  { id: 'debit', label: 'Debit' },
 ];
 
 const defaultFilters = {
@@ -63,7 +60,7 @@ export default function CustomerStatementListView() {
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
-  const [customerStatement, setCustomerStatement] = useState([]);
+  const [customerStatement, setCustomerStatement] = useState({});
   const [customerStatementLoading, setCustomerStatementLoading] = useState(false);
 
   const dataFiltered = applyFilter({
@@ -87,13 +84,14 @@ export default function CustomerStatementListView() {
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer-statement/${filters.customer}`
       );
 
-      const statementData = res.data.data || [];
+      const statementData = res.data.data;
+      setCustomerStatement(Object.values(statementData));
+      const statement = Object.values(statementData);
 
-      const updatedData = statementData.map((item, index) => ({
+      const updatedData = statement?.map((item, index) => ({
         ...item,
         srNo: index + 1,
       }));
-      setCustomerStatement(statementData);
       setSrData(updatedData);
     } catch (error) {
       console.error('Error fetching customer statement:', error);
@@ -213,34 +211,6 @@ export default function CustomerStatementListView() {
                     <CustomerStatementTableRow key={row?._id} index={index} row={row} />
                   ))}
                 <TableNoData notFound={notFound} />
-                <TableRow
-                  sx={{
-                    backgroundColor: '#F4F6F8',
-                    position: 'sticky',
-                    bottom: 0,
-                    zIndex: 1,
-                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
-                  }}
-                >
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    TOTAL
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {loanAmount.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(loanAmount - intLoanAmount).toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {intLoanAmount.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {amt.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}

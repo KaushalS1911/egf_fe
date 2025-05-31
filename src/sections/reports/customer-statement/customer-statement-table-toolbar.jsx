@@ -38,9 +38,13 @@ export default function CustomerStatementTableToolbar({
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
 
+  const findCustomer = customer.find((item) => item?._id === filters.customer);
+
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
+    name: `${findCustomer?.firstName} ${findCustomer?.middleName} ${findCustomer?.lastName}`,
+    code: findCustomer?.customerCode,
   };
 
   const handleFilterName = useCallback(
@@ -123,20 +127,6 @@ export default function CustomerStatementTableToolbar({
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
-          {/*<TextField*/}
-          {/*  sx={{ input: { height: 7 } }}*/}
-          {/*  fullWidth*/}
-          {/*  value={filters.username}*/}
-          {/*  onChange={handleFilterName}*/}
-          {/*  placeholder="Search..."*/}
-          {/*  InputProps={{*/}
-          {/*    startAdornment: (*/}
-          {/*      <InputAdornment position="start">*/}
-          {/*        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />*/}
-          {/*      </InputAdornment>*/}
-          {/*    ),*/}
-          {/*  }}*/}
-          {/*/>*/}
           <FormControl
             sx={{
               flexShrink: 0,
@@ -230,34 +220,15 @@ export default function CustomerStatementTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                view.onTrue();
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              view.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
