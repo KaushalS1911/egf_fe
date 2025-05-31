@@ -37,6 +37,8 @@ export default function BranchWiseLoanClosingTableToolbar({
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [startCloseDateOpen, setStartCloseDateOpen] = useState(false);
+  const [endCloseDateOpen, setEndCloseDateOpen] = useState(false);
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -89,8 +91,42 @@ export default function BranchWiseLoanClosingTableToolbar({
     [onFilters]
   );
 
+  const handleFilterStartCloseDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('startCoseDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('startCloseDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('startDate', null);
+      }
+    },
+    [onFilters]
+  );
+
+  const handleFilterEndCloseDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('endCloseDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('endCloseDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('endCloseDate', null);
+      }
+    },
+    [onFilters]
+  );
+
   const customStyle = {
-    minWidth: { md: 350 },
+    minWidth: { md: 200 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -144,7 +180,7 @@ export default function BranchWiseLoanClosingTableToolbar({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 350 },
+              width: { xs: 1, sm: 250 },
             }}
           >
             <InputLabel
@@ -192,7 +228,7 @@ export default function BranchWiseLoanClosingTableToolbar({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, sm: 350 },
+              width: { xs: 1, sm: 250 },
             }}
           >
             <InputLabel
@@ -268,8 +304,39 @@ export default function BranchWiseLoanClosingTableToolbar({
               },
             }}
             sx={{ ...customStyle }}
+          />{' '}
+          <DatePicker
+            label="Start close date"
+            value={filters.startCloseDate ? moment(filters.startCloseDate).toDate() : null}
+            open={startCloseDateOpen}
+            onClose={() => setStartCloseDateOpen(false)}
+            onChange={handleFilterStartCloseDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setStartCloseDateOpen(true),
+                fullWidth: true,
+              },
+            }}
+            sx={{ ...customStyle }}
           />
-
+          <DatePicker
+            label="End close date"
+            value={filters.endCloseDate}
+            open={endCloseDateOpen}
+            onClose={() => setEndCloseDateOpen(false)}
+            onChange={handleFilterEndCloseDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setEndCloseDateOpen(true),
+                fullWidth: true,
+                error: dateError,
+                helperText: dateError && 'End date must be later than start date',
+              },
+            }}
+            sx={{ ...customStyle }}
+          />
           {getResponsibilityValue('print_branch_vise_loan_closing_report', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
