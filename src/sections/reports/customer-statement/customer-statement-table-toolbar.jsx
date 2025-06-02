@@ -17,6 +17,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment from 'moment/moment.js';
+import { useGetLoanissue } from '../../../api/loanissue.js';
 
 // ----------------------------------------------------------------------
 
@@ -34,14 +35,20 @@ export default function CustomerStatementTableToolbar({
   const view = useBoolean();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const { Loanissue } = useGetLoanissue();
 
+  // Find selected customer from filters.customer
   const findCustomer = customer.find((item) => item?._id === filters.customer);
 
+  // Filter loan issues for selected customer
+  const filteredLoanIssues = Loanissue.filter((loan) => loan.customer._id === filters.customer);
+  console.log(filters);
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
-    name: `${findCustomer?.firstName} ${findCustomer?.middleName} ${findCustomer?.lastName}`,
+    name: `${findCustomer?.firstName || ''} ${findCustomer?.middleName || ''} ${findCustomer?.lastName || ''}`.trim(),
     code: findCustomer?.customerCode,
+    loanNo: filters.loanNo || '',
   };
 
   const handleFilterName = useCallback(
@@ -50,9 +57,12 @@ export default function CustomerStatementTableToolbar({
     },
     [onFilters]
   );
+
   const handleFilterCustomer = useCallback(
     (event, newValue) => {
       onFilters('customer', newValue?._id || '');
+      // Reset loanNo filter when customer changes
+      onFilters('loanNo', '');
     },
     [onFilters]
   );
@@ -124,6 +134,7 @@ export default function CustomerStatementTableToolbar({
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
+          {/* Customer Autocomplete */}
           <FormControl
             sx={{
               flexShrink: 0,
@@ -144,6 +155,40 @@ export default function CustomerStatementTableToolbar({
               fullWidth
             />
           </FormControl>
+
+          {/* Loan Number Autocomplete */}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 300 },
+            }}
+          >
+            <Autocomplete
+              multiple
+              options={filteredLoanIssues}
+              getOptionLabel={(option) => option.loanNo || ''}
+              value={filteredLoanIssues.filter((loan) =>
+                (filters.loanNo || []).includes(loan.loanNo)
+              )}
+              onChange={(event, newValue) => {
+                // newValue is an array of selected loan objects
+                const selectedLoanNos = newValue.map((loan) => loan.loanNo);
+                onFilters('loanNo', selectedLoanNos);
+              }}
+              isOptionEqualToValue={(option, value) => option.loanNo === value.loanNo}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Loan Number(s)"
+                  className={'custom-textfield'}
+                />
+              )}
+              fullWidth
+              disabled={!filters.customer}
+            />
+          </FormControl>
+
+          {/* Start Date Picker */}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -159,6 +204,8 @@ export default function CustomerStatementTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
+
+          {/* End Date Picker */}
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -176,12 +223,14 @@ export default function CustomerStatementTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
+
           {getResponsibilityValue('print_customer_statement', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
+
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -199,6 +248,7 @@ export default function CustomerStatementTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -226,4 +276,5 @@ CustomerStatementTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  loanIssue: PropTypes.array, // Added prop type for loan issues
 };

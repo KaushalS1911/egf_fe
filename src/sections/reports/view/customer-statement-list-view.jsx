@@ -33,6 +33,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { isBetween } from '../../../utils/format-time.js';
 import { TableCell, TableRow } from '@mui/material';
+import { useGetLoanissue } from '../../../api/loanissue.js';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +50,7 @@ const defaultFilters = {
   customer: '',
   startDate: null,
   endDate: null,
+  loanNo: '',
 };
 
 // ----------------------------------------------------------------------
@@ -62,6 +64,7 @@ export default function CustomerStatementListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const [customerStatement, setCustomerStatement] = useState({});
   const [customerStatementLoading, setCustomerStatementLoading] = useState(false);
+  const { Loanissue } = useGetLoanissue();
 
   const dataFiltered = applyFilter({
     inputData: srData,
@@ -149,7 +152,7 @@ export default function CustomerStatementListView() {
           <CustomerStatementTableToolbar
             filters={filters}
             onFilters={handleFilters}
-            data={customerStatement}
+            data={dataFiltered}
             total={total}
           />
           {canReset && (
@@ -257,7 +260,7 @@ export default function CustomerStatementListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, startDate, endDate } = filters;
+  const { username, startDate, endDate, loan } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -280,6 +283,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.loanDetails.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
+  if (filters.loanNo && filters.loanNo.length > 0) {
+    inputData = inputData.filter((item) => filters.loanNo.includes(item.loanNo));
+  }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.createdAt), startDate, endDate));
   }
