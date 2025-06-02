@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
 
-import Select from '@mui/material/Select';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
 import Iconify from 'src/components/iconify';
@@ -26,27 +27,15 @@ export default function ProductTableToolbar({
 
   const [publish, setPublish] = useState(filters.publish);
 
-  const handleChangeStock = useCallback((event) => {
-    const {
-      target: { value },
-    } = event;
-    setStock(typeof value === 'string' ? value.split(',') : value);
-  }, []);
+  const handleChangeStock = useCallback((event, newValue) => {
+    setStock(newValue);
+    onFilters('stock', newValue);
+  }, [onFilters]);
 
-  const handleChangePublish = useCallback((event) => {
-    const {
-      target: { value },
-    } = event;
-    setPublish(typeof value === 'string' ? value.split(',') : value);
-  }, []);
-
-  const handleCloseStock = useCallback(() => {
-    onFilters('stock', stock);
-  }, [onFilters, stock]);
-
-  const handleClosePublish = useCallback(() => {
-    onFilters('publish', publish);
-  }, [onFilters, publish]);
+  const handleChangePublish = useCallback((event, newValue) => {
+    setPublish(newValue);
+    onFilters('publish', newValue);
+  }, [onFilters]);
 
   return (
     <>
@@ -57,23 +46,38 @@ export default function ProductTableToolbar({
         }}
       >
         <InputLabel>Stock</InputLabel>
-
-        <Select
+        <Autocomplete
           multiple
           value={stock}
           onChange={handleChangeStock}
-          input={<OutlinedInput label="Stock" />}
-          renderValue={(selected) => selected.map((value) => value).join(', ')}
-          onClose={handleCloseStock}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {stockOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              <Checkbox disableRipple size="small" checked={stock.includes(option.value)} />
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
+          options={stockOptions.map(option => option.value)}
+          getOptionLabel={(option) => stockOptions.find(opt => opt.value === option)?.label || ''}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Stock"
+              sx={{ textTransform: 'capitalize' }}
+            />
+          )}
+          ListboxProps={{
+            sx: {
+              maxHeight: 240,
+              '&::-webkit-scrollbar': {
+                width: '5px',
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: '#f1f1f1',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#888',
+                borderRadius: '4px',
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: '#555',
+              },
+            },
+          }}
+        />
       </FormControl>
 
       <FormControl
@@ -83,23 +87,38 @@ export default function ProductTableToolbar({
         }}
       >
         <InputLabel>Publish</InputLabel>
-
-        <Select
+        <Autocomplete
           multiple
           value={publish}
           onChange={handleChangePublish}
-          input={<OutlinedInput label="Publish" />}
-          renderValue={(selected) => selected.map((value) => value).join(', ')}
-          onClose={handleClosePublish}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {publishOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              <Checkbox disableRipple size="small" checked={publish.includes(option.value)} />
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
+          options={publishOptions.map(option => option.value)}
+          getOptionLabel={(option) => publishOptions.find(opt => opt.value === option)?.label || ''}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Publish"
+              sx={{ textTransform: 'capitalize' }}
+            />
+          )}
+          ListboxProps={{
+            sx: {
+              maxHeight: 240,
+              '&::-webkit-scrollbar': {
+                width: '5px',
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: '#f1f1f1',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#888',
+                borderRadius: '4px',
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: '#555',
+              },
+            },
+          }}
+        />
       </FormControl>
 
       <CustomPopover

@@ -1,11 +1,20 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  FormControl,
+  Grid,
+  IconButton,
+  MenuItem,
+  InputAdornment,
+  Stack,
+  TextField,
+  Button,
+  InputLabel,
+} from '@mui/material';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
-import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
@@ -13,17 +22,10 @@ import { getResponsibilityValue } from '../../permission/permission';
 import { useGetConfigs } from '../../api/config';
 import { useAuthContext } from '../../auth/hooks';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
-import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../reports/pdf/all-branch-loan-summary-pdf.jsx';
-import { useBoolean } from '../../hooks/use-boolean.js';
 import InqiryPdf from './view/inqiry-pdf.jsx';
-
-// ----------------------------------------------------------------------
+import { useBoolean } from '../../hooks/use-boolean.js';
+import { Autocomplete } from '@mui/material';
 
 export default function InquiryTableToolbar({
   filters,
@@ -58,96 +60,60 @@ export default function InquiryTableToolbar({
     },
     [onFilters]
   );
+
   const handleFilterStartDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('startDate', null);
-        return;
-      }
       const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('startDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('startDate', null);
-      }
+      onFilters('startDate', date.isValid() ? date.toDate() : null);
     },
     [onFilters]
   );
+
   const handleFilterEndDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('endDate', null);
-        return;
-      }
       const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('endDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('endDate', null);
-      }
+      onFilters('endDate', date.isValid() ? date.toDate() : null);
     },
     [onFilters]
   );
-  const handleFilterEndRecallingDate = useCallback(
-    (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('endRecallingDate', null);
-        return;
-      }
-      const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('endRecallingDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('endRecallingDate', null);
-      }
-    },
-    [onFilters]
-  );
+
   const handleFilterStartRecallingDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('startRecallingDate', null);
-        return;
-      }
       const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('startRecallingDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('startRecallingDate', null);
-      }
+      onFilters('startRecallingDate', date.isValid() ? date.toDate() : null);
+    },
+    [onFilters]
+  );
+
+  const handleFilterEndRecallingDate = useCallback(
+    (newValue) => {
+      const date = moment(newValue);
+      onFilters('endRecallingDate', date.isValid() ? date.toDate() : null);
     },
     [onFilters]
   );
 
   const handleFilterAssignTo = useCallback(
-    (event) => {
-      onFilters('assignTo', typeof event.target.value === 'object' && event.target.value);
+    (_, newValue) => {
+      onFilters('assignTo', newValue);
     },
     [onFilters]
   );
+
   const handleFilterInquiryFor = useCallback(
-    (event) => {
-      onFilters('inquiryFor', event.target.value);
+    (_, newValue) => {
+      onFilters('inquiryFor', newValue);
     },
     [onFilters]
   );
+
   return (
     <>
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
-        direction={{
-          xs: 'column',
-          md: 'row',
-        }}
-        sx={{
-          p: 2.5,
-          pr: { xs: 2.5, md: 1 },
-        }}
+        direction={{ xs: 'column', md: 'row' }}
+        sx={{ p: 2.5, pr: { xs: 2.5, md: 1 } }}
       >
         <Stack
           direction="row"
@@ -170,104 +136,32 @@ export default function InquiryTableToolbar({
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 200 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Assign To
-            </InputLabel>
 
-            <Select
-              value={filters.assignTo}
-              onChange={handleFilterAssignTo}
-              input={<OutlinedInput label="Assign To" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 200 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Inquiry For
-            </InputLabel>
+          <Autocomplete
+            fullWidth
+            options={options}
+            getOptionLabel={(option) => option?.name || ''}
+            value={filters.assignTo || null}
+            onChange={handleFilterAssignTo}
+            renderInput={(params) => (
+              <TextField {...params} label="Assign To" className="custom-textfield" />
+            )}
+            isOptionEqualToValue={(option, value) => option?.name === value?.name}
+            sx={{ maxWidth: 200 }}
+          />
 
-            <Select
-              value={filters.inquiryFor}
-              onChange={handleFilterInquiryFor}
-              input={<OutlinedInput label="Inquiry For" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options[0]?.inquiryFor?.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            fullWidth
+            options={options[0]?.inquiryFor || []}
+            value={filters.inquiryFor || null}
+            onChange={handleFilterInquiryFor}
+            renderInput={(params) => (
+              <TextField {...params} label="Inquiry For" className="custom-textfield" />
+            )}
+            sx={{ maxWidth: 200 }}
+          />
+
+          {/* Date Filters */}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -281,18 +175,10 @@ export default function InquiryTableToolbar({
                 fullWidth: true,
               },
             }}
-            sx={{
-              maxWidth: { md: 200 },
-              label: {
-                mt: -0.8,
-                fontSize: '14px',
-              },
-              '& .MuiInputLabel-shrink': {
-                mt: 0,
-              },
-              input: { height: 7 },
-            }}
+            sx={{ maxWidth: { md: 200 } }}
+            className="custom-textfield"
           />
+
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -308,22 +194,10 @@ export default function InquiryTableToolbar({
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
-            sx={{
-              maxWidth: { md: 200 },
-              [`& .${formHelperTextClasses.root}`]: {
-                position: { md: 'absolute' },
-                bottom: { md: -40 },
-              },
-              label: {
-                mt: -0.8,
-                fontSize: '14px',
-              },
-              '& .MuiInputLabel-shrink': {
-                mt: 0,
-              },
-              input: { height: 7 },
-            }}
-          />{' '}
+            sx={{ maxWidth: { md: 200 } }}
+            className="custom-textfield"
+          />
+
           <DatePicker
             label="Start recalling date"
             value={filters.startRecallingDate ? moment(filters.startRecallingDate).toDate() : null}
@@ -337,18 +211,10 @@ export default function InquiryTableToolbar({
                 fullWidth: true,
               },
             }}
-            sx={{
-              maxWidth: { md: 200 },
-              label: {
-                mt: -0.8,
-                fontSize: '14px',
-              },
-              '& .MuiInputLabel-shrink': {
-                mt: 0,
-              },
-              input: { height: 7 },
-            }}
+            sx={{ maxWidth: { md: 200 } }}
+            className="custom-textfield"
           />
+
           <DatePicker
             label="End recalling date"
             value={filters.endRecallingDate}
@@ -364,22 +230,10 @@ export default function InquiryTableToolbar({
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
-            sx={{
-              maxWidth: { md: 200 },
-              [`& .${formHelperTextClasses.root}`]: {
-                position: { md: 'absolute' },
-                bottom: { md: -40 },
-              },
-              label: {
-                mt: -0.8,
-                fontSize: '14px',
-              },
-              '& .MuiInputLabel-shrink': {
-                mt: 0,
-              },
-              input: { height: 7 },
-            }}
+            sx={{ maxWidth: { md: 200 } }}
+            className="custom-textfield"
           />
+
           <IconButton onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
@@ -413,6 +267,7 @@ export default function InquiryTableToolbar({
           )}
         </CustomPopover>
       </Stack>
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -435,4 +290,8 @@ InquiryTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  options: PropTypes.array,
+  dateError: PropTypes.bool,
+  inquiries: PropTypes.array,
+  inquiriesDate: PropTypes.array,
 };

@@ -1,22 +1,29 @@
 import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
+import moment from 'moment';
 import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  FormControl,
+  Grid,
+  IconButton,
+  MenuItem,
+  Button,
+} from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../auth/hooks';
 import { getResponsibilityValue } from '../../../permission/permission';
-import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
 import { useGetBranch } from '../../../api/branch';
-import InputLabel from '@mui/material/InputLabel';
 import { useBoolean } from '../../../hooks/use-boolean';
-import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
 import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 // ----------------------------------------------------------------------
 
@@ -34,51 +41,52 @@ export default function AllBranchLoanSummaryTableToolbar({
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
-  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [selectedBranch, setSelectedBranch] = useState([]);
   const view = useBoolean();
+
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
     issuedBy: filters.issuedBy,
     branch: filters.branch,
   };
-  const handleFilterName = useCallback(
-    (event) => {
-      onFilters('username', event.target.value);
-    },
-    [onFilters]
-  );
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
+      if (!newValue) {
         onFilters('startDate', null);
         return;
       }
       const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('startDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('startDate', null);
-      }
+      onFilters('startDate', date.isValid() ? date.toDate() : null);
     },
     [onFilters]
   );
 
   const handleFilterEndDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
+      if (!newValue) {
         onFilters('endDate', null);
         return;
       }
       const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('endDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('endDate', null);
-      }
+      onFilters('endDate', date.isValid() ? date.toDate() : null);
+    },
+    [onFilters]
+  );
+
+  const handleFilterIssuedBy = useCallback(
+    (event) => {
+      onFilters('issuedBy', event.target.value);
+    },
+    [onFilters]
+  );
+
+  const handleFilterBranch = useCallback(
+    (event) => {
+      const value = event.target.value;
+      setSelectedBranch(value);
+      onFilters('branch', value);
     },
     [onFilters]
   );
@@ -94,24 +102,6 @@ export default function AllBranchLoanSummaryTableToolbar({
     },
     input: { height: 7 },
   };
-
-  const handleFilterBranch = useCallback(
-    (event) => {
-      setSelectedBranch(event.target.value);
-      onFilters(
-        'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
-    },
-    [onFilters]
-  );
-
-  const handleFilterIssuedBy = useCallback(
-    (event) => {
-      onFilters('issuedBy', typeof event.target.value === 'object' && event.target.value);
-    },
-    [onFilters]
-  );
 
   return (
     <>
@@ -134,102 +124,30 @@ export default function AllBranchLoanSummaryTableToolbar({
           flexGrow={1}
           sx={{ width: '100%', pr: 1.5 }}
         >
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 350 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Issued By
-            </InputLabel>
-            <Select
-              value={filters.issuedBy}
-              onChange={handleFilterIssuedBy}
-              input={<OutlinedInput label="Issued By" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 350 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Branch
-            </InputLabel>
-            <Select
-              value={filters.branch}
-              onChange={handleFilterBranch}
-              input={<OutlinedInput label="Branch" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {branch.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            value={filters.issuedBy || null}
+            onChange={(event, newValue) => handleFilterIssuedBy({ target: { value: newValue } })}
+            options={options}
+            getOptionLabel={(option) => option?.name || ''}
+            isOptionEqualToValue={(option, value) => option?.name === value?.name}
+            renderInput={(params) => (
+              <TextField {...params} label="Issued By" className={'custom-textfield'} />
+            )}
+            sx={{ width: { xs: '100%', sm: 350 } }}
+          />
+
+          <Autocomplete
+            value={filters.branch || []}
+            onChange={(event, newValue) => handleFilterBranch({ target: { value: newValue } })}
+            options={branch}
+            getOptionLabel={(option) => option?.name || ''}
+            isOptionEqualToValue={(option, value) => option?.name === value?.name}
+            renderInput={(params) => (
+              <TextField {...params} label="Branch" className={'custom-textfield'} />
+            )}
+            sx={{ width: { xs: '100%', sm: 350 } }}
+          />
+
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -240,11 +158,11 @@ export default function AllBranchLoanSummaryTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
-                fullWidth: true,
               },
             }}
             sx={{ ...customStyle }}
           />
+
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -255,58 +173,38 @@ export default function AllBranchLoanSummaryTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
-                fullWidth: true,
                 error: dateError,
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
             sx={{ ...customStyle }}
           />
+
           {getResponsibilityValue('print_all_branch_loan_summary', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
+
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                view.onTrue();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-            {/*<MenuItem>*/}
-            {/*  <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              view.onTrue();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
         </CustomPopover>
       </Stack>
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -333,5 +231,9 @@ export default function AllBranchLoanSummaryTableToolbar({
 AllBranchLoanSummaryTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
-  roleOptions: PropTypes.array,
+  dateError: PropTypes.bool,
+  dataFilter: PropTypes.array,
+  configs: PropTypes.object,
+  options: PropTypes.array,
+  total: PropTypes.number,
 };

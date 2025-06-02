@@ -22,6 +22,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import InqiryPdf from '../../inquiry/view/inqiry-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import CashInPdf from './view/cash-in-pdf.jsx';
+import Autocomplete from '@mui/material/Autocomplete';
 
 // ----------------------------------------------------------------------
 
@@ -139,102 +140,46 @@ export default function CashInTableToolbar({
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 250 },
+          <Autocomplete
+            fullWidth
+            options={['Payment In', 'Payment Out']}
+            value={filters.category || null}
+            onChange={(event, newValue) => {
+              onFilters('category', newValue || '');
             }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Category
-            </InputLabel>
-            <Select
-              value={filters.category}
-              onChange={handleFilterCategory}
-              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {['Payment In', 'Payment Out'].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 250 },
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                sx={{
+                  input: { height: 7 },
+                  label: { mt: -0.8 },
+                  '& .MuiInputLabel-shrink': { mt: 0 },
+                }}
+              />
+            )}
+          />
+
+          <Autocomplete
+            fullWidth
+            options={options}
+            value={filters.status || null}
+            onChange={(event, newValue) => {
+              onFilters('status', newValue || '');
             }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Type
-            </InputLabel>
-            <Select
-              value={filters.status}
-              onChange={handleFilterStatus}
-              input={<OutlinedInput label="Type" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Type"
+                sx={{
+                  input: { height: 7 },
+                  label: { mt: -0.8 },
+                  '& .MuiInputLabel-shrink': { mt: 0 },
+                }}
+              />
+            )}
+          />
+
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { FormControl, IconButton, MenuItem } from '@mui/material';
+import { Autocomplete, FormControl, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
@@ -31,7 +31,7 @@ export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateE
     },
     [onFilters]
   );
-
+  console.log(filters);
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -123,53 +123,17 @@ export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateE
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 350 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Branch
-            </InputLabel>
-            <Select
-              value={filters.branch}
-              onChange={handleFilterBranch}
-              input={<OutlinedInput label="Branch" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {branch.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
+          <FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 300 } }}>
+            <Autocomplete
+              options={branch}
+              getOptionLabel={(option) => option?.name || ''}
+              isOptionEqualToValue={(option, value) => option._id === value._id}
+              value={branch.find((b) => b._id === filters.branch) || null}
+              onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}
+              renderInput={(params) => (
+                <TextField {...params} label="Branch" className={'custom-textfield'} />
+              )}
+            />
           </FormControl>
           <DatePicker
             label="Start date"

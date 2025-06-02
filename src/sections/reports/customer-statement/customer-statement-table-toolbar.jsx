@@ -9,14 +9,11 @@ import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import Autocomplete from '@mui/material/Autocomplete';
 import { useGetCustomer } from '../../../api/customer.js';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import LoanDetailsPdf from '../pdf/loan-details-pdf.jsx';
 import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment from 'moment/moment.js';
@@ -54,8 +51,8 @@ export default function CustomerStatementTableToolbar({
     [onFilters]
   );
   const handleFilterCustomer = useCallback(
-    (event) => {
-      onFilters('customer', event.target.value);
+    (event, newValue) => {
+      onFilters('customer', newValue?._id || '');
     },
     [onFilters]
   );
@@ -133,49 +130,20 @@ export default function CustomerStatementTableToolbar({
               width: { xs: 1, sm: 500 },
             }}
           >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Choose Customer
-            </InputLabel>
-
-            <Select
-              value={filters.customer}
+            <Autocomplete
+              options={customer}
+              getOptionLabel={(option) =>
+                `${option?.firstName || ''} ${option?.middleName || ''} ${option?.lastName || ''}`.trim()
+              }
+              value={customer.find((c) => c._id === filters.customer) || null}
               onChange={handleFilterCustomer}
-              input={<OutlinedInput label="Choose Customer" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {customer.map((option) => (
-                <MenuItem key={option._id} value={option._id}>
-                  {`${option?.firstName} ${option?.middleName} ${option?.lastName}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
+              isOptionEqualToValue={(option, value) => option._id === value._id}
+              renderInput={(params) => (
+                <TextField {...params} label="Choose Customer" className={'custom-textfield'} />
+              )}
+              fullWidth
+            />
+          </FormControl>
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

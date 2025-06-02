@@ -35,7 +35,16 @@ import InquiryTableToolbar from '../inquiry-table-toolbar';
 import InquiryTableFiltersResult from '../inquiry-table-filters-result';
 import { fDate, isAfter, isBetween } from '../../../utils/format-time';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Autocomplete,
+  TextField,
+} from '@mui/material';
 import Iconify from '../../../components/iconify';
 import { useGetEmployee } from '../../../api/employee';
 import { useGetBranch } from '../../../api/branch';
@@ -338,56 +347,31 @@ export default function InquiryListView() {
                       margin: '0px 10px',
                     }}
                   >
-                    <InputLabel
-                      sx={{
-                        mt: -1,
-                        '&.MuiInputLabel-shrink': {
-                          mt: 0,
-                        },
-                      }}
-                    >
-                      Branch
-                    </InputLabel>
-                    <Select
-                      value={selectedBranch}
-                      onChange={handleBranchChange}
-                      input={
-                        <OutlinedInput
-                          label="Branch"
-                          sx={{
-                            height: '36px',
-                          }}
-                        />
+                    <Autocomplete
+                      disablePortal
+                      options={branch.map((option) => ({
+                        label: option.name,
+                        value: option._id,
+                      }))}
+                      value={
+                        branch
+                          ?.map((option) => ({
+                            label: option.name,
+                            value: option._id,
+                          }))
+                          ?.find((option) => option.value === selectedBranch) || null
                       }
-                      MenuProps={{
-                        PaperProps: {
-                          sx: {
-                            maxHeight: 200,
-                            '&::-webkit-scrollbar': {
-                              width: '5px',
-                            },
-                            '&::-webkit-scrollbar-track': {
-                              backgroundColor: '#f1f1f1',
-                            },
-                            '&::-webkit-scrollbar-thumb': {
-                              backgroundColor: '#888',
-                              borderRadius: '4px',
-                            },
-                            '&::-webkit-scrollbar-thumb:hover': {
-                              backgroundColor: '#555',
-                            },
-                          },
-                        },
+                      onChange={(e, newValue) => {
+                        setSelectedBranch(newValue?.value || '');
+                        setSelectedEmployee(''); // reset employee on branch change
                       }}
-                    >
-                      {branch.map((option) => (
-                        <MenuItem key={option._id} value={option._id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      renderInput={(params) => (
+                        <TextField {...params} label="Branch" className="custom-textfield" />
+                      )}
+                    />
                   </FormControl>
                 )}
+
               {user?.role === 'Admin' && employee && (
                 <FormControl
                   sx={{
@@ -397,56 +381,30 @@ export default function InquiryListView() {
                   }}
                   disabled={!selectedBranch}
                 >
-                  <InputLabel
-                    sx={{
-                      mt: -1,
-                      '&.MuiInputLabel-shrink': {
-                        mt: 0,
-                      },
-                    }}
-                  >
-                    Employee
-                  </InputLabel>
-                  <Select
-                    value={selectedEmployee}
-                    onChange={handleEmployeeChange}
-                    input={
-                      <OutlinedInput
-                        label="Emplyoee"
-                        sx={{
-                          height: '36px',
-                        }}
-                      />
+                  <Autocomplete
+                    disablePortal
+                    options={employee.map((item) => ({
+                      label: `${item?.user?.firstName} ${item?.user?.lastName}`,
+                      value: item._id,
+                    }))}
+                    value={
+                      employee
+                        ?.map((item) => ({
+                          label: `${item?.user?.firstName} ${item?.user?.lastName}`,
+                          value: item._id,
+                        }))
+                        ?.find((option) => option.value === selectedEmployee) || null
                     }
-                    MenuProps={{
-                      PaperProps: {
-                        sx: {
-                          maxHeight: 200,
-                          '&::-webkit-scrollbar': {
-                            width: '5px',
-                          },
-                          '&::-webkit-scrollbar-track': {
-                            backgroundColor: '#f1f1f1',
-                          },
-                          '&::-webkit-scrollbar-thumb': {
-                            backgroundColor: '#888',
-                            borderRadius: '4px',
-                          },
-                          '&::-webkit-scrollbar-thumb:hover': {
-                            backgroundColor: '#555',
-                          },
-                        },
-                      },
+                    onChange={(e, newValue) => {
+                      setSelectedEmployee(newValue?.value || '');
                     }}
-                  >
-                    {employee.map((item) => (
-                      <MenuItem key={item._id} value={item._id}>
-                        {`${item?.user?.firstName} ${item?.user?.lastName}`}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    renderInput={(params) => (
+                      <TextField {...params} label="Employee" className="custom-textfield" />
+                    )}
+                  />
                 </FormControl>
               )}
+
               {getResponsibilityValue('bulk_inquiry_detail', configs, user) && (
                 <>
                   <Box display="flex" alignItems="center" mx={1}>

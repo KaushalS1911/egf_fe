@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Dialog, DialogActions, Grid, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../auth/hooks';
@@ -21,6 +21,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import AllBranchOtherLoanSummaryPdf from '../pdf/all-branch-other-loan-summary-pdf.jsx';
 import OtherLoanCloseSummaryPdf from '../pdf/other-loan-close-summary-pdf.jsx';
+import Autocomplete from '@mui/material/Autocomplete';
 
 // ----------------------------------------------------------------------
 
@@ -112,8 +113,8 @@ export default function OtherLoanCloseSummaryTableToolbar({
   );
 
   const handleFilterOtherName = useCallback(
-    (event) => {
-      onFilters('otherName', event.target.value);
+    (event, newValue) => {
+      onFilters('otherName', newValue);
     },
     [onFilters]
   );
@@ -146,54 +147,23 @@ export default function OtherLoanCloseSummaryTableToolbar({
             ),
           }}
         />
-        <FormControl
+        <Autocomplete
+          options={options || []}
+          value={filters.otherName || null}
+          onChange={(event, newValue) => onFilters('otherName', newValue)}
           sx={{
             flexShrink: 0,
             width: { xs: 1, sm: 350 },
           }}
-        >
-          <InputLabel
-            sx={{
-              mt: -0.8,
-              '&.MuiInputLabel-shrink': {
-                mt: 0,
-              },
-            }}
-          >
-            Other Name
-          </InputLabel>
-          <Select
-            value={filters.otherName}
-            onChange={handleFilterOtherName}
-            input={<OutlinedInput label="Other Name" sx={{ height: '40px' }} />}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  maxHeight: 240,
-                  '&::-webkit-scrollbar': {
-                    width: '5px',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#f1f1f1',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#888',
-                    borderRadius: '4px',
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    backgroundColor: '#555',
-                  },
-                },
-              },
-            }}
-          >
-            {options.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Other Name"
+              variant="outlined"
+              className={'custom-textfield'}
+            />
+          )}
+        />
         <Stack
           direction="row"
           alignItems="center"
@@ -246,37 +216,15 @@ export default function OtherLoanCloseSummaryTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                view.onTrue();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-            {/*<MenuItem>*/}
-            {/*  <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              view.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
@@ -289,7 +237,7 @@ export default function OtherLoanCloseSummaryTableToolbar({
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <OtherLoanCloseSummaryPdf
-                loans={dataFilter}
+                data={dataFilter}
                 configs={configs}
                 filterData={filterData}
                 total={total}

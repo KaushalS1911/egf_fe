@@ -26,6 +26,7 @@ import {
 import { PDFViewer } from '@react-pdf/renderer';
 import BankAccountPdf from './view/bank-account-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
+import Autocomplete from '@mui/material/Autocomplete';
 
 export default function BankAccountTableToolbar({
   filters,
@@ -195,38 +196,45 @@ export default function BankAccountTableToolbar({
               ),
             }}
           />
+          <Autocomplete
+            fullWidth
+            options={['Payment In', 'Payment Out']}
+            value={filters.category || null}
+            onChange={(event, newValue) => {
+              onFilters('category', newValue || '');
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                sx={{
+                  input: { height: 7 },
+                  label: { mt: -0.8 },
+                  '& .MuiInputLabel-shrink': { mt: 0 },
+                }}
+              />
+            )}
+          />
 
-          <FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 200 } }}>
-            <InputLabel sx={{ mt: -0.8, '&.MuiInputLabel-shrink': { mt: 0 } }}>Type</InputLabel>
-            <Select
-              value={filters.status}
-              onChange={handleFilterStatus}
-              input={<OutlinedInput label="Type" sx={{ height: '40px' }} />}
-              MenuProps={{ PaperProps: { sx: customStyle } }}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 150 } }}>
-            <InputLabel sx={{ mt: -0.8, '&.MuiInputLabel-shrink': { mt: 0 } }}>Category</InputLabel>
-            <Select
-              value={filters.category}
-              onChange={handleFilterCategory}
-              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
-              MenuProps={{ PaperProps: { sx: customStyle } }}
-            >
-              {['Payment In', 'Payment Out'].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            fullWidth
+            options={options}
+            value={filters.status || null}
+            onChange={(event, newValue) => {
+              onFilters('status', newValue || '');
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Type"
+                sx={{
+                  input: { height: 7 },
+                  label: { mt: -0.8 },
+                  '& .MuiInputLabel-shrink': { mt: 0 },
+                }}
+              />
+            )}
+          />
 
           <DatePicker
             label="Start date"

@@ -389,7 +389,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     );
   }
   if (branch) {
-    inputData = inputData.filter((item) => item.customer.branch._id === branch._id);
+    inputData = inputData.filter((item) => item.customer.branch._id === branch);
   }
   if (rate) {
     inputData = inputData.filter((item) => item.scheme.interestRate === rate.rate);
