@@ -576,18 +576,18 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       new Map(
                         branch
                           .flatMap((item) => item.company.bankAccounts)
-                          .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                          .map((item) => [item.bankName + item._id, item])
                       ).values()
                     )}
                     getOptionLabel={(option) =>
                       `${option.bankName} (${option.accountHolderName})` || ''
                     }
                     renderOption={(props, option) => (
-                      <li {...props} key={option.id || option.bankName}>
+                      <li {...props} key={option._id || option.bankName}>
                         {`${option.bankName}(${option.accountHolderName})`}
                       </li>
                     )}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    isOptionEqualToValue={(option, value) => option._id === value._id}
                   />
 
                   <Controller
@@ -689,8 +689,9 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.cashAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankAmount || 0}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {`${row?.paymentDetail?.account?.bankName} (${row?.paymentDetail?.account?.accountHolderName})}` ||
-                        '-'}
+                      {row?.paymentDetail?.account?.bankName && row?.paymentDetail?.account?.accountHolderName
+                        ? `${row.paymentDetail.account.bankName} (${row.paymentDetail.account.accountHolderName})`
+                        : '-'}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
                     {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (

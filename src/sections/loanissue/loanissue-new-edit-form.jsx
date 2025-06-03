@@ -1290,18 +1290,18 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item])
+                            .map((item) => [item.bankName + item._id, item])
                         ).values()
                       )}
                       getOptionLabel={(option) =>
                         `${option.bankName} (${option.accountHolderName})` || ''
                       }
                       renderOption={(props, option) => (
-                        <li {...props} key={option.id || option.bankName}>
+                        <li {...props} key={option._id || option.bankName}>
                           {`${option.bankName} (${option.accountHolderName})`}
                         </li>
                       )}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      isOptionEqualToValue={(option, value) => option._id === value._id}
                     />
                     <Controller
                       name="chargeBankAmount"
@@ -1962,7 +1962,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         options={customerData.bankDetails || []}
                         getOptionLabel={(option) => option.bankName || ''}
                         renderOption={(props, option) => (
-                          <li {...props} key={option.id || option.bankName}>
+                          <li {...props} key={option._id || option.bankName}>
                             {option.bankName}
                           </li>
                         )}
