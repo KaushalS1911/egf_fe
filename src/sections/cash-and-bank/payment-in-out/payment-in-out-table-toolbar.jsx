@@ -182,6 +182,7 @@ export default function PaymentInOutTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
+                fullWidth: true,
               },
             }}
             sx={{ ...customStyle }}
@@ -197,6 +198,7 @@ export default function PaymentInOutTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
+                fullWidth: true,
                 error: dateError,
                 helperText: dateError && 'End date must be later than start date',
               },
