@@ -37,18 +37,16 @@ export default function CustomerStatementTableToolbar({
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { Loanissue } = useGetLoanissue();
 
-  // Find selected customer from filters.customer
   const findCustomer = customer.find((item) => item?._id === filters.customer);
 
-  // Filter loan issues for selected customer
   const filteredLoanIssues = Loanissue.filter((loan) => loan.customer._id === filters.customer);
-  console.log(filters);
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
     name: `${findCustomer?.firstName || ''} ${findCustomer?.middleName || ''} ${findCustomer?.lastName || ''}`.trim(),
     code: findCustomer?.customerCode,
     loanNo: filters.loanNo || '',
+    branch:findCustomer?.branch
   };
 
   const handleFilterName = useCallback(

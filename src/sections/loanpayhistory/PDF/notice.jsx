@@ -221,7 +221,7 @@ export default function Notice({ noticeData, configs }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={noticeData} configs={configs} />
+          <InvoiceHeader  branch={noticeData?.customer?.branch} configs={configs} />
           <View style={styles.pagePadding}>
             <View>
               <Text

@@ -203,7 +203,7 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
         <Page key={pages.length} size="A4" style={styles.page} orientation="portrait">
           {pages.length === 0 && (
             <>
-              <InvoiceHeader selectedBranch={selectedBranch} configs={configs} />
+              <InvoiceHeader branch={filterData?.branch} configs={configs} />
               <View style={{ position: 'absolute', top: 20, right: 0, width: 120 }}>
                 {dataFilter.map((item, index) => (
                   <View key={index} style={styles.row}>

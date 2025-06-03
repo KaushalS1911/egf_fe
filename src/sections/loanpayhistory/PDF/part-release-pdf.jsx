@@ -242,7 +242,7 @@ export default function PartReleasePdf({ selectedRow, configs }) {
             <View style={styles.watermarkContainer}>
               <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <InvoiceHeader selectedRow={selectedRow.loan} configs={configs} />
+            <InvoiceHeader branch={selectedRow?.loan?.customer?.branch} configs={configs} />
             <View style={styles.pagePadding}>
               <View
                 style={{

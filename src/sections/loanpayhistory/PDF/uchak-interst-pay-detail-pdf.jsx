@@ -139,7 +139,7 @@ export default function UchakInterstPayDetailPdf({ data, configs }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={data.loan} configs={configs} />
+          <InvoiceHeader branch={data?.loan?.customer?.branch} configs={configs} />
           <View style={styles.pagePadding}>
             <View
               style={{

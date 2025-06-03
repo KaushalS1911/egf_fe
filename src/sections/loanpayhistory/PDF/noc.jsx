@@ -214,7 +214,7 @@ function Noc({ nocData, configs }) {
             <View style={styles.watermarkContainer}>
               <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <InvoiceHeader selectedRow={nocData} configs={configs} />
+            <InvoiceHeader branch={nocData?.customer?.branch} configs={configs} />
             <View style={{ ...styles.pagePadding, lineHeight: 1.6, fontSize: 9 }}>
               <View
                 style={{

@@ -138,7 +138,7 @@ export default function InterestPdf({ data, configs }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={data} configs={configs} />
+          <InvoiceHeader  branch={data?.loan?.customer?.branch} configs={configs} />
           <View style={styles.pagePadding}>
             <View
               style={{

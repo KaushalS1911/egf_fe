@@ -17,20 +17,6 @@ const useStyles = () =>
           fontSize: 10,
           fontFamily: 'Roboto',
         },
-        // header: {
-        //   width: '100%',
-        //   height: '126px',
-        //   fontFamily: 'Roboto',
-        //   // position: 'relative',
-        //   // overflow: 'hidden',
-        // },
-        // headerbox1: {
-        //   width: '65%',
-        //   height: '126px',
-        //   backgroundColor: '#FF7F27',
-        //   borderTopRightRadius: '50%',
-        //   borderBottomRightRadius: '50%',
-        // },
         headerbox2: {
           position: 'absolute',
           top: '-45px',
@@ -41,24 +27,6 @@ const useStyles = () =>
           borderTopLeftRadius: '50%',
           borderBottomLeftRadius: '50%',
         },
-        // logoParent: {
-        //   height: 94,
-        //   width: 94,
-        //   margin: '0px 0px 0px 5px ',
-        // },
-        // logo: {
-        //   height: '100%',
-        //   width: '100%',
-        //   borderRadius: '5px',
-        //   objectFit: 'contain',
-        //   marginTop: 10,
-        // },
-        // headerText: {
-        //   color: '#fff',
-        //   fontSize: '24px',
-        //   // marginLeft: '10px',
-        //   fontWeight: 'bold',
-        // },
         headerText: {
           color: '#fff',
           fontWeight: 'bold',
@@ -82,18 +50,9 @@ const useStyles = () =>
 
         companyNameContainer: {
           flex: 1.5,
-          // marginLeft: 10,
           justifyContent: 'center',
           alignItems: 'center',
         },
-        // headerSubText: {
-        //   color: '#fff',
-        //   fontSize: '10px',
-        //   fontWeight: 'bold',
-        //   marginLeft: 5,
-        //   marginRight: 5,
-        //   fontsize: 10,
-        // },
         headerDetailsParent: {
           margin: '60px 30px',
           color: '#fff',
@@ -142,7 +101,6 @@ const useStyles = () =>
           height: '100%',
         },
         headerbox1: {
-          // flex: 1,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
@@ -162,8 +120,6 @@ const useStyles = () =>
           fontSize: 24,
           color: '#fff',
           fontWeight: 'bold',
-          // textAlign: 'center',
-          // flex: 1,
         },
         letterSpacingText: {
           letterSpacing: 6,
@@ -172,10 +128,9 @@ const useStyles = () =>
     []
   );
 
-export default function InvoiceHeader({ configs, landscape }) {
+export default function InvoiceHeader({ configs, landscape,branch }) {
   const styles = useStyles();
   const logo = configs?.company?.logo_url;
-  const branch = configs?.headersConfig?.branch;
   const company = configs?.headersConfig?.companyDetail;
   const webUrl = configs?.headersConfig?.companyDetail?.webUrl;
   const branchAddress = branch
@@ -199,7 +154,6 @@ export default function InvoiceHeader({ configs, landscape }) {
           }}
         >
           <View style={styles.headerbox1}>
-            {/* Left: Logo */}
             <View
               style={{
                 ...styles.logoParent,
@@ -216,7 +170,6 @@ export default function InvoiceHeader({ configs, landscape }) {
                 style={{
                   ...styles.companyName,
                   fontSize: landscape ? '38px' : '30px',
-                  // width: 220,
                 }}
               >
                 {/*{company?.name ? company.name.split(' ').slice(0, -1).join(' ') : 'EASY GOLD'}*/}
@@ -238,116 +191,23 @@ export default function InvoiceHeader({ configs, landscape }) {
             </View>
           </View>
         </View>
-        <View
-          style={{
-            fontSize: '10px',
-            flexDirection: 'row',
-            textWrap: 'wrap',
-            // paddingRight: 10,
-            marginTop: landscape ? 14 : 13,
-            marginLeft: 10,
-          }}
-        >
-          <Image style={styles.icon} src={address} />
-          <Text style={styles.separator}>|</Text>
-          <Text style={{ fontSize: 9, fontWeight: 600 }}>{branchAddress}</Text>
-        </View>
+        {branch &&
+          <View
+            style={{
+              fontSize: '10px',
+              flexDirection: 'row',
+              textWrap: 'wrap',
+              // paddingRight: 10,
+              marginTop: landscape ? 14 : 13,
+              marginLeft: 10,
+            }}
+          >
+            <Image style={styles.icon} src={address} />
+            <Text style={styles.separator}>|</Text>
+            <Text style={{ fontSize: 9, fontWeight: 600 }}>{branchAddress.toUpperCase()}</Text>
+          </View>
+        }
       </View>
-
-      {/* Header Box 1 */}
-      {/*{/<View style={styles.headerbox1}>/}*/}
-      {/*  <View*/}
-      {/*    style={{*/}
-      {/*      display: 'flex',*/}
-      {/*      flexDirection: 'row',*/}
-      {/*      alignItems: 'center', // Center vertically*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    /!* Logo Section !//}
-      {/*    <View style={styles.logoParent}>*/}
-      {/*      <Image style={styles.logo} src={logo} />*/}
-      {/*    </View>*/}
-
-      {/*    /!* Company Name and Address Section !//}
-      {/*    <View*/}
-      {/*      style={{*/}
-      {/*        flex: 1,*/}
-      {/*        marginLeft: 0,*/}
-      {/*        display: 'flex',*/}
-      {/*        flexDirection: 'column', // Stack vertically*/}
-      {/*        justifyContent: 'center', // Align content vertically in the available space*/}
-      {/*        padding: ' 0px 0px 0px 5px',*/}
-      {/*      }}*/}
-      {/*    >*/}
-      {/*      /!* Company Name !//}
-      {/*      <Text*/}
-      {/*        style={{*/}
-      {/*          ...styles.dynamicHeaderText,*/}
-      {/*          fontSize: company?.name?.length > 20 ? '18px' : '24px',*/}
-      {/*          marginTop: 60,*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        {company?.name || 'Company Name'}*/}
-      {/*      </Text>*/}
-
-      {/*/!* Address !*/}
-
-      {/*</View>*/}
-      {/*// </View>*/}
-      {/*// </View>*/}
-
-      {/* Header Box 2 */}
-      {/*{/<View style={styles.headerbox2}>/}*/}
-      {/*  <View style={styles.headerDetailsParent}>*/}
-      {/*    <View style={styles.flexContainer}>a*/}
-      {/*      /!* Column 1 !//}
-      {/*      <View style={{ width: 'auto' }}>*/}
-      {/*        <View style={styles.rowContainer}>*/}
-      {/*          <Image style={styles.icon} src={branchHeader} />*/}
-      {/*          <Text style={styles.separator}>|</Text>*/}
-      {/*          <Text style={styles.headerDetails}>{branchName}</Text>*/}
-      {/*        </View>*/}
-      {/*        <View style={{ ...styles.rowContainer, marginTop: 15 }}>*/}
-      {/*          <Image style={styles.icon} src={branchCodeHeader} />*/}
-      {/*          <Text style={styles.separator}>|</Text>*/}
-      {/*          <Text style={styles.headerDetails}>{branchCode}</Text>*/}
-      {/*        </View>*/}
-      {/*      </View>*/}
-
-      {/*      /!* Column 2 !//}
-      {/*      <View style={{ width: 'auto' }}>*/}
-      {/*        <View style={styles.rowContainer}>*/}
-      {/*          <Image style={styles.icon} src={mail || 'default_mail_icon'} />*/}
-      {/*          <Text style={styles.separator}>|</Text>*/}
-      {/*          <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>{branchEmail}</Text>*/}
-      {/*        </View>*/}
-      {/*        <View style={{ ...styles.rowContainer, marginTop: 15 }}>*/}
-      {/*          <Image style={styles.icon} src={website || 'default_website_icon'} />*/}
-      {/*          <Text style={styles.separator}>|</Text>*/}
-      {/*          <Text style={{ ...styles.headerDetails, textTransform: 'lowercase' }}>*/}
-      {/*            <Link src={webUrl} style={{ textDecoration: 'none', color: '#fff' }}>*/}
-      {/*              {webUrl}*/}
-      {/*            </Link>*/}
-      {/*          </Text>*/}
-      {/*        </View>*/}
-      {/*      </View>*/}
-
-      {/*      /!* Column 3 !//}
-      {/*      <View style={{ width: 'auto' }}>*/}
-      {/*        <View style={styles.rowContainer}>*/}
-      {/*          <Image style={styles.icon} src={contact || 'default_contact_icon'} />*/}
-      {/*          <Text style={styles.separator}>|</Text>*/}
-      {/*          <Text style={styles.headerDetails}>{branchContact}</Text>*/}
-      {/*        </View>*/}
-      {/*        <View style={{ ...styles.rowContainer, marginTop: 15 }}>*/}
-      {/*          <Image style={styles.icon} src={contact || 'default_contact_icon'} />*/}
-      {/*          <Text style={styles.separator}>|</Text>*/}
-      {/*          <Text style={styles.headerDetails}>{company?.contact || 'Company Contact'}</Text>*/}
-      {/*        </View>*/}
-      {/*      </View>*/}
-      {/*    </View>*/}
-      {/*  </View>*/}
-      {/*{/</View>/}*/}
     </View>
   );
 }
