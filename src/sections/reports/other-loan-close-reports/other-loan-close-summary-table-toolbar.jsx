@@ -37,6 +37,9 @@ export default function OtherLoanCloseSummaryTableToolbar({
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [startCloseDateOpen, setStartCloseDateOpen] = useState(false);
+  const [endCloseDateOpen, setEndCloseDateOpen] = useState(false);
+
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -89,7 +92,7 @@ export default function OtherLoanCloseSummaryTableToolbar({
   );
 
   const customStyle = {
-    minWidth: { md: 350 },
+    minWidth: { md: 155 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -100,21 +103,16 @@ export default function OtherLoanCloseSummaryTableToolbar({
     input: { height: 7 },
   };
 
-  const sx2 = {};
-  const handleFilterBranch = useCallback(
-    (event) => {
-      setSelectedBranch(event.target.value);
-      onFilters(
-        'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
+  const handleFilterStartCloseDate = useCallback(
+    (newValue) => {
+      onFilters('startCloseDate', newValue ? moment(newValue).toDate() : null);
     },
     [onFilters]
   );
 
-  const handleFilterOtherName = useCallback(
-    (event, newValue) => {
-      onFilters('otherName', newValue);
+  const handleFilterEndCloseDate = useCallback(
+    (newValue) => {
+      onFilters('endCloseDate', newValue ? moment(newValue).toDate() : null);
     },
     [onFilters]
   );
@@ -197,6 +195,37 @@ export default function OtherLoanCloseSummaryTableToolbar({
               textField: {
                 onClick: () => setEndDateOpen(true),
                 fullWidth: true,
+                error: dateError,
+                helperText: dateError && 'End date must be later than start date',
+              },
+            }}
+            sx={{ ...customStyle }}
+          />
+          <DatePicker
+            label="Start close date"
+            value={filters.startCloseDate ? moment(filters.startCloseDate).toDate() : null}
+            open={startCloseDateOpen}
+            onClose={() => setStartCloseDateOpen(false)}
+            onChange={handleFilterStartCloseDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setStartCloseDateOpen(true),
+              },
+            }}
+            sx={{ ...customStyle }}
+          />
+
+          <DatePicker
+            label="End close date"
+            value={filters.endCloseDate ? moment(filters.endCloseDate).toDate() : null}
+            open={endCloseDateOpen}
+            onClose={() => setEndCloseDateOpen(false)}
+            onChange={handleFilterEndCloseDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setEndCloseDateOpen(true),
                 error: dateError,
                 helperText: dateError && 'End date must be later than start date',
               },
