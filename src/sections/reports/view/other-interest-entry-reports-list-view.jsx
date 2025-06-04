@@ -97,7 +97,6 @@ export default function OtherInterestEntryReportsListView() {
     (prev, next) => prev + (Number(next?.otherLoan?.amount) || 0),
     0
   );
-
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
     0
@@ -121,7 +120,6 @@ export default function OtherInterestEntryReportsListView() {
     setSrData(updatedData);
 
     if (updatedData.length > 0) {
-      // Create a Set of existing rates for quick lookup
       const existingRates = new Set(options.map((opt) => opt.rate));
       const newOptions = [...options];
 
@@ -135,7 +133,7 @@ export default function OtherInterestEntryReportsListView() {
 
       setOptions(newOptions);
     }
-  }, [otherInterestEntryReports]); // Runs only when interestReports changes
+  }, [otherInterestEntryReports]);
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
@@ -159,6 +157,7 @@ export default function OtherInterestEntryReportsListView() {
   if (otherInterestEntryReportsLoading) {
     return <LoadingScreen />;
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -262,7 +261,7 @@ export default function OtherInterestEntryReportsListView() {
                     {charge.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(payAmt - charge).toFixed(0)}
+                    {(interestAmount + charge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {cashAmt}
