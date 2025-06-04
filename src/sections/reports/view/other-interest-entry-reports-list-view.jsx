@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -15,29 +15,24 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { LoadingScreen } from '../../../components/loading-screen';
-import InterestReportsTableRow from '../interest-reports/interest-reports-table-row.jsx';
-import InterestReportsTableFiltersResult from '../interest-reports/interest-reports-table-filters-result.jsx';
-import InterestReportsTableToolbar from '../interest-reports/interest-reports-table-toolbar.jsx';
-import { useGetInterestReports } from '../../../api/interest-reports.js';
 import { isBetween } from '../../../utils/format-time.js';
 import { TableCell, TableRow } from '@mui/material';
-import InterestEntryReportsTableToolbar from '../interest-entry-reports/interest-entry-reports-table-toolbar.jsx';
-import InterestEntryReportsTableFiltersResult from '../interest-entry-reports/interest-entry-reports-table-filters-result.jsx';
-import InterestEntryReportsTableRow from '../interest-entry-reports/interest-entry-reports-table-row.jsx';
-import { useGetInterestEntryReports } from '../../../api/interest-entry-reports.js';
-import OtherInterestEntryReportsTableToolbar from '../other-interest-entry-reports/other-interest-entry-reports-table-toolbar.jsx';
-import OtherInterestEntryReportsTableFiltersResult from '../other-interest-entry-reports/other-interest-entry-reports-table-filters-result.jsx';
-import OtherInterestEntryReportsTableRow from '../other-interest-entry-reports/other-interest-entry-reports-table-row.jsx';
+import OtherInterestEntryReportsTableToolbar
+  from '../other-interest-entry-reports/other-interest-entry-reports-table-toolbar.jsx';
+import OtherInterestEntryReportsTableFiltersResult
+  from '../other-interest-entry-reports/other-interest-entry-reports-table-filters-result.jsx';
+import OtherInterestEntryReportsTableRow
+  from '../other-interest-entry-reports/other-interest-entry-reports-table-row.jsx';
 import { useGetOtherInterestEntryReports } from '../../../api/other-interest-entry-reports.js';
 
 // ----------------------------------------------------------------------
@@ -253,6 +248,7 @@ export default function OtherInterestEntryReportsListView() {
                   </TableCell>
                   <TableCell />
                   <TableCell />
+                  <TableCell />
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {day}
                   </TableCell>{' '}
@@ -342,7 +338,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) =>
-      isBetween(new Date(item?.createdAt), startDate, endDate)
+      isBetween(new Date(item?.to), startDate, endDate)
     );
   }
 
