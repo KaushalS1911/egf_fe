@@ -368,7 +368,7 @@ export default function CompanyProfile() {
                     sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                   >
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {account.bankName} ({account.accountType})
+                      {account.bankName} ({account.accountHolderName}) - {account.accountType}
                     </Typography>
                     <Box>
                       <IconButton color={'primary'} onClick={() => handleEditBankDetail(account)}>

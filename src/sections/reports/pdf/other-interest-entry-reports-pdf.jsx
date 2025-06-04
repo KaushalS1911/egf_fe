@@ -3,6 +3,7 @@ import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/rendere
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 import { differenceInDays } from 'date-fns';
+import {NumberSchema} from "yup";
 
 // Register fonts
 Font.register({
@@ -125,16 +126,18 @@ export default function OtherInterestEntryReportsPdf({
   filterData,
   total,
 }) {
-  const { bankAmt, cashAmt, interestAmount, charge, day, payAmt } = total || {};
+  const { bankAmt, cashAmt, interestAmount, charge, day, payAmt,otherAmt } = total || {};
 
   const styles = useStyles();
   const headers = [
     { label: '#', flex: 0.2 },
-    { label: 'Loan No', flex: 2.5 },
+    { label: 'Loan No', flex: 3 },
+    { label: 'Other No', flex: 1 },
     { label: 'From Date', flex: 1.2 },
     { label: 'To Date', flex: 1.2 },
     { label: 'Days', flex: 0.5 },
     { label: 'Int. Amt', flex: 1.2 },
+    { label: 'Other Amt', flex: 1.2 },
     { label: 'Charge', flex: 1.2 },
     { label: 'Amt Paid', flex: 1.2 },
     { label: 'Cash Amt', flex: 1.2 },
@@ -169,14 +172,16 @@ export default function OtherInterestEntryReportsPdf({
     currentPageRows.push(
       <View key={index} style={[styles.tableRow, isAlternateRow && styles.alternateRow]}>
         <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
-        <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.otherLoan.otherLoanNumber}</Text>
+        <Text style={[styles.tableCell, { flex: 3 }]}>{row.otherLoan.loan.loanNo}</Text>
+        <Text style={[styles.tableCell, { flex: 1}]}>{row.otherLoan.otherNumber}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.from) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.to) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.days || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.amount || '-'}</Text>{' '}
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.interestAmount || '-'}</Text>{' '}
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.charge || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {(row?.payAfterAdjust - row.charge).toFixed(2) || '-'}
+          {(Number(row?.payAfterAdjust) - Number(row.charge)).toFixed(2) || '-'}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
           {row?.paymentDetail?.paymentMode || '-'}
@@ -252,18 +257,20 @@ export default function OtherInterestEntryReportsPdf({
               {isLastRow && (
                 <View style={[styles.tableRow, styles.totalRow]}>
                   <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
-                  <Text style={[styles.totalCell, { flex: 2.5 }]}>TOTAL</Text>
+                  <Text style={[styles.totalCell, { flex: 3}]}>TOTAL</Text>
+                  <Text style={[styles.totalCell, { flex: 1 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 0.5 }]}>{day}</Text>
-                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{interestAmount}</Text>
-                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{charge}</Text>
+                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{otherAmt.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{interestAmount.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{charge.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}>
                     {(payAmt - charge).toFixed(0)}
                   </Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
-                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{cashAmt}</Text>
-                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{bankAmt}</Text>
+                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{cashAmt.toFixed(0)}</Text>
+                  <Text style={[styles.totalCell, { flex: 1.2 }]}>{bankAmt.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1.5 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                 </View>

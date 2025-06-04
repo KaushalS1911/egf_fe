@@ -65,10 +65,10 @@ const TABLE_HEAD = [
   { id: 'otherCharge', label: 'Charge' },
   { id: 'day', label: ' Day' },
   { id: 'int', label: 'Int.' },
-  { id: 'lastintpaydate', label: 'Last int. pay date' },
+  { id: 'payDate', label: 'Pay date' },
   { id: 'pendingDay', label: 'Pending day' },
   { id: 'pendingAmt', label: 'Pending int.' },
-  { id: 'nextointpaydayte', label: 'Next int. pay date' },
+  { id: 'renewdate', label: 'Renew date' },
   { id: 'status', label: 'Status' },
 ];
 const STATUS_OPTIONS = [

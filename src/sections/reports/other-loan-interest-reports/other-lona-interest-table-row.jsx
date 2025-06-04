@@ -53,7 +53,7 @@ export default function OtherLonaInterestTableRow({
           {(row.totalInterestAmt - row.totalCharge).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {fDate(loan.lastInstallmentDate) || '-'}
+          {fDate(row.createdAt) || '-'}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
           {row.pendingDay > 0 ? row.pendingDay : 0}
@@ -62,7 +62,7 @@ export default function OtherLonaInterestTableRow({
           {Number(pendingInterest).toFixed(2) || 0}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {fDate(loan.nextInstallmentDate) || '-'}
+          {fDate(row.renewalDate) || '-'}
         </TableCell>
         {/*<TableCell sx={{ fontSize: '12px', padding: '6px' }}>*/}
         {/*  {fDate(lastAmtPayDate) || '-'}*/}

@@ -44,9 +44,11 @@ import { useGetOtherInterestEntryReports } from '../../../api/other-interest-ent
 
 const TABLE_HEAD = [
   { id: 'otherLoanNumber', label: 'Loan No' },
+  { id: 'otherNo', label: 'other no' },
   { id: 'from', label: 'From Date' },
   { id: 'to', label: 'To Date' },
   { id: 'days', label: 'Days' },
+  { id: 'amount', label: 'Other amt' },
   { id: 'interestAmount', label: 'Int. amt' },
   { id: 'charge', label: 'Charge' },
   { id: 'amountPaid', label: 'Amount Paid' },
@@ -96,6 +98,10 @@ export default function OtherInterestEntryReportsListView() {
     0
   );
   const charge = dataFiltered.reduce((prev, next) => prev + (Number(next?.charge) || 0), 0);
+  const otherAmt = dataFiltered.reduce(
+    (prev, next) => prev + (Number(next?.otherLoan?.amount) || 0),
+    0
+  );
 
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
@@ -109,6 +115,7 @@ export default function OtherInterestEntryReportsListView() {
     charge,
     day,
     payAmt,
+    otherAmt
   };
 
   useEffect(() => {
@@ -161,7 +168,7 @@ export default function OtherInterestEntryReportsListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Interest Entry Reports"
+          heading="Other Interest Entry Reports"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Interest Entry Reports' },
@@ -249,6 +256,9 @@ export default function OtherInterestEntryReportsListView() {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {day}
                   </TableCell>{' '}
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                    {otherAmt}
+                  </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {interestAmount}
                   </TableCell>{' '}

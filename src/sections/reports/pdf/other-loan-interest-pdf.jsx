@@ -135,10 +135,10 @@ export default function OtherLoanInterestPdf({
     { label: 'charge', flex: 1 },
     { label: 'Day', flex: 0.3 },
     { label: 'Int.', flex: 0.3 },
-    { label: 'Last int. pay date', flex: 1 },
+    { label: 'Pay Date', flex: 1 },
     { label: 'Pen. day', flex: 0.3 },
     { label: 'Pending int.', flex: 1 },
-    { label: 'Next int. pay date', flex: 1 },
+    { label: 'Renew Date', flex: 1 },
   ];
   const dataFilter = [
     { value: fDate(filterData.startDate), label: 'Start Date' },
@@ -176,12 +176,12 @@ export default function OtherLoanInterestPdf({
         <Text style={[styles.tableCell, { flex: 1 }]}>{(row.otherCharge || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.loan.scheme.interestRate}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.lastInterestPayDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.createdAt)}</Text>
         <Text style={[styles.tableCell, { flex: 0.3 }]}>
           {row.pendingDay > 0 ? row.pendingDay : 0}
         </Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{(row.pendingInterest || 0).toFixed(2)}</Text>
-        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.nextInstallmentDate)}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.renewalDate)}</Text>
       </View>
     );
 
