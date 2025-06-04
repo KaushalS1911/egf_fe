@@ -261,7 +261,7 @@ export default function OtherInterestEntryReportsListView() {
                     {charge.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(interestAmount + charge).toFixed(0)}
+                    {(payAmt - charge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {cashAmt}

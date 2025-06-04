@@ -22,7 +22,7 @@ export default function OtherInterestEntryReportsTableRow({ row }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.charge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {(Number(row.interestAmount || 0) + Number(row.charge || 0)).toFixed(2)}
+          {(Number(row.payAfterAdjust) - Number(row.charge || 0)).toFixed(2)}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail.cashAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail.bankAmount || 0}</TableCell>

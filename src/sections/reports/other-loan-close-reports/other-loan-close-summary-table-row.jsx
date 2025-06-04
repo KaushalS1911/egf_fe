@@ -33,6 +33,7 @@ export default function OtherLoanCloseSummaryTableRow({
     status,
     totalInterestAmt,
     closingAmount,
+    totalCharge,
   } = row;
   const { loanNo, customer, loanAmount, scheme, issueDate } = loan;
 
@@ -60,7 +61,7 @@ export default function OtherLoanCloseSummaryTableRow({
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{row.amount}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>
-          {totalInterestAmt.toFixed(2)}
+          {(totalInterestAmt - totalCharge).toFixed(2)}
         </TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>{day > 0 ? day : 0}</TableCell>
         <TableCell sx={{ fontSize: '12px', padding: '6px' }}>

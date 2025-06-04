@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -10,44 +10,31 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetLoanissue } from '../../../api/loanissue';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { fDate, isBetween } from '../../../utils/format-time';
+import { isBetween } from '../../../utils/format-time';
 import { useGetConfigs } from '../../../api/config';
-import AllBranchLoanSummaryTableRow from '../all-branch-loan/all-branch-loan-summary-table-row';
-import AllBranchLoanSummaryTableToolbar from '../all-branch-loan/all-branch-loan-summary-table-toolbar';
-import AllBranchLoanSummaryTableFiltersResult from '../all-branch-loan/all-branch-loan-summary-table-filters-result';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Label from '../../../components/label';
-import { useGetAllLoanSummary } from '../../../api/all-branch-loan-summary';
 import { useGetOtherLoanReports } from '../../../api/all-branch-other-loan-report.js';
-import AllBranchOtherLoanSummaryTableToolbar from '../all-branch-other-loan/all-branch-other-loan-summary-table-toolbar.jsx';
-import AllBranchOtherLoanSummaryTableFiltersResult from '../all-branch-other-loan/all-branch-other-loan-summary-table-filters-result.jsx';
-import AllBranchOtherLoanSummaryTableRow from '../all-branch-other-loan/all-branch-other-loan-summary-table-row.jsx';
 import OtherLoanCloseSummaryTableToolbar from '../other-loan-close-reports/other-loan-close-summary-table-toolbar.jsx';
-import OtherLoanCloseSummaryTableFiltersResult from '../other-loan-close-reports/other-loan-close-summary-table-filters-result.jsx';
+import OtherLoanCloseSummaryTableFiltersResult
+  from '../other-loan-close-reports/other-loan-close-summary-table-filters-result.jsx';
 import OtherLoanCloseSummaryTableRow from '../other-loan-close-reports/other-loan-close-summary-table-row.jsx';
 import { TableCell, TableRow } from '@mui/material';
 
@@ -401,7 +388,7 @@ export default function OtherLoanCloseSummaryListView() {
                     {amount.toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
-                    {totalInterestAmt.toFixed(0)}
+                    {(totalInterestAmt - totalCharge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {(day / dataFiltered.length).toFixed(0)}
