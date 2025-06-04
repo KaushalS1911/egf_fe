@@ -354,7 +354,7 @@ export default function Sansaction8({ sansaction, configs }) {
             <View style={styles.watermarkContainer}>
               <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <InvoiceHeader selectedRow={sansaction} configs={configs} />
+            <InvoiceHeader branch={sansaction?.customer?.branch} configs={configs} />
             <View style={styles.pagePadding}>
               <View
                 style={{

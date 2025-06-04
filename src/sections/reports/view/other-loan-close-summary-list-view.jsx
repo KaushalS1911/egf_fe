@@ -252,6 +252,7 @@ export default function OtherLoanCloseSummaryListView() {
   if (otherLoanReportsLoading) {
     return <LoadingScreen />;
   }
+
   function fetchStates() {
     dataFiltered?.map((data) => {
       setOptions((item) => {
@@ -472,7 +473,8 @@ export default function OtherLoanCloseSummaryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch, otherName } = filters;
+  const { username, status, startDate, endDate, branch, otherName, startCloseDate, endCloseDate } =
+    filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -510,8 +512,12 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item?.otherName === otherName);
   }
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((item) => isBetween(new Date(item.closeDate), startDate, endDate));
+    inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
-
+  if (!dateError && startCloseDate && endCloseDate) {
+    inputData = inputData.filter((loan) =>
+      isBetween(new Date(loan.closeDate), startCloseDate, endCloseDate)
+    );
+  }
   return inputData;
 }

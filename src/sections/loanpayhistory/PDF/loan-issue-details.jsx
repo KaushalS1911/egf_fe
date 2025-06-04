@@ -306,7 +306,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
             <View style={styles.watermarkContainer}>
               <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <InvoiceHeader selectedRow={selectedRow} configs={configs} />
+            <InvoiceHeader branch={selectedRow?.customer?.branch} configs={configs} />
             <View style={styles.pagePadding}>
               <View
                 style={{
@@ -533,6 +533,9 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
         </Page>
         <Page size="A4" style={styles.page}>
           <View style={{ border: '1px solid #000' }}>
+            <View style={styles.watermarkContainer}>
+              <Image src={logo} style={styles.watermarkImage} />
+            </View>
             <View style={styles.pagePadding2}>
               <view style={{ marginTop: 20 }}>
                 <Text style={styles.termsAndConditionsHeaders}>Terms And Conditions</Text>

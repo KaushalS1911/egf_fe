@@ -1102,7 +1102,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                         new Map(
                           branch
                             .flatMap((item) => item.company.bankAccounts)
-                            .map((item) => [item.bankName + item.id, item]) // key includes ID to ensure uniqueness
+                            .map((item) => [item.bankName + item._id, item])
                         ).values()
                       )}
                       getOptionLabel={(option) => option.bankName || ''}
@@ -1111,7 +1111,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                           {`${option.bankName}(${option.accountHolderName})`}
                         </li>
                       )}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      isOptionEqualToValue={(option, value) => option._id === value._id}
                     />
                     <RHFTextField
                       name="accountNumber"

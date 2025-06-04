@@ -94,7 +94,7 @@ export default function DailyReportsListView() {
   const confirm = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
   const params = new URLSearchParams();
-  if (filters.branch._id) params.append('branch', filters.branch._id);
+  if (filters?.branch?._id) params.append('branch', filters?.branch?._id);
   if (filters.startDate) params.append('date', fDate(filters.startDate));
   // if(filters.username) params.append('username',filters.username)
   const date = filters.startDate.toLocaleDateString();

@@ -33,18 +33,16 @@ import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { isBetween } from '../../../utils/format-time.js';
 import { TableCell, TableRow } from '@mui/material';
+import { useGetLoanissue } from '../../../api/loanissue.js';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: '', label: '#' },
   { id: 'loanNo', label: 'Loan no.' },
-  { id: 'customerName', label: 'Customer name' },
-  { id: 'loanAmount', label: 'Loan amt' },
-  { id: 'partLoanAmount', label: 'Part loan amt' },
-  { id: 'interestLoanAmount', label: 'Int. loan amt' },
-  { id: 'amount', label: 'amount' },
-  { id: 'createdAt', label: 'Entry date' },
+  { id: 'date', label: 'Date' },
+  { id: 'credit', label: 'Credit' },
+  { id: 'debit', label: 'Debit' },
 ];
 
 const defaultFilters = {
@@ -52,6 +50,7 @@ const defaultFilters = {
   customer: '',
   startDate: null,
   endDate: null,
+  loanNo: '',
 };
 
 // ----------------------------------------------------------------------
@@ -63,8 +62,9 @@ export default function CustomerStatementListView() {
   const confirm = useBoolean();
   const [srData, setSrData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
-  const [customerStatement, setCustomerStatement] = useState([]);
+  const [customerStatement, setCustomerStatement] = useState({});
   const [customerStatementLoading, setCustomerStatementLoading] = useState(false);
+  const { Loanissue } = useGetLoanissue();
 
   const dataFiltered = applyFilter({
     inputData: srData,
@@ -87,13 +87,14 @@ export default function CustomerStatementListView() {
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/customer-statement/${filters.customer}`
       );
 
-      const statementData = res.data.data || [];
+      const statementData = res.data.data;
+      setCustomerStatement(Object.values(statementData));
+      const statement = Object.values(statementData);
 
-      const updatedData = statementData.map((item, index) => ({
+      const updatedData = statement?.map((item, index) => ({
         ...item,
         srNo: index + 1,
       }));
-      setCustomerStatement(statementData);
       setSrData(updatedData);
     } catch (error) {
       console.error('Error fetching customer statement:', error);
@@ -151,7 +152,7 @@ export default function CustomerStatementListView() {
           <CustomerStatementTableToolbar
             filters={filters}
             onFilters={handleFilters}
-            data={customerStatement}
+            data={dataFiltered}
             total={total}
           />
           {canReset && (
@@ -213,34 +214,6 @@ export default function CustomerStatementListView() {
                     <CustomerStatementTableRow key={row?._id} index={index} row={row} />
                   ))}
                 <TableNoData notFound={notFound} />
-                <TableRow
-                  sx={{
-                    backgroundColor: '#F4F6F8',
-                    position: 'sticky',
-                    bottom: 0,
-                    zIndex: 1,
-                    boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
-                  }}
-                >
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    TOTAL
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {loanAmount.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {(loanAmount - intLoanAmount).toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {intLoanAmount.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
-                    {amt.toFixed(0)}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
-                </TableRow>
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
@@ -287,7 +260,7 @@ export default function CustomerStatementListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, startDate, endDate } = filters;
+  const { username, startDate, endDate, loan } = filters;
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -310,6 +283,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.loanDetails.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
+  if (filters.loanNo && filters.loanNo.length > 0) {
+    inputData = inputData.filter((item) => filters.loanNo.includes(item.loanNo));
+  }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.createdAt), startDate, endDate));
   }

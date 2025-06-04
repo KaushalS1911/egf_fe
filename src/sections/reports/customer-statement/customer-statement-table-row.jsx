@@ -43,18 +43,59 @@ export default function CustomerStatementTableRow({ row }) {
   const { user, initialize } = useAuthContext();
   const { configs } = useGetConfigs();
 
+  // Calculate totals
+  const totals = row.statements?.reduce(
+    (acc, item) => {
+      acc.credit += Number(item.credit) || 0;
+      acc.debit += Number(item.debit) || 0;
+      acc.balance += Number(item.balance) || 0;
+      return acc;
+    },
+    { credit: 0, debit: 0, balance: 0 }
+  );
+  const statusColors = {
+    'Loan Close': (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706'),
+  };
+
   return (
     <>
+      {/* Parent Loan Row */}
       <TableRow hover>
         <TableCell>{row.srNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{customerName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{partLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{interestLoanAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{amount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(createdAt)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>{loanNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}></TableCell>
+        <TableCell colSpan={4} />
       </TableRow>
+
+      {/* Show only if there are statements */}
+      {row.statements?.length > 0 && (
+        <>
+          {/* Statement Rows */}
+          {row.statements.map((item, index) => (
+            <TableRow key={index} sx={{ backgroundColor: statusColors[item.detail] || '' }}>
+              <TableCell />
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{item.detail}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(item.date)}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{item.credit || 0}</TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>{item.debit || 0}</TableCell>
+            </TableRow>
+          ))}
+
+          {/* Totals Row */}
+          <TableRow
+            sx={{
+              background: (theme) => (theme.palette.mode === 'light' ? '#E3E7EA' : ''),
+            }}
+          >
+            <TableCell />
+            <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
+              Total
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>{totals.credit.toFixed(2)}</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>{totals.debit.toFixed(2)}</TableCell>
+          </TableRow>
+        </>
+      )}
     </>
   );
 }

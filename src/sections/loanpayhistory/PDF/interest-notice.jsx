@@ -221,7 +221,7 @@ export default function InterestNotice({ interestNoticeData, configs }) {
           <View style={styles.watermarkContainer}>
             <Image src={logo} style={styles.watermarkImage} />
           </View>
-          <InvoiceHeader selectedRow={interestNoticeData} configs={configs} />
+          <InvoiceHeader  branch={interestNoticeData?.customer?.branch} selectedRow={interestNoticeData} configs={configs} />
           <View style={styles.pagePadding}>
             <View>
               <Text

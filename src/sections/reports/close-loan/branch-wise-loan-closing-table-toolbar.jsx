@@ -2,28 +2,27 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  FormControl,
+  MenuItem,
+  Autocomplete,
+  IconButton,
+  Button,
+} from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
-import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
-import { getResponsibilityValue } from '../../../permission/permission';
+import { useGetBranch } from '../../../api/branch';
+import { useBoolean } from '../../../hooks/use-boolean';
+import { PDFViewer } from '@react-pdf/renderer';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { formHelperTextClasses } from '@mui/material/FormHelperText';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import { useGetBranch } from '../../../api/branch';
-import InputLabel from '@mui/material/InputLabel';
-import { useBoolean } from '../../../hooks/use-boolean';
-import Button from '@mui/material/Button';
-import { PDFViewer } from '@react-pdf/renderer';
 import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 import BranchWiseLoanClosingPdf from '../pdf/branch-wise-loan-closing-pdf.jsx';
-
-// ----------------------------------------------------------------------
+import { getResponsibilityValue } from '../../../permission/permission';
 
 export default function BranchWiseLoanClosingTableToolbar({
   filters,
@@ -35,98 +34,67 @@ export default function BranchWiseLoanClosingTableToolbar({
   total,
 }) {
   const popover = usePopover();
+  const view = useBoolean();
+  const { user } = useAuthContext();
+  const { branch } = useGetBranch();
+
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [startCloseDateOpen, setStartCloseDateOpen] = useState(false);
   const [endCloseDateOpen, setEndCloseDateOpen] = useState(false);
-  const { user } = useAuthContext();
-  const { branch } = useGetBranch();
-  const [selectedBranch, setSelectedBranch] = useState(null);
-  const view = useBoolean();
+
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
     closedBy: filters.closedBy,
     branch: filters.branch,
   };
-  console.log(filters);
-  const handleFilterName = useCallback(
-    (event) => {
-      onFilters('username', event.target.value);
+
+  // --- Handler Functions ---
+  const handleFilterIssuedBy = useCallback(
+    (event, newValue) => {
+      onFilters('closedBy', newValue);
+    },
+    [onFilters]
+  );
+
+  const handleFilterBranch = useCallback(
+    (event, newValue) => {
+      onFilters('branch', newValue);
     },
     [onFilters]
   );
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('startDate', null);
-        return;
-      }
-      const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('startDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('startDate', null);
-      }
+      onFilters('startDate', newValue ? moment(newValue).toDate() : null);
     },
     [onFilters]
   );
 
   const handleFilterEndDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('endDate', null);
-        return;
-      }
-      const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('endDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('endDate', null);
-      }
+      onFilters('endDate', newValue ? moment(newValue).toDate() : null);
     },
     [onFilters]
   );
 
   const handleFilterStartCloseDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('startCoseDate', null);
-        return;
-      }
-      const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('startCloseDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('startDate', null);
-      }
+      onFilters('startCloseDate', newValue ? moment(newValue).toDate() : null);
     },
     [onFilters]
   );
 
   const handleFilterEndCloseDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('endCloseDate', null);
-        return;
-      }
-      const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('endCloseDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
-        onFilters('endCloseDate', null);
-      }
+      onFilters('endCloseDate', newValue ? moment(newValue).toDate() : null);
     },
     [onFilters]
   );
 
   const customStyle = {
-    minWidth: { md: 200 },
+    minWidth: { md: 100 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -137,38 +105,13 @@ export default function BranchWiseLoanClosingTableToolbar({
     input: { height: 7 },
   };
 
-  const sx2 = {};
-  const handleFilterBranch = useCallback(
-    (event) => {
-      setSelectedBranch(event.target.value);
-      onFilters(
-        'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
-    },
-    [onFilters]
-  );
-
-  const handleFilterIssuedBy = useCallback(
-    (event) => {
-      onFilters('closedBy', typeof event.target.value === 'object' && event.target.value);
-    },
-    [onFilters]
-  );
-
   return (
     <>
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
-        direction={{
-          xs: 'column',
-          md: 'row',
-        }}
-        sx={{
-          p: 2.5,
-          pr: { xs: 2.5, md: 1 },
-        }}
+        direction={{ xs: 'column', md: 'row' }}
+        sx={{ p: 2.5, pr: { xs: 2.5, md: 1 } }}
       >
         <Stack
           direction="row"
@@ -177,102 +120,30 @@ export default function BranchWiseLoanClosingTableToolbar({
           flexGrow={1}
           sx={{ width: '100%', pr: 1.5 }}
         >
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 250 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Closed By
-            </InputLabel>
-            <Select
-              value={filters.closedBy}
-              onChange={handleFilterIssuedBy}
-              input={<OutlinedInput label="Closed By" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 250 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Branch
-            </InputLabel>
-            <Select
-              value={filters.branch}
-              onChange={handleFilterBranch}
-              input={<OutlinedInput label="Branch" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {branch.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            options={options}
+            getOptionLabel={(option) => option?.name || ''}
+            value={filters.closedBy || null}
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
+            onChange={handleFilterIssuedBy}
+            renderInput={(params) => (
+              <TextField {...params} label="Closed By" className={'custom-textfield'} />
+            )}
+            sx={{ width: 200 }}
+          />
+
+          <Autocomplete
+            options={branch}
+            getOptionLabel={(option) => option?.name || ''}
+            value={filters.branch || null}
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
+            onChange={handleFilterBranch}
+            renderInput={(params) => (
+              <TextField {...params} label="Branch" className={'custom-textfield'} />
+            )}
+            sx={{ width: 200 }}
+          />
+
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -283,14 +154,14 @@ export default function BranchWiseLoanClosingTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setStartDateOpen(true),
-                fullWidth: true,
               },
             }}
             sx={{ ...customStyle }}
           />
+
           <DatePicker
             label="End date"
-            value={filters.endDate}
+            value={filters.endDate ? moment(filters.endDate).toDate() : null}
             open={endDateOpen}
             onClose={() => setEndDateOpen(false)}
             onChange={handleFilterEndDate}
@@ -298,13 +169,13 @@ export default function BranchWiseLoanClosingTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setEndDateOpen(true),
-                fullWidth: true,
                 error: dateError,
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
             sx={{ ...customStyle }}
-          />{' '}
+          />
+
           <DatePicker
             label="Start close date"
             value={filters.startCloseDate ? moment(filters.startCloseDate).toDate() : null}
@@ -315,14 +186,14 @@ export default function BranchWiseLoanClosingTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setStartCloseDateOpen(true),
-                fullWidth: true,
               },
             }}
             sx={{ ...customStyle }}
           />
+
           <DatePicker
             label="End close date"
-            value={filters.endCloseDate}
+            value={filters.endCloseDate ? moment(filters.endCloseDate).toDate() : null}
             open={endCloseDateOpen}
             onClose={() => setEndCloseDateOpen(false)}
             onChange={handleFilterEndCloseDate}
@@ -330,58 +201,40 @@ export default function BranchWiseLoanClosingTableToolbar({
             slotProps={{
               textField: {
                 onClick: () => setEndCloseDateOpen(true),
-                fullWidth: true,
                 error: dateError,
                 helperText: dateError && 'End date must be later than start date',
               },
             }}
             sx={{ ...customStyle }}
           />
+
           {getResponsibilityValue('print_branch_vise_loan_closing_report', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
+
+        {/* Popover */}
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                view.onTrue();
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-            {/*<MenuItem>*/}
-            {/*  <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              view.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
         </CustomPopover>
       </Stack>
+
+      {/* PDF Viewer */}
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -408,5 +261,9 @@ export default function BranchWiseLoanClosingTableToolbar({
 BranchWiseLoanClosingTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
-  roleOptions: PropTypes.array,
+  dateError: PropTypes.bool,
+  dataFilter: PropTypes.array,
+  configs: PropTypes.object,
+  options: PropTypes.array,
+  total: PropTypes.number,
 };

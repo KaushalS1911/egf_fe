@@ -9,17 +9,15 @@ import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import Autocomplete from '@mui/material/Autocomplete';
 import { useGetCustomer } from '../../../api/customer.js';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import LoanDetailsPdf from '../pdf/loan-details-pdf.jsx';
 import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment from 'moment/moment.js';
+import { useGetLoanissue } from '../../../api/loanissue.js';
 
 // ----------------------------------------------------------------------
 
@@ -37,10 +35,18 @@ export default function CustomerStatementTableToolbar({
   const view = useBoolean();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const { Loanissue } = useGetLoanissue();
 
+  const findCustomer = customer.find((item) => item?._id === filters.customer);
+
+  const filteredLoanIssues = Loanissue.filter((loan) => loan.customer._id === filters.customer);
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
+    name: `${findCustomer?.firstName || ''} ${findCustomer?.middleName || ''} ${findCustomer?.lastName || ''}`.trim(),
+    code: findCustomer?.customerCode,
+    loanNo: filters.loanNo || '',
+    branch:findCustomer?.branch
   };
 
   const handleFilterName = useCallback(
@@ -49,9 +55,12 @@ export default function CustomerStatementTableToolbar({
     },
     [onFilters]
   );
+
   const handleFilterCustomer = useCallback(
-    (event) => {
-      onFilters('customer', event.target.value);
+    (event, newValue) => {
+      onFilters('customer', newValue?._id || '');
+      // Reset loanNo filter when customer changes
+      onFilters('loanNo', '');
     },
     [onFilters]
   );
@@ -123,69 +132,61 @@ export default function CustomerStatementTableToolbar({
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
-          {/*<TextField*/}
-          {/*  sx={{ input: { height: 7 } }}*/}
-          {/*  fullWidth*/}
-          {/*  value={filters.username}*/}
-          {/*  onChange={handleFilterName}*/}
-          {/*  placeholder="Search..."*/}
-          {/*  InputProps={{*/}
-          {/*    startAdornment: (*/}
-          {/*      <InputAdornment position="start">*/}
-          {/*        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />*/}
-          {/*      </InputAdornment>*/}
-          {/*    ),*/}
-          {/*  }}*/}
-          {/*/>*/}
+          {/* Customer Autocomplete */}
           <FormControl
             sx={{
               flexShrink: 0,
               width: { xs: 1, sm: 500 },
             }}
           >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Choose Customer
-            </InputLabel>
-
-            <Select
-              value={filters.customer}
+            <Autocomplete
+              options={customer}
+              getOptionLabel={(option) =>
+                `${option?.firstName || ''} ${option?.middleName || ''} ${option?.lastName || ''}`.trim()
+              }
+              value={customer.find((c) => c._id === filters.customer) || null}
               onChange={handleFilterCustomer}
-              input={<OutlinedInput label="Choose Customer" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
+              isOptionEqualToValue={(option, value) => option._id === value._id}
+              renderInput={(params) => (
+                <TextField {...params} label="Choose Customer" className={'custom-textfield'} />
+              )}
+              fullWidth
+            />
+          </FormControl>
+
+          {/* Loan Number Autocomplete */}
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, sm: 300 },
+            }}
+          >
+            <Autocomplete
+              multiple
+              options={filteredLoanIssues}
+              getOptionLabel={(option) => option.loanNo || ''}
+              value={filteredLoanIssues.filter((loan) =>
+                (filters.loanNo || []).includes(loan.loanNo)
+              )}
+              onChange={(event, newValue) => {
+                // newValue is an array of selected loan objects
+                const selectedLoanNos = newValue.map((loan) => loan.loanNo);
+                onFilters('loanNo', selectedLoanNos);
               }}
-            >
-              {customer.map((option) => (
-                <MenuItem key={option._id} value={option._id}>
-                  {`${option?.firstName} ${option?.middleName} ${option?.lastName}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
+              isOptionEqualToValue={(option, value) => option.loanNo === value.loanNo}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Loan Number(s)"
+                  className={'custom-textfield'}
+                />
+              )}
+              fullWidth
+              disabled={!filters.customer}
+            />
+          </FormControl>
+
+          {/* Start Date Picker */}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -201,6 +202,8 @@ export default function CustomerStatementTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
+
+          {/* End Date Picker */}
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -218,48 +221,32 @@ export default function CustomerStatementTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
+
           {getResponsibilityValue('print_customer_statement', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
+
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                view.onTrue();
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              view.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
         </CustomPopover>
       </Stack>
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -287,4 +274,5 @@ CustomerStatementTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  loanIssue: PropTypes.array, // Added prop type for loan issues
 };

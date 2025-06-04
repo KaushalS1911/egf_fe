@@ -54,7 +54,7 @@ const defaultFilters = {
   username: '',
   startDate: null,
   endDate: null,
-  branch: '',
+  branch: null,
 };
 
 // ----------------------------------------------------------------------
@@ -307,7 +307,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     );
   }
   if (branch) {
-    inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
+    inputData = inputData.filter((loan) => loan?.customer?.branch === branch);
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));

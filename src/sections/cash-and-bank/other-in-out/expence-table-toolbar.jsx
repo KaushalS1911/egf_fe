@@ -10,7 +10,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover/index.j
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel.jsx';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, Dialog, FormControl, Typography } from '@mui/material';
+import { Box, Dialog, FormControl, Typography, Autocomplete } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -145,104 +145,45 @@ export default function ExpenceTableToolbar({
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 220 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Cash & Bank Transactions
-            </InputLabel>
-            <Select
-              value={filters.transactions || ''}
-              onChange={handleFilterTransactions}
-              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options?.map((option) => (
-                <MenuItem key={option._id} value={option}>
-                  {option.bankName && option.accountHolderName
-                    ? `${option.bankName} (${option.accountHolderName})`
-                    : option.transactionsType || 'Unnamed Account'}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 220 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Category{' '}
-            </InputLabel>
-            <Select
-              value={filters.category || ''}
-              onChange={handleFilterCategory}
-              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {categoryOptions?.map((option) => (
-                <MenuItem key={option._id} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
+          <Autocomplete
+            fullWidth
+            disableClearable
+            size="medium"
+            options={options || []}
+            getOptionLabel={(option) =>
+              option.bankName && option.accountHolderName
+                ? `${option.bankName} (${option.accountHolderName})`
+                : option.transactionsType || 'Unnamed Account'
+            }
+            value={filters.transactions || null}
+            onChange={(_, newValue) => onFilters('transactions', newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Cash & Bank Transactions"
+                sx={{ minWidth: 220 }}
+                className={'custom-textfield'}
+              />
+            )}
+          />
+
+          <Autocomplete
+            fullWidth
+            disableClearable
+            size="medium"
+            options={categoryOptions || []}
+            getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
+            value={filters.category || ''}
+            onChange={(_, newValue) => onFilters('category', newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                sx={{ minWidth: 220 }}
+                className={'custom-textfield'}
+              />
+            )}
+          />
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

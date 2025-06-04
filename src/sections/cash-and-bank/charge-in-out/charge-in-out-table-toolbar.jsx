@@ -21,6 +21,7 @@ import PaymentInOutPdf from '../payment-in-out/view/payment-in-out-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import { useGetConfigs } from '../../../api/config.js';
 import ChargeInOutPdf from './view/charge-in-out-pdf.jsx';
+import Autocomplete from '@mui/material/Autocomplete';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ export default function ChargeInOutTableToolbar({
   const [endDateOpen, setEndDateOpen] = useState(false);
   const view = useBoolean();
   const { configs } = useGetConfigs();
+
   const filterData = {
     startDate: filters?.startDate,
     endDate: filters?.endDate,
@@ -90,9 +92,16 @@ export default function ChargeInOutTableToolbar({
     [onFilters]
   );
 
+  const handleFilterTransactions = useCallback(
+    (event, newValue) => {
+      onFilters('transactions', newValue || null);
+    },
+    [onFilters]
+  );
+
   const handleFilterCategory = useCallback(
-    (event) => {
-      onFilters('category', event.target.value);
+    (event, newValue) => {
+      onFilters('category', newValue || null);
     },
     [onFilters]
   );
@@ -108,12 +117,7 @@ export default function ChargeInOutTableToolbar({
     },
     input: { height: 7 },
   };
-  const handleFilterTransactions = useCallback(
-    (event) => {
-      onFilters('transactions', typeof event.target.value === 'object' ? event.target.value : null);
-    },
-    [onFilters]
-  );
+
   return (
     <>
       <Box sx={{ p: 2.5 }}>
@@ -121,6 +125,7 @@ export default function ChargeInOutTableToolbar({
           Charge Name : {chargeDetails.chargeType}
         </Typography>
       </Box>
+
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -147,104 +152,50 @@ export default function ChargeInOutTableToolbar({
               ),
             }}
           />
+
           <FormControl
             sx={{
               flexShrink: 0,
               width: { xs: 1, sm: 220 },
             }}
           >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Cash & Bank Transactions
-            </InputLabel>
-            <Select
-              value={filters.transactions || ''}
+            <Autocomplete
+              value={filters.transactions || null}
               onChange={handleFilterTransactions}
-              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options?.map((option) => (
-                <MenuItem key={option._id} value={option}>
-                  {option.bankName && option.accountHolderName
-                    ? `${option.bankName} (${option.accountHolderName})`
-                    : option.transactionsType || 'Unnamed Account'}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
+              options={options || []}
+              getOptionLabel={(option) =>
+                option.bankName && option.accountHolderName
+                  ? `${option.bankName} (${option.accountHolderName})`
+                  : option.transactionsType || 'Unnamed Account'
+              }
+              isOptionEqualToValue={(option, value) => option._id === value?._id}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Cash & Bank Transactions"
+                  className={'custom-textfield'}
+                />
+              )}
+            />
+          </FormControl>
+
           <FormControl
             sx={{
               flexShrink: 0,
               width: { xs: 1, sm: 150 },
             }}
           >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Status
-            </InputLabel>
-            <Select
-              value={filters.category}
+            <Autocomplete
+              value={filters.category || null}
               onChange={handleFilterCategory}
-              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {['Payment In', 'Payment Out'].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
+              options={['Payment In', 'Payment Out']}
+              getOptionLabel={(option) => option || ''}
+              renderInput={(params) => (
+                <TextField {...params} label="Status" className={'custom-textfield'} />
+              )}
+            />
           </FormControl>
+
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -278,10 +229,12 @@ export default function ChargeInOutTableToolbar({
             sx={{ ...customStyle }}
           />
         </Stack>
+
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
+
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -319,6 +272,7 @@ export default function ChargeInOutTableToolbar({
           whatsapp share
         </MenuItem>
       </CustomPopover>
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -340,5 +294,9 @@ export default function ChargeInOutTableToolbar({
 ChargeInOutTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
-  roleOptions: PropTypes.array,
+  schemes: PropTypes.array,
+  dateError: PropTypes.bool,
+  chargeDetails: PropTypes.object,
+  options: PropTypes.array,
+  chargeData: PropTypes.any,
 };

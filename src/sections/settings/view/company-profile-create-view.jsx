@@ -68,7 +68,7 @@ export default function CompanyProfile() {
       accountHolderName: editingBankDetail?.accountHolderName || '',
       bankName: editingBankDetail?.bankName || '',
       IFSC: editingBankDetail?.IFSC || '',
-      branchName: editingBankDetail?.branchName || '',
+      // branchName: editingBankDetail?.branchName || '',
     },
     resolver: yupResolver(bankDetailsSchema),
   });
@@ -84,7 +84,7 @@ export default function CompanyProfile() {
         name: companyDetail.name || '',
         email: companyDetail.email || '',
         contact: companyDetail.contact || '',
-        branch: configs?.headersConfig?.branch || null,
+        // branch: configs?.headersConfig?.branch || null,
         webUrl: configs?.headersConfig?.companyDetail.webUrl || '',
       });
     }
@@ -96,7 +96,7 @@ export default function CompanyProfile() {
       name: data.name,
       email: data.email,
       contact: data.contact,
-      branch: data.branch,
+      // branch: data.branch,
       webUrl: data.webUrl,
     };
 
@@ -268,18 +268,18 @@ export default function CompanyProfile() {
                       e.target.value = e.target.value.replace(/[^0-9]/g, '');
                     }}
                   />
-                  <RHFAutocomplete
-                    name="branch"
-                    label="Branch"
-                    fullWidth
-                    options={branch?.map((item) => item)}
-                    getOptionLabel={(option) => option.name}
-                    renderOption={(props, option) => (
-                      <li {...props} key={option}>
-                        {option.name}
-                      </li>
-                    )}
-                  />
+                  {/*<RHFAutocomplete*/}
+                  {/*  name="branch"*/}
+                  {/*  label="Branch"*/}
+                  {/*  fullWidth*/}
+                  {/*  options={branch?.map((item) => item)}*/}
+                  {/*  getOptionLabel={(option) => option.name}*/}
+                  {/*  renderOption={(props, option) => (*/}
+                  {/*    <li {...props} key={option}>*/}
+                  {/*      {option.name}*/}
+                  {/*    </li>*/}
+                  {/*  )}*/}
+                  {/*/>*/}
                   <RHFTextField name="webUrl" label="Website url" />
                 </Box>
               </Stack>
@@ -368,7 +368,7 @@ export default function CompanyProfile() {
                     sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                   >
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {account.bankName} ({account.accountType})
+                      {account.bankName} ({account.accountHolderName}) - {account.accountType}
                     </Typography>
                     <Box>
                       <IconButton color={'primary'} onClick={() => handleEditBankDetail(account)}>

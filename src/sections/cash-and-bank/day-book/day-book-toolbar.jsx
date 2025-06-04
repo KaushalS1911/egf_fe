@@ -15,8 +15,8 @@ import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Box, Dialog, FormControl } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Autocomplete from '@mui/material/Autocomplete'; // <-- Import Autocomplete
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import { PDFViewer } from '@react-pdf/renderer';
 import DialogActions from '@mui/material/DialogActions';
@@ -39,6 +39,7 @@ export default function DayBookToolbar({
   const [startDateOpen, setStartDateOpen] = useState(false);
 
   const view = useBoolean();
+
   const filterData = {
     startDate: filters.startDate,
     category: filters.status,
@@ -47,6 +48,7 @@ export default function DayBookToolbar({
         ? `${filters.transactions.bankName} (${filters.transactions.accountHolderName})`
         : filters?.transactions?.transactionsType || '-',
   };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -72,25 +74,28 @@ export default function DayBookToolbar({
   );
 
   const handleFilterCategory = useCallback(
-    (event) => {
-      onFilters('category', event.target.value);
+    (event, value) => {
+      onFilters('category', value || '');
     },
     [onFilters]
   );
+
   const handleFilterStatus = useCallback(
-    (event) => {
-      onFilters('status', event.target.value);
+    (event, value) => {
+      onFilters('status', value || '');
     },
     [onFilters]
   );
+
   const handleFilterTransactions = useCallback(
-    (event) => {
-      onFilters('transactions', typeof event.target.value === 'object' ? event.target.value : null);
+    (event, value) => {
+      onFilters('transactions', value || null);
     },
     [onFilters]
   );
+
   const customStyle = {
-    maxWidth: { md: 350 },
+    maxWidth: { md: 150 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -100,6 +105,7 @@ export default function DayBookToolbar({
     },
     input: { height: 7 },
   };
+
   return (
     <>
       <Stack
@@ -128,152 +134,55 @@ export default function DayBookToolbar({
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 220 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Cash & Bank Transactions
-            </InputLabel>
-            <Select
-              value={filters.transactions || ''}
-              onChange={handleFilterTransactions}
-              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options?.map((option) => (
-                <MenuItem key={option._id} value={option}>
-                  {option.bankName && option.accountHolderName
-                    ? `${option.bankName} (${option.accountHolderName})`
-                    : option.transactionsType || 'Unnamed Account'}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 250 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Category
-            </InputLabel>
-            <Select
-              value={filters.category}
-              onChange={handleFilterCategory}
-              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {['Payment In', 'Payment Out'].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 250 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Type
-            </InputLabel>
-            <Select
-              value={filters.status}
-              onChange={handleFilterStatus}
-              input={<OutlinedInput label="Type" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {typeOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+
+          {/* Autocomplete for Cash & Bank Transactions */}
+          <Autocomplete
+            sx={{ width: { xs: 1, sm: 500 } }}
+            options={options || []}
+            getOptionLabel={(option) =>
+              option.bankName && option.accountHolderName
+                ? `${option.bankName} (${option.accountHolderName})`
+                : option.transactionsType || 'Unnamed Account'
+            }
+            value={filters.transactions || null}
+            onChange={handleFilterTransactions}
+            isOptionEqualToValue={(option, value) => option._id === value?._id}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Cash & Bank Transactions"
+                className={'custom-textfield'}
+              />
+            )}
+          />
+
+          {/* Autocomplete for Category */}
+          <Autocomplete
+            sx={{ width: { xs: 1, sm: 500 } }}
+            options={['Payment In', 'Payment Out']}
+            value={filters.category || ''}
+            onChange={handleFilterCategory}
+            renderInput={(params) => (
+              <TextField {...params} label="Category" className={'custom-textfield'} />
+            )}
+          />
+
+          {/* Autocomplete for Type */}
+          <Autocomplete
+            sx={{ width: { xs: 1, sm: 500 } }}
+            options={typeOptions || []}
+            value={filters.status || ''}
+            onChange={handleFilterStatus}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Type"
+                variant="outlined"
+                className={'custom-textfield'}
+              />
+            )}
+          />
+
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -290,10 +199,12 @@ export default function DayBookToolbar({
             sx={{ ...customStyle }}
           />
         </Stack>
+
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
+
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -333,6 +244,7 @@ export default function DayBookToolbar({
           whatsapp share
         </MenuItem>
       </CustomPopover>
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

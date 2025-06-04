@@ -13,7 +13,7 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, Dialog, FormControl, Typography } from '@mui/material';
+import { Box, Dialog, FormControl, Typography, Autocomplete } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -24,8 +24,6 @@ import { PDFViewer } from '@react-pdf/renderer';
 import ExpencePdf from '../other-in-out/view/expence-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import PaymentInOutPdf from './view/payment-in-out-pdf.jsx';
-
-// ----------------------------------------------------------------------
 
 export default function PaymentInOutTableToolbar({
   filters,
@@ -44,6 +42,7 @@ export default function PaymentInOutTableToolbar({
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const view = useBoolean();
+
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
@@ -54,6 +53,7 @@ export default function PaymentInOutTableToolbar({
         ? `${filters.transactions.bankName} (${filters.transactions.accountHolderName})`
         : filters?.transactions?.transactionsType || '-',
   };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -63,16 +63,11 @@ export default function PaymentInOutTableToolbar({
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('startDate', null);
-        return;
-      }
       const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('startDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
+      if (!newValue || !date.isValid()) {
         onFilters('startDate', null);
+      } else {
+        onFilters('startDate', date.toDate());
       }
     },
     [onFilters]
@@ -80,29 +75,26 @@ export default function PaymentInOutTableToolbar({
 
   const handleFilterEndDate = useCallback(
     (newValue) => {
-      if (newValue === null || newValue === undefined) {
-        onFilters('endDate', null);
-        return;
-      }
       const date = moment(newValue);
-      if (date.isValid()) {
-        onFilters('endDate', date.toDate());
-      } else {
-        console.warn('Invalid date selected');
+      if (!newValue || !date.isValid()) {
         onFilters('endDate', null);
+      } else {
+        onFilters('endDate', date.toDate());
       }
     },
     [onFilters]
   );
+
   const handleFilterCategory = useCallback(
-    (event) => {
-      onFilters('category', event.target.value);
+    (event, newValue) => {
+      onFilters('category', newValue);
     },
     [onFilters]
   );
+
   const handleFilterTransactions = useCallback(
-    (event) => {
-      onFilters('transactions', typeof event.target.value === 'object' ? event.target.value : null);
+    (event, newValue) => {
+      onFilters('transactions', newValue);
     },
     [onFilters]
   );
@@ -118,23 +110,20 @@ export default function PaymentInOutTableToolbar({
     },
     input: { height: 7 },
   };
+
   return (
     <>
       <Box sx={{ p: 2.5, pb: 0, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography sx={{ color: 'text.secondary' }} variant="subtitle1" component="p">
+        <Typography sx={{ color: 'text.secondary' }} variant="subtitle1">
           {partyDetails?.name}
         </Typography>
       </Box>
+
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
-        direction={{
-          xs: 'column',
-          md: 'row',
-        }}
-        sx={{
-          p: 2.5,
-        }}
+        direction={{ xs: 'column', md: 'row' }}
+        sx={{ p: 2.5 }}
       >
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
@@ -151,104 +140,38 @@ export default function PaymentInOutTableToolbar({
               ),
             }}
           />
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 220 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Cash & Bank Transactions
-            </InputLabel>
-            <Select
-              value={filters.transactions || ''}
-              onChange={handleFilterTransactions}
-              input={<OutlinedInput label="Cash & Bank Transactions" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {options?.map((option) => (
-                <MenuItem key={option._id} value={option}>
-                  {option.bankName && option.accountHolderName
-                    ? `${option.bankName} (${option.accountHolderName})`
-                    : option.transactionsType || 'Unnamed Account'}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, sm: 150 },
-            }}
-          >
-            <InputLabel
-              sx={{
-                mt: -0.8,
-                '&.MuiInputLabel-shrink': {
-                  mt: 0,
-                },
-              }}
-            >
-              Category
-            </InputLabel>
-            <Select
-              value={filters.category}
-              onChange={handleFilterCategory}
-              input={<OutlinedInput label="Category" sx={{ height: '40px' }} />}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 240,
-                    '&::-webkit-scrollbar': {
-                      width: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: '#f1f1f1',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: '#888',
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: '#555',
-                    },
-                  },
-                },
-              }}
-            >
-              {['Payment In', 'Payment Out'].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+
+          <Autocomplete
+            fullWidth
+            options={options || []}
+            getOptionLabel={(option) =>
+              option.bankName && option.accountHolderName
+                ? `${option.bankName} (${option.accountHolderName})`
+                : option.transactionsType || 'Unnamed Account'
+            }
+            value={filters.transactions || null}
+            onChange={handleFilterTransactions}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Cash & Bank Transactions"
+                className={'custom-textfield'}
+              />
+            )}
+            isOptionEqualToValue={(option, value) => option._id === value?._id}
+          />
+
+          <Autocomplete
+            fullWidth
+            options={['Payment In', 'Payment Out']}
+            value={filters.category || null}
+            onChange={handleFilterCategory}
+            renderInput={(params) => (
+              <TextField {...params} label="Category" className={'custom-textfield'} />
+            )}
+            isOptionEqualToValue={(option, value) => option === value}
+          />
+
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -264,6 +187,7 @@ export default function PaymentInOutTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
+
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -282,10 +206,12 @@ export default function PaymentInOutTableToolbar({
             sx={{ ...customStyle }}
           />
         </Stack>
+
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
+
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -303,11 +229,7 @@ export default function PaymentInOutTableToolbar({
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
+            <MenuItem onClick={popover.onClose}>
               <Iconify icon="ant-design:file-pdf-filled" />
               PDF
             </MenuItem>
@@ -316,15 +238,12 @@ export default function PaymentInOutTableToolbar({
             </MenuItem>
           </>
         )}
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
+        <MenuItem onClick={popover.onClose}>
           <Iconify icon="ic:round-whatsapp" />
           whatsapp share
         </MenuItem>
       </CustomPopover>
+
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -355,4 +274,7 @@ PaymentInOutTableToolbar.propTypes = {
   dateError: PropTypes.bool,
   partyDetails: PropTypes.object,
   mutate: PropTypes.func,
+  options: PropTypes.array,
+  paymentData: PropTypes.array,
+  party: PropTypes.object,
 };

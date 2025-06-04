@@ -36,10 +36,12 @@ export default function OtherInterestEntryReportsTableRow({ row }) {
   return (
     <>
       <TableRow hover>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.otherLoan.otherLoanNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.otherLoan.loan.loanNo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.otherLoan.otherNumber}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.from)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.to)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.days > 0 ? row.days : 0}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.otherLoan.amount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.charge}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
