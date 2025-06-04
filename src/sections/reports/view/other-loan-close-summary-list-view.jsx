@@ -512,7 +512,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter((item) => item?.otherName === otherName);
   }
   if (!dateError && startDate && endDate) {
-    inputData = inputData.filter((item) => isBetween(new Date(item.closeDate), startDate, endDate));
+    inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
   if (!dateError && startCloseDate && endCloseDate) {
     inputData = inputData.filter((loan) =>
