@@ -332,7 +332,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter((item) =>
       item.otherLoan.otherLoanNumber.toLowerCase().includes(username.toLowerCase()) ||
-      item.otherLoan.otherNumber.toLowerCase().includes(username.toLowerCase())
+      item.otherLoan.otherNumber.toLowerCase().includes(username.toLowerCase()) ||
+      item.otherLoan.loan?.loanNo.toLowerCase().includes(username.toLowerCase())
     );
   }
 
