@@ -15,6 +15,7 @@ import { useAuthContext } from '../../../auth/hooks';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
+import {useTheme} from "@mui/material/styles";
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ export default function JwtLoginView() {
   const searchParams = useSearchParams();
   const [canResendOTP, setCanResendOTP] = useState(false);
   const returnTo = searchParams.get('returnTo');
-  const password = useBoolean();
+
 
   // Validation schema
   const LoginSchema = Yup.object().shape({
@@ -100,7 +101,9 @@ export default function JwtLoginView() {
     <>
       {renderHeader}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={2.5}>
+        <Stack
+          spacing={2.5}
+        >
           <RHFTextField
             name="contact"
             label="Contact"

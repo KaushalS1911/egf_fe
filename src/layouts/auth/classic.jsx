@@ -7,6 +7,7 @@ import loginImage from 'src/assets/login-back/login.jpg';
 import { useRouter } from '../../routes/hooks';
 import { PATH_AFTER_LOGIN } from '../../config-global';
 import Iconify from '../../components/iconify';
+import {useTheme} from "@mui/material/styles";
 // ----------------------------------------------------------------------
 
 const METHODS = [
@@ -44,6 +45,7 @@ const METHODS = [
 
 export default function AuthClassicLayout({ children, register, invite, forgotPassword }) {
   const router = useRouter();
+  const theme = useTheme();
   const renderContent = (
     <>
       <Box
@@ -53,7 +55,7 @@ export default function AuthClassicLayout({ children, register, invite, forgotPa
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          backgroundColor: '#F6F7F9',
+          backgroundColor: theme.palette.mode === 'light' ? '#ffff' : '#222830',
           position: invite ? 'relative' : 'unset',
         }}
       >
@@ -82,7 +84,7 @@ export default function AuthClassicLayout({ children, register, invite, forgotPa
           sx={{
             borderRadius: '20px',
             overflow: 'hidden',
-            boxShadow: '1px 1px 20px #e1e1e1',
+            boxShadow: '1px 1px 10px #e1e1e1',
             maxWidth: { md: '85rem !important', xs: 'unset' },
             width: forgotPassword ? { xs: '430px' } : { xs: '430px', md: '100%' },
             mx: '20px',
