@@ -66,6 +66,7 @@ const TABLE_HEAD = [
   { id: 'bankAmount', label: 'Bank amt' },
   { id: 'bankName', label: 'Bank' },
   { id: 'Amount', label: 'Amount' },
+  { id: 'status', label: 'Status' },
 ];
 
 const defaultFilters = {
