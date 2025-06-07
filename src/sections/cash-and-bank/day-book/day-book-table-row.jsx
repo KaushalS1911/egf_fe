@@ -45,18 +45,8 @@ export default function DayBookTableRow({ row, selected, onEditRow, onSelectRow,
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.ref ? `${row.detail} (${row.ref})` : row.detail}
         </TableCell>{' '}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <Label
-            variant="soft"
-            color={
-              (row.category === 'Payment Out' && 'error') ||
-              (row.category === 'Payment In' && 'success') ||
-              'default'
-            }
-          >
-            {row.category}
-          </Label>
-        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.allCategory || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail?.paymentMode || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail?.cashAmount || 0}</TableCell>
@@ -70,7 +60,19 @@ export default function DayBookTableRow({ row, selected, onEditRow, onSelectRow,
           sx={{ whiteSpace: 'nowrap', color: row.category === 'Payment Out' ? 'red' : 'green' }}
         >
           {row.amount}
-        </TableCell>
+        </TableCell> <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <Label
+          variant="soft"
+          color={
+            (row.category === 'Payment Out' && 'error') ||
+            (row.category === 'Payment In' && 'success') ||
+            'default'
+          }
+        >
+          {row.category}
+        </Label>
+      </TableCell>
+
       </TableRow>
       <CustomPopover
         open={popover.open}

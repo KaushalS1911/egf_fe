@@ -74,6 +74,7 @@ const TABLE_HEAD = [
 ];
 
 export default function LoanissueNewEditForm({ currentLoanIssue }) {
+
   const router = useRouter();
   const table = useTable();
   const [customerId, setCustomerID] = useState();
@@ -104,12 +105,11 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
   const [rotation, setRotation] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
-  const [selectBankAccount, setSelectBankAccount] = useState(
-    !!currentLoanIssue?.customerBankDetail
-  );
+  const [selectBankAccount, setSelectBankAccount] = useState(!currentLoanIssue?.customerBankDetail);
   const [addBankAccount, setAddBankAccount] = useState(!!currentLoanIssue?.customerBankDetail);
   const [approvalChargeValue, setApprovalChargeValue] = useState(0);
   const [chargePaymentModeValue, setChargePaymentModeValue] = useState('');
+  const [paymentMode, setPaymentMode] = useState('');
 
   useEffect(() => {
     setMultiSchema(scheme);
@@ -124,7 +124,38 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       };
     }
   }, [imageSrc]);
-
+  const paymentSchema =
+    paymentMode === 'Bank'
+      ? {
+          account: Yup.object().required('Account is required').typeError('Account is required'),
+          bankAmount: Yup.string()
+            .required('Bank Amount is required')
+            .test(
+              'is-positive',
+              'Bank Amount must be a positive number',
+              (value) => parseFloat(value) >= 0
+            ),
+        }
+      : paymentMode === 'Cash'
+        ? {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+          }
+        : {
+            cashAmount: Yup.number()
+              .typeError('Cash Amount must be a valid number')
+              .required('Cash Amount is required')
+              .min(0, 'Cash Amount must be a positive number'),
+            bankAmount: Yup.string()
+              .required('Bank Amount is required')
+              .test(
+                'is-positive',
+                'Bank Amount must be a positive number',
+                (value) => parseFloat(value) >= 0
+              ),
+          };
   const chargePaymentSchema = {
     ...(approvalChargeValue > 0 && {
       chargePaymentMode: Yup.string().required('Charge Payment Mode is required'),
@@ -174,7 +205,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     jewellerName: Yup.string().required('Jeweller Name is required'),
     loanAmount: Yup.string().required('Loan Amount is required'),
     paymentMode: Yup.string().required('Payment Mode is required'),
-    cashAmount: Yup.string().required('Cash Amount is required'),
     approvalCharge: Yup.string().required('Approval Charge To Amount is required'),
     loanType: Yup.string().required('Loan Type is required'),
     propertyDetails: Yup.array().of(
@@ -203,8 +233,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       branchName: Yup.string().required('Branch Name is required'),
     }),
     ...chargePaymentSchema,
+    ...paymentSchema
   });
 
+  console.log(selectBankAccount, '111111111111111');
   const defaultValues = useMemo(() => {
     const baseValues = {
       customer_url: '',
@@ -251,7 +283,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       IFSC: currentLoanIssue?.customerBankDetail?.IFSC || '',
       bankName: currentLoanIssue?.customerBankDetail?.bankName || '',
       branchName: currentLoanIssue?.customerBankDetail?.branchName || null,
-      account: currentLoanIssue?.customerBankDetail || null,
+      account: currentLoanIssue?.customerBankDetail || '',
       propertyDetails: currentLoanIssue?.propertyDetails || [
         {
           type: '',
@@ -289,6 +321,10 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     control,
     name: 'propertyDetails',
   });
+
+  useEffect(() => {
+    setPaymentMode(watch('paymentMode'));
+  }, [watch('paymentMode')]);
 
   useEffect(() => {
     const loanType = watch('loanType');
@@ -1895,7 +1931,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                       pb: 1.5,
                     }}
                   >
-                    {!currentLoanIssue && (
+                    {!Object?.values(currentLoanIssue?.customerBankDetail || {})?.some(Boolean) && (
                       <Box>
                         {customerData?.bankDetails?.length > 0 && (
                           <Button
@@ -1959,7 +1995,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                         label="Account"
                         req="red"
                         fullWidth
-                        options={customerData.bankDetails || []}
+                        options={customerData?.bankDetails || []}
                         getOptionLabel={(option) => option.bankName || ''}
                         renderOption={(props, option) => (
                           <li {...props} key={option._id || option.bankName}>

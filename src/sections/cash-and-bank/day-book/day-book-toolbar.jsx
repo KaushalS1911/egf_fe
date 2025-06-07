@@ -121,8 +121,7 @@ export default function DayBookToolbar({
       >
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            sx={{ input: { height: 7 } }}
-            fullWidth
+            sx={{ input: { height: 7 }, width: { xs: 1, sm: 550 } }}
             value={filters.name}
             onChange={handleFilterName}
             placeholder="Search..."
@@ -137,7 +136,7 @@ export default function DayBookToolbar({
 
           {/* Autocomplete for Cash & Bank Transactions */}
           <Autocomplete
-            sx={{ width: { xs: 1, sm: 500 } }}
+            sx={{ width: { xs: 1, sm: 250 } }}
             options={options || []}
             getOptionLabel={(option) =>
               option.bankName && option.accountHolderName
@@ -158,7 +157,7 @@ export default function DayBookToolbar({
 
           {/* Autocomplete for Category */}
           <Autocomplete
-            sx={{ width: { xs: 1, sm: 500 } }}
+            sx={{ width: { xs: 1, sm: 250 } }}
             options={['Payment In', 'Payment Out']}
             value={filters.category || ''}
             onChange={handleFilterCategory}
@@ -169,7 +168,7 @@ export default function DayBookToolbar({
 
           {/* Autocomplete for Type */}
           <Autocomplete
-            sx={{ width: { xs: 1, sm: 500 } }}
+            sx={{ width: { xs: 1, sm: 250 } }}
             options={typeOptions || []}
             value={filters.status || ''}
             onChange={handleFilterStatus}
@@ -211,7 +210,7 @@ export default function DayBookToolbar({
         arrow="right-top"
         sx={{ width: 'auto' }}
       >
-        {getResponsibilityValue('print_scheme_detail', configs, user) && (
+        {/*{getResponsibilityValue('print_scheme_detail', configs, user) && (*/}
           <>
             <MenuItem
               onClick={() => {
@@ -234,7 +233,7 @@ export default function DayBookToolbar({
               <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
             </MenuItem>
           </>
-        )}
+        {/*)}*/}
         <MenuItem
           onClick={() => {
             popover.onClose();
