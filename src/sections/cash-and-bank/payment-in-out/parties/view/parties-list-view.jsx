@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -256,6 +256,16 @@ export default function PartiesListView({
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePaginationCustom
+        sx={{ '.css-n3104v-MuiToolbar-root-MuiTablePagination-toolbar': { p: 0 , overflow:'hidden'} }}
+        count={dataFiltered.length}
+        page={table.page}
+        rowsPerPage={table.rowsPerPage}
+        onPageChange={table.onChangePage}
+        onRowsPerPageChange={table.onChangeRowsPerPage}
+        // dense={table.dense}
+        // onChangeDense={table.onChangeDense}
+      />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
