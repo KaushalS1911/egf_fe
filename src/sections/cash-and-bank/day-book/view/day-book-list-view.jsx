@@ -183,7 +183,7 @@ export default function DayBookListView() {
         <CustomBreadcrumbs
           heading={
             <Typography variant="h4" gutterBottom>
-              Day Bank :{' '}
+              Day Book :{' '}
               <strong style={{ color: amount > 0 ? 'green' : 'red' }}>
                 {Object.values(filters).some(Boolean)
                   ? Math.abs(amount).toFixed(2)
