@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -222,7 +222,7 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
       )}
       <TableContainer
         sx={{
-          maxHeight: 500,
+          maxHeight: 700,
           overflow: 'auto',
           position: 'relative',
         }}
@@ -286,6 +286,16 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePaginationCustom
+        sx={{
+          '.css-n3104v-MuiToolbar-root-MuiTablePagination-toolbar': { p: 0, overflow: 'hidden' },
+        }}
+        count={dataFiltered.length}
+        page={table.page}
+        rowsPerPage={table.rowsPerPage}
+        onPageChange={table.onChangePage}
+        onRowsPerPageChange={table.onChangeRowsPerPage}
+      />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

@@ -263,8 +263,6 @@ export default function PartiesListView({
         rowsPerPage={table.rowsPerPage}
         onPageChange={table.onChangePage}
         onRowsPerPageChange={table.onChangeRowsPerPage}
-        // dense={table.dense}
-        // onChangeDense={table.onChangeDense}
       />
       <ConfirmDialog
         open={confirm.value}

@@ -505,7 +505,6 @@ export default function PaymentInOutNewEditForm({ currentPayment }) {
                             {...field}
                             label="Bank Amount"
                             req={'red'}
-                            disabled={watch('paymentMode') === 'Bank' ? false : true}
                           />
                         )}
                       />

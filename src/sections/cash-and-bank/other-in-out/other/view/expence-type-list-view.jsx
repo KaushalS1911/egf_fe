@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
@@ -17,7 +17,7 @@ import {
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableNoData,
+  TableNoData, TablePaginationCustom,
   TableSelectedAction,
   useTable,
 } from 'src/components/table/index.js';
@@ -231,6 +231,14 @@ export default function ExpenceTypeListView({
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePaginationCustom
+        sx={{ '.css-n3104v-MuiToolbar-root-MuiTablePagination-toolbar': { p: 0 , overflow:'hidden'} }}
+        count={dataFiltered.length}
+        page={table.page}
+        rowsPerPage={table.rowsPerPage}
+        onPageChange={table.onChangePage}
+        onRowsPerPageChange={table.onChangeRowsPerPage}
+      />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
