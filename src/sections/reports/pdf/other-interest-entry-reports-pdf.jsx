@@ -3,7 +3,7 @@ import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/rendere
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 import { differenceInDays } from 'date-fns';
-import {NumberSchema} from "yup";
+import { NumberSchema } from 'yup';
 
 // Register fonts
 Font.register({
@@ -126,7 +126,7 @@ export default function OtherInterestEntryReportsPdf({
   filterData,
   total,
 }) {
-  const { bankAmt, cashAmt, interestAmount, charge, day, payAmt,otherAmt } = total || {};
+  const { bankAmt, cashAmt, interestAmount, charge, day, payAmt, otherAmt } = total || {};
 
   const styles = useStyles();
   const headers = [
@@ -136,12 +136,12 @@ export default function OtherInterestEntryReportsPdf({
     { label: 'From Date', flex: 1.2 },
     { label: 'To Date', flex: 1.2 },
     { label: 'Days', flex: 0.5 },
-    { label: 'Int. Amt', flex: 1.2 },
     { label: 'Other Amt', flex: 1.2 },
+    { label: 'Int. Amt', flex: 1.2 },
     { label: 'Charge', flex: 1.2 },
     { label: 'Amt Paid', flex: 1.2 },
-    { label: 'Cash Amt', flex: 1.2 },
     { label: 'Payment Mode', flex: 1.2 },
+    { label: 'Cash Amt', flex: 1.2 },
     { label: 'Bank Amt', flex: 1.2 },
     { label: 'Bank', flex: 1.5 },
     { label: 'Entry Date', flex: 1.2 },
@@ -154,8 +154,8 @@ export default function OtherInterestEntryReportsPdf({
   ];
 
   // Modified to have different row counts for first page vs subsequent pages
-  const firstPageRows = 16;
-  const otherPagesRows = 23;
+  const firstPageRows = 12;
+  const otherPagesRows = 16;
 
   const pages = [];
   let currentPageRows = [];
@@ -173,24 +173,27 @@ export default function OtherInterestEntryReportsPdf({
       <View key={index} style={[styles.tableRow, isAlternateRow && styles.alternateRow]}>
         <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
         <Text style={[styles.tableCell, { flex: 3 }]}>{row.otherLoan.loan.loanNo}</Text>
-        <Text style={[styles.tableCell, { flex: 1}]}>{row.otherLoan.otherNumber}</Text>
+        <Text style={[styles.tableCell, { flex: 1 }]}>{row.otherLoan.otherNumber}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.from) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>{fDate(row.to) || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.days || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.amount || '-'}</Text>{' '}
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.interestAmount || '-'}</Text>{' '}
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.charge || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 0.5 }]}>{row.days || 0}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.amount || 0}</Text>{' '}
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {(Number(row?.payAfterAdjust) - Number(row.charge)).toFixed(2) || '-'}
+          {' '}
+          {(Number(row?.payAfterAdjust) - Number(row.charge || 0)).toFixed(2) || '-'}
+        </Text>{' '}
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.charge || 0}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>
+          {(Number(row?.payAfterAdjust) - Number(row.charge || 0)).toFixed(2) || '-'}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
           {row?.paymentDetail?.paymentMode || '-'}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {row?.paymentDetail?.cashAmount || '-'}
+          {row?.paymentDetail?.cashAmount || 0}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.2 }]}>
-          {row?.paymentDetail?.bankAmount || '-'}
+          {row?.paymentDetail?.bankAmount || 0}
         </Text>
         <Text style={[styles.tableCell, { flex: 1.5 }]}>{row?.paymentDetail?.bankName || '-'}</Text>
         <Text style={[styles?.tableCell, { flex: 1.2 }]}>{fDate(row?.createdAt) || '-'}</Text>
@@ -257,7 +260,7 @@ export default function OtherInterestEntryReportsPdf({
               {isLastRow && (
                 <View style={[styles.tableRow, styles.totalRow]}>
                   <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
-                  <Text style={[styles.totalCell, { flex: 3}]}>TOTAL</Text>
+                  <Text style={[styles.totalCell, { flex: 3 }]}>TOTAL</Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.2 }]}></Text>

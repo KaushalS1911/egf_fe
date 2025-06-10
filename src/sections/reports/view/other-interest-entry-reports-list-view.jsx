@@ -47,6 +47,7 @@ const TABLE_HEAD = [
   { id: 'interestAmount', label: 'Int. amt' },
   { id: 'charge', label: 'Charge' },
   { id: 'amountPaid', label: 'Amount Paid' },
+  { id: 'paymentMode', label: 'Payment mode' },
   { id: 'cashAmt', label: 'Cash Amt' },
   { id: 'BankAmt', label: 'Bank Amt' },
   { id: 'Bank', label: 'Bank' },
@@ -264,6 +265,7 @@ export default function OtherInterestEntryReportsListView() {
                     {(payAmt - charge).toFixed(0)}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
+                  </TableCell><TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {cashAmt}
                   </TableCell>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>

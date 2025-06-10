@@ -19,11 +19,15 @@ export default function OtherInterestEntryReportsTableRow({ row }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.to)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.days > 0 ? row.days : 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.otherLoan.amount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.interestAmount}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.charge}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {' '}
+          {(Number(row.payAfterAdjust) - Number(row.charge || 0)).toFixed(2)}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.charge || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {(Number(row.payAfterAdjust) - Number(row.charge || 0)).toFixed(2)}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail.paymentMode || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail.cashAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail.bankAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.paymentDetail.bankName || '-'}</TableCell>
