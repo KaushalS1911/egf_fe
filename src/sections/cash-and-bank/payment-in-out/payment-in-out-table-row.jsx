@@ -62,30 +62,30 @@ export default function PaymentInOutTableRow({
             />
           </TableCell>{' '}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.party?.name}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.receiptNo.split('/')[2]}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.date)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.paymentDetail?.paymentMode}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap',px:0 }}>{row?.party?.name}</TableCell>
+        <TableCell>{row?.receiptNo.split('/')[2]}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap',px:1 }}>{fDate(row.date)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap',px:1 }}>{row?.paymentDetail?.paymentMode}</TableCell>
         <TableCell
           sx={{
-            whiteSpace: 'nowrap',
+            whiteSpace: 'nowrap',px:1,
           }}
         >
           {row?.paymentDetail?.cashAmount || 0}
         </TableCell>
         <TableCell
           sx={{
-            whiteSpace: 'nowrap',
+            whiteSpace: 'nowrap',px:1,
           }}
         >
           {row?.paymentDetail?.bankAmount || 0}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap',px:1 }}>
           {row?.paymentDetail?.account?.bankName && row?.paymentDetail?.account?.accountHolderName
             ? `${row.paymentDetail.account.bankName} (${row.paymentDetail.account.accountHolderName})`
             : '-'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '200px', textWrap: 'wrap' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap',px:1, maxWidth: '200px', textWrap: 'wrap' }}>
           {row?.description || '-'}
         </TableCell>
         {row.invoice ? (
@@ -96,9 +96,9 @@ export default function PaymentInOutTableRow({
             <Lightbox image={row.invoice} open={lightbox.open} close={lightbox.onClose} />
           </TableCell>
         ) : (
-          <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>-</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap',px:1, textAlign: 'center' }}>-</TableCell>
         )}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap',px:1 }}>
           <Label
             variant="soft"
             color={
@@ -111,7 +111,7 @@ export default function PaymentInOutTableRow({
           </Label>
         </TableCell>
 
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <TableCell align="right" sx={{ px: 0, whiteSpace: 'nowrap' }}>
           {/*{getResponsibilityValue('delete_scheme', configs, user) ||*/}
           {/*getResponsibilityValue('update_scheme', configs, user) ? (*/}
 

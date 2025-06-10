@@ -299,7 +299,7 @@ export default function PropertyListView() {
                 sx={{
                   position: 'sticky',
                   top: 0,
-                  zIndex: 1000,
+                  zIndex: 1,
                 }}
               />
               <TableBody>
