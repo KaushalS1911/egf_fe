@@ -50,7 +50,7 @@ export default function BankAccountTableRow({
         <TableCell
           sx={{ whiteSpace: 'nowrap' }}
         >{`${row.bankName}(${row?.bankHolderName})`}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{width:1500}}>
           {row.ref ? `${row.detail} (${row.ref})` : row.detail}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

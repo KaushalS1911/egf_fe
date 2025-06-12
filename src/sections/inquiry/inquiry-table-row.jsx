@@ -134,7 +134,7 @@ export default function InquiryTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor || '-'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{remark || '-'}</TableCell>
+        <TableCell sx={{width:350}}>{remark || '-'}</TableCell>
         <TableCell>
           <Label
             variant="soft"
