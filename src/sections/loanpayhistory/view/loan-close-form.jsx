@@ -313,10 +313,10 @@ function LoanCloseForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
-
-  const sendPdfToWhatsApp = async (item) => {
+  console.log(currentLoan,"000000000000")
+  const sendPdfToWhatsApp = async (item,date,charge) => {
     try {
-      const blob = await pdf(<Noc nocData={currentLoan} configs={configs} />).toBlob();
+      const blob = await pdf(<Noc nocData={currentLoan} closingDate={date} charge={charge} configs={configs} />).toBlob();
       const file = new File([blob], `Noc.pdf`, { type: 'application/pdf' });
       const payload = {
         firstName: item ? item.loan.customer.firstName : data.loan.customer.firstName,
@@ -481,7 +481,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       };
       const response = await axios(config);
       const responseData = response?.data?.data;
-      sendPdfToWhatsApp(responseData);
+      sendPdfToWhatsApp(responseData,data.date,data.closingCharge);
       if (data.closingCharge > 0 && configs.chargeType.includes('CLOSING CHARGE')) {
         handleChargeIn(data);
       }
