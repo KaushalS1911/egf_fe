@@ -21,9 +21,7 @@ import React from 'react';
 
 export default function BankAccountTableRow({
   row,
-  selected,
   onEditRow,
-  onSelectRow,
   onDeleteRow,
 }) {
   const confirm = useBoolean();
@@ -33,7 +31,7 @@ export default function BankAccountTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow hover >
         <TableCell padding="checkbox">
           <TableCell sx={{ fontSize: '12px', textAlign: 'center' }}>
             <Box
@@ -134,7 +132,5 @@ export default function BankAccountTableRow({
 BankAccountTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
-  onSelectRow: PropTypes.func,
   row: PropTypes.object,
-  selected: PropTypes.bool,
 };
