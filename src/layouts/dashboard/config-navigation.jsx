@@ -276,6 +276,9 @@ export function useNavData() {
               {
                 title: t('day book'),
                 path: paths.dashboard.cashAndBank['day-book'].list,
+              },{
+                title: t('all transaction'),
+                path: paths.dashboard.cashAndBank['all-transaction'].list,
               },
             ],
           },

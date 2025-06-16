@@ -236,7 +236,7 @@ export default function CustomerListView() {
               } else if (tab.value === 'false') {
                 count = customer.filter(user => user.isLoan === false).length;
               } else if (['Active', 'In Active', 'Blocked',true,false].includes(tab.value)) {
-                count = customer.filter(user => user.status  && user.isLoan === tab.value).length;
+                count = customer.filter(user => user.status === tab.value  || user.isLoan === tab.value).length;
               } else {
                 count = customer.length;
               }

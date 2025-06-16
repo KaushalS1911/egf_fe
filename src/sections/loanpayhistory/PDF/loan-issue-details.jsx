@@ -545,8 +545,8 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       key={index}
                       style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}
                     >
-                      <Text style={{ fontSize: 10, fontWeight: '500', marginRight: 4 }}>•</Text>{' '}
-                      <Text style={{ fontSize: 10, fontWeight: '500' }}>{item}</Text>{' '}
+                      <Text style={{ fontSize: 10, fontWeight: '600', marginRight: 4 }}>•</Text>{' '}
+                      <Text style={{ fontSize: 10, fontWeight: '600' }}>{item}</Text>{' '}
                     </View>
                   ))}
                 </View>

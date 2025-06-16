@@ -109,7 +109,7 @@ export const paths = {
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     setting: `${ROOTS.DASHBOARD}/setting`,
-    goldLoanCalculator: `${ROOTS.DASHBOARD}/goldLoanCalculator`,
+    goldLoanCalculator: `${ROOTS.DASHBOARD}/gold-loan-calculator`,
 
     general: {
       app: `${ROOTS.DASHBOARD}/app`,
@@ -242,6 +242,9 @@ export const paths = {
       },
       'day-book': {
         list: `${ROOTS.DASHBOARD}/cash-and-bank/day-book/list`,
+      },
+      'all-transaction': {
+        list: `${ROOTS.DASHBOARD}/cash-and-bank/all-transaction/list`,
       },
       chargeInOut: {
         list: `${ROOTS.DASHBOARD}/cash-and-bank/charge-in-out/list`,

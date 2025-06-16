@@ -120,6 +120,7 @@ export default function TransferDialog({
       parsedBranch === 'all' ? values?.branch?.value || branch?.[0]?._id : parsedBranch;
 
     let payload = {
+      entryBy: user?._id,
       branch: selectedBranchId,
       company: user.company,
       transferType: watchTransferType,

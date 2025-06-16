@@ -12,6 +12,7 @@ import OtherDailyReportsListView from 'src/sections/reports/view/other-loan-dail
 import DayBookListView from '../../sections/cash-and-bank/day-book/view/day-book-list-view.jsx';
 import CustomerRefReportListView from '../../sections/reports/view/customer-ref-report-list-view.jsx';
 import OtherInterestEntryReportsListView from '../../sections/reports/view/other-interest-entry-reports-list-view.jsx';
+import AllTransactionListView from "../../sections/cash-and-bank/all-transaction/view/all-transaction-list-view.jsx";
 
 // ----------------------------------------------------------------------
 
@@ -358,10 +359,11 @@ export const dashboardRoutes = [
           { path: 'charge-in-out/new', element: <ChargeInOutCreateView /> },
           { path: 'charge-in-out/:id/edit', element: <ChargeInOutEditView /> },
           { path: 'day-book/list', element: <DayBookListView /> },
+          { path: 'all-transaction/list', element: <AllTransactionListView /> },
         ],
       },
       { path: 'setting', element: <SettingsPage /> },
-      { path: 'goldLoanCalculator', element: <GoldLoanCalculator /> },
+      { path: 'gold-loan-calculator', element: <GoldLoanCalculator /> },
     ],
   },
   { path: 'jwt/reset-password/:token', element: <ResetPassword /> },
