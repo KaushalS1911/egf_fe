@@ -451,7 +451,10 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
       (item) =>
         item?.party?.name?.toLowerCase().includes(name?.toLowerCase()) ||
         item?.receiptNo?.toLowerCase().includes(name?.toLowerCase()) ||
-        item?.description?.toLowerCase().includes(name?.toLowerCase())
+        item?.description?.toLowerCase().includes(name?.toLowerCase()) ||
+        item?.paymentDetail?.cashAmount?.includes(name) ||
+        item?.paymentDetail?.bankAmount?.includes(name)
+
     );
   }
   if (category) {

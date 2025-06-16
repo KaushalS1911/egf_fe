@@ -535,7 +535,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter(
       (item) =>
         item.detail.toLowerCase().includes(name.toLowerCase()) ||
-        item.ref.toLowerCase().includes(name.toLowerCase())
+        item.ref.toLowerCase().includes(name.toLowerCase()) ||
+        (item?.amount).toString()?.includes(name)
     );
   }
 

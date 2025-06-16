@@ -330,7 +330,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (name && name.trim()) {
     inputData = inputData.filter((sch) =>
-      sch?.incomeType?.toLowerCase().includes(name.toLowerCase())
+      sch?.incomeType?.toLowerCase().includes(name.toLowerCase()) ||
+      (sch?.amount).toString()?.includes(name)
     );
   }
 

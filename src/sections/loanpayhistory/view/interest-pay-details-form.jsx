@@ -348,7 +348,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     }
 
     const payload = {
-      entryBy: user.firstName + ' ' + user.middleName + ' ' + user.lastName,]
+      entryBy: user.firstName + ' ' + user.middleName + ' ' + user.lastName,
       to: new Date(data.to),
       adjustedPay: parseFloat(data.payAfterAdjusted1) || 0,
       days: parseInt(data.days, 10) || 0,

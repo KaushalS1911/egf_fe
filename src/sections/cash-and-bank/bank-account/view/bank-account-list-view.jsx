@@ -360,7 +360,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     inputData = inputData.filter(
       (sch) =>
         sch?.ref?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.detail?.toLowerCase().includes(name?.toLowerCase())
+        sch?.detail?.toLowerCase().includes(name?.toLowerCase()) ||
+        (sch?.amount).toString()?.includes(name)
     );
   }
 

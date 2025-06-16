@@ -419,10 +419,12 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (name && name.trim()) {
     inputData = inputData.filter(
-      (sch) =>
-        sch?.chargeType?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.category?.toLowerCase().includes(name?.toLowerCase()) ||
-        sch?.description?.toLowerCase().includes(name?.toLowerCase())
+      (item) =>
+        item?.chargeType?.toLowerCase().includes(name?.toLowerCase()) ||
+        item?.category?.toLowerCase().includes(name?.toLowerCase()) ||
+        item?.description?.toLowerCase().includes(name?.toLowerCase()) ||
+        item?.paymentDetail?.cashAmount?.includes(name) ||
+        item?.paymentDetail?.bankAmount?.includes(name)
     );
   }
   if (category) {
