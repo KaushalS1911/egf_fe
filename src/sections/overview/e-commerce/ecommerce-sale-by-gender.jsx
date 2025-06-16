@@ -212,7 +212,7 @@ export default function EcommerceSaleByGender({
                           lineHeight: 1.2,
                         }}
                       >
-                        {`${bank.name}(${bank.holderName})`}
+                        {`${bank.name}(${bank.bankHolderName})`}
                       </Typography>
                       <Typography
                         variant='subtitle1'

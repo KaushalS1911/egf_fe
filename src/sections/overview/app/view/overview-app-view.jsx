@@ -95,22 +95,23 @@ export default function OverviewAppView() {
     const amount = Number(tx.amount) || 0;
     const key = tx.bankName;
     const sign = tx.category === 'Payment In' ? 1 : -1;
+
     bankamount += sign * amount;
 
     if (!bankMap[key]) {
       bankMap[key] = {
-        total: 0,
-        holderName: tx.bankHolderName || 'N/A',
+        amount: 0,
+        bankHolderName: tx.bankHolderName || 'N/A',
       };
     }
 
-    bankMap[key].total += sign * amount;
+    bankMap[key].amount += sign * amount;
   });
 
   const banks = Object.entries(bankMap).map(([name, data]) => ({
     name,
-    amount: data.total,
-    holderName: data.holderName,
+    amount: data.amount,
+    bankHolderName: data.bankHolderName,
   }));
 
   const { ReferenceAreaSummary: customerData } = useGetReferenceAreaSummary(
