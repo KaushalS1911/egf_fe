@@ -292,10 +292,7 @@ export default function BankAccountListView() {
                         )
                         .map((row) => (
                           <BankAccountTableRow
-                            key={row._id}
                             row={row}
-                            selected={table.selected.includes(row._id)}
-                            onSelectRow={() => table.onSelectRow(row._id)}
                             onEditRow={() => handleEditRow(row._id)}
                             onDeleteRow={() => handleDeleteRow(row._id)}
                           />

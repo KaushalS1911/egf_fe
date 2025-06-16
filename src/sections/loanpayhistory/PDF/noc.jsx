@@ -204,7 +204,7 @@ const useStyles = () =>
     []
   );
 
-function Noc({ nocData, configs }) {
+function Noc({ nocData, configs ,closingDate , charge}) {
   const styles = useStyles();
   return (
     <>
@@ -262,7 +262,7 @@ function Noc({ nocData, configs }) {
                   with <Text style={[styles.fw, styles.bottomDetails]}>Easy Gold FinCorp</Text>, has
                   been successfully closed as of{' '}
                   <Text style={[styles.fw, styles.bottomDetails]}>
-                    {fDate(nocData.closingDate)}
+                    {fDate(nocData.closingDate || closingDate)}
                   </Text>{' '}
                   <Text style={styles.bottomDetails}>
                     {' '}
@@ -282,13 +282,13 @@ function Noc({ nocData, configs }) {
                 </Text>
                 <Text style={styles.bottomDetails}>- Loan Amount: {nocData.loanAmount}</Text>
                 <Text style={styles.bottomDetails}>
-                  - Closing Charge: {nocData.closingCharge || 0}
+                  - Closing Charge: {nocData.closingCharge ||  charge || 0}
                 </Text>
                 <Text style={styles.bottomDetails}>
                   - Date of Loan Disbursement: {fDate(nocData.issueDate)}
                 </Text>
                 <Text style={styles.bottomDetails}>
-                  - Closure Date: {fDate(nocData.closingDate)}
+                  - Closure Date: {fDate(nocData.closingDate || closingDate)}
                 </Text>
               </View>
               <View style={styles.mt8}>
