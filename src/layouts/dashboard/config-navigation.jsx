@@ -180,7 +180,7 @@ export function useNavData() {
               },
               {
                 title: t('branch vise loan closing report'),
-                path: paths.dashboard.reports['closed-loanList'],
+                path: paths.dashboard.reports['closed-loan-list'],
               },
               {
                 title: t('daily reports'),

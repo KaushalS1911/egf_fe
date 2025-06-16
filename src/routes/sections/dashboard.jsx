@@ -321,7 +321,7 @@ export const dashboardRoutes = [
         children: [
           { element: <AllBranchLoanSummaryListView />, index: true },
           { path: 'loan-list', element: <AllBranchLoanSummaryListView /> },
-          { path: 'closed-loanList', element: <BranchViseLoanClosingListView /> },
+          { path: 'closed-loan-list', element: <BranchViseLoanClosingListView /> },
           { path: 'daily-reports', element: <DailyReportsListView /> },
           { path: 'loan-details', element: <LoanDetailListView /> },
           { path: 'interest-reports', element: <InterestReportsListView /> },
