@@ -4,15 +4,13 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Dialog, FormControl, IconButton, MenuItem } from '@mui/material';
+import { Dialog, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { useGetBranch } from '../../../api/branch.js';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import CustomerRefReportPdf from '../pdf/customer-ref-report-pdf.jsx';
@@ -23,6 +21,21 @@ import DialogActions from '@mui/material/DialogActions';
 import Autocomplete from '@mui/material/Autocomplete';
 
 // ----------------------------------------------------------------------
+
+const INQUIRY_REFERENCE_BY = [
+  { value: 'Google', label: 'Google' },
+  {
+    value: 'Just Dial',
+    label: 'Just Dial',
+  },
+  { value: 'Social Media', label: 'Social Media' },
+  {
+    value: 'Board Banner',
+    label: 'Board Banner',
+  },
+  { value: 'Brochure', label: 'Brochure' },
+  { value: 'Other', label: 'Other' },
+];
 
 export default function CustomerRefReportTableToolbar({
   filters,
@@ -87,10 +100,8 @@ export default function CustomerRefReportTableToolbar({
     [onFilters]
   );
 
-  // Autocomplete handlers for Area and Ref
   const handleFilterArea = useCallback(
     (event, newValue) => {
-      // newValue can be string or null
       onFilters('area', newValue || '');
     },
     [onFilters]
@@ -150,8 +161,6 @@ export default function CustomerRefReportTableToolbar({
               ),
             }}
           />
-
-          {/* Autocomplete for Area */}
           <Autocomplete
             options={options?.area || []}
             value={filters.area || ''}
@@ -161,10 +170,8 @@ export default function CustomerRefReportTableToolbar({
               <TextField {...params} label="Area" className={'custom-textfield'} />
             )}
           />
-
-          {/* Autocomplete for Ref */}
           <Autocomplete
-            options={options?.ref || []}
+            options={INQUIRY_REFERENCE_BY?.map((e) => e.value) || []}
             value={filters.ref || ''}
             onChange={handleFilterRef}
             sx={{ width: { xs: 1, sm: 350 } }}
@@ -172,7 +179,6 @@ export default function CustomerRefReportTableToolbar({
               <TextField {...params} label="Ref" className={'custom-textfield'} />
             )}
           />
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -203,14 +209,12 @@ export default function CustomerRefReportTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           {getResponsibilityValue('print_Interest_Reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
-
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -230,7 +234,6 @@ export default function CustomerRefReportTableToolbar({
           </>
         </CustomPopover>
       </Stack>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
