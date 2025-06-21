@@ -91,7 +91,7 @@ export default function EcommerceSaleByGender({
             label: 'Total',
             fontSize: '16px',
             fontWeight: 600,
-            formatter: () => formatCurrency(totalValue),
+            formatter: () => formatCurrency(bank + cash),
           },
         },
       },
