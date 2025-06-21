@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -15,24 +15,21 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { LoadingScreen } from '../../../components/loading-screen';
-import InterestReportsTableRow from '../interest-reports/interest-reports-table-row.jsx';
-import InterestReportsTableFiltersResult from '../interest-reports/interest-reports-table-filters-result.jsx';
-import InterestReportsTableToolbar from '../interest-reports/interest-reports-table-toolbar.jsx';
-import { useGetInterestReports } from '../../../api/interest-reports.js';
 import { isBetween } from '../../../utils/format-time.js';
 import { TableCell, TableRow } from '@mui/material';
 import InterestEntryReportsTableToolbar from '../interest-entry-reports/interest-entry-reports-table-toolbar.jsx';
-import InterestEntryReportsTableFiltersResult from '../interest-entry-reports/interest-entry-reports-table-filters-result.jsx';
+import InterestEntryReportsTableFiltersResult
+  from '../interest-entry-reports/interest-entry-reports-table-filters-result.jsx';
 import InterestEntryReportsTableRow from '../interest-entry-reports/interest-entry-reports-table-row.jsx';
 import { useGetInterestEntryReports } from '../../../api/interest-entry-reports.js';
 
@@ -257,8 +254,13 @@ export default function interestEntryReportsListView() {
                     <InterestEntryReportsTableRow key={row?._id} index={index} row={row} />
                   ))}
                 <TableNoData notFound={notFound} />
-
-                <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
+                <TableRow sx={{
+                  backgroundColor: '#F4F6F8',
+                  position: 'sticky',
+                  bottom: 0,
+                  zIndex: 1,
+                  boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
+                }}>
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
