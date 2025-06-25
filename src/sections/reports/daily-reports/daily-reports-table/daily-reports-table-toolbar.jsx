@@ -107,22 +107,22 @@ export default function DailyReportsTableToolbar({
             }}
           />
 
-          <Autocomplete
-            options={branch}
-            value={selectedBranch}
-            onChange={handleFilterBranch}
-            getOptionLabel={(option) => option.name || ''}
-            isOptionEqualToValue={(option, value) => option._id === value._id}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Branch"
-                placeholder="Select Branches"
-                sx={customStyle}
-              />
-            )}
-            sx={{ flexShrink: 0, width: { xs: 1, sm: 450 } }}
-          />
+          {/*<Autocomplete*/}
+          {/*  options={branch}*/}
+          {/*  value={selectedBranch}*/}
+          {/*  onChange={handleFilterBranch}*/}
+          {/*  getOptionLabel={(option) => option.name || ''}*/}
+          {/*  isOptionEqualToValue={(option, value) => option._id === value._id}*/}
+          {/*  renderInput={(params) => (*/}
+          {/*    <TextField*/}
+          {/*      {...params}*/}
+          {/*      label="Branch"*/}
+          {/*      placeholder="Select Branches"*/}
+          {/*      sx={customStyle}*/}
+          {/*    />*/}
+          {/*  )}*/}
+          {/*  sx={{ flexShrink: 0, width: { xs: 1, sm: 450 } }}*/}
+          {/*/>*/}
 
           <DatePicker
             label="Date"
