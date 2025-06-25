@@ -41,7 +41,7 @@ export default function OtherDailyReportsTableToolbar({
   const view = useBoolean();
 
   const filterData = {
-    date: filters.date,
+    date: filters.startDate,
   };
 
   const handleFilterName = useCallback(

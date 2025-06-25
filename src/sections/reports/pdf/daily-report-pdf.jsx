@@ -116,11 +116,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
     closedLoans,
   } = data;
   const dataFilter = [
-    // { value: filterData.issuedBy.name, label: 'Issued By' },
     { value: filterData.branch.name, label: 'Branch' },
     { value: fDate(filterData.date), label: 'Report Date' },
-    // { value: fDate(filterData.startDate), label: 'Start Date' },
-    // { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
 
