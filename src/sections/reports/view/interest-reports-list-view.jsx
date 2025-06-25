@@ -198,7 +198,7 @@ export default function InterestReportsListView() {
           <InterestReportsTableToolbar
             filters={filters}
             onFilters={handleFilters}
-            data={interestReports}
+            data={dataFiltered}
             total={total}
             options={options}
           />
