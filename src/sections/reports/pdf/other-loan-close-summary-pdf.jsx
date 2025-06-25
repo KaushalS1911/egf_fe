@@ -114,14 +114,14 @@ const useStyles = () =>
 export default function OtherLoanCloseSummaryPdf({
   selectedBranch,
   configs,
-  loans,
+  data,
   filterData,
   total,
 }) {
   const styles = useStyles();
 
   // Define dataFiltered for calculations
-  const dataFiltered = loans;
+  const dataFiltered = data;
 
   const {
     percentage,
@@ -159,13 +159,18 @@ export default function OtherLoanCloseSummaryPdf({
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
-  const rowsPerPage = 18;
+  // Pagination logic: 16 rows on first page, 20 on subsequent pages
+  const firstPageRows = 12;
+  const otherPagesRows = 16;
   const pages = [];
   let currentPageRows = [];
+  let currentPageIndex = 0;
+  let rowsOnCurrentPage = 0;
+  let maxRowsForCurrentPage = firstPageRows;
 
-  loans.forEach((row, index) => {
+  data?.forEach((row, index) => {
     const isAlternateRow = index % 2 !== 0;
-    const isLastRow = index === loans.length - 1;
+    const isLastRow = index === data.length - 1;
 
     currentPageRows.push(
       <View
@@ -203,10 +208,14 @@ export default function OtherLoanCloseSummaryPdf({
       </View>
     );
 
-    if ((index + 1) % rowsPerPage === 0 || index === loans.length - 1) {
-      const isFirstPage = pages.length === 0;
+    rowsOnCurrentPage++;
+
+    // Check if we need to create a new page
+    const isPageFull = rowsOnCurrentPage === maxRowsForCurrentPage;
+    if (isPageFull || isLastRow) {
+      const isFirstPage = currentPageIndex === 0;
       pages.push(
-        <Page key={pages.length} size="A4" style={styles.page} orientation="landscape">
+        <Page key={currentPageIndex} size="A4" style={styles.page} orientation="landscape">
           {isFirstPage && (
             <>
               <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
@@ -248,7 +257,7 @@ export default function OtherLoanCloseSummaryPdf({
                 ))}
               </View>
               {currentPageRows}
-              {index === loans.length - 1 && (
+              {isLastRow && (
                 <View style={[styles.totalRow, { textAlign: 'center' }]}>
                   <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 2 }]}>TOTAL</Text>
@@ -256,14 +265,14 @@ export default function OtherLoanCloseSummaryPdf({
                   <Text style={[styles.totalCell, { flex: 0.6 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1.1 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 0.35 }]}>
-                    {(percentage / loans.length).toFixed(2)}
+                    {(percentage / data.length).toFixed(2)}
                   </Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>{rate.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>{amount.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>{totalInterestAmt.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 0.3 }]}>
-                    {(day / loans.length).toFixed(0)}
+                    {(day / data.length).toFixed(0)}
                   </Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>{closeAmt.toFixed(0)}</Text>
                   <Text style={[styles.totalCell, { flex: 1 }]}>{pendingInterest.toFixed(0)}</Text>
@@ -279,7 +288,11 @@ export default function OtherLoanCloseSummaryPdf({
           </View>
         </Page>
       );
+      // Reset for next page
       currentPageRows = [];
+      currentPageIndex++;
+      rowsOnCurrentPage = 0;
+      maxRowsForCurrentPage = otherPagesRows;
     }
   });
 
