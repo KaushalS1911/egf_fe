@@ -159,7 +159,7 @@ export default function OtherLoanCloseSummaryPdf({
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
-  // Pagination logic: 16 rows on first page, 20 on subsequent pages
+
   const firstPageRows = 12;
   const otherPagesRows = 16;
   const pages = [];
@@ -194,7 +194,7 @@ export default function OtherLoanCloseSummaryPdf({
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.loan.issueDate)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.loan.loanAmount}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.totalInterestAmt}</Text>
-        <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day > 0 ? row.day : 0}</Text>
+        <Text style={[styles.tableCell, { flex: 0.3 }]}>{row.day.toFixed(0) > 0 ? row.day.toFixed(0) : 0}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{(row.closingAmount || 0).toFixed(2)}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>
           {(row.amount - row.closingAmount || 0).toFixed(2)}

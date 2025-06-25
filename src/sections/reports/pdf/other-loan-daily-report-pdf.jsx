@@ -283,7 +283,7 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                   <Text style={[styles.tableCell, { flex: 0.6 }]}>{item.days}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.cashAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.bankAmount}</Text>
-                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.amountPaid}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.interestAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.9 }]}>
                     {fDate(item.otherLoan.createdAt)}
                   </Text>
