@@ -33,47 +33,55 @@ const useStyles = () =>
           display: 'flex',
           flexDirection: 'column',
           borderWidth: 1,
-          borderColor: '#b1b0b0',
+          borderColor: '#606060',
         },
         tableRow: {
           flexDirection: 'row',
           minHeight: 20,
-          borderBottomWidth: 0.5,
-          borderBottomColor: '#c7c6c6',
           pageBreakInside: 'avoid',
-        },
-        lastTableRow: {
-          borderBottomWidth: 0,
+          backgroundColor: '#FFFFFF',
         },
         tableHeader: {
-          backgroundColor: '#5B9BD4',
+          backgroundColor: '#5B9BD4', // Dark blue for header
           fontWeight: 'bold',
-          color: '#000',
           textAlign: 'center',
         },
         tableCell: {
           padding: '4px 6px',
           borderRightWidth: 0.5,
-          borderRightColor: '#b1b0b0',
+          borderRightColor: '#606060',
+          borderBottomWidth: 0.5,
+          borderBottomColor: '#606060',
           textAlign: 'center',
           fontSize: 6.5,
           overflow: 'hidden',
+          color: '#000000',
         },
         numericCell: {
           textAlign: 'center',
         },
+        positiveValue: {
+          color: '#008000', // Green color for positive values
+        },
+        negativeValue: {
+          color: '#FF0000', // Red color for negative values
+        },
         textCell: {
           textAlign: 'left',
+          color: '#000000',
         },
         tableCellLast: {
           borderRightWidth: 0,
         },
-        alternateRow: {
-          backgroundColor: '#F2F2F2',
+        mainLoanCell: {
+          backgroundColor: '#F2F2F2', // Light grey for the main loan columns
+        },
+        otherLoanCell: {
+          backgroundColor: '#F2F2F2', // Light grey for the "other loan" columns
         },
         termsAndConditionsHeaders: {
-          color: '#232C4B',
-          borderBottom: '1px solid #232C4B',
+          color: '#000000',
+          borderBottom: '1px solid #000000',
           fontWeight: 'bold',
           textWrap: 'nowrap',
           fontSize: '12px',
@@ -105,7 +113,7 @@ const useStyles = () =>
           textAlign: 'center',
           fontSize: 6.5,
           overflow: 'hidden',
-          backgroundColor: '#F4F6F8',
+          backgroundColor: '#E3F2FD',
           minHeight: 20,
           display: 'flex',
           justifyContent: 'center',
@@ -155,7 +163,7 @@ export default function TotalInOutLoanReports({
     { label: 'Total int.amt', flex: 1, width: 90 },
     { label: 'Other no', flex: 1.2, width: 90 },
     { label: 'Date', flex: 1, width: 80 },
-    { label: 'Other name', flex: 0.4, width: 90 },
+    { label: 'Other name', flex: 1, width: 90 },
     { label: 'Other Loan amt', flex: 1, width: 90 },
     { label: 'Gross wt', flex: 0.5, width: 70 },
     { label: 'Net wt', flex: 0.5, width: 70 },
@@ -171,7 +179,7 @@ export default function TotalInOutLoanReports({
     { value: fDate(new Date()), label: 'Date' },
   ];
 
-  const rowsPerPage = 18;
+  const rowsPerPage = 14;
   const pages = [];
   let currentPageRows = [];
   let currentRowCount = 0;
@@ -181,99 +189,363 @@ export default function TotalInOutLoanReports({
     const firstRow = otherLoans[0];
     const rowSpan = otherLoans.length;
 
-    // Process each row in the loan group
     otherLoans.forEach((row, index) => {
-      const isAlternateRow = currentRowCount % 2 !== 0;
-      const isLastRow = currentRowCount === Object.values(loans).flat().length - 1;
+      const isLastRowInTable = currentRowCount === Object.values(loans).flat().length - 1;
+      const isLastRowInGroup = index === otherLoans.length - 1;
+      const conditionalSpannedStyle = !isLastRowInGroup ? { borderBottomWidth: 0 } : {};
 
       currentPageRows.push(
         <View
           key={`${loanId}-${index}`}
-          style={[
-            styles.tableRow,
-            isAlternateRow ? styles.alternateRow : {},
-            isLastRow ? styles.lastTableRow : {},
-          ]}
+          style={[styles.tableRow]}
           wrap={false}
         >
-          {/* Initial loan details - show in first row, empty cells in subsequent rows */}
+          {/* Main loan columns: only show for first row of group, else blank/shaded */}
           {index === 0 ? (
             <>
-              <Text style={[styles.tableCell, { flex: 0.1 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[0].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {loanIndex + 1}
               </Text>
-              <Text style={[styles.tableCell, { flex: 2 }, styles.textCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[1].flex },
+                  styles.textCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {row.loan.loanNo}
               </Text>
-              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[2].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {fDate(row.loan.issueDate)}
               </Text>
-              <Text style={[styles.tableCell, { flex: 2 }, styles.textCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[3].flex },
+                  styles.textCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {`${row.loan.customer.firstName} ${row.loan.customer.middleName} ${row.loan.customer.lastName}`}
               </Text>
-              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[4].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {row.loan.loanAmount}
               </Text>
-              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[5].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {(row.loan.loanAmount - row.loan.interestLoanAmount).toFixed(2)}
               </Text>
-              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[6].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {row.loan.interestLoanAmount.toFixed(2)}
               </Text>
-              <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[7].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {row.loan.propertyDetails
                   .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
                   .toFixed(2)}
               </Text>
-              <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[8].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {row.loan.propertyDetails
                   .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
                   .toFixed(2)}
               </Text>
-              <Text style={[styles.tableCell, { flex: 0.4 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[9].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {row.loan.scheme.interestRate.toFixed(2)}
               </Text>
-              <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[10].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
                 {row.totalInterestAmount.toFixed(2)}
               </Text>
             </>
           ) : (
             <>
-              <Text style={[styles.tableCell, { flex: 0.1, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 2, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 2, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 0.5, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 0.5, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 0.4, backgroundColor: '#F4F6F8' }]}> </Text>
-              <Text style={[styles.tableCell, { flex: 1, backgroundColor: '#F4F6F8' }]}> </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[0].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[1].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[2].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[3].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[4].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[5].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[6].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[7].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[8].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[9].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[10].flex },
+                  conditionalSpannedStyle,
+                  styles.mainLoanCell,
+                ]}
+              >
+                {' '}
+              </Text>
             </>
           )}
 
-          {/* Other loan details */}
-          <Text style={[styles.tableCell, { flex: 1.2 }, styles.textCell]}>{row.otherNumber}</Text>
-          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>{fDate(row.date)}</Text>
-          <Text style={[styles.tableCell, { flex: 0.4 }, styles.textCell]}>{row.otherName}</Text>
-          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+          {/* Other loan columns: always show */}
+          <Text style={[styles.tableCell, { flex: headers[11].flex }, styles.textCell]}>
+            {row.otherNumber}
+          </Text>
+          <Text style={[styles.tableCell, { flex: headers[12].flex }, styles.numericCell]}>
+            {fDate(row.date)}
+          </Text>
+          <Text style={[styles.tableCell, { flex: headers[13].flex }, styles.textCell]}>
+            {row.otherName}
+          </Text>
+          <Text style={[styles.tableCell, { flex: headers[14].flex }, styles.numericCell]}>
             {Number(row.amount).toFixed(2)}
           </Text>
-          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{row.grossWt}</Text>
-          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>{row.netWt}</Text>
-          <Text style={[styles.tableCell, { flex: 0.5 }, styles.numericCell]}>
+          <Text style={[styles.tableCell, { flex: headers[15].flex }, styles.numericCell]}>
+            {row.grossWt}
+          </Text>
+          <Text style={[styles.tableCell, { flex: headers[16].flex }, styles.numericCell]}>
+            {row.netWt}
+          </Text>
+          <Text style={[styles.tableCell, { flex: headers[17].flex }, styles.numericCell]}>
             {Number(row.percentage).toFixed(2)}
           </Text>
-          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
+          <Text style={[styles.tableCell, { flex: headers[18].flex }, styles.numericCell]}>
             {Number(row.totalOtherInterestAmount).toFixed(2)}
           </Text>
-          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
-            {(row.amount - row.loan.interestLoanAmount).toFixed(2)}
-          </Text>
-          <Text style={[styles.tableCell, { flex: 1 }, styles.numericCell]}>
-            {(row.totalInterestAmount - row.totalOtherInterestAmount).toFixed(2)}
-          </Text>
+
+          {/* Diff columns: only show for first row of group, else blank/shaded */}
+          {index === 0 ? (
+            <>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[19].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  (() => {
+                    const totalOtherAmount = otherLoans.reduce(
+                      (sum, loan) => sum + Number(loan.amount || 0),
+                      0
+                    );
+                    const diffAmount = totalOtherAmount - row.loan.interestLoanAmount;
+                    return diffAmount < 0 ? styles.negativeValue : styles.positiveValue;
+                  })(),
+                ]}
+              >
+                {(() => {
+                  const totalOtherAmount = otherLoans.reduce(
+                    (sum, loan) => sum + Number(loan.amount || 0),
+                    0
+                  );
+                  const diffAmount = totalOtherAmount - row.loan.interestLoanAmount;
+                  return diffAmount.toFixed(2);
+                })()}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[20].flex },
+                  styles.numericCell,
+                  conditionalSpannedStyle,
+                  (() => {
+                    const totalOtherInterest = otherLoans.reduce(
+                      (sum, loan) => sum + Number(loan.totalOtherInterestAmount || 0),
+                      0
+                    );
+                    const diffInterest = row.totalInterestAmount - totalOtherInterest;
+                    return diffInterest < 0 ? styles.negativeValue : styles.positiveValue;
+                  })(),
+                ]}
+              >
+                {(() => {
+                  const totalOtherInterest = otherLoans.reduce(
+                    (sum, loan) => sum + Number(loan.totalOtherInterestAmount || 0),
+                    0
+                  );
+                  const diffInterest = row.totalInterestAmount - totalOtherInterest;
+                  return diffInterest.toFixed(2);
+                })()}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[19].flex },
+                  conditionalSpannedStyle,
+                ]}
+              >
+                {' '}
+              </Text>
+              <Text
+                style={[
+                  styles.tableCell,
+                  { flex: headers[20].flex },
+                  conditionalSpannedStyle,
+                ]}
+              >
+                {' '}
+              </Text>
+            </>
+          )}
         </View>
       );
 
@@ -334,42 +606,68 @@ export default function TotalInOutLoanReports({
                   <View
                     style={[
                       styles.tableRow,
-                      { backgroundColor: '#e8f0fe', color: '#1a237e', fontWeight: 'bold' },
+                      {
+                        backgroundColor: '#E8F0FE',
+                        color: '#1a237e',
+                        fontWeight: 'bold',
+                      },
                     ]}
                   >
-                    <Text style={[styles.tableCell, { flex: 0.1 }]}></Text>
-                    <Text style={[styles.tableCell, { flex: 2 }]}>TOTAL</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}></Text>
-                    <Text style={[styles.tableCell, { flex: 2 }]}></Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>{loanAmount.toFixed(0)}</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>{partLoanAmount.toFixed(0)}</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                    <Text style={[styles.tableCell, { flex: headers[0].flex, color: '#1a237e' }]}></Text>
+                    <Text style={[styles.tableCell, { flex: headers[1].flex, color: '#1a237e' }]}>TOTAL</Text>
+                    <Text style={[styles.tableCell, { flex: headers[2].flex, color: '#1a237e' }]}></Text>
+                    <Text style={[styles.tableCell, { flex: headers[3].flex, color: '#1a237e' }]}></Text>
+                    <Text style={[styles.tableCell, { flex: headers[4].flex, color: '#1a237e' }]}>
+                      {loanAmount.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: headers[5].flex, color: '#1a237e' }]}>
+                      {partLoanAmount.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: headers[6].flex, color: '#1a237e' }]}>
                       {interestLoanAmount.toFixed(2)}
                     </Text>
-                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{totalWeight.toFixed(0)}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{netWeight.toFixed(0)}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.4 }]}>
+                    <Text style={[styles.tableCell, { flex: headers[7].flex, color: '#1a237e' }]}>
+                      {totalWeight.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: headers[8].flex, color: '#1a237e' }]}>
+                      {netWeight.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: headers[9].flex, color: '#1a237e' }]}>
                       {averageInterestRate.toFixed(0)}
                     </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                    <Text style={[styles.tableCell, { flex: headers[10].flex, color: '#1a237e' }]}>
                       {totalInterestAmount.toFixed(0)}
                     </Text>
-                    <Text style={[styles.tableCell, { flex: 1.2 }]}></Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}></Text>
-                    <Text style={[styles.tableCell, { flex: 0.4 }]}></Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                    <Text style={[styles.tableCell, { flex: headers[11].flex, color: '#1a237e' }]}></Text>
+                    <Text style={[styles.tableCell, { flex: headers[12].flex, color: '#1a237e' }]}></Text>
+                    <Text style={[styles.tableCell, { flex: headers[13].flex, color: '#1a237e' }]}></Text>
+                    <Text style={[styles.tableCell, { flex: headers[14].flex, color: '#1a237e' }]}>
                       {otherLoanAmount.toFixed(0)}
                     </Text>
-                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{grossWeight.toFixed(0)}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.5 }]}>{netWeight.toFixed(0)}</Text>
-                    <Text style={[styles.tableCell, { flex: 0.5 }]}>
+                    <Text style={[styles.tableCell, { flex: headers[15].flex, color: '#1a237e' }]}>
+                      {grossWeight.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: headers[16].flex, color: '#1a237e' }]}>
+                      {netWeight.toFixed(0)}
+                    </Text>
+                    <Text style={[styles.tableCell, { flex: headers[17].flex, color: '#1a237e' }]}>
                       {averagePercentage.toFixed(0)}
                     </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                    <Text style={[styles.tableCell, { flex: headers[18].flex, color: '#1a237e' }]}>
                       {totalOtherInterestAmount.toFixed(0)}
                     </Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>{diffLoanAmount.toFixed(0)}</Text>
-                    <Text style={[styles.tableCell, { flex: 1 }]}>
+                    <Text style={[
+                      styles.tableCell,
+                      { flex: headers[19].flex, color: '#1a237e' },
+                      diffLoanAmount < 0 ? styles.negativeValue : styles.positiveValue
+                    ]}>
+                      {diffLoanAmount.toFixed(0)}
+                    </Text>
+                    <Text style={[
+                      styles.tableCell,
+                      { flex: headers[20].flex, color: '#1a237e' },
+                      diffInterestAmount < 0 ? styles.negativeValue : styles.positiveValue
+                    ]}>
                       {diffInterestAmount.toFixed(0)}
                     </Text>
                   </View>
