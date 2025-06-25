@@ -305,7 +305,7 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
             <View style={styles.watermarkContainer}>
               <Image src={logo} style={styles.watermarkImage} />
             </View>
-            <InvoiceHeader selectedRow={selectedRow} configs={configs} />
+            <InvoiceHeader selectedRow={selectedRow} branch={selectedRow?.customer?.branch} configs={configs} />
             <View style={styles.pagePadding}>
               <View
                 style={{
@@ -520,7 +520,7 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
               <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>{' '}
               <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>
-            <InvoiceFooter configs={configs} />
+            <InvoiceFooter configs={configs} branch={selectedRow?.customer?.branch}/>
           </View>
         </Page>
         <Page size="A4" style={styles.page}>
@@ -605,7 +605,7 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
             {/*  <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>*/}
             {/*  <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>*/}
             {/*</View>*/}
-            <InvoiceFooter configs={configs} />
+            <InvoiceFooter configs={configs} branch={selectedRow?.customer?.branch} />
           </View>
         </Page>
       </Document>

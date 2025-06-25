@@ -296,14 +296,14 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
-        (item.customer.firstName + ' ' + item.customer.middleName + ' ' + item.customer.lastName)
+        (item?.customer?.firstName + ' ' + item?.customer?.middleName + ' ' + item?.customer?.lastName)
           .toLowerCase()
           .includes(username.toLowerCase()) ||
-        item.customer.firstName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.customer?.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.customer?.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.customer?.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.loanNo?.toLowerCase().includes(username.toLowerCase()) ||
+        item?.customer?.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
   if (branch) {
