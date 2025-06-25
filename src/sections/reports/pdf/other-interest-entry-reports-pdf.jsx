@@ -234,7 +234,7 @@ export default function OtherInterestEntryReportsPdf({
                   marginHorizontal: 15,
                 }}
               >
-                <Text style={styles.termsAndConditionsHeaders}>INTEREST ENTRY REPORTS</Text>
+                <Text style={styles.termsAndConditionsHeaders}>OTHER INTEREST ENTRY REPORTS</Text>
               </View>
             </>
           )}
