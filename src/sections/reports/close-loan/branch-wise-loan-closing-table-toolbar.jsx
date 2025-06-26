@@ -131,20 +131,20 @@ export default function BranchWiseLoanClosingTableToolbar({
             renderInput={(params) => (
               <TextField {...params} label="Closed By" className={'custom-textfield'} />
             )}
-            sx={{ width: 200 }}
+            sx={{ width: 500 }}
           />
 
-          <Autocomplete
-            options={branch}
-            getOptionLabel={(option) => option?.name || ''}
-            value={filters.branch || null}
-            isOptionEqualToValue={(option, value) => option?.id === value?.id}
-            onChange={handleFilterBranch}
-            renderInput={(params) => (
-              <TextField {...params} label="Branch" className={'custom-textfield'} />
-            )}
-            sx={{ width: 200 }}
-          />
+          {/*<Autocomplete*/}
+          {/*  options={branch}*/}
+          {/*  getOptionLabel={(option) => option?.name || ''}*/}
+          {/*  value={filters.branch || null}*/}
+          {/*  isOptionEqualToValue={(option, value) => option?.id === value?.id}*/}
+          {/*  onChange={handleFilterBranch}*/}
+          {/*  renderInput={(params) => (*/}
+          {/*    <TextField {...params} label="Branch" className={'custom-textfield'} />*/}
+          {/*  )}*/}
+          {/*  sx={{ width: 200 }}*/}
+          {/*/>*/}
 
           <DatePicker
             label="Start date"

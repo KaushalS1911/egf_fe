@@ -5,7 +5,22 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetOtherLoanReports(restOfClosedLoan, closedLoan) {
   const { user } = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan-summary`;
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+  let parsedBranch = storedBranch;
+
+  if (storedBranch !== 'all') {
+    try {
+      parsedBranch = JSON.parse(storedBranch);
+    } catch (error) {
+      console.error('Error parsing storedBranch:', error);
+    }
+  }
+
+  const branchQuery = parsedBranch && parsedBranch === 'all'
+    ? ''
+    : `branch=${parsedBranch}`;
+
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan-summary?${branchQuery}`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
 
   const filteredData = useMemo(() => {
@@ -17,6 +32,7 @@ export function useGetOtherLoanReports(restOfClosedLoan, closedLoan) {
     }
     return data?.data || [];
   }, [data?.data, closedLoan, restOfClosedLoan]);
+
   const memoizedValue = useMemo(
     () => ({
       otherLoanReports: filteredData,

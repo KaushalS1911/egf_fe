@@ -125,18 +125,18 @@ export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateE
               ),
             }}
           />
-          <FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 300 } }}>
-            <Autocomplete
-              options={branch}
-              getOptionLabel={(option) => option?.name || ''}
-              isOptionEqualToValue={(option, value) => option._id === value._id}
-              value={branch.find((b) => b._id === filters.branch) || null}
-              onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}
-              renderInput={(params) => (
-                <TextField {...params} label="Branch" className={'custom-textfield'} />
-              )}
-            />
-          </FormControl>
+          {/*<FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 300 } }}>*/}
+          {/*  <Autocomplete*/}
+          {/*    options={branch}*/}
+          {/*    getOptionLabel={(option) => option?.name || ''}*/}
+          {/*    isOptionEqualToValue={(option, value) => option._id === value._id}*/}
+          {/*    value={branch.find((b) => b._id === filters.branch) || null}*/}
+          {/*    onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}*/}
+          {/*    renderInput={(params) => (*/}
+          {/*      <TextField {...params} label="Branch" className={'custom-textfield'} />*/}
+          {/*    )}*/}
+          {/*  />*/}
+          {/*</FormControl>*/}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

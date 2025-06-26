@@ -5,8 +5,24 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetLoanIssueReport() {
   const { user } = useAuthContext();
-  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/issued-loan-detail`;
+  const storedBranch = sessionStorage.getItem('selectedBranch');
+  let parsedBranch = storedBranch;
+
+  if (storedBranch !== 'all') {
+    try {
+      parsedBranch = JSON.parse(storedBranch);
+    } catch (error) {
+      console.error('Error parsing storedBranch:', error);
+    }
+  }
+
+  const branchQuery = parsedBranch && parsedBranch === 'all'
+    ? ''
+    : `branch=${parsedBranch}`;
+
+  const URL = `${import.meta.env.VITE_BASE_URL}/${user?.company}/issued-loan-detail?${branchQuery}`;
   const { data, isLoading, error, isValidating, mutate } = useSWR(URL, fetcher);
+
   const memoizedValue = useMemo(
     () => ({
       loanIssueReports: data?.data || [],
@@ -18,5 +34,6 @@ export function useGetLoanIssueReport() {
     }),
     [data?.data, error, isLoading, isValidating, mutate]
   );
+
   return memoizedValue;
 }
