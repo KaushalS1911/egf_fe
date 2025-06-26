@@ -19,6 +19,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import Autocomplete from '@mui/material/Autocomplete';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -221,17 +223,43 @@ export default function CustomerRefReportTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            <MenuItem
-              onClick={() => {
-                view.onTrue();
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-          </>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              view.onTrue();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={data.map((row) => {
+                const matchedReference = INQUIRY_REFERENCE_BY.find(
+                  (item) => item.value === row.referenceBy
+                );
+                const getReferenceLabel = () => matchedReference?.label || 'Other';
+                const getOtherReferenceLabel = () =>
+                  row.referenceBy === 'Other'
+                    ? row.referenceBy || '-'
+                    : matchedReference
+                      ? '-'
+                      : row.referenceBy;
+
+                return {
+                  'Sr No': row.srNo,
+                  'Customer Name': `${row.firstName} ${row.middleName} ${row.lastName}`,
+                  'Contact': row.contact,
+                  'Joining Date': fDate(row.joiningDate) || '-',
+                  'Reference By': getReferenceLabel(),
+                  'Other Reference': getOtherReferenceLabel(),
+                  'Area': row.permanentAddress?.area || '-',
+                };
+              })}
+              fileName="CustomerRefReport"
+              sheetName="CustomerRefReportSheet"
+            />
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>

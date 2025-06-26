@@ -23,6 +23,8 @@ import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
 import InterestEntryReportsPdf from '../pdf/interest-entry-reports-pdf.jsx';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -293,34 +295,44 @@ export default function InterestEntryReportsTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                view.onTrue();
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              view.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={data.map((row) => ({
+                'Sr No': row.srNo,
+                'Loan No.': row.loan.loanNo,
+                'From Date': fDate(row.from),
+                'To Date': fDate(row.to),
+                'Loan Amount': Number(row.loan.loanAmount).toFixed(2),
+                'Interest Loan Amount': Number(row.interestLoanAmount).toFixed(2),
+                'Interest Rate (%)': row.loan.scheme.interestRate,
+                'Interest Amount': Number(row?.interestAmount).toFixed(2) || 0,
+                'Consulting Charge': Number(row?.consultingCharge).toFixed(2),
+                'Penalty': row.penalty,
+                'Total Interest': (row.interestAmount + row.penalty + row.consultingCharge).toFixed(2),
+                'Uchak Interest Amount': row.uchakInterestAmount || 0,
+                'Old CR/DR': row.old_cr_dr,
+                'Adjusted Pay': row.adjustedPay,
+                'Days': row.days,
+                'Entry Date': fDate(row.createdAt),
+                'Cash Amount': row.paymentDetail.cashAmount || 0,
+                'Bank Amount': row.paymentDetail.bankAmount || 0,
+                'Bank Name': row?.paymentDetail?.account?.bankName || '-',
+                'Amount Paid': row.amountPaid,
+                'Entry By': row.entryBy,
+              }))}
+              fileName="InterestEntryReport"
+              sheetName="InterestEntryReportSheet"
+            />
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>

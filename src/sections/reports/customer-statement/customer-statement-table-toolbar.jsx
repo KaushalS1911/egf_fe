@@ -18,6 +18,8 @@ import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment from 'moment/moment.js';
 import { useGetLoanissue } from '../../../api/loanissue.js';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -109,6 +111,59 @@ export default function CustomerStatementTableToolbar({
       mt: 0,
     },
     input: { height: 7 },
+  };
+
+  const handleExport = (data) => {
+    const flattenedData = [];
+    let srNo = 1;
+
+    data.forEach((row) => {
+      if (row.statements?.length > 0) {
+        // Add statement rows
+        row.statements.forEach((item) => {
+          flattenedData.push({
+            'Sr No': srNo++,
+            'Loan No': row.loanNo,
+            'Detail': item.detail,
+            'Date': fDate(item.date),
+            'Credit': item.credit || 0,
+            'Debit': item.debit || 0,
+          });
+        });
+
+        // Calculate totals
+        const totals = row.statements.reduce(
+          (acc, item) => {
+            acc.credit += Number(item.credit) || 0;
+            acc.debit += Number(item.debit) || 0;
+            return acc;
+          },
+          { credit: 0, debit: 0 }
+        );
+
+        // Add total row
+        flattenedData.push({
+          'Sr No': '',
+          'Loan No': '',
+          'Detail': 'Total',
+          'Date': '',
+          'Credit': totals.credit.toFixed(2),
+          'Debit': totals.debit.toFixed(2),
+        });
+
+        // Add an empty row for spacing
+        flattenedData.push({
+          'Sr No': '',
+          'Loan No': '',
+          'Detail': '',
+          'Date': '',
+          'Credit': '',
+          'Debit': '',
+        });
+      }
+    });
+
+    return flattenedData;
   };
 
   return (
@@ -244,10 +299,17 @@ export default function CustomerStatementTableToolbar({
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
           </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={handleExport(data)}
+              fileName="CustomerStatement"
+              sheetName="CustomerStatementSheet"
+            />
+          </MenuItem>
         </CustomPopover>
       </Stack>
 
-      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
+      <Dialog full Screen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
             <Button color="inherit" variant="contained" onClick={view.onFalse}>

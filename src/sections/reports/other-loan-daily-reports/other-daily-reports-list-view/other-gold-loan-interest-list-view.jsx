@@ -48,6 +48,7 @@ const TABLE_HEAD = [
   { id: 'cashAmount', label: 'Cash Amt.' },
   { id: 'bankAmount', label: 'Bank Amt.' },
   { id: 'interestAmount', label: 'Int. amt' },
+  { id: 'charge', label: 'Charge' },
   { id: 'createdAt', label: 'Entry date' },
 ];
 
@@ -92,6 +93,8 @@ export default function OtherGoldLoanInterestListView({ interestDetail }) {
     (prev, next) => prev + (Number(next?.otherLoan.amount) || 0),
     0
   );
+  const chargeAmt = interestDetail.reduce((prev, next) => prev + (Number(next?.charge) || 0), 0);
+  const intAmt = interestDetail.reduce((prev, next) => prev + (Number(next?.interestAmount) || 0), 0);
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -291,7 +294,8 @@ export default function OtherGoldLoanInterestListView({ interestDetail }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     {bankAmount.toFixed(0)}
                   </TableCell>{' '}
-                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}></TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{intAmt.toFixed(0)}</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>{chargeAmt.toFixed(0)}</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableBody>

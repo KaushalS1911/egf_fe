@@ -15,7 +15,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../../components/custom-popover';
-import RHFExportExcel from '../../../../components/hook-form/rhf-export-excel';
+import RHFMultiSheetExportExcel from '../../../../components/hook-form/rhf-multi-sheet-export-excel.jsx';
 import { useAuthContext } from '../../../../auth/hooks';
 import { useGetConfigs } from '../../../../api/config';
 import { getResponsibilityValue } from '../../../../permission/permission';
@@ -29,6 +29,7 @@ import { useGetLoanissue } from '../../../../api/loanissue';
 import LoanDetailsPdf from '../../pdf/loan-details-pdf.jsx';
 import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
 import Autocomplete from '@mui/material/Autocomplete';
+import { fDate } from '../../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -201,6 +202,95 @@ export default function LoanDetailTableToolbarTableToolbar({
           >
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
+          </MenuItem>
+          <MenuItem>
+            <RHFMultiSheetExportExcel
+              sheets={[
+                {
+                  data:
+                    data.loanCloseDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No.': row.loan.loanNo,
+                      'Total Loan Amount': Number(row.totalLoanAmount).toFixed(2),
+                      'Interest Loan Amount': Number(row.loan.interestLoanAmount).toFixed(2),
+                      'Paid Loan Amount': Number(row.totalLoanAmount - row.netAmount).toFixed(2),
+                      'Pay Date': fDate(row.date),
+                      'Pending Loan Amount': Number(row.netAmount - row.closingCharge).toFixed(2),
+                      'Closing Charge': Number(row.closingCharge).toFixed(2),
+                      'Net Amount': Number(row.netAmount).toFixed(2),
+                      'Entry Date': fDate(row.createdAt),
+                      'Entry By': row.entryBy,
+                    })) || [],
+                  sheetName: 'LoanCloseDetails',
+                },
+                {
+                  data:
+                    data.intDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'From Date': fDate(row.from),
+                      'To Date': fDate(row.to),
+                      'Loan Amount': Number(row.loan?.loanAmount).toFixed(2),
+                      'Interest Rate (%)':
+                        row.loan.scheme?.interestRate > 1.5 ? 1.5 : row.loan.scheme?.interestRate,
+                      'Consulting Charge (%)': row.loan.consultingCharge,
+                      'Total Interest': Number(
+                        row.interestAmount + row.loan.consultingCharge
+                      ).toFixed(2),
+                      'Penalty': row.penalty,
+                      'CR/DR Amount': Number(row.old_cr_dr).toFixed(2),
+                      'Uchak Amount': row.uchakInterestAmount,
+                      'Entry Date': fDate(row.createdAt),
+                      'Days': row.days,
+                      'Pay after Adjust': row.payAfterAdjust,
+                      'Total Pay Amount': row.amountPaid,
+                      'Entry By': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'LoanInterestDetails',
+                },
+                {
+                  data:
+                    data.uchakPayDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Date': fDate(row.date),
+                      'Amount Paid': Number(row.amountPaid).toFixed(2),
+                      'Remark': row.remark || '-',
+                    })) || [],
+                  sheetName: 'LoanUchakPayDetails',
+                },
+                {
+                  data:
+                    data.partPaymentDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Paid Date': fDate(row.date),
+                      'Loan Amount': Number(row.loan?.loanAmount).toFixed(2),
+                      'Interest Loan Amount': Number(row.loan?.interestLoanAmount).toFixed(2),
+                      'Paid Loan Amount': Number(row.paidAmount).toFixed(2),
+                      'Pending Loan Amount': Number(row.pendingAmount).toFixed(2),
+                      'Entry Date': fDate(row.createdAt),
+                      'Remark': row.remark || '-',
+                      'Entry By': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'PartPayment',
+                },
+                {
+                  data:
+                    data.partReleaseDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No': row.loan.loanNo,
+                      'Loan Amount': Number(row.loan.loanAmount).toFixed(2),
+                      'Interest Loan Amount': Number(row.loan.interestLoanAmount).toFixed(2),
+                      'Release Loan Amount': Number(row.adjustedAmount).toFixed(2),
+                      'Pending Loan Amount': Number(row.pendingLoanAmount).toFixed(2),
+                      'Release Date': fDate(row.date),
+                      'Entry Date': fDate(row.createdAt),
+                      'Remark': row.remark || '-',
+                      'Entry By': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'PartReleaseDetails',
+                },
+              ]}
+              fileName="LoanDetails"
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

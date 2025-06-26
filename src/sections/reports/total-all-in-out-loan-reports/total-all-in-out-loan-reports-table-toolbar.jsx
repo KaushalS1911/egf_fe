@@ -22,6 +22,7 @@ import TextField from '@mui/material/TextField';
 import AllBranchOtherLoanSummaryPdf from '../pdf/all-branch-other-loan-summary-pdf.jsx';
 import OtherLoanInterestPdf from '../pdf/other-loan-interest-pdf.jsx';
 import TotalInOutLoanReports from '../pdf/total-in-out-loan-reports.jsx';
+import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -219,7 +220,73 @@ export default function TotalAllInOutLoanReportsTableToolbar({
               PDF
             </MenuItem>
             <MenuItem>
-              <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />
+              <RHFExportExcel
+                data={Object.values(dataFilter)
+                  .flat()
+                  .map((row, index) => {
+                    const {
+                      loan,
+                      otherNumber,
+                      otherName,
+                      renewalDate,
+                      status,
+                      totalInterestAmount,
+                      amount,
+                      grossWt,
+                      netWt,
+                      percentage,
+                      totalOtherInterestAmount,
+                    } = row;
+                    const { loanNo, customer, loanAmount, scheme, issueDate, interestLoanAmount } =
+                      loan;
+
+                    const totalOtherAmount =
+                      dataFilter[loanNo]?.reduce(
+                        (sum, item) => sum + Number(item.amount || 0),
+                        0
+                      ) || 0;
+                    const diffAmount = totalOtherAmount - loanAmount;
+
+                    const totalOtherInterest =
+                      dataFilter[loanNo]?.reduce(
+                        (sum, item) => sum + Number(item.totalOtherInterestAmount || 0),
+                        0
+                      ) || 0;
+                    const diffInterest = totalOtherInterest - totalInterestAmount;
+
+                    return {
+                      '#': index + 1,
+                      'Loan no.': loanNo,
+                      'Issue date': fDate(issueDate),
+                      'Customer name': `${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`,
+                      'Total loan amt': loanAmount,
+                      'Part loan amt':
+                        parseFloat((loanAmount - interestLoanAmount).toFixed(2)) || 0,
+                      'Int. loan amt': interestLoanAmount,
+                      'Total wt': loan.propertyDetails
+                        .reduce((prev, next) => prev + (Number(next?.totalWeight) || 0), 0)
+                        .toFixed(2),
+                      'Net wt': loan.propertyDetails
+                        .reduce((prev, next) => prev + (Number(next?.netWeight) || 0), 0)
+                        .toFixed(2),
+                      'Int. rate': scheme.interestRate,
+                      'Total int. amt': (totalInterestAmount || 0).toFixed(2),
+                      'Other no': otherNumber,
+                      'Date': fDate(row.date),
+                      'Other name': otherName,
+                      'Other Loan amt': amount,
+                      'Gross wt': grossWt,
+                      'Net wt': netWt,
+                      'Other int(%)': percentage,
+                      'Other int amt': totalOtherInterestAmount.toFixed(2),
+                      'Diff loan amt': diffAmount.toFixed(2),
+                      'Diff int. amt': diffInterest.toFixed(2),
+                      Status: status,
+                    };
+                  })}
+                fileName="TotalAllInOutLoanReport"
+                sheetName="TotalAllInOutLoanReportSheet"
+              />
             </MenuItem>
           </>
           <MenuItem

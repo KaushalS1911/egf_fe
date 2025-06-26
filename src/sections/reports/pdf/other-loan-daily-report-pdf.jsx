@@ -253,6 +253,7 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                 <Text style={[styles.tableCell, { flex: 0.8 }]}>Cash Amt</Text>
                 <Text style={[styles.tableCell, { flex: 0.8 }]}>Bank Amt</Text>
                 <Text style={[styles.tableCell, { flex: 0.8 }]}>Int Amt</Text>
+                <Text style={[styles.tableCell, { flex: 0.8 }]}>Charge</Text>
                 <Text style={[styles.tableCell, { flex: 0.9 }]}>Entry Date</Text>
               </View>
               {loanIntDetails.map((item, index) => (
@@ -284,6 +285,7 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.cashAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.otherLoan.bankAmount}</Text>
                   <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.interestAmount}</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.charge}</Text>
                   <Text style={[styles.tableCell, { flex: 0.9 }]}>
                     {fDate(item.otherLoan.createdAt)}
                   </Text>
@@ -321,7 +323,11 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
                 </Text>
                 <Text style={[styles.totalCell, { flex: 0.8 }]}>
                   {loanIntDetails
-                    .reduce((sum, item) => sum + (Number(item.amountPaid) || 0), 0)
+                    .reduce((sum, item) => sum + (Number(item.interestAmount) || 0), 0)
+                    .toFixed(0)}
+                </Text> <Text style={[styles.totalCell, { flex: 0.8 }]}>
+                  {loanIntDetails
+                    .reduce((sum, item) => sum + (Number(item.charge) || 0), 0)
                     .toFixed(0)}
                 </Text>
                 <Text style={[styles.totalCell, { flex: 0.9 }]}></Text>

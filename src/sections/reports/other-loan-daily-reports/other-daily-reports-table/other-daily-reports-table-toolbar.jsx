@@ -21,6 +21,8 @@ import { PDFViewer } from '@react-pdf/renderer';
 import AllBranchLoanSummaryPdf from '../../pdf/all-branch-loan-summary-pdf.jsx';
 import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
 import OtherDailyReportPdf from '../../pdf/other-loan-daily-report-pdf';
+import { fDate } from '../../../../utils/format-time.js';
+import RHFMultiSheetExportExcel from '../../../../components/hook-form/rhf-multi-sheet-export-excel.jsx';
 
 // ----------------------------------------------------------------------
 
@@ -202,7 +204,6 @@ export default function OtherDailyReportsTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
             <MenuItem
               onClick={() => {
                 view.onTrue();
@@ -212,30 +213,85 @@ export default function OtherDailyReportsTableToolbar({
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
             </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-            {/*<MenuItem>*/}
-            {/*  <RHFExportExcel*/}
-            {/*    // data={loans}*/}
-            {/*    fileName="LaonissueData"*/}
-            {/*    sheetName="LoanissueDetails"*/}
-            {/*  />*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem>
+            <RHFMultiSheetExportExcel
+              sheets={[
+                {
+                  data: data.LoanIssue?.map((row, index) => ({
+                    '#': index + 1,
+                    'Open Date': fDate(row.date),
+                    'Loan no.': row.loan?.loanNo,
+                    'Customer name': `${row.loan?.customer?.firstName || ''} ${row.loan?.customer?.middleName || ''} ${row.loan?.customer?.lastName || ''}`,
+                    'Other name': row.otherName,
+                    'Other loan no': row.otherNumber,
+                    'Rate': row.percentage,
+                    'Gross Wt.': row.grossWt,
+                    'Net Wt.': row.netWt,
+                    'Charge': row.otherCharge,
+                    'Cash Amt.': row.cashAmount,
+                    'Bank Amt.': row.bankAmount,
+                    'Other Amt.': row.amount,
+                    'Entry date': fDate(row.createdAt),
+                  })) || [],
+                  sheetName: 'NewOtherGoldLoans',
+                },
+                {
+                  data: data.interestDetail?.map((row, index) => {
+                    const { from, to, days, otherLoan, interestAmount } = row;
+                    const {
+                      date, otherName, loan, otherNumber, percentage,
+                      cashAmount, bankAmount, amount, createdAt,
+                    } = otherLoan;
+                    const { loanNo, customer } = loan;
+                    return {
+                      '#': index + 1,
+                      'Open Date': fDate(date),
+                      'Loan no.': loanNo,
+                      'Customer name': `${customer?.firstName || ''} ${customer?.middleName || ''} ${customer?.lastName || ''}`,
+                      'Other name': otherName,
+                      'Other loan no': otherNumber,
+                      'Other Amt.': amount,
+                      'Rate': percentage,
+                      'From date': fDate(from),
+                      'To date': fDate(to),
+                      'Day': days,
+                      'Cash Amt.': cashAmount,
+                      'Bank Amt.': bankAmount,
+                      'Int. amt': interestAmount,
+                      'Entry date': fDate(createdAt),
+                    };
+                  }) || [],
+                  sheetName: 'InterestDetails',
+                },
+                {
+                  data: data.partPayment?.map((row, index) => {
+                    const {
+                      date, otherName, loan, otherNumber, percentage, otherCharge,
+                      cashAmount, bankAmount, amount, createdAt, closeDate, closingAmount,
+                    } = row.otherLoan;
+                    return {
+                      '#': index + 1,
+                      'Open Date': fDate(date),
+                      'Loan no.': loan?.loanNo,
+                      'Customer name': `${loan?.customer?.firstName || ''} ${loan?.customer?.middleName || ''} ${loan?.customer?.lastName || ''}`,
+                      'Other name': otherName,
+                      'Other loan no': otherNumber,
+                      'Other amount': amount,
+                      'Rate': percentage,
+                      'Charge': otherCharge,
+                      'Cash Amt.': cashAmount,
+                      'Bank Amt.': bankAmount,
+                      'Pay Amt.': closingAmount,
+                      'Close date': fDate(closeDate),
+                      'Entry date': fDate(createdAt),
+                    };
+                  }) || [],
+                  sheetName: 'ClosedOtherGoldLoans',
+                },
+              ]}
+              fileName="OtherLoanDailyReport"
+            />
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>

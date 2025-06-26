@@ -17,6 +17,8 @@ import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
 import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
 import Autocomplete from '@mui/material/Autocomplete';
+import { fDate } from '../../../../utils/format-time';
+import RHFMultiSheetExportExcel from '../../../../components/hook-form/rhf-multi-sheet-export-excel.jsx';
 
 export default function DailyReportsTableToolbar({
   filters,
@@ -161,6 +163,100 @@ export default function DailyReportsTableToolbar({
           >
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
+          </MenuItem>
+          <MenuItem>
+            <RHFMultiSheetExportExcel
+              sheets={[
+                {
+                  data:
+                    data.loanDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No.': row.loanNo,
+                      'Customer Name': `${row.customer?.firstName || ''} ${row.customer?.middleName || ''} ${row.customer?.lastName || ''}`,
+                      'Loan Amt': Number(row.loanAmount).toFixed(2),
+                      'Int. (%)': Number(
+                        row.scheme?.interestRate > 1.5 ? 1.5 : row.scheme?.interestRate
+                      ).toFixed(2),
+                      'Con. (%)': Number(row.consultingCharge).toFixed(2),
+                      'Issue Date': fDate(row.issueDate),
+                      'Entry by': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'NewGoldLoan',
+                },
+                {
+                  data:
+                    data.loanIntDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No.': row.loan.loanNo,
+                      'Customer Name': `${row.loan.customer?.firstName || ''} ${row.loan.customer?.middleName || ''} ${row.loan.customer?.lastName || ''}`,
+                      'From Date': fDate(row.from),
+                      'To Date': fDate(row.to),
+                      'Loan Amount': Number(row.loan.loanAmount).toFixed(2),
+                      'Int. (%)': Number(
+                        row.loan.scheme?.interestRate > 1.5 ? 1.5 : row.loan.scheme?.interestRate
+                      ).toFixed(2),
+                      'Con. (%)': Number(row.loan.consultingCharge).toFixed(2),
+                      'Int. Amt': Number(row.interestAmount).toFixed(2),
+                      'Entry by': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'InterestDetails',
+                },
+                {
+                  data:
+                    data.partReleaseDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No': row.loan.loanNo,
+                      'Customer Name': `${row.loan.customer?.firstName || ''} ${row.loan.customer?.middleName || ''} ${row.loan.customer?.lastName || ''}`,
+                      'Release Date': fDate(row.releaseDate),
+                      'Release Amount': Number(row.releaseAmount).toFixed(2),
+                      'Release Weight': Number(row.releaseWeight).toFixed(3),
+                      'Entry By': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'PartReleaseDetails',
+                },
+                {
+                  data:
+                    data.uchakIntDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No.': row.loan.loanNo,
+                      'Customer Name': `${row.loan.customer?.firstName || ''} ${row.loan.customer?.middleName || ''} ${row.loan.customer?.lastName || ''}`,
+                      'Amount Paid': Number(row.amountPaid).toFixed(2),
+                      Remark: row.remark,
+                      'Entry by': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'UchakInterest',
+                },
+                {
+                  data:
+                    data.partPaymentDetails?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No': row.loan.loanNo,
+                      'Customer Name': `${row.loan.customer?.firstName || ''} ${row.loan.customer?.middleName || ''} ${row.loan.customer?.lastName || ''}`,
+                      'Paid Date': fDate(row.date),
+                      'Paid Amount': Number(row.paidAmount).toFixed(2),
+                      'Entry By': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'PartPayment',
+                },
+                {
+                  data:
+                    data.closedLoans?.map((row, index) => ({
+                      '#': index + 1,
+                      'Loan No.': row.loan.loanNo,
+                      'Customer Name': `${row.loan.customer?.firstName || ''} ${row.loan.customer?.middleName || ''} ${row.loan.customer?.lastName || ''}`,
+                      'Close Date': fDate(row.date),
+                      'Total Loan Amount': Number(row.totalLoanAmount).toFixed(2),
+                      'Interest Loan Amount': Number(row.loan.interestLoanAmount).toFixed(2),
+                      'Net Amount': Number(row.netAmount).toFixed(2),
+                      'Closing Charge': Number(row.closingCharge).toFixed(2),
+                      'Net Paid Amount': Number(row.netAmount - row.closingCharge).toFixed(2),
+                      'Entry by': `${row.entryBy?.firstName || ''} ${row.entryBy?.middleName || ''} ${row.entryBy?.lastName || ''}`,
+                    })) || [],
+                  sheetName: 'ClosedLoan',
+                },
+              ]}
+              fileName="DailyReport"
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

@@ -15,10 +15,12 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { useGetBranch } from '../../../api/branch.js';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
-export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateError }) {
+export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateError, data }) {
   const popover = usePopover();
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
@@ -188,13 +190,25 @@ export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateE
                 <Iconify icon="solar:printer-minimalistic-bold" />
                 Print
               </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="ant-design:file-pdf-filled" />
-                PDF
+              <MenuItem>
+                <RHFExportExcel
+                  data={(data || []).map((row) => ({
+                    'Sr No': row.srNo,
+                    'Loan No.': row.loanNo,
+                    'Issue Date': fDate(row.issueDate),
+                    'Customer Name': `${row.customer?.firstName} ${row.customer?.middleName} ${row.customer?.lastName}`,
+                    'Contact': row.customer?.contact,
+                    'Loan Amount': Number(row.loanAmount).toFixed(2),
+                    'Interest Loan Amount': Number(row.interestLoanAmount).toFixed(2),
+                    'Net Amount': Number(row.loanAmount - row.interestLoanAmount).toFixed(2),
+                    'Interest Rate (%)': row.scheme?.interestRate,
+                    'Cash Amount': Number(row.cashAmount).toFixed(2),
+                    'Bank Amount': Number(row.bankAmount).toFixed(2),
+                    'Status': row.status,
+                  }))}
+                  fileName="LoanIssueReport"
+                  sheetName="LoanIssueReportSheet"
+                />
               </MenuItem>
             </>
           )}
@@ -216,4 +230,5 @@ LoanIssueReportsTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  data: PropTypes.array,
 };

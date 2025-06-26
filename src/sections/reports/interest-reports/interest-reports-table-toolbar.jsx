@@ -22,6 +22,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -220,12 +222,37 @@ export default function InterestReportsTableToolbar({
         >
           <MenuItem
             onClick={() => {
-              view.onTrue();
               popover.onClose();
+              view.onTrue();
             }}
           >
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={data.map((row) => ({
+                'Sr No': row.srNo,
+                'Loan No.': row.loanNo,
+                'Customer Name': `${row.customer.firstName} ${row.customer.middleName} ${row.customer.lastName}`,
+                'Issue Date': fDate(row.issueDate),
+                'Loan Amount': row.loanAmount,
+                'Interest Loan Amount': row.interestLoanAmount ? row.interestLoanAmount : '0',
+                'Interest Rate (%)': row.scheme.interestRate <= 1.5 ? row.scheme.interestRate : 1.5,
+                'Consulting Charge': row.consultingCharge,
+                'Interest Amount': (row.interestAmount || 0).toFixed(2),
+                'Consulting Amount': (row.consultingAmount || 0).toFixed(2),
+                'Penalty Amount': row.penaltyAmount ? row.penaltyAmount : '0',
+                'Days': row.day > 0 ? row.day : 0,
+                'Total Paid Interest': row.totalPaidInterest ? row.totalPaidInterest.toFixed(2) : '0',
+                'Last Installment Date': row.lastInstallmentDate ? fDate(row.lastInstallmentDate) : '-',
+                'Entry Date': fDate(row.createdAt) || '-',
+                'Pending Days': row.pendingDays > 0 ? row.pendingDays : 0,
+                'Pending Interest': (row.pendingInterest || 0).toFixed(2),
+              }))}
+              fileName="InterestReport"
+              sheetName="InterestReportSheet"
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

@@ -139,7 +139,11 @@ export default function LoanIssueReportsListView() {
           }}
         />
         <Card>
-          <LoanIssueReportsTableToolbar filters={filters} onFilters={handleFilters} />
+          <LoanIssueReportsTableToolbar
+            filters={filters}
+            onFilters={handleFilters}
+            data={dataFiltered}
+          />
           {canReset && (
             <LoanIssueReportsTableFiltersResult
               filters={filters}
