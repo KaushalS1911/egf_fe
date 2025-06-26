@@ -121,16 +121,16 @@ export default function LoanDetailTableToolbarTableToolbar({
           </FormControl>
 
           {/* Branch Autocomplete (Multi-select) */}
-          <FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 350 } }}>
-            <Autocomplete
-              options={branch}
-              getOptionLabel={(option) => option?.name || ''}
-              value={branch.find((b) => b._id === filters.branch) || null}
-              onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}
-              renderInput={(params) => <TextField {...params} label="Branch" />}
-              sx={customStyle}
-            />
-          </FormControl>
+          {/*<FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 350 } }}>*/}
+          {/*  <Autocomplete*/}
+          {/*    options={branch}*/}
+          {/*    getOptionLabel={(option) => option?.name || ''}*/}
+          {/*    value={branch.find((b) => b._id === filters.branch) || null}*/}
+          {/*    onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}*/}
+          {/*    renderInput={(params) => <TextField {...params} label="Branch" />}*/}
+          {/*    sx={customStyle}*/}
+          {/*  />*/}
+          {/*</FormControl>*/}
 
           {/* Start Date */}
           <DatePicker

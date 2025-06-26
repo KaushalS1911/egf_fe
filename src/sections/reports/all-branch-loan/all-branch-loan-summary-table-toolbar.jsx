@@ -133,20 +133,20 @@ export default function AllBranchLoanSummaryTableToolbar({
             renderInput={(params) => (
               <TextField {...params} label="Issued By" className={'custom-textfield'} />
             )}
-            sx={{ width: { xs: '100%', sm: 350 } }}
+            sx={{ width: { xs: '100%', sm: 800 } }}
           />
 
-          <Autocomplete
-            value={filters.branch || []}
-            onChange={(event, newValue) => handleFilterBranch({ target: { value: newValue } })}
-            options={branch}
-            getOptionLabel={(option) => option?.name || ''}
-            isOptionEqualToValue={(option, value) => option?.name === value?.name}
-            renderInput={(params) => (
-              <TextField {...params} label="Branch" className={'custom-textfield'} />
-            )}
-            sx={{ width: { xs: '100%', sm: 350 } }}
-          />
+          {/*<Autocomplete*/}
+          {/*  value={filters.branch || []}*/}
+          {/*  onChange={(event, newValue) => handleFilterBranch({ target: { value: newValue } })}*/}
+          {/*  options={branch}*/}
+          {/*  getOptionLabel={(option) => option?.name || ''}*/}
+          {/*  isOptionEqualToValue={(option, value) => option?.name === value?.name}*/}
+          {/*  renderInput={(params) => (*/}
+          {/*    <TextField {...params} label="Branch" className={'custom-textfield'} />*/}
+          {/*  )}*/}
+          {/*  sx={{ width: { xs: '100%', sm: 350 } }}*/}
+          {/*/>*/}
 
           <DatePicker
             label="Start date"
