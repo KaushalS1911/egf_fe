@@ -257,7 +257,7 @@ export default function AllBranchOtherLoanSummaryTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
-      <Dialog full Screen open={view.value} onClose={view.onFalse}>
+      <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
             <Button color="inherit" variant="contained" onClick={view.onFalse}>
