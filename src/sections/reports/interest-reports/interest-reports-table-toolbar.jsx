@@ -151,7 +151,7 @@ export default function InterestReportsTableToolbar({
                 <TextField
                   {...params}
                   label="Rate"
-                  sx={{ '& .MuiInputBase-input': { height: '7px' } }}
+                  className='custom-textfield'
                 />
               )}
               isOptionEqualToValue={(option, value) => option?.rate === value?.rate}

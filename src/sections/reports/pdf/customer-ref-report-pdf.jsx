@@ -176,7 +176,7 @@ export default function CustomerRefReportPdf({ configs, data, filterData }) {
         <Text style={[styles.tableCell, { flex: 1 }]}>{row.contact || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.joiningDate) || '-'}</Text>
         <Text style={[styles.tableCell, { flex: 2.5 }]}>{row.referenceBy || '-'}</Text>
-        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row.area || '-'}</Text>
+        <Text style={[styles.tableCell, { flex: 1.2 }]}>{row?.permanentAddress?.area || '-'}</Text>
       </View>
     );
 

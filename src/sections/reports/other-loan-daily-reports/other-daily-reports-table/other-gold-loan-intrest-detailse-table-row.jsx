@@ -58,7 +58,7 @@ export default function OtherGoldLoanIntrestDetailseTableRow({
         <TableCell sx={{ padding: '6px' }}>{days}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{cashAmount}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{bankAmount}</TableCell>
-        <TableCell sx={{ padding: '6px' }}>{row.amountPaid}</TableCell>
+        <TableCell sx={{ padding: '6px' }}>{row.interestAmount}</TableCell>
         <TableCell sx={{ padding: '6px' }}>{fDate(createdAt)}</TableCell>
       </TableRow>
       <CustomPopover

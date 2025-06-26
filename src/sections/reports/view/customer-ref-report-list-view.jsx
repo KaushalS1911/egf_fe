@@ -280,10 +280,10 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
       return (
         fullName.includes(username.toLowerCase()) ||
-        item.customer.middleName.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.lastName.toLowerCase().includes(username.toLowerCase()) ||
-        item.loanNo.toLowerCase().includes(username.toLowerCase()) ||
-        item.customer.contact.toLowerCase().includes(username.toLowerCase())
+        item?.customer?.firstName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.customer?.middleName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.customer?.lastName.toLowerCase().includes(username.toLowerCase()) ||
+        item?.customer?.contact.toLowerCase().includes(username.toLowerCase())
       );
     });
   }

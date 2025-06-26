@@ -528,7 +528,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
               <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>{' '}
               <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>
-            <InvoiceFooter configs={configs} />
+            <InvoiceFooter configs={configs} branch={selectedRow?.customer?.branch} />
           </View>
         </Page>
         <Page size="A4" style={styles.page}>
@@ -556,7 +556,7 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
               <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>
               <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>
             </View>
-            <InvoiceFooter configs={configs} />
+            <InvoiceFooter configs={configs} branch={selectedRow?.customer?.branch}/>
           </View>
         </Page>
       </Document>

@@ -111,13 +111,24 @@ export default function LoanDetailTableToolbarTableToolbar({
           {/* Loan Autocomplete */}
           <FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 355 } }}>
             <Autocomplete
-              options={Loanissue}
+              options={Loanissue.filter(
+                (option) => option?.customer?.branch?._id === filters.branch
+              )}
               getOptionLabel={(option) => option?.loanNo || ''}
-              value={Loanissue.find((item) => item._id === filters.loan) || null}
-              onChange={(event, newValue) => onFilters('loan', newValue ? newValue._id : null)}
+              value={
+                Loanissue.find(
+                  (item) =>
+                    item._id === filters.loan &&
+                    item?.customer?.branch?._id === filters.branch
+                ) || null
+              }
+              onChange={(event, newValue) =>
+                onFilters('loan', newValue ? newValue._id : null)
+              }
               renderInput={(params) => <TextField {...params} label="Loan" />}
               sx={customStyle}
             />
+
           </FormControl>
 
           {/* Branch Autocomplete (Multi-select) */}

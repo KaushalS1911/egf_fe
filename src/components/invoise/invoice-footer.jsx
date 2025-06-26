@@ -184,10 +184,9 @@ const useStyles = () =>
     []
   );
 
-export default function InvoiceFooter({ configs }) {
+export default function InvoiceFooter({ configs ,branch }) {
   const styles = useStyles();
   const logo = configs?.company?.logo_url;
-  const branch = configs?.headersConfig?.branch;
   const company = configs?.headersConfig?.companyDetail;
   const webUrl = configs?.headersConfig?.companyDetail?.webUrl;
   const branchAddress = branch
