@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -36,6 +36,11 @@ import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetConfigs } from '../../../api/config';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import OtherLoanIssueDetails from './other-loan-issue-details';
+import {Box} from "@mui/system";
 
 // ----------------------------------------------------------------------
 
@@ -73,6 +78,8 @@ export default function OtherLoanissueListView() {
   const [tableData, setTableData] = useState(otherLoanissue);
   const [filters, setFilters] = useState(defaultFilters);
   const [srData, setSrData] = useState([]);
+  const [openOverview, setOpenOverview] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     const updatedData = otherLoanissue.map((item, index) => ({
@@ -119,7 +126,7 @@ export default function OtherLoanissueListView() {
     }
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan/${id}`
       );
       enqueueSnackbar(res.data.message);
       confirm.onFalse();
@@ -164,29 +171,11 @@ export default function OtherLoanissueListView() {
     [router]
   );
 
-  // const loans = otherLoanissue.map((item) => ({
-  //   'Loan No': item.loan.loanNo,
-  //   'Customer Name': `${item.loan.customer.firstName} ${item.loan.customer.middleName} ${item.loan.customer.lastName}`,
-  //   Contact: item.loan.customer.contact,
-  //   'OTP Contact': item.loan.customer.otpContact,
-  //   Email: item.loan.customer.email,
-  //   'Permanent address': `${item.loan.customer.permanentAddress.street} ${item.loan.customer.permanentAddress.landmark} ${item.loan.customer.permanentAddress.city} , ${item.loan.customer.permanentAddress.state} ${item.loan.customer.permanentAddress.country} ${item.loan.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.loan.issueDate,
-  //   Scheme: item.loan.scheme.name,
-  //   'Rate per gram': item.loan.scheme.ratePerGram,
-  //   'Interest rate': item.loan.scheme.interestRate,
-  //   valuation: item.loan.scheme.valuation,
-  //   'Interest period': item.loan.scheme.interestPeriod,
-  //   'Renewal time': item.loan.scheme.renewalTime,
-  //   'min loan time': item.loan.scheme.minLoanTime,
-  //   'Loan amount': item.loan.loanAmount,
-  //   'Next nextInstallment date': fDate(item.loan.nextInstallmentDate),
-  //   'Payment mode': item.loan.paymentMode,
-  //   'Paying cashAmount': item.loan.payingCashAmount,
-  //   'Pending cashAmount': item.loan.pendingCashAmount,
-  //   'Paying bankAmount': item.loan.payingBankAmount,
-  //   'Pending bankAmount': item.loan.pendingBankAmount,
-  // }));
+  const handleViewRow = (row) => {
+    const found = srData.find((item) => item._id === row._id);
+    setSelectedRow(found || null);
+    setOpenOverview(true);
+  };
 
   if (otherLoanissueLoading) {
     return <LoadingScreen />;
@@ -286,6 +275,7 @@ export default function OtherLoanissueListView() {
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}
                       onEditRow={() => handleEditRow(row._id)}
+                      onViewRow={handleViewRow}
                     />
                   ))}
                 <TableEmptyRows
@@ -329,6 +319,17 @@ export default function OtherLoanissueListView() {
           </Button>
         }
       />
+      <Dialog open={openOverview} onClose={() => setOpenOverview(false)} maxWidth="md" fullWidth>
+        <Box sx={{display: 'flex', alignItems: 'center',justifyContent:'space-between'}}>
+          <DialogTitle>Loan Overview</DialogTitle>
+          <IconButton color="error" onClick={() => setOpenOverview(false)} sx={{p:2}}>
+            <Iconify icon="oui:cross-in-circle-filled" />
+          </IconButton>
+        </Box>
+        <DialogContent>
+          {selectedRow && <OtherLoanIssueDetails selectedRow={selectedRow} configs={configs} />}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
