@@ -24,6 +24,8 @@ import DialogActions from '@mui/material/DialogActions';
 import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
 import InterestEntryReportsPdf from '../pdf/interest-entry-reports-pdf.jsx';
 import OtherInterestEntryReportsPdf from '../pdf/other-interest-entry-reports-pdf.jsx';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -199,12 +201,34 @@ export default function OtherInterestEntryReportsTableToolbar({
         >
           <MenuItem
             onClick={() => {
-              view.onTrue();
               popover.onClose();
+              view.onTrue();
             }}
           >
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={data.map((row) => ({
+                'Loan No.': row.otherLoan.loan.loanNo,
+                'Other Loan No.': row.otherLoan.otherNumber,
+                'From Date': fDate(row.from),
+                'To Date': fDate(row.to),
+                'Days': row.days > 0 ? row.days : 0,
+                'Amount': row.otherLoan.amount,
+                'Interest Amount': (Number(row.payAfterAdjust) - Number(row.charge || 0)).toFixed(2),
+                'Charge': row.charge || 0,
+                'Net Amount': (Number(row.payAfterAdjust) - Number(row.charge || 0)).toFixed(2),
+                'Payment Mode': row.paymentDetail.paymentMode || '-',
+                'Cash Amount': row.paymentDetail.cashAmount || 0,
+                'Bank Amount': row.paymentDetail.bankAmount || 0,
+                'Bank Name': row.paymentDetail.bankName || '-',
+                'Entry Date': fDate(row.createdAt),
+              }))}
+              fileName="OtherInterestEntryReport"
+              sheetName="OtherInterestEntryReportSheet"
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

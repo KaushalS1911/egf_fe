@@ -22,6 +22,7 @@ export default function OtherLoanissueTableRow({
   onEditRow,
   onSelectRow,
   onDeleteRow,
+  onViewRow,
 }) {
   const { loan, cashAmount, bankAmount, srNo, otherNumber, amount, percentage, otherName, date } =
     row;
@@ -35,7 +36,12 @@ export default function OtherLoanissueTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{srNo}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap', cursor: 'pointer', fontWeight:'bold' }}
+          onClick={() => onViewRow && onViewRow(row)}
+        >
+          {loanNo}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
         </TableCell>
@@ -110,4 +116,5 @@ OtherLoanissueTableRow.propTypes = {
   onSelectRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
+  onViewRow: PropTypes.func,
 };

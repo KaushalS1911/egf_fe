@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import moment from 'moment';
 import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
+import { fDate } from '../../../utils/format-time';
 import {
   Box,
   Dialog,
@@ -201,6 +202,33 @@ export default function AllBranchLoanSummaryTableToolbar({
           >
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={dataFilter?.map((row, index) => ({
+                'Sr No': index + 1,
+                'Loan No.': row.loanNo,
+                'Customer Name': `${row.customer?.firstName || ''} ${row.customer?.middleName || ''} ${row.customer?.lastName || ''}`,
+                'Contact': row.customer?.contact,
+                'Interest Rate (%)': Number(row.scheme?.interestRate > 1.5 ? 1.5 : row.scheme?.interestRate).toFixed(2),
+                'Other Interest (%)': Number(row.consultingCharge).toFixed(2) || 0,
+                'Issue Date': fDate(row.issueDate),
+                'Loan Amount': row.loanAmount,
+                'Last Amount Pay Date': fDate(row.lastAmtPayDate) || '-',
+                'Loan Amount Pay': parseFloat((row.loanAmount - row.interestLoanAmount).toFixed(2)),
+                'Interest Loan Amount': row.interestLoanAmount,
+                'Last Interest Pay Date': fDate(row.lastInstallmentDate) || '-',
+                'Days': row.day > 0 ? row.day : 0,
+                'Total Interest Pay': row.totalPaidInterest.toFixed(2),
+                'Pending Days': row.pendingDays > 0 ? row.pendingDays : 0,
+                'Pending Interest': Number(row.pendingInterest).toFixed(2) || 0,
+                'Next Interest Pay Date': fDate(row.nextInstallmentDate) || '-',
+                'Approval Charge': row.approvalCharge || 0,
+                'Status': row.status
+              })) || []}
+              fileName="AllBranchLoanSummary"
+              sheetName="AllBranchLoanSummarySheet"
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

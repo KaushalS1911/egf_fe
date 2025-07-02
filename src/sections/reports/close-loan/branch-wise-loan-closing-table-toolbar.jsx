@@ -23,6 +23,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 import BranchWiseLoanClosingPdf from '../pdf/branch-wise-loan-closing-pdf.jsx';
 import { getResponsibilityValue } from '../../../permission/permission';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
+import { fDate } from '../../../utils/format-time';
 
 export default function BranchWiseLoanClosingTableToolbar({
   filters,
@@ -224,12 +226,39 @@ export default function BranchWiseLoanClosingTableToolbar({
         >
           <MenuItem
             onClick={() => {
-              view.onTrue();
               popover.onClose();
+              view.onTrue();
             }}
           >
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={dataFilter.map((row, index) => ({
+                '#': index + 1,
+                'Loan No.': row.loanNo,
+                'Customer Name': `${row.customer?.firstName || ''} ${row.customer?.middleName || ''} ${row.customer?.lastName || ''}`,
+                'Contact': row.customer?.contact,
+                'Interest Rate (%)': Number(row.scheme?.interestRate).toFixed(2),
+                'Consulting Charge': Number(row.consultingCharge).toFixed(2),
+                'Issue Date': fDate(row.issueDate),
+                'Loan Amount': row.loanAmount,
+                'Part Loan Amount': parseFloat((row.loanAmount - row.interestLoanAmount).toFixed(2)),
+                'Interest Loan Amount': row.interestLoanAmount,
+                'Last Interest Pay Date': fDate(row.lastInstallmentDate) || '-',
+                'Total Interest Pay': Number(row.totalPaidInterest).toFixed(2),
+                'Days': row.day > 0 ? row.day : 0,
+                'Close Date': fDate(row.closedDate) || '-',
+                'Approval Charge': row.approvalCharge || 0,
+                'Close Charge': row.closeCharge || 0,
+                'Close Amount': row.loanAmount.toFixed(2),
+                'Close By': `${row.closedBy?.firstName || ''} ${row.closedBy?.middleName || ''} ${row.closedBy?.lastName || ''}`,
+                'Status': row.status
+              }))}
+              fileName="BranchWiseLoanClosing"
+              sheetName="BranchWiseLoanClosingSheet"
+            />
           </MenuItem>
         </CustomPopover>
       </Stack>

@@ -21,6 +21,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import AllBranchOtherLoanSummaryPdf from '../pdf/all-branch-other-loan-summary-pdf.jsx';
 import OtherLoanInterestPdf from '../pdf/other-loan-interest-pdf.jsx';
+import { fDate } from '../../../utils/format-time.js';
 
 // ----------------------------------------------------------------------
 
@@ -198,36 +199,39 @@ export default function OtherLonaInterestTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                view.onTrue();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-            {/*<MenuItem>*/}
-            {/*  <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              view.onTrue();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={dataFilter.map((row, index) => ({
+                '#': index + 1,
+                'Loan No.': row.loan?.loanNo,
+                'Customer Name': `${row.loan?.customer?.firstName || ''} ${row.loan?.customer?.middleName || ''} ${row.loan?.customer?.lastName || ''}`,
+                'Other Name': row.otherName,
+                'Other Number': row.otherNumber,
+                'Interest Rate (%)': Number(row.percentage).toFixed(2) || 0,
+                'Date': fDate(row.date),
+                'Amount': row.amount,
+                'Total Charge': (row.totalCharge || 0).toFixed(2),
+                'Days': row.day > 0 ? row.day : 0,
+                'Net Interest Amount': (row.totalInterestAmt - row.totalCharge).toFixed(2),
+                'Last Interest Pay Date': fDate(row.createdAt) || '-',
+                'Pending Days': row.pendingDay > 0 ? row.pendingDay : 0,
+                'Pending Interest': Number(row.pendingInterest).toFixed(2) || 0,
+                'Renewal Date': fDate(row.renewalDate) || '-',
+                'Status': row.status
+              }))}
+              fileName="OtherLoanInterest"
+              sheetName="OtherLoanInterestSheet"
+            />
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>

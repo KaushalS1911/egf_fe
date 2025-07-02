@@ -29,6 +29,8 @@ import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import AllBranchOtherLoanSummaryPdf from '../pdf/all-branch-other-loan-summary-pdf.jsx';
+import { fDate } from '../../../utils/format-time';
+import {formHelperTextClasses} from "@mui/material/FormHelperText";
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +46,8 @@ export default function AllBranchOtherLoanSummaryTableToolbar({
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [renewStartDateOpen, setRenewStartDateOpen] = useState(false);
+  const [renewEndDateOpen, setRenewEndDateOpen] = useState(false);
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -94,8 +98,41 @@ export default function AllBranchOtherLoanSummaryTableToolbar({
     },
     [onFilters]
   );
+  const handleFilterRenewStartDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('renewStartDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('renewStartDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('renewStartDate', null);
+      }
+    },
+    [onFilters]
+  );
+
+  const handleFilterRenewEndDate = useCallback(
+    (newValue) => {
+      if (newValue === null || newValue === undefined) {
+        onFilters('renewEndDate', null);
+        return;
+      }
+      const date = moment(newValue);
+      if (date.isValid()) {
+        onFilters('renewEndDate', date.toDate());
+      } else {
+        console.warn('Invalid date selected');
+        onFilters('renewEndDate', null);
+      }
+    },
+    [onFilters]
+  );
   const customStyle = {
-    minWidth: { md: 350 },
+    minWidth: { md: 180 },
     label: {
       mt: -0.8,
       fontSize: '14px',
@@ -159,7 +196,7 @@ export default function AllBranchOtherLoanSummaryTableToolbar({
           onChange={(event, newValue) => onFilters('otherName', newValue)}
           sx={{
             flexShrink: 0,
-            width: { xs: 1, sm: 350 },
+            width: { xs: 1, sm: 250 },
           }}
           renderInput={(params) => (
             <TextField
@@ -210,6 +247,40 @@ export default function AllBranchOtherLoanSummaryTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
+          <DatePicker
+            label="Renew Start date"
+            value={filters.renewStartDate ? moment(filters.renewStartDate).toDate() : null}
+            open={renewStartDateOpen}
+            onClose={() => setRenewStartDateOpen(false)}
+            onChange={handleFilterRenewStartDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setRenewStartDateOpen(true),
+                fullWidth: true,
+              },
+            }}
+            sx={{ ...customStyle }}
+
+          />
+          <DatePicker
+            label="Renew End date"
+            value={filters.renewEndDate}
+            open={renewEndDateOpen}
+            onClose={() => setRenewEndDateOpen(false)}
+            onChange={handleFilterRenewEndDate}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                onClick: () => setRenewEndDateOpen(true),
+                fullWidth: true,
+                error: dateError,
+                helperText: dateError && 'End date must be later than start date',
+              },
+            }}
+            sx={{ ...customStyle }}
+
+          />
 
           {getResponsibilityValue('print_other_loan_all_branch_reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
@@ -223,37 +294,37 @@ export default function AllBranchOtherLoanSummaryTableToolbar({
           arrow="right-top"
           sx={{ width: 'auto' }}
         >
-          <>
-            {' '}
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                view.onTrue();
-              }}
-            >
-              <Iconify icon="solar:printer-minimalistic-bold" />
-              Print
-            </MenuItem>
-            {/*<MenuItem*/}
-            {/*  onClick={() => {*/}
-            {/*    popover.onClose();*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <Iconify icon="ant-design:file-pdf-filled" />*/}
-            {/*  PDF*/}
-            {/*</MenuItem>*/}
-            {/*<MenuItem>*/}
-            {/*  <RHFExportExcel fileName="LaonissueData" sheetName="LoanissueDetails" />*/}
-            {/*</MenuItem>*/}
-          </>
-          {/*<MenuItem*/}
-          {/*  onClick={() => {*/}
-          {/*    popover.onClose();*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Iconify icon="ic:round-whatsapp" />*/}
-          {/*  whatsapp share*/}
-          {/*</MenuItem>*/}
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              view.onTrue();
+            }}
+          >
+            <Iconify icon="solar:printer-minimalistic-bold" />
+            Print
+          </MenuItem>
+          <MenuItem>
+            <RHFExportExcel
+              data={dataFilter.map((row, index) => ({
+                '#': index + 1,
+                'Loan No.': row.loan?.loanNo,
+                'Customer Name': `${row.loan?.customer?.firstName || ''} ${row.loan?.customer?.middleName || ''} ${row.loan?.customer?.lastName || ''}`,
+                'Other Name': row.otherName,
+                'Other Number': row.otherNumber,
+                'Interest Rate (%)': Number(row.percentage).toFixed(2) || 0,
+                'Rate': Number(row.rate).toFixed(2) || 0,
+                'Date': fDate(row.date),
+                'Amount': row.amount,
+                'Total Charge': row.totalCharge || 0,
+                'Pending Days': row.pendingDay > 0 ? row.pendingDay : 0,
+                'Pending Interest': Number(row.pendingInterest).toFixed(2) || 0,
+                'Renewal Date': fDate(row.renewalDate) || '-',
+                'Status': row.status,
+              }))}
+              fileName="AllBranchOtherLoanSummary"
+              sheetName="AllBranchOtherLoanSummarySheet"
+            />
+          </MenuItem>
         </CustomPopover>
       </Stack>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>

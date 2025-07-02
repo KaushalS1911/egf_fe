@@ -83,6 +83,8 @@ const defaultFilters = {
   endDate: null,
   branch: '',
   otherName: '',
+  renewStartDate: null,
+  renewEndDate: null,
 };
 
 // ----------------------------------------------------------------------
@@ -484,7 +486,7 @@ export default function AllBranchLoanSummaryListView() {
 
 // ----------------------------------------------------------------------
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { username, status, startDate, endDate, branch, otherName } = filters;
+  const { username, status, startDate, endDate, branch, otherName,renewEndDate,renewStartDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -524,6 +526,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
+  }
+  if (!dateError && renewStartDate && renewEndDate) {
+    inputData = inputData.filter((order) =>
+      isBetween(new Date(order.renewalDate), renewStartDate, renewEndDate)
+    );
   }
 
   return inputData;

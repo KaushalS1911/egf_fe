@@ -107,6 +107,9 @@ export default function OtherDailyReportsListView() {
   }
 
   const data = {
+    LoanIssue: report?.loans,
+    partPayment: report?.closedLoanDetails,
+    interestDetail: report?.interestDetail,
     loanDetails: report?.loans,
     loanIntDetails: report?.interestDetail,
     closedLoanDetails: report?.closedLoanDetails,
