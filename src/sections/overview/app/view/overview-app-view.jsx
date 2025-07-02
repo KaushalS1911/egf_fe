@@ -56,13 +56,13 @@ export default function OverviewAppView() {
   const { Loanissue } = useGetLoanissue();
   const settings = useSettingsContext();
   const [ranges, setRanges] = useState({
-    customerRange: 'this_year',
-    areaRange: 'this_year',
-    referenceRange: 'this_year',
-    inquiryRange: 'this_year',
+    customerRange: 'this_month',
+    areaRange: 'this_month',
+    referenceRange: 'this_month',
+    inquiryRange: 'this_month',
     schemeLoanSummaryRange: 'this_month',
-    chargeRange: 'this_year',
-    interestRange: 'this_year',
+    chargeRange: 'this_month',
+    interestRange: 'this_month',
     paymentInRange: 'this_month',
     paymentOutRange: 'this_month',
     expenseRange: 'this_month',
