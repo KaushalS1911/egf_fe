@@ -39,7 +39,7 @@ export default function AnalyticsCurrentVisits({
                                                  ...other
                                                }) {
   const theme = useTheme();
-  const [timeRange, setTimeRange] = useState('this_year');
+  const [timeRange, setTimeRange] = useState('this_month');
 
   const handleChange = (event) => {
     setTimeRange(event.target.value);
