@@ -40,7 +40,7 @@ export default function BookingCheckInWidgets({
                                               }) {
   const theme = useTheme();
   const smUp = useResponsive('up', 'sm');
-  const [timeRange, setTimeRange] = useState('this_year');
+  const [timeRange, setTimeRange] = useState('this_month');
 
   const {
     series,

@@ -26,7 +26,7 @@ export default function AppAreaInstalled({ title, subheader, chart, ...other }) 
   }
 
   const popover = usePopover();
-  const [seriesData, setSeriesData] = useState(series?.[0]?.type || 'Week');
+  const [seriesData, setSeriesData] = useState('Week');
   const selectedSeries = series.find((item) => item.type === seriesData);
 
   const formatCurrency = (value) =>

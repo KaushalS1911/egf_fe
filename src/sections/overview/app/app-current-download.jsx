@@ -40,7 +40,7 @@ export default function AppCurrentDownload({
                                              ...other
                                            }) {
   const theme = useTheme();
-  const [timeRange, setTimeRange] = useState('this_year');
+  const [timeRange, setTimeRange] = useState('this_month');
 
   const handleTimeRangeChange = (event) => {
     const value = event.target.value;
