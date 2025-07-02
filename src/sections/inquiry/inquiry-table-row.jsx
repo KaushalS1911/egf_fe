@@ -129,12 +129,13 @@ export default function InquiryTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date) || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.recallingDate ? fDate(row?.recallingDate) : '-'}
+          {`${row.assignTo.user.firstName} ${row.assignTo.user.middleName} ${row.assignTo.user.lastName}`}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor || '-'}</TableCell>
-        <TableCell sx={{width:350}}>{remark || '-'}</TableCell>
+        <TableCell sx={{ width: 350 }}>{remark || '-'}</TableCell>
         <TableCell>
           <Label
             variant="soft"

@@ -74,6 +74,7 @@ const STATUS_OPTIONS = [
 const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
   { id: 'recallingDate', label: 'Recalling date' },
+  { id: 'assignTo', label: 'Assign to' },
   { id: 'name', label: 'Name' },
   { id: 'contact', label: 'Contact' },
   { id: 'inquiryFor', label: 'Inquiry for' },
