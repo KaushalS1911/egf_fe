@@ -284,6 +284,7 @@ export default function InquiryListView() {
 
   const inquiries = inquiry.map((item) => ({
     Date: fDate(item.date),
+    'Assign To': `${item.assignTo.user.firstName} ${item.assignTo.user.middleName} ${item.assignTo.user.lastName}`,
     Name: item.firstName + ' ' + item.lastName,
     Contact: item.contact,
     Email: item.email,
