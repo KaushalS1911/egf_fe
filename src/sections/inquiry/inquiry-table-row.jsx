@@ -128,10 +128,10 @@ export default function InquiryTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(date) || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.recallingDate) || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {`${row.assignTo.user.firstName} ${row.assignTo.user.middleName} ${row.assignTo.user.lastName}`}
+          {`${row.assignTo.user.firstName}  ${row.assignTo.user.lastName}`}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{firstName + ' ' + lastName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{contact || '-'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{inquiryFor || '-'}</TableCell>
