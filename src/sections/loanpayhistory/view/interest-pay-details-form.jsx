@@ -49,7 +49,6 @@ const TABLE_HEAD = [
   { id: 'bank', label: 'Bank' },
   { id: 'totalPay', label: 'Total Pay Amt' },
   { id: 'pdf', label: 'PDF' },
-  // { id: 'crDrAmt', label: 'CR/DR Amt' },
   { id: 'entryBy', label: 'Entry By' },
   { id: 'action', label: 'Action' },
 ];
@@ -81,10 +80,12 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.amountPaid) || 0),
     0
   );
+
   const cashAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
+
   const bankAmt = loanInterest.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
@@ -376,26 +377,11 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
       mutate();
       refetchLoanInterest();
       enqueueSnackbar(response?.data.message);
-      // reset();
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to pay interest', { variant: 'error' });
     }
   });
-
-  const handleCashAmountChange = (event) => {
-    const newCashAmount = parseFloat(event.target.value) || 0;
-    const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
-
-    if (newCashAmount > totalAmountPaid) {
-      enqueueSnackbar('Cash amount cannot exceed Total Pay Amount.', { variant: 'warning' });
-      setValue('cashAmount', totalAmountPaid);
-      setValue('bankAmount', 0);
-    } else {
-      setValue('cashAmount', newCashAmount.toFixed(2));
-      setValue('bankAmount', (totalAmountPaid - newCashAmount).toFixed(2));
-    }
-  };
 
   useEffect(() => {
     const totalAmountPaid = parseFloat(watch('amountPaid')) || 0;
@@ -557,10 +543,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                       label="Cash Amount"
                       req={'red'}
                       inputProps={{ min: 0 }}
-                      // onChange={(e) => {
-                      //   field.onChange(e);
-                      //   handleCashAmountChange(`e);
-                      // }}
                     />
                   )}
                 />
@@ -589,7 +571,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                     )}
                     isOptionEqualToValue={(option, value) => option._id === value._id}
                   />
-
                   <Controller
                     name="bankAmount"
                     control={control}
@@ -617,7 +598,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               >
                 Reset
               </Button>
-              {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+              {getResponsibilityValue('create_interest', configs, user) && (
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                   Submit
                 </LoadingButton>
@@ -694,7 +675,7 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                         : '-'}
                     </TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{row.amountPaid}</TableCell>
-                    {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
+                    {getResponsibilityValue('print_loan_pay_history_detail', configs, user) ? (
                       <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                         {
                           <Typography
@@ -746,7 +727,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
                 </>
               ))}{' '}
               <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
-                {/*<TableCell padding="checkbox" />*/}
                 <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                   TOTAL
                 </TableCell>
@@ -848,7 +828,6 @@ function InterestPayDetailsForm({ currentLoan, mutate, configs }) {
               Share
             </Button>
           </DialogActions>
-
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <InterestPdf data={data} configs={configs} />

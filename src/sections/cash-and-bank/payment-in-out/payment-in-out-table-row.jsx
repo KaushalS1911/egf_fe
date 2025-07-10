@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean.js';
@@ -17,9 +16,7 @@ import { fDate } from '../../../utils/format-time.js';
 import { statusColorMap } from '../../../assets/data/index.js';
 import { Box } from '@mui/system';
 import React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Lightbox, { useLightBox } from '../../../components/lightbox/index.js';
-import ListItemText from '@mui/material/ListItemText';
 
 // ----------------------------------------------------------------------
 
@@ -110,17 +107,15 @@ export default function PaymentInOutTableRow({
             {row.status}
           </Label>
         </TableCell>
-
         <TableCell align="right" sx={{ px: 0, whiteSpace: 'nowrap' }}>
-          {/*{getResponsibilityValue('delete_scheme', configs, user) ||*/}
-          {/*getResponsibilityValue('update_scheme', configs, user) ? (*/}
-
+          {getResponsibilityValue('delete_payment_in_out', configs, user) ||
+          getResponsibilityValue('update_payment_in_out', configs, user) ? (
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
-          {/*) : (*/}
-          {/*  ''*/}
-          {/*)}*/}
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
@@ -129,7 +124,7 @@ export default function PaymentInOutTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('delete_scheme', configs, user) && (
+        {getResponsibilityValue('delete_payment_in_out', configs, user) && (
           <MenuItem
             onClick={() => {
               confirm.onTrue();
@@ -141,7 +136,7 @@ export default function PaymentInOutTableRow({
             Delete
           </MenuItem>
         )}
-        {getResponsibilityValue('update_scheme', configs, user) && (
+        {getResponsibilityValue('update_payment_in_out', configs, user) && (
           <MenuItem
             onClick={() => {
               onEditRow();

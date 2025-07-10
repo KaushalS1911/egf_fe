@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,25 +12,25 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
 import { isBetween } from '../../../../utils/format-time';
 import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
 import { TableCell, TableRow, Typography } from '@mui/material';
-import OtherGoldLoanIntrestDetailseTableRow from '../other-daily-reports-table/other-gold-loan-intrest-detailse-table-row';
+import OtherGoldLoanIntrestDetailseTableRow
+  from '../other-daily-reports-table/other-gold-loan-intrest-detailse-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -76,14 +76,17 @@ export default function OtherGoldLoanInterestListView({ interestDetail }) {
     (prev, next) => prev + (Number(next?.otherLoan.percentage) || 0),
     0
   );
+
   const day = interestDetail.reduce(
     (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
     0
   );
+
   const cashAmount = interestDetail.reduce(
     (prev, next) => prev + (Number(next?.otherLoan.cashAmount) || 0),
     0
   );
+
   const bankAmount = interestDetail.reduce(
     (prev, next) => prev + (Number(next?.otherLoan.bankAmount) || 0),
     0
@@ -93,6 +96,7 @@ export default function OtherGoldLoanInterestListView({ interestDetail }) {
     (prev, next) => prev + (Number(next?.otherLoan.amount) || 0),
     0
   );
+
   const chargeAmt = interestDetail.reduce((prev, next) => prev + (Number(next?.charge) || 0), 0);
   const intAmt = interestDetail.reduce((prev, next) => prev + (Number(next?.interestAmount) || 0), 0);
 
@@ -109,7 +113,6 @@ export default function OtherGoldLoanInterestListView({ interestDetail }) {
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -269,7 +272,6 @@ export default function OtherGoldLoanInterestListView({ interestDetail }) {
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/*<TableCell padding="checkbox" />*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     TOTAL
                   </TableCell>

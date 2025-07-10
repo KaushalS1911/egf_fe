@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Page, View, Text, Font, Document, StyleSheet, Image } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
 import { fDate } from '../../../utils/format-time';
 import logo from '../../../assets/logo/pdf-logo.png';
@@ -131,6 +131,7 @@ const useStyles = () =>
 
 export default function LoanCloseDetailsPdf({ data, configs }) {
   const styles = useStyles();
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>

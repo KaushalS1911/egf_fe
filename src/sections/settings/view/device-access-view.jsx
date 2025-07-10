@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  TextField,
-  Button,
-  Typography,
-  Grid,
-  Box,
-  Card,
-  Autocomplete,
-  IconButton,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Card, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { useGetConfigs } from 'src/api/config';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
@@ -106,7 +97,6 @@ export default function DeviceAccessView() {
       <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
         Device Access
       </Typography>
-
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <Autocomplete
@@ -118,7 +108,6 @@ export default function DeviceAccessView() {
             onChange={(_, newValue) => setDeviceInput({ ...deviceInput, employee: newValue })}
             renderInput={(params) => <TextField {...params} label="Employee Name" />}
           />
-
           <TextField
             fullWidth
             label="MAC Address"
@@ -126,14 +115,12 @@ export default function DeviceAccessView() {
             onChange={(e) => setDeviceInput({ ...deviceInput, macAddress: e.target.value })}
             sx={{ mt: 2 }}
           />
-
           <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="contained" onClick={handleAddOrUpdateDevice}>
               {editIndex !== null ? 'Update Device' : 'Add Device'}
             </Button>
           </Box>
         </Grid>
-
         <Grid item xs={12} md={8}>
           <Typography variant="subtitle1" sx={{ mb: 1 }}>
             Devices List

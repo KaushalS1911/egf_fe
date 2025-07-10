@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, Typography, Grid, Box, Card } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Card, Grid, TextField, Typography } from '@mui/material';
 import { useGetConfigs } from 'src/api/config';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import { Stack } from '@mui/system';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
 export default function PolicyConfigCreateView() {
   const { user } = useAuthContext();

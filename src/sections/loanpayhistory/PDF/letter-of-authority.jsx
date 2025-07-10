@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/logo.png';
 
 // ----------------------------------------------------------------------
@@ -88,6 +88,7 @@ export default function LetterOfAuthority({ loan }) {
     (prev, next) => prev + (Number(next?.netWeight) || 0),
     0
   );
+
   return (
     <>
       <Document>

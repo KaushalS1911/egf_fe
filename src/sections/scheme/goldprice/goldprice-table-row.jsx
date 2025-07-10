@@ -9,12 +9,17 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { TextField } from '@mui/material';
+import { getResponsibilityValue } from '../../../permission/permission.js';
+import { useAuthContext } from '../../../auth/hooks/index.js';
+import { useGetConfigs } from '../../../api/config.js';
 
 // ----------------------------------------------------------------------
 
 export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSelectRow, onDeleteRow , goldRate}) {
-  const {name,ratePerGram,interestRate,valuation} = row;
+  const { name, interestRate, valuation } = row;
   const confirm = useBoolean();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const popover = usePopover();
 
   return (
@@ -39,25 +44,29 @@ export default function GoldpriceTableRow({ index,row, selected, onEditRow, onSe
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>
+        {getResponsibilityValue('delete_scheme', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon='solar:trash-bin-trash-bold' />
+            Delete
+          </MenuItem>
+        )}
+        {getResponsibilityValue('update_scheme', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:pen-bold' />
+            Edit
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}

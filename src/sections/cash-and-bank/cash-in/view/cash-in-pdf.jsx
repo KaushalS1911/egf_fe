@@ -1,10 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../../components/invoise/invoice-header.jsx';
-import Typography from '@mui/material/Typography';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -186,7 +184,6 @@ export default function CashInPdf({ configs, cashData, filterData }) {
       .filter((e) => e.category === 'Payment Out')
       .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
 
-  // Add the first page
   pages.push(
     <Page key={0} size="A4" style={styles.page} orientation="landscape">
       <InvoiceHeader configs={configs} landscape={true} />

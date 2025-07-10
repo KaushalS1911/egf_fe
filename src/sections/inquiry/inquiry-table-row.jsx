@@ -1,44 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import { fDate } from 'src/utils/format-time';
-import { useBoolean } from 'src/hooks/use-boolean';
-import Iconify from 'src/components/iconify';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import {
   Box,
+  Button,
+  Checkbox,
   Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
+  MenuItem,
   Paper,
   Stack,
+  TableCell,
+  TableRow,
   TextField,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import { fDate } from 'src/utils/format-time';
+import { useBoolean } from 'src/hooks/use-boolean';
+import Iconify from 'src/components/iconify';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetBranch } from '../../api/branch';
-import { useSnackbar } from 'notistack';
-import Label from '../../components/label';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
+import Label from '../../components/label';
 
 export default function InquiryTableRow({
-  row,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-  mutate,
-}) {
+                                          row,
+                                          selected,
+                                          onEditRow,
+                                          onSelectRow,
+                                          onDeleteRow,
+                                          mutate,
+                                        }) {
   const { date, firstName, lastName, contact, inquiryFor, remark, _id } = row;
   const { configs } = useGetConfigs();
   const [attempts, setAttempts] = useState(row?.attempts || []);
@@ -68,6 +68,10 @@ export default function InquiryTableRow({
     setAttempts((prev) => [...prev, newResponse]);
     setResponseDate(new Date().toISOString().split('T')[0]);
     setResponseRemark('');
+  };
+
+  const handleDeleteAttempt = (indexToDelete) => {
+    setAttempts((prev) => prev.filter((_, i) => i !== indexToDelete));
   };
 
   const handleSaveResponses = async () => {
@@ -107,7 +111,7 @@ export default function InquiryTableRow({
   };
 
   const isRecentlyUpdated = () => {
-    if (!row?.updatedAt || row?.updatedAt === row?.createdAt) return false; // Only apply if updatedAt is different from createdAt
+    if (!row?.updatedAt || row?.updatedAt === row?.createdAt) return false;
     const updatedAtDate = new Date(row.updatedAt);
     const currentTime = new Date();
     const timeDiff = currentTime - updatedAtDate;
@@ -123,7 +127,6 @@ export default function InquiryTableRow({
           backgroundColor: isRecentlyUpdated() ? '#F6F7F8' : 'inherit',
         }}
       >
-        {' '}
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
@@ -160,7 +163,7 @@ export default function InquiryTableRow({
               <Iconify icon="eva:arrow-ios-downward-fill" />
             </IconButton>
           )}
-          {getResponsibilityValue('inquiry_follow_Up', configs, user) && (
+          {getResponsibilityValue('inquiry_follow-up', configs, user) && (
             <IconButton onClick={handleRespondedClick}>
               <Iconify icon="eva:edit-fill" />
             </IconButton>
@@ -170,13 +173,11 @@ export default function InquiryTableRow({
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
-          ) : (
-            ''
-          )}
+          ) : ' '}
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell sx={{ p: 0, border: 'none' }} colSpan={9}>
+        <TableCell sx={{ p: 0, border: 'none' }} colSpan={10}>
           <Collapse
             in={collapse.value}
             timeout="auto"
@@ -246,13 +247,20 @@ export default function InquiryTableRow({
           {attempts.map((attempt, index) => (
             <Stack
               key={index}
-              spacing={1.5}
-              sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'grey.300', borderRadius: 2 }}
+              spacing={2}
+              sx={{
+                mb: 3,
+                p: 2,
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+                position: 'relative',
+              }}
             >
               <Typography variant="subtitle2" sx={{ fontWeight: 500 }}>
                 Response {index + 1}
               </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField
                   label="Date"
                   type="date"
@@ -266,7 +274,6 @@ export default function InquiryTableRow({
                   InputLabelProps={{ shrink: true }}
                 />
                 <TextField
-                  sx={{ px: 1 }}
                   label="Remark"
                   value={attempt.remark}
                   onChange={(e) => {
@@ -275,14 +282,26 @@ export default function InquiryTableRow({
                     setAttempts(newAttempts);
                   }}
                   multiline
-                  rows={1}
+                  rows={2}
                   placeholder="Add a remark"
                   fullWidth
                 />
-              </Box>
+              </Stack>
+              <IconButton
+                size='small'
+                onClick={() => handleDeleteAttempt(index)}
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  color: 'error.main',
+                }}
+              >
+                <Iconify icon='solar:trash-bin-trash-bold' />
+              </IconButton>
             </Stack>
           ))}
-          <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 1 }}>
+          <Stack direction='row' justifyContent='flex-end' spacing={1}>
             <Button
               onClick={handleAddResponse}
               variant="outlined"

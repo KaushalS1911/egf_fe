@@ -38,8 +38,8 @@ import ChargeInOutTableFiltersResult from '../charge-in-out-table-filters-result
 import ChargeListView from '../charge/view/charge-list-view.jsx';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
+import { getResponsibilityValue } from '../../../../permission/permission.js';
 import { useGetConfigs } from '../../../../api/config.js';
-import { Box } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -76,6 +76,7 @@ export default function ChargeInOutListView() {
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
+  const { configs } = useGetConfigs();
   const { user } = useAuthContext();
   const [tableData, setTableData] = useState(ChargeInOut);
   const [filters, setFilters] = useState(defaultFilters);
@@ -90,6 +91,7 @@ export default function ChargeInOutListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
   useEffect(() => {
     {
       dataFiltered.length > 0 && fetchStates();
@@ -104,6 +106,7 @@ export default function ChargeInOutListView() {
     }
     return prev;
   }, 0);
+
   const payable = dataFiltered.reduce((prev, next) => {
     if (next.status === 'Payment Out') {
       const cash = Number(next?.paymentDetail?.cashAmount || 0);
@@ -112,6 +115,7 @@ export default function ChargeInOutListView() {
     }
     return prev;
   }, 0);
+
   const calculateChargeTypeTotals = (data) => {
     const totals = {};
     data.forEach((item) => {
@@ -169,6 +173,10 @@ export default function ChargeInOutListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (getResponsibilityValue('delete_charge', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/charge/${id}`
@@ -184,7 +192,6 @@ export default function ChargeInOutListView() {
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
@@ -203,9 +210,7 @@ export default function ChargeInOutListView() {
 
   function fetchStates() {
     const accountMap = new Map();
-
     accountMap.set('cash', { transactionsType: 'Cash' });
-
     dataFiltered?.forEach((data) => {
       const account = data?.paymentDetail?.account;
       if (account && account._id && !accountMap.has(account._id)) {
@@ -214,7 +219,6 @@ export default function ChargeInOutListView() {
     });
 
     const newOptions = Array.from(accountMap.values());
-
     setOptions((prevOptions) => {
       const isSame =
         prevOptions.length === newOptions.length &&
@@ -257,14 +261,16 @@ export default function ChargeInOutListView() {
           }
           links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'List' }]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.cashAndBank.chargeInOut.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Add Charge in-out
-            </Button>
+            <>
+              {getResponsibilityValue('create_charge', configs, user) && (<Button
+                component={RouterLink}
+                href={paths.dashboard.cashAndBank.chargeInOut.new}
+                variant='contained'
+                startIcon={<Iconify icon='mingcute:add-line' />}
+              >
+                Add Charge in-out
+              </Button>)}
+            </>
           }
           sx={{
             mb: { xs: 3, md: 1 },
@@ -427,17 +433,22 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item?.paymentDetail?.bankAmount?.includes(name)
     );
   }
+
   if (category) {
     inputData = inputData.filter((item) => item.status === category);
   }
+
   if (transactions) {
     inputData = inputData.filter((item) => item?.paymentDetail?.account?._id === transactions?._id);
   }
+
   if (Object.keys(chargeType).length > 0) {
     inputData = inputData.filter((item) => chargeType.chargeType === item.chargeType);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
+
   return inputData;
 }

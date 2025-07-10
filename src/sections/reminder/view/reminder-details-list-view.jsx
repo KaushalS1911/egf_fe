@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,24 +12,23 @@ import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { isAfter, isBetween } from '../../../utils/format-time';
+import { isBetween } from '../../../utils/format-time';
 import ReminderDetailsTableRow from '../reminder-details-table-row';
 import ReminderDetailsTableToolbar from '../reminder-details-table-toolbar';
 import ReminderDetailsTableFiltersResult from '../reminder-details-table-filters-result';
@@ -78,8 +77,6 @@ export default function ReminderDetailsListView() {
     filters,
   });
 
-  const dateError = isAfter(filters.startDate, filters.endDate);
-
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
@@ -109,6 +106,7 @@ export default function ReminderDetailsListView() {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/reminder`, {
         data: { ids: id },

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
 import Qr from 'src/assets/icon/qr.png';
@@ -11,7 +11,7 @@ import InvoiceFooter from '../../../components/invoise/invoice-footer.jsx';
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: '/fonts/Roboto-Regular.ttf' }, // Regular weight
+    { src: '/fonts/Roboto-Regular.ttf' },
     { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' },
   ],
 });
@@ -71,7 +71,6 @@ const useStyles = () =>
         },
         flexContainer: {
           flexDirection: 'row',
-          // marginTop: 5,
           justifyContent: 'space-between',
           alignItems: 'flex-start',
         },
@@ -255,14 +254,11 @@ const useStyles = () =>
         tableRow: {
           flexDirection: 'row',
           minHeight: 22,
-          // borderBottomWidth: 0.5,
           borderBottomColor: '#c7c6c6',
           pageBreakInside: 'avoid',
         },
         tableCell: {
           padding: 5,
-          // borderRightWidth: 0.5,
-          // borderRightColor: '#b1b0b0',
           textAlign: 'center',
           fontSize: 10,
         },
@@ -413,7 +409,6 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
                   </View>
                 </View>
                 <View style={{ marginRight: '24px' }}>
-                  {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                   <View>
                     <Image style={styles.propertyImage} src={selectedRow.customer.avatar_url} />
                   </View>
@@ -459,7 +454,6 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
                       <Text style={[styles.tableCell, { flex: 1 }]}>Net Wt</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>Net Amt</Text>
                     </View>
-
                     {selectedRow.propertyDetails.map((row, index) => (
                       <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
                         <Text style={[styles.tableCell, { flex: 2 }]}>{row.type}</Text>
@@ -476,7 +470,6 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
                         <Text style={[styles.tableCell, { flex: 1 }]}>{row.netAmount}</Text>
                       </View>
                     ))}
-
                     <View
                       style={{
                         ...styles.tableRow,
@@ -544,7 +537,6 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
                   <Text style={[styles.tableCell, { flex: 1 }]}>Cons. Charge</Text>
                   <Text style={[styles.tableCell, { flex: 1 }]}>Total pay</Text>
                 </View>
-
                 {selectedRow.interests.map((row, index) => (
                   <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
                     <Text style={[styles.tableCell, { flex: 1 }]}>{fDate(row.createdAt)}</Text>
@@ -568,7 +560,6 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
                     </Text>
                   </View>
                 ))}
-
                 <View
                   style={{
                     ...styles.tableRow,
@@ -601,10 +592,6 @@ export default function InitialLoanDetailsPdf({ selectedRow, configs }) {
                 </View>
               </View>
             </View>
-            {/*<View style={styles.d_flex}>*/}
-            {/*  <Text style={{ ...styles.signText, marginLeft: 35 }}>Authority Sign</Text>*/}
-            {/*  <Text style={{ ...styles.signText, marginRight: 35 }}>Easy Gold FinCorp</Text>*/}
-            {/*</View>*/}
             <InvoiceFooter configs={configs} branch={selectedRow?.customer?.branch} />
           </View>
         </Page>

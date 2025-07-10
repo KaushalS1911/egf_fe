@@ -207,18 +207,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
       await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData1);
 
-      // Generate the second PDF
-      // const blob2 = await pdf(<Sansaction11 sansaction={item} configs={configs} />).toBlob();
-      // const file2 = new File([blob2], `Sansaction11.pdf`, { type: 'application/pdf' });
-      //
-      // const formData2 = new FormData();
-      // formData2.append('type', 'sanction_letter_11');
-      // formData2.append('file', file2);
-      // formData2.append('contact', item.customer.contact);
-      //
-      // // Send the second PDF
-      // await axios.post(`https://egf-be.onrender.com/api/whatsapp-notification`, formData2);
-      // console.log('Second PDF sent successfully');
     } catch (error) {
       console.error('Error generating or sending PDFs:', error);
     }
@@ -306,7 +294,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
   const handleCashAmountChange = (event) => {
     const cashPayingAmount = parseFloat(event.target.value) || '';
-    // const cashNetAmount = parseFloat(watch('cashNetAmount') - watch('approvalCharge'));
 
     if (cashPayingAmount > cashNetAmount) {
       setValue('payingCashAmount', cashNetAmount);
@@ -318,7 +305,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
 
   const handleBankAmountChange = (event) => {
     const bankPayingAmount = parseFloat(event.target.value) || '';
-    // const bankNetAmount = parseFloat(watch('bankNetAmount') - watch('approvalCharge')) || '';
 
     if (bankPayingAmount > bankNetAmount) {
       setValue('payingBankAmount', bankNetAmount);
@@ -337,48 +323,6 @@ export default function DisburseNewEditForm({ currentDisburse, mutate }) {
     );
 
     return total.toFixed(2);
-  };
-
-  const handleChargeCashAmountChange = (event) => {
-    const newCashAmount = parseFloat(event.target.value) || 0;
-    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
-    const chargePaymentMode = watch('chargePaymentMode');
-
-    if (chargePaymentMode === 'Both') {
-      if (newCashAmount > approvalCharge) {
-        setValue('chargeCashAmount', approvalCharge);
-        setValue('chargeBankAmount', 0);
-        enqueueSnackbar('Cash amount cannot be greater than approval charge', {
-          variant: 'warning',
-        });
-      } else {
-        setValue('chargeCashAmount', newCashAmount);
-        setValue('chargeBankAmount', approvalCharge - newCashAmount);
-      }
-    } else {
-      setValue('chargeCashAmount', newCashAmount);
-    }
-  };
-
-  const handleChargeBankAmountChange = (event) => {
-    const newBankAmount = parseFloat(event.target.value) || 0;
-    const approvalCharge = parseFloat(watch('approvalCharge')) || 0;
-    const chargePaymentMode = watch('chargePaymentMode');
-
-    if (chargePaymentMode === 'Both') {
-      if (newBankAmount > approvalCharge) {
-        setValue('chargeBankAmount', approvalCharge);
-        setValue('chargeCashAmount', 0);
-        enqueueSnackbar('Bank amount cannot be greater than approval charge', {
-          variant: 'warning',
-        });
-      } else {
-        setValue('chargeBankAmount', newBankAmount);
-        setValue('chargeCashAmount', approvalCharge - newBankAmount);
-      }
-    } else {
-      setValue('chargeBankAmount', newBankAmount);
-    }
   };
 
   const handleChargeIn = (data) => {

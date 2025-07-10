@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,18 +12,17 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
@@ -78,14 +77,17 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
     0
   );
+
   const intLoanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
+
   const amountPaid = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
     0
   );
+
   const pendingLoanAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.pendingLoanAmount) || 0),
     0
@@ -161,36 +163,6 @@ export default function LoanPartReleaseDetailsListView({ partReleaseDetail, data
     },
     [router]
   );
-
-  // const loans = Loanissue.map((item) => ({
-  //   'Loan No': item.loanNo,
-  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-  //   'Contact': item.customer.contact,
-  //   'OTP Contact': item.customer.otpContact,
-  //   Email: item.customer.email,
-  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.issueDate,
-  //   'Scheme': item.scheme.name,
-  //   'Rate per gram': item.scheme.ratePerGram,
-  //   'Interest rate': item.scheme.interestRate,
-  //   valuation: item.scheme.valuation,
-  //   'Interest period': item.scheme.interestPeriod,
-  //   'Renewal time': item.scheme.renewalTime,
-  //   'min loan time': item.scheme.minLoanTime,
-  //   'Loan amount': item.loanAmount,
-  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
-  //   'Payment mode': item.paymentMode,
-  //   'Paying cashAmount': item.payingCashAmount,
-  //   'Pending cashAmount': item.pendingCashAmount,
-  //   'Paying bankAmount': item.payingBankAmount,
-  //   'Pending bankAmount': item.pendingBankAmount,
-  // }));
-
-  // if (LoanissueLoading) {
-  //   return (
-  //     <LoadingScreen />
-  //   );
-  // }
 
   return (
     <>

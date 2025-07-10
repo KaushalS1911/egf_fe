@@ -34,6 +34,9 @@ import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
 import { useGetCashTransactions } from '../../../../api/cash-transactions.js';
 import { useGetBankTransactions } from '../../../../api/bank-transactions.js';
+import { useAuthContext } from '../../../../auth/hooks/index.js';
+import { useGetConfigs } from '../../../../api/config.js';
+import { getResponsibilityValue } from '../../../../permission/permission.js';
 
 const timeRangeOptions = [
   { label: 'All', value: 'all' },
@@ -51,6 +54,8 @@ const timeRangeOptions = [
 
 export default function OverviewAppView() {
   const router = useRouter();
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const { enqueueSnackbar } = useSnackbar();
   const { customer } = useGetCustomer();
   const { Loanissue } = useGetLoanissue();
@@ -216,7 +221,7 @@ export default function OverviewAppView() {
     <Container maxWidth={settings.themeStretch ? false : 'xl'}
                sx={{ bgcolor: '#eceaea', p: 5, borderRadius: '20px' }}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6} lg={3}>
+        {getResponsibilityValue('select_customer', configs, user) && <Grid item xs={12} md={6} lg={3}>
           <Autocomplete
             sx={{
               'label': {
@@ -256,8 +261,8 @@ export default function OverviewAppView() {
               <TextField {...params} label='Select Customer' placeholder='Choose a customer' />
             )}
           />
-        </Grid>
-        <Grid item xs={12} md={6} lg={3}>
+        </Grid>}
+        {getResponsibilityValue('select_loanNo', configs, user) && <Grid item xs={12} md={6} lg={3}>
           <Autocomplete
             sx={{
               'label': {
@@ -281,8 +286,8 @@ export default function OverviewAppView() {
               <TextField {...params} label='Search Loan No' placeholder='Choose a loan number' />
             )}
           />
-        </Grid>
-        <Grid item xs={12} md={6} lg={3}>
+        </Grid>}
+        {getResponsibilityValue('select_mobileNo', configs, user) && <Grid item xs={12} md={6} lg={3}>
           <Autocomplete
             sx={{
               'label': {
@@ -333,8 +338,8 @@ export default function OverviewAppView() {
               </li>
             )}
           />
-        </Grid>
-        <Grid item xs={12} md={6} lg={3}>
+        </Grid>}
+        {getResponsibilityValue('select_calculator', configs, user) && <Grid item xs={12} md={6} lg={3}>
           <Button
             fullWidth
             variant='contained'
@@ -345,8 +350,8 @@ export default function OverviewAppView() {
           >
             Calculator
           </Button>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Grid>}
+        {getResponsibilityValue('expense_box', configs, user) && <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Expense'
             total={expense?.totalExpense}
@@ -360,8 +365,8 @@ export default function OverviewAppView() {
             }}
             color='error'
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Grid>}
+        {getResponsibilityValue('payment_in_box', configs, user) && <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment In'
             total={paymentIn?.receivableAmt}
@@ -373,8 +378,8 @@ export default function OverviewAppView() {
             onFilterChange={(val) => handleRangeChange('paymentInRange', val)}
             color='success'
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Grid>}
+        {getResponsibilityValue('payment_out_box', configs, user) && <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment Out'
             total={paymentOut?.payableAmt}
@@ -385,8 +390,8 @@ export default function OverviewAppView() {
             onFilterChange={(val) => handleRangeChange('paymentOutRange', val)}
             color='warning'
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Grid>}
+        {getResponsibilityValue('payment_diff_box', configs, user) && <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title='Payment Diff'
             total={difference.receivablePayableDifference}
@@ -397,13 +402,13 @@ export default function OverviewAppView() {
             onFilterChange={(val) => handleRangeChange('differenceRange', val)}
             color='secondary'
           />
-        </Grid>
+        </Grid>}
         <Grid item xs={12} sm={6} md={6}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={12} lg={12}>
+            {getResponsibilityValue('cash_bank_chart', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <Box sx={{ display: { xs: 'none', sm: 'block' } }}>{renderStorageOverview}</Box>
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('interest_summary_box', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <BookingCheckInWidgets
                 chartTitle={'Interest Summary'}
                 chart={{
@@ -430,8 +435,8 @@ export default function OverviewAppView() {
                   handleRangeChange('interestRange', range);
                 }}
               />
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('scheme_chart', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <AnalyticsConversionRates
                 title='Interest Rate'
                 chart={{
@@ -450,8 +455,8 @@ export default function OverviewAppView() {
                 timeRangeOptions={timeRangeOptions}
                 onTimeRangeChange={(range) => handleRangeChange('schemeLoanSummaryRange', range)}
               />
-            </Grid>
-            <Grid item xs={12} md={6} lg={6}>
+            </Grid>}
+            {getResponsibilityValue('inquiry_chart', configs, user) && <Grid item xs={12} md={6} lg={6}>
               <AppCurrentDownload
                 title='Inquiry'
                 chart={{
@@ -461,8 +466,8 @@ export default function OverviewAppView() {
                 timeRangeOptions={timeRangeOptions}
                 onTimeRangeChange={(range) => handleRangeChange('inquiryRange', range)}
               />
-            </Grid>
-            <Grid item xs={12} md={6} lg={6}>
+            </Grid>}
+            {getResponsibilityValue('customer_chart', configs, user) && <Grid item xs={12} md={6} lg={6}>
               <AppCurrentDownload
                 title='Customer'
                 chart={{
@@ -475,8 +480,8 @@ export default function OverviewAppView() {
                 timeRangeOptions={timeRangeOptions}
                 onTimeRangeChange={(range) => handleRangeChange('customerRange', range)}
               />
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('customer_references_chart', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <AnalyticsCurrentVisits
                 title='Current Customer References'
                 chart={{
@@ -487,15 +492,15 @@ export default function OverviewAppView() {
                   handleRangeChange('referenceRange', range);
                 }}
               />
-            </Grid>
+            </Grid>}
           </Grid>
         </Grid>
         <Grid item xs={12} sm={6} md={6}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={12} lg={12}>
+            {getResponsibilityValue('portfolio_box', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <AnalyticsTrafficBySite title='Traffic by Site' list={analyticsData} />
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('in_out_summary_box', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <BookingCheckInWidgets
                 chartTitle={'All In/Out Summary'}
                 chart={{
@@ -518,8 +523,8 @@ export default function OverviewAppView() {
                   ],
                 }}
               />
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('charge_summary_box', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <BookingCheckInWidgets
                 chartTitle={'Charge Summary'}
                 chart={{
@@ -546,22 +551,22 @@ export default function OverviewAppView() {
                   handleRangeChange('chargeRange', range);
                 }}
               />
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('loan_chart', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <AppAreaInstalled
                 title='Loan Graph'
                 chart={LoanChart}
               />
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('other_loan_chart', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <Stack spacing={3}>
                 <BankingBalanceStatistics
                   title='Other Loan'
                   chart={OtherLoanChart}
                 />
               </Stack>
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            </Grid>}
+            {getResponsibilityValue('customer_area_chart', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <AnalyticsCurrentVisits
                 title='Current Customer Area'
                 chart={{
@@ -572,7 +577,7 @@ export default function OverviewAppView() {
                   handleRangeChange('areaRange', range);
                 }}
               />
-            </Grid>
+            </Grid>}
           </Grid>
         </Grid>
       </Grid>

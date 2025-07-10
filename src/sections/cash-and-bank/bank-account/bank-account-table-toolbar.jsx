@@ -11,22 +11,13 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  FormControl,
-  Typography,
-  InputLabel,
-  Select,
-  OutlinedInput,
-  Button,
-  Menu,
-} from '@mui/material';
+import { Box, Button, Dialog, DialogActions, Menu, Typography } from '@mui/material';
 import { PDFViewer } from '@react-pdf/renderer';
 import BankAccountPdf from './view/bank-account-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import Autocomplete from '@mui/material/Autocomplete';
+import { getResponsibilityValue } from '../../../permission/permission.js';
+import RHFExportExcel from '../../../components/hook-form/rhf-export-excel.jsx';
 
 export default function BankAccountTableToolbar({
   filters,
@@ -52,6 +43,7 @@ export default function BankAccountTableToolbar({
     status: filters.status,
     bank: filters.account.bankName,
   };
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -151,9 +143,10 @@ export default function BankAccountTableToolbar({
           </Typography>
         </Box>
         <Box>
-          <Button variant="contained" onClick={handleMenuOpen} sx={{ height: 40 }}>
+          {getResponsibilityValue('create_transfer', configs, user) &&
+            <Button variant='contained' onClick={handleMenuOpen} sx={{ height: 40 }}>
             {'Transfer Type'}
-          </Button>
+            </Button>}
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
             <MenuItem onClick={() => handleTransferTypeSelect('Bank To Bank')}>
               <Iconify icon="mdi:bank-transfer" width={20} sx={{ mr: 1 }} />
@@ -174,7 +167,6 @@ export default function BankAccountTableToolbar({
           </Menu>
         </Box>
       </Box>
-
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -215,7 +207,6 @@ export default function BankAccountTableToolbar({
               />
             )}
           />
-
           <Autocomplete
             fullWidth
             options={options}
@@ -235,7 +226,6 @@ export default function BankAccountTableToolbar({
               />
             )}
           />
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -251,7 +241,6 @@ export default function BankAccountTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -270,32 +259,33 @@ export default function BankAccountTableToolbar({
             sx={{ ...customStyle }}
           />
         </Stack>
-
-        {/* Transfer Type Button (Outside Popover) */}
-
-        {/* Popover with only Print option */}
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
         sx={{ width: 'auto' }}
       >
-        <MenuItem
-          onClick={() => {
-            view.onTrue();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="mdi:printer" />
-          Print
-        </MenuItem>
+        {getResponsibilityValue('print_bank_account_in', configs, user) && (
+          <>
+            <MenuItem
+              onClick={() => {
+                view.onTrue();
+                popover.onClose();
+              }}
+            >
+              <Iconify icon='solar:printer-minimalistic-bold' />
+              Print
+            </MenuItem>
+            <MenuItem>
+              <RHFExportExcel data={schemes} fileName='SchemeData' sheetName='SchemeDetails' />
+            </MenuItem>
+          </>
+        )}
       </CustomPopover>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -120,7 +119,6 @@ export default function OtherLoanInterestPdf({
   total,
 }) {
   const styles = useStyles();
-
   const { percentage, amount, totalInterestAmt, pendingInterest, day, penDay, totalCharge } = total;
 
   const headers = [
@@ -140,6 +138,7 @@ export default function OtherLoanInterestPdf({
     { label: 'Pending int.', flex: 1 },
     { label: 'Renew Date', flex: 1 },
   ];
+
   const dataFilter = [
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
@@ -230,7 +229,6 @@ export default function OtherLoanInterestPdf({
                 ))}
               </View>
               {currentPageRows}
-              {/* Footer row */}
               <View style={styles.footerRow}>
                 <Text style={[styles.footerCell, { flex: 0.2 }]}></Text>
                 <Text style={[styles.footerCell, { flex: 2.5 }]}>TOTAL</Text>

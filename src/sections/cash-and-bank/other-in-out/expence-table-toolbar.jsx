@@ -7,19 +7,17 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify/index.js';
 import CustomPopover, { usePopover } from 'src/components/custom-popover/index.js';
-import RHFExportExcel from '../../../components/hook-form/rhf-export-excel.jsx';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, Dialog, FormControl, Typography, Autocomplete } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import { Autocomplete, Box, Dialog, Typography } from '@mui/material';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import { PDFViewer } from '@react-pdf/renderer';
 import ExpencePdf from './view/expence-pdf.jsx';
 import { useGetConfigs } from '../../../api/config.js';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import { getResponsibilityValue } from '../../../permission/permission.js';
+import { useAuthContext } from '../../../auth/hooks/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +35,7 @@ export default function ExpenceTableToolbar({
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const view = useBoolean();
+  const { user } = useAuthContext();
   const { configs } = useGetConfigs();
 
   const filterData = {
@@ -166,7 +165,6 @@ export default function ExpenceTableToolbar({
               />
             )}
           />
-
           <Autocomplete
             fullWidth
             disableClearable
@@ -228,35 +226,16 @@ export default function ExpenceTableToolbar({
         sx={{ width: 'auto' }}
       >
         <>
-          <MenuItem
+          {getResponsibilityValue('print_expenses', configs, user) && <MenuItem
             onClick={() => {
               view.onTrue();
               popover.onClose();
             }}
           >
-            <Iconify icon="solar:printer-minimalistic-bold" />
+            <Iconify icon='solar:printer-minimalistic-bold' />
             Print
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="ant-design:file-pdf-filled" />
-            PDF
-          </MenuItem>
-          <MenuItem>
-            <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
-          </MenuItem>
+          </MenuItem>}
         </>
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="ic:round-whatsapp" />
-          whatsapp share
-        </MenuItem>
       </CustomPopover>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>

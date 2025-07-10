@@ -14,7 +14,6 @@ import { useGetConfigs } from '../../api/config';
 import { Box, Dialog, DialogActions } from '@mui/material';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import EmployeePdf from '../employee/view/employee-pdf.jsx';
 import SchemePdf from './view/scheme-pdf.jsx';
 import { useBoolean } from '../../hooks/use-boolean.js';
 

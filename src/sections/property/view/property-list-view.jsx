@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -13,20 +13,19 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import PropertyTableToolbar from '../property-table-toolbar';
 import PropertyTableFiltersResult from '../property-table-filters-result';
@@ -67,6 +66,7 @@ const defaultFilters = {
   name: '',
   isActive: 'all',
 };
+
 // ----------------------------------------------------------------------
 
 export default function PropertyListView() {
@@ -98,7 +98,6 @@ export default function PropertyListView() {
 
   const handleFilters = useCallback(
     (name, value) => {
-      console.log('name', value);
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -117,6 +116,7 @@ export default function PropertyListView() {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property`, {
         data: { ids: id },

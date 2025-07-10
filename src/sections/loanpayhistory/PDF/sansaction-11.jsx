@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/logo.png';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
@@ -20,6 +20,7 @@ Font.register({
   family: 'Poppins',
   src: '/fonts/Overpass-VariableFont_wght.ttf',
 });
+
 Font.register({
   family: 'Mukta Vaani',
   fonts: [
@@ -27,6 +28,7 @@ Font.register({
     { src: '/fonts/MuktaVaani-Bold.ttf', fontWeight: 'bold' },
   ],
 });
+
 const useStyles = () =>
   useMemo(
     () =>
@@ -222,14 +224,17 @@ const useStyles = () =>
 export default function Sansaction11({ sansaction, configs }) {
   const styles = useStyles();
   const qty = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0);
+
   const totalWight = sansaction.propertyDetails.reduce(
     (prev, next) => prev + (Number(next?.totalWeight) || 0),
     0
   );
+
   const netWight = sansaction.propertyDetails.reduce(
     (prev, next) => prev + (Number(next?.netWeight) || 0),
     0
   );
+
   const amount = sansaction.loanAmount;
 
   const month =
@@ -407,7 +412,6 @@ export default function Sansaction11({ sansaction, configs }) {
                   નમૂનો-૧૧ કરજ શરતોની વીગતો દર્શાવતું વિવરણ પત્રક નિયમ -૧૪
                 </Text>
               </View>
-
               <View
                 style={{
                   flexDirection: 'row',
@@ -433,7 +437,6 @@ export default function Sansaction11({ sansaction, configs }) {
                       style={{
                         ...styles.gujaratiText,
                         fontSize: 11,
-
                         flex: 0.7,
                       }}
                     >
@@ -445,7 +448,6 @@ export default function Sansaction11({ sansaction, configs }) {
                         flex: 2,
                         fontSize: 10,
                         marginBottom: 5,
-                        //
                       }}
                     >
                       {`${sansaction.customer.firstName} ${sansaction.customer.middleName} ${sansaction.customer.lastName}`}
@@ -465,7 +467,6 @@ export default function Sansaction11({ sansaction, configs }) {
                       {`${sansaction.customer.temporaryAddress.street}, ${sansaction.customer.temporaryAddress.landmark}, ${sansaction.customer.temporaryAddress.city}, ${sansaction.customer.temporaryAddress.zipcode}`.toUpperCase()}
                     </Text>
                   </View>
-
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, flex: 0.7 }}>
                       ૩. કરજ ની રકમ
@@ -473,7 +474,6 @@ export default function Sansaction11({ sansaction, configs }) {
                     <Text style={styles.colon}>:</Text>
                     <Text style={{ ...styles.subText, flex: 2 }}>{sansaction.loanAmount}/-</Text>
                   </View>
-
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
                     <Text style={{ ...styles.gujaratiText, fontSize: 11, flex: 0.7 }}>
                       ૪. ધીર્યા ની તારીખ
@@ -482,14 +482,11 @@ export default function Sansaction11({ sansaction, configs }) {
                     <Text style={{ ...styles.subText, flex: 2, marginTop: -3 }}>
                       {fDate(sansaction.issueDate)}
                       {'             '}
-                      {/*<View style={{ textAlign: 'center' }}>*/}
                       <Text style={{ ...styles.gujaratiText, fontSize: 11 }}>
                         સવંત : {sansaction.savant}
                       </Text>
-                      {/*</View>*/}
                     </Text>
                   </View>
-
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 }}>
                     <Text
                       style={{

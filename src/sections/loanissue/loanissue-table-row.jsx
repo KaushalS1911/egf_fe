@@ -1,13 +1,10 @@
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
@@ -35,8 +32,8 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount}</TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('update_loanIssue', configs, user) ||
-          getResponsibilityValue('delete_loanIssue', configs, user) ? (
+          {getResponsibilityValue('update_loan_issue', configs, user) ||
+          getResponsibilityValue('delete_loan_issue', configs, user) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
@@ -51,7 +48,7 @@ export default function LoanissueTableRow({ row, selected, onEditRow, onSelectRo
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_loanIssue', configs, user) && (
+        {getResponsibilityValue('update_loan_issue', configs, user) && (
           <MenuItem
             onClick={() => {
               onEditRow();

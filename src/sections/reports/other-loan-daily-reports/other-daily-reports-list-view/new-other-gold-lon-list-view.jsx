@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,18 +12,17 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
@@ -248,7 +247,6 @@ export default function OtherNewGoldLonListView({ LoanIssue }) {
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/*<TableCell padding="checkbox" />*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
@@ -277,7 +275,6 @@ export default function OtherNewGoldLonListView({ LoanIssue }) {
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     {other.toFixed(0)}
                   </TableCell>
-
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}></TableCell>
                 </TableRow>
               </TableBody>

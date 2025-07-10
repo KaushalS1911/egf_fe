@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
-import { differenceInDays } from 'date-fns';
 
 Font.register({
   family: 'Roboto',
@@ -152,7 +151,6 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
     );
     currentPageCount++;
 
-    // Statement Rows
     if (row.statements?.length > 0) {
       row.statements.forEach((statement, statementIndex) => {
         currentPageRows.push(
@@ -170,7 +168,6 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
         currentPageCount++;
       });
 
-      // Calculate totals
       const totals = row.statements.reduce(
         (acc, item) => {
           acc.credit += Number(item.credit) || 0;
@@ -180,7 +177,6 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
         { credit: 0, debit: 0 }
       );
 
-      // Totals Row
       currentPageRows.push(
         <View key={`total-${rowIndex}`} style={[styles.tableRow, styles.totalRow]}>
           <Text style={[styles.tableCell, { flex: 0.3 }]}></Text>
@@ -197,7 +193,6 @@ export default function CustomerStatementPdf({ selectedBranch, configs, data, fi
       currentPageCount++;
     }
 
-    // Check if we need to create a new page
     if (currentPageCount >= rowsPerPage || rowIndex === data.length - 1) {
       pages.push(
         <Page key={pages.length} size="A4" style={styles.page} orientation="portrait">

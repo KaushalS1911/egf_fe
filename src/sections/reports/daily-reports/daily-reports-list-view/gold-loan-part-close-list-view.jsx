@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,23 +12,21 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
 import { isBetween } from '../../../../utils/format-time';
-import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
 import GoldLoanPartCloseDetailsTableRow from '../daily-reports-table/gold-loan-part-close-details-table-row.jsx';
 import { TableCell, TableRow, Typography } from '@mui/material';
 
@@ -79,18 +77,22 @@ export default function GoldLoanPartCloseListView({ partClose }) {
       (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
+
   const loanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
     0
   );
+
   const conCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
     0
   );
+
   const intLoanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
+
   const adjustedAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
     0

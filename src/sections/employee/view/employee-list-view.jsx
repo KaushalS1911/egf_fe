@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -13,20 +13,19 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import EmployeeTableRow from '../employee-table-row';
 import EmployeeTableToolbar from '../employee-table-toolbar';
@@ -51,6 +50,7 @@ const STATUS_OPTIONS = [
   { value: 'In Active', label: 'In Active' },
   { value: 'Blocked', label: 'Blocked' },
 ];
+
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'branchname', label: 'Branch' },
@@ -87,6 +87,7 @@ export default function EmployeeListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
   useEffect(() => {
     fetchStates();
   }, [employee]);
@@ -120,6 +121,7 @@ export default function EmployeeListView() {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/employee`, {
         data: { ids: id },
@@ -160,12 +162,14 @@ export default function EmployeeListView() {
     },
     [router]
   );
+
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
     },
     [handleFilters]
   );
+
   const employees = employee?.map((item) => ({
     Name: `${item?.user?.firstName} ${item?.user?.middleName} ${item?.user?.lastName}`,
     Email: item?.user?.email,
@@ -412,11 +416,14 @@ function applyFilter({ inputData, comparator, filters }) {
         item.user.contact.includes(name)
     );
   }
+
   if (role) {
     inputData = inputData.filter((item) => item?.user?.role === role);
   }
+
   if (status !== 'all') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   return inputData;
 }

@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -146,19 +145,15 @@ export default function AllBranchLoanSummaryPdf({
     { value: fDate(new Date()), label: 'Date' },
   ];
 
-  // Create pages with correct row distribution
   const rowsPerPageFirst = 17;
   const rowsPerPageOther = 23;
 
-  // Calculate how many pages we'll need
   const remainingRows = loans.length - rowsPerPageFirst;
   const additionalPages = Math.ceil(Math.max(0, remainingRows) / rowsPerPageOther);
   const totalPages = 1 + additionalPages;
 
-  // Create an array to hold all pages
   const pages = [];
 
-  // Function to render a row
   const renderRow = (row, index, isLastRow) => {
     const isAlternateRow = index % 2 !== 0;
 
@@ -211,7 +206,6 @@ export default function AllBranchLoanSummaryPdf({
     );
   };
 
-  // Function to render the table header
   const renderTableHeader = () => (
     <View style={[styles.tableRow, styles.tableHeader]}>
       {headers.map((header, i) => (
@@ -229,7 +223,6 @@ export default function AllBranchLoanSummaryPdf({
     </View>
   );
 
-  // Function to render the table footer with totals
   const renderTableFooter = () => (
     <View style={[styles.tableRow, { backgroundColor: '#E8F0FE' }]} wrap={false}>
       <Text style={[styles.tableCell, { flex: 0.3, fontWeight: 'bold', color: '#1a237e' }]}></Text>
@@ -272,14 +265,12 @@ export default function AllBranchLoanSummaryPdf({
     </View>
   );
 
-  // Create first page
   const firstPageRows = loans
     .slice(0, rowsPerPageFirst)
     .map((row, index) =>
       renderRow(row, index, index === rowsPerPageFirst - 1 && loans.length === rowsPerPageFirst)
     );
 
-  // Add the first page
   pages.push(
     <Page key={0} size="A4" style={styles.page} orientation="landscape">
       <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape={true} />
@@ -302,7 +293,6 @@ export default function AllBranchLoanSummaryPdf({
       >
         <Text style={styles.termsAndConditionsHeaders}>BRANCH WISE LOAN CLOSING REPORT</Text>
       </View>
-
       <View style={{ flexGrow: 1, padding: '12px' }}>
         <View style={styles.table}>
           {renderTableHeader()}
@@ -313,7 +303,6 @@ export default function AllBranchLoanSummaryPdf({
     </Page>
   );
 
-  // Create subsequent pages with 20 rows each
   if (loans.length > rowsPerPageFirst) {
     for (let pageIndex = 0; pageIndex < additionalPages; pageIndex++) {
       const startIndex = rowsPerPageFirst + pageIndex * rowsPerPageOther;

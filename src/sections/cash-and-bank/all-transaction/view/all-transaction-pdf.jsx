@@ -1,10 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../../components/invoise/invoice-header.jsx';
-import Typography from '@mui/material/Typography';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -173,8 +171,6 @@ export default function AllTransactionPdf({ configs, dayBookData, filterData }) 
     );
   };
 
-  console.log('0000000000000000000000000000000000000000')
-
   const renderTableHeader = () => (
     <View style={[styles.tableRow, styles.tableHeader]}>
       {headers.map((header, i) => (
@@ -209,7 +205,6 @@ export default function AllTransactionPdf({ configs, dayBookData, filterData }) 
       .filter((e) => e.category === 'Payment Out')
       .reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
 
-  // Add the first page
   pages.push(
     <Page key={0} size="A4" style={styles.page} orientation="landscape">
       <InvoiceHeader configs={configs} landscape={true} />
@@ -221,7 +216,6 @@ export default function AllTransactionPdf({ configs, dayBookData, filterData }) 
             <Text style={styles.subText}>{item.value || '-'}</Text>
           </View>
         ))}
-
         <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 15 }}>
          Total :{' '}
           <Text style={{ color: amount >= 0 ? 'green' : 'red' }}>
@@ -241,7 +235,6 @@ export default function AllTransactionPdf({ configs, dayBookData, filterData }) 
       >
         <Text style={styles.termsAndConditionsHeaders}>ALL TRANSACTION</Text>
       </View>
-
       <View style={{ flexGrow: 1, padding: '12px' }}>
         <View style={styles.table}>
           {renderTableHeader()}

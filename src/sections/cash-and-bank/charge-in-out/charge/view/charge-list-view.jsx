@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
@@ -30,8 +30,6 @@ import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../../permission/permission.js';
 import { LoadingScreen } from '../../../../../components/loading-screen/index.js';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
 
 // ----------------------------------------------------------------------
 
@@ -118,7 +116,6 @@ export default function ChargeListView({ chargeTypeTotals, setChargeDetails, cha
     const deleteIds = deleteRows.map((row) => row._id);
     handleDelete(deleteIds);
     setTableData(deleteRows);
-
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,

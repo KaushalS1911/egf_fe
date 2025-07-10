@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -9,10 +9,6 @@ import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import { IconButton, MenuItem } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
 import { getResponsibilityValue } from '../../permission/permission';
@@ -23,13 +19,8 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
   const popover = usePopover();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  // const [filters.day, setDay] = useState('Next Week');
-  // const days = ['Next Day', 'Next Week', 'Next Month'];
   const { user } = useAuthContext();
   const { configs } = useGetConfigs();
-  // useEffect(() => {
-  //   onFilters('day', 'Next Month');
-  // }, []);
 
   const handleFilterName = useCallback(
     (event) => {
@@ -37,34 +28,6 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
     },
     [onFilters]
   );
-
-  // useEffect(() => {
-  //   const lastDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-  //   onFilters('endDay', lastDate);
-  // }, []);
-  // const dayManage = (day) => {
-  //   const currentDate = new Date();
-  //   const nextDay = new Date(new Date().setDate(new Date().getDate() + 1));
-  //   const nextWeek = new Date(new Date().setDate(new Date().getDate() + 7));
-
-  // if (day === 'Next Day') {
-  //   onFilters('startDay', currentDate);
-  //   onFilters('endDay', nextDay);
-  // }
-  // if (day === 'Next Week') {
-  //   onFilters('startDay', currentDate);
-  //   onFilters('endDay', nextWeek);
-  // }
-  // if (day === 'Next Month') {
-  // onFilters('startDay', currentDate);
-  // }
-  // };
-
-  // useEffect(() => {
-  //   if (filters.day !== '') {
-  //     dayManage(filters.day);
-  //   }
-  // }, [filters.day]);
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
@@ -106,6 +69,7 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
     },
     [onFilters]
   );
+
   const handleEndDays = useCallback(
     (event) => {
       onFilters('endDay', event.target.value);
@@ -231,22 +195,6 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
               <MenuItem
                 onClick={() => {
                   popover.onClose();
-                }}
-              >
-                <Iconify icon="solar:printer-minimalistic-bold" />
-                Print
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="ant-design:file-pdf-filled" />
-                PDF
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
                   exportToExcel();
                 }}
               >
@@ -255,14 +203,6 @@ export default function ReminderTableToolbar({ filters, onFilters, dateError, ex
               </MenuItem>
             </>
           )}
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="ic:round-whatsapp" />
-            whatsapp share
-          </MenuItem>
         </CustomPopover>
       </Stack>
     </>

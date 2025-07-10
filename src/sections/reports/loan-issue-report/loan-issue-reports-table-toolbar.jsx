@@ -4,16 +4,13 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Autocomplete, FormControl, IconButton, MenuItem } from '@mui/material';
+import { IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { useGetBranch } from '../../../api/branch.js';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { fDate } from '../../../utils/format-time.js';
@@ -27,13 +24,14 @@ export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateE
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { branch } = useGetBranch();
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
     },
     [onFilters]
   );
-  console.log(filters);
+
   const handleFilterStartDate = useCallback(
     (newValue) => {
       if (newValue === null || newValue === undefined) {
@@ -125,18 +123,6 @@ export default function LoanIssueReportsTableToolbar({ filters, onFilters, dateE
               ),
             }}
           />
-          {/*<FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 300 } }}>*/}
-          {/*  <Autocomplete*/}
-          {/*    options={branch}*/}
-          {/*    getOptionLabel={(option) => option?.name || ''}*/}
-          {/*    isOptionEqualToValue={(option, value) => option._id === value._id}*/}
-          {/*    value={branch.find((b) => b._id === filters.branch) || null}*/}
-          {/*    onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}*/}
-          {/*    renderInput={(params) => (*/}
-          {/*      <TextField {...params} label="Branch" className={'custom-textfield'} />*/}
-          {/*    )}*/}
-          {/*  />*/}
-          {/*</FormControl>*/}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}

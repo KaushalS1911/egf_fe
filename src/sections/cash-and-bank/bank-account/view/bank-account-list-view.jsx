@@ -37,6 +37,8 @@ import TransferDialog from './TransferDialog.jsx';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
+import { getResponsibilityValue } from '../../../../permission/permission.js';
+import { useGetConfigs } from '../../../../api/config.js';
 
 // ----------------------------------------------------------------------
 
@@ -68,6 +70,7 @@ export default function BankAccountListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const confirm = useBoolean();
+  const { configs } = useGetConfigs();
   const [filters, setFilters] = useState(defaultFilters);
   const [options, setOptions] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -137,10 +140,10 @@ export default function BankAccountListView() {
   );
 
   const handleDelete = async (id) => {
-    // if (!getResponsibilityValue('delete_scheme', configs, user)) {
-    //   enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
-    //   return;
-    // }
+    if (getResponsibilityValue('delete_transfer', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/transfer/${id}`

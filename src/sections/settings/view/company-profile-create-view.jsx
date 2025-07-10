@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Card, CardHeader, Grid, Typography, IconButton } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Box, Card, Grid, IconButton, Typography } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
@@ -68,7 +68,6 @@ export default function CompanyProfile() {
       accountHolderName: editingBankDetail?.accountHolderName || '',
       bankName: editingBankDetail?.bankName || '',
       IFSC: editingBankDetail?.IFSC || '',
-      // branchName: editingBankDetail?.branchName || '',
     },
     resolver: yupResolver(bankDetailsSchema),
   });
@@ -84,7 +83,6 @@ export default function CompanyProfile() {
         name: companyDetail.name || '',
         email: companyDetail.email || '',
         contact: companyDetail.contact || '',
-        // branch: configs?.headersConfig?.branch || null,
         webUrl: configs?.headersConfig?.companyDetail.webUrl || '',
       });
     }
@@ -96,7 +94,6 @@ export default function CompanyProfile() {
       name: data.name,
       email: data.email,
       contact: data.contact,
-      // branch: data.branch,
       webUrl: data.webUrl,
     };
 
@@ -109,6 +106,7 @@ export default function CompanyProfile() {
       },
       branch: data.branch,
     };
+
     const payload2 = {
       ...configs,
       headersConfig: details,
@@ -268,18 +266,6 @@ export default function CompanyProfile() {
                       e.target.value = e.target.value.replace(/[^0-9]/g, '');
                     }}
                   />
-                  {/*<RHFAutocomplete*/}
-                  {/*  name="branch"*/}
-                  {/*  label="Branch"*/}
-                  {/*  fullWidth*/}
-                  {/*  options={branch?.map((item) => item)}*/}
-                  {/*  getOptionLabel={(option) => option.name}*/}
-                  {/*  renderOption={(props, option) => (*/}
-                  {/*    <li {...props} key={option}>*/}
-                  {/*      {option.name}*/}
-                  {/*    </li>*/}
-                  {/*  )}*/}
-                  {/*/>*/}
                   <RHFTextField name="webUrl" label="Website url" />
                 </Box>
               </Stack>

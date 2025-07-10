@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -10,29 +10,26 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetLoanissue } from '../../../api/loanissue';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { fDate, isBetween } from '../../../utils/format-time';
+import { isBetween } from '../../../utils/format-time';
 import { useGetConfigs } from '../../../api/config';
 import AllBranchLoanSummaryTableRow from '../all-branch-loan/all-branch-loan-summary-table-row';
 import AllBranchLoanSummaryTableToolbar from '../all-branch-loan/all-branch-loan-summary-table-toolbar';
@@ -68,6 +65,7 @@ const TABLE_HEAD = [
   { id: 'approvalCharge', label: 'Approval charge' },
   { id: 'status', label: 'Status' },
 ];
+
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
   { value: 'Issued', label: 'Issued' },
@@ -81,6 +79,7 @@ const STATUS_OPTIONS = [
     label: 'Overdue',
   },
 ];
+
 const defaultFilters = {
   username: '',
   status: 'All',
@@ -116,17 +115,18 @@ export default function AllBranchLoanSummaryListView() {
       prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
+
   const approvalCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.approvalCharge) || 0),
     0
   );
+
   const conCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
 
   const loanAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
-
   const intLoanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
@@ -136,14 +136,17 @@ export default function AllBranchLoanSummaryListView() {
     (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
     0
   );
+
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
     0
   );
+
   const pendingDays = dataFiltered.reduce(
     (prev, next) => prev + (Number(next.pendingDays > 0 && next?.pendingDays) || 0),
     0
   );
+
   const pendingIntAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.pendingInterest) || 0),
     0
@@ -160,6 +163,7 @@ export default function AllBranchLoanSummaryListView() {
     pendingDays,
     pendingIntAmt,
   };
+
   useEffect(() => {
     fetchStates();
   }, [dataFiltered]);
@@ -200,12 +204,14 @@ export default function AllBranchLoanSummaryListView() {
       enqueueSnackbar('Failed to delete Employee');
     }
   };
+
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
     },
     [handleFilters]
   );
+
   const handleDeleteRow = useCallback(
     (id) => {
       if (id) {
@@ -240,30 +246,6 @@ export default function AllBranchLoanSummaryListView() {
     },
     [router]
   );
-
-  // const loans = Loanissue.map((item) => ({
-  //   'Loan No': item.loanNo,
-  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-  //   'Contact': item.customer.contact,
-  //   'OTP Contact': item.customer.otpContact,
-  //   Email: item.customer.email,
-  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.issueDate,
-  //   'Scheme': item.scheme.name,
-  //   'Rate per gram': item.scheme.ratePerGram,
-  //   'Interest rate': item.scheme.interestRate,
-  //   valuation: item.scheme.valuation,
-  //   'Interest period': item.scheme.interestPeriod,
-  //   'Renewal time': item.scheme.renewalTime,
-  //   'min loan time': item.scheme.minLoanTime,
-  //   'Loan amount': item.loanAmount,
-  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
-  //   'Payment mode': item.paymentMode,
-  //   'Paying cashAmount': item.payingCashAmount,
-  //   'Pending cashAmount': item.pendingCashAmount,
-  //   'Paying bankAmount': item.payingBankAmount,nasm
-  //   'Pending bankAmount': item.pendingBankAmount,
-  // }));
 
   if (LoanSummaryLoading) {
     return <LoadingScreen />;
@@ -302,7 +284,6 @@ export default function AllBranchLoanSummaryListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <Tabs
             value={filters.status}
@@ -342,7 +323,6 @@ export default function AllBranchLoanSummaryListView() {
               />
             ))}
           </Tabs>
-
           <AllBranchLoanSummaryTableToolbar
             filters={filters}
             onFilters={handleFilters}
@@ -351,7 +331,6 @@ export default function AllBranchLoanSummaryListView() {
             options={options}
             total={total}
           />
-
           {canReset && (
             <AllBranchLoanSummaryTableFiltersResult
               filters={filters}
@@ -361,7 +340,6 @@ export default function AllBranchLoanSummaryListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -396,7 +374,6 @@ export default function AllBranchLoanSummaryListView() {
                 </Tooltip>
               }
             />
-
             <Table size={table.dense ? 'small' : 'medium'}>
               <TableHeadCustom
                 order={table.order}
@@ -412,7 +389,6 @@ export default function AllBranchLoanSummaryListView() {
                   backgroundColor: '#2f3944',
                 }}
               />
-
               <TableBody>
                 {dataFiltered
                   .slice(
@@ -441,7 +417,6 @@ export default function AllBranchLoanSummaryListView() {
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/*<TableCell padding="checkbox" />*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 0.5 }}>
                     TOTAL
                   </TableCell>
@@ -507,20 +482,17 @@ export default function AllBranchLoanSummaryListView() {
               </TableBody>
             </Table>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -558,6 +530,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
+
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
@@ -570,15 +543,19 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
   }
+
   if (issuedBy) {
     inputData = inputData.filter((item) => item?.issuedBy?._id === issuedBy?.value);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
   }

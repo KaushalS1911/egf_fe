@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 import Stack from '@mui/material/Stack';
-import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify/index.js';
-import CustomPopover, { usePopover } from 'src/components/custom-popover/index.js';
+import { usePopover } from 'src/components/custom-popover/index.js';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../api/config.js';
 
@@ -53,48 +51,7 @@ export default function PartiesToolbar({ filters, onFilters, schemes }) {
             }}
           />
         </Stack>
-        {/*<IconButton onClick={popover.onOpen}>*/}
-        {/*  <Iconify icon="eva:more-vertical-fill" />*/}
-        {/*</IconButton>*/}
       </Stack>
-      {/*<CustomPopover*/}
-      {/*  open={popover.open}*/}
-      {/*  onClose={popover.onClose}*/}
-      {/*  arrow="right-top"*/}
-      {/*  sx={{ width: 'auto' }}*/}
-      {/*>*/}
-      {/*  {getResponsibilityValue('print_scheme_detail', configs, user) && (*/}
-      {/*    <>*/}
-      {/*      <MenuItem*/}
-      {/*        onClick={() => {*/}
-      {/*          popover.onClose();*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        <Iconify icon="solar:printer-minimalistic-bold" />*/}
-      {/*        Print*/}
-      {/*      </MenuItem>*/}
-      {/*      <MenuItem*/}
-      {/*        onClick={() => {*/}
-      {/*          popover.onClose();*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        <Iconify icon="ant-design:file-pdf-filled" />*/}
-      {/*        PDF*/}
-      {/*      </MenuItem>*/}
-      {/*      <MenuItem>*/}
-      {/*        <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />*/}
-      {/*      </MenuItem>*/}
-      {/*    </>*/}
-      {/*  )}*/}
-      {/*  <MenuItem*/}
-      {/*    onClick={() => {*/}
-      {/*      popover.onClose();*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    <Iconify icon="ic:round-whatsapp" />*/}
-      {/*    whatsapp share*/}
-      {/*  </MenuItem>*/}
-      {/*</CustomPopover>*/}
     </>
   );
 }

@@ -4,16 +4,7 @@ import moment from 'moment';
 import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
 import { fDate } from '../../../utils/format-time';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  FormControl,
-  Grid,
-  IconButton,
-  MenuItem,
-  Button,
-} from '@mui/material';
+import { Box, Button, Dialog, DialogActions, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../auth/hooks';
@@ -136,19 +127,6 @@ export default function AllBranchLoanSummaryTableToolbar({
             )}
             sx={{ width: { xs: '100%', sm: 800 } }}
           />
-
-          {/*<Autocomplete*/}
-          {/*  value={filters.branch || []}*/}
-          {/*  onChange={(event, newValue) => handleFilterBranch({ target: { value: newValue } })}*/}
-          {/*  options={branch}*/}
-          {/*  getOptionLabel={(option) => option?.name || ''}*/}
-          {/*  isOptionEqualToValue={(option, value) => option?.name === value?.name}*/}
-          {/*  renderInput={(params) => (*/}
-          {/*    <TextField {...params} label="Branch" className={'custom-textfield'} />*/}
-          {/*  )}*/}
-          {/*  sx={{ width: { xs: '100%', sm: 350 } }}*/}
-          {/*/>*/}
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -163,7 +141,6 @@ export default function AllBranchLoanSummaryTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -180,14 +157,12 @@ export default function AllBranchLoanSummaryTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           {getResponsibilityValue('print_all_branch_loan_summary', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
-
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -232,7 +207,6 @@ export default function AllBranchLoanSummaryTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

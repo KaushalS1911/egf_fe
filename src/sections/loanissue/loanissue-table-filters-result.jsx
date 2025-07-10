@@ -10,7 +10,6 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function LoanissueTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
-
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
   }, [onFilters]);

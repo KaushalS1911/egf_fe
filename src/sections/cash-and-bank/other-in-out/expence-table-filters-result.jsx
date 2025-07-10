@@ -20,9 +20,11 @@ export default function ExpenceTableFiltersResult({
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
+
   const handleRemoveCategory = useCallback(() => {
     onFilters('category', '');
   }, [onFilters]);
+
   const handleRemoveTransactions = useCallback(() => {
     onFilters('transactions', '');
   }, [onFilters]);

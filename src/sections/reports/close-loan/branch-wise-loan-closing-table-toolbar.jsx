@@ -3,16 +3,7 @@ import { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Iconify from 'src/components/iconify';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  FormControl,
-  MenuItem,
-  Autocomplete,
-  IconButton,
-  Button,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Dialog, DialogActions, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetBranch } from '../../../api/branch';
@@ -20,7 +11,6 @@ import { useBoolean } from '../../../hooks/use-boolean';
 import { PDFViewer } from '@react-pdf/renderer';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 import BranchWiseLoanClosingPdf from '../pdf/branch-wise-loan-closing-pdf.jsx';
 import { getResponsibilityValue } from '../../../permission/permission';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
@@ -39,7 +29,6 @@ export default function BranchWiseLoanClosingTableToolbar({
   const view = useBoolean();
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
-
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [startCloseDateOpen, setStartCloseDateOpen] = useState(false);
@@ -52,7 +41,6 @@ export default function BranchWiseLoanClosingTableToolbar({
     branch: filters.branch,
   };
 
-  // --- Handler Functions ---
   const handleFilterIssuedBy = useCallback(
     (event, newValue) => {
       onFilters('closedBy', newValue);
@@ -133,19 +121,6 @@ export default function BranchWiseLoanClosingTableToolbar({
             )}
             sx={{ width: 500 }}
           />
-
-          {/*<Autocomplete*/}
-          {/*  options={branch}*/}
-          {/*  getOptionLabel={(option) => option?.name || ''}*/}
-          {/*  value={filters.branch || null}*/}
-          {/*  isOptionEqualToValue={(option, value) => option?.id === value?.id}*/}
-          {/*  onChange={handleFilterBranch}*/}
-          {/*  renderInput={(params) => (*/}
-          {/*    <TextField {...params} label="Branch" className={'custom-textfield'} />*/}
-          {/*  )}*/}
-          {/*  sx={{ width: 200 }}*/}
-          {/*/>*/}
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -160,7 +135,6 @@ export default function BranchWiseLoanClosingTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="End date"
             value={filters.endDate ? moment(filters.endDate).toDate() : null}
@@ -177,7 +151,6 @@ export default function BranchWiseLoanClosingTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="Start close date"
             value={filters.startCloseDate ? moment(filters.startCloseDate).toDate() : null}
@@ -192,7 +165,6 @@ export default function BranchWiseLoanClosingTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="End close date"
             value={filters.endCloseDate ? moment(filters.endCloseDate).toDate() : null}
@@ -209,15 +181,12 @@ export default function BranchWiseLoanClosingTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           {getResponsibilityValue('print_branch_vise_loan_closing_report', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
-
-        {/* Popover */}
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -262,8 +231,6 @@ export default function BranchWiseLoanClosingTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
-
-      {/* PDF Viewer */}
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

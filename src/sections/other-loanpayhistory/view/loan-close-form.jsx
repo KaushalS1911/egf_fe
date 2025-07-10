@@ -3,17 +3,7 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
@@ -407,7 +397,7 @@ function LoanCloseForm({ currentOtherLoan, mutate }) {
                   <Button color="inherit" variant="outlined" onClick={() => reset()}>
                     Reset
                   </Button>
-                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                  {getResponsibilityValue('create_loan_close', configs, user) && (
                     <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                       Submit
                     </LoadingButton>

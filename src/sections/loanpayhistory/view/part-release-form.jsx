@@ -94,15 +94,19 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.adjustedAmount) || 0),
     0
   );
+
   const totalPayAmt = partRelease.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+
   const pendingLoanAmount = partRelease.reduce(
     (prev, next) => prev + (Number(next?.pendingLoanAmount) || 0),
     0
   );
+
   const casAmt = partRelease.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
+
   const bankAmt = partRelease.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
@@ -246,7 +250,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         companyContact: item ? item.loan.company.contact : data.loan.company.contact,
         branchContact: item ? item.loan.customer.branch.contact : data.loan.customer.branch.contact,
         company: user.company,
-
         file,
         type: 'part_release',
       };
@@ -283,23 +286,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
     const netAmount = Number(selectedTotals?.netAmount || 0);
     const amountPaid = watch('amountPaid');
     const adjustAmt = Number(watch('adjustAmount'));
-
-    // if (adjustAmt > amountPaid + 500) {
-    //   enqueueSnackbar(`Amount Paid must be less than ${netAmount + 500}.`, {
-    //     variant: 'error',
-    //   });
-    //   return;
-    // }
-    // if (adjustAmt < amountPaid - 500) {
-    //   enqueueSnackbar(`Amount Paid must be grater than ${netAmount - 500}.`, {
-    //     variant: 'error',
-    //   });
-    //   return;
-    // }
-    // if (amountPaid < netAmount - 500) {
-    //   enqueueSnackbar(`Amount Paid must be less than ${netAmount - 500}.`, { variant: 'error' });
-    //   return;
-    // }
 
     if (selectedRows.length === 0) {
       enqueueSnackbar('At least one property must be selected', { variant: 'error' });
@@ -387,6 +373,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       enqueueSnackbar('Failed to part release', { variant: 'error' });
     }
   });
+
   useEffect(() => {
     if (watch('paymentMode')) {
       setPaymentMode(watch('paymentMode'));
@@ -400,17 +387,9 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
   const handleCashAmountChange = (event) => {
     const newCashAmount = parseFloat(watch('cashAmount')) || 0;
     const adjustAmount = parseFloat(watch('adjustAmount')) || 0;
-    // if (newCashAmount > adjustAmount) {
-    // setValue('cashAmount', adjustAmount);
-    // enqueueSnackbar('Cash amount cannot be greater than the loan amount.', {
-    //   variant: 'warning',
-    // });
-    // } else {
-    // setValue('cashAmount', adjustAmount.toFixed(2));
     if (watch('paymentMode') === 'Both') {
       setValue('bankAmount', (adjustAmount - newCashAmount).toFixed(2));
     }
-    // }
   };
 
   useEffect(() => {
@@ -487,7 +466,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
       const angleRadians = (rotation * Math.PI) / 180;
 
       if (!completedCrop || !completedCrop.width || !completedCrop.height) {
-        // No cropping, save the entire rotated image
         const rotatedCanvasWidth =
           Math.abs(image.naturalWidth * Math.cos(angleRadians)) +
           Math.abs(image.naturalHeight * Math.sin(angleRadians));
@@ -509,7 +487,6 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
         );
         ctx.restore();
       } else {
-        // Cropping is required
         const cropX = completedCrop.x * scaleX;
         const cropY = completedCrop.y * scaleY;
         const cropWidth = completedCrop.width * scaleX;
@@ -970,7 +947,7 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
             >
               Reset
             </Button>
-            {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+            {getResponsibilityValue('create_part_release', configs, user) && (
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Submit
               </LoadingButton>
@@ -1066,14 +1043,13 @@ function PartReleaseForm({ currentLoan, mutate, configs }) {
                   ) : (
                     <TableCell>-</TableCell>
                   )}
-                  {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
+                  {getResponsibilityValue('print_loan_pay_history_detail', configs, user) ? (
                     <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                       {
                         <Typography
                           onClick={() => {
                             view.onTrue();
                             setData(row);
-                            console.log(row);
                           }}
                           sx={{
                             cursor: 'pointer',

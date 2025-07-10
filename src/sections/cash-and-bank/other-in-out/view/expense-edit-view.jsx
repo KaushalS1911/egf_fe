@@ -3,7 +3,6 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
-import { useGetScheme } from '../../../../api/scheme.js';
 import { useParams } from '../../../../routes/hooks/index.js';
 import { LoadingScreen } from '../../../../components/loading-screen/index.js';
 import { Box } from '@mui/material';

@@ -124,6 +124,7 @@ export default function CustomerListView() {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/${user.data?.company}/customer`,
@@ -410,22 +411,27 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
           .indexOf(name.toLowerCase()) !== -1 || item.contact.trim().includes(name)
     );
   }
- if (status !== 'all') {
+
+  if (status !== 'all') {
     inputData = inputData.filter((item) => item.status === status || (item.isLoan === true ? 'true' : 'false') === status
     );
   }
+
   if (isAadharVerified) {
     inputData = inputData.filter(
       (item) => item.isAadharVerified === (isAadharVerified === 'Verified' ? true : false)
     );
   }
+
   if (role.length) {
     inputData = inputData.filter((item) => role.includes(item.role));
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) =>
       isBetween(new Date(loan.joiningDate), startDate, endDate)
     );
   }
+
   return inputData;
 }

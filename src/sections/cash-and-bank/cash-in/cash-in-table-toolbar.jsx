@@ -13,13 +13,9 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, Dialog, DialogActions, FormControl } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import { Box, Dialog, DialogActions } from '@mui/material';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import InqiryPdf from '../../inquiry/view/inqiry-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import CashInPdf from './view/cash-in-pdf.jsx';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -89,18 +85,21 @@ export default function CashInTableToolbar({
     },
     [onFilters]
   );
+
   const handleFilterCategory = useCallback(
     (event) => {
       onFilters('category', event.target.value);
     },
     [onFilters]
   );
+
   const handleFilterStatus = useCallback(
     (event) => {
       onFilters('status', event.target.value);
     },
     [onFilters]
   );
+
   const customStyle = {
     maxWidth: { md: 350 },
     label: {
@@ -112,6 +111,7 @@ export default function CashInTableToolbar({
     },
     input: { height: 7 },
   };
+
   return (
     <>
       <Stack
@@ -159,7 +159,6 @@ export default function CashInTableToolbar({
               />
             )}
           />
-
           <Autocomplete
             fullWidth
             options={options}
@@ -179,7 +178,6 @@ export default function CashInTableToolbar({
               />
             )}
           />
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -223,7 +221,7 @@ export default function CashInTableToolbar({
         arrow="right-top"
         sx={{ width: 'auto' }}
       >
-        {getResponsibilityValue('print_scheme_detail', configs, user) && (
+        {getResponsibilityValue('print_cash_in', configs, user) && (
           <>
             <MenuItem
               onClick={() => {
@@ -234,27 +232,11 @@ export default function CashInTableToolbar({
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="ant-design:file-pdf-filled" />
-              PDF
-            </MenuItem>
             <MenuItem>
               <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
             </MenuItem>
           </>
         )}
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="ic:round-whatsapp" />
-          whatsapp share
-        </MenuItem>
       </CustomPopover>
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>

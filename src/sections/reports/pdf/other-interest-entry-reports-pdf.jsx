@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
-import { differenceInDays } from 'date-fns';
-import { NumberSchema } from 'yup';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -114,11 +111,6 @@ const useStyles = () =>
     []
   );
 
-// Helper function to format currency values
-const formatCurrency = (value, precision = 2) => {
-  return (value || 0).toFixed(precision);
-};
-
 export default function OtherInterestEntryReportsPdf({
   selectedBranch,
   configs,
@@ -127,8 +119,8 @@ export default function OtherInterestEntryReportsPdf({
   total,
 }) {
   const { bankAmt, cashAmt, interestAmount, charge, day, payAmt, otherAmt } = total || {};
-
   const styles = useStyles();
+
   const headers = [
     { label: '#', flex: 0.2 },
     { label: 'Loan No', flex: 3 },
@@ -153,7 +145,6 @@ export default function OtherInterestEntryReportsPdf({
     { value: fDate(new Date()) || '-', label: 'Date' },
   ];
 
-  // Modified to have different row counts for first page vs subsequent pages
   const firstPageRows = 12;
   const otherPagesRows = 16;
 
@@ -168,7 +159,6 @@ export default function OtherInterestEntryReportsPdf({
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === reportsData.length - 1;
 
-    // Create the row component
     currentPageRows.push(
       <View key={index} style={[styles.tableRow, isAlternateRow && styles.alternateRow]}>
         <Text style={[styles.tableCell, { flex: 0.2 }]}>{index + 1}</Text>
@@ -202,10 +192,8 @@ export default function OtherInterestEntryReportsPdf({
 
     rowsOnCurrentPage++;
 
-    // Check if we need to create a new page
     const isPageFull = rowsOnCurrentPage === maxRowsForCurrentPage;
     if (isPageFull || isLastRow) {
-      // Create a page with the current rows
       const isFirstPage = currentPageIndex === 0;
 
       pages.push(
@@ -255,8 +243,6 @@ export default function OtherInterestEntryReportsPdf({
                 ))}
               </View>
               {currentPageRows}
-
-              {/* Total Row - only show on the last page */}
               {isLastRow && (
                 <View style={[styles.tableRow, styles.totalRow]}>
                   <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
@@ -282,8 +268,6 @@ export default function OtherInterestEntryReportsPdf({
           </View>
         </Page>
       );
-
-      // Reset for next page
       currentPageRows = [];
       currentPageIndex++;
       rowsOnCurrentPage = 0;
@@ -291,7 +275,6 @@ export default function OtherInterestEntryReportsPdf({
     }
   });
 
-  // If no data, create an empty page with headers
   if (reportsData.length === 0) {
     pages.push(
       <Page

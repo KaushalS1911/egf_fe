@@ -120,6 +120,7 @@ export default function SchemeListView() {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/scheme`, {
         data: { ids: id },
@@ -135,7 +136,6 @@ export default function SchemeListView() {
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
@@ -196,7 +196,7 @@ export default function SchemeListView() {
           ]}
           action={
             <Box>
-              {getResponsibilityValue('print_gold_price_change', configs, user) && (
+              {getResponsibilityValue('gold_price_change', configs, user) && (
                 <Button
                   component={RouterLink}
                   href={paths.dashboard.scheme.goldpricelist}

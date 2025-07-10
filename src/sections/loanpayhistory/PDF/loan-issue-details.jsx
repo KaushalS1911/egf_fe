@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time.js';
 import Qr from 'src/assets/icon/qr.png';
@@ -12,7 +12,7 @@ import customerImages from '../../../assets/icon/customer.png';
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: '/fonts/Roboto-Regular.ttf' }, // Regular weight
+    { src: '/fonts/Roboto-Regular.ttf' },
     { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' },
   ],
 });
@@ -72,7 +72,6 @@ const useStyles = () =>
         },
         flexContainer: {
           flexDirection: 'row',
-          // marginTop: 5,
           justifyContent: 'space-between',
           alignItems: 'flex-start',
         },
@@ -256,14 +255,11 @@ const useStyles = () =>
         tableRow: {
           flexDirection: 'row',
           minHeight: 22,
-          // borderBottomWidth: 0.5,
           borderBottomColor: '#c7c6c6',
           pageBreakInside: 'avoid',
         },
         tableCell: {
           padding: 5,
-          // borderRightWidth: 0.5,
-          // borderRightColor: '#b1b0b0',
           textAlign: 'center',
           fontSize: 10,
         },
@@ -421,7 +417,6 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                   </View>
                 </View>
                 <View style={{ marginRight: '24px' }}>
-                  {/*<Text style={styles.propertyCellHeading}>Property Image</Text>*/}
                   <View>
                     <Image
                       style={styles.propertyImage}
@@ -471,7 +466,6 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                       <Text style={[styles.tableCell, { flex: 1 }]}>Part Close Date</Text>
                       <Text style={[styles.tableCell, { flex: 1 }]}>Sign</Text>
                     </View>
-
                     {selectedRow.propertyDetails.map((row, index) => (
                       <View key={index} style={[styles.tableRow, styles.tableRowBorder]}>
                         <Text style={[styles.tableCell, { flex: 2 }]}>{row.type}</Text>
@@ -487,7 +481,6 @@ export default function LoanIssueDetails({ selectedRow, configs }) {
                         <Text style={[styles.tableCell, { flex: 1 }]}></Text>
                       </View>
                     ))}
-
                     <View
                       style={{
                         ...styles.tableRow,

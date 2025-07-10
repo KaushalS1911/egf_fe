@@ -3,7 +3,6 @@ import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/rendere
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -174,26 +173,22 @@ export default function BranchWiseLoanClosingPdf({
     { value: fDate(new Date()) || '-', label: 'Date' },
   ];
 
-  // Modified to have different row counts for first page vs subsequent pages
   const firstPageRows = 17;
   const otherPagesRows = 23;
 
-  // Safely handle data
   const loansData = loans || [];
   const loanCount = loansData.length || 0;
 
-  // Create pages with rows distributed according to the requirements
   const pages = [];
   let currentPageRows = [];
   let currentPageIndex = 0;
   let rowsOnCurrentPage = 0;
-  let maxRowsForCurrentPage = firstPageRows; // First page gets 17 rows
+  let maxRowsForCurrentPage = firstPageRows;
 
   loansData.forEach((row, index) => {
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === loansData.length - 1;
 
-    // Create the row component
     currentPageRows.push(
       <View
         key={index}
@@ -239,10 +234,8 @@ export default function BranchWiseLoanClosingPdf({
 
     rowsOnCurrentPage++;
 
-    // Check if we need to create a new page
     const isPageFull = rowsOnCurrentPage === maxRowsForCurrentPage;
     if (isPageFull || isLastRow) {
-      // Create a page with the current rows
       const isFirstPage = currentPageIndex === 0;
 
       pages.push(
@@ -290,7 +283,6 @@ export default function BranchWiseLoanClosingPdf({
                 ))}
               </View>
               {currentPageRows}
-
               {isLastRow && (
                 <View
                   style={[
@@ -371,16 +363,13 @@ export default function BranchWiseLoanClosingPdf({
           </View>
         </Page>
       );
-
-      // Reset for next page
       currentPageRows = [];
       currentPageIndex++;
       rowsOnCurrentPage = 0;
-      maxRowsForCurrentPage = otherPagesRows; // After first page, use 23 rows per page
+      maxRowsForCurrentPage = otherPagesRows;
     }
   });
 
-  // If no loans data, create an empty page with headers
   if (loansData.length === 0) {
     pages.push(
       <Page key={0} size="A4" style={styles.page} orientation="landscape">

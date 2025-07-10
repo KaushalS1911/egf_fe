@@ -10,7 +10,6 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function AllBranchLoanSummaryFilters({ filters, onFilters, onResetFilters, results, ...other }) {
-
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
   }, [onFilters]);

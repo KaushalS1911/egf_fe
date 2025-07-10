@@ -508,10 +508,6 @@ export default function ExpenceNewEditForm({ currentExpense }) {
                           req={'red'}
                           label="Cash Amount"
                           inputProps={{ min: 0 }}
-                          // onChange={(e) => {
-                          //   field.onChange(e);
-                          //   handleCashAmountChange(`e);
-                          // }}
                         />
                       )}
                     />

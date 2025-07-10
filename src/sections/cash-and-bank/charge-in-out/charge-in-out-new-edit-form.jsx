@@ -26,7 +26,6 @@ export default function ChargeInOutNewEditForm({ currentCharge }) {
   const { configs } = useGetConfigs();
   const { branch } = useGetBranch();
   const [paymentMode, setPaymentMode] = useState('');
-
   const storedBranch = sessionStorage.getItem('selectedBranch');
 
   const paymentSchema =

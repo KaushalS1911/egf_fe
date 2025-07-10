@@ -19,9 +19,11 @@ export default function CustomerRefReportTableFiltersResult({
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
   }, [onFilters]);
+
   const handleRemoveArea = useCallback(() => {
     onFilters('area', '');
   }, [onFilters]);
+
   const handleRemoveRef = useCallback(() => {
     onFilters('ref', '');
   }, [onFilters]);

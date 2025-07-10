@@ -13,15 +13,10 @@ import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, Dialog, FormControl, Typography, Autocomplete } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import PartyNewEditForm from './parties/party-new-edit-form.jsx';
+import { Autocomplete, Box, Dialog, Typography } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import ExpencePdf from '../other-in-out/view/expence-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import PaymentInOutPdf from './view/payment-in-out-pdf.jsx';
 
@@ -140,7 +135,6 @@ export default function PaymentInOutTableToolbar({
               ),
             }}
           />
-
           <Autocomplete
             fullWidth
             options={options || []}
@@ -160,7 +154,6 @@ export default function PaymentInOutTableToolbar({
             )}
             isOptionEqualToValue={(option, value) => option._id === value?._id}
           />
-
           <Autocomplete
             fullWidth
             options={['Payment In', 'Payment Out']}
@@ -171,7 +164,6 @@ export default function PaymentInOutTableToolbar({
             )}
             isOptionEqualToValue={(option, value) => option === value}
           />
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -187,7 +179,6 @@ export default function PaymentInOutTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -206,19 +197,17 @@ export default function PaymentInOutTableToolbar({
             sx={{ ...customStyle }}
           />
         </Stack>
-
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
         sx={{ width: 'auto' }}
       >
-        {getResponsibilityValue('print_scheme_detail', configs, user) && (
+        {getResponsibilityValue('print_payment_in_out', configs, user) && (
           <>
             <MenuItem
               onClick={() => {
@@ -229,13 +218,6 @@ export default function PaymentInOutTableToolbar({
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
             </MenuItem>
-            <MenuItem onClick={popover.onClose}>
-              <Iconify icon="ant-design:file-pdf-filled" />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
-            </MenuItem>
           </>
         )}
         <MenuItem onClick={popover.onClose}>
@@ -243,7 +225,6 @@ export default function PaymentInOutTableToolbar({
           whatsapp share
         </MenuItem>
       </CustomPopover>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

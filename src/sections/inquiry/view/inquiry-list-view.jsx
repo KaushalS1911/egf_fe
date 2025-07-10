@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -14,20 +14,19 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetInquiry } from 'src/api/inquiry';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { useAuthContext } from 'src/auth/hooks';
 import InquiryTableRow from '../inquiry-table-row';
@@ -35,16 +34,7 @@ import InquiryTableToolbar from '../inquiry-table-toolbar';
 import InquiryTableFiltersResult from '../inquiry-table-filters-result';
 import { fDate, isAfter, isBetween } from '../../../utils/format-time';
 import { LoadingScreen } from '../../../components/loading-screen';
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Autocomplete,
-  TextField,
-} from '@mui/material';
+import { Autocomplete, Box, FormControl, TextField } from '@mui/material';
 import Iconify from '../../../components/iconify';
 import { useGetEmployee } from '../../../api/employee';
 import { useGetBranch } from '../../../api/branch';
@@ -113,6 +103,7 @@ export default function InquiryListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const storedBranch = sessionStorage.getItem('selectedBranch');
   const [options, setOptions] = useState([]);
+
   useEffect(() => {
     fetchStates();
   }, [inquiry]);
@@ -148,19 +139,12 @@ export default function InquiryListView() {
     setFilters(defaultFilters);
   }, []);
 
-  const handleBranchChange = useCallback((e) => {
-    setSelectedBranch(e.target.value);
-  }, []);
-
-  const handleEmployeeChange = useCallback((e) => {
-    setSelectedEmployee(e.target.value);
-  }, []);
-
   const handleDelete = (id) => {
     if (!getResponsibilityValue('delete_inquiry', configs, user)) {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     axios
       .delete(`${import.meta.env.VITE_BASE_URL}/${user.data?.company}/inquiry`, {
         data: { ids: id },
@@ -365,7 +349,7 @@ export default function InquiryListView() {
                       }
                       onChange={(e, newValue) => {
                         setSelectedBranch(newValue?.value || '');
-                        setSelectedEmployee(''); // reset employee on branch change
+                        setSelectedEmployee('');
                       }}
                       renderInput={(params) => (
                         <TextField {...params} label="Branch" className="custom-textfield" />
@@ -373,7 +357,6 @@ export default function InquiryListView() {
                     />
                   </FormControl>
                 )}
-
               {user?.role === 'Admin' && employee && (
                 <FormControl
                   sx={{
@@ -406,7 +389,6 @@ export default function InquiryListView() {
                   />
                 </FormControl>
               )}
-
               {getResponsibilityValue('bulk_inquiry_detail', configs, user) && (
                 <>
                   <Box display="flex" alignItems="center" mx={1}>
@@ -644,15 +626,19 @@ function applyFilter({ inputData, comparator, filters }) {
         item.contact.trim().includes(name)
     );
   }
+
   if (assignTo) {
     inputData = inputData.filter((item) => item?.assignTo?.user?._id === assignTo?.value);
   }
+
   if (inquiryFor) {
     inputData = inputData.filter((item) => item?.inquiryFor === inquiryFor);
   }
+
   if (startDate && endDate) {
     inputData = inputData.filter((user) => isBetween(user.date, startDate, endDate));
   }
+
   if (startRecallingDate && endRecallingDate) {
     inputData = inputData.filter((user) =>
       isBetween(user.recallingDate, startRecallingDate, endRecallingDate)

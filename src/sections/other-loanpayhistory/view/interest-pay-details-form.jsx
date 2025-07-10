@@ -54,18 +54,22 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     (prev, next) => prev + (Number(next?.payAfterAdjust) || 0),
     0
   );
+
   const cashAmt = otherLoanInterest.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
+
   const bankAmt = otherLoanInterest.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
   );
+
   const interestAmount = otherLoanInterest.reduce(
     (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
+
   const charge = otherLoanInterest.reduce((prev, next) => prev + (Number(next?.charge) || 0), 0);
 
   const day = otherLoanInterest.reduce(
@@ -128,7 +132,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     from: otherLoanInterest[0]?.to
       ? new Date(otherLoanInterest[0].to)
       : new Date(currentOtherLoan.date),
-
     to: new Date(currentOtherLoan?.renewalDate)
       ? new Date(currentOtherLoan?.renewalDate)
       : new Date(),
@@ -159,7 +162,6 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-  console.log(watch('account'));
 
   useEffect(() => {
     if (currentOtherLoan.status !== 'Closed') {
@@ -260,6 +262,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
           bankAmount: data.charge,
         };
       }
+
       const payload = {
         chargeType: 'OTHER INTEREST CHARGE',
         date: new Date(data.to),
@@ -533,7 +536,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
               >
                 Reset
               </Button>
-              {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+              {getResponsibilityValue('create_interest', configs, user) && (
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                   Submit
                 </LoadingButton>
@@ -595,8 +598,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankName || '-'}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      <IconButton
-                        color="error"
+                      {getResponsibilityValue('delete_interest', configs, user) ? <IconButton
+                        color='error'
                         onClick={() => {
                           if (index === 0) {
                             confirm.onTrue();
@@ -609,8 +612,8 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                           pointerEvents: index === 0 ? 'auto' : 'none',
                         }}
                       >
-                        <Iconify icon="eva:trash-2-outline" />
-                      </IconButton>
+                        <Iconify icon='eva:trash-2-outline' />
+                      </IconButton> : '-'}
                     </TableCell>
                   </TableRow>
                 ))}

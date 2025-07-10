@@ -85,19 +85,23 @@ export default function OtherInterestEntryReportsListView() {
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
+
   const bankAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
   );
+
   const interestAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
+
   const charge = dataFiltered.reduce((prev, next) => prev + (Number(next?.charge) || 0), 0);
   const otherAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.otherLoan?.amount) || 0),
     0
   );
+
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
     0
@@ -123,7 +127,6 @@ export default function OtherInterestEntryReportsListView() {
     if (updatedData.length > 0) {
       const existingRates = new Set(options.map((opt) => opt.rate));
       const newOptions = [...options];
-
       updatedData.forEach((data) => {
         const rate = data?.scheme?.interestRate;
         if (!existingRates.has(rate)) {

@@ -1,15 +1,6 @@
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  IconButton,
-  MenuItem,
-  TableCell,
-  TableRow,
-} from '@mui/material';
-import { PDFViewer, pdf } from '@react-pdf/renderer';
+import { Box, Button, Dialog, DialogActions, IconButton, MenuItem, TableCell, TableRow } from '@mui/material';
+import { pdf, PDFViewer } from '@react-pdf/renderer';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -205,9 +196,6 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
         'noc',
       ].includes(content)
     )
-      // {
-      //   await sendPdfToWhatsApp(content);
-      // }
       view.onTrue();
   };
 
@@ -229,7 +217,7 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
       <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' }}>
         <TableCell>{srNo}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('create_loanIssue', configs, user) ? (
+          {getResponsibilityValue('update_loan_pay_history', configs, user) ? (
             <Link
               to={paths.dashboard.loanPayHistory.edit(_id)}
               style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}
@@ -267,10 +255,12 @@ export default function LoanpayhistoryTableRow({ row, selected, onDeleteRow, loa
             {status}
           </Label>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
+        <TableCell
+          sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
+          {getResponsibilityValue('print_loan_pay_history_detail', configs, user) ? (
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+            <Iconify icon='eva:more-vertical-fill' />
+          </IconButton>) : ''}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
           {getResponsibilityValue('delete_loan', configs, user) ? (

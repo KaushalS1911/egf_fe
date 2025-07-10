@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -13,20 +13,17 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
-  emptyRows,
-  TableNoData,
   getComparator,
-  TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import LoanissueTableRow from '../loanissue-table-row';
 import LoanissueTableToolbar from '../loanissue-table-toolbar';
@@ -101,10 +98,11 @@ export default function LoanissueListView() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!getResponsibilityValue('delete_loanIssue', configs, user)) {
+    if (!getResponsibilityValue('delete_loan_issue', configs, user)) {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/loans/${id}`
@@ -116,16 +114,6 @@ export default function LoanissueListView() {
       enqueueSnackbar('Loan cannot be deleted because it is not latest one.', { variant: 'error' });
     }
   };
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      if (id) {
-        handleDelete([id]);
-        table.onUpdatePageDeleteRow(dataInPage.length);
-      }
-    },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
-  );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = Loanissue.filter((row) => table.selected.includes(row._id));
@@ -191,7 +179,7 @@ export default function LoanissueListView() {
             { name: ' List' },
           ]}
           action={
-            getResponsibilityValue('create_loanIssue', configs, user) && (
+            getResponsibilityValue('create_loan_issue', configs, user) && (
               <>
                 <Button
                   component={RouterLink}
@@ -327,6 +315,7 @@ function applyFilter({ inputData, comparator, filters }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
+
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
@@ -343,5 +332,6 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   return inputData;
 }

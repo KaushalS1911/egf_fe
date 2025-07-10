@@ -27,7 +27,6 @@ export default function CustomerTableFiltersResult({
   const handleRemoveRole = useCallback(
     (inputValue) => {
       const newValue = filters.role.filter((item) => item !== inputValue);
-
       onFilters('role', newValue);
     },
     [filters.role, onFilters],

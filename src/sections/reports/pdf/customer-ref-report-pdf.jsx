@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
-// Remove MUI imports as they're not compatible with react-pdf
-import { differenceInDays } from 'date-fns';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -115,11 +112,6 @@ const useStyles = () =>
     []
   );
 
-// Helper function to format currency values
-const formatCurrency = (value, precision = 2) => {
-  return (value || 0).toFixed(precision);
-};
-
 export default function CustomerRefReportPdf({ configs, data, filterData }) {
   const styles = useStyles();
   const headers = [
@@ -132,7 +124,6 @@ export default function CustomerRefReportPdf({ configs, data, filterData }) {
   ];
 
   const dataFilter = [
-    // { value: filterData.issuedBy.name, label: 'Issued By' },
     { value: fDate(filterData?.startDate) || '-', label: 'Start Date' },
     { value: fDate(filterData?.endDate) || '-', label: 'End Date' },
     { value: filterData?.area || '-', label: 'Area' },
@@ -140,7 +131,6 @@ export default function CustomerRefReportPdf({ configs, data, filterData }) {
     { value: fDate(new Date()) || '-', label: 'Date' },
   ];
 
-  // Modified to have different row counts for first page vs subsequent pages
   const firstPageRows = 17;
   const otherPagesRows = 23;
 
@@ -148,9 +138,8 @@ export default function CustomerRefReportPdf({ configs, data, filterData }) {
   let currentPageRows = [];
   let currentPageIndex = 0;
   let rowsOnCurrentPage = 0;
-  let maxRowsForCurrentPage = firstPageRows; // First page gets 17 rows
+  let maxRowsForCurrentPage = firstPageRows;
 
-  // Safely handle data
   const reportsData = data || [];
   const reportCount = reportsData.length || 0;
 
@@ -158,7 +147,6 @@ export default function CustomerRefReportPdf({ configs, data, filterData }) {
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === reportsData.length - 1;
 
-    // Create the row component
     currentPageRows.push(
       <View
         key={index}
@@ -182,10 +170,8 @@ export default function CustomerRefReportPdf({ configs, data, filterData }) {
 
     rowsOnCurrentPage++;
 
-    // Check if we need to create a new page
     const isPageFull = rowsOnCurrentPage === maxRowsForCurrentPage;
     if (isPageFull || isLastRow) {
-      // Create a page with the current rows
       const isFirstPage = currentPageIndex === 0;
 
       pages.push(
@@ -240,15 +226,13 @@ export default function CustomerRefReportPdf({ configs, data, filterData }) {
         </Page>
       );
 
-      // Reset for next page
       currentPageRows = [];
       currentPageIndex++;
       rowsOnCurrentPage = 0;
-      maxRowsForCurrentPage = otherPagesRows; // After first page, use 23 rows per page
+      maxRowsForCurrentPage = otherPagesRows;
     }
   });
 
-  // If no data, create an empty page with headers
   if (reportsData.length === 0) {
     pages.push(
       <Page

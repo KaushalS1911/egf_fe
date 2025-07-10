@@ -4,19 +4,10 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { IconButton, MenuItem } from '@mui/material';
-import CustomPopover, { usePopover } from '../../components/custom-popover';
-import { getResponsibilityValue } from '../../permission/permission';
-import { useAuthContext } from '../../auth/hooks';
-import { useGetConfigs } from '../../api/config';
 
 // ----------------------------------------------------------------------
 
 export default function LoanpayhistoryTableToolbar({ filters, onFilters }) {
-  const popover = usePopover();
-  const { user } = useAuthContext();
-  const { configs } = useGetConfigs();
-
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -59,41 +50,7 @@ export default function LoanpayhistoryTableToolbar({ filters, onFilters }) {
               ),
             }}
           />
-          <IconButton onClick={popover.onOpen}>
-            <Iconify icon='eva:more-vertical-fill' />
-          </IconButton>
         </Stack>
-        <CustomPopover
-          open={popover.open}
-          onClose={popover.onClose}
-          arrow='right-top'
-          sx={{ width: 'auto' }}
-        >
-          {getResponsibilityValue('print_loanPayHistory_detail', configs, user) && (<>   <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem></>)}
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ic:round-whatsapp' />
-            whatsapp share
-          </MenuItem>
-        </CustomPopover>
       </Stack>
     </>
   );

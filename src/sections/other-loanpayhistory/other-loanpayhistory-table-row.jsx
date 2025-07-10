@@ -95,7 +95,7 @@ export default function OtherLoanpayhistoryTableRow({
         sx={{ backgroundColor: statusColors[status] || '', ' td': { padding: '6px' } }}
       >
         <TableCell>{srNo}</TableCell>
-        {getResponsibilityValue('create_loanIssue', configs, user) ? (
+        {getResponsibilityValue('update_other_loan_pay_history', configs, user) ? (
           <TableCell>
             {
               <Link
@@ -127,28 +127,8 @@ export default function OtherLoanpayhistoryTableRow({
         <TableCell>{month}</TableCell>
         <TableCell>{row.cashAmount || 0}</TableCell>
         <TableCell>{row.bankAmount || 0}</TableCell>
-        {/*<TableCell>{fDate(closeDate)}</TableCell>*/}
         <TableCell>{closingCharge || 0}</TableCell>
         <TableCell>{fDate(renewalDate)}</TableCell>
-        {/*<TableCell>*/}
-        {/*  <Label*/}
-        {/*    variant="soft"*/}
-        {/*    color={*/}
-        {/*      (status === 'Disbursed' && 'info') ||*/}
-        {/*      (status === 'Closed' && 'warning') ||*/}
-        {/*      (status === 'Overdue' && 'error') ||*/}
-        {/*      (status === 'Regular' && 'success') ||*/}
-        {/*      'default'*/}
-        {/*    }*/}
-        {/*  >*/}
-        {/*    {status}*/}
-        {/*  </Label>*/}
-        {/*</TableCell>*/}
-        {/*<TableCell sx={{  cursor: 'pointer' }}>*/}
-        {/*  <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>*/}
-        {/*    <Iconify icon="eva:more-vertical-fill" />*/}
-        {/*  </IconButton>*/}
-        {/*</TableCell>*/}
         <TableCell>
           <Label
             variant="soft"
@@ -164,7 +144,7 @@ export default function OtherLoanpayhistoryTableRow({
           </Label>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }}>
-          {getResponsibilityValue('delete_loan', configs, user) ? (
+          {getResponsibilityValue('delete_other_loan', configs, user) ? (
             <IconButton
               color="error"
               onClick={() => {

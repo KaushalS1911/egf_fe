@@ -19,7 +19,6 @@ import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import InqiryPdf from '../inquiry/view/inqiry-pdf.jsx';
 import { useBoolean } from '../../hooks/use-boolean.js';
 import CustomerPdf from './view/customer-pdf.jsx';
 
@@ -50,6 +49,7 @@ export default function CustomerTableToolbar({
     },
     [onFilters]
   );
+
   const handleFilterIsAadharVerified = useCallback(
     (event) => {
       onFilters('isAadharVerified', event.target.value);

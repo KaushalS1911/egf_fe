@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,24 +12,22 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
 import { isBetween } from '../../../../utils/format-time';
 import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
-import GoldLoanUchakPaymentTableRow from '../daily-reports-table/gold-loan-uchak-payment-table-row';
 import { TableCell, TableRow, Typography } from '@mui/material';
 import LoanCloseTableRow from '../daily-reports-table/loan-close-table-row.jsx';
 
@@ -81,14 +79,17 @@ export default function LoanCloseListView({ closedLoans }) {
       (Number(next?.loan.scheme.interestRate > 1.05 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
+
   const totalLoanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.totalLoanAmount) || 0),
     0
   );
+
   const closingCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.closingCharge) || 0),
     0
   );
+
   const netAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.netAmount) || 0), 0);
 
   const dataInPage = dataFiltered.slice(

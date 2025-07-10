@@ -7,21 +7,18 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify/index.js';
 import CustomPopover, { usePopover } from 'src/components/custom-popover/index.js';
-import RHFExportExcel from '../../../components/hook-form/rhf-export-excel.jsx';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Box, Dialog, FormControl, Typography } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import PaymentInOutPdf from '../payment-in-out/view/payment-in-out-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import { useGetConfigs } from '../../../api/config.js';
 import ChargeInOutPdf from './view/charge-in-out-pdf.jsx';
 import Autocomplete from '@mui/material/Autocomplete';
+import { getResponsibilityValue } from '../../../permission/permission.js';
+import { useAuthContext } from '../../../auth/hooks/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +35,7 @@ export default function ChargeInOutTableToolbar({
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const view = useBoolean();
+  const { user } = useAuthContext();
   const { configs } = useGetConfigs();
 
   const filterData = {
@@ -125,7 +123,6 @@ export default function ChargeInOutTableToolbar({
           Charge Name : {chargeDetails.chargeType}
         </Typography>
       </Box>
-
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -152,7 +149,6 @@ export default function ChargeInOutTableToolbar({
               ),
             }}
           />
-
           <FormControl
             sx={{
               flexShrink: 0,
@@ -178,7 +174,6 @@ export default function ChargeInOutTableToolbar({
               )}
             />
           </FormControl>
-
           <FormControl
             sx={{
               flexShrink: 0,
@@ -195,7 +190,6 @@ export default function ChargeInOutTableToolbar({
               )}
             />
           </FormControl>
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -229,12 +223,10 @@ export default function ChargeInOutTableToolbar({
             sx={{ ...customStyle }}
           />
         </Stack>
-
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -242,37 +234,17 @@ export default function ChargeInOutTableToolbar({
         sx={{ width: 'auto' }}
       >
         <>
-          <MenuItem
+          {getResponsibilityValue('print_charge', configs, user) && <MenuItem
             onClick={() => {
               view.onTrue();
               popover.onClose();
             }}
           >
-            <Iconify icon="solar:printer-minimalistic-bold" />
+            <Iconify icon='solar:printer-minimalistic-bold' />
             Print
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="ant-design:file-pdf-filled" />
-            PDF
-          </MenuItem>
-          <MenuItem>
-            <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
-          </MenuItem>
+          </MenuItem>}
         </>
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="ic:round-whatsapp" />
-          whatsapp share
-        </MenuItem>
       </CustomPopover>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,18 +12,17 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
@@ -75,6 +74,7 @@ export default function NewGoldLonListView({ LoanIssue, branch }) {
       prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
+
   const loanAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
   const conCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
@@ -252,7 +252,6 @@ export default function NewGoldLonListView({ LoanIssue, branch }) {
                     boxShadow: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/*<TableCell padding="checkbox" />*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
                     TOTAL
                   </TableCell>
@@ -319,9 +318,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
   }
+
   inputData = stabilizedThis.map((el) => el[0]);
   return inputData;
 }

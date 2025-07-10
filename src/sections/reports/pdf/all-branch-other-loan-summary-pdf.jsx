@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -21,7 +20,7 @@ const useStyles = () =>
           backgroundColor: '#ffff',
           fontSize: 8,
           position: 'relative',
-          // padding: 40, // Add some padding to the page
+
         },
         subHeading: {
           fontWeight: 'bold',
@@ -119,10 +118,7 @@ export default function AllBranchOtherLoanSummaryPdf({
   total,
 }) {
   const styles = useStyles();
-
   const { percentage, rate, amount, pendingInterest, day, totalCharge } = total;
-
-  // Define dataFiltered for calculations
   const dataFiltered = loans;
 
   const headers = [
@@ -140,14 +136,17 @@ export default function AllBranchOtherLoanSummaryPdf({
     { label: 'Pending int.', flex: 1 },
     { label: 'Renew date', flex: 0.85 },
   ];
+
   const dataFilter = [
     { value: fDate(filterData.startDate), label: 'Start Date' },
     { value: fDate(filterData.endDate), label: 'End Date' },
     { value: fDate(new Date()), label: 'Date' },
   ];
+
   const rowsPerPage = 16;
   const pages = [];
   let currentPageRows = [];
+
   loans.forEach((row, index) => {
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === loans.length - 1;

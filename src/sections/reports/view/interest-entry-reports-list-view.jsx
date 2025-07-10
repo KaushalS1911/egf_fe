@@ -85,7 +85,6 @@ export default function interestEntryReportsListView() {
   });
 
   const penaltyAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
-
   const payAfterAdjustAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.adjustedPay) || 0),
     0
@@ -100,10 +99,12 @@ export default function interestEntryReportsListView() {
     (prev, next) => prev + (Number(next?.amountPaid) || 0),
     0
   );
+
   const cashAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
+
   const bankAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
@@ -116,6 +117,7 @@ export default function interestEntryReportsListView() {
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
+
   const total = {
     penaltyAmt,
     payAfterAdjustAmt,
@@ -136,7 +138,6 @@ export default function interestEntryReportsListView() {
     setSrData(updatedData);
 
     if (updatedData.length > 0) {
-      // Create a Set of existing rates for quick lookup
       const existingRates = new Set(options.map((opt) => opt.rate));
       const newOptions = [...options];
 
@@ -150,7 +151,7 @@ export default function interestEntryReportsListView() {
 
       setOptions(newOptions);
     }
-  }, [interestEntryReports]); // Runs only when interestReports changes
+  }, [interestEntryReports]);
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
@@ -174,6 +175,7 @@ export default function interestEntryReportsListView() {
   if (interestEntryReportsLoading) {
     return <LoadingScreen />;
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

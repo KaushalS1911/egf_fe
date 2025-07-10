@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import { Box, Dialog, DialogActions, FormControl, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
@@ -38,10 +37,9 @@ export default function CustomerStatementTableToolbar({
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { Loanissue } = useGetLoanissue();
-
   const findCustomer = customer.find((item) => item?._id === filters.customer);
-
   const filteredLoanIssues = Loanissue.filter((loan) => loan.customer._id === filters.customer);
+
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
@@ -61,7 +59,6 @@ export default function CustomerStatementTableToolbar({
   const handleFilterCustomer = useCallback(
     (event, newValue) => {
       onFilters('customer', newValue?._id || '');
-      // Reset loanNo filter when customer changes
       onFilters('loanNo', '');
     },
     [onFilters]
@@ -119,7 +116,6 @@ export default function CustomerStatementTableToolbar({
 
     data.forEach((row) => {
       if (row.statements?.length > 0) {
-        // Add statement rows
         row.statements.forEach((item) => {
           flattenedData.push({
             'Sr No': srNo++,
@@ -131,7 +127,6 @@ export default function CustomerStatementTableToolbar({
           });
         });
 
-        // Calculate totals
         const totals = row.statements.reduce(
           (acc, item) => {
             acc.credit += Number(item.credit) || 0;
@@ -141,7 +136,6 @@ export default function CustomerStatementTableToolbar({
           { credit: 0, debit: 0 }
         );
 
-        // Add total row
         flattenedData.push({
           'Sr No': '',
           'Loan No': '',
@@ -151,7 +145,6 @@ export default function CustomerStatementTableToolbar({
           'Debit': totals.debit.toFixed(2),
         });
 
-        // Add an empty row for spacing
         flattenedData.push({
           'Sr No': '',
           'Loan No': '',
@@ -187,7 +180,6 @@ export default function CustomerStatementTableToolbar({
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
-          {/* Customer Autocomplete */}
           <FormControl
             sx={{
               flexShrink: 0,
@@ -208,8 +200,6 @@ export default function CustomerStatementTableToolbar({
               fullWidth
             />
           </FormControl>
-
-          {/* Loan Number Autocomplete */}
           <FormControl
             sx={{
               flexShrink: 0,
@@ -224,7 +214,6 @@ export default function CustomerStatementTableToolbar({
                 (filters.loanNo || []).includes(loan.loanNo)
               )}
               onChange={(event, newValue) => {
-                // newValue is an array of selected loan objects
                 const selectedLoanNos = newValue.map((loan) => loan.loanNo);
                 onFilters('loanNo', selectedLoanNos);
               }}
@@ -240,8 +229,6 @@ export default function CustomerStatementTableToolbar({
               disabled={!filters.customer}
             />
           </FormControl>
-
-          {/* Start Date Picker */}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -257,8 +244,6 @@ export default function CustomerStatementTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
-          {/* End Date Picker */}
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -276,14 +261,12 @@ export default function CustomerStatementTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           {getResponsibilityValue('print_customer_statement', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
-
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -308,7 +291,6 @@ export default function CustomerStatementTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
-
       <Dialog full Screen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -336,5 +318,5 @@ CustomerStatementTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
-  loanIssue: PropTypes.array, // Added prop type for loan issues
+  loanIssue: PropTypes.array,
 };

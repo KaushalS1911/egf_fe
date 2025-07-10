@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Dialog, DialogActions, FormControl, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 import { useGetConfigs } from '../../api/config';
@@ -15,7 +15,6 @@ import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import CustomerPdf from '../customer/view/customer-pdf.jsx';
 import { useBoolean } from '../../hooks/use-boolean.js';
 import EmployeePdf from './view/employee-pdf.jsx';
 
@@ -98,7 +97,6 @@ export default function EmployeeTableToolbar({
             >
               Role
             </InputLabel>
-
             <Select
               value={filters.role}
               onChange={handleFilterRole}

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,20 +12,19 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
@@ -34,15 +33,14 @@ import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { useGetLoanissue } from '../../../api/loanissue';
 import BulkInterestModel from '../bulk-interest-pay/bulk-interest-model';
-import { getResponsibilityValue } from '../../../permission/permission';
 import { useGetConfigs } from '../../../api/config';
 import OtherLoanpayhistoryTableRow from '../other-loanpayhistory-table-row.jsx';
 import OtherLoanpayhistoryTableToolbar from '../other-loanpayhistory-table-toolbar.jsx';
 import OtherLoanpayhistoryTableFiltersResult from '../other-loanpayhistory-table-filters-result.jsx';
 import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
 import { isBetween } from '../../../utils/format-time.js';
+import { getResponsibilityValue } from '../../../permission/permission.js';
 
 // ----------------------------------------------------------------------
 
@@ -145,6 +143,11 @@ export default function LoanpayhistoryListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (!getResponsibilityValue('delete_other_loan', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
+
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan/${id}`
@@ -392,13 +395,16 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((order) => isBetween(new Date(order.date), startDate, endDate));
   }
+
   if (!dateError && renewStartDate && renewEndDate) {
     inputData = inputData.filter((order) =>
       isBetween(new Date(order.renewalDate), renewStartDate, renewEndDate)
     );
   }
+
   return inputData;
 }

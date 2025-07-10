@@ -67,8 +67,6 @@ export function useNavData() {
 
   const data = useMemo(
     () => [
-      // MASTER
-      // ----------------------------------------------------------------------
       {
         subheader: t('overview'),
         items: [
@@ -191,7 +189,7 @@ export function useNavData() {
                 path: paths.dashboard.reports['loan-details'],
               },
               {
-                title: t('Interest Reports'),
+                title: t('interest reports'),
                 path: paths.dashboard.reports['interest-reports'],
               },
               {
@@ -262,15 +260,15 @@ export function useNavData() {
                 path: paths.dashboard.cashAndBank.bankAccount,
               },
               {
-                title: t('Expence'),
+                title: t('expence'),
                 path: paths.dashboard.cashAndBank.expense.list,
               },
               {
-                title: t('payment in out'),
+                title: t('payment in/out'),
                 path: paths.dashboard.cashAndBank['payment-in-out'].list,
               },
               {
-                title: t('Charge in/out'),
+                title: t('charge in/out'),
                 path: paths.dashboard.cashAndBank.chargeInOut.list,
               },
               {
@@ -283,7 +281,7 @@ export function useNavData() {
             ],
           },
           {
-            title: t('setting'),
+            title: t('Setting'),
             path: paths.dashboard.setting,
             icon: ICONS.setting,
           },

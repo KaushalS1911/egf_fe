@@ -156,7 +156,14 @@ export default function CaratNewEditForm({ currentCarat }) {
                   }
                 }}
               />
-              <RHFTextField name="remark" label="Remark" />
+              <RHFTextField
+                name='remark'
+                label='Remark'
+                fullWidth
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
+              />
             </Box>
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
               {currentCarat && <RHFSwitch name="isActive" label={'is Active'} sx={{ m: 0 }} />}

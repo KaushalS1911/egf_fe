@@ -4,12 +4,9 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Grid, IconButton, MenuItem } from '@mui/material';
-import CustomPopover, { usePopover } from '../../components/custom-popover';
-import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
+import { usePopover } from '../../components/custom-popover';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
-import { getResponsibilityValue } from '../../permission/permission';
 
 // ----------------------------------------------------------------------
 
@@ -60,53 +57,7 @@ export default function OtherLoanissueTableToolbar({ filters, onFilters }) {
               ),
             }}
           />
-          <IconButton onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
         </Stack>
-        <CustomPopover
-          open={popover.open}
-          onClose={popover.onClose}
-          arrow="right-top"
-          sx={{ width: 'auto' }}
-        >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (
-            <>
-              {' '}
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="solar:printer-minimalistic-bold" />
-                Print
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  popover.onClose();
-                }}
-              >
-                <Iconify icon="ant-design:file-pdf-filled" />
-                PDF
-              </MenuItem>
-              {/*<MenuItem>*/}
-              {/*  <RHFExportExcel*/}
-              {/*    data={loans}*/}
-              {/*    fileName='LaonissueData'*/}
-              {/*    sheetName='LoanissueDetails'*/}
-              {/*  />*/}
-              {/*</MenuItem>*/}
-            </>
-          )}
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="ic:round-whatsapp" />
-            whatsapp share
-          </MenuItem>
-        </CustomPopover>
       </Stack>
     </>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from '../../../utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
@@ -116,18 +116,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
     { value: fDate(new Date()), label: 'Date' },
   ];
 
-  // Add calculation functions
-  const calculateTotals = (data, columns) => {
-    const totals = {};
-    columns.forEach((col) => {
-      totals[col] = data.reduce((sum, item) => {
-        const value = parseFloat(item[col]) || 0;
-        return sum + value;
-      }, 0);
-    });
-    return totals;
-  };
-
   const calculateAverage = (data, field) => {
     const validValues = data.filter((item) => {
       let value;
@@ -190,7 +178,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
 
   return (
     <Document>
-      {/* Loan Interest Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape />
         <View style={{ position: 'absolute', top: 20, right: -30, width: 220 }}>
@@ -266,7 +253,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
                 </Text>
               </View>
             ))}
-            {/* Add total row */}
             <View style={[styles.tableRow, styles.totalRow]}>
               <Text style={[styles.tableCell, { flex: 0.3 }]}></Text>
               <Text style={[styles.tableCell, { flex: 2.7 }]}>TOTAL</Text>
@@ -313,8 +299,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
           </View>
         </View>
       </Page>
-
-      {/* Loan Part Release Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={{ padding: '10px' }}>
           <View
@@ -366,7 +350,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
                 </Text>
               </View>
             ))}
-            {/* Add total row */}
             <View style={[styles.tableRow, styles.totalRow]}>
               <Text style={[styles.tableCell, { flex: 0.25 }]}></Text>
               <Text style={[styles.tableCell, { flex: 1.8 }]}>TOTAL</Text>
@@ -398,8 +381,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
           </View>
         </View>
       </Page>
-
-      {/* Loan Uchak Pay Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={{ padding: '10px' }}>
           <View
@@ -435,7 +416,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
                 </Text>
               </View>
             ))}
-            {/* Add total row */}
             <View style={[styles.tableRow, styles.totalRow]}>
               <Text style={[styles.tableCell, { flex: 0.1 }]}></Text>
               <Text style={[styles.tableCell, { flex: 2 }]}>TOTAL</Text>
@@ -449,8 +429,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
           </View>
         </View>
       </Page>
-
-      {/* Loan Part Payment Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={{ padding: '10px' }}>
           <View
@@ -502,7 +480,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
                 </Text>
               </View>
             ))}
-            {/* Add total row */}
             <View style={[styles.tableRow, styles.totalRow]}>
               <Text style={[styles.tableCell, { flex: 0.1 }]}></Text>
               <Text style={[styles.tableCell, { flex: 2.5 }]}>TOTAL</Text>
@@ -538,8 +515,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
           </View>
         </View>
       </Page>
-
-      {/* Loan Close Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={{ padding: '10px' }}>
           <View
@@ -597,7 +572,6 @@ export default function LoanDetailsPdf({ selectedBranch, configs, data, filterDa
                 </Text>
               </View>
             ))}
-            {/* Add total row */}
             <View style={[styles.tableRow, styles.totalRow]}>
               <Text style={[styles.tableCell, { flex: 0.1 }]}></Text>
               <Text style={[styles.tableCell, { flex: 2.5 }]}>TOTAL</Text>

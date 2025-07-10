@@ -1,10 +1,8 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
-import Card from '@mui/material/Card';
+import React, { useCallback, useState } from 'react';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
@@ -15,16 +13,15 @@ import Iconify from 'src/components/iconify/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
 import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table/index.js';
 
 import axios from 'axios';
@@ -37,9 +34,6 @@ import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../../permission/permission.js';
 import { LoadingScreen } from '../../../../../components/loading-screen/index.js';
-import TableRow from '@mui/material/TableRow';
-import { grey } from '../../../../../theme/palette.js';
-import { TableCell } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -182,13 +176,6 @@ export default function AccountsListView({ accounts, setAccountDetails, accountD
       router.push(paths.dashboard.scheme.edit(id));
     },
     [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('isActive', newValue);
-    },
-    [handleFilters]
   );
 
   const schemes = scheme.map((item) => ({

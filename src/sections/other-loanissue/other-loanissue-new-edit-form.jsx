@@ -1,18 +1,14 @@
 import * as Yup from 'yup';
-import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFTextField,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import { Alert } from '@mui/material';
 import axios from 'axios';
@@ -28,7 +24,6 @@ import { paths } from '../../routes/paths';
 import { useGetBranch } from '../../api/branch';
 import { v4 as uuidv4 } from 'uuid';
 import RhfDatePicker from '../../components/hook-form/rhf-date-picker.jsx';
-import { useTable } from '../../components/table';
 import 'react-image-crop/dist/ReactCrop.css';
 import { useGetConfigs } from '../../api/config';
 import { useGetLoanissue } from '../../api/loanissue.js';
@@ -165,6 +160,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       otherwise: (schema) => schema.notRequired(),
     }),
   });
+
   const defaultValues = useMemo(() => {
     const baseValues = {
       customer_url: '',
@@ -263,6 +259,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
         });
     }
   }, [watch('loan')]);
+
   useEffect(() => {
     const otherNo = watch('otherNumber');
     if (otherNo) {
@@ -281,10 +278,12 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
   useEffect(() => {
     setValue('loanAmount', watch('amount'));
   }, [watch('amount'), watch('loanAmount')]);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'propertyDetails',
   });
+
   useEffect(() => {
     const rate = (watch('amount') / watch('netWt')).toFixed(2);
     setValue('rate', rate);
@@ -351,7 +350,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     const month = watch('month');
 
     if (!month) {
-      // Handle empty month value
       return;
     }
 
@@ -464,6 +462,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
     setValue('bankName', accountDetails?.bankName);
     setValue('branchName', accountDetails?.branchName);
   }, [watch('account')]);
+
   const handleLoanAmountChange = (event) => {
     const newLoanAmount = parseFloat(event.target.value) || '';
     setValue('loanAmount', newLoanAmount);
@@ -496,6 +495,7 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
+
   const handleBankAmountChange = (event) => {
     const newBankAmount = parseFloat(event.target.value) || '';
     const currentLoanAmount = parseFloat(watch('loanAmount')) || '';
@@ -813,7 +813,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     </li>
                   )}
                 />
-
                 <RHFTextField
                   name="otherNumber"
                   label="Other Number"
@@ -831,7 +830,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
                     }
                   }}
                 />
-
                 <RHFAutocomplete
                   disabled={!isFieldsEnabled}
                   name="percentage"
@@ -1062,7 +1060,6 @@ export default function OtherLoanissueNewEditForm({ currentOtherLoanIssue }) {
               </Box>
             </Card>
           </Grid>
-
           {['Bank', 'Both'].includes(watch('paymentMode')) && (
             <>
               <Grid item xs={12} md={12}>

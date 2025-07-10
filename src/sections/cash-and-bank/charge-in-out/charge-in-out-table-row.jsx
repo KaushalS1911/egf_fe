@@ -13,6 +13,9 @@ import { statusColorMap } from '../../../assets/data/index.js';
 import { Box } from '@mui/system';
 import React from 'react';
 import Label from '../../../components/label/index.js';
+import { getResponsibilityValue } from '../../../permission/permission.js';
+import { useAuthContext } from '../../../auth/hooks/index.js';
+import { useGetConfigs } from '../../../api/config.js';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +26,8 @@ export default function ChargeInOutTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
+  const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const confirm = useBoolean();
   const popover = usePopover();
 
@@ -80,9 +85,14 @@ export default function ChargeInOutTableRow({
           </Label>
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          {getResponsibilityValue('delete_charge', configs, user) ||
+          getResponsibilityValue('update_charge', configs, user) ? (
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon='eva:more-vertical-fill' />
+            </IconButton>
+          ) : (
+            ''
+          )}
         </TableCell>
       </TableRow>
       <CustomPopover
@@ -91,25 +101,29 @@ export default function ChargeInOutTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            onEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>
+        {getResponsibilityValue('delete_charge', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon='solar:trash-bin-trash-bold' />
+            Delete
+          </MenuItem>
+        )}
+        {getResponsibilityValue('update_charge', configs, user) && (
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon='solar:pen-bold' />
+            Edit
+          </MenuItem>
+        )}
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}

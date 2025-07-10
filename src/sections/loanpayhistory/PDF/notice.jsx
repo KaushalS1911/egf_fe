@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
@@ -18,6 +18,7 @@ Font.register({
   family: 'NotoSansGujarati',
   src: '/fonts/NotoSansGujarati-VariableFont_wdth,wght.ttf',
 });
+
 Font.register({
   family: 'Mukta Vaani',
   fonts: [
@@ -25,6 +26,7 @@ Font.register({
     { src: '/fonts/MuktaVaani-Bold.ttf', fontWeight: 'bold' },
   ],
 });
+
 const useStyles = () =>
   useMemo(
     () =>
@@ -149,12 +151,8 @@ const useStyles = () =>
         },
         wriitenBy: {
           fontSize: 14,
-          // width: '100%',
-          // textAlign: 'right',
-          // marginTop: 10,
           fontFamily: 'Mukta Vaani',
           letterSpacing: 0.5,
-          // fontSize: 11,
           borderTop: '1px solid 232C4B',
           paddingTop: 10,
           textAlign: 'center',
@@ -214,6 +212,7 @@ const useStyles = () =>
 export default function Notice({ noticeData, configs }) {
   const styles = useStyles();
   const date = new Date(new Date().setDate(new Date().getDate() + 10));
+
   return (
     <>
       <Document>

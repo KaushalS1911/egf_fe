@@ -326,9 +326,13 @@ export default function CashInListView() {
             { name: 'List' },
           ]}
           action={
-            <Button variant="contained" onClick={handleOpenAdjustDialog} sx={{ mb: 2 }}>
-              Adjust Cash
-            </Button>
+            <>
+              {getResponsibilityValue('create_transfer', configs, user) &&
+                <Button variant='contained' onClick={handleOpenAdjustDialog} sx={{ mb: 2 }}>
+                  Adjust Cash
+                </Button>
+              }
+            </>
           }
           sx={{
             mb: { xs: 3, md: 1 },

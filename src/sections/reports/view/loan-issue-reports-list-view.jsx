@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -15,14 +15,14 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { useGetLoanIssueReport } from '../../../api/loan-issue-reports.js';
@@ -71,18 +71,22 @@ export default function LoanIssueReportsListView() {
     (prev, next) => prev + (Number(next?.loanAmount) || 0),
     0
   );
+
   const intLoanAmount = loanIssueReports.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
+
   const cashAmt = loanIssueReports.reduce(
     (prev, next) => prev + (Number(next?.cashAmount) || 0),
     0
   );
+
   const bankAmt = loanIssueReports.reduce(
     (prev, next) => prev + (Number(next?.bankAmount) || 0),
     0
   );
+
   const int = loanIssueReports.reduce(
     (prev, next) => prev + (Number(next?.scheme.interestRate) || 0),
     0
@@ -310,9 +314,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item?.customer?.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   if (branch) {
     inputData = inputData.filter((loan) => loan?.customer?.branch === branch);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
   }

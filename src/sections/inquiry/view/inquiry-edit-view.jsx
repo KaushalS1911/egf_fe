@@ -16,6 +16,7 @@ export default function InquiryEditView() {
   const { inquiry } = useGetInquiry();
   const { id } = useParams();
   const currentInquiry = inquiry.find((inq) => inq._id === id);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs

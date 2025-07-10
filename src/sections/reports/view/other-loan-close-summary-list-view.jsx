@@ -98,22 +98,27 @@ export default function OtherLoanCloseSummaryListView() {
     (prev, next) => prev + (Number(next?.totalInterestAmt) || 0),
     0
   );
+
   const pendingInterest = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.pendingInterest) || 0),
     0
   );
+
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
     0
   );
+
   const closeAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.closingAmount) || 0),
     0
   );
+
   const closingCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.closingCharge) || 0),
     0
   );
+
   const totalCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.totalCharge) || 0),
     0
@@ -171,12 +176,7 @@ export default function OtherLoanCloseSummaryListView() {
       enqueueSnackbar('Failed to delete Employee');
     }
   };
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
+
   const handleDeleteRow = useCallback(
     (id) => {
       if (id) {
@@ -212,30 +212,6 @@ export default function OtherLoanCloseSummaryListView() {
     [router]
   );
 
-  // const loans = Loanissue.map((item) => ({
-  //   'Loan No': item.loanNo,
-  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-  //   'Contact': item.customer.contact,
-  //   'OTP Contact': item.customer.otpContact,
-  //   Email: item.customer.email,
-  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.issueDate,
-  //   'Scheme': item.scheme.name,
-  //   'Rate per gram': item.scheme.ratePerGram,
-  //   'Interest rate': item.scheme.interestRate,
-  //   valuation: item.scheme.valuation,
-  //   'Interest period': item.scheme.interestPeriod,
-  //   'Renewal time': item.scheme.renewalTime,
-  //   'min loan time': item.scheme.minLoanTime,
-  //   'Loan amount': item.loanAmount,
-  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
-  //   'Payment mode': item.paymentMode,
-  //   'Paying cashAmount': item.payingCashAmount,
-  //   'Pending cashAmount': item.pendingCashAmount,
-  //   'Paying bankAmount': item.payingBankAmount,nasm
-  //   'Pending bankAmount': item.pendingBankAmount,
-  // }));
-
   if (otherLoanReportsLoading) {
     return <LoadingScreen />;
   }
@@ -270,7 +246,6 @@ export default function OtherLoanCloseSummaryListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <OtherLoanCloseSummaryTableToolbar
             filters={filters}
@@ -280,7 +255,6 @@ export default function OtherLoanCloseSummaryListView() {
             options={options}
             total={total}
           />
-
           {canReset && (
             <OtherLoanCloseSummaryTableFiltersResult
               filters={filters}
@@ -290,7 +264,6 @@ export default function OtherLoanCloseSummaryListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -325,7 +298,6 @@ export default function OtherLoanCloseSummaryListView() {
                 </Tooltip>
               }
             />
-
             <Table size={table.dense ? 'small' : 'medium'}>
               <TableHeadCustom
                 order={table.order}
@@ -341,7 +313,6 @@ export default function OtherLoanCloseSummaryListView() {
                   backgroundColor: '#2f3944',
                 }}
               />
-
               <TableBody>
                 {dataFiltered
                   .slice(
@@ -418,20 +389,17 @@ export default function OtherLoanCloseSummaryListView() {
               </TableBody>
             </Table>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -470,6 +438,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
+
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
@@ -489,22 +458,28 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item?.otherNumber?.toLowerCase()?.includes(username.toLowerCase())
     );
   }
+
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   if (branch) {
     inputData = inputData.filter((loan) => loan.loan.customer.branch._id === branch._id);
   }
+
   if (otherName) {
     inputData = inputData.filter((item) => item?.otherName === otherName);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
+
   if (!dateError && startCloseDate && endCloseDate) {
     inputData = inputData.filter((loan) =>
       isBetween(new Date(loan.closeDate), startCloseDate, endCloseDate)
     );
   }
+
   return inputData;
 }

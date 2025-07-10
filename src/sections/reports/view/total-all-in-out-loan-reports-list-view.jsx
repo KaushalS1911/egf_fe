@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -10,48 +10,35 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
-import { useGetLoanissue } from '../../../api/loanissue';
 import { LoadingScreen } from '../../../components/loading-screen';
 import { fDate, isBetween } from '../../../utils/format-time';
 import { useGetConfigs } from '../../../api/config';
-import AllBranchLoanSummaryTableRow from '../all-branch-loan/all-branch-loan-summary-table-row';
-import AllBranchLoanSummaryTableToolbar from '../all-branch-loan/all-branch-loan-summary-table-toolbar';
-import AllBranchLoanSummaryTableFiltersResult from '../all-branch-loan/all-branch-loan-summary-table-filters-result';
 import Tabs from '@mui/material/Tabs';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Label from '../../../components/label';
-import { useGetAllLoanSummary } from '../../../api/all-branch-loan-summary';
-import { useGetOtherLoanReports } from '../../../api/all-branch-other-loan-report.js';
-import AllBranchOtherLoanSummaryTableToolbar from '../all-branch-other-loan/all-branch-other-loan-summary-table-toolbar.jsx';
-import AllBranchOtherLoanSummaryTableFiltersResult from '../all-branch-other-loan/all-branch-other-loan-summary-table-filters-result.jsx';
-import AllBranchOtherLoanSummaryTableRow from '../all-branch-other-loan/all-branch-other-loan-summary-table-row.jsx';
-import OtherLonaInterestTableToolbar from '../other-loan-interest-reports/other-lona-interest-table-toolbar.jsx';
-import OtherLonaInterestTableFiltersResult from '../other-loan-interest-reports/other-lona-interest-table-filters-result.jsx';
-import OtherLonaInterestTableRow from '../other-loan-interest-reports/other-lona-interest-table-row.jsx';
-import TotalAllInOutLoanReportsTableToolbar from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-toolbar.jsx';
-import TotalAllInOutLoanReportsTableFiltersResult from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-filters-result.jsx';
-import TotalAllInOutLoanReportsTableRow from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-row.jsx';
+import TotalAllInOutLoanReportsTableToolbar
+  from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-toolbar.jsx';
+import TotalAllInOutLoanReportsTableFiltersResult
+  from '../total-all-in-out-loan-reports/total-all-in-out-loan-reports-table-filters-result.jsx';
 import { useGetTotalAllInoutLoanReports } from '../../../api/total-all-in-out-loan-reports.js';
 import { TableCell, TableRow } from '@mui/material';
 
@@ -82,6 +69,7 @@ const TABLE_HEAD = [
   { id: 'diffintamt', label: 'Diff int amt', width: 90 },
   { id: 'status', label: 'Status', width: 80 },
 ];
+
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
   { value: 'Issued', label: 'Issued' },
@@ -95,6 +83,7 @@ const STATUS_OPTIONS = [
     label: 'Closed',
   },
 ];
+
 const defaultFilters = {
   username: '',
   status: 'All',
@@ -136,97 +125,12 @@ export default function OtherLonaInterestListView() {
     diffInterestAmount: 0,
   });
 
-  // const loanAmount = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-  //   0
-  // );
-  // const amount = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.amount) || 0),
-  //   0
-  // );
-
-  const data = Object.values(totalAllInoutLoanReports);
-
-  // const loanAmount = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
-  //   0
-  // );
-  const amount = totalAllInoutLoanReports.reduce(
-    (prev, next) => prev + (Number(next?.amount) || 0),
-    0
-  );
-
-  // const intLoanAmount = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.loan.interestLoanAmount) || 0),
-  //   0
-  // );
-  // const totalWt = totalAllInoutLoanReports?.reduce((prev, next) => {
-  //   const propertyTotal =
-  //     next?.loan?.propertyDetails?.reduce(
-  //       (sum, item) => sum + (Number(item?.totalWeight) || 0),
-  //       0
-  //     ) || 0;
-
-  //   return prev + propertyTotal;
-  // }, 0);
-  // const grossWt = totalAllInoutLoanReports?.reduce((prev, next) => {
-  //   const propertyTotal =
-  //     next?.loan?.propertyDetails?.reduce(
-  //       (sum, item) => sum + (Number(item?.grossWeight) || 0),
-  //       0
-  //     ) || 0;
-
-  //   return prev + propertyTotal;
-  // }, 0);
-
-  // const netWt = totalAllInoutLoanReports?.loan?.propertyDetails.reduce(
-  //   (prev, next) => prev + (Number(next?.netWeight) || 0),
-  //   0
-  // );
-  // const int = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.loan.scheme.interestRate) || 0),
-  //   0
-  // );
-  // const totalInterestAmount = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.totalInterestAmount) || 0),
-  //   0
-  // );
-  // const amt = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.amount) || 0),
-  //   0
-  // );
-  // const otherGrossWT = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.grossWt) || 0),
-  //   0
-  // );
-  // const otherNetWT = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.netWt) || 0),
-  //   0
-  // );
-  // const otherInt = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.percentage) || 0),
-  //   0
-  // );
-  // const intAmt = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.percentage) || 0),
-  //   0
-  // );
-  // const totalOtherInterestAmount = totalAllInoutLoanReports.reduce(
-  //   (prev, next) => prev + (Number(next?.totalOtherInterestAmount) || 0),
-  //   0
-  // );
-
-  // useEffect(() => {
-  //   fetchStates();
-  // }, [totalAllInoutLoanReports]);
-
   const dataFiltered = applyFilter({
     inputData: totalAllInoutLoanReports,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
 
-  // Convert grouped data to array for pagination
   const flattenedData = Object.values(dataFiltered).flat();
   const dataInPage = flattenedData.slice(
     table.page * table.rowsPerPage,
@@ -264,20 +168,12 @@ export default function OtherLonaInterestListView() {
       enqueueSnackbar('Failed to delete Employee');
     }
   };
+
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
     },
     [handleFilters]
-  );
-  const handleDeleteRow = useCallback(
-    (id) => {
-      if (id) {
-        handleDelete([id]);
-        table.onUpdatePageDeleteRow(dataInPage.length);
-      }
-    },
-    [dataInPage.length, enqueueSnackbar, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -291,45 +187,6 @@ export default function OtherLonaInterestListView() {
     });
   }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
 
-  const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.loanissue.edit(id));
-    },
-    [router]
-  );
-
-  const handleClick = useCallback(
-    (id) => {
-      router.push(paths.dashboard.disburse.new(id));
-    },
-    [router]
-  );
-
-  // const loans = Loanissue.map((item) => ({
-  //   'Loan No': item.loanNo,
-  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-  //   'Contact': item.customer.contact,
-  //   'OTP Contact': item.customer.otpContact,
-  //   Email: item.customer.email,
-  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.issueDate,
-  //   'Scheme': item.scheme.name,
-  //   'Rate per gram': item.scheme.ratePerGram,
-  //   'Interest rate': item.scheme.interestRate,
-  //   valuation: item.scheme.valuation,
-  //   'Interest period': item.scheme.interestPeriod,
-  //   'Renewal time': item.scheme.renewalTime,
-  //   'min loan time': item.scheme.minLoanTime,
-  //   'Loan amount': item.loanAmount,
-  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
-  //   'Payment mode': item.paymentMode,
-  //   'Paying cashAmount': item.payingCashAmount,
-  //   'Pending cashAmount': item.pendingCashAmount,
-  //   'Paying bankAmount': item.payingBankAmount,nasm
-  //   'Pending bankAmount': item.pendingBankAmount,
-  // }));
-
-  // Add this useEffect to calculate totals whenever dataFiltered changes
   useEffect(() => {
     const calculateTotals = () => {
       const newTotals = {
@@ -354,21 +211,18 @@ export default function OtherLonaInterestListView() {
       let uniqueLoanCount = 0;
 
       Object.values(dataFiltered).forEach((otherLoans) => {
-        // Calculate loan-specific totals (only once per loan)
         otherLoans.forEach((item) => {
           const loanNo = item.loan.loanNo;
 
           if (!uniqueLoans.has(loanNo)) {
             uniqueLoans.add(loanNo);
 
-            // Loan-specific calculations
             newTotals.loanAmount += Number(item.loan.loanAmount) || 0;
             newTotals.partLoanAmount +=
               Number(item.loan.loanAmount - item.loan.interestLoanAmount) || 0;
             newTotals.interestLoanAmount += Number(item.loan.interestLoanAmount) || 0;
             newTotals.totalInterestAmount += Number(item.totalInterestAmount) || 0;
 
-            // Property details calculations
             const propertyTotal =
               item.loan.propertyDetails?.reduce(
                 (sum, detail) => sum + (Number(detail.totalWeight) || 0),
@@ -383,13 +237,11 @@ export default function OtherLonaInterestListView() {
               ) || 0;
             newTotals.netWeight += propertyNet;
 
-            // Interest rate calculations
             totalInterestRate += Number(item.loan.scheme.interestRate) || 0;
             uniqueLoanCount++;
           }
         });
 
-        // Calculate other loan totals (for all entries)
         otherLoans.forEach((item) => {
           newTotals.otherLoanAmount += Number(item.otherLoanAmount) || 0;
           newTotals.amount += Number(item.amount) || 0;
@@ -399,7 +251,6 @@ export default function OtherLonaInterestListView() {
         });
       });
 
-      // Calculate averages
       newTotals.averageInterestRate = uniqueLoanCount > 0 ? totalInterestRate / uniqueLoanCount : 0;
       newTotals.averagePercentage =
         Object.values(dataFiltered).reduce((sum, otherLoans) => sum + otherLoans.length, 0) > 0
@@ -411,7 +262,6 @@ export default function OtherLonaInterestListView() {
             ) / Object.values(dataFiltered).reduce((sum, otherLoans) => sum + otherLoans.length, 0)
           : 0;
 
-      // Calculate difference amounts
       newTotals.diffLoanAmount = newTotals.amount - newTotals.interestLoanAmount;
       newTotals.diffInterestAmount =
         newTotals.totalInterestAmount - newTotals.totalOtherInterestAmount;
@@ -425,24 +275,7 @@ export default function OtherLonaInterestListView() {
   if (totalAllInoutLoanReportsLoading) {
     return <LoadingScreen />;
   }
-  //
-  // function fetchStates() {
-  //   dataFiltered?.map((data) => {
-  //     setOptions((item) => {
-  //       if (!item.find((option) => option.value === data.issuedBy._id)) {
-  //         return [
-  //           ...item,
-  //           {
-  //             name: `${data.issuedBy.firstName} ${data.issuedBy.middleName} ${data.issuedBy.lastName}`,
-  //             value: data.issuedBy._id,
-  //           },
-  //         ];
-  //       } else {
-  //         return item;
-  //       }
-  //     });
-  //   });
-  // }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -461,7 +294,6 @@ export default function OtherLonaInterestListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <Tabs
             value={filters.status}
@@ -503,7 +335,6 @@ export default function OtherLonaInterestListView() {
               />
             ))}
           </Tabs>
-
           <TotalAllInOutLoanReportsTableToolbar
             filters={filters}
             onFilters={handleFilters}
@@ -512,7 +343,6 @@ export default function OtherLonaInterestListView() {
             options={options}
             total={totals}
           />
-
           {canReset && (
             <TotalAllInOutLoanReportsTableFiltersResult
               filters={filters}
@@ -522,7 +352,6 @@ export default function OtherLonaInterestListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -574,7 +403,6 @@ export default function OtherLonaInterestListView() {
                 </Tooltip>
               }
             />
-
             <Table stickyHeader size="small">
               <TableHeadCustom
                 order={table.order}
@@ -596,7 +424,6 @@ export default function OtherLonaInterestListView() {
                   },
                 }}
               />
-
               <TableBody>
                 {Object.entries(dataFiltered).map(([loanId, otherLoans], loanIndex) => {
                   const firstRow = otherLoans[0];
@@ -612,7 +439,6 @@ export default function OtherLonaInterestListView() {
                         },
                       }}
                     >
-                      {/* Show these cells only for the first row of each loan group */}
                       {index === 0 && (
                         <>
                           <TableCell
@@ -638,7 +464,6 @@ export default function OtherLonaInterestListView() {
                           >
                             {row.loan.loanNo}
                           </TableCell>
-
                           <TableCell
                             sx={{
                               fontSize: '11px',
@@ -754,7 +579,6 @@ export default function OtherLonaInterestListView() {
                           </TableCell>
                         </>
                       )}
-                      {/* Other Number cell */}
                       <TableCell
                         align="left"
                         sx={{
@@ -973,7 +797,6 @@ export default function OtherLonaInterestListView() {
               </TableBody>
             </Table>
           </TableContainer>
-
           <TablePaginationCustom
             count={flattenedData.length}
             page={table.page}
@@ -985,7 +808,6 @@ export default function OtherLonaInterestListView() {
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -1016,10 +838,8 @@ export default function OtherLonaInterestListView() {
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { username, status, startDate, endDate, branch, issuedBy } = filters;
 
-  // Convert inputData to array if it's an object
   const dataArray = Array.isArray(inputData) ? inputData : Object.values(inputData);
 
-  // Flatten the data structure to get all other loan entries
   const flattenedData = dataArray.flatMap((loanGroup) =>
     Array.isArray(loanGroup) ? loanGroup : [loanGroup]
   );
@@ -1065,7 +885,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     );
   }
 
-  // Group the filtered data by loan ID
   const groupedData = filteredData.reduce((acc, item) => {
     const loanId = item.loan._id;
     if (!acc[loanId]) {

@@ -2,25 +2,19 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, FormControl, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Dialog, DialogActions, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../auth/hooks';
 import { getResponsibilityValue } from '../../../permission/permission';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
 import { useGetBranch } from '../../../api/branch';
-import InputLabel from '@mui/material/InputLabel';
 import { useBoolean } from '../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import AllBranchOtherLoanSummaryPdf from '../pdf/all-branch-other-loan-summary-pdf.jsx';
-import OtherLoanInterestPdf from '../pdf/other-loan-interest-pdf.jsx';
 import TotalInOutLoanReports from '../pdf/total-in-out-loan-reports.jsx';
 import { fDate } from '../../../utils/format-time.js';
 
@@ -48,6 +42,7 @@ export default function TotalAllInOutLoanReportsTableToolbar({
     issuedBy: filters.issuedBy,
     branch: filters.branch,
   };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -88,6 +83,7 @@ export default function TotalAllInOutLoanReportsTableToolbar({
     },
     [onFilters]
   );
+
   const customStyle = {
     minWidth: { md: 350 },
     label: {
@@ -99,25 +95,6 @@ export default function TotalAllInOutLoanReportsTableToolbar({
     },
     input: { height: 7 },
   };
-
-  const sx2 = {};
-  const handleFilterBranch = useCallback(
-    (event) => {
-      setSelectedBranch(event.target.value);
-      onFilters(
-        'branch',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
-    },
-    [onFilters]
-  );
-
-  const handleFilterIssuedBy = useCallback(
-    (event) => {
-      onFilters('issuedBy', typeof event.target.value === 'object' && event.target.value);
-    },
-    [onFilters]
-  );
 
   return (
     <>
@@ -147,7 +124,6 @@ export default function TotalAllInOutLoanReportsTableToolbar({
             ),
           }}
         />
-
         <Stack
           direction="row"
           alignItems="center"
@@ -187,7 +163,6 @@ export default function TotalAllInOutLoanReportsTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           {getResponsibilityValue('print_total_all_in_out_loan_reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />

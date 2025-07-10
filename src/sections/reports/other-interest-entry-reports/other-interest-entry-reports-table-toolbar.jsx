@@ -4,25 +4,19 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Dialog, FormControl, IconButton, MenuItem } from '@mui/material';
+import { Dialog, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { useGetBranch } from '../../../api/branch.js';
 import { useBoolean } from '../../../hooks/use-boolean.js';
-import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
 import { PDFViewer } from '@react-pdf/renderer';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import InterestReportsPdf from '../pdf/interest-reports-pdf.jsx';
-import InterestEntryReportsPdf from '../pdf/interest-entry-reports-pdf.jsx';
 import OtherInterestEntryReportsPdf from '../pdf/other-interest-entry-reports-pdf.jsx';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { fDate } from '../../../utils/format-time.js';
@@ -44,10 +38,12 @@ export default function OtherInterestEntryReportsTableToolbar({
   const [endDateOpen, setEndDateOpen] = useState(false);
   const { branch } = useGetBranch();
   const view = useBoolean();
+
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
   };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -91,7 +87,6 @@ export default function OtherInterestEntryReportsTableToolbar({
 
   const handleFilterBranch = useCallback(
     (event) => {
-      // setSelectedBranch(event.target.value);
       onFilters(
         'branch',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
@@ -187,7 +182,7 @@ export default function OtherInterestEntryReportsTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-          {getResponsibilityValue('print_Other_Interest_Entry_Reports', configs, user) && (
+          {getResponsibilityValue('print_other_interest_entry_report', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>

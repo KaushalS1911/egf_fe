@@ -1,33 +1,20 @@
 import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
-
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  FormControl,
-  IconButton,
-  Button,
-  MenuItem,
-} from '@mui/material';
+import { Box, Button, Dialog, DialogActions, FormControl, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../../components/custom-popover';
 import RHFMultiSheetExportExcel from '../../../../components/hook-form/rhf-multi-sheet-export-excel.jsx';
 import { useAuthContext } from '../../../../auth/hooks';
-import { useGetConfigs } from '../../../../api/config';
 import { getResponsibilityValue } from '../../../../permission/permission';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetBranch } from '../../../../api/branch';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../../pdf/all-branch-loan-summary-pdf.jsx';
 import { useGetLoanissue } from '../../../../api/loanissue';
 import LoanDetailsPdf from '../../pdf/loan-details-pdf.jsx';
-import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
 import Autocomplete from '@mui/material/Autocomplete';
 import { fDate } from '../../../../utils/format-time.js';
 
@@ -109,7 +96,6 @@ export default function LoanDetailTableToolbarTableToolbar({
           flexGrow={1}
           sx={{ width: 1, pr: 1.5 }}
         >
-          {/* Loan Autocomplete */}
           <FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 355 } }}>
             <Autocomplete
               options={Loanissue.filter(
@@ -129,22 +115,7 @@ export default function LoanDetailTableToolbarTableToolbar({
               renderInput={(params) => <TextField {...params} label="Loan" />}
               sx={customStyle}
             />
-
           </FormControl>
-
-          {/* Branch Autocomplete (Multi-select) */}
-          {/*<FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 350 } }}>*/}
-          {/*  <Autocomplete*/}
-          {/*    options={branch}*/}
-          {/*    getOptionLabel={(option) => option?.name || ''}*/}
-          {/*    value={branch.find((b) => b._id === filters.branch) || null}*/}
-          {/*    onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}*/}
-          {/*    renderInput={(params) => <TextField {...params} label="Branch" />}*/}
-          {/*    sx={customStyle}*/}
-          {/*  />*/}
-          {/*</FormControl>*/}
-
-          {/* Start Date */}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -160,8 +131,6 @@ export default function LoanDetailTableToolbarTableToolbar({
             }}
             sx={customStyle}
           />
-
-          {/* End Date */}
           <DatePicker
             label="End date"
             value={filters.endDate ? moment(filters.endDate).toDate() : null}
@@ -179,15 +148,12 @@ export default function LoanDetailTableToolbarTableToolbar({
             }}
             sx={customStyle}
           />
-
-          {/* Print Button */}
           {getResponsibilityValue('print_loan_details', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
-
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -294,8 +260,6 @@ export default function LoanDetailTableToolbarTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
-
-      {/* PDF Viewer Dialog */}
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

@@ -7,21 +7,18 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify/index.js';
 import CustomPopover, { usePopover } from 'src/components/custom-popover/index.js';
-import RHFExportExcel from '../../../components/hook-form/rhf-export-excel.jsx';
-import { getResponsibilityValue } from '../../../permission/permission.js';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../api/config.js';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, Dialog, FormControl } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Autocomplete from '@mui/material/Autocomplete'; // <-- Import Autocomplete
+import { Box, Dialog } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import { PDFViewer } from '@react-pdf/renderer';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import DayBookPdf from './view/day-book-pdf.jsx';
+import { getResponsibilityValue } from '../../../permission/permission.js';
 
 // ----------------------------------------------------------------------
 
@@ -133,8 +130,6 @@ export default function DayBookToolbar({
               ),
             }}
           />
-
-          {/* Autocomplete for Cash & Bank Transactions */}
           <Autocomplete
             sx={{ width: { xs: 1, sm: 250 } }}
             options={options || []}
@@ -154,8 +149,6 @@ export default function DayBookToolbar({
               />
             )}
           />
-
-          {/* Autocomplete for Category */}
           <Autocomplete
             sx={{ width: { xs: 1, sm: 250 } }}
             options={['Payment In', 'Payment Out']}
@@ -165,8 +158,6 @@ export default function DayBookToolbar({
               <TextField {...params} label="Category" className={'custom-textfield'} />
             )}
           />
-
-          {/* Autocomplete for Type */}
           <Autocomplete
             sx={{ width: { xs: 1, sm: 250 } }}
             options={typeOptions || []}
@@ -181,7 +172,6 @@ export default function DayBookToolbar({
               />
             )}
           />
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -198,19 +188,17 @@ export default function DayBookToolbar({
             sx={{ ...customStyle }}
           />
         </Stack>
-
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
         sx={{ width: 'auto' }}
       >
-        {/*{getResponsibilityValue('print_scheme_detail', configs, user) && (*/}
+        {getResponsibilityValue('print_day_book', configs, user) && (
           <>
             <MenuItem
               onClick={() => {
@@ -221,29 +209,9 @@ export default function DayBookToolbar({
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="ant-design:file-pdf-filled" />
-              PDF
-            </MenuItem>
-            <MenuItem>
-              <RHFExportExcel data={schemes} fileName="SchemeData" sheetName="SchemeDetails" />
-            </MenuItem>
           </>
-        {/*)}*/}
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="ic:round-whatsapp" />
-          whatsapp share
-        </MenuItem>
+        )}
       </CustomPopover>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

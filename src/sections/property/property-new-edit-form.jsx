@@ -11,10 +11,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFAutocomplete, RHFSwitch,
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 import axios from 'axios';
 import { useAuthContext } from '../../auth/hooks';
 import { useGetConfigs } from '../../api/config';
@@ -64,12 +61,12 @@ export default function PropertyNewEditForm({ currentProperty }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentProperty) {
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property/${currentProperty._id}?branch=66ea5ebb0f0bdc8062c13a64`, data);
+        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property/${currentProperty._id}`, data);
         router.push(paths.dashboard.property.list);
         enqueueSnackbar(res?.data.message);
         reset();
       } else {
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property/?branch=66ea5ebb0f0bdc8062c13a64`, data);
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/property`, data);
         router.push(paths.dashboard.property.list);
         enqueueSnackbar(res?.data.message);
         reset();
@@ -129,7 +126,14 @@ export default function PropertyNewEditForm({ currentProperty }) {
                                 e.preventDefault();
                               }
                             }} />
-              <RHFTextField name='remark' label='Remark' />
+              <RHFTextField
+                name='remark'
+                label='Remark'
+                fullWidth
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
+              />
             </Box>
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
               {

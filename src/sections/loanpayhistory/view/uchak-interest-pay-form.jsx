@@ -64,16 +64,18 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
   const view = useBoolean();
   const [data, setData] = useState(null);
   const { configs } = useGetConfigs();
-
   const uchakAmt = uchak.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
+
   const cashAmt = uchak.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
+
   const bankAmt = uchak.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
   );
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -173,7 +175,6 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
         companyContact: item ? item.loan.company.contact : data.loan.company.contact,
         branchContact: item ? item.loan.customer.branch.contact : data.loan.customer.branch.contact,
         company: user.company,
-
         file,
         type: 'uchak_interest',
       };
@@ -424,7 +425,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 <Button color="inherit" variant="outlined" onClick={() => reset()}>
                   Reset
                 </Button>
-                {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                {getResponsibilityValue('create_uchak_interest', configs, user) && (
                   <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                     Submit
                   </LoadingButton>
@@ -495,7 +496,7 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
                 ) : (
                   <TableCell>-</TableCell>
                 )}
-                {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
+                {getResponsibilityValue('print_loan_pay_history_detail', configs, user) ? (
                   <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 2 }}>
                     {
                       <Typography
@@ -519,7 +520,6 @@ function UchakInterestPayForm({ currentLoan, mutate }) {
               </TableRow>
             ))}
           <TableRow sx={{ backgroundColor: '#F4F6F8' }}>
-            {/*<TableCell padding="checkbox" />*/}
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>TOTAL</TableCell>
             <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 2 }}>
               {uchakAmt}

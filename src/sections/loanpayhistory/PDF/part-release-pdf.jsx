@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/pdf-logo.png';
 import { fDate } from 'src/utils/format-time';
 import InvoiceHeader from '../../../components/invoise/invoice-header';
@@ -9,7 +9,7 @@ import InvoiceHeader from '../../../components/invoise/invoice-header';
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: '/fonts/Roboto-Regular.ttf' }, // Regular weight
+    { src: '/fonts/Roboto-Regular.ttf' },
     { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' },
   ],
 });
@@ -233,6 +233,7 @@ const useStyles = () =>
 
 export default function PartReleasePdf({ selectedRow, configs }) {
   const styles = useStyles();
+
   return (
     <>
       <Document>

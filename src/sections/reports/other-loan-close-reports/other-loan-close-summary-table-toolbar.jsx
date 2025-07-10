@@ -2,24 +2,19 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
-import { Box, Dialog, DialogActions, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, Dialog, DialogActions, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import RHFExportExcel from '../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../auth/hooks';
 import { getResponsibilityValue } from '../../../permission/permission';
 import moment from 'moment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
 import { useGetBranch } from '../../../api/branch';
-import InputLabel from '@mui/material/InputLabel';
 import { useBoolean } from '../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import AllBranchLoanSummaryPdf from '../pdf/all-branch-loan-summary-pdf.jsx';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import AllBranchOtherLoanSummaryPdf from '../pdf/all-branch-other-loan-summary-pdf.jsx';
 import OtherLoanCloseSummaryPdf from '../pdf/other-loan-close-summary-pdf.jsx';
 import Autocomplete from '@mui/material/Autocomplete';
 import { fDate } from '../../../utils/format-time.js';
@@ -40,17 +35,18 @@ export default function OtherLoanCloseSummaryTableToolbar({
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [startCloseDateOpen, setStartCloseDateOpen] = useState(false);
   const [endCloseDateOpen, setEndCloseDateOpen] = useState(false);
-
   const { user } = useAuthContext();
   const { branch } = useGetBranch();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const view = useBoolean();
+
   const filterData = {
     startDate: filters.startDate,
     endDate: filters.endDate,
     otherName: filters.otherName,
     branch: filters.branch,
   };
+
   const handleFilterName = useCallback(
     (event) => {
       onFilters('username', event.target.value);
@@ -216,7 +212,6 @@ export default function OtherLoanCloseSummaryTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="End close date"
             value={filters.endCloseDate ? moment(filters.endCloseDate).toDate() : null}
@@ -233,8 +228,7 @@ export default function OtherLoanCloseSummaryTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
-          {getResponsibilityValue('print_other_loan_daily_reports', configs, user) && (
+          {getResponsibilityValue('print_other_loan_close_reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>

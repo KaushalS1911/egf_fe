@@ -1,18 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import {
+  Autocomplete,
   Box,
+  Button,
   Dialog,
   DialogActions,
-  FormControl,
-  Grid,
   IconButton,
-  MenuItem,
   InputAdornment,
+  MenuItem,
   Stack,
   TextField,
-  Button,
-  InputLabel,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import moment from 'moment';
@@ -25,7 +23,6 @@ import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 import { PDFViewer } from '@react-pdf/renderer';
 import InqiryPdf from './view/inqiry-pdf.jsx';
 import { useBoolean } from '../../hooks/use-boolean.js';
-import { Autocomplete } from '@mui/material';
 
 export default function InquiryTableToolbar({
   filters,
@@ -136,7 +133,6 @@ export default function InquiryTableToolbar({
               ),
             }}
           />
-
           <Autocomplete
             fullWidth
             options={options}
@@ -149,7 +145,6 @@ export default function InquiryTableToolbar({
             isOptionEqualToValue={(option, value) => option?.name === value?.name}
             sx={{ maxWidth: 200 }}
           />
-
           <Autocomplete
             fullWidth
             options={options[0]?.inquiryFor || []}
@@ -160,8 +155,6 @@ export default function InquiryTableToolbar({
             )}
             sx={{ maxWidth: 200 }}
           />
-
-          {/* Date Filters */}
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -178,7 +171,6 @@ export default function InquiryTableToolbar({
             sx={{ maxWidth: { md: 200 } }}
             className="custom-textfield"
           />
-
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -197,7 +189,6 @@ export default function InquiryTableToolbar({
             sx={{ maxWidth: { md: 200 } }}
             className="custom-textfield"
           />
-
           <DatePicker
             label="Start recalling date"
             value={filters.startRecallingDate ? moment(filters.startRecallingDate).toDate() : null}
@@ -214,7 +205,6 @@ export default function InquiryTableToolbar({
             sx={{ maxWidth: { md: 200 } }}
             className="custom-textfield"
           />
-
           <DatePicker
             label="End recalling date"
             value={filters.endRecallingDate}
@@ -233,12 +223,10 @@ export default function InquiryTableToolbar({
             sx={{ maxWidth: { md: 200 } }}
             className="custom-textfield"
           />
-
           <IconButton onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
-
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -267,7 +255,6 @@ export default function InquiryTableToolbar({
           )}
         </CustomPopover>
       </Stack>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

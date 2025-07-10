@@ -1,9 +1,8 @@
-import React, { useMemo, useState } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import React, { useMemo } from 'react';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -42,7 +41,7 @@ const useStyles = () =>
           backgroundColor: '#FFFFFF',
         },
         tableHeader: {
-          backgroundColor: '#5B9BD4', // Dark blue for header
+          backgroundColor: '#5B9BD4',
           fontWeight: 'bold',
           textAlign: 'center',
         },
@@ -61,10 +60,10 @@ const useStyles = () =>
           textAlign: 'center',
         },
         positiveValue: {
-          color: '#008000', // Green color for positive values
+          color: '#008000',
         },
         negativeValue: {
-          color: '#FF0000', // Red color for negative values
+          color: '#FF0000',
         },
         textCell: {
           textAlign: 'left',
@@ -74,10 +73,10 @@ const useStyles = () =>
           borderRightWidth: 0,
         },
         mainLoanCell: {
-          backgroundColor: '#F2F2F2', // Light grey for the main loan columns
+          backgroundColor: '#F2F2F2',
         },
         otherLoanCell: {
-          backgroundColor: '#F2F2F2', // Light grey for the "other loan" columns
+          backgroundColor: '#F2F2F2',
         },
         termsAndConditionsHeaders: {
           color: '#000000',
@@ -184,7 +183,6 @@ export default function TotalInOutLoanReports({
   let currentPageRows = [];
   let currentRowCount = 0;
 
-  // Process each loan group
   Object.entries(loans).forEach(([loanId, otherLoans], loanIndex) => {
     const firstRow = otherLoans[0];
     const rowSpan = otherLoans.length;
@@ -200,7 +198,6 @@ export default function TotalInOutLoanReports({
           style={[styles.tableRow]}
           wrap={false}
         >
-          {/* Main loan columns: only show for first row of group, else blank/shaded */}
           {index === 0 ? (
             <>
               <Text
@@ -443,8 +440,6 @@ export default function TotalInOutLoanReports({
               </Text>
             </>
           )}
-
-          {/* Other loan columns: always show */}
           <Text style={[styles.tableCell, { flex: headers[11].flex }, styles.textCell]}>
             {row.otherNumber}
           </Text>
@@ -469,8 +464,6 @@ export default function TotalInOutLoanReports({
           <Text style={[styles.tableCell, { flex: headers[18].flex }, styles.numericCell]}>
             {Number(row.totalOtherInterestAmount).toFixed(2)}
           </Text>
-
-          {/* Diff columns: only show for first row of group, else blank/shaded */}
           {index === 0 ? (
             <>
               <Text
@@ -551,7 +544,6 @@ export default function TotalInOutLoanReports({
 
       currentRowCount++;
 
-      // Check if we need to create a new page
       if (
         currentRowCount % rowsPerPage === 0 ||
         currentRowCount === Object.values(loans).flat().length

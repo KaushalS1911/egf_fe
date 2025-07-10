@@ -20,9 +20,11 @@ export default function AllTransactionTableFiltersResult({
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
+
   const handleRemoveCategory = useCallback(() => {
     onFilters('category', '');
   }, [onFilters]);
+
   const handleRemoveStatus = useCallback(() => {
     onFilters('status', '');
   }, [onFilters]);

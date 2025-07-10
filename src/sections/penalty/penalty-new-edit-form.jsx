@@ -59,12 +59,12 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentPenalty) {
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty/${currentPenalty._id}?branch=66ea5ebb0f0bdc8062c13a64`, data);
+        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty/${currentPenalty._id}`, data);
         router.push(paths.dashboard.penalty.list);
         enqueueSnackbar(res?.data.message);
         reset();
       } else {
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty/?branch=66ea5ebb0f0bdc8062c13a64`, data);
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${user?.company}/penalty`, data);
         router.push(paths.dashboard.penalty.list);
         enqueueSnackbar(res?.data.message);
         reset();
@@ -117,7 +117,14 @@ export default function PenaltyNewEditForm({ currentPenalty }) {
                   }
                 }}
               />
-              <RHFTextField name='remark' label='Remark' />
+              <RHFTextField
+                name='remark'
+                label='Remark'
+                fullWidth
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                }}
+              />
             </Box>
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
               {

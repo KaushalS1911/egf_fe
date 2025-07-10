@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Grid, IconButton, MenuItem } from '@mui/material';
+import { IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../components/custom-popover';
 import RHFExportExcel from '../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../auth/hooks';
@@ -70,22 +70,7 @@ export default function LoanissueTableToolbar({ filters, onFilters, loans }) {
           arrow='right-top'
           sx={{ width: 'auto' }}
         >
-          {getResponsibilityValue('print_loanIssue_detail', configs, user) && (<>   <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='solar:printer-minimalistic-bold' />
-            Print
-          </MenuItem>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon='ant-design:file-pdf-filled' />
-              PDF
-            </MenuItem>
+          {getResponsibilityValue('print_loan_issue_detail', configs, user) && (<>
             <MenuItem>
               <RHFExportExcel
                 data={loans}
@@ -93,14 +78,6 @@ export default function LoanissueTableToolbar({ filters, onFilters, loans }) {
                 sheetName='LoanissueDetails'
               />
             </MenuItem></>)}
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon='ic:round-whatsapp' />
-            whatsapp share
-          </MenuItem>
         </CustomPopover>
       </Stack>
     </>

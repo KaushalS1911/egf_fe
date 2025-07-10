@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,18 +12,17 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
@@ -73,22 +72,27 @@ export default function OtherGoldLoanCloseListView({ partPayment }) {
     (prev, next) => prev + (Number(next?.otherLoan?.amount) || 0),
     0
   );
+
   const rate = partPayment.reduce(
     (prev, next) => prev + (Number(next?.otherLoan?.percentage) || 0),
     0
   );
+
   const charge = partPayment.reduce(
     (prev, next) => prev + (Number(next?.otherLoan?.otherCharge) || 0),
     0
   );
+
   const cashAmount = partPayment.reduce(
     (prev, next) => prev + (Number(next?.otherLoan?.cashAmount) || 0),
     0
   );
+
   const bankAmount = partPayment.reduce(
     (prev, next) => prev + (Number(next?.otherLoan?.bankAmount) || 0),
     0
   );
+
   const payAmount = partPayment.reduce(
     (prev, next) => prev + (Number(next?.otherLoan?.closingAmount) || 0),
     0

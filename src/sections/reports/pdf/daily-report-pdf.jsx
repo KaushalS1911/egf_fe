@@ -1,8 +1,7 @@
 import React from 'react';
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from '../../../utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
-import TableCell from '@mui/material/TableCell';
 
 const useStyles = () =>
   StyleSheet.create({
@@ -121,19 +120,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
     { value: fDate(new Date()), label: 'Date' },
   ];
 
-  // Add this function to calculate totals
-  const calculateTotals = (data, columns) => {
-    const totals = {};
-    columns.forEach((col) => {
-      totals[col] = data.reduce((sum, item) => {
-        const value = parseFloat(item[col]) || 0;
-        return sum + value;
-      }, 0);
-    });
-    return totals;
-  };
-
-  // Add this function to calculate averages
   const calculateAverage = (data, field) => {
     const validValues = data.filter((item) => {
       let value;
@@ -162,7 +148,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
     return (sum / validValues.length).toFixed(0);
   };
 
-  // Add this function to handle interest rate specifically
   const calculateInterestRateAverage = (data) => {
     const validValues = data.filter((item) => {
       const rate = item?.scheme?.interestRate || item.loan?.scheme?.interestRate;
@@ -179,7 +164,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
     return (sum / validValues.length).toFixed(2);
   };
 
-  // Add this function to handle consulting charge specifically
   const calculateConsultingChargeAverage = (data) => {
     const validValues = data.filter((item) => {
       const charge = item?.consultingCharge || item.loan?.consultingCharge;
@@ -198,7 +182,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
 
   return (
     <Document>
-      {/* New Gold Loan Details Table */}
       <Page size="A4" orientation="landscape" style={styles.page}>
         <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape />
         <View style={{ position: 'absolute', top: 20, right: -30, width: 220 }}>
@@ -260,7 +243,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                     </Text>
                   </View>
                 ))}
-                {/* Add total row */}
                 <View style={[styles.tableRow, styles.totalRow]}>
                   <Text style={[styles.totalCell, { flex: 0.2 }]}></Text>
                   <Text style={[styles.totalCell, { flex: 2 }]}>TOTAL</Text>
@@ -284,7 +266,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
           )}
         </View>
       </Page>
-      {/* Gold Loan Interest Details Table */}
       {loanIntDetails && loanIntDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>
@@ -297,7 +278,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
             >
               <Text style={styles.termsAndConditionsHeaders}>GOLD LOAN INTEREST DETAILS</Text>
             </View>
-
             <View style={styles.table}>
               <View style={[styles.tableRow, styles.tableHeader]}>
                 <Text style={[styles.tableCell, { flex: 0.3 }]}>#</Text>
@@ -320,8 +300,8 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                 <View
                   style={[
                     styles.tableRow,
-                    index % 2 !== 0 && styles.strippedRow, // Apply stripped row style
-                    index === loanIntDetails.length - 1 && styles.lastRow, // Remove border for the last row
+                    index % 2 !== 0 && styles.strippedRow,
+                    index === loanIntDetails.length - 1 && styles.lastRow,
                   ]}
                   key={index}
                 >
@@ -354,7 +334,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
-              {/* Add total row */}
               <View style={[styles.tableRow, styles.totalRow]}>
                 <Text style={[styles.totalCell, { flex: 0.3 }]}></Text>
                 <Text style={[styles.totalCell, { flex: 2.7 }]}>TOTAL</Text>
@@ -402,7 +381,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
           </View>
         </Page>
       )}
-      {/* Gold Loan Part Close Details Table */}
       {partReleaseDetails && partReleaseDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>
@@ -461,7 +439,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
-              {/* Add total row */}
               <View style={[styles.tableRow, styles.totalRow]}>
                 <Text style={[styles.tableCell, { flex: 0.25 }]}></Text>
                 <Text style={[styles.tableCell, { flex: 1.8 }]}>TOTAL</Text>
@@ -494,7 +471,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
           </View>
         </Page>
       )}
-      {/* Gold Loan Part Payment Details Table */}
       {partPaymentDetails && partPaymentDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>
@@ -553,7 +529,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
-              {/* Add total row */}
               <View style={[styles.tableRow, styles.totalRow]}>
                 <Text style={[styles.tableCell, { flex: 0.25 }]}></Text>
                 <Text style={[styles.tableCell, { flex: 1.8 }]}>TOTAL</Text>
@@ -586,7 +561,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
           </View>
         </Page>
       )}
-      {/* Gold Loan Uchak Part Details Table */}
       {uchakIntDetails && uchakIntDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>
@@ -647,7 +621,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
-              {/* Add total row */}
               <View style={[styles.tableRow, styles.totalRow]}>
                 <Text style={[styles.tableCell, { flex: 0.2 }]}></Text>
                 <Text style={[styles.tableCell, { flex: 2 }]}>TOTAL</Text>
@@ -737,7 +710,6 @@ export default function DailyReportPdf({ selectedBranch, configs, data, filterDa
                   </Text>
                 </View>
               ))}
-              {/* Add total row */}
               <View style={[styles.tableRow, styles.totalRow]}>
                 <Text style={[styles.tableCell, { flex: 0.2 }]}></Text>
                 <Text style={[styles.tableCell, { flex: 2 }]}>TOTAL</Text>

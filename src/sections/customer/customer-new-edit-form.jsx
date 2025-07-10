@@ -132,7 +132,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
 
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
-      // setDisabledField(true);
       enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
     }
     setOpenPopup(false);
@@ -228,7 +227,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       tempState: currentCustomer?.temporaryAddress?.state || '',
       tempCity: currentCustomer?.temporaryAddress?.city || '',
       tempZipcode: currentCustomer?.temporaryAddress?.zipcode || '',
-
       bankDetails: currentCustomer?.bankDetails || [
         {
           accountHolderName: '',
@@ -256,10 +254,12 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'bankDetails',
   });
+
   const handleAdd = () => {
     append({
       accountHolderName: '',
@@ -282,6 +282,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
       branchName: '',
     });
   };
+
   const handleRemove = (index) => {
     if (fields?.length > 1) {
       remove(index);
@@ -358,8 +359,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         },
         bankDetails: cleanedBankDetails,
       };
-
-      console.log(payload, '000000');
 
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => {
@@ -651,7 +650,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
         });
 
         if (userRole.toLowerCase() === 'employee') {
-          // setDisabledField(true);
           enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
             variant: 'error',
           });
@@ -1216,7 +1214,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 defaultValue="India"
                 sx={{ display: 'none' }}
               />
-
               <RHFAutocomplete
                 disabled={disabledField}
                 req={'red'}
@@ -1288,7 +1285,7 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                   options={INQUIRY_REFERENCE_BY}
                   onChange={(e) => {
                     setReferenceBy(e.target.value);
-                    setValue('referenceBy', e.target.value); // Manually update react-hook-form state
+                    setValue('referenceBy', e.target.value);
                   }}
                 />
               </Stack>
@@ -1308,6 +1305,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                     req={'red'}
                     name="otherReferenceBy"
                     label="Reference By"
+                    onChange={(e) => {
+                      const value = e.target.value.toUpperCase();
+                      methods.setValue('otherReferenceBy', value, { shouldValidate: true });
+                    }}
                     disabled={disabledField}
                   />
                 </Stack>
@@ -1344,8 +1345,8 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                 <TableBody>
                   {fields.map((row, index) => {
                     const isEditing = editRowIndex === index;
-                    const isNewRow = row.isNew; // New row identifier
-                    const isDisabled = !!currentCustomer && !isEditing && !isNewRow; // Disable only for existing non-edit rows
+                    const isNewRow = row.isNew;
+                    const isDisabled = !!currentCustomer && !isEditing && !isNewRow;
 
                     return (
                       <TableRow
@@ -1360,14 +1361,22 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                             name={`bankDetails[${index}].accountHolderName`}
                             label="Account Holder Name"
                             disabled={isDisabled}
+                            onChange={(e) => {
+                              e.target.value = e.target.value.toUpperCase();
+                              methods.setValue(`bankDetails[${index}].accountHolderName`, e.target.value);
+                            }}
                           />
                         </TableCell>
                         <TableCell sx={{ width: 240, padding: '0px 8px' }}>
                           <RHFTextField
                             name={`bankDetails[${index}].accountNumber`}
                             label="Account Number"
-                            type="text" // Change from "number" to "text"
-                            inputProps={{ pattern: '[0-9]*', inputMode: 'numeric' }} // Ensures only numbers are allowed
+                            type='text'
+                            inputProps={{ pattern: '[0-9]*', inputMode: 'numeric' }}
+                            onChange={(e) => {
+                              const value = e.target.value.toUpperCase();
+                              methods.setValue(`bankDetails[${index}].accountNumber`, value, { shouldValidate: true });
+                            }}
                             disabled={isDisabled}
                           />
                         </TableCell>
@@ -1400,6 +1409,10 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                             name={`bankDetails[${index}].bankName`}
                             label="Bank Name"
                             disabled={isDisabled}
+                            onChange={(e) => {
+                              const value = e.target.value.toUpperCase();
+                              methods.setValue(`bankDetails[${index}].bankName`, value, { shouldValidate: true });
+                            }}
                           />
                         </TableCell>
                         <TableCell sx={{ width: 240, padding: '0px 8px' }}>
@@ -1407,13 +1420,16 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                             name={`bankDetails[${index}].branchName`}
                             label="Branch Name"
                             disabled={isDisabled}
+                            onChange={(e) => {
+                              const value = e.target.value.toUpperCase();
+                              methods.setValue(`bankDetails[${index}].branchName`, value, { shouldValidate: true });
+                            }}
                           />
                         </TableCell>
                         <TableCell sx={{ width: '150px', padding: '0px 8px' }}>
                           <IconButton onClick={() => handleReset(index)}>
                             <Iconify icon="ic:baseline-refresh" />
                           </IconButton>
-
                           {!!currentCustomer &&
                             !isNewRow &&
                             (isEditing ? (
@@ -1425,7 +1441,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
                                 <Iconify icon="eva:edit-fill" />
                               </IconButton>
                             ))}
-
                           {user.role === 'Admin' && (
                             <IconButton color="error" onClick={() => handleRemove(index)}>
                               <Iconify icon="solar:trash-bin-trash-bold" />
@@ -1448,7 +1463,6 @@ export default function CustomerNewEditForm({ currentCustomer, mutate2 }) {
           >
             <Button
               size="small"
-              // disabled={!isFieldsEnabled}
               variant="contained"
               color="primary"
               startIcon={<Iconify icon="mingcute:add-line" />}

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Font, Image, Document, StyleSheet } from '@react-pdf/renderer';
+import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import logo from 'src/assets/logo/logo.png';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
@@ -20,6 +20,7 @@ Font.register({
   family: 'Poppins',
   src: '/fonts/Overpass-VariableFont_wght.ttf',
 });
+
 Font.register({
   family: 'Mukta Vaani',
   fonts: [
@@ -192,7 +193,6 @@ const useStyles = () =>
         termsAndConditionsHeaders: {
           color: '#232C4B',
           borderBottom: '1px solid #232C4B',
-          // fontWeight: 'bold',
           textWrap: 'nowrap',
           fontSize: '12px',
           textAlign: 'center',
@@ -241,10 +241,12 @@ const useStyles = () =>
 export default function Sansaction8({ sansaction, configs }) {
   const styles = useStyles();
   const qty = sansaction.propertyDetails.reduce((prev, next) => prev + (Number(next?.pcs) || 0), 0);
+
   const totalWight = sansaction.propertyDetails.reduce(
     (prev, next) => prev + (Number(next?.totalWeight) || 0),
     0
   );
+
   const netWight = sansaction.propertyDetails.reduce(
     (prev, next) => prev + (Number(next?.netWeight) || 0),
     0
@@ -318,7 +320,6 @@ export default function Sansaction8({ sansaction, configs }) {
         num = Math.floor(num / (unitIndex === 0 ? 1000 : 100));
         unitIndex++;
       }
-
       return result.trim();
     };
 
@@ -460,18 +461,6 @@ export default function Sansaction8({ sansaction, configs }) {
                       }
                     </Text>
                   </View>
-                  {/*<View*/}
-                  {/*  style={{*/}
-                  {/*    width: '80%',*/}
-                  {/*    flexDirection: 'row',*/}
-                  {/*    display: 'flex',*/}
-                  {/*    justifyContent: 'flex-end',*/}
-                  {/*  }}*/}
-                  {/*>*/}
-                  {/*  <Text style={{ ...styles.gujaratiText, fontSize: 12, fontWight: 600 }}>*/}
-                  {/*    તારીખ :-{' '}*/}
-                  {/*  </Text>*/}
-                  {/*</View>*/}
                   <view>
                     <Text
                       style={[
@@ -493,11 +482,9 @@ export default function Sansaction8({ sansaction, configs }) {
                           }}
                         >
                           <Text style={{ fontSize: 10, marginRight: 4, marginTop: 2 }}>•</Text>{' '}
-                          {/* Bullet point */}
                           <Text style={{ ...styles.gujaratiText, fontSize: 10 }}>
                             {item.rule}
                           </Text>{' '}
-                          {/* Condition text */}
                         </View>
                       ))}
                     </View>

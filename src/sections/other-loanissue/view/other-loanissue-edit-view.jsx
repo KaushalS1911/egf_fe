@@ -3,13 +3,11 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import LoanissueNewEditForm from '../other-loanissue-new-edit-form';
+import OtherLoanissueNewEditForm from '../other-loanissue-new-edit-form';
 import { useParams } from '../../../routes/hooks';
 import { Box } from '@mui/material';
 import { LoadingScreen } from '../../../components/loading-screen';
-import { useGetLoanissue } from '../../../api/loanissue';
 import { useGetOtherLoanissue } from '../../../api/other-loan-issue.js';
-import OtherLoanissueNewEditForm from '../other-loanissue-new-edit-form';
 
 // ----------------------------------------------------------------------
 

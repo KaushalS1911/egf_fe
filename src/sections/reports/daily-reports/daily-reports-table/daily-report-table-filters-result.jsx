@@ -22,9 +22,11 @@ export default function DailyReportTableFiltersResult({
   const handleRemoveBranch = useCallback(() => {
     onFilters('branch', '');
   }, [onFilters]);
+
   const handleRemoveUsername = useCallback(() => {
     onFilters('username', '');
-  }, [onFilters]);
+  }, [onFilters])
+
   const handleRemoveDate = useCallback(() => {
     onFilters('startDate', '');
   }, [onFilters]);

@@ -9,11 +9,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormProvider, {
-  RHFAutocomplete,
-  RHFTextField,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import {
   Alert,
@@ -124,6 +120,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
       };
     }
   }, [imageSrc]);
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -156,6 +153,7 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
                 (value) => parseFloat(value) >= 0
               ),
           };
+
   const chargePaymentSchema = {
     ...(approvalChargeValue > 0 && {
       chargePaymentMode: Yup.string().required('Charge Payment Mode is required'),
@@ -220,7 +218,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     ),
     selectBankAccount: Yup.boolean(),
     addBankAccount: Yup.boolean(),
-
     ...(selectBankAccount && {
       account: Yup.mixed().required('Account is required'),
     }),
@@ -236,7 +233,6 @@ export default function LoanissueNewEditForm({ currentLoanIssue }) {
     ...paymentSchema
   });
 
-  console.log(selectBankAccount, '111111111111111');
   const defaultValues = useMemo(() => {
     const baseValues = {
       customer_url: '',

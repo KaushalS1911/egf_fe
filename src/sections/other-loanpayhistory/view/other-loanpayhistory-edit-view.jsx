@@ -3,12 +3,11 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import LoanpayhistoryNew from '../other-loanpayhistory-new';
+import OtherLoanpayhistoryNew from '../other-loanpayhistory-new';
 import { useParams } from '../../../routes/hooks';
 import { useGetEmployee } from '../../../api/employee';
 import { Box } from '@mui/material';
 import { LoadingScreen } from '../../../components/loading-screen';
-import OtherLoanpayhistoryNew from '../other-loanpayhistory-new';
 
 // ----------------------------------------------------------------------
 

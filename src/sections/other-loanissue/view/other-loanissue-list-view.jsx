@@ -40,7 +40,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import OtherLoanIssueDetails from './other-loan-issue-details';
-import {Box} from "@mui/system";
+import { Box } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -120,10 +120,11 @@ export default function OtherLoanissueListView() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!getResponsibilityValue('delete_other_loanIssue', configs, user)) {
+    if (!getResponsibilityValue('delete_other_loan_issue', configs, user)) {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/other-loan/${id}`
@@ -192,7 +193,7 @@ export default function OtherLoanissueListView() {
             { name: ' List' },
           ]}
           action={
-            getResponsibilityValue('create_other_loanIssue', configs, user) && (
+            getResponsibilityValue('create_other_loan_issue', configs, user) && (
               <>
                 <Button
                   component={RouterLink}
@@ -366,5 +367,6 @@ function applyFilter({ inputData, comparator, filters }) {
         item?.otherNumber.includes(username)
     );
   }
+
   return inputData;
 }

@@ -106,7 +106,6 @@ export default function BranchViseLoanClosingListView() {
   );
 
   const loanAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
-
   const intLoanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
@@ -116,18 +115,22 @@ export default function BranchViseLoanClosingListView() {
     (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
     0
   );
+
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next.day > 0 && next?.day) || 0),
     0
   );
+
   const approvalCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.approvalCharge) || 0),
     0
   );
+
   const closeCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.closeCharge) || 0),
     0
   );
+
   const closeAmt = dataFiltered.reduce((prev, next) => prev + (Number(next?.closeAmt) || 0), 0);
 
   const total = {
@@ -182,12 +185,14 @@ export default function BranchViseLoanClosingListView() {
       enqueueSnackbar('Failed to delete Employee');
     }
   };
+
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
     },
     [handleFilters]
   );
+
   const handleDeleteRow = useCallback(
     (id) => {
       if (id) {
@@ -222,30 +227,6 @@ export default function BranchViseLoanClosingListView() {
     },
     [router]
   );
-
-  // const loans = Loanissue.map((item) => ({
-  //   'Loan No': item.loanNo,
-  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-  //   'Contact': item.customer.contact,
-  //   'OTP Contact': item.customer.otpContact,
-  //   Email: item.customer.email,
-  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.issueDate,
-  //   'Scheme': item.scheme.name,
-  //   'Rate per gram': item.scheme.ratePerGram,
-  //   'Interest rate': item.scheme.interestRate,
-  //   valuation: item.scheme.valuation,
-  //   'Interest period': item.scheme.interestPeriod,
-  //   'Renewal time': item.scheme.renewalTime,
-  //   'min loan time': item.scheme.minLoanTime,
-  //   'Loan amount': item.loanAmount,
-  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
-  //   'Payment mode': item.paymentMode,
-  //   'Paying cashAmount': item.payingCashAmount,
-  //   'Pending cashAmount': item.pendingCashAmount,
-  //   'Paying bankAmount': item.payingBankAmount,nasm
-  //   'Pending bankAmount': item.pendingBankAmount,
-  // }));
 
   if (LoanSummaryLoading) {
     return <LoadingScreen />;
@@ -287,7 +268,6 @@ export default function BranchViseLoanClosingListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
         <Card>
           <BranchWiseLoanClosingTableToolbar
             filters={filters}
@@ -306,7 +286,6 @@ export default function BranchViseLoanClosingListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -384,7 +363,6 @@ export default function BranchViseLoanClosingListView() {
                     boxShaodw: '0px 2px 2px rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/*<TableCell padding="checkbox" />*/}
                   <TableCell sx={{ fontWeight: '600', color: '#637381', py: 1, px: 1 }}>
                     TOTAL
                   </TableCell>
@@ -483,6 +461,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     return a[1] - b[1];
   });
   inputData = stabilizedThis.map((el) => el[0]);
+
   if (username && username.trim()) {
     inputData = inputData.filter(
       (item) =>
@@ -495,18 +474,23 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   if (closedBy) {
     inputData = inputData.filter((item) => item?.closedBy?._id === closedBy?.value);
   }
+
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   if (branch) {
     inputData = inputData.filter((loan) => loan.customer.branch._id === branch._id);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) => isBetween(new Date(loan.issueDate), startDate, endDate));
   }
+
   if (!dateError && startCloseDate && endCloseDate) {
     inputData = inputData.filter((loan) =>
       isBetween(new Date(loan.closedDate), startCloseDate, endCloseDate)

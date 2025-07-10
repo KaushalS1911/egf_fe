@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Button,
-  Typography,
-  Grid,
   Box,
+  Button,
   Card,
-  Switch,
-  FormControlLabel,
+  CardHeader,
   Checkbox,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  CardHeader,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  Grid,
+  Switch,
+  Typography,
 } from '@mui/material';
 import { useGetConfigs } from 'src/api/config';
 import { Stack } from '@mui/system';
-import { useForm, FormProvider, Controller } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { RHFAutocomplete } from '../../../components/hook-form';
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
@@ -25,210 +25,170 @@ import { useAuthContext } from '../../../auth/hooks';
 export const modules = [
   {
     label: 'Dashboard',
-    value: 'dashboard',
-    permissions: [],
+    value: 'Dashboard',
+    permissions: [
+      { action: 'Select Customer', key: 'select_customer' },
+      { action: 'Select Loan No.', key: 'select_loan_no' },
+      { action: 'Select Mobile No.', key: 'select_mobile_no' },
+      { action: 'Select Calculator', key: 'select_calculator' },
+      { action: 'Expense Box', key: 'expense_box' },
+      { action: 'Payment In Box', key: 'payment_in_box' },
+      { action: 'Payment Out Box', key: 'payment_out_box' },
+      { action: 'Payment Diff Box', key: 'payment_diff_box' },
+      { action: 'Cash/Bank Chart', key: 'cash_bank_chart' },
+      { action: 'Portfolio Box', key: 'portfolio_box' },
+      { action: 'Interest Summary Box', key: 'interest_summary_box' },
+      { action: 'All In/Out Summary Box', key: 'all_in/out_summary_box' },
+      { action: 'Charge Summary Box', key: 'charge_summary_box' },
+      { action: 'Scheme Chart', key: 'scheme_chart' },
+      { action: 'Loan Chart', key: 'loan_chart' },
+      { action: 'Other Loan Chart', key: 'other_loan_chart' },
+      { action: 'Inquiry Chart', key: 'inquiry_chart' },
+      { action: 'Customer Chart', key: 'customer_chart' },
+      { action: 'Customer References Chart', key: 'customer_references_chart' },
+      { action: 'Customer Area Chart', key: 'customer_area_chart' },
+    ],
   },
   {
     label: 'Inquiry',
     value: 'Inquiry',
     permissions: [
-      { action: 'create Inquiry', key: 'create_inquiry' },
-      { action: 'update Inquiry', key: 'update_inquiry' },
-      { action: 'delete Inquiry', key: 'delete_inquiry' },
-      { action: 'print Inquiry', key: 'print_inquiry_detail' },
-      { action: 'bulk Inquiry', key: 'bulk_inquiry_detail' },
-      { action: 'Inquiry Follow-Up', key: 'inquiry_follow_Up' },
+      { action: 'Create Inquiry', key: 'create_inquiry' },
+      { action: 'Update Inquiry', key: 'update_inquiry' },
+      { action: 'Delete Inquiry', key: 'delete_inquiry' },
+      { action: 'Print Inquiry', key: 'print_inquiry_detail' },
+      { action: 'Bulk Inquiry', key: 'bulk_inquiry_detail' },
+      { action: 'Inquiry Follow-Up', key: 'inquiry_follow-up' },
     ],
   },
   {
     label: 'Customer',
     value: 'Customer',
     permissions: [
-      { action: 'create Customer', key: 'create_customer' },
-      { action: 'update Customer', key: 'update_customer' },
-      { action: 'delete Customer', key: 'delete_customer' },
-      { action: 'print Customer', key: 'print_customer' },
+      { action: 'Create Customer', key: 'create_customer' },
+      { action: 'Update Customer', key: 'update_customer' },
+      { action: 'Delete Customer', key: 'delete_customer' },
+      { action: 'Print Customer', key: 'print_customer' },
     ],
   },
   {
     label: 'Employee',
     value: 'Employee',
     permissions: [
-      { action: 'create Employee', key: 'create_employee' },
-      { action: 'update Employee', key: 'update_employee' },
-      { action: 'delete Employee', key: 'delete_employee' },
-      { action: 'print Employee', key: 'print_employee_detail' },
+      { action: 'Create Employee', key: 'create_employee' },
+      { action: 'Update Employee', key: 'update_employee' },
+      { action: 'Delete Employee', key: 'delete_employee' },
+      { action: 'Print Employee', key: 'print_employee_detail' },
     ],
   },
   {
     label: 'Scheme',
-    value: 'scheme',
+    value: 'Scheme',
     permissions: [
-      { action: 'create Scheme', key: 'create_scheme' },
-      { action: 'update Scheme', key: 'update_scheme' },
-      { action: 'delete Scheme', key: 'delete_scheme' },
-      { action: 'print Scheme', key: 'print_scheme_detail' },
+      { action: 'Create Scheme', key: 'create_scheme' },
+      { action: 'Update Scheme', key: 'update_scheme' },
+      { action: 'Delete Scheme', key: 'delete_scheme' },
+      { action: 'Print Scheme', key: 'print_scheme_detail' },
       { action: 'Gold Price Change', key: 'gold_price_change' },
+      { action: 'Gold Price Change Print', key: 'gold_price_change_print' },
     ],
   },
   {
     label: 'Carat',
-    value: 'carat',
+    value: 'Carat',
     permissions: [
-      { action: 'create Carat', key: 'create_carat' },
-      { action: 'update Carat', key: 'update_carat' },
-      { action: 'delete Carat', key: 'delete_carat' },
-      { action: 'print Carat', key: 'print_carat_detail' },
+      { action: 'Create Carat', key: 'create_carat' },
+      { action: 'Update Carat', key: 'update_carat' },
+      { action: 'Delete Carat', key: 'delete_carat' },
+      { action: 'Print Carat', key: 'print_carat_detail' },
     ],
   },
   {
     label: 'Property',
-    value: 'property',
+    value: 'Property',
     permissions: [
-      { action: 'create Property', key: 'create_property' },
-      { action: 'update Property', key: 'update_property' },
-      { action: 'delete Property', key: 'delete_property' },
-      { action: 'print Property', key: 'print_property' },
+      { action: 'Create Property', key: 'create_property' },
+      { action: 'Update Property', key: 'update_property' },
+      { action: 'Delete Property', key: 'delete_property' },
+      { action: 'Print Property', key: 'print_property' },
     ],
   },
   {
     label: 'Penalty',
-    value: 'penalty',
+    value: 'Penalty',
     permissions: [
-      { action: 'create Penalty', key: 'create_penalty' },
-      { action: 'update Penalty', key: 'update_penalty' },
-      { action: 'delete Penalty', key: 'delete_penalty' },
-      { action: 'print Penalty', key: 'print_penalty_detail' },
+      { action: 'Create Penalty', key: 'create_penalty' },
+      { action: 'Update Penalty', key: 'update_penalty' },
+      { action: 'Delete Penalty', key: 'delete_penalty' },
+      { action: 'Print Penalty', key: 'print_penalty_detail' },
     ],
   },
   {
     label: 'Loan Issue',
-    value: 'Loan issue',
+    value: 'Loan Issue',
     permissions: [
-      { action: 'create Loan Issue', key: 'create_loanIssue' },
-      { action: 'update Loan Issue', key: 'update_loanIssue' },
-      { action: 'delete Loan Issue', key: 'delete_loanIssue' },
-      { action: 'print Loan Issue', key: 'print_loanIssue_detail' },
+      { action: 'Create Loan Issue', key: 'create_loan_issue' },
+      { action: 'Update Loan Issue', key: 'update_loan_issue' },
+      { action: 'Delete Loan Issue', key: 'delete_loan_issue' },
+      { action: 'Print Loan Issue', key: 'print_loan_issue_detail' },
     ],
   },
   {
     label: 'Disburse',
-    value: 'disburse',
+    value: 'Disburse',
     permissions: [
-      { action: 'create Disburse', key: 'create_disburse' },
-      { action: 'update Disburse', key: 'update_disburse' },
-      { action: 'delete Disburse', key: 'delete_disburse' },
-      { action: 'print Disburse Detail', key: 'print_disburse_detail' },
+      { action: 'Create Disburse', key: 'create_disburse' },
+      { action: 'Update Disburse', key: 'update_disburse' },
+      { action: 'Delete Disburse', key: 'delete_disburse' },
     ],
   },
   {
-    label: 'loan pay history',
-    value: 'loan pay history',
+    label: 'Loan Pay History',
+    value: 'Loan Pay History',
     permissions: [
       { action: 'Bulk Interest Pay', key: 'bulk_interest_pay' },
-      { action: 'update Loan Pay History', key: 'update_loanPayHistory' },
-      { action: 'print Loan Pay History', key: 'print_loanPayHistory_detail' },
-      { action: 'Delete Interest', key: 'delete_interest' },
+      { action: 'Update Loan Pay History', key: 'update_loan_pay_history' },
+      { action: 'Print Loan Pay History', key: 'print_loan_pay_history_detail' },
       { action: 'Delete Loan', key: 'delete_loan' },
+      { action: 'Create Interest', key: 'create_interest' },
+      { action: 'Delete Interest', key: 'delete_interest' },
+      { action: 'Create Part Release', key: 'create_part_release' },
       { action: 'Delete Part Release', key: 'delete_part_release' },
+      { action: 'Create Uchak Interest', key: 'create_uchak_interest' },
       { action: 'Delete Uchak Interest', key: 'delete_uchak_interest' },
+      { action: 'Create Loan Part Payment', key: 'create_loan_part_payment' },
       { action: 'Delete Loan Part Payment', key: 'delete_loan_part_payment' },
+      { action: 'Create Loan Close', key: 'create_loan_close' },
     ],
   },
   {
     label: 'Other Loan Issue',
-    value: 'other loan issue',
+    value: 'Other Loan Issue',
     permissions: [
-      { action: 'create Other Loan Issue', key: 'create_other_loanIssue' },
-      { action: 'update Other Loan Issue', key: 'update_other_loanIssue' },
-      { action: 'delete Other Loan Issue', key: 'delete_other_loanIssue' },
+      { action: 'Create Other Loan Issue', key: 'create_other_loan_issue' },
+      { action: 'Update Other Loan Issue', key: 'update_other_loan_issue' },
+      { action: 'Delete Other Loan Issue', key: 'delete_other_loan_issue' },
     ],
   },
   {
-    label: 'other loan pay history',
-    value: 'other loan pay history',
+    label: 'Other Loan Pay History',
+    value: 'Other Loan Pay History',
     permissions: [
-      { action: 'update Other Loan Pay History', key: 'update_-otherloanPayHistory' },
-      { action: 'print Other Loan Pay History', key: 'print_-otherloanPayHistory_detail' },
-      { action: 'Delete Other Loan', key: 'delete_loan' },
-      { action: 'Delete Interest', key: 'delete_other_interest' },
-      // { action: 'Delete Part Release', key: 'delete_other_part_release' },
-      // { action: 'Delete Uchak Interest', key: 'delete_uchak_interest' },
-      // { action: 'Delete Other Loan Part Payment', key: 'delete_loan_part_payment' },
+      { action: 'Update Other Loan Pay History', key: 'update_other_loan_pay_history' },
+      { action: 'Delete Other Loan', key: 'delete_other_loan' },
+      { action: 'Create Interest', key: 'create_interest' },
+      { action: 'Delete Interest', key: 'delete_interest' },
+      { action: 'Create Loan Close', key: 'create_loan_close' },
     ],
   },
   {
     label: 'Reminder',
-    value: 'reminder',
+    value: 'Reminder',
     permissions: [
-      { action: 'create Reminder', key: 'create_reminder' },
-      { action: 'update Reminder', key: 'update_reminder' },
-      { action: 'delete Reminder', key: 'delete_reminder' },
-      { action: 'print Reminder', key: 'print_reminder_detail' },
-    ],
-  },
-
-  {
-    label: 'Reports',
-    value: 'reports',
-    permissions: [
-      { action: 'All Branch Loan Summary', key: 'all branch loan summary' },
-      { action: 'Branch Vise Loan Closing Report', key: 'branch vise loan closing report' },
-      { action: 'Daily Reports', key: 'daily reports' },
-      { action: 'Loan Details', key: 'loan details' },
-      { action: 'Interest Reports', key: 'Interest Reports' },
-      { action: 'Interest Entry Reports', key: 'interest entry reports' },
-      { action: 'Customer Statement', key: 'customer statement' },
-      { action: 'Loan Issue Reports', key: 'loan issue reports' },
-    ],
-  },
-  {
-    label: 'Reports Print',
-    value: 'reports print',
-    permissions: [
-      { action: 'All Branch Loan Summary', key: 'print_all_branch_loan_summary' },
-      { action: 'Branch Vise Loan Closing Report', key: 'print_branch_vise_loan_closing_report' },
-      { action: 'Daily Reports', key: 'print_daily_reports' },
-      { action: 'Loan Details', key: 'print_loan_details' },
-      { action: 'Interest Reports', key: 'print_Interest_Reports' },
-      { action: 'Interest Entry Report', key: 'print_Interest_Entry_Reports' },
-      { action: 'Customer Statement', key: 'print_customer_statement' },
-      { action: 'Loan Issue Reports', key: 'print_loan_issue_reports' },
-    ],
-  },
-  {
-    label: 'Other Reports',
-    value: 'other reports',
-    permissions: [
-      { action: 'Other Loan All Branch Reports', key: 'other loan all branch reports' },
-      { action: 'Other Loan close Reports', key: 'other loan close reports' },
-      { action: 'Other Loan Interest', key: 'other loan interest' },
-      { action: 'Other Interest Entry Report', key: 'Other_Interest_Entry_Reports' },
-      { action: 'Other Loan Daily Reports', key: 'other loan daily reports' },
-      { action: 'total all in out Loan Reports', key: 'total all in out loan reports' },
-    ],
-  },
-  {
-    label: 'Other Reports Print',
-    value: 'other reports Print',
-    permissions: [
-      { action: 'Other Loan All Branch Reports', key: 'print_other_loan_all_branch_reports' },
-      { action: 'Other Loan close Reports', key: 'print_other_loan_close_reports' },
-      { action: 'Other Loan Interest', key: 'print_other_loan_interest' },
-      { action: 'Other Interest Entry Report', key: 'print_Other_Interest_Entry_Reports' },
-      { action: 'Other Loan Daily Reports', key: 'print_other_loan_daily_reports' },
-      { action: 'total all in out Loan Reports', key: 'print_total_all_in_out_loan_reports' },
-    ],
-  },
-  {
-    label: 'Cash & Bank',
-    value: 'cash & bank',
-    permissions: [
-      { action: 'Cash In', key: 'cash in' },
-      { action: 'Bank Account', key: 'bank account' },
-      { action: 'Expense', key: 'expense' },
-      { action: 'Other Income', key: 'other income' },
-      { action: 'Payment In Out', key: 'payment in out' },
+      { action: 'Create Reminder', key: 'create_reminder' },
+      { action: 'Update Reminder', key: 'update_reminder' },
+      { action: 'Delete Reminder', key: 'delete_reminder' },
+      { action: 'Print Reminder', key: 'print_reminder_detail' },
     ],
   },
   {
@@ -237,9 +197,121 @@ export const modules = [
     permissions: [],
   },
   {
+    label: 'Reports',
+    value: 'Reports',
+    permissions: [
+      { action: 'All Branch Loan Summary', key: 'all branch loan summary' },
+      { action: 'Branch Vise Loan Closing Report', key: 'branch vise loan closing report' },
+      { action: 'Daily Reports', key: 'daily reports' },
+      { action: 'Loan Details', key: 'loan details' },
+      { action: 'Interest Reports', key: 'interest reports' },
+      { action: 'Interest Entry Reports', key: 'interest entry reports' },
+      { action: 'Customer Statement', key: 'customer statement' },
+      { action: 'Customer Refrance Statement', key: 'customer refrance report' },
+      { action: 'Loan Issue Reports', key: 'loan issue reports' },
+    ],
+  },
+  {
+    label: 'Reports Print',
+    value: 'Reports Print',
+    permissions: [
+      { action: 'All Branch Loan Summary', key: 'print_all_branch_loan_summary' },
+      { action: 'Branch Vise Loan Closing Report', key: 'print_branch_vise_loan_closing_report' },
+      { action: 'Daily Reports', key: 'print_daily_reports' },
+      { action: 'Loan Details', key: 'print_loan_details' },
+      { action: 'Interest Reports', key: 'print_interest_reports' },
+      { action: 'Interest Entry Report', key: 'print_interest_entry_report' },
+      { action: 'Customer Statement', key: 'print_customer_statement' },
+      { action: 'Customer Refrance Statement', key: 'print_customer_refrance_statement' },
+      { action: 'Loan Issue Reports', key: 'print_loan_issue_reports' },
+    ],
+  },
+  {
+    label: 'Other Reports',
+    value: 'Other Reports',
+    permissions: [
+      { action: 'Other Loan All Branch Reports', key: 'other loan all branch reports' },
+      { action: 'Other Loan Close Reports', key: 'other loan close reports' },
+      { action: 'Other Loan Interest', key: 'other loan interest' },
+      { action: 'Other Interest Entry Report', key: 'other interest entry reports' },
+      { action: 'Other Loan Daily Reports', key: 'other loan daily reports' },
+      { action: 'Total All In Out Loan Reports', key: 'total all in out loan reports' },
+    ],
+  },
+  {
+    label: 'Other Reports Print',
+    value: 'Other Reports Print',
+    permissions: [
+      { action: 'Other Loan All Branch Reports', key: 'print_other_loan_all_branch_reports' },
+      { action: 'Other Loan Close Reports', key: 'print_other_loan_close_reports' },
+      { action: 'Other Loan Interest', key: 'print_other_loan_interest' },
+      { action: 'Other Interest Entry Report', key: 'print_other_interest_entry_report' },
+      { action: 'Other Loan Daily Reports', key: 'print_other_loan_daily_reports' },
+      { action: 'Total All In Out Loan Reports', key: 'print_total_all_in_out_loan_reports' },
+    ],
+  },
+  {
+    label: 'Accounting',
+    value: 'Accounting',
+    permissions: [
+      { action: 'Cash In', key: 'cash in' },
+      { action: 'Bank Account', key: 'bank account' },
+      { action: 'Expense', key: 'expence' },
+      { action: 'Payment In Out', key: 'payment in/out' },
+      { action: 'Charge In Out', key: 'charge in/out' },
+      { action: 'Day Book', key: 'day book' },
+      { action: 'All Transaction', key: 'all transaction' },
+    ],
+  },
+  {
+    label: 'Accounting Print',
+    value: 'Accounting Print',
+    permissions: [
+      { action: 'Print Cash In', key: 'print_cash_in' },
+      { action: 'Print Bank Account In', key: 'print_bank_account_in' },
+      { action: 'Create Transfer', key: 'create_transfer' },
+      { action: 'Delete Transfer', key: 'delete_transfer' },
+      { action: 'Update Transfer', key: 'update_transfer' },
+      { action: 'Create Expenses', key: 'create_expenses' },
+      { action: 'Delete Expenses', key: 'delete_expenses' },
+      { action: 'Update Expenses', key: 'update_expenses' },
+      { action: 'Print Expenses', key: 'print_expenses' },
+      { action: 'Create Party', key: 'create_party' },
+      { action: 'Delete Party', key: 'delete_party' },
+      { action: 'Update Party', key: 'update_party' },
+      { action: 'Create Payment In/Out', key: 'create_payment_in_out' },
+      { action: 'Delete Payment In/Out', key: 'delete_payment_in_out' },
+      { action: 'Update Payment In/Out', key: 'update_payment_in_out' },
+      { action: 'Print Payment In/Out', key: 'print_payment_in_out' },
+      { action: 'Create Charge', key: 'create_charge' },
+      { action: 'Delete Charge', key: 'delete_charge' },
+      { action: 'Update Charge', key: 'update_charge' },
+      { action: 'Print Charge', key: 'print_charge' },
+      { action: 'Print Day Book', key: 'print_day_book' },
+      { action: 'Print All Transaction', key: 'print_all_transaction' },
+    ],
+  },
+  {
     label: 'Setting',
-    value: 'setting',
-    permissions: [],
+    value: 'Setting',
+    permissions: [
+      { action: 'Company Profile', key: 'Company Profile' },
+      { action: 'Roles', key: 'Roles' },
+      { action: 'Permission', key: 'Permission' },
+      { action: 'Branch', key: 'Branch' },
+      { action: 'Business Type', key: 'Business type' },
+      { action: 'Loan Type', key: 'Loan type' },
+      { action: 'Percentage', key: 'Percentage' },
+      { action: 'Expense Type', key: 'Expense type' },
+      { action: 'Charge Type', key: 'Charge type' },
+      { action: 'Remark Type', key: 'Remark type' },
+      { action: 'Export Policy Config', key: 'Export Policy Config' },
+      { action: 'Other Name', key: 'Other Name' },
+      { action: 'Month Tab', key: 'Month' },
+      { action: 'WhatsApp Configs', key: 'WhatsApp Configs' },
+      { action: 'Device Access', key: 'Device Access' },
+      { action: 'Area', key: 'Area' },
+    ],
   },
 ];
 
@@ -376,7 +448,7 @@ export default function PermissionView() {
       [selectedRole]: {
         sections: modules
           .filter((module) => moduleSwitchState[module.value])
-          .map((module) => module.value), // Map to module values
+          .map((module) => module.value),
         responsibilities: modules.reduce((acc, module) => {
           module.permissions.forEach((permission) => {
             const permissionKey = `${module.value}.${permission.key}`;
@@ -474,7 +546,7 @@ export default function PermissionView() {
                                     checked={
                                       permissionsState[`${module.value}.${permission.key}`] || false
                                     }
-                                    disabled={!moduleSwitchState[module.value]} // Disable if module is off
+                                    disabled={!moduleSwitchState[module.value]}
                                     onChange={(e) => {
                                       field.onChange(e.target.checked);
                                       handleCheckboxChange(
@@ -515,7 +587,7 @@ export default function PermissionView() {
             necessary:
           </Typography>
           {configs?.roles
-            .filter(
+            ?.filter(
               (role) =>
                 role !== 'Admin' &&
                 (!configs.permissions?.[role] || !configs.permissions[role]?.sections?.length)

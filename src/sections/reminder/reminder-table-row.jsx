@@ -45,10 +45,9 @@ export default function ReminderTableRow({
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
   const statusColors = {
-    // Closed: (theme) => (theme.palette.mode === 'light' ? '#FFF1D6' : '#6f4f07'),
     Overdue: (theme) => (theme.palette.mode === 'light' ? '#FFE4DE' : '#611706'),
-    // Regular: (theme) => (theme.palette.mode === 'light' ? '#e4ffde' : '#0e4403'),
   };
+
   return (
     <>
       <TableRow hover selected={selected} sx={{ backgroundColor: statusColors[status] || '' }}>

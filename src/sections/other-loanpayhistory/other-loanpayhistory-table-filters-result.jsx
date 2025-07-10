@@ -19,6 +19,7 @@ export default function OtherLoanpayhistoryTableFiltersResult({
 }) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
   const DayLabel = shortDateLabel(filters.startDay, filters.endDay);
+
   const handleRemoveKeyword = useCallback(() => {
     onFilters('username', '');
   }, [onFilters]);
@@ -39,6 +40,7 @@ export default function OtherLoanpayhistoryTableFiltersResult({
     onFilters('startDate', null);
     onFilters('endDate', null);
   }, [onFilters]);
+
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>

@@ -4,19 +4,15 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
-import { Dialog, FormControl, IconButton, MenuItem, Autocomplete } from '@mui/material';
+import { Autocomplete, Dialog, FormControl, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../components/custom-popover';
 import { getResponsibilityValue } from '../../../permission/permission';
 import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { useGetBranch } from '../../../api/branch.js';
 import { useBoolean } from '../../../hooks/use-boolean.js';
-import CustomerStatementPdf from '../pdf/customer-statement-pdf.jsx';
 import { PDFViewer } from '@react-pdf/renderer';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -89,13 +85,6 @@ export default function InterestReportsTableToolbar({
     [onFilters]
   );
 
-  const handleFilterRate = useCallback(
-    (event) => {
-      onFilters('rate', typeof event.target.value === 'object' && event.target.value);
-    },
-    [onFilters]
-  );
-
   const customStyle = {
     maxWidth: { md: 350 },
     label: {
@@ -159,20 +148,6 @@ export default function InterestReportsTableToolbar({
               isOptionEqualToValue={(option, value) => option?.rate === value?.rate}
             />
           </FormControl>
-
-          {/*<FormControl sx={{ flexShrink: 0, width: { xs: 1, sm: 300 } }}>*/}
-          {/*  <Autocomplete*/}
-          {/*    options={branch}*/}
-          {/*    getOptionLabel={(option) => option?.name || ''}*/}
-          {/*    isOptionEqualToValue={(option, value) => option._id === value._id}*/}
-          {/*    value={branch.find((b) => b._id === filters.branch) || null}*/}
-          {/*    onChange={(event, newValue) => onFilters('branch', newValue ? newValue._id : null)}*/}
-          {/*    renderInput={(params) => (*/}
-          {/*      <TextField {...params} label="Branch" className={'custom-textfield'} />*/}
-          {/*    )}*/}
-          {/*  />*/}
-          {/*</FormControl>*/}
-
           <DatePicker
             label="Start date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -188,7 +163,6 @@ export default function InterestReportsTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
           <DatePicker
             label="End date"
             value={filters.endDate}
@@ -206,14 +180,12 @@ export default function InterestReportsTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-
-          {getResponsibilityValue('print_Interest_Reports', configs, user) && (
+          {getResponsibilityValue('print_interest_reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
-
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -256,7 +228,6 @@ export default function InterestReportsTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
@@ -264,7 +235,6 @@ export default function InterestReportsTableToolbar({
               Close
             </Button>
           </DialogActions>
-
           <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <InterestReportsPdf

@@ -55,8 +55,8 @@ export default function OtherLoanissueTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{cashAmount || 0}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{bankAmount || 0}</TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {getResponsibilityValue('update_loanIssue', configs, user) ||
-          getResponsibilityValue('delete_loanIssue', configs, user) ? (
+          {getResponsibilityValue('update_other_loan_issue', configs, user) ||
+          getResponsibilityValue('delete_other_loan_issue', configs, user) ? (
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
@@ -71,7 +71,7 @@ export default function OtherLoanissueTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        {getResponsibilityValue('update_other_loanIssue', configs, user) && (
+        {getResponsibilityValue('update_other_loan_issue', configs, user) && (
           <MenuItem
             onClick={() => {
               onEditRow();
@@ -82,7 +82,7 @@ export default function OtherLoanissueTableRow({
             Edit
           </MenuItem>
         )}
-        {getResponsibilityValue('delete_other_loanIssue', configs, user) && (
+        {getResponsibilityValue('delete_other_loan_issue', configs, user) && (
           <MenuItem
             onClick={() => {
               confirm.onTrue();

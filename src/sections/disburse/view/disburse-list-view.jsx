@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,20 +12,19 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks';
@@ -105,6 +104,7 @@ export default function DisburseListView() {
       enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
       return;
     }
+
     try {
       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/${user?.company}/loans`, {
         data: { ids: id },
@@ -299,15 +299,12 @@ function applyFilter({ inputData, comparator, filters }) {
     const aStatus = (a[0].status || '').toLowerCase();
     const bStatus = (b[0].status || '').toLowerCase();
 
-    // Bring 'issued' rows to the top
     if (aStatus === 'issued' && bStatus !== 'issued') return -1;
     if (aStatus !== 'issued' && bStatus === 'issued') return 1;
 
-    // Apply your original sorting
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
 
-    // Maintain original index order
     return a[1] - b[1];
   });
 
@@ -327,5 +324,6 @@ function applyFilter({ inputData, comparator, filters }) {
         item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   return inputData;
 }

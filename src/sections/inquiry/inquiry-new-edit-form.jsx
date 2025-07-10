@@ -58,16 +58,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   }
 
   const NewUserSchema = Yup.object().shape({
-    // firstName: Yup.string().required('First name is required'),
-    // lastName: Yup.string().required('Last name is required'),
     contact: Yup.string().required('Contact is required'),
-    // address: Yup.string().required('Address is required'),
-    // email: Yup.string().email('Email must be valid').required('Email is required'),
-    // date: Yup.date()
-    //   .required('Date is required')
-    //   .nullable()
-    //   .typeError('Date is required'),
-    // inquiryFor: Yup.string().required('Inquiry field is required'),
     assignTo: Yup.object().required('Inquiry field is required'),
     ...(user.role !== 'Employee' && {
       branchId: Yup.object()
@@ -133,6 +124,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
   } = methods;
 
   const selectedBranch = watch('branchId');
+
   useEffect(() => {
     const handleFilterEmployee = employee.filter(
       (item) =>
@@ -141,6 +133,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
     );
     setFilteredEmployee(handleFilterEmployee);
   }, [selectedBranch, employee, storedBranch]);
+
   const onSubmit = handleSubmit(async (data) => {
     const payload = {
       firstName: data.firstName,
@@ -200,6 +193,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
       console.error(error);
     }
   });
+
   const fetchNextInquiry = () => {
     const currentIndex = inquiry.indexOf(currentInquiry);
 
@@ -287,7 +281,6 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   isOptionEqualToValue={(option, value) => option?.value === value?.value}
                 />
               )}
-              {/*{user?.role === 'Admin' && employee && (*/}
               <RHFAutocomplete
                 name="assignTo"
                 req={'red'}
@@ -305,9 +298,7 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   })) || []
                 }
                 isOptionEqualToValue={(option, value) => option?.value === value?.value}
-                // disabled={user?.role === 'Employee'}
               />
-              {/*)}*/}
               <RHFTextField
                 name="firstName"
                 label="First Name"
@@ -372,7 +363,10 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   )}
                 />
               )}
-              {watch('inquiryFor') === 'Other' && <RHFTextField name="other" label="Other" />}
+              {watch('inquiryFor') === 'Other' && <RHFTextField name='other' label='Other' onChange={(e) => {
+                e.target.value = e.target.value.toUpperCase();
+                methods.setValue('other', e.target.value);
+              }} />}
               <RHFAutocomplete
                 name="response"
                 label="Status"
@@ -385,7 +379,10 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   }
                 }}
               />
-              <RHFTextField name="address" label="Address" />
+              <RHFTextField name='address' label='Address' onChange={(e) => {
+                e.target.value = e.target.value.toUpperCase();
+                methods.setValue('address', e.target.value);
+              }} />
               <RHFAutocomplete
                 name="remark"
                 label="Remark"
@@ -403,6 +400,10 @@ export default function InquiryNewEditForm({ currentInquiry, inquiry }) {
                   name="otherRemark"
                   label="Other Remark"
                   placeholder="Enter other remark"
+                  onChange={(e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    methods.setValue('otherRemark', e.target.value);
+                  }}
                 />
               )}
             </Box>

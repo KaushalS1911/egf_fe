@@ -8,7 +8,6 @@ import Iconify from 'src/components/iconify/index.js';
 // ----------------------------------------------------------------------
 
 export default function ChargeToolbar({ filters, onFilters, schemes }) {
-
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);

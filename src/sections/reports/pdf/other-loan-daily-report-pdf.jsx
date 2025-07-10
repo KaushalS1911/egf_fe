@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from '../../../utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
@@ -48,10 +48,10 @@ const useStyles = () =>
       borderRightWidth: 0,
     },
     strippedRow: {
-      backgroundColor: '#F2F2F2', // Light gray background for stripped rows
+      backgroundColor: '#F2F2F2',
     },
     lastRow: {
-      borderBottomWidth: 0, // Remove border for the last row
+      borderBottomWidth: 0,
     },
     termsAndConditionsHeaders: {
       color: '#232C4B',
@@ -109,7 +109,6 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
   ];
   return (
     <Document>
-      {/* New Gold Loan Details Table */}
       <Page size="A4" orientation="landscape" style={{ ...styles.page, position: 'relative' }}>
         <InvoiceHeader selectedBranch={selectedBranch} configs={configs} landscape />
         <View style={{ position: 'absolute', top: 20, right: -40, width: 250 }}>
@@ -222,8 +221,6 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
           )}
         </View>
       </Page>
-
-      {/* Gold Loan Interest Details Table */}
       {loanIntDetails && loanIntDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>
@@ -336,8 +333,6 @@ export default function OtherDailyReportPdf({ selectedBranch, configs, data, fil
           </View>
         </Page>
       )}
-
-      {/* Gold Loan Part Close/Payment Details Table */}
       {closedLoanDetails && closedLoanDetails.length > 0 && (
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={{ padding: '10px' }}>

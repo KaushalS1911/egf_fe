@@ -18,7 +18,6 @@ export default function ReminderTableFiltersResult({
   ...other
 }) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
-  // const DayLabel = shortDateLabel(filters.startDay, filters.endDay);
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
@@ -35,6 +34,7 @@ export default function ReminderTableFiltersResult({
   const handleRemoveStatus = useCallback(() => {
     onFilters('status', 'All');
   }, [onFilters]);
+
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
@@ -64,7 +64,6 @@ export default function ReminderTableFiltersResult({
             <Chip size="small" label={filters.day} onDelete={handleRemoveDay} />
           </Block>
         )}
-
         <Button
           color="error"
           onClick={onResetFilters}

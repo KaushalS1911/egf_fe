@@ -19,6 +19,7 @@ export default function EmployeeTableFiltersResult({
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
+
   const handleRemoveStatus = useCallback(() => {
     onFilters('status', 'all');
   }, [onFilters]);
@@ -30,12 +31,14 @@ export default function EmployeeTableFiltersResult({
     },
     [filters.service, onFilters]
   );
+
   const handleRemoveRole = useCallback(
     (inputValue) => {
       onFilters('role', '');
     },
     [onFilters]
   );
+
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>

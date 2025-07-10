@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -15,14 +15,14 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { LoadingScreen } from '../../../components/loading-screen';
 import InterestReportsTableRow from '../interest-reports/interest-reports-table-row.jsx';
@@ -40,7 +40,6 @@ const TABLE_HEAD = [
   { id: 'customerName', label: 'Customer name' },
   { id: 'issueDate', label: 'Issue date' },
   { id: 'loanAmount', label: 'Loan amt' },
-  // { id: 'partLoanAmt', label: 'Part loan amt' },
   { id: 'interestLoanAmount', label: 'Int. loan amt' },
   { id: 'interestRate', label: 'Rate' },
   { id: 'consultingCharge', label: 'Consulting Charge' },
@@ -85,35 +84,43 @@ export default function InterestReportsListView() {
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
+
   const int = dataFiltered.reduce(
     (prev, next) =>
       prev + (Number(next?.scheme.interestRate > 1.5 ? 1.5 : next?.scheme.interestRate) || 0),
     0
   );
+
   const consultingCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
+
   const interestAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
+
   const consultingAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingAmount) || 0),
     0
   );
+
   const penaltyAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.penaltyAmount) || 0),
     0
   );
+
   const totalPaidInterest = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.totalPaidInterest) || 0),
     0
   );
+
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.day > 0 ? next.day : 0) || 0),
     0
   );
+
   const pendingDay = dataFiltered.reduce(
     (prev, next) => prev + Number(next?.pendingDays >= 0 ? next.pendingDays : 0),
     0
@@ -159,7 +166,7 @@ export default function InterestReportsListView() {
 
       setOptions(newOptions);
     }
-  }, [interestReports]); // Runs only when interestReports changes
+  }, [interestReports]);
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
@@ -388,9 +395,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   if (branch) {
     inputData = inputData.filter((item) => item.customer.branch._id === branch);
   }
+
   if (rate) {
     inputData = inputData.filter((item) => item.scheme.interestRate === rate.rate);
   }

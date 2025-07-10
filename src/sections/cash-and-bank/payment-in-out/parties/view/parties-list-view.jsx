@@ -1,10 +1,8 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback, useEffect } from 'react';
-import Card from '@mui/material/Card';
+import React, { useCallback, useState } from 'react';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
@@ -15,16 +13,15 @@ import Iconify from 'src/components/iconify/index.js';
 import { useSnackbar } from 'src/components/snackbar/index.js';
 import { ConfirmDialog } from 'src/components/custom-dialog/index.js';
 import { useSettingsContext } from 'src/components/settings/index.js';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/index.js';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table/index.js';
 
 import axios from 'axios';
@@ -32,16 +29,10 @@ import axios from 'axios';
 import PartiesToolbar from '../parties-toolbar.jsx';
 import PartiesTableFiltersResult from '../parties-table-filters-result.jsx';
 import PartiesTableRow from '../parties-table-row.jsx';
-import { useGetScheme } from '../../../../../api/scheme.js';
 import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../../permission/permission.js';
 import { LoadingScreen } from '../../../../../components/loading-screen/index.js';
-import TableRow from '@mui/material/TableRow';
-import { grey } from '../../../../../theme/palette.js';
-import { TableCell, Typography } from '@mui/material';
-import { useParams } from 'react-router';
-import { useGetParty } from '../../../../../api/party.js';
 import { useTheme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------

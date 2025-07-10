@@ -28,7 +28,7 @@ import {
   useTable,
 } from 'src/components/table/index.js';
 import ExpenceTableToolbar from '../expence-table-toolbar.jsx';
-import ExpenceTableRow from '../expence-table-row.jsx';
+import ExpenseTableRow from '../expence-table-row.jsx';
 import { Grid } from '@mui/material';
 import { LoadingScreen } from '../../../../components/loading-screen/index.js';
 import Typography from '@mui/material/Typography';
@@ -39,9 +39,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks/index.js';
 import { useGetExpanse } from '../../../../api/expense.js';
 import { getResponsibilityValue } from '../../../../permission/permission.js';
-import ExpenseTableRow from '../expence-table-row.jsx';
 import { useGetConfigs } from '../../../../api/config.js';
-import { useLightBox } from '../../../../components/lightbox/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -79,6 +77,7 @@ export default function ExpenceListView() {
   const router = useRouter();
   const confirm = useBoolean();
   const { user } = useAuthContext();
+  const { configs } = useGetConfigs();
   const [tableData, setTableData] = useState(expense);
   const [filters, setFilters] = useState(defaultFilters);
   const [options, setOptions] = useState([]);
@@ -89,22 +88,24 @@ export default function ExpenceListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
   useEffect(() => {
     {
       dataFiltered.length > 0 && fetchStates();
       fetchCategoryStates();
     }
   }, [expense]);
+
   const cash = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail?.cashAmount) || 0),
     0
   );
+
   const bank = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail?.bankAmount) || 0),
     0
   );
 
-  // Calculate total by expense type
   const calculateExpenceTypeTotals = (data) => {
     const totals = {};
     data.forEach((item) => {
@@ -123,6 +124,7 @@ export default function ExpenceListView() {
       amount: Number(amount.toFixed(2)),
     }));
   };
+
   const expenceTypeTotals = calculateExpenceTypeTotals(expense);
 
   useEffect(() => {
@@ -162,6 +164,10 @@ export default function ExpenceListView() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (getResponsibilityValue('delete_expenses', configs, user)) {
+      enqueueSnackbar('You do not have permission to delete.', { variant: 'error' });
+      return;
+    }
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/${user?.company}/expense/${id}`
@@ -177,7 +183,6 @@ export default function ExpenceListView() {
   const handleDeleteRow = useCallback(
     (id) => {
       handleDelete([id]);
-
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, enqueueSnackbar, table, tableData]
@@ -196,9 +201,7 @@ export default function ExpenceListView() {
 
   function fetchStates() {
     const accountMap = new Map();
-
     accountMap.set('cash', { transactionsType: 'Cash' });
-
     dataFiltered?.forEach((data) => {
       const account = data?.paymentDetail?.account;
       if (account && account._id && !accountMap.has(account._id)) {
@@ -207,7 +210,6 @@ export default function ExpenceListView() {
     });
 
     const newOptions = Array.from(accountMap.values());
-
     setOptions((prevOptions) => {
       const isSame =
         prevOptions.length === newOptions.length &&
@@ -215,7 +217,6 @@ export default function ExpenceListView() {
 
       return isSame ? prevOptions : newOptions;
     });
-
     setOptions(newOptions);
   }
 
@@ -248,14 +249,16 @@ export default function ExpenceListView() {
           }
           links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'List' }]}
           action={
-            <Button
+            <>
+              {getResponsibilityValue('create_expenses', configs, user) && <Button
               component={RouterLink}
               href={paths.dashboard.cashAndBank.expense.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
+              variant='contained'
+              startIcon={<Iconify icon='mingcute:add-line' />}
             >
               Add Expense
-            </Button>
+              </Button>}
+            </>
           }
           sx={{
             mb: { xs: 3, md: 1 },
@@ -417,12 +420,15 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         item?.paymentDetail?.bankAmount?.includes(name)
     );
   }
+
   if (transactions) {
     inputData = inputData.filter((item) => item?.paymentDetail?.account?._id === transactions?._id);
   }
+
   if (category) {
     inputData = inputData.filter((item) => item?.category === category);
   }
+
   if (Object.keys(expenseType).length > 0) {
     inputData = inputData.filter((item) => expenseType.expenseType === item.expenseType);
   }
@@ -430,5 +436,6 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((item) => isBetween(new Date(item.date), startDate, endDate));
   }
+
   return inputData;
 }

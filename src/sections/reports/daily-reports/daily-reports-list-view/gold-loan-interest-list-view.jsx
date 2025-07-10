@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,18 +12,17 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
   emptyRows,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
@@ -84,28 +83,34 @@ export default function GoldLoanInterestListView({ interestDetail }) {
       (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
+
   const loanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
     0
   );
+
   const conCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
     0
   );
+
   const intLoanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
+
   const penalty = dataFiltered.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
   const day = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.days > 0 ? next?.days : 0) || 0),
     0
   );
+
   const amountPaid = dataFiltered.reduce((prev, next) => prev + (Number(next?.amountPaid) || 0), 0);
   const interestAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
+
   const consultingCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
@@ -118,7 +123,6 @@ export default function GoldLoanInterestListView({ interestDetail }) {
 
   const denseHeight = table.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
     (name, value) => {

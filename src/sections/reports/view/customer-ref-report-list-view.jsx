@@ -30,7 +30,6 @@ import CustomerRefReportTableToolbar from '../custmoer-ref-report/customer-ref-r
 import CustomerRefReportTableFiltersResult from '../custmoer-ref-report/customer-ref-report-table-filters-result.jsx';
 import CustomerRefReportTableRow from '../custmoer-ref-report/customer-ref-report-table-row.jsx';
 import { useGetCustomer } from '../../../api/customer.js';
-// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
@@ -112,6 +111,7 @@ export default function CustomerRefReportListView() {
       setOptions(newOptions);
     }
   }, [customer]);
+
   const denseHeight = table?.dense ? 56 : 56 + 20;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
@@ -215,7 +215,6 @@ export default function CustomerRefReportListView() {
                     <CustomerRefReportTableRow key={row?._id} index={index} row={row} />
                   ))}
                 <TableNoData notFound={notFound} />
-
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered?.length)}

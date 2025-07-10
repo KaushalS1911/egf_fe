@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -15,24 +15,22 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import { LoadingScreen } from '../../../components/loading-screen';
 import InterestReportsTableFiltersResult from '../interest-reports/interest-reports-table-filters-result.jsx';
-import { useGetInterestReports } from '../../../api/interest-reports.js';
 import CustomerStatementTableToolbar from '../customer-statement/customer-statement-table-toolbar.jsx';
 import CustomerStatementTableRow from '../customer-statement/customer-statement-table-row.jsx';
 import axios from 'axios';
 import { useAuthContext } from '../../../auth/hooks/index.js';
 import { isBetween } from '../../../utils/format-time.js';
-import { TableCell, TableRow } from '@mui/material';
 import { useGetLoanissue } from '../../../api/loanissue.js';
 
 // ----------------------------------------------------------------------
@@ -71,12 +69,15 @@ export default function CustomerStatementListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
   const loanAmount = dataFiltered.reduce((prev, next) => prev + (Number(next?.loanAmount) || 0), 0);
   const intLoanAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
+
   const amt = dataFiltered.reduce((prev, next) => prev + (Number(next?.amount) || 0), 0);
+
   const fetchCustomerStatement = async () => {
     if (!filters.customer) return;
 
@@ -135,6 +136,7 @@ export default function CustomerStatementListView() {
   if (customerStatementLoading) {
     return <LoadingScreen />;
   }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>

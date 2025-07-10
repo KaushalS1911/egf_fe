@@ -7,7 +7,7 @@ import InvoiceHeader from '../../../components/invoise/invoice-header';
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: '/fonts/Roboto-Regular.ttf' }, // Regular weight
+    { src: '/fonts/Roboto-Regular.ttf' },
     { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' },
   ],
 });
@@ -206,6 +206,7 @@ const useStyles = () =>
 
 function Noc({ nocData, configs ,closingDate , charge}) {
   const styles = useStyles();
+
   return (
     <>
       <Document>
@@ -238,7 +239,6 @@ function Noc({ nocData, configs ,closingDate , charge}) {
                 <Text style={styles.topDetails}>
                   {`${nocData.customer.temporaryAddress.street},\n${nocData.customer.temporaryAddress.landmark}\n${nocData.customer.temporaryAddress.city} - ${nocData.customer.temporaryAddress.zipcode}\n${nocData.customer.temporaryAddress.state}`}
                 </Text>
-
                 <Text style={styles.topDetails}>{nocData.customer.contact}</Text>
               </View>
               <View>

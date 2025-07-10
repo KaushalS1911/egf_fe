@@ -1,10 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
-import { differenceInDays } from 'date-fns';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -115,26 +113,11 @@ const useStyles = () =>
     []
   );
 
-// Helper function to format currency values
 const formatCurrency = (value, precision = 2) => {
   return (value || 0).toFixed(precision);
 };
 
 export default function InterestReportsPdf({ selectedBranch, configs, data, filterData, total }) {
-  const {
-    int,
-    intLoanAmt,
-    consultingCharge,
-    interestAmount,
-    consultingAmount,
-    penaltyAmount,
-    totalPaidInterest,
-    day,
-    pendingDay,
-    pendingInterest,
-    loanAmt,
-  } = total || {};
-
   const styles = useStyles();
   const headers = [
     { label: '#', flex: 0.3 },
@@ -167,7 +150,6 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
     { value: fDate(new Date()) || '-', label: 'Date' },
   ];
 
-  // Modified to have different row counts for first page vs subsequent pages
   const firstPageRows = 16;
   const otherPagesRows = 23;
 
@@ -176,12 +158,9 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
   let currentPageIndex = 0;
   let rowsOnCurrentPage = 0;
   let maxRowsForCurrentPage = firstPageRows;
-
-  // Safely handle data
   const reportsData = data || [];
   const reportCount = reportsData.length || 0;
 
-  // Calculate totals
   const totals = reportsData.reduce(
     (acc, row) => ({
       interestAmount: (acc.interestAmount || 0) + (row.interestAmount || 0),
@@ -202,7 +181,6 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
     const isAlternateRow = index % 2 !== 0;
     const isLastRow = index === reportsData.length - 1;
 
-    // Create the row component
     currentPageRows.push(
       <View key={index} style={[styles.tableRow, isAlternateRow && styles.alternateRow]}>
         <Text style={[styles.tableCell, { flex: headers[0].flex }]}>{index + 1}</Text>
@@ -261,10 +239,8 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
 
     rowsOnCurrentPage++;
 
-    // Check if we need to create a new page
     const isPageFull = rowsOnCurrentPage === maxRowsForCurrentPage;
     if (isPageFull || isLastRow) {
-      // Create a page with the current rows
       const isFirstPage = currentPageIndex === 0;
 
       pages.push(
@@ -314,8 +290,6 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
                 ))}
               </View>
               {currentPageRows}
-
-              {/* Total Row - only show on the last page */}
               {isLastRow && (
                 <View style={[styles.tableRow, styles.totalRow]}>
                   <Text style={[styles.totalCell, { flex: headers[0].flex }]}></Text>
@@ -369,8 +343,6 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
           </View>
         </Page>
       );
-
-      // Reset for next page
       currentPageRows = [];
       currentPageIndex++;
       rowsOnCurrentPage = 0;
@@ -378,7 +350,6 @@ export default function InterestReportsPdf({ selectedBranch, configs, data, filt
     }
   });
 
-  // If no data, create an empty page with headers
   if (reportsData.length === 0) {
     pages.push(
       <Page

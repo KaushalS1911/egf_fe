@@ -16,6 +16,7 @@ export default function GoldpriceTableFiltersResult({
   results,
   ...other
 }) {
+
   const handleRemoveKeyword = useCallback(() => {
     onFilters('name', '');
   }, [onFilters]);
@@ -27,7 +28,6 @@ export default function GoldpriceTableFiltersResult({
   const handleRemoveRole = useCallback(
     (inputValue) => {
       const newValue = filters.role.filter((item) => item !== inputValue);
-
       onFilters('role', newValue);
     },
     [filters.role, onFilters]
@@ -41,21 +41,17 @@ export default function GoldpriceTableFiltersResult({
           results found
         </Box>
       </Box>
-
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.isActive !== 'all' && (
           <Block label="Active">
             <Chip size="small" label={filters.isActive === "true"?"Active":"Non Active"} onDelete={handleRemoveStatus} />
           </Block>
         )}
-
-
         {!!filters.name && (
           <Block label="Scheme Name:">
             <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
-
         <Button
           color="error"
           onClick={onResetFilters}
@@ -96,7 +92,6 @@ function Block({ label, children, sx, ...other }) {
       <Box component="span" sx={{ typography: 'subtitle2' }}>
         {label}
       </Box>
-
       <Stack spacing={1} direction="row" flexWrap="wrap">
         {children}
       </Stack>

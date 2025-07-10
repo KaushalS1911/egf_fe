@@ -69,14 +69,17 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     (prev, next) => prev + (Number(next?.interestLoanAmount) || 0),
     0
   );
+
   const cashAmt = partPayment.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.cashAmount) || 0),
     0
   );
+
   const bankAmt = partPayment.reduce(
     (prev, next) => prev + (Number(next?.paymentDetail.bankAmount) || 0),
     0
   );
+
   const paymentSchema =
     paymentMode === 'Bank'
       ? {
@@ -153,6 +156,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
     setValue,
     formState: { isSubmitting },
   } = methods;
+
   const sendPdfToWhatsApp = async (item) => {
     try {
       const blob = await pdf(
@@ -174,7 +178,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
         companyContact: item ? item.loan.company.contact : data.loan.company.contact,
         branchContact: item ? item.loan.customer.branch.contact : data.loan.customer.branch.contact,
         company: user.company,
-
         file,
         type: 'part_payment',
       };
@@ -196,6 +199,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       console.error('Error generating PDF:', error);
     }
   };
+
   const onSubmit = handleSubmit(async (data) => {
     const loanToDate = loanInterest[0]?.to;
     const selectedDate = watch('date');
@@ -318,13 +322,6 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
       setValue('bankAmount', 0);
     }
   };
-
-  // function intAmtCalculation(loanAmt, IntAmt, index) {
-  //   const totalPartPay = partPayment.reduce((acc, curr, i) => {
-  //     return i <= index ? acc + curr.amountPaid : acc;
-  //   }, 0);
-  //   return loanAmt - totalPartPay;
-  // }
 
   return (
     <>
@@ -472,7 +469,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
                   >
                     Reset
                   </Button>
-                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                  {getResponsibilityValue('create_loan_part_payment', configs, user) && (
                     <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                       Submit
                     </LoadingButton>
@@ -545,7 +542,7 @@ function LoanPartPaymentForm({ currentLoan, mutate }) {
               ) : (
                 <TableCell>-</TableCell>
               )}
-              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
+              {getResponsibilityValue('print_loan_pay_history_detail', configs, user) ? (
                 <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0, px: 1 }}>
                   {
                     <Typography

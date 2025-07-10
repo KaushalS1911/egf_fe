@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -10,37 +10,25 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
 import axios from 'axios';
 import { useAuthContext } from '../../../../auth/hooks';
-import { useGetLoanissue } from '../../../../api/loanissue';
-import { LoadingScreen } from '../../../../components/loading-screen';
-import { fDate, isBetween } from '../../../../utils/format-time';
+import { isBetween } from '../../../../utils/format-time';
 import { useGetConfigs } from '../../../../api/config';
-import AllBranchLoanSummaryTableRow from '../../all-branch-loan/all-branch-loan-summary-table-row';
-import AllBranchLoanSummaryTableToolbar from '../../all-branch-loan/all-branch-loan-summary-table-toolbar';
 import AllBranchLoanSummaryTableFiltersResult from '../../all-branch-loan/all-branch-loan-summary-table-filters-result';
-import Tabs from '@mui/material/Tabs';
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Label from '../../../../components/label';
 import { TableCell, TableRow, Typography } from '@mui/material';
 import LoanInterestDetailsTableRow from '../loan-details-table/loan-interest-details-table-row';
 
@@ -71,6 +59,7 @@ const STATUS_OPTIONS = [
   },
   { value: 'Disbursed', label: 'Disbursed' },
 ];
+
 const defaultFilters = {
   username: '',
   status: 'All',
@@ -105,29 +94,35 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
       (Number(next?.loan.scheme.interestRate > 1.5 ? 1.5 : next?.loan.scheme.interestRate) || 0),
     0
   );
+
   const totalInt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.interestAmount) || 0),
     0
   );
+
   const conCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.consultingCharge) || 0),
     0
   );
+
   const consultingCharge = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.loan.consultingCharge) || 0),
     0
   );
+
   const penalty = dataFiltered.reduce((prev, next) => prev + (Number(next?.penalty) || 0), 0);
   const cr_dr = dataFiltered.reduce((prev, next) => prev + (Number(next?.old_cr_dr) || 0), 0);
   const adjustedPay = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.adjustedPay) || 0),
     0
   );
+
   const day = dataFiltered.reduce((prev, next) => prev + (Number(next?.days) || 0), 0);
   const uchakInterestAmount = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.uchakInterestAmount) || 0),
     0
   );
+
   const loanAmt = dataFiltered.reduce(
     (prev, next) => prev + (Number(next?.loan.loanAmount) || 0),
     0
@@ -171,12 +166,7 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
       enqueueSnackbar('Failed to delete Employee');
     }
   };
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
+
   const handleDeleteRow = useCallback(
     (id) => {
       if (id) {
@@ -212,36 +202,6 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
     [router]
   );
 
-  // const loans = Loanissue.map((item) => ({
-  //   'Loan No': item.loanNo,
-  //   'Customer Name': `${item.customer.firstName} ${item.customer.middleName} ${item.customer.lastName}`,
-  //   'Contact': item.customer.contact,
-  //   'OTP Contact': item.customer.otpContact,
-  //   Email: item.customer.email,
-  //   'Permanent address': `${item.customer.permanentAddress.street} ${item.customer.permanentAddress.landmark} ${item.customer.permanentAddress.city} , ${item.customer.permanentAddress.state} ${item.customer.permanentAddress.country} ${item.customer.permanentAddress.zipcode}`,
-  //   'Issue date': item.issueDate,
-  //   'Scheme': item.scheme.name,
-  //   'Rate per gram': item.scheme.ratePerGram,
-  //   'Interest rate': item.scheme.interestRate,
-  //   valuation: item.scheme.valuation,
-  //   'Interest period': item.scheme.interestPeriod,
-  //   'Renewal time': item.scheme.renewalTime,
-  //   'min loan time': item.scheme.minLoanTime,
-  //   'Loan amount': item.loanAmount,
-  //   'Next nextInstallment date': fDate(item.nextInstallmentDate),
-  //   'Payment mode': item.paymentMode,
-  //   'Paying cashAmount': item.payingCashAmount,
-  //   'Pending cashAmount': item.pendingCashAmount,
-  //   'Paying bankAmount': item.payingBankAmount,
-  //   'Pending bankAmount': item.pendingBankAmount,
-  // }));
-
-  // if (LoanissueLoading) {
-  //   return (
-  //     <LoadingScreen />
-  //   );
-  // }
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -256,7 +216,6 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
-
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -300,7 +259,6 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                   backgroundColor: '#2f3944',
                 }}
               />
-
               <TableBody>
                 {dataFiltered
                   .slice(
@@ -319,7 +277,6 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                       onEditRow={() => handleEditRow(row._id)}
                     />
                   ))}
-
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
@@ -331,7 +288,6 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
                     </TableCell>
                   </TableRow>
                 )}
-
                 <TableRow
                   sx={{
                     backgroundColor: '#F4F6F8',
@@ -381,7 +337,6 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
               </TableBody>
             </Table>
           </TableContainer>
-
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -393,7 +348,6 @@ export default function LoanInterestDetailsListView({ interestDetail, dataFilter
           />
         </Card>
       </Container>
-
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -443,12 +397,15 @@ function applyFilter({ inputData, comparator, filters, dateError, dataFilters })
         item.customer.contact.toLowerCase().includes(username.toLowerCase())
     );
   }
+
   if (status && status !== 'All') {
     inputData = inputData.filter((item) => item.status === status);
   }
+
   if (branch) {
     inputData = inputData.filter((item) => item.loan.customer.branch._id === branch._id);
   }
+
   if (!dateError && startDate && endDate) {
     inputData = inputData.filter((loan) => isBetween(new Date(loan.createdAt), startDate, endDate));
   }

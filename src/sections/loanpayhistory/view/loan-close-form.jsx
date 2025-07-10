@@ -2,17 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import FormProvider, { RHFAutocomplete, RHFTextField } from '../../../components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableHeadCustom } from '../../../components/table';
@@ -313,7 +303,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
       setValue('bankAmount', calculatedBankAmount >= 0 ? calculatedBankAmount : '');
     }
   };
-  console.log(currentLoan,"000000000000")
+
   const sendPdfToWhatsApp = async (item,date,charge) => {
     try {
       const blob = await pdf(<Noc nocData={currentLoan} closingDate={date} charge={charge} configs={configs} />).toBlob();
@@ -489,7 +479,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
       confirm.onFalse();
       refetchLoanClose();
       mutate();
-      // enqueueSnackbar(response?.data.message, { variant: 'success' });
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Failed to close Loan', { variant: 'error' });
@@ -701,7 +690,6 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   getOptionLabel={(option) => option}
                   onChange={(event, value) => {
                     setValue('chargePaymentMode', value);
-                    // handleLoanAmountChange({ target: { value: watch('closingCharge') } });
                   }}
                   renderOption={(props, option) => (
                     <li {...props} key={option}>
@@ -776,7 +764,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
                   <Button color="inherit" variant="outlined" onClick={() => reset()}>
                     Reset
                   </Button>
-                  {getResponsibilityValue('update_loanPayHistory', configs, user) && (
+                  {getResponsibilityValue('create_loan_close', configs, user) && (
                     <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                       Submit
                     </LoadingButton>
@@ -828,7 +816,7 @@ function LoanCloseForm({ currentLoan, mutate }) {
               <TableCell sx={{ whiteSpace: 'nowrap', py: 0, px: 2 }}>
                 {row.entryBy || '-'}
               </TableCell>
-              {getResponsibilityValue('print_loanPayHistory_detail', configs, user) ? (
+              {getResponsibilityValue('print_loan_pay_history_detail', configs, user) ? (
                 <TableCell sx={{ whiteSpace: 'nowrap', cursor: 'pointer', py: 0.5, px: 2 }}>
                   {
                     <Typography

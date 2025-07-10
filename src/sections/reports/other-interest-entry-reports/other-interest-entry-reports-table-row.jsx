@@ -1,14 +1,10 @@
 import PropTypes from 'prop-types';
 import { TableCell, TableRow } from '@mui/material';
-import { useAuthContext } from '../../../auth/hooks';
-import { useGetConfigs } from '../../../api/config';
 import { fDate } from '../../../utils/format-time';
 
 // ----------------------------------------------------------------------
 
 export default function OtherInterestEntryReportsTableRow({ row }) {
-  const { user, initialize } = useAuthContext();
-  const { configs } = useGetConfigs();
 
   return (
     <>

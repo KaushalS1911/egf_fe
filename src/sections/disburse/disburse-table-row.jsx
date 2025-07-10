@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -30,16 +29,7 @@ export default function DisburseTableRow({ row, selected, onEditRow, onSelectRow
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-        {/*{getResponsibilityValue('create_disburse', configs, user) ? <TableCell sx={{ whiteSpace: 'nowrap' }}>*/}
-        {/*    <Link*/}
-        {/*      to={paths.dashboard.disburse.new(_id)}*/}
-        {/*      style={{ textDecoration: 'none', fontWeight: 'bold', color: 'inherit' }}*/}
-        {/*    >*/}
-        {/*      {loanNo}*/}
-        {/*    </Link>*/}
-        {/*  </TableCell> :*/}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{loanNo}</TableCell>
-        {/*}*/}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {customer?.firstName + ' ' + customer?.middleName + ' ' + customer?.lastName}
         </TableCell>

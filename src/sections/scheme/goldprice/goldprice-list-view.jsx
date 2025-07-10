@@ -52,8 +52,8 @@ const TABLE_HEAD = [
 export default function GoldpriceListView() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-  const table = useTable();
   const { configs } = useGetConfigs();
+  const table = useTable();
 
   const defaultFilters = {
     name: '',

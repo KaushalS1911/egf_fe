@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -167,7 +166,6 @@ export default function PenaltyPdf({ configs, penalty }) {
       renderRow(row, index, index === rowsPerPageFirst - 1 && penalty.length === rowsPerPageFirst)
     );
 
-  // Add the first page
   pages.push(
     <Page key={0} size="A4" style={styles.page}>
       <InvoiceHeader configs={configs} />
@@ -190,7 +188,6 @@ export default function PenaltyPdf({ configs, penalty }) {
       >
         <Text style={styles.termsAndConditionsHeaders}>PENALTIES</Text>
       </View>
-
       <View style={{ flexGrow: 1, padding: '12px' }}>
         <View style={styles.table}>
           {renderTableHeader()}

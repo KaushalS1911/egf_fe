@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import PayTabs from './view/pay-tabs';
-import LoanpayhistoryNewEditForm from './other-loanpayhistory-new-edit-form';
 import OtherLoanpayhistoryNewEditForm from './other-loanpayhistory-new-edit-form';
 
 // ----------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
@@ -17,7 +17,8 @@ import {
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableNoData, TablePaginationCustom,
+  TableNoData,
+  TablePaginationCustom,
   TableSelectedAction,
   useTable,
 } from 'src/components/table/index.js';
@@ -30,8 +31,6 @@ import { useAuthContext } from '../../../../../auth/hooks/index.js';
 import { useGetConfigs } from '../../../../../api/config.js';
 import { getResponsibilityValue } from '../../../../../permission/permission.js';
 import { LoadingScreen } from '../../../../../components/loading-screen/index.js';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
 
 // ----------------------------------------------------------------------
 

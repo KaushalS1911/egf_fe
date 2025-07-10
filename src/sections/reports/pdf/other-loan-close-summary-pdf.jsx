@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Page, View, Text, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { fDate } from 'src/utils/format-time.js';
 import InvoiceHeader from '../../../components/invoise/invoice-header.jsx';
 
-// Register fonts
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -120,9 +119,6 @@ export default function OtherLoanCloseSummaryPdf({
 }) {
   const styles = useStyles();
 
-  // Define dataFiltered for calculations
-  const dataFiltered = data;
-
   const {
     percentage,
     rate,
@@ -210,7 +206,6 @@ export default function OtherLoanCloseSummaryPdf({
 
     rowsOnCurrentPage++;
 
-    // Check if we need to create a new page
     const isPageFull = rowsOnCurrentPage === maxRowsForCurrentPage;
     if (isPageFull || isLastRow) {
       const isFirstPage = currentPageIndex === 0;
@@ -288,7 +283,6 @@ export default function OtherLoanCloseSummaryPdf({
           </View>
         </Page>
       );
-      // Reset for next page
       currentPageRows = [];
       currentPageIndex++;
       rowsOnCurrentPage = 0;

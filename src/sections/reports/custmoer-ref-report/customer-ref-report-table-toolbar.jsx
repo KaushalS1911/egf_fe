@@ -11,7 +11,6 @@ import { useAuthContext } from '../../../auth/hooks';
 import { useGetConfigs } from '../../../api/config';
 import moment from 'moment/moment.js';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useGetBranch } from '../../../api/branch.js';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import CustomerRefReportPdf from '../pdf/customer-ref-report-pdf.jsx';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -51,7 +50,6 @@ export default function CustomerRefReportTableToolbar({
   const { configs } = useGetConfigs();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  const { branch } = useGetBranch();
   const view = useBoolean();
 
   const filterData = {
@@ -211,7 +209,7 @@ export default function CustomerRefReportTableToolbar({
             }}
             sx={{ ...customStyle }}
           />
-          {getResponsibilityValue('print_Interest_Reports', configs, user) && (
+          {getResponsibilityValue('print_customer_refrance_statement', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>

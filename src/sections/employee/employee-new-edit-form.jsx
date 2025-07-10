@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -9,16 +9,11 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import countrystatecity from '../../_mock/map/csc.json';
-import FormProvider, {
-  RHFTextField,
-  RHFUploadAvatar,
-  RHFAutocomplete,
-  RHFCode,
-} from 'src/components/hook-form';
+import FormProvider, { RHFAutocomplete, RHFCode, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
-import { Autocomplete, Button, Dialog, DialogContent, IconButton, TextField } from '@mui/material';
+import { Button, Dialog, DialogContent, IconButton } from '@mui/material';
 import axios from 'axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllUser } from 'src/api/user';
@@ -61,7 +56,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
 
   const handleClosePopup = () => {
     if (user?.role.toLowerCase() === 'employee') {
-      // setDisabledField(true);
       enqueueSnackbar('Cannot proceed without Aadhaar card verification.', { variant: 'error' });
     }
     setOpenPopup(false);
@@ -510,7 +504,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         });
 
         if (userRole.toLowerCase() === 'employee') {
-          // setDisabledField(true);
           enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
             variant: 'error',
           });
@@ -566,7 +559,6 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
         setOtpPopupOpen(false);
         enqueueSnackbar('Error in OTP verification. Please try again.', { variant: 'error' });
         if (userRole.toLowerCase() === 'employee') {
-          // setDisabledField(true);
           enqueueSnackbar('Cannot proceed without Aadhaar card verification.', {
             variant: 'error',
           });
@@ -785,7 +777,10 @@ export default function EmployeeNewEditForm({ currentEmployee }) {
                   label="Date of Birth"
                   req={'red'}
                 />
-                <RHFTextField disabled={disabledField} name="remark" label="Remark" />
+                <RHFTextField disabled={disabledField} name='remark' label='Remark' onChange={(e) => {
+                  e.target.value = e.target.value.toUpperCase();
+                  methods.setValue('remark', e.target.value);
+                }} />
                 {aadharImage && (
                   <Box pb={0}>
                     <Box

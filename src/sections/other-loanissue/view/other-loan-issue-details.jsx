@@ -1,19 +1,19 @@
 import React from 'react';
 import {
-  Box,
-  Typography,
-  Grid,
-  Divider,
   Avatar,
+  Box,
+  Divider,
+  Grid,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
+  Typography,
 } from '@mui/material';
-import {fDate} from '../../../utils/format-time.js';
+import { fDate } from '../../../utils/format-time.js';
 
 export default function OtherLoanIssueDetails({selectedRow}) {
   if (!selectedRow) return null;
@@ -26,7 +26,6 @@ export default function OtherLoanIssueDetails({selectedRow}) {
 
   return (
     <Box p={2}>
-      {/* Images at the top */}
       <Box display="flex" gap={2} alignItems="center" mb={2}>
         {customer.avatar_url && (
           <Avatar src={customer.avatar_url} alt="Customer" sx={{width: 90, height: 90}}/>
@@ -35,13 +34,10 @@ export default function OtherLoanIssueDetails({selectedRow}) {
           <Avatar src={selectedRow.loan.propertyImage} alt="Property" sx={{width: 90, height: 90}}/>
         )}
       </Box>
-
       <Typography variant="h6" gutterBottom>
         Other Loan Overview
       </Typography>
       <Divider sx={{mb: 2}}/>
-
-      {/* Customer Details */}
       <Typography variant="subtitle1" sx={{fontWeight: 600, mb: 1}}>
         Customer Details
       </Typography>
@@ -62,10 +58,7 @@ export default function OtherLoanIssueDetails({selectedRow}) {
           <b>OTP Mobile No.:</b> {customer.otpContact}
         </Grid>
       </Grid>
-
       <Divider sx={{my: 2}}/>
-
-      {/* Loan Details */}
       <Typography variant="subtitle1" sx={{fontWeight: 600, mb: 1}}>
         Loan Details
       </Typography>
@@ -114,10 +107,7 @@ export default function OtherLoanIssueDetails({selectedRow}) {
           <b>Loan Type:</b> {loan.loanType}
         </Grid>
       </Grid>
-
       <Divider sx={{my: 2}}/>
-
-      {/* Other Loan Details as columns */}
       <Typography variant="subtitle1" sx={{fontWeight: 600, mb: 1}}>
         Other Loan Details
       </Typography>
@@ -165,10 +155,7 @@ export default function OtherLoanIssueDetails({selectedRow}) {
           <b>Remark:</b> {selectedRow.remark}
         </Grid>
       </Grid>
-
       <Divider sx={{my: 2}}/>
-
-      {/* Payment Details */}
       <Typography variant="subtitle1" sx={{fontWeight: 600, mb: 1}}>
         Payment Details
       </Typography>
@@ -207,10 +194,7 @@ export default function OtherLoanIssueDetails({selectedRow}) {
           <b>Branch Name:</b> {bank.branchName}
         </Grid>
       </Grid>
-
       <Divider sx={{my: 2}}/>
-
-      {/* Property Details Table */}
       <Typography variant="subtitle1" sx={{fontWeight: 600, mb: 1}}>
         Property Details
       </Typography>

@@ -8,11 +8,12 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { Box, Dialog, DialogActions } from '@mui/material';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
-import SchemePdf from '../view/scheme-pdf.jsx';
 import { useBoolean } from '../../../hooks/use-boolean.js';
 import { useGetConfigs } from '../../../api/config.js';
 import GoldpricePdf from './goldprice-pdf.jsx';
 import IconButton from '@mui/material/IconButton';
+import { useAuthContext } from '../../../auth/hooks/index.js';
+import { getResponsibilityValue } from '../../../permission/permission.js';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ export default function GoldpriceTableToolbar({
   goldRate,
   schemeData,
 }) {
+  const { user } = useAuthContext();
   const popover = usePopover();
   const view = useBoolean();
   const { configs } = useGetConfigs();
@@ -63,17 +65,17 @@ export default function GoldpriceTableToolbar({
               const numericValue = value.replace(/[^0-9]/g, '');
               handleFilterName({ target: { value: numericValue } });
             }}
-            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restricts input to numbers
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
           />
         </Stack>
         <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </Stack>
-      <CustomPopover
+      {getResponsibilityValue('gold_price_change_print', configs, user) && <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
-        arrow="right-top"
+        arrow='right-top'
         sx={{ width: 140 }}
       >
         <MenuItem
@@ -82,26 +84,10 @@ export default function GoldpriceTableToolbar({
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:printer-minimalistic-bold" />
+          <Iconify icon='solar:printer-minimalistic-bold' />
           Print
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:import-bold" />
-          Import
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:export-bold" />
-          Export
-        </MenuItem>
-      </CustomPopover>
+      </CustomPopover>}
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>

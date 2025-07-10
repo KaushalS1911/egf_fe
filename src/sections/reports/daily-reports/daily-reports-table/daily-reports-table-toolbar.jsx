@@ -6,7 +6,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import { Box, Dialog, DialogActions, IconButton, MenuItem } from '@mui/material';
 import CustomPopover, { usePopover } from '../../../../components/custom-popover';
-import RHFExportExcel from '../../../../components/hook-form/rhf-export-excel';
 import { useAuthContext } from '../../../../auth/hooks';
 import { getResponsibilityValue } from '../../../../permission/permission';
 import moment from 'moment';
@@ -16,7 +15,6 @@ import { useBoolean } from '../../../../hooks/use-boolean';
 import Button from '@mui/material/Button';
 import { PDFViewer } from '@react-pdf/renderer';
 import DailyReportPdf from '../../pdf/daily-report-pdf.jsx';
-import Autocomplete from '@mui/material/Autocomplete';
 import { fDate } from '../../../../utils/format-time';
 import RHFMultiSheetExportExcel from '../../../../components/hook-form/rhf-multi-sheet-export-excel.jsx';
 
@@ -108,24 +106,6 @@ export default function DailyReportsTableToolbar({
               ),
             }}
           />
-
-          {/*<Autocomplete*/}
-          {/*  options={branch}*/}
-          {/*  value={selectedBranch}*/}
-          {/*  onChange={handleFilterBranch}*/}
-          {/*  getOptionLabel={(option) => option.name || ''}*/}
-          {/*  isOptionEqualToValue={(option, value) => option._id === value._id}*/}
-          {/*  renderInput={(params) => (*/}
-          {/*    <TextField*/}
-          {/*      {...params}*/}
-          {/*      label="Branch"*/}
-          {/*      placeholder="Select Branches"*/}
-          {/*      sx={customStyle}*/}
-          {/*    />*/}
-          {/*  )}*/}
-          {/*  sx={{ flexShrink: 0, width: { xs: 1, sm: 450 } }}*/}
-          {/*/>*/}
-
           <DatePicker
             label="Date"
             value={filters.startDate ? moment(filters.startDate).toDate() : null}
@@ -141,14 +121,12 @@ export default function DailyReportsTableToolbar({
             }}
             sx={customStyle}
           />
-
           {getResponsibilityValue('print_daily_reports', configs, user) && (
             <IconButton onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </Stack>
-
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -260,7 +238,6 @@ export default function DailyReportsTableToolbar({
           </MenuItem>
         </CustomPopover>
       </Stack>
-
       <Dialog fullScreen open={view.value} onClose={view.onFalse}>
         <Box sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
           <DialogActions sx={{ p: 1.5 }}>
