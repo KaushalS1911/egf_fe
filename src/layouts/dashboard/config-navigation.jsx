@@ -96,22 +96,22 @@ export function useNavData() {
             icon: ICONS.employee,
           },
           {
-            title: t('scheme'),
+            title: t('Scheme'),
             path: paths.dashboard.scheme.root,
             icon: ICONS.scheme,
           },
           {
-            title: t('carat'),
+            title: t('Carat'),
             path: paths.dashboard.carat.root,
             icon: ICONS.carat,
           },
           {
-            title: t('property'),
+            title: t('Property'),
             path: paths.dashboard.property.root,
             icon: ICONS.property,
           },
           {
-            title: t('penalty'),
+            title: t('Penalty'),
             path: paths.dashboard.penalty.root,
             icon: ICONS.penalty,
           },
@@ -121,18 +121,18 @@ export function useNavData() {
         subheader: t('loans'),
         items: [
           {
-            title: t('Loan issue'),
+            title: t('Loan Issue'),
             path: paths.dashboard.loanissue.root,
             icon: ICONS.loanissue,
           },
 
           {
-            title: t('disburse'),
+            title: t('Disburse'),
             path: paths.dashboard.disburse.root,
             icon: ICONS.disburse,
           },
           {
-            title: t('loan pay history'),
+            title: t('Loan Pay History'),
             path: paths.dashboard.loanPayHistory.list,
             icon: ICONS.loanPayHistory,
           },
@@ -142,13 +142,13 @@ export function useNavData() {
         subheader: t('other loans'),
         items: [
           {
-            title: t('other loan issue'),
+            title: t('Other Loan Issue'),
             path: paths.dashboard.other_loanissue.root,
             icon: ICONS.otherLoanIssue,
           },
 
           {
-            title: t('other loan pay history'),
+            title: t('Other Loan Pay History'),
             path: paths.dashboard.other_loanPayHistory.list,
             icon: ICONS.otherPayHistory,
           },
@@ -158,7 +158,7 @@ export function useNavData() {
         subheader: t('Loan Utilities'),
         items: [
           {
-            title: t('reminder'),
+            title: t('Reminder'),
             path: paths.dashboard.reminder.list,
             icon: ICONS.reminder,
           },
@@ -168,7 +168,7 @@ export function useNavData() {
             icon: ICONS.goldLoanCalculator,
           },
           {
-            title: t('reports'),
+            title: t('Reports'),
             path: paths.dashboard.reports.root,
             icon: ICONS.reports,
             children: [
@@ -211,7 +211,7 @@ export function useNavData() {
             ],
           },
           {
-            title: t('other reports'),
+            title: t('Other Reports'),
             path: paths.dashboard.otherReports.root,
             icon: ICONS.otherReports,
             children: [
