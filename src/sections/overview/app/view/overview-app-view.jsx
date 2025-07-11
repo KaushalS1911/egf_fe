@@ -262,7 +262,7 @@ export default function OverviewAppView() {
             )}
           />
         </Grid>}
-        {getResponsibilityValue('select_loanNo', configs, user) && <Grid item xs={12} md={6} lg={3}>
+        {getResponsibilityValue('select_loan_no', configs, user) && <Grid item xs={12} md={6} lg={3}>
           <Autocomplete
             sx={{
               'label': {
@@ -287,7 +287,7 @@ export default function OverviewAppView() {
             )}
           />
         </Grid>}
-        {getResponsibilityValue('select_mobileNo', configs, user) && <Grid item xs={12} md={6} lg={3}>
+        {getResponsibilityValue('select_mobile_no', configs, user) && <Grid item xs={12} md={6} lg={3}>
           <Autocomplete
             sx={{
               'label': {
