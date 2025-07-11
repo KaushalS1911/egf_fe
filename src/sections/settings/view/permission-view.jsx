@@ -176,8 +176,8 @@ export const modules = [
     permissions: [
       { action: 'Update Other Loan Pay History', key: 'update_other_loan_pay_history' },
       { action: 'Delete Other Loan', key: 'delete_other_loan' },
-      { action: 'Create Interest', key: 'create_interest' },
-      { action: 'Delete Interest', key: 'delete_interest' },
+      { action: 'Create Other Interest', key: 'create_other_interest' },
+      { action: 'Delete Other Interest', key: 'delete_other_interest' },
       { action: 'Create Loan Close', key: 'create_loan_close' },
     ],
   },

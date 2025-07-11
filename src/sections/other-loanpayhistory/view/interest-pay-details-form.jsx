@@ -536,7 +536,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
               >
                 Reset
               </Button>
-              {getResponsibilityValue('create_interest', configs, user) && (
+              {getResponsibilityValue('create_other_interest', configs, user) && (
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                   Submit
                 </LoadingButton>
@@ -598,7 +598,7 @@ function InterestPayDetailsForm({ currentOtherLoan, mutate, configs }) {
                     <TableCell sx={{ py: 0, px: 2 }}>{row.paymentDetail.bankName || '-'}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>{fDate(row.createdAt)}</TableCell>
                     <TableCell sx={{ py: 0, px: 2 }}>
-                      {getResponsibilityValue('delete_interest', configs, user) ? <IconButton
+                      {getResponsibilityValue('delete_other_interest', configs, user) ? <IconButton
                         color='error'
                         onClick={() => {
                           if (index === 0) {
