@@ -500,7 +500,7 @@ export default function OverviewAppView() {
             {getResponsibilityValue('portfolio_box', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <AnalyticsTrafficBySite title='Traffic by Site' list={analyticsData} />
             </Grid>}
-            {getResponsibilityValue('in_out_summary_box', configs, user) && <Grid item xs={12} md={12} lg={12}>
+            {getResponsibilityValue('all_in/out_summary_box', configs, user) && <Grid item xs={12} md={12} lg={12}>
               <BookingCheckInWidgets
                 chartTitle={'All In/Out Summary'}
                 chart={{
